@@ -135,8 +135,6 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
       receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
       receivethread.setDaemon(True)
       receivethread.start()
-      recvingfinished = False
-      sendingfinished = False
       producerFinished = 0
       while 1:
          # This loop will handle sending, control and signal communications
@@ -168,7 +166,6 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
                      sock.shutdown(2)
                   except socket.error, e:
                      pass
-                  sendingfinished = True
                   if receiverFinished:
                      break
          except socket.error, err:
@@ -188,7 +185,6 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
                except:
                   pass
                break # Receiving has stopped.  We are doing a symetrical close.
-               # self.outqueues["signal"].put(consumerFinished())
             else:
                self.outqueues["signal"].put(msg)
          except Empty, e:
