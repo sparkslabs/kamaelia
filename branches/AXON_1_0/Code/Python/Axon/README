@@ -47,6 +47,8 @@ the running system)
 
 Example code:
 
+from Axon.Component import *
+
 class Producer(component):
    Inboxes=[]
    Outboxes=["result"]
@@ -89,23 +91,18 @@ class testComponent(component):
       self.consumer = Consumer()
       self.addChildren(self.producer, self.consumer)
       self.link((self.producer, "result"), (self.consumer, "source"))
-      linkage(self.consumer,self,"result","_input", self.postoffice)
+      self.link((self.consumer, "result"), (self, "_input"))
+      self.addChildren(self.producer, self.consumer)
 
-   def childComponents(self):
-      return [self.producer, self.consumer]
-
-   def mainBody(self):
-      while len(self.inboxes["_input"]) < 1:
+   def main(self):
+      yield newComponent(*self.childComponents())
+      while not self.dataReady("_input"):
          yield 1
       result = self.recv("_input")
       print "Consumer finished with result:", result, "!"
 
-r = scheduler()
 p = testComponent()
-children = p.childComponents()
 p.activate()
-for p in children:
-   p.activate()
 scheduler.run.runThreads(slowmo=0)# context = r.runThreads()
 
 (It would probably be nice to have better syntactic sugar here by using
@@ -241,3 +238,4 @@ private:
    _safeCollect
        Wrapper around _collect - returns None where an IndexError would
        normally be thrown. Internall Function.
+
