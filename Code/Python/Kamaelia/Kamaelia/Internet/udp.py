@@ -1,4 +1,4 @@
-#!/usr/bin/python
+!/usr/bin/python
 #
 # Simple udp /multicast/ sender and receiver
 # Logically these map to being a single component each
@@ -9,30 +9,28 @@ import time
 import Axon
 
 class Chargen(Axon.Component.component):
-   def main():
+   def main(self):
       while 1:
-         yield "Hello World"
-   main = staticmethod(main)
+         self.send("Hello World", "outbox")
+         yield 1
  
 class Multicast_sender(Axon.Component.component):
-   def __init__(self, local_addr, local_port, remote_addr, remote_port, source):
+   def __init__(self, local_addr, local_port, remote_addr, remote_port):
        self.__super.__init__()
        self.local_addr = local_addr
        self.local_port = local_port
        self.remote_addr = remote_addr
        self.remote_port = remote_port
-       self.source = source
 
    def main(self):
        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
        sock.bind((self.local_addr,self.local_port))
        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)
        while 1:
-          time.sleep(0.7)
-          data = self.source.next()
-          l = sock.sendto(data, (self.remote_addr,self.remote_port) );
-          print "sending...", time.time()
-          yield l
+          if self.dataReady("inbox"):
+             data = self.recv()
+             l = sock.sendto(data, (self.remote_addr,self.remote_port) );
+          yield 1
 
 
 class Multicast_receiver(Axon.Component.component):
@@ -59,13 +57,13 @@ class Multicast_receiver(Axon.Component.component):
            except socket.error, e:
               pass
            else:
-              print "We got data!"
-              print "FROM: ", addr
-              print "DATA: ", data
+              message = (addr, data)
+              self.send(message,"outbox")
            yield 1
 
 def tests():
    from Axon.Scheduler import scheduler
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
    ANY = "0.0.0.0"
    ANYPORT = 0
@@ -74,18 +72,22 @@ def tests():
 
    class testComponent(Axon.Component.component):
       def main(self):
-        source= Chargen.main()
-        R = Multicast_receiver(MCAST_ADDR, MCAST_PORT)
-        S = Multicast_sender(ANY, ANYPORT, MCAST_ADDR, MCAST_PORT, source)
-        self.addChildren(R, S)
+        chargen= Chargen()
+        sender = Multicast_sender(ANY, ANYPORT, MCAST_ADDR, MCAST_PORT)
+        receiver = Multicast_receiver(MCAST_ADDR, MCAST_PORT)
+        display = consoleEchoer()
+
+        self.link((chargen,"outbox"), (sender,"inbox"))
+        self.link((receiver,"outbox"), (display,"inbox"))
+        self.addChildren(chargen, sender, receiver, display)
         yield Axon.Ipc.newComponent(*(self.children))
         while 1:
            self.pause()
-           yield 1k
+           yield 1
 
    harness = testComponent()
    harness.activate()
-   scheduler.run.runThreads(slowmo=0)
+   scheduler.run.runThreads(slowmo=0.1)
 
 if __name__=="__main__":
 
