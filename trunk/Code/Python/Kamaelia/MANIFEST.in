@@ -1,3 +1,5 @@
+include Kamaelia/test/*
+include Kamaelia/Sketch/*
 include Kamaelia/Support/*
 include Kamaelia/Support/*/*
 include Docs/*
