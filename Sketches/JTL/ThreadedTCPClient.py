@@ -136,32 +136,33 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
       receivethread.setDaemon(True)
       receivethread.start()
       producerFinished = 0
+      # This loop will handle sending, control and signal communications
+      # including with the recv thread.  Apart from the sending all the calls
+      # should be non-blocking.  sending should rarely take a significant
+      # time.  One non-blocking call will operate with a short timeout to
+      # prevent busy wait taking too much CPU time.
       while 1:
-         # This loop will handle sending, control and signal communications
-         # including with the recv thread.  Apart from the sending all the calls
-         # should be non-blocking.  sending should rarely take a significant
-         # time.  One non-blocking call will operate with a short timeout to
-         # prevent busy wait taking too much CPU time.
-         
-         # TODO: All Exception Handling
          try:
             # This blocks for a short time to avoid busy wait if there is
-            # nothing to do.
+            # nothing to do.  Should mean thread doesn't hog CPU.
             data = self.inqueues["inbox"].get(True, 0.2)
             sock.send(data)
-            if producerFinished: #If there is still coming extend the time
-                                            #window for data to get in the queue
+            if producerFinished: 
+               #As there is still data coming extend the time window for data to
+               # get in the queue
                producerFinished = time.time()
          except Empty, e:
-             # A four second delay ought to be enough for the component to
-             # get a timeslice and move some data from inbox to the queue.
-             # Yet it shouldn't cause critical errors, delays or leaks if it
-             # allowed to take this long.  This must be done on a time basis as
-             # the items are being added to our queue by an Axon component so
-             # are being copied in only when there is a timeslice.  The
-             # alternative is to have a reasonable liklyhood of dropping some data.
-             if producerFinished:
+             if producerFinished: # This is an efficiency guard to prevent time.time
+                                             # being called repeatedly.
                if time.time() > producerFinished + 4:
+               # A four second delay ought to be enough for the component to get
+               # a timeslice and move some data from inbox to the queue.  Yet it
+               # shouldn't cause critical errors, delays or leaks if it allowed
+               # to take this long.  This must be done on a time basis as the
+               # items are being added to our queue by an Axon component so are
+               # being copied in only when there is a timeslice.  The
+               # alternative is to have a reasonable liklyhood of dropping some
+               # data.
                   recvthreadcontrol.put("StopThread")
                   break
          except socket.error, err:
@@ -186,6 +187,8 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
                # inbox queue before shutting down the sending system.
          except Empty, e:
             pass # Normal case.
+      
+      #end while 1
       
       # After breaking out of while loop clean up socket before ending the thread.
       try:
