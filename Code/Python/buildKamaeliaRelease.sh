@@ -12,7 +12,7 @@
 
    # Now we clobber everything in this branch. 
    # Reason for the update before copy is to ensure we don't get a clash
-   find -type f . | egrep -v '/build/|/CVS/|/dist/|~$|^./MANIFEST' |while read i; do
+   find . -type f | egrep -v '/build/|/CVS/|/dist/|~$|^./MANIFEST' |while read i; do
       cp ../Kamaelia/$i $i
    done
 
