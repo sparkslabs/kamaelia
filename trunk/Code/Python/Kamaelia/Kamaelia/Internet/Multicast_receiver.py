@@ -35,8 +35,24 @@ class Multicast_receiver(Axon.Component.component):
            yield 1
 
 def tests():
-   print "This module is acceptance tested as part of a system."
-   print "Please see the test/test_BasicMulticastSystem.py script instead"
+   from Axon.Scheduler import scheduler
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+
+   class testComponent(Axon.Component.component):
+      def main(self):
+        receiver = Multicast_receiver("224.168.2.9", 1600)
+        display = consoleEchoer()
+
+        self.link((receiver,"outbox"), (display,"inbox"))
+        self.addChildren(receiver, display)
+        yield Axon.Ipc.newComponent(*(self.children))
+        while 1:
+           self.pause()
+           yield 1
+
+   harness = testComponent()
+   harness.activate()
+   scheduler.run.runThreads(slowmo=0.1)
 
 if __name__=="__main__":
 
