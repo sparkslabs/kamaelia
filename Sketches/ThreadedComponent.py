@@ -1,5 +1,13 @@
 #!/usr/bin/env python2.3
 #
+#      TODO: Thread shutdown
+#      TODO: How to allow the thread to start new components?
+#            (ie we only yield 1, not a newComponent or any value from the
+#            thread.)
+#      TODO: Number of minor issues fixed - thread shutdown is an issue though!
+#            Added simple trace statements into the code.
+#
+#
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -30,19 +38,12 @@ class _componentthread(threading.Thread):
       avoid multiple inheritance, essentially a bounceback through to the
       passed component that is to be run as a thread not as a generator.
    """
-   def __init__(self, componentToRun, queuelengths):
-      self.__super.__init__() # FIXME-- that will FAIL
-
-      self.tcomponent  = componentToRun
-#      inqueues = dict()
-#      outqueues = dict()
-#      for box in inboxes.iterkeys():
-#         inqueues[box] = Queue.Queue(queuelengths)
-#      for box in outboxes.iterkeys():
-#         outqueues[box] = Queue.Queue(queuelengths)
+   def __init__(self, componentToRun=None):
+      threading.Thread.__init__(self)
+      self.componentToRun  = componentToRun
       
    def run(self):
-      self.tcomponent.run()
+      self.componentToRun.run()
       
 class threadedcomponent(Axon.Component.component):
    """This component is intended to allow blocking calls to be made from within
@@ -51,10 +52,18 @@ class threadedcomponent(Axon.Component.component):
 
    def __init__(self,queuelengths=10):
       self.__super.__init__()
-      thethread = _componentthread(self,queuelengths)
+      thethread = _componentthread(self)
+
+      self.queuelengths = queuelengths
+      self.inqueues = dict()
+      self.outqueues = dict()
+      for box in self.inboxes.iterkeys():
+         self.inqueues[box] = Queue.Queue(self.queuelengths)
+      for box in self.outboxes.iterkeys():
+         self.outqueues[box] = Queue.Queue(self.queuelengths)
 
       self.outbuffer = dict()
-      for box in outboxes:
+      for box in self.outboxes:
          self.outbuffer[box] = None
 
       self.finished = False
@@ -67,23 +76,21 @@ class threadedcomponent(Axon.Component.component):
       """
       while 1:
          for box in self.inqueues.iterkeys():
-            while not inqueues[box].empty():
-               inqueues.get()
+            print "ba",
+            while not self.inqueues[box].empty():
+               print "dada:", self.inqueues[box].get(),
+         print "doing"
          time.sleep(1)
       
    def main(self):
       """Do not overide this unless you reimplement the pass through of the boxes to the threads.
-      TODO: Thread shutdown
-      TODO: How to allow the thread to start new components?
-            (ie we only yield 1, not a newComponent or any value from the
-            thread.)
       """
 
       while 1:
-         for box in inboxes:
+         for box in self.inboxes:
             if(self.dataReady(box)):
                if(not self.inqueues[box].full()): # LBYL, but no race hazard
-                  self.inqueues[box].put(receive(box))
+                  self.inqueues[box].put(self.recv(box))
 
          for box in self.outboxes:
             if self.outbuffer.has_key(box):
@@ -103,3 +110,12 @@ class threadedcomponent(Axon.Component.component):
 
          yield 1
       
+if __name__ == '__main__':
+   from Axon.Scheduler import scheduler
+
+   tc = threadedcomponent()
+   tc.activate()
+   tc._deliver("hello","inbox")
+   tc._deliver("world","inbox")
+   tc._deliver("foo","inbox")
+   scheduler.run.runThreads(slowmo=0)
