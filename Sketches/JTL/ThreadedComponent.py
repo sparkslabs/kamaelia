@@ -72,6 +72,7 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
          if not self.axontothreadqueue.empty():
             mesg = self.axontothreadqueue.get()
             if mesg == "StopThread":
+               self.threadtoaxonqueue.put("ThreadStopped")
                break
          time.sleep(1)
       
@@ -80,11 +81,7 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
       """
 
       while 1:
-         for box in self.inboxes:
-            if(self.dataReady(box)):
-               if(not self.inqueues[box].full()): # LBYL, but no race hazard
-                  self.inqueues[box].put(self.recv(box))
-
+ 
          for box in self.outboxes:
             if self.outbuffer.has_key(box):
                try:
@@ -100,6 +97,37 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
                except noSpaceInBox:
                   self.outbuffer[box] = sending
                   break
+   
+         if not self.threadtoaxonqueue.empty():
+         # Check for messages from internal thread.  It could loop through them but that 
+         # would change the meaning of the continue statement from skipping the inbox
+         #reading.
+            m = self.threadtoaxonqueue.get()
+            if isinstance(m, newComponent):
+            # If new components have been created and need to be added to the run queue
+            # It might be best that more of the work of adding children is done here to avoid
+            # race conditions.
+               yield m # yield for the scheduler to add to list of running components.
+            elif m == "ThreadStopped":
+            # See if thread has finished in which case the component should finish up and die
+            # as soon as all the output from the thread is passed on and no longer pending
+               residualdata = False
+               for box in self.outboxes:
+                  # This checks that there is no pending data that hasn't been put in an outbox
+                  # before allowing the component to die.
+                  if self.outbuffer.has_key(box) or not self.outqueues[box].empty():
+                     residualdata = True
+                     break
+               if not residualdata:
+                  return # The thread has finished, all data has been sent and the component
+                             # can be removed from the run queue.
+               yield 1
+               continue # This means we do not pass in more data destined for the dead thread
+   
+         for box in self.inboxes:
+            if(self.dataReady(box)):
+               if(not self.inqueues[box].full()): # LBYL, but no race hazard
+                  self.inqueues[box].put(self.recv(box))
 
          yield 1
 
