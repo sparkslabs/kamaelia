@@ -1,3 +1,5 @@
+AUTHORS
+COPYING
 setup.py
 Docs/Axon.html
 Docs/BaseModules.html
@@ -30,9 +32,12 @@ Kamaelia/KamaeliaExceptions.py
 Kamaelia/KamaeliaIPC.py
 Kamaelia/MimeRequestComponent.py
 Kamaelia/ReadFileAdaptor.py
+Kamaelia/SampleMIMERequest.txt
 Kamaelia/SampleTemplateComponent.py
 Kamaelia/SimpleServerComponent.py
 Kamaelia/__init__.py
+Kamaelia/afortune.pl
+Kamaelia/debug.conf
 Kamaelia/requestLine.py
 Kamaelia/vorbisDecodeComponent.py
 Kamaelia/Internet/ConnectedSocketAdapter.py
@@ -49,6 +54,9 @@ Kamaelia/Support/BlankFile.txt
 Kamaelia/Support/README
 Kamaelia/Support/Ulysses
 Kamaelia/Support/Ulysses.short
+Kamaelia/Support/mpeg1/.keep
+Kamaelia/Support/ogg/.keep
+Kamaelia/Support/wav/.keep
 Kamaelia/Util/ConsoleEcho.py
 Kamaelia/Util/ToStringComponent.py
 Kamaelia/Util/__init__.py

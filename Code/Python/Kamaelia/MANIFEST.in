@@ -1,5 +1,9 @@
 include Kamaelia/Support/*
+include Kamaelia/Support/*/*
 include Docs/*
 include Docs/*/*
 include COPYING
 include AUTHORS
+include Kamaelia/afortune.pl
+include Kamaelia/debug.conf
+include Kamaelia/SampleMIMERequest.txt
