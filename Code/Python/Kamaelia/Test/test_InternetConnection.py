@@ -1,5 +1,7 @@
 #!/usr/bin/env python2.3
-#
+# -------------------------------------------------------------------------
+# THIS MODULE IS NOW REDUNDANT BECAUSE IT TESTS A MODULE NO LONGER IN USE.
+# -------------------------------------------------------------------------
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -19,7 +21,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+# 
 # Full coverage testing of the Internet Connection module.
 #
 

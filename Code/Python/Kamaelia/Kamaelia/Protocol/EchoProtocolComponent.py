@@ -51,7 +51,7 @@ class EchoProtocol(component):
       return 1
 
 if __name__ == '__main__':
-   from SimpleServerComponent import SimpleServer
+   from Kamaelia.SimpleServerComponent import SimpleServer
 
    SimpleServer(protocol=EchoProtocol, port=1501).activate()
    scheduler.run.runThreads(slowmo=0)

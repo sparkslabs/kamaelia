@@ -26,7 +26,7 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import NullPayloadRTP
+import Kamaelia.NullPayloadRTP
 
 
 class NullPayloadRTP_Test(unittest.TestCase):

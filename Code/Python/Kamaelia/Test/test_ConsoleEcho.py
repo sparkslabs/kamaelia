@@ -26,7 +26,7 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import ConsoleEcho
+import Kamaelia.Util.ConsoleEcho
 
 class ConsoleEcho_Test(unittest.TestCase):
    def test_init_minArgs(self):

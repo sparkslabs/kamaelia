@@ -59,10 +59,10 @@
 #
 
 import socket, time
-from Axon.Component import component
-import Axon
-from Axon.Ipc import wouldblock, status, producerFinished
 import errno
+import Axon
+from Axon.Component import component
+from Axon.Ipc import wouldblock, status, producerFinished
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA
 from Kamaelia.KamaeliaExceptions import *
 

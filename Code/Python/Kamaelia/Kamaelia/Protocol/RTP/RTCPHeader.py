@@ -28,7 +28,7 @@ represent the fields in the header:
 
 The order of the fields and sizes are defined in the variable "struct".
 """
-from bitfieldrec import bfrec, field
+from Kamaelia.bitfieldrec import bfrec, field
 
 class RTCPHeader(bfrec):
    "Abstract (note, *not* base) class for RTCP packet types"

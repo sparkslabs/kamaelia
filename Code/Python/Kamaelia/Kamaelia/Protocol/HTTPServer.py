@@ -38,11 +38,11 @@ import sys
 
 from Axon.Component import component, scheduler, linkage, newComponent
 from Axon.Ipc import producerFinished, errorInformation
-from ReadFileAdaptor import ReadFileAdaptor
-from SimpleServerComponent import SimpleServer
-from MimeRequestComponent import mimeObject, MimeRequestComponent
-from requestLine import BadRequest
-from ToStringComponent import ToStringComponent
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.MimeRequestComponent import mimeObject, MimeRequestComponent
+from Kamaelia.requestLine import BadRequest
+from Kamaelia.Util.ToStringComponent import ToStringComponent
 
 crashAndBurn = { "error404" : False }
 

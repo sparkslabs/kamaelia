@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 
 import unittest
-import requestLine.py
+import Kamaelia.requestLine
 
 class requestLineTestCase(unittest.TestCase):
 	def test_Method_FullURL_UsernamePasswordCGIArgs_Protocol(self)

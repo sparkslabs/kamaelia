@@ -46,8 +46,8 @@ bit rate.
 import sys
 
 from Axon.Component import component, scheduler, linkage, newComponent
-from ReadFileAdaptor import ReadFileAdaptor
-from SimpleServerComponent import SimpleServer
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.SimpleServerComponent import SimpleServer
 
 class AudioCookieProtocol(component):
    def __init__(self,filename="Ulysses", debug=0):
