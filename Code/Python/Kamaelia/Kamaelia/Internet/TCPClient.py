@@ -21,7 +21,21 @@
 # -------------------------------------------------------------------------
 
 import socket
+
 import errno
+try:
+# We use several values of windows only socket errors so it works on Windows too.
+    test = errno.WSAEISCONN
+except AttributeError, e: 
+    # We are running on something other than Windows.  We want to define the used
+    # errno values to something that will not occur in real usage.  No numbers can be
+    #guaranteed not to be used so I set them to a string.
+    errno.WSAEISCONN = "fish"
+try:
+    test = errno.WSAEISCONN
+except AttributeError, e:
+    errno.WSAEWOULDBLOCK = "fish"
+    
 import Axon
 from Axon.util import Finality
 from Axon.Component import component
@@ -95,12 +109,18 @@ class TCPClient(component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errorno==errno.EINPROGRESS:
+         if errorno==errno.EINPROGRESS or errorno==errno.WSAEWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
+         if errorno == errno.WSAEISCONN:
+             # This is a windows error indicating the connection has already been made.
+             # This is actually an alternate sucess case to a truth response immediately.
+             # self.connected = 1 # If connected is actually used then it should be set here too
+             self.connecting = 0 # as with the no exception case.
+             return True
          # Anything else is an error we don't handle
          raise socket.msg
 
@@ -138,8 +158,8 @@ class TCPClient(component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-         self.send(e, "signal") 
-      # "TCPC: Exitting run client"
+          self.send(e, "signal")
+        # "TCPC: Exitting run client"
 
 def _tests():
    from Axon.Linkage import linkage
