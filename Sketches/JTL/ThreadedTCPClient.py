@@ -130,7 +130,7 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
             result = sock.close()
          except:
             pass
-         self.threadtoaxonqueue("StoppedThread")
+         self.threadtoaxonqueue.put("StoppedThread")
          return
       receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
       receivethread.setDaemon(True)
