@@ -1,3 +1,5 @@
 include Kamaelia/Support/*
 include Docs/*
 include Docs/*/*
+include COPYING
+include AUTHORS
