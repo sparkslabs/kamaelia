@@ -110,12 +110,6 @@ dictionaries, operators (eg '|' ) and decorators. The presentation on the
 website on Kamaelia shows a partial semi-reimplementation of ideas using
 decorators to eliminate the classes above)
 
-For various reasons it makes sense to run all Axon code using the -OO flags
-- this is due to the currently highly inefficient debug framework. One
-downside of async systems is that debuggers tend to have a hard time - but
-this has been thought of upfront :), the downside is that if you run with
-debugging enabled/possible, then the system runs like a pig. (Due to some
-rather heavy duty fumbling around in the garbage collector)
 
 
 Michael, January 2005
