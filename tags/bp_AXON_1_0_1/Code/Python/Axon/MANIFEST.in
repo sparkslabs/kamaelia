@@ -1,0 +1,3 @@
+include Axon/test/*
+include COPYING
+include AUTHORS
