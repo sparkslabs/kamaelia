@@ -230,7 +230,8 @@ class microprocess(Axon.AxonObject):
       if not 'debugger' in self.__dict__.keys():
          self.debugger = debug()
          self.debugger.useConfig()
-         assert self.debugger.note("microprocess.__init__",5, "Defining debugger for self", self.__class__)
+         if self.debugger.areDebugging("microprocess.__init__", 5):
+            self.debugger.debugmessage("microprocess.__init__", "Defining debugger for self", self.__class__)
 
 
    def __str__(self):
@@ -255,27 +256,31 @@ class microprocess(Axon.AxonObject):
 
    def _isStopped(self):
       """'M._isStopped()' - test, boolean result indicating if the microprocess is halted."""
-      assert self.debugger.note("microprocess._isStopped",1, "self.stopped",self.__stopped)
+      if self.debugger.areDebugging("microprocess._isStopped", 1):
+         self.debugger.debugmessage("microprocess._isStopped", "self.stopped",self.__stopped)
       return self.__stopped == 1
 
    def _isRunnable(self):
       """'M._isRunnable()' - test,
       boolean result indicating if the microprocess is paused.
       """
-      assert self.debugger.note("microprocess._isRunnable",10, "self.runnable",self.__runnable)
+      if self.debugger.areDebugging("microprocess._isRunnable", 10):
+         self.debugger.debugmessage("microprocess._isRunnable", "self.runnable",self.__runnable)
       return self.__runnable == 1
 
    def stop(self):
       """'M.stop()' -
       Halts the microprocess, no way to "unstop" """
-      assert self.debugger.note("microprocess.stop",1, "Microprocess STOPPED", self.id,self.name,self)
+      if self.debugger.areDebugging("microprocess.stop", 1):
+         self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
       self.__runnable = 0
 
    def pause(self):
       """'M.pause()' - Pauses the microprocess.
       sets the runnable flag to false - thus pausing the microprocess."""
-      assert self.debugger.note("microprocess.pause",1, "Microprocess PAUSED", self.id,self.name,self)
+      if self.debugger.areDebugging("microprocess.pause", 1):
+         self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
       self.__runnable = 0
 
    def _unpause(self):
@@ -292,7 +297,8 @@ class microprocess(Axon.AxonObject):
 #      assert self.debugger.note("microprocess._unpause",1, "Microprocess UNPAUSED", self.id,self.name,self)
 #      self.__runnable = 1
 #=======
-      assert self.debugger.note("microprocess._unpause",1, "Microprocess UNPAUSED", self.id,self.name,self)
+      if self.debugger.areDebugging("microprocess._unpause", 1):
+         self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
       if not self._isStopped():
          self.__runnable = 1
 #>>>>>>> 1.10
@@ -302,7 +308,8 @@ class microprocess(Axon.AxonObject):
 
       If you miss this off a class that directly subclass's microprocess, your program
       will run, but it will not do what you want!"""
-      assert self.debugger.note("microprocess.main",0, self.name,"OI! You're only supposed to blow the bloody doors off!")
+      if self.debugger.areDebugging("microprocess.main", 0):
+         self.debugger.debugmessage("microprocess.main", self.name,"OI! You're only supposed to blow the bloody doors off!")
       "If you ever see the above message in your debug output, you've made a big mistake!"
       yield 1
       return
@@ -338,7 +345,8 @@ class microprocess(Axon.AxonObject):
       object, places this into the thread attribute of the microprocess
       and appends the component to the scheduler's run queue."""
 
-      assert self.debugger.note("microprocess.activate",1, "Activating microprocess",self)
+      if self.debugger.areDebugging("microprocess.activate", 1):
+         self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
       self.__thread = self._microprocessGenerator(self)
 
       #
@@ -347,7 +355,8 @@ class microprocess(Axon.AxonObject):
       # (Specifically the component class needs that capability)
       #
       if Scheduler is not None:
-         assert self.debugger.note("microprocess.activate",1, "Activating microprocess",self)
+         if self.debugger.areDebugging("microprocess.activate", 1):
+            self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
          Scheduler._addThread(self)
          self.scheduler = Scheduler
       else:
@@ -371,7 +380,8 @@ class microprocess(Axon.AxonObject):
          pass
          #self.tracker = microprocess.trackerClass.tracker
 
-      assert self.debugger.note("microprocess.activate",5, "Using Scheduler",self.scheduler)
+      if self.debugger.areDebugging("microprocess.activate", 5):
+         self.debugger.debugmessage("microprocess.activate", "Using Scheduler",self.scheduler)
       return self
 
    def _closeDownMicroprocess(self):
