@@ -23,3 +23,7 @@ as the original decoder.
 Michael Sparks, michaels@rd.bbc.co.uk, July 2004
 
 (The contents of this directory has also been contributed back to Xiph.org)
+
+December 2004: Added to Kamaelia's sourceforge project since it documents in
+detail the basic architecture and design ideas behind libvorbissimple -
+which is wrapped as a sample Kamaelia codec decode component.
