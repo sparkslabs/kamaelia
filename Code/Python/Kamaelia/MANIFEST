@@ -24,6 +24,7 @@ Docs/Axon/debug.py.html
 Docs/Axon/debugConfigFile.py.html
 Docs/Axon/idGen.py.html
 Docs/Axon/util.py.html
+Kamaelia/ComponentClasses.py
 Kamaelia/FortuneCookie_InternetHandlingTests.py
 Kamaelia/KamaeliaExceptions.py
 Kamaelia/KamaeliaIPC.py
