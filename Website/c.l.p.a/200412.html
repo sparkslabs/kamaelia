@@ -1,0 +1,41 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
+<p><span style="font-family:Courier 10 Pitch">Kamaelia - A network Testbed<br />----------------------------</span></p>
+<p><span style="font-family:Courier 10 Pitch">I'm very pleased to be able to be able to announce the release of the BBC's R&amp;D KAMAELIA project under open source licensing terms to all potential collaborative partners in the network community.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Kamaelia is collection of python modules designed as a network experimentation testbed for network protocol research. Its architecture is specifically designed to simplify creation and testing of new protocols for large scale media delivery systems.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Many network researchers use the open source TCP/IP stacks for investigating/improving low level transport protocols. Likewise, many network caching researchers use similar testbeds for experimentation and collaboration. The intent for Kamaelia is similar. Kamaelia is designed to enable use as a media server experimentation toolkit.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Kamaelia is a work in progress, and has gone through a number of iterations to date. This initial release is a small stable subset of what we hope can be created using this system, but more importantly we feel provides a base for future experimentation. We do not expect to get the right answers first time round, but by sharing with the community we hope to stimulate development in this area.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Kamaelia uses the Python programming language, created by Guido van Rossum. Python was chosen for its facilities: resumable functions, its clarity of code and compact nature. However, Kamaelia is designed to provide a framework for collaboration, so we hope that the approach will be available to other network researchers as the project progresses.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">The aim of releasing Kamaelia is to work with participants inside the IETF and similar organisations for the creation of open protocols and standards designed for large scale media delivery. It is hoped that the result of such a process would be to stimulate vendors who can then confirm the results of our research and implement any resulting open protocols in their products in much the same manner as many earlier protocols.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">But what is it?<br />---------------</span></p>
+<p><span style="font-family:Courier 10 Pitch">A collection of python generators running concurrently linked via communications channels.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Components are written as python generators. The approach for building components and systems is similar to using Unix command line pipes, CSP and hardware. Specifically you write small focussed components which only know about their local inputs and outputs. Interesting systems are then composed using linkages, creating networks of components linking outboxes to inboxes, in a similar way that unix pipelines create interesting systems by linking stdout to stdin between successive programs. </span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">This differs from many other systems in that it doesn't use essentially a state machine based approach, rather relying on the python language to provide the basic concurrency requirements. This approach is however somewhat experimental, and at this stage not as efficient, however this will change. If you are looking to build a production system Kamaelia is probably not appropriate at present.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Take a TCP server as an example. You have a generic TCP server component that accepts a protocol component. That server component handles then everything except the actual protocol. The work in creating (and hence testing and experimenting) is then limited to just writing your protocol. You don't have to consider basic network server scaling issues, you don't need to restructure your protocol to fit a framework (thereby making it more difficult to experiment with the protocol), you just write the protocol. You can also test the protocol in isolation from the network, making protocol testing and compliance testing significantly simpler.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">The key difference from traditional software systems is that people are able to write new components and network protocols for the system using simple techniques to integrate with a larger testbed framework. The approach is inspired directly from the techniques used for asynchronous hardware construction. More documentation will be added as we do on, but for now there is documentation in the CVS tree. (See download below)</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">What Stage Is The Project At ?<br />------------------------------<br />We have recently made our code available as a CVS release for developers who are interested at this stage. We are moving documentation and material describing the motivation into both the website and documentation. The project changed to a largely test-first approach late in the project, and some test suites are being implemented. However the core of the system, Axon, we believe to be largely feature complete given that it's functionality has been driven by application spikes. The Kamaelia system itself is now largely complete for building TCP based servers - the most common class of network server. A small number of trivial example protocols are included.<br /><br />Website, Email lists<br />--------------------<br />   * http://kamaelia.sourceforge.net/<br />   * http://lists.sourceforge.net/lists/listinfo/kamaelia-list<br /></span></p>
+<p><span style="font-family:Courier 10 Pitch">Availability<br />------------</span></p>
+<p><span style="font-family:Courier 10 Pitch">Kamaelia is only available as a developer CVS release at present. A SourceForge.net hosted project has been created to allow open process, and to allow working reference solutions to be shared in the hope of encouraging consensus. </span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Please go to the sourceforge project page and perform a CVS checkout, read the tests, and feel free to play/feedback:<br />   * http://sourceforge.net/projects/kamaelia<br /></span></p>
+<p><span style="font-family:Courier 10 Pitch">Licensing:<br />----------</span></p>
+<p><span style="font-family:Courier 10 Pitch">Kamaelia is released under the Mozilla tri-license scheme (MPL/GPL/LGPL). Specifically you may choose to accept either the Mozilla Public License 1.1, the GNU General Public License 2.0 or the Lesser General Public License 2.1. Proprietary terms and conditions available upon request.</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">The development of Python is managed by the Python Software Foundation</span></p>
+<p><span style="font-family:Courier 10 Pitch">SourceForge.net is a trademark of VA Software Corporation</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Merry Christmas,</span></p>
+<p></p>
+<p><span style="font-family:Courier 10 Pitch">Michael Sparks</span></p>
+<p></p>
+</body></html>
