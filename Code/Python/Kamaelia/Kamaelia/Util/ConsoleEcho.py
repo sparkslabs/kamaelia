@@ -37,7 +37,7 @@ class consoleEchoer(component):
    def mainBody(self):
       if self.dataReady("inbox"):
          data = self.recv("inbox")
-         _sys.stdout.write(data)
+         _sys.stdout.write(str(data))
          _sys.stdout.flush()
          if self.forwarder:
             self.send(data, "outbox")
