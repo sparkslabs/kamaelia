@@ -47,6 +47,7 @@ using namespace std;
 
 /* Base class for IPC objects */
 struct IPC_S {
+   virtual string __str__() { }; // Force polymorphic
    int payload;
 };
 
@@ -228,7 +229,7 @@ struct Consumer : public SimpleComponent {
     GENERATOR_CODE_START
         while (1) {
             if (dataReady()) {
-               result = (mystring *)recv();
+               result = dynamic_cast<mystring *>(recv());
                cout << "! " << result->payload << endl;
             };
             YIELD(1);
