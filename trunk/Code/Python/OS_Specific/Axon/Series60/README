@@ -27,16 +27,12 @@ receive the message the Python Installer will pop up and ask if you want to
 install as "Python script" or "Python lib module".  For all the files in the
 Axon folder choose "Python lib module".  
 
-2) Transfer "sets.py" from the libs directory to your phone, this is from the
-standard python distribution and required by Axon.  This must also be
-installed as a "Python lib module".
-
-3) Axon is now installed on your phone and ready to use.  In the examples
+2) Axon is now installed on your phone and ready to use.  In the examples
 folder there is a script called README.py that includes a version of the code
 below and is a good basic example.  You can transfer it to the phone and
 should install it as a "Python script".
 
-4) To run a script start the Python application and choose "Options" then
+3) To run a script start the Python application and choose "Options" then
 "Run script"  You should my\README.py in the list, select it and after a
 little wait you should see the output.
 

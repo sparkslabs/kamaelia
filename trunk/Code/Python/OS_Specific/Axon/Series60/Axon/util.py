@@ -23,7 +23,7 @@
 General utility functions & common includes
 """
 
-import sets
+#import sets
 from AxonExceptions import invalidComponentInterface
 
 
@@ -52,7 +52,13 @@ def removeAll(xs, y):
          raise ValueError, reason
 
 def listSubset(requiredList, suppliedList):
-   return sets.Set(requiredList).issubset(sets.Set(suppliedList))
+   """Returns True if requiredList is a subset of suppliedList, False otherwise.
+   Efficient for short required lists but copying and sorting both lists first
+   may be better if required list is long."""
+   for item in requiredList:
+      if not item in suppliedList:
+         return False
+   return True
 
 def testInterface(theComponent, interface):
    "Look for a minimal match interface for the component"
