@@ -1,0 +1,10 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:26pt;font-weight:600">Kamaelia</span></p>
+<p align="right"><span style="font-weight:600">A network testbed</span></p>
+<ul type="disc"><div><span style="font-style:italic">Kamaelia is designed as a testbed for network experimentation using a<br />component architecture designed to simplify creation and testing of new<br />protocols for large scale media delivery systems.</span></div></ul>
+<p><span style="font-style:italic;font-weight:600">But what is it?</span></p>
+<p>The basic system is written in python using generators. The approach for building components and systems is similar to using Unix command line pipes. Specifically you write small focussed components which only know about their local inputs and outputs. Interesting systems are then constructed using linkages and pipelines - much like the Unix shell approach. Also, this differs from systems like twisted.python in that it doesn't use essentially a state machine based approach, rather relying on the python language to provide the basic concurrency requirements.</p>
+<p>The result is that when creating (say) a TCP server, you have a TCP server component that accepts a protocol components, and then it handles everything except the actual protocol. The work in creating (and hence testing and experimenting) is then limited to just writing your protocol. You don't have to consider basic network server scaling issues, you don't need to restructure your protocol to fit a framework (thereby making it more difficult to experiment with the protocol), you just write the protocol. You can also test the protocol in isolation from the network making protocol testing and compliance testing significantly simpler.</p>
+<p>ie the key difference from traditional systems is that people are able to write new components and network protocols for the system using their simple techniques to integrate with a larger testbed framework.</p>
+<p></p>
+</body></html>
