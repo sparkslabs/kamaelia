@@ -127,7 +127,7 @@ class TCPClient(component):
                result = sock.shutdown(1) ; yield 3
                print "TCPC: We do indeed :)"
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
-               # The logical place to send the error is to
+               # The logical place to send the error is to the signal outbox
          except Exception, x:
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
