@@ -12,21 +12,20 @@
 
    # Now we clobber everything in this branch. 
    # Reason for the update before copy is to ensure we don't get a clash
-   find -type f | egrep -v '/build/|/CVS/|/dist/|~$|^./MANIFEST' |while read i; do
+   find -type f . | egrep -v '/build/|/CVS/|/dist/|~$|^./MANIFEST' |while read i; do
       cp ../Kamaelia/$i $i
    done
 
    cvs status . 2>&1 >/dev/null # Reset all timestamps
 
-   # Extract the version number from setup.py, replace periods with
-   # underscores and create a branch point release tag. (Means that
-   # if necessary we can instantiate a branch easily, but don't have to)
-   RELEASETAG=bp_`egrep "^ *version *=" setup.py |cut -d\" -f2|sed -e "s/\./_/g"`
-
-   cvs tag $RELEASETAG
+   # NOTE: We do not tag the release here any more - this allows us to do
+   # test builds _without_ clobbering older releases.
 
    cp ../../../AUTHORS .
    cp ../../../COPYING .
    python setup.py sdist
    cp dist/* ../Releases
+
+   echo "If the release tar ball is fine, please use tagKamaeliaRelease.sh"
+   echo "to tag the release"
 )
