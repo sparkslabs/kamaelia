@@ -1,4 +1,5 @@
 AUTHORS
+CHANGELOG
 COPYING
 README
 setup.py
@@ -34,3 +35,21 @@ Axon/test/test_debug.py
 Axon/test/test_debugConfigFile.py
 Axon/test/test_idGen.py
 Axon/test/test_util.py
+Docs/Axon.html
+Docs/cat.gif
+Docs/Axon/AdaptiveCommsComponent.py.html
+Docs/Axon/Axon.py.html
+Docs/Axon/AxonExceptions.py.html
+Docs/Axon/Component.py.html
+Docs/Axon/CoordinatingAssistantTracker.py.html
+Docs/Axon/Ipc.py.html
+Docs/Axon/Linkage.py.html
+Docs/Axon/Microprocess.py.html
+Docs/Axon/Postman.py.html
+Docs/Axon/Scheduler.py.html
+Docs/Axon/__init__.py.html
+Docs/Axon/cat.gif
+Docs/Axon/debug.py.html
+Docs/Axon/debugConfigFile.py.html
+Docs/Axon/idGen.py.html
+Docs/Axon/util.py.html

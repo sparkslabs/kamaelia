@@ -1,3 +1,6 @@
 include Axon/test/*
 include COPYING
 include AUTHORS
+include CHANGELOG
+include Docs/*/*
+include Docs/*

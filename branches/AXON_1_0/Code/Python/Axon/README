@@ -6,7 +6,8 @@ The install procedure is python's usual dance:
 
    * python setup.py install
 
-Documentation is held in two places:
+
+Code based documentation is held in two places:
    * The usual 'pydoc name' - probably worth starting with: 
      pydoc Axon.Component
 
@@ -17,6 +18,9 @@ Documentation is held in two places:
      docstring for each test to be dumped in a form that allows collation,
      and summarisation. (For an example of what we expect to automate from
      the test suite, see the end of this README file)
+
+The "Docs" directory contains the output from these two, combined and
+santisation is in progress.
 
 Sample producer/consumber & wrapper component system:
 
@@ -117,7 +121,7 @@ debugging enabled/possible, then the system runs like a pig. (Due to some
 rather heavy duty fumbling around in the garbage collector)
 
 
-Michael, December 2004
+Michael, January 2005
 
 -----------------------------------------------------------------------------
 
