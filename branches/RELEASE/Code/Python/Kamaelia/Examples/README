@@ -1,0 +1,27 @@
+Examples
+--------
+
+This directory contains a number of subdirectories, each with a specific
+example.
+   * Example 1 : Contains a simple "FortuneCookie" protocol system. Includes
+     a server and client as part of a single system.
+
+   * Example 2 : This has much the same structure, but rather than serve
+     and display fortune cookies, serves (ogg vorbis) audio over a TCP
+     connection to a client which decodes and plays back the audio.
+
+   * Example 3 : Splits the structure in example 2 into a specific server
+     application and a client application. This puts the two halves at odds,
+     *competing* with each other for CPU time. Thus if both are run on the
+     same (single CPU) system you will hear audio breakage. If run on
+     separate machines (as client and server(!)) you won't hear this. In
+     practice, part of the issue is that there is no buffering in the
+     receiver.
+
+   * Example 4 : Simple multicast based streaming system. Since it uses raw
+     ogg vorbis with no resends and no codebook facility, you will need to
+     *start all the client machines first* and *then* the server.
+     Uses the multicast transceiver object exclusively.
+
+
+Michael, April 2005
