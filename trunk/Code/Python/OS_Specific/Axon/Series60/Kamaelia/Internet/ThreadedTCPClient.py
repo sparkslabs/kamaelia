@@ -28,8 +28,7 @@ from Axon.Component import component
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
 from Kamaelia.KamaeliaExceptions import connectionDiedReceiving
-import Queue
-Empty = Queue.Empty
+from Queue import Empty, Queue
 import threading
 import Axon.ThreadedComponent
 #from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
@@ -45,12 +44,12 @@ class receiveThread(threading.Thread):
    This class is intended purely to make blocking receive calls.
    """
    def __init__(self,socket, outputqueue,controlqueue,signalqueue,size = 1024):
-      threading.Thread.__init__(self)
       self.oq = outputqueue
       self.cq = controlqueue
       self.sq = signalqueue
       self.size = size
       self.sock = socket
+      threading.Thread.__init__(self)
    def run(self):
       try:
          while 1:
@@ -73,9 +72,6 @@ class receiveThread(threading.Thread):
          self.sq.put(cd)
       except Exception, e: # Unexpected error that might cause crash. Do we want to really crash & burn?
          self.sq.put(e)
-         if crashAndBurn["receivingDataFailed"]:
-            # Should this be dealt with in the main socket thread.
-            raise e #Throw as an uncaught exception as it is unexpected behaviour.
       self.sq.put("StoppedThread")
          
 
@@ -90,27 +86,13 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       self.port = port
       self.chargen=chargen
       self.delay=delay
-      self.recvthreadsignal = Queue.Queue()
-      self.recvthreadcontrol = Queue.Queue()
-
-#   def setupCSA(self, sock):
-#      CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
-#      self.addChildren(CSA)
-#      selectorService , newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
-#      if newSelector:
-#         self.addChildren(newSelector)
-
-#      self.link((self, "_selectorSignal"),selectorService)
-#      self.link((CSA, "FactoryFeedback"),(self,"_socketFeedback"))
-#      self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
-#      self.link((self, "inbox"), (CSA, "DataSend"), passthrough=1)
-
-#      self.send(newCSA(self, (CSA,sock)), "_selectorSignal")
-#      return self.childComponents()
+      self.recvthreadsignal = Queue()
+      self.recvthreadcontrol = Queue()
 
    def run(self):
+     try:
+      self.outqueues["outbox"].put("Thread running",True)
       try:
-         print "TCPC: RHUBARB", 87
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#; yield 0.3
       except socket.error, e:
          #handle initial failure to create socket.
@@ -120,8 +102,10 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
          # for?
          self.outqueues["signal"].put(e)
          # I am assuming that by using queues there are no race conditions between this operations.
-         self.threadtoaxonqueue.put("StoppedThread")
+#         self.threadtoaxonqueue.put("StoppedThread")
+         self.outqueues["signal"].put(socketShutdown())
          return
+      self.outqueues["outbox"].put("socket object created")
       try:
          sock.connect((self.host, self.port))
       except socket.error, e:
@@ -130,8 +114,12 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
             result = sock.close()
          except:
             pass
-         self.threadtoaxonqueue.put("StoppedThread")
+#         self.threadtoaxonqueue.put("StoppedThread")
+         self.outqueues["signal"].put(socketShutdown())
          return
+      self.outqueues["outbox"].put("socket connected")
+#      timeout = 0.1
+#      sock.settimeout(timeout)
       receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
       receivethread.setDaemon(True)
       receivethread.start()
@@ -146,8 +134,15 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
             # This blocks for a short time to avoid busy wait if there is
             # nothing to do.  Should mean thread doesn't hog CPU.
             data = self.inqueues["inbox"].get(True, 0.2)
+#            while 1:
+#               try:
             sock.send(data)
-            if producerFinished: 
+#                  break
+#               except socket.timeout, to:
+#                  timeout = timeout * 2
+#                  sock.settimeout(timeout)
+#                  self.outqueues["signal"].put(("sendtimeout = ", timeout),True)
+            if producerFinished:
                #As there is still data coming extend the time window for data to
                # get in the queue
                producerFinished = time.time()
@@ -165,8 +160,15 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
                # data.
                   recvthreadcontrol.put("StopThread")
                   break
+#             try:
+#               data = self.sock.recv(self.size)
+#               if not data: # This implies the connection has barfed.
+#                  raise connectionDiedReceiving(self.sock,self.size)
+#               self.outqueues["outbox"].put(data)
+#             except socket.timeout, to:
+#               pass # common case Try again next loop.
          except socket.error, err:
-            self.outqueues["signal"].put(err)
+            self.outqueues["signal"].put(err,True)
             recvthreadcontrol.put("StopThread")
             break # The task is finished now.
          
@@ -201,10 +203,15 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
          self.outqueues["signal"].put(e)
       self.outqueues["signal"].put(socketShutdown())
       self.signalqueue.put("ThreadStopped")
+     except Exception, e:
+      self.outqueues["signal"].put("Unexpected exception")
+      self.outqueues["signal"].put(e)
+      self.outqueues["signal"].put(socketShutdown())
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer
+   import Axon
    # _tests()
 
    class testHarness(component): # Spike component to test interoperability with TCPServer
@@ -217,15 +224,18 @@ if __name__ =="__main__":
          self.displayerr = consoleEchoer()
 
       def initialiseComponent(self):
-         self.client = ThreadedTCPClient("82.44.62.1",self.serverport, delay=1)
+         #self.client = ThreadedTCPClient("132.185.133.18",self.serverport, delay=1)
+         self.client = ThreadedTCPClient("82.44.62.55",self.serverport, delay=1)
          self.addChildren(self.client,self.display,self.displayerr)
 #         self.addChildren(self.server, self.display)
          self.link((self.client,"outbox"), (self.display,"inbox") )
          self.link((self.client,"signal"), (self.displayerr,"inbox") )
+         self.link((self, "outbox"),(self.client, "inbox"))
+         print self.children
          return Axon.Ipc.newComponent(*(self.children))
 
       def mainBody(self):
-            print "working"
+            self.send("hello")
             return 1
 
    t = testHarness()
