@@ -80,18 +80,19 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
    Outboxes = ["outbox","signal"]
 #   Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
-   def __init__(self,host,port,chargen=0,delay=0):
+   def __init__(self,host,port,chargen=0,delay=0, initialsendmessage=None):
       self.__super.__init__()
       self.host = host
       self.port = port
       self.chargen=chargen
       self.delay=delay
+      self.sendmessage = initialsendmessage
 #      self.recvthreadsignal = Queue()
 #      self.recvthreadcontrol = Queue()
 
    def run(self):
      try:
-      self.outqueues["outbox"].put("Thread running",True)
+      self.outqueues["signal"].put("Thread running",True)
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#; yield 0.3
       except socket.error, e:
@@ -105,7 +106,7 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
 #         self.threadtoaxonqueue.put("StoppedThread")
          self.outqueues["signal"].put(socketShutdown())
          return
-      self.outqueues["outbox"].put("socket object created")
+      self.outqueues["signal"].put("socket object created")
       try:
          sock.connect((self.host, self.port))
       except socket.error, e:
@@ -124,6 +125,17 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
 #      receivethread.setDaemon(True)
 #      receivethread.start()
       producerFinished = 0
+      if self.sendmessage != None:
+        try:
+            sock.send(self.sendmessage)
+        except socket.error, e:
+            self.outqueues["signal"].put(e)
+            try:
+                result = sock.close()
+            except:
+                pass
+            self.outqueues["signal"].put(socketShutdown())
+            return
       # This loop will handle sending, control and signal communications
       # including with the recv thread.  Apart from the sending all the calls
       # should be non-blocking.  sending should rarely take a significant
