@@ -24,7 +24,7 @@ from distutils.core import setup
 
 setup(name = "Axon",
       version = "1.0",
-      description = "Axon - Aynschonous Isolated Generator Component System",
+      description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
