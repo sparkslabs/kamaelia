@@ -11,15 +11,51 @@
 # multiple components but nested components. (How this would be visualised of
 # course is a different matter)
 #
+ # Thoughts for future:
+ #
+ # If we recieve a new digraph & component list, we should use
+ # these to replace the existing one, and re-calculate the node
+ # positions. Obviously, as things stand this isn't possible at
+ # present, since this isn't integrated into Axon/etc, but it is a
+ # likely future step.
+ #
+ # More immediate points:
+ #   * Need a way of representing sub-components.
+ #   * Need a way of integrating this into the system - and then
+ #     acting as an introspection tool. (Not a huge deal, but needs
+ #     doing)
+ #   * Would be nice to allow nodes to be clickable.
+ #   * Would be nice to allow editing via clicking
+ #
+ # Other:
+ #   * If we do start integrating into a system, having a means of
+ #     exporting (visual) snapshots of the running system would be
+ #     very useful.
+ #   * More intelligent node placement is desirable. The current
+ #     approach is pretty dumb and based on a circle. Maybe this
+ #     should change toa linear assumption unless linkages exist? 
+ #     Dunno. (This sort of thing can be whole research projects in
+ #     themselves - as things like graphviz show...)
+#
 
 import pygame
 from pygame.locals import *
 import random
-import time
+import math
    
+def slices(num):
+   v = 360/float(num)
+   x=0
+   for i in xrange(num):
+      yield int(i*v)
+
+def radial_to_cartesian(angle, length=100, offset=(500,250)):
+   x = math.cos(math.radians(angle))*length+offset[0]
+   y = math.sin(math.radians(angle))*length+offset[1]
+   return int(x),int(y)
+
 class app:
    def __init__(self):
-           import time
            # Initialise screen
            pygame.init()
            self.screen = pygame.display.set_mode((1000, 500))
@@ -37,7 +73,6 @@ class app:
               location = location[0]-text.get_rect().width/2, location[1]-text.get_rect().height/2
               textpos = location
            self.screen.blit(text, textpos)
-#           self.background.blit(text, textpos)
 
    def Background(self,colour=(250,250,250)):
            # Fill background
@@ -60,7 +95,7 @@ class app:
                                    return
 
                    pygame.display.flip()
-                   time.sleep(0.1)
+
    def box(self,size=(10,10),location=(100,100),colour=(127,127,127)):
          pygame.draw.rect(self.screen, colour, (location,size))
 
@@ -70,92 +105,16 @@ class app:
 
    def main(self):
       while 1:
+         # This is where changes to the display can be made. For example:
+         """
          colour = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
          location = (random.randint(0,1000),random.randint(0,500))
          size = (random.randint(0,(1000-location[0])),random.randint(0,(500-location[1])))
          self.box(size,location,colour)
+         """
+         # This needs to be a generator... (Note, this fits in neatly with
+         # the component system. This is not exactly accidental!)
          yield 1
-
-def slices(num):
-   v = 360/float(num)
-   x=0
-   for i in xrange(num):
-      yield int(i*v)
-
-import math
-
-def radial_to_cartesian(angle, length=100, offset=(500,250)):
-   x = math.cos(math.radians(angle))*length+offset[0]
-   y = math.sin(math.radians(angle))*length+offset[1]
-   return int(x),int(y)
-
-class myapp(app):
-   def __init__(self, digraph):
-      app.__init__(self)
-      self.digraph = digraph
-
-   def init(self):
-      background = self.Background()
-   def main(self):
-      numpoints = 5
-      delta = 1
-      while 1:
-          points = []
-          for i in slices(numpoints):
-             points.append(radial_to_cartesian(i))
-          for point in points:
-             pygame.draw.line(self.screen, (10,10,10), (500,250),  [x+18 for x in point])
-             self.text("a",location=point)
-#             self.box(location=point)
-          yield 1
-          self.Background()
-          self.screen.blit(self.background, (0, 0))
-          numpoints = numpoints + delta
-          if numpoints > 10 or numpoints < 5:
-             delta = delta * -1
-
-class myapp2(app):
-   def __init__(self, digraph):
-      app.__init__(self)
-      self.digraph = digraph
-      ephemeral = {}
-      for s,e in self.digraph:
-         ephemeral[s] = None
-         ephemeral[e] = None
-      self.nodes = ephemeral.keys()
-      self.nodes.sort()
-
-   def init(self):
-      background = self.Background()
-   def main(self):
-      node_pos = {}
-      numpoints = len(self.nodes)
-      for i in xrange(numpoints):
-         angle = int(i * (360.0/numpoints))
-         node_pos[self.nodes[i]] = radial_to_cartesian(angle)
-         
-      while 1:
-          for node in node_pos:
-             self.text(node,location=node_pos[node])
-          for edge in self.digraph:
-             pygame.draw.line(self.screen, (10,10,10), node_pos[edge[0]], node_pos[edge[1]])
-
-          yield 1
-#          self.Background()
-#          self.screen.blit(self.background, (0, 0))
-
-def myapp2_test():
-   digraph = [
-      ("a","b"),
-      ("b","c"),
-      ("c","d"),
-      ("d","e"),
-      ("e","a"),
-      ("a","c"),
-      ("a","d"),
-   ]
-   x = myapp2(digraph)
-   x._main()
 
 class myapp3(app):
    def __init__(self, parts, digraph):
@@ -216,7 +175,7 @@ class myapp3(app):
           self.draw_parts()
           yield 1
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
 
    def myapp3_test():
       producer = ["producer", "inbox", "outbox", "signal","control"]
