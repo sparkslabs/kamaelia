@@ -107,7 +107,6 @@ class TCPClient(component):
    def runClient(self,sock=None):
       # The various numbers yielded here indicate progress through the function, and
       # nothing else specific.
-      message = None
       try:
          print "TCPC: RHUBARB", 87
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
@@ -124,7 +123,7 @@ class TCPClient(component):
                raise Finality
             except Exception, x:
                print "TCPC: I think we do indeed shutdown?"
-               result = sock.shutdown(1) ; yield 3
+               result = sock.shutdown(2) ; yield 3
                print "TCPC: We do indeed :)"
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
@@ -139,8 +138,7 @@ class TCPClient(component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-         message = e
-      self.send(message, "signal")
+         self.send(e, "signal") 
       # "TCPC: Exitting run client"
 
 def _tests():
