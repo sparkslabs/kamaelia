@@ -28,8 +28,7 @@ from Axon.Component import component
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
 from Kamaelia.KamaeliaExceptions import connectionDiedReceiving
-import Queue
-Empty = Queue.Empty
+from Queue import Queue,Empty
 import threading
 import ThreadedComponent
 #from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
@@ -90,8 +89,8 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
       self.port = port
       self.chargen=chargen
       self.delay=delay
-      self.recvthreadsignal = Queue.Queue()
-      self.recvthreadcontrol = Queue.Queue()
+      self.recvthreadsignal = Queue()
+      self.recvthreadcontrol = Queue()
 
 #   def setupCSA(self, sock):
 #      CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
@@ -110,7 +109,6 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
 
    def run(self):
       try:
-         print "TCPC: RHUBARB", 87
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#; yield 0.3
       except socket.error, e:
          #handle initial failure to create socket.
