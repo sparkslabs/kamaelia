@@ -59,14 +59,7 @@
 #
 
 import socket, time
-
 import errno
-try:
-    # This is an error code produced on Windows that has Unix equivalents.
-    # We need to be able to test for it without throwing attribute errors.
-    test = errno.WSAEWOULDBLOCK
-except AttributeError, e:
-    errno.WSAEWOULDBLOCK = "fish"
 
 import Axon
 from Axon.Component import component
@@ -87,7 +80,7 @@ def _safesend(sock, data):
       return 1
    except socket.error, socket.msg:
       (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK or errorno == errno.WSAEWOULDBLOCK):
+      if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
          raise socket.msg        # then rethrow the error.
       return 0                                                                        # Otherwise return 0 for failure on sending
    except exceptions.TypeError, ex:
@@ -105,7 +98,7 @@ def _saferecv(sock, size=1024):
          raise connectionDiedReceiving(sock,size)
    except socket.error, socket.msg:
       (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK or errorno == errno.WSAEWOULDBLOCK):
+      if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
          #"Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
          raise socket.msg # rethrow
    return data
