@@ -1,3 +1,7 @@
+1.0.1 -> 1.0.2
+   * Fixes for example in README, pulled out into an Examples directory.
+     (Thanks to: "Gangadhar NPK" <npk.gangadhar at gmail dot com>)
+
 1.0 -> 1.0.1
    * Distribution now included initial version of combined docs. This needs
      santisation.
