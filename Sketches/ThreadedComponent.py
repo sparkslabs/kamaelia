@@ -32,6 +32,8 @@ import threading
 import Queue
 import time
 import Axon.Component
+from Axon.AxonExceptions import noSpaceInBox
+from Axon.Ipc import newComponent
 
 class threadedcomponent(Axon.Component.component,threading.Thread):
    """This component is intended to allow blocking calls to be made from within
