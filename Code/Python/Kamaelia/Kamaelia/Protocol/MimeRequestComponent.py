@@ -72,6 +72,7 @@ class MimeRequestComponent(component):
       self.body = ''
       self.step = 0
 
+   def initialiseComponent(self): pass
    def nextLine(self):
       if self.dataReady("inbox"):
          theData = self.recv("inbox")
