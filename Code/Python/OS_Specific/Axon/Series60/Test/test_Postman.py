@@ -27,9 +27,9 @@
 import unittest
 import re
 #import sys ; sys.path.append("..")
-from Component import component
-from Linkage import linkage
-from Postman import *
+from Axon.Component import component
+from Axon.Linkage import linkage
+from Axon.Postman import *
 
 class MockLinkage:
    def __init__(self, source="blah", sink="bling"):

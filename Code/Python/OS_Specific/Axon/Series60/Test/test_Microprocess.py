@@ -26,9 +26,9 @@ from __future__ import generators
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-import Scheduler
-from test___str__ import str_Test
-from Microprocess import microprocess
+import Axon.Scheduler
+from Axon.test.test___str__ import str_Test
+from Axon.Microprocess import microprocess
 
 class MicroProcess_Test(str_Test):
    """A full set of tests for the Microprocess class."""
@@ -106,12 +106,12 @@ class MicroProcess_Test(str_Test):
       microprocess.setSchedulerClass(DummySched)
       postmp = self.init_test()
       after = postmp.__class__.schedulerClass
-      self.failUnless(before == Scheduler.scheduler, "Default scheduler not as expected!")
+      self.failUnless(before == Axon.Scheduler.scheduler, "Default scheduler not as expected!")
       self.failUnless(after == DummySched, "Set scheduler failed to set the scheduler properly")
       self.failUnless(before != after, "Setting scheduler did not change class!")
       microprocess.setSchedulerClass(before)
       resetmp=self.init_test()
-      self.failUnless(resetmp.__class__.schedulerClass == Scheduler.scheduler)
+      self.failUnless(resetmp.__class__.schedulerClass == Axon.Scheduler.scheduler)
 
    def test_overriddenMainWorksWithNext(self):
       "Tests that an overridden main is run correctly by repeatedly calling next() and that termination occurs at the proper time with the proper StopIteration exception."

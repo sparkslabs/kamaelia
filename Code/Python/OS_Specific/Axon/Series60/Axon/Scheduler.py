@@ -43,6 +43,7 @@ from idGen import strId, numId
 from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
+import e32
 
 def _sort(somelist):
    a=[ x for x in somelist]
@@ -107,6 +108,7 @@ class scheduler(microprocess):
       starttime= lasttime
 #      assert self.debugger.note("scheduler.main", 5, "# CX Ave, CX this" )
       while(running):           # Threads gets re-assigned so this can reduce to []
+        e32.ao_yield()
         now = time.time()
         if (now - self.time) > slowmo or slowmo == 0:
          self.time = now   # Update last run time - only really useful if slowmo != 0
@@ -122,6 +124,7 @@ class scheduler(microprocess):
 #         assert self.debugger.note("scheduler.scheduler",1,"SCHEDULED", self.name,self.id)
          activeMicroprocesses = 0
          for mprocess in self.threads:
+            e32.ao_yield()
             cx=cx+1
             if (now - lasttime)> 1:
 #                 assert self.debugger.note("scheduler.main", 10, cx/(now-starttime), ",", cx-lastcx )

@@ -26,7 +26,7 @@
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-from Ipc import *
+from Axon.Ipc import *
 
 class ipc_Test(unittest.TestCase):
     def test_SmokeTest(self):
