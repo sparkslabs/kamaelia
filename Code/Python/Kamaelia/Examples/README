@@ -18,10 +18,10 @@ example.
      practice, part of the issue is that there is no buffering in the
      receiver.
 
-   * Example 4 : 
-     (Will be a similar simple streaming system using multicast instead of
-     unicast)
-
+   * Example 4 : Simple multicast based streaming system. Since it uses raw
+     ogg vorbis with no resends and no codebook facility, you will need to
+     *start all the client machines first* and *then* the server.
+     Uses the multicast transceiver object exclusively.
 
 
 Michael, April 2005
