@@ -1,7 +1,13 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:Sans Serif">
 <p><img align=right src=cat.gif ></p>
-<p><span style="font-size:25pt">Kamaelia</span><span style="font-size:23pt;font-weight:600"> Modules Overview</span></p>
+<p><span style="font-size:20pt">Kamaelia</span><span style="font-size:19pt;font-weight:600"> Modules Overview</span></p>
 <p></p>
+<p>Kamaelia's modules divide into 2 main sections:</p>
+<ul type="disc"><li><a href="Axon.html">A core subsystem of modules</a> which provide the main concurrency support</li>
+<ul type="disc"><div>This core subsystem is called &quot;<a href="Axon.html">Axon</a>&quot; and is <a href="Axon.html">documented here</a>.</div>
+<li>The core subsystem is suitable for use independently of Kamaelia itself, and is available as a separate download.</li></ul>
+<li>Modules for Kamaelia itself.</li></ul>
+<p>This document is the starting point for Kamaelia itself.</p>
 <p>This file provides an overview of the current Kamaelia files, what they are and where appropriate, how they work. This is designed to be a living document, but not designed as raw API documentation. (There are better ways of building API documentation) Essentially the purpose of this documentis to act as &quot;the next layer up&quot; the documentation layers - stating how and why the different parts are joined together.</p>
 <ul type="disc"><li><a href="BaseModules.html">Base Modules</a></li>
 <li><a href="InternetAdaptionModules.html">Internet Adaption Modules</a></li>
@@ -9,7 +15,7 @@
 <li><a href="UDPComponents.html">UDP Components</a></li>
 <li><a href="UtilityModules.html">Utility Modules</a></li></ul>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Multimedia Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Multimedia Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- AOPlayer.py </span><span style="font-family:Century Schoolbook L;font-style:italic;font-weight:600">deprecated</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- vorbisDecodeComponent.py<br />`-- oggFilePlayComponent.py </span><span style="font-family:Century Schoolbook L;font-style:italic;font-weight:600">deprecated</span></div></ul>
@@ -39,7 +45,7 @@
 <ul type="disc"><li>The python bindings supplied with<span style="font-family:Cursor"> </span><span style="font-family:Courier 10 Pitch">libvorbissimple</span></li>
 <li>Pyrex is therefore also required.</li></ul>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">RTP Related Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">RTP Related Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- bitfieldrec.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- NullPayloadPreFramer.py<br />|-- NullPayloadRTP.py<br />|-- RTCPHeader.py<br />|-- RTPHeader.py<br />|-- RtpPacker.py</span></div></ul>
@@ -73,23 +79,24 @@
 <li> <span style="font-family:Courier 10 Pitch">RtpPacker.py </span>......</li></ul>
 <p></p>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">MIME &amp; Disk Related modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">MIME &amp; Disk Related modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- ReadFileAdaptor.py<br />|-- MimeRequestComponent.py<br />|-- SampleMIMERequest.txt<br />|-- SimpleServerComponent.py<br />|-- requestLine.py</span></div></ul>
 <p>......</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Testing Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Testing Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- runTests.sh<br />|-- FortuneCookie_InternetHandlingTests.py<br />|-- test<br />|   |-- SynchronousLinks_SystemTest.py<br />|   |-- debug.conf<br />|   |-- test.log<br />|   |-- test_ConsoleEcho.py<br />|   |-- test_InternetConnection.py<br />|   |-- test_MimeRequestComponent.py<br />|   |-- test_NullPayloadRTP.py<br />|   |-- test_RtpPacker.py<br />|   |-- test_Selector.py<br />|   `-- test_requestLine.py</span></div></ul>
 <p>......</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Experimentation Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Experimentation Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">|-- Sketch<br />|   |-- AO_TEST.py<br />|   |-- DONE.list<br />|   |-- DataSteps.txt<br />|   |-- EchoCheckerProtocolComponent.py<br />|   |-- Forking.py<br />|   |-- PygameTest.py<br />|   |-- TODO.list<br />|   |-- oggFilePlayComponent-refactor.py<br />|   |-- oggPlayComponent.py<br />|   |-- rgrailspuds.txt<br />|   |-- run.log<br />|   |-- simple_decoder.py<br />|   `-- test.py</span></div></ul>
 <p>......</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Support Files</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Support Files</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">|-- Makefile<br />|-- ComponentClasses.py<br />|-- SampleTemplateComponent.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- debug.conf<br />|-- makeDocs.sh<br />|-- afortune.pl<br />|-- Support/ - various support files. Wav Audio comes from the OpenOffice.org suite.<br />|-- doc/ - Autogenerated documentation<br />|-- docs/ - More autogenerated docs</span></div></ul>
 <p>......</p>
 <p></p>
 <p></p>
-<hr />
-<p><a href="http://www.opensource.org/docs/definition.php"> <img align="right" src="http://opensource.org/trademarks/open_source_button.png" border="0" width="88" height="31"></a><a href="http://sourceforge.net"> <img align=right alt="SourceForge.net Logo" border=0 height=31 src=http://sourceforge.net/sflogo.php?group_id=122494&type=1 width=88 ></a></p>
+<p><hr></p>
+<p><a href="http://www.opensource.org/docs/definition.php"> <img align=right border=0 height=31 src=http://opensource.org/trademarks/open_source_button.png width=88 ></a><a href="http://sourceforge.net"> <img align=right alt="SourceForge.net Logo" border=0 height=31 src=http://sourceforge.net/sflogo.php?group_id ></a></p>
+<li type="disc"></li>
 </body></html>
