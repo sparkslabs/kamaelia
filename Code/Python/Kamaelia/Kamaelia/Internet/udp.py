@@ -8,11 +8,12 @@ import socket
 import time
 import Axon
 
-def datasource():
-   while 1:
-      yield "Hello World"
-
-
+class Chargen(Axon.Component.component):
+   def main():
+      while 1:
+         yield "Hello World"
+   main = staticmethod(main)
+ 
 class Multicast_sender(Axon.Component.component):
    def __init__(self, local_addr, local_port, remote_addr, remote_port, source):
        self.__super.__init__()
@@ -71,11 +72,19 @@ def tests():
    MCAST_ADDR = "224.168.2.9"
    MCAST_PORT = 1600
 
-   source= datasource()
-   R = Multicast_receiver(MCAST_ADDR, MCAST_PORT)
-   S = Multicast_sender(ANY, ANYPORT, MCAST_ADDR, MCAST_PORT, source)
-   R.activate()
-   S.activate()
+   class testComponent(Axon.Component.component):
+      def main(self):
+        source= Chargen.main()
+        R = Multicast_receiver(MCAST_ADDR, MCAST_PORT)
+        S = Multicast_sender(ANY, ANYPORT, MCAST_ADDR, MCAST_PORT, source)
+        self.addChildren(R, S)
+        yield Axon.Ipc.newComponent(*(self.children))
+        while 1:
+           self.pause()
+           yield 1k
+
+   harness = testComponent()
+   harness.activate()
    scheduler.run.runThreads(slowmo=0)
 
 if __name__=="__main__":
