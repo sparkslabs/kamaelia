@@ -162,28 +162,16 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
              # alternative is to have a reasonable liklyhood of dropping some data.
              if producerFinished:
                if time.time() > producerFinished + 4:
-                  try:
-                     sock.shutdown(2)
-                  except socket.error, e:
-                     pass
-                  if receiverFinished:
-                     break
+                  recvthreadcontrol.put("StopThread")
+                  break
          except socket.error, err:
             self.outqueues["signal"].put(err)
-            try:
-               sock.shutdown(2)
-            except socket.error, e:
-               pass
             recvthreadcontrol.put("StopThread")
             break # The task is finished now.
          
          try:
             msg = self.recvthreadsignal.get(False)
             if msg == "ThreadStopped":
-               try:
-                  sock.shutdown(2)
-               except:
-                  pass
                break # Receiving has stopped.  We are doing a symetrical close.
             else:
                self.outqueues["signal"].put(msg)
@@ -198,7 +186,12 @@ class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
                # inbox queue before shutting down the sending system.
          except Empty, e:
             pass # Normal case.
-
+      
+      # After breaking out of while loop clean up socket before ending the thread.
+      try:
+         sock.shutdown(2)
+      except socket.error, e:
+         pass
       try:
          sock.close()
       except socket.error, e:
