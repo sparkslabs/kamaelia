@@ -21,21 +21,8 @@
 # -------------------------------------------------------------------------
 
 import socket
-
 import errno
-try:
-# We use several values of windows only socket errors so it works on Windows too.
-    test = errno.WSAEISCONN
-except AttributeError, e: 
-    # We are running on something other than Windows.  We want to define the used
-    # errno values to something that will not occur in real usage.  No numbers can be
-    #guaranteed not to be used so I set them to a string.
-    errno.WSAEISCONN = "fish"
-try:
-    test = errno.WSAEISCONN
-except AttributeError, e:
-    errno.WSAEWOULDBLOCK = "fish"
-    
+
 import Axon
 from Axon.util import Finality
 from Axon.Component import component
@@ -65,10 +52,7 @@ class TCPClient(component):
          yield 1
       for v in self.runClient():
          yield v
-      print "We have indeed ceased looking at the connection. "
-      print "The stuff going on elsewhere is spurious"
-      print "if we're closing down, and we know we're closing down,"
-      print "then can send shutdown info from here"
+      # SMELL - we may need to send a shutdown message
 
    def setupCSA(self, sock):
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
@@ -108,13 +92,13 @@ class TCPClient(component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errorno==errno.EINPROGRESS or errorno==errno.WSAEWOULDBLOCK:
+         if errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
-         if errorno == errno.WSAEISCONN:
+         if errorno == errno.EISCONN:
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
              return True
@@ -125,7 +109,6 @@ class TCPClient(component):
       # The various numbers yielded here indicate progress through the function, and
       # nothing else specific.
       try:
-         print "TCPC: RHUBARB", 87
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
          try:
             sock.setblocking(0); yield 0.6
@@ -136,12 +119,9 @@ class TCPClient(component):
                while self.waitCSAClose():
                   self.pause()
                   yield 2
-               print "TCPC: I would expect to get here"
                raise Finality
             except Exception, x:
-               print "TCPC: I think we do indeed shutdown?"
                result = sock.shutdown(2) ; yield 3
-               print "TCPC: We do indeed :)"
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
          except Exception, x:
