@@ -16,7 +16,7 @@ from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 import sys
 
 class HelloServer(component):
-	Inboxes=["datain","inbox"]
+	Inboxes=["datain","inbox","control"]
 	Outboxes=["outbox"]
 	maxid = 0
 	def __init__(self,filename="Ulysses", debug=0):
@@ -28,9 +28,9 @@ class HelloServer(component):
 #		component.__init__(self, id, inboxes=["datain","inbox"], outboxes=["outbox"])
 
 	def initialiseComponent(self):
-		myDataSource = ReadFileAdaptor(filename="mpeg1/foo.mpg",
+		myDataSource = ReadFileAdaptor(filename="/video/buffy-100.mpg",
 					readmode="bitrate",
-					bitrate=375000, framerate=25)
+					bitrate=375000, chunkrate=24 )
 		linkage(myDataSource,self,"outbox","datain", self.postoffice)
 		self.addChildren(myDataSource)
 
@@ -57,6 +57,6 @@ class HelloServer(component):
 
 if __name__ == '__main__':
 
-   SimpleServer(protocol=HelloServer, port=1500).activate()
+   SimpleServer(protocol=HelloServer, port=5222).activate()
    # HelloServer(debug = 1).activate()
    scheduler.run.runThreads(slowmo=0)
