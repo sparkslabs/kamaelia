@@ -26,58 +26,80 @@ import time
 import Axon.Component
 
 class _componentthread(threading.Thread):
-   def __init__(self, tcomp,queuelengths):
-      self.__super.__init__()
-      self.tcomponent  = tcomp
-      inqueues = dict()
-      outqueues = dict()
-      for box in inboxes.iterkeys():
-         inqueues[box] = Queue.Queue(queuelengths)
-      for box in outboxes.iterkeys():
-         outqueues[box] = Queue.Queue(queuelengths)
+   """Represents the thread object that will be run. This is a bodge to
+      avoid multiple inheritance, essentially a bounceback through to the
+      passed component that is to be run as a thread not as a generator.
+   """
+   def __init__(self, componentToRun, queuelengths):
+      self.__super.__init__() # FIXME-- that will FAIL
+
+      self.tcomponent  = componentToRun
+#      inqueues = dict()
+#      outqueues = dict()
+#      for box in inboxes.iterkeys():
+#         inqueues[box] = Queue.Queue(queuelengths)
+#      for box in outboxes.iterkeys():
+#         outqueues[box] = Queue.Queue(queuelengths)
       
    def run(self):
-      tcomponent.run()
+      self.tcomponent.run()
       
 class threadedcomponent(Axon.Component.component):
    """This component is intended to allow blocking calls to be made from within
-   a component by running them inside a thread in the component."""
+      a component by running them inside a thread in the component.
+   """
+
    def __init__(self,queuelengths=10):
       self.__super.__init__()
       thethread = _componentthread(self,queuelengths)
+
       self.outbuffer = dict()
       for box in outboxes:
          self.outbuffer[box] = None
+
       self.finished = False
       thethread.start()
    
    def run(self):
-      """Override this to do the work that will block.  Access the in and out
-      queues that pass on to the in and out boxes.  You should read from all
-      inqueues"""
+      """STUB - Override this to do the work that will block.  Access the in and out
+         queues that pass on to the in and out boxes.  You should read from all
+         inqueues
+      """
       while 1:
          for box in self.inqueues.iterkeys():
             while not inqueues[box].empty():
                inqueues.get()
          time.sleep(1)
       
-   def mainBody(self):
-      """Do not overide this unless you reimplement the pass through of the boxes to the threads."""
-      for box in inboxes.iterkeys():
-         if(not self.inqueues[box].full()):
+   def main(self):
+      """Do not overide this unless you reimplement the pass through of the boxes to the threads.
+      TODO: Thread shutdown
+      TODO: How to allow the thread to start new components?
+            (ie we only yield 1, not a newComponent or any value from the
+            thread.)
+      """
+
+      while 1:
+         for box in inboxes:
             if(self.dataReady(box)):
-               self.inqueues[box].put(receive(box))
-      sending = None
-      for box in self.outboxes.iterkeys():
-         try:
+               if(not self.inqueues[box].full()): # LBYL, but no race hazard
+                  self.inqueues[box].put(receive(box))
+
+         for box in self.outboxes:
             if self.outbuffer.has_key(box):
-               sending = self.outbuffer[box]
-               self.send(sending)
+               try:
+                  self.send(self.outbuffer[box], box)
+               except noSpaceInBox:
+                  continue # Skip to next box, since outbox full
                del self.outbuffer[box]
+
             while(not self.outqueues[box].empty()):
                sending = self.outqueues[box].get()
-               self.send(sending,box)
-         except noSpaceInBox:
-            self.outbuffer[box] = sending
-      return 1
+               try:
+                  self.send(sending,box)
+               except noSpaceInBox:
+                  self.outbuffer[box] = sending
+                  break
+
+         yield 1
       
