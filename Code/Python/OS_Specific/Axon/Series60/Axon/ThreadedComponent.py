@@ -34,9 +34,7 @@ import threading
 import Queue
 import time
 import Component
-import e32
-
-e32.ao_yield()
+from AxonExceptions import noSpaceInBox
 
 class threadedcomponent(Component.component,threading.Thread):
    """This component is intended to allow blocking calls to be made from within
@@ -61,14 +59,12 @@ class threadedcomponent(Component.component,threading.Thread):
       self.axontothreadqueue = Queue.Queue()
 
       self.setDaemon(True) # means the thread is stopped if the main thread stops.
-      e32.ao_yield()
    
    def run(self):
       """STUB - Override this to do the work that will block.  Access the in and out
          queues that pass on to the in and out boxes.  You should read from all
          inqueues
       """
-      self.start()
       while 1:
          for box in self.inqueues.iterkeys():
             self.outqueues["outbox"].put("ba")
@@ -85,9 +81,9 @@ class threadedcomponent(Component.component,threading.Thread):
    def main(self):
       """Do not overide this unless you reimplement the pass through of the boxes to the threads.
       """
-
+      self.start()
       while 1:
- 
+         time.sleep(0)
          for box in self.outboxes:
             if self.outbuffer.has_key(box):
                try:
@@ -135,7 +131,6 @@ class threadedcomponent(Component.component,threading.Thread):
                if(not self.inqueues[box].full()): # LBYL, but no race hazard
                   self.inqueues[box].put(self.recv(box))
 
-         e32.ao_yield()
          yield 1
 
 if __name__ == '__main__':
@@ -145,7 +140,6 @@ if __name__ == '__main__':
          #print tc._collect("outbox")
          tmp = tmp + tc._collect("outbox")
        print tmp
-       e32.ao_yield()
 
 
 #   from Scheduler import scheduler
@@ -204,4 +198,4 @@ if __name__ == '__main__':
 #   except Exception, e:
 #     print e
 #     print "done"
-     e32.ao_yield()
+
