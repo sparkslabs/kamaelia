@@ -240,8 +240,8 @@ class NullPayloadPreFramer(component):
       pass
 
 if __name__ =="__main__":
-   from ConsoleEcho import consoleEchoer
-   from ReadFileAdaptor import ReadFileAdaptor
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 
    class NullPayloadPreFramer_testHarness(component):
       #Inboxes=["inbox"] List of inbox names if different

@@ -47,8 +47,8 @@ inbox. MimeRequest objects come out the outbox.
 
 from Axon.Component import component, scheduler,linkage,newComponent
 from Axon.Ipc import errorInformation
-from ReadFileAdaptor import ReadFileAdaptor
-import requestLine
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+import Kamaelia.requestLine
 
 class mimeObject(object):
    """Accepts a Mime header represented as a dictionary object, and a body

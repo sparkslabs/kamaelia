@@ -26,7 +26,7 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import RtpPacker
+import Kamaelia.RtpPacker
 
 class RtpPacker_Test(unittest.TestCase):
    pass

@@ -20,7 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from KamaeliaExceptions import BadRequest
+from Kamaelia.KamaeliaExceptions import BadRequest
 
 class requestLine(object):
    def __init__(self,request):

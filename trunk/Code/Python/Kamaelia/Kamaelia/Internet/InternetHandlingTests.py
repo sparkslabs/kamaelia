@@ -25,14 +25,14 @@
 #
 
 from Axon.Scheduler import scheduler as _scheduler
-from FortuneCookieProtocol import FortuneCookieProtocol as _FortuneCookieProtocol
-from EchoCheckerProtocolComponent import EchoCheckerProtocol
-from EchoProtocolComponent import EchoProtocol
-from SimpleServerComponent import SimpleServer as _SimpleServer
-from TCPClient import TCPClient as _TCPClient
-from ConsoleEcho import consoleEchoer as _consoleEchoer
+from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol as _FortuneCookieProtocol
+from Kamaelia.Sketch.EchoCheckerProtocolComponent import EchoCheckerProtocol
+from Kamaelia.Protocol.EchoProtocolComponent import EchoProtocol
+from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
+from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
+from Kamaelia.Util.ConsoleEcho import consoleEchoer as _consoleEchoer
 import Axon as _Axon
-from oggFilePlayComponent import oggPlayer
+from Kamaelia.oggFilePlayComponent import oggPlayer
 
 from Axon.Component import component, scheduler
 class InternetHandlingTest(component):

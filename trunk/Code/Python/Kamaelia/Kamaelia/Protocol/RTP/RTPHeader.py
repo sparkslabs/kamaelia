@@ -28,7 +28,7 @@ represent the fields in the header:
 
 The order of the fields and sizes are defined in the variable "struct".
 """
-from bitfieldrec import bfrec, field
+from Kamaelia.bitfieldrec import bfrec, field
 class RTPHeader(bfrec):
    "RFC1889, 5.1, Page 10"
    fields = field.mkList([	("version", 2, None),
