@@ -36,6 +36,13 @@ class selectorComponent(AdaptiveCommsComponent):
    Outboxes=["outbox","signal"]
    requiredInboxes=["DataReady"]
    requiredOutboxes=["signal"]
+   
+   def setSelectorService(selector, tracker = None):
+        "Sets the given selector as the service for the selected tracker or the default one."
+        if not tracker:
+            tracker = cat.coordinatingassistanttracker.getcat()
+        tracker.registerService("selector", selector, "notify")
+   setSelectorService = staticmethod(setSelectorService)
 
    def getSelectorService(tracker=None): # STATIC METHOD
       "Returns any live selector in the system, or creates one for the system to use"
@@ -46,6 +53,7 @@ class selectorComponent(AdaptiveCommsComponent):
          return service, None
       except KeyError:
          selector = selectorComponent()
+         selectorComponent.setSelectorService(selector, tracker)
          service=(selector,"notify")
          return service, selector
    getSelectorService = staticmethod(getSelectorService)
