@@ -21,7 +21,6 @@
 # -------------------------------------------------------------------------
 
 import socket
-import socketConstants
 import Axon
 from Axon.util import Finality
 from Axon.Component import component

@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 
 import socket
-import socketConstants
+import errno
 import Axon
 from Axon.util import Finality
 from Axon.Component import component
@@ -88,14 +88,14 @@ class TCPClient(component):
          self.connected=1
          return True
       except socket.error, socket.msg:
-         (errno, errmsg) = socket.msg.args
-         if errno==socketConstants.EALREADY:
+         (errorno, errmsg) = socket.msg.args
+         if errorno==errno.EALREADY:
             # The socket is non-blocking and a previous connection attempt has not yet been completed
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errno==socketConstants.EINPROGRESS:
+         if errorno==errno.EINPROGRESS:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
