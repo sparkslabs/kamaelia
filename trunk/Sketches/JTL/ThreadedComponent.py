@@ -56,7 +56,6 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
       self.axontothreadqueue = Queue.Queue()
 
       self.setDaemon(True) # means the thread is stopped if the main thread stops.
-      self.start()
    
    def run(self):
       """STUB - Override this to do the work that will block.  Access the in and out
@@ -75,11 +74,11 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
                self.threadtoaxonqueue.put("ThreadStopped")
                break
          time.sleep(1)
-      
+   
    def main(self):
       """Do not overide this unless you reimplement the pass through of the boxes to the threads.
       """
-
+      self.start()
       while 1:
  
          for box in self.outboxes:
