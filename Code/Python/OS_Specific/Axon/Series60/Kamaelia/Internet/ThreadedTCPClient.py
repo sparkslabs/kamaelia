@@ -117,7 +117,7 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
 #         self.threadtoaxonqueue.put("StoppedThread")
          self.outqueues["signal"].put(socketShutdown())
          return
-      self.outqueues["outbox"].put("socket connected")
+      self.outqueues["signal"].put("socket connected")
 #      timeout = 0.1
 #      sock.settimeout(timeout)
 #      receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
