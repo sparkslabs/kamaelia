@@ -29,13 +29,26 @@
  * Run:
  *  > ./miniaxon
  *
+ *
+ * This is a rather icky implementation of Axon now, which has many of the
+ * normal features of axon - the ability to link arbitrary outboxes to
+ * arbitrary inboxes, multiple named inboxes/outboxes, arbitrary message
+ * passing. (Subclass IPC_S, and place what you want in a .payload
+ * attribute. (doesn't have to have a .payload though).
+ *
  */
 
 #include "generators.hpp"
 #include <iostream>
 #include <list>
+#include <map>
 
 using namespace std;
+
+/* Base class for IPC objects */
+struct IPC_S {
+   int payload;
+};
 
 struct Microprocess : public Generator {
     Microprocess()  {     };
@@ -46,6 +59,14 @@ struct Microprocess : public Generator {
         YIELD(-1);
     GENERATOR_CODE_END
     };
+    virtual void run() {
+    // This would not normally be run on a microprocess, but may be useful
+    // for some circumstances, such as testing.
+       int r;
+       while(r!= -1) {
+          r = next();
+       }
+    }
 };
 
 
@@ -85,67 +106,83 @@ struct Scheduler : public Microprocess {
     };
 };
 
-/* Simplificaton of Component that just has 1 inbox, 1 outbox, and these may
- * only contain strings.
+
+/* Simplificaton of Component, need to check what it's now missing
  */
+struct SimpleComponent : public Microprocess {
+    map<string,list<IPC_S*> > outboxes;
+    map <string, list<IPC_S*> > inboxes;
 
-struct VerySimpleComponent : public Microprocess {
-    list<string> inbox;
-    list<string> outbox;
-
-    VerySimpleComponent()  {     };
-    ~VerySimpleComponent() {     };
+    SimpleComponent()  {
+       inboxes["inbox"];
+       outboxes["outbox"];
+    };
+    ~SimpleComponent() {     };
 
     virtual int next() {
     GENERATOR_CODE_START
-        cout << "VerySimpleComponent" << endl;
+        cout << "SimpleComponent" << endl;
         YIELD(-1);
     GENERATOR_CODE_END
     };
 
-    void send(string value) {
-       outbox.push_back(value);
+    void send(IPC_S *value) {   send(value,"outbox"); }
+    void send(IPC_S *value, string somebox) {
+       outboxes[somebox].push_back(value);
     }
-    string recv() {
-        string result;
-        result = *(inbox.begin());
-        inbox.erase(inbox.begin());
+
+    IPC_S *recv() {   return recv("inbox"); }
+    IPC_S *recv(string somebox) {
+        IPC_S *result;
+        result = *(inboxes[somebox].begin());
+        inboxes[somebox].erase(inboxes[somebox].begin());
         return result;
     }
 
-    void deliver(string value) {
-       inbox.push_back(value);
+    void deliver(IPC_S *value, string somebox) {
+       inboxes[somebox].push_back(value);
     }
-    string collect() {
-        string result;
-        result = *(outbox.begin());
-        outbox.erase(outbox.begin());
+    IPC_S *collect(string somebox) {
+        IPC_S *result;
+        result = *(outboxes[somebox].begin());
+        outboxes[somebox].erase(outboxes[somebox].begin());
         return result;
     }
-    bool dataReady() {
-       return ! inbox.empty();
+    bool dataReady() { return dataReady("inbox");    }
+    bool dataReady(string somebox) {
+       return ! inboxes[somebox].empty();
     }
-    bool dataOutReady() {
-       return ! outbox.empty();
+    bool dataOutReady(string somebox) {
+       return ! outboxes[somebox].empty();
     }
 };
 
-struct Postman : public VerySimpleComponent {
-    VerySimpleComponent* source;
-    VerySimpleComponent* destination;
-    string temp;
-    Postman(VerySimpleComponent* s, VerySimpleComponent* d)  {
+struct Postman : public SimpleComponent {
+    SimpleComponent* source;
+    string sourcebox;
+    SimpleComponent* destination;
+    string destbox;
+    IPC_S * temp;
+    Postman(SimpleComponent* s, SimpleComponent* d)  {
        source = s;
        destination = d;
+       sourcebox = "outbox";
+       destbox = "inbox";
+    };
+    Postman(SimpleComponent* s, string sbox, SimpleComponent* d, string dbox)  {
+       source = s;
+       destination = d;
+       sourcebox = sbox;
+       destbox = dbox;
     };
     ~Postman() {     };
 
     virtual int next() {
     GENERATOR_CODE_START
         while (1) {
-           if (source->dataOutReady()) {
-              temp = source->collect();
-              destination->deliver(temp);
+           if (source->dataOutReady(sourcebox)) {
+              temp = source->collect(sourcebox);
+              destination->deliver(temp,destbox);
            };
            YIELD(1);
         };
@@ -153,24 +190,37 @@ struct Postman : public VerySimpleComponent {
     };
 };
 
+/**********************************************************************
+ *
+ * Sample Producer/Consumer system, passing IPC messages with a string as
+ * payload.
+ *
+ */
 
-struct Producer : public VerySimpleComponent {
+struct mystring : public IPC_S{
+   string payload;
+};
 
+struct Producer : public SimpleComponent {
+
+    mystring msg;
     Producer()  {     };
     ~Producer() {     };
 
     virtual int next() {
     GENERATOR_CODE_START
         while(1) {
-           send("hello world");
+           msg.payload = "hello world!";
+           send(&msg);
            YIELD(1);
         };
     GENERATOR_CODE_END
     };
 };
 
-struct Consumer : public VerySimpleComponent {
-    string result;
+struct Consumer : public SimpleComponent {
+    mystring *result;
+
     Consumer()  {     };
     ~Consumer() {     };
 
@@ -178,8 +228,8 @@ struct Consumer : public VerySimpleComponent {
     GENERATOR_CODE_START
         while (1) {
             if (dataReady()) {
-               result = recv();
-               cout << "! " << result << endl;
+               result = (mystring *)recv();
+               cout << "! " << result->payload << endl;
             };
             YIELD(1);
         };
@@ -187,27 +237,21 @@ struct Consumer : public VerySimpleComponent {
     };
 };
 
-void runScheduler(Scheduler* scheduler) {
-   int r;
-   while(r!= -1) {
-      r = scheduler->next();
-   }
-}
+/*
+ * End of sample system.
+ *
+ **********************************************************************/
 
 int main(int, char **) {
    Scheduler scheduler;
 
-//   VerySimpleComponent X;
-//   VerySimpleComponent Y;
-//   scheduler.activateMicroprocess(&X);
-//   scheduler.activateMicroprocess(&Y);
    Producer P;
    Consumer C;
-   Postman postie(&P,&C);
+   Postman postie(&P,"outbox", &C, "inbox"); // Same as postie(&P,&C)
    scheduler.activateMicroprocess(&P);
    scheduler.activateMicroprocess(&C);
    scheduler.activateMicroprocess(&postie);
-   runScheduler(&scheduler);
+   scheduler.run();
 
    return 0;
 }
