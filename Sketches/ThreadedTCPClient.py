@@ -27,7 +27,11 @@ from Axon.util import Finality
 from Axon.Component import component
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+from Kamaelia.KamaeliaExceptions import connectionDiedReceiving
 import Queue
+Empty = Queue.Empty
+import threading
+import ThreadedComponent
 #from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 #import Axon.CoordinatingAssistantTracker as cat
 
@@ -41,19 +45,19 @@ class receiveThread(threading.Thread):
    This class is intended purely to make blocking receive calls.
    """
    def __init__(self,socket, outputqueue,controlqueue,signalqueue,size = 1024):
-      self.Thread.__init__()
+      threading.Thread.__init__(self)
       self.oq = outputqueue
       self.cq = controlqueue
       self.sq = signalqueue
       self.size = size
       self.sock = socket
-   def run():
+   def run(self):
       try:
          while 1:
-            data = socket.recv(self.size)
+            data = self.sock.recv(self.size)
             if not data: # This implies the connection has barfed.
-               raise connectionDiedReceiving(sock,size)
-            self.oq.put(socketdata)
+               raise connectionDiedReceiving(self.sock,self.size)
+            self.oq.put(data)
             try:
                msg = self.cq.get(False)
                if msg == "StopThread":
@@ -72,15 +76,10 @@ class receiveThread(threading.Thread):
          if crashAndBurn["receivingDataFailed"]:
             # Should this be dealt with in the main socket thread.
             raise e #Throw as an uncaught exception as it is unexpected behaviour.
-      try:
-         self.sock.shutdown(0)
-      except:
-         pass # Don't need to do much here, shutdown is largely for politeness and may well have already
-                 # been done.  The error is of little consequence to further actions.
-      self.signalqueue.put("StoppedThread")
+      self.sq.put("StoppedThread")
          
 
-class ThreadedTCPClient(threadedcomponent):
+class ThreadedTCPClient(ThreadedComponent.threadedcomponent):
    Inboxes = ["inbox", "control"]
    Outboxes = ["outbox","signal"]
 #   Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -109,39 +108,6 @@ class ThreadedTCPClient(threadedcomponent):
 #      self.send(newCSA(self, (CSA,sock)), "_selectorSignal")
 #      return self.childComponents()
 
-##~    def waitCSAClose(self):
-##~       if self.dataReady("_socketFeedback"):
-##~          message = self.recv("_socketFeedback")
-##~          if isinstance(message, socketShutdown):
-##~             return False
-##~       return True
-
-##~    def safeConnect(self, sock, *sockArgsList):
-##~       try:
-##~          sock.connect(*sockArgsList); # Expect socket.error: (115, 'Operation now in progress')
-##~             # EALREADY
-##~             #   The  socket  is  non-blocking  and  a  previous connection
-##~             #   attempt has not yet been completed.
-##~          self.connecting=0
-##~          self.connected=1
-##~          return True
-##~       except socket.error, socket.msg:
-##~          (errorno, errmsg) = socket.msg.args
-##~          if errorno==errno.EALREADY:
-##~             # The socket is non-blocking and a previous connection attempt has not yet been completed
-##~             # We handle this by allowing  the code to come back and repeatedly retry
-##~             # connecting. This is a valid, if brute force approach.
-##~             assert(self.connecting==1)
-##~             return False
-##~          if errorno==errno.EINPROGRESS:
-##~             #The socket is non-blocking and the connection cannot be completed immediately.
-##~             # We handle this by allowing  the code to come back and repeatedly retry
-##~             # connecting. Rather brute force.
-##~             self.connecting=1
-##~             return False # Not connected should retry until no error
-##~          # Anything else is an error we don't handle
-##~          raise socket.msg
-
    def run(self):
       try:
          print "TCPC: RHUBARB", 87
@@ -157,7 +123,7 @@ class ThreadedTCPClient(threadedcomponent):
          self.threadtoaxonqueue.put("StoppedThread")
          return
       try:
-         sock.connect(self.host, self.port)
+         sock.connect((self.host, self.port))
       except socket.error, e:
          self.outqueues["signal"].put(e)
          try:
@@ -166,7 +132,7 @@ class ThreadedTCPClient(threadedcomponent):
             pass
          self.threadtoaxonqueue("StoppedThread")
          return
-      receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = recvthreadsignal)
+      receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
       receivethread.setDaemon(True)
       receivethread.start()
       recvingfinished = False
@@ -180,52 +146,57 @@ class ThreadedTCPClient(threadedcomponent):
          # prevent busy wait taking too much CPU time.
          
          # TODO: All Exception Handling
-         if not sendingfinished:
-            try:
-               # This blocks for a short time to avoid busy wait if there is
-               # nothing to do.
-               data = self.inqueues["inbox"].get(True, 0.2)
-               sock.send(data)
-               if producerFinished: #If there is still coming extend the time
-                                               #window for data to get in the queue
-                  producerFinished = time.time()
-            except Empty, e:
-                # A four second delay ought to be enough for the component to
-                # get a timeslice and move some data from inbox to the queue.
-                # Yet it shouldn't cause critical errors, delays or leaks if it
-                # allowed to take this long.
+         try:
+            # This blocks for a short time to avoid busy wait if there is
+            # nothing to do.
+            data = self.inqueues["inbox"].get(True, 0.2)
+            sock.send(data)
+            if producerFinished: #If there is still coming extend the time
+                                            #window for data to get in the queue
+               producerFinished = time.time()
+         except Empty, e:
+             # A four second delay ought to be enough for the component to
+             # get a timeslice and move some data from inbox to the queue.
+             # Yet it shouldn't cause critical errors, delays or leaks if it
+             # allowed to take this long.  This must be done on a time basis as
+             # the items are being added to our queue by an Axon component so
+             # are being copied in only when there is a timeslice.  The
+             # alternative is to have a reasonable liklyhood of dropping some data.
+             if producerFinished:
                if time.time() > producerFinished + 4:
                   try:
-                     sock.shutdown(1)
+                     sock.shutdown(2)
                   except socket.error, e:
                      pass
                   sendingfinished = True
                   if receiverFinished:
                      break
-            except socket.error, err:
-               self.outqueues["signal"].put(err)
-               try:
-                  sock.shutdown(1)
-               except socket.error, e:
-                  pass
-               sendingfinished = True
-               if receiverFinished:
-                  break # The task is finished now.
-         
-         if not receivingfinished:
+         except socket.error, err:
+            self.outqueues["signal"].put(err)
             try:
-               msg = self.recvthreadsignal.get(False)
-               if msg == "ThreadStopped":
-                  recvingfinished = True
-                  # self.outqueues["signal"].put(consumerFinished())
-               else:
-                  self.outqueues["signal"].put(msg)
-            except Empty, e:
-               pass # This is the common case.
+               sock.shutdown(2)
+            except socket.error, e:
+               pass
+            recvthreadcontrol.put("StopThread")
+            break # The task is finished now.
+         
+         try:
+            msg = self.recvthreadsignal.get(False)
+            if msg == "ThreadStopped":
+               try:
+                  sock.shutdown(2)
+               except:
+                  pass
+               break # Receiving has stopped.  We are doing a symetrical close.
+               # self.outqueues["signal"].put(consumerFinished())
+            else:
+               self.outqueues["signal"].put(msg)
+         except Empty, e:
+            pass # This is the common case.
 
          try:
             msg = self.inqueues["control"].get(False)
-            if isinstance(msg, producerFinished):
+            if isinstance(msg, Axon.Ipc.producerFinished):
                producerStopTime = time.time() 
                # Want to give opportunity for inbox messages to get into the
                # inbox queue before shutting down the sending system.
@@ -238,55 +209,6 @@ class ThreadedTCPClient(threadedcomponent):
          self.outqueues["signal"].put(e)
       self.outqueues["signal"].put(socketShutdown())
       self.signalqueue.put("ThreadStopped")
-   
-   def __startrecvthread(self, sock):
-      
-
-def _tests():
-   from Axon.Linkage import linkage
-
-   print "This test suite requires access to an active network server"
-   client=TCPClient("127.0.0.1",1500)
-   clientGen = client.main()
-   r = clientGen.next() # assert r == 0.3 (Socket Created)
-   assert r==0.3, "Socket Created"
-   r = clientGen.next() # assert r == 0.6 (Socket set non-blocking)
-   assert r==0.6, "Socket set non-blocking"
-   r = clientGen.next() # assert r == 1   (Socket connecting)
-   assert r==1, "Socket connecting"
-   print "1", r
-   m=clientGen.next()
-   try:
-      assert isinstance(m, newComponent), "We connected and have been returned a new component to activate"
-   except AssertionError:
-      print "Connection to remote server Failed", m
-      raise
-
-   print "cgn", m
-   CSA=m.components()[0]
-
-   # Put some linkages in place for testing
-   outboxLink=linkage(CSA,client,"outbox","outbox",passthrough=2)
-   feedbackLink=linkage(CSA,client,"FactoryFeedback","_socketFeedback")
-
-   CSA.initialiseComponent()
-   CSA.mainBody()
-   CSA._deliver(status("data ready"),"DataReady")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   CSA._deliver(socketShutdown(1),"control")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   outboxLink.moveDataWithCheck()  # Move output from the CSA to output of the client
-   feedbackLink.moveDataWithCheck()  # Move output from the CSA to input of client
-   print CSA,"\n",client
-   client._safeCollect("_selectorSignal")
-   print client._safeCollect("outbox")
-   print CSA,"\n",client
-   for i in clientGen:
-      print i
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
@@ -305,7 +227,7 @@ if __name__ =="__main__":
          self.display = consoleEchoer()
 
       def initialiseComponent(self):
-         self.client = TCPClient("127.0.0.1",self.serverport, delay=1)
+         self.client = ThreadedTCPClient("127.0.0.1",self.serverport, delay=1)
          self.addChildren(self.server,self.client,self.display)
 #         self.addChildren(self.server, self.display)
          self.link((self.client,"outbox"), (self.display,"inbox") )
