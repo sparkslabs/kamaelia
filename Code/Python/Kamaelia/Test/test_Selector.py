@@ -28,6 +28,9 @@ import unittest
 import sys ; sys.path.append("..")
 from Kamaelia.Internet.Selector import selectorComponent
 from Axon.Component import component
+import Kamaelia.Internet.Selector
+from Axon.AxonExceptions import ServiceAlreadyExists
+import Axon.CoordinatingAssistantTracker
 
 def preservedIncreasedItemCount(preList, postList):
    "Boolean that returns true if the number of items in each list has increased, and preserved the old items"
@@ -131,7 +134,42 @@ class selector_Test(unittest.TestCase):
             {"exceptionals":"world",
              "writers":"hello",
              "readers":"goodbye"})
-
+             
+   def test_setSelectorService_smoketest(self):
+        "setSelectorService - Registers a selector with a Coordinating Assistant Tracker"
+        try:
+            Kamaelia.Internet.Selector.selectorComponent.setSelectorService()
+            self.fail("Expected an exception to be thrown.  Selector argument required.")
+        except TypeError,e:
+            pass
+        s = selectorComponent()
+        Kamaelia.Internet.Selector.selectorComponent.setSelectorService(s)
+        service,non = Kamaelia.Internet.Selector.selectorComponent.getSelectorService()
+        gs,gb = service
+        self.failUnless(gs is s)
+        self.failUnless(gb == "notify")
+        self.failUnless(non == None)
+        s2 = selectorComponent()
+        try:
+            Kamaelia.Internet.Selector.selectorComponent.setSelectorService(s)
+            self.fail("Expected an exception")
+        except ServiceAlreadyExists,e:
+            pass
+            
+   def test_setSelectorService_targettracker(self):
+        "setSelectorService - Registers a selector with a Coordinating Assistant Tracker"
+        cat = Axon.CoordinatingAssistantTracker.coordinatingassistanttracker()
+        s = selectorComponent()
+        Kamaelia.Internet.Selector.selectorComponent.setSelectorService(s,cat)
+        service,non = Kamaelia.Internet.Selector.selectorComponent.getSelectorService(cat)
+        gs,gb = service
+        self.failUnless(gs is s)
+        self.failUnless(gb == "notify")
+        self.failUnless(non == None)
+        service,non = Kamaelia.Internet.Selector.selectorComponent.getSelectorService()
+        gs,gb = service
+        self.failIf(gs is s)
+            
 if __name__=="__main__":
    unittest.main()
 
