@@ -62,7 +62,7 @@ import socket, time
 from Axon.Component import component
 import Axon
 from Axon.Ipc import wouldblock, status, producerFinished
-import socketConstants
+import errno
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA
 from Kamaelia.KamaeliaExceptions import *
 
@@ -78,8 +78,8 @@ def _safesend(sock, data):
       sock.send(data)
       return 1
    except socket.error, socket.msg:
-      (errno, errmsg) = socket.msg.args
-      if not (errno == socketConstants.EAGAIN or  errno == socketConstants.EWOULDBLOCK):
+      (errorno, errmsg) = socket.msg.args
+      if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
          raise socket.msg        # then rethrow the error.
       return 0                                                                        # Otherwise return 0 for failure on sending
    except exceptions.TypeError, ex:
@@ -96,8 +96,8 @@ def _saferecv(sock, size=1024):
       if not data: # This implies the connection has barfed.
          raise connectionDiedReceiving(sock,size)
    except socket.error, socket.msg:
-      (errno, errmsg) = socket.msg.args
-      if not (errno == socketConstants.EAGAIN or errno == socketConstants.EWOULDBLOCK):
+      (errorno, errmsg) = socket.msg.args
+      if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
          "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
          raise socket.msg # rethrow
    return data
@@ -144,7 +144,6 @@ class ConnectedSocketAdapter(component):
       #      print "CSA: DATAREADY", self.dataReady("DataReady")
       #if not (self.dataReady("DataSend") or self.dataReady("DataReady")):
          if self.dataReady("control"):
-            print "CSA: Control Has a message!"
             data = self.recv("control")
             if isinstance(data, producerFinished):
                #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data

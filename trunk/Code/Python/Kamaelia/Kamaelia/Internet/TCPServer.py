@@ -55,13 +55,14 @@
 #    * Send what you like to CSA's, ensure you recieve data from the CSAs
 #    * Send shutdown messages when done.
 
-import socket, random, Axon, socketConstants, Selector
+import socket, errno, random, Axon, Selector
 import Kamaelia.KamaeliaIPC as _ki
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
 _component = Axon.Component.component
 status = Axon.Ipc.status
 wouldblock = Axon.Ipc.wouldblock
+import time
 
 class TCPServer(_component):
    Inboxes=["DataReady", "_csa_feedback"]
@@ -71,10 +72,6 @@ class TCPServer(_component):
       self.__super.__init__()
       self.listenport = listenport
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
-      print "TCPS: SERVER INITIALISED"
-      import os
-      os.system("netstat -natp")
-      print "TCPS: PORT", listenport
 
    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
       if HOST is None: HOST=''
@@ -91,7 +88,11 @@ class TCPServer(_component):
       return s,PORT
 
    def createConnectedSocket(self, sock):
-      newsock, addr = sock.accept()
+      tries = 0
+      maxretries = 10
+      gotsock=False
+      newsock, addr = sock.accept()  # <===== THIS IS THE PROBLEM
+      gotsock = True
       newsock.setblocking(0)
       CSA = ConnectedSocketAdapter(newsock)
       return CSA
@@ -103,7 +104,6 @@ class TCPServer(_component):
       self.send(_ki.shutdownCSA(self, (theComponent,sock)), "signal")
       # Delete the child component
       self.removeChild(theComponent)
-      print "TCPS: SHUTTING DOWN SERVER SOCKET"
 
    def checkForClosedSockets(self):
       if self.dataReady("_csa_feedback"):
@@ -125,7 +125,6 @@ class TCPServer(_component):
          self.addChildren(newSelector)
       self.link((self, "signal"),selectorService)
       self.send(_ki.newServer(self, (self,self.listener)), "signal")
-      print self.outboxes["signal"]
       return Axon.Ipc.newComponent(*(self.children))
 
    def handleNewConnection(self):
@@ -135,15 +134,17 @@ class TCPServer(_component):
          # to handle
          try:
             CSA = self.createConnectedSocket(self.listener)
+         except socket.error, e:
+            (errorno,errmsg) = e
+            if errorno != errno.EAGAIN:
+               if errorno != errno.EWOULDBLOCK:
+                  raise e
+         else:
             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
             self.addChildren(CSA)
             self.link((CSA, "FactoryFeedback"),(self,"_csa_feedback"))
             self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "signal")
             return CSA
-         except socket.error, e:
-            (errno,errmsg) = e
-            if errno != socketConstants.EAGAIN:
-               raise e
 
    def mainBody(self):
       self.pause()
