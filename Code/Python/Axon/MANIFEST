@@ -14,7 +14,6 @@ Axon/debug.py
 Axon/debugConfigFile.py
 Axon/idGen.py
 Axon/util.py
-Axon/test/.keep
 Axon/test/AxonTest.py
 Axon/test/TemplateTestModule.py
 Axon/test/debug.conf
