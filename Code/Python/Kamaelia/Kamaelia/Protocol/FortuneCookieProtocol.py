@@ -70,15 +70,14 @@ class FortuneCookieProtocol(component):
       if self.dataReady("control"):
          data = self.recv("control")
          self.send(data,"signal")
-         print "FCP: SIGNAL PROPOGATED Upwards, Exiting protocol Handler"
          return 0
       assert self.debugger.note("FortuneCookieProtocol.main", 10, self.name, "Main Loop")
       return 1
 
    def closeDownComponent(self):
-      print "FCP: Shutting down fortune cookies"
+      pass
 
 if __name__ == '__main__':
-   SimpleServer(protocol=FortuneCookieProtocol, port=1501).activate()
+   SimpleServer(protocol=FortuneCookieProtocol, port=1500).activate()
    # HelloServer(debug = 1).activate()
    scheduler.run.runThreads(slowmo=0)

@@ -46,8 +46,6 @@ class newServer(notify):
    """Helper class to notify of new CSAs as they are created.  newCSA.object
    will return the CSA."""
    def __init__(self, caller, CSA):
-      #notify.__init__(self, caller, CSA)
       super(newServer, self).__init__(caller, CSA)
    def handlesWriting(self):
-      print "we're being checked"
       return False
