@@ -99,7 +99,6 @@ class TCPClient(component):
             #   The  socket  is  non-blocking  and  a  previous connection
             #   attempt has not yet been completed.
          self.connecting=0
-         self.connected=1
          return True
       except socket.error, socket.msg:
          (errorno, errmsg) = socket.msg.args
@@ -117,8 +116,6 @@ class TCPClient(component):
             return False # Not connected should retry until no error
          if errorno == errno.WSAEISCONN:
              # This is a windows error indicating the connection has already been made.
-             # This is actually an alternate sucess case to a truth response immediately.
-             # self.connected = 1 # If connected is actually used then it should be set here too
              self.connecting = 0 # as with the no exception case.
              return True
          # Anything else is an error we don't handle
