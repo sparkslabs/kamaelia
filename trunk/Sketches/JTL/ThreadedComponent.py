@@ -33,26 +33,14 @@ import Queue
 import time
 import Axon.Component
 
-class _componentthread(threading.Thread):
-   """Represents the thread object that will be run. This is a bodge to
-      avoid multiple inheritance, essentially a bounceback through to the
-      passed component that is to be run as a thread not as a generator.
-   """
-   def __init__(self, componentToRun=None):
-      threading.Thread.__init__(self)
-      self.componentToRun  = componentToRun
-      
-   def run(self):
-      self.componentToRun.run()
-      
-class threadedcomponent(Axon.Component.component):
+class threadedcomponent(Axon.Component.component,threading.Thread):
    """This component is intended to allow blocking calls to be made from within
       a component by running them inside a thread in the component.
    """
 
    def __init__(self,queuelengths=10):
       self.__super.__init__()
-      thethread = _componentthread(self)
+      threading.Thread.__init__(self)
 
       self.queuelengths = queuelengths
       self.inqueues = dict()
@@ -63,11 +51,12 @@ class threadedcomponent(Axon.Component.component):
          self.outqueues[box] = Queue.Queue(self.queuelengths)
 
       self.outbuffer = dict()
-      for box in self.outboxes:
-         self.outbuffer[box] = None
 
-      self.finished = False
-      thethread.start()
+      self.threadtoaxonqueue = Queue.Queue()
+      self.axontothreadqueue = Queue.Queue()
+
+      self.setDaemon(True) # means the thread is stopped if the main thread stops.
+      self.start()
    
    def run(self):
       """STUB - Override this to do the work that will block.  Access the in and out
@@ -80,6 +69,10 @@ class threadedcomponent(Axon.Component.component):
             while not self.inqueues[box].empty():
                print "dada:", self.inqueues[box].get(),
          print "doing"
+         if not self.axontothreadqueue.empty():
+            mesg = self.axontothreadqueue.get()
+            if mesg == "StopThread":
+               break
          time.sleep(1)
       
    def main(self):
@@ -109,13 +102,35 @@ class threadedcomponent(Axon.Component.component):
                   break
 
          yield 1
-      
-if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
 
-   tc = threadedcomponent()
-   tc.activate()
-   tc._deliver("hello","inbox")
-   tc._deliver("world","inbox")
-   tc._deliver("foo","inbox")
-   scheduler.run.runThreads(slowmo=0)
+if __name__ == '__main__':
+     print "starting"
+     tc = threadedcomponent()
+     axonthread = tc.main()
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     time.sleep(2)
+     tc._deliver("hello","inbox")
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     time.sleep(3)
+     tc._deliver("world","inbox")
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     time.sleep(2)
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     tc._deliver("foo","inbox")
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     time.sleep(2)
+     axonthread.next()
+     axonthread.next()
+     axonthread.next()
+     tc.axontothreadqueue.put("StopThread")
+ 
