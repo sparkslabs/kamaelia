@@ -94,7 +94,8 @@ class postman(microprocess):
       """Registers a _named_ component with the postman.
       These are stored in forward & reverse lookup tables.
       """
-      assert self.debugger.note("postman.register",5,self.name,name,component)
+      if self.debugger.areDebugging("postman.register", 5):
+         self.debugger.debugmessage("postman.register", self.name,name,component)
       self.things[name] = component
       self.reversethings[id(component)] = name
 
@@ -103,7 +104,8 @@ class postman(microprocess):
       actually more useful, looking back on this design, since we
       only deliver things along linkages. (no defaults)
       """
-      assert self.debugger.note("postman.registerlinkage",5,self.name, thelinkage)
+      if self.debugger.areDebugging("postman.registerlinkage", 5):
+         self.debugger.debugmessage("postman.registerlinkage", self.name, thelinkage)
       self.linkages.append(thelinkage)
 
    def deregister(self, name=None, component=None):
@@ -149,18 +151,22 @@ class postman(microprocess):
          while num > 0:
             num = num - 1
             if self.linkages[num] is thelinkage:
-               assert self.debugger.note("postman.deregisterlinkage", 5,"Flushing linkage", thelinkage)
+               if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+                  self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", thelinkage)
                while thelinkage.dataToMove():
-                  assert self.debugger.note("postman.deregisterlinkage", 5,"Flushing ", thelinkage.source.name,thelinkage.sink.name)
+                  if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+                     self.debugger.debugmessage("postman.deregisterlinkage", "Flushing ", thelinkage.source.name,thelinkage.sink.name)
                   thelinkage.moveData(True)
                del self.linkages[num]
       while (i < num):
          if ((self.linkages[i].source is thecomponent) or
              (self.linkages[i].sink is thecomponent)):
             num = num -1 # We remove an item from the list, so num shrinks by 1
-            assert self.debugger.note("postman.deregisterlinkage", 5,"Flushing linkage", self.linkages[i])
+            if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+               self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", self.linkages[i])
             while self.linkages[i].dataToMove():
-               assert self.debugger.note("postman.deregisterlinkage", 5,"Flushing ", self.linkages[i].source.name,self.linkages[i].sink.name)
+               if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+                  self.debugger.debugmessage("postman.deregisterlinkage", "Flushing ", self.linkages[i].source.name,self.linkages[i].sink.name)
                self.linkages[i].moveData(True)
             del self.linkages[i]
          else:
@@ -189,21 +195,23 @@ class postman(microprocess):
       Loops through the *linkages*, scanning their sources, collects messages
       for delivery to the sinkwbox of the recipient.
       """
-      assert self.debugger.note("postman.domessagedelivery", 5,self.name,self.showqueuelengths())
-      # The following commented code has no significant effects.  Only debugging purposes.  Above may be sufficient for the case.
-##~       if self.linkages == [] :
-##~          assert self.debugger.note("postman.domessagedelivery.linkages", 10, "No Destinations")
-##~          return
+      if self.debugger.areDebugging("postman.domessagedelivery", 5):
+         self.debugger.debugmessage("postman.domessagedelivery", 5,self.name,self.showqueuelengths())
 
-      assert self.debugger.note("postman.domessagedelivery.linkages", 5, self.name, self.linkages)
+      if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
+         self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, self.linkages)
 
       for link in self.linkages:
-         assert self.debugger.note("postman.domessagedelivery.linkages", 5, self.name, "So Far")
-         assert self.debugger.note("postman.domessagedelivery", 7, "DELIVERY", link.sinkbox,link.sink.name)
-         assert self.debugger.note("postman.domessagedelivery", 10, self.name +" taking message from ", link.source.name, "outbox", link.sourcebox, " delivering to ", link.sink.name, " inbox ", link.sinkbox)
+         if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
+            self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, "So Far")
+         if self.debugger.areDebugging("postman.domessagedelivery", 7):
+            self.debugger.debugmessage("postman.domessagedelivery", "DELIVERY", link.sinkbox,link.sink.name)
+         if self.debugger.areDebugging("postman.domessagedelivery", 10):
+            self.debugger.debugmessage("postman.domessagedelivery", self.name +" taking message from ", link.source.name, "outbox", link.sourcebox, " delivering to ", link.sink.name, " inbox ", link.sinkbox)
          if link.dataToMove():
              if link.showtransit:
-                 assert self.debugger.note("postman.specificTransits", 1, self.name + " "+ str(link))
+                 if self.debugger.areDebugging("postman.specificTransits", 1):
+                    self.debugger.debugmessage("postman.specificTransits", self.name + " "+ str(link))
              link.moveData()
 
    def islinkageregistered(self, linkage):
@@ -214,7 +222,8 @@ class postman(microprocess):
       yield "initialised"
       while 1:
          self.domessagedelivery()
-         assert self.debugger.note("postman.main",10,self.name)
+         if self.debugger.areDebugging("postman.main", 10):
+            self.debugger.debugmessage("postman.main", self.name)
          yield 1
 
 

@@ -82,6 +82,24 @@ class debug(object):
    def setDebugSections(self,**debugSections):
       self.debugSections = debugSections
 
+   def areDebugging(self,section,level):
+      """ Returns true if we are debugging this level, doesn't try to enforce correctness"""
+      try:
+         if self.debugSections[section] >= level:
+            return True
+      except KeyError, key:
+         pass
+      except AttributeError, error:
+         pass
+      return False
+
+   def debugmessage(self, section, *message):
+      """ Always Outputs *message, section still required for offline filtering""" 
+      print time.asctime(), "|", section, "|",
+      for arg in message:
+         print arg,
+      print # Force new line
+
    def debug(self,section, level, *message):
       """ Outputs *message if user set level is greater than requested level for given section
       returns True. This allows debug to be used in assert statements to allow

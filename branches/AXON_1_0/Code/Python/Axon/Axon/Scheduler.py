@@ -65,7 +65,8 @@ class scheduler(microprocess):
 
       self.time = time.time()
       self.threads = list()     # Don't use [] to avoid Python wierdness
-      assert self.debugger.note("scheduler.__init__", 1, "STARTED: ", self.name, self.id)
+      if self.debugger.areDebugging("scheduler.__init__", 1):
+         self.debugger.debugmessage("scheduler.__init__", "STARTED: ", self.name, self.id)
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -91,52 +92,64 @@ class scheduler(microprocess):
       """
       crashAndBurnWithErrors = True
       mprocesses = self.threads          # Grab the singleton set of threads.
-      assert self.debugger.note("scheduler.main", 1, "SCHEDULER:",self)
-      assert self.debugger.note("scheduler.main", 1, "Scheduler Starting, # threads to run:")
-      assert self.debugger.note("scheduler.main", 1, "   ", len(self.threads) )
+      if self.debugger.areDebugging("scheduler.main", 1):
+         self.debugger.debugmessage("scheduler.main", "SCHEDULER:",self)
+         self.debugger.debugmessage("scheduler.main", "Scheduler Starting, # threads to run:")
+         self.debugger.debugmessage("scheduler.main", "   ", len(self.threads))
 
       yield 1
       running = len(self.threads) > 0
-      assert self.debugger.note("scheduler.main", 5, "THR", self.threads )
+      if self.debugger.areDebugging("scheduler.main", 5):
+         self.debugger.debugmessage("scheduler.main", "THR", self.threads)
       cx=0
       lastcx=0
       lasttime = time.time()
       starttime= lasttime
-      assert self.debugger.note("scheduler.main", 5, "# CX Ave, CX this" )
+      if self.debugger.areDebugging("scheduler.main", 5):
+         self.debugger.debugmessage("scheduler.main", "# CX Ave, CX this")
       while(running):           # Threads gets re-assigned so this can reduce to []
         now = time.time()
         if (now - self.time) > slowmo or slowmo == 0:
          self.time = now   # Update last run time - only really useful if slowmo != 0
-         assert self.debugger.note("scheduler.main.threads", 1, "Threads to run:", len(self.threads) )
-
-         assert self.debugger.note("scheduler.main.threads", 2, "Threads to run:", _sort([ thr.name for thr in self.threads if thr is not None]))
-         assert self.debugger.note("scheduler.objecttrack", 5, "Axon Objects active", len([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
-         assert self.debugger.note("scheduler.objecttrack", 10, "Axon Objects active", "\n           ".join([ str(x.__class__) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
-         assert self.debugger.note("scheduler.objecttrack", 15, "Axon Objects active", "\n           ".join([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         if self.debugger.areDebugging("scheduler.main.threads", 1):
+            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", len(self.threads))
+         if self.debugger.areDebugging("scheduler.main.threads", 2):
+            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", _sort([ thr.name for thr in self.threads if thr is not None]))
+         if self.debugger.areDebugging("scheduler.main.threads", 5):
+            self.debugger.debugmessage("scheduler.main.threads", "Axon Objects active", len([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         if self.debugger.areDebugging("scheduler.objecttrack", 10):
+            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x.__class__) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         if self.debugger.areDebugging("scheduler.objecttrack", 15):
+            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
          newthreads = list()  # We go through all the threads,
                               # if they don't exit they get put here.
 
-         assert self.debugger.note("scheduler.scheduler",1,"SCHEDULED", self.name,self.id)
+         if self.debugger.areDebugging("scheduler.scheduler", 1):
+            self.debugger.debugmessage("scheduler.main", "SCHEDULED", self.name,self.id)
          activeMicroprocesses = 0
          for mprocess in self.threads:
             cx=cx+1
             if (now - lasttime)> 1:
-                 assert self.debugger.note("scheduler.main", 10, cx/(now-starttime), ",", cx-lastcx )
+                 if self.debugger.areDebugging("scheduler.main", 10):
+                    self.debugger.debugmessage("scheduler.main", cx/(now-starttime), ",", cx-lastcx)
                  lasttime = now
                  lastcx=cx
             if mprocess:
                try:
-                  assert self.debugger.note("scheduler.main", 10, "Scheduler about to yield",self)
+                  if self.debugger.areDebugging("scheduler.main", 10):
+                     self.debugger.debugmessage("scheduler.main", "Scheduler about to yield",self)
                   yield 1                       # Relinquish control between every thread
 
-                  assert self.debugger.note("scheduler.main", 10, "Scheduler back yield",self)
+                  if self.debugger.areDebugging("scheduler.main", 10):
+                     self.debugger.debugmessage("scheduler.main", "Scheduler back yield",self)
                   result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
 
                   if (issubclass(result.__class__, newComponent)):
                      # The class sent us a newComponent message, which
                      # can contain several components.
                      for component in result.components():   # For each one
-                        assert self.debugger.note("scheduler.main", 5, "Starting a new component",component)
+                        if self.debugger.areDebugging("scheduler.main", 5):
+                           self.debugger.debugmessage("scheduler.main", "Starting a new component",component)
                         t = component.activate()      # Activate it - adds itself to the runset
                         if t._activityCreator():
                            activeMicroprocesses +=1
@@ -144,12 +157,15 @@ class scheduler(microprocess):
                      activeMicroprocesses +=1
                   newthreads.append(mprocess)    # Add the current thread to the new run set
                except StopIteration:             # Thread exited
-                  assert self.debugger.note("scheduler.main", 5, "STOP ITERATION THROWN", mprocess)
+                  if self.debugger.areDebugging("scheduler.main", 5):
+                     self.debugger.debugmessage("scheduler.main", "STOP ITERATION THROWN", mprocess)
                   knockon = mprocess._closeDownMicroprocess()
                   if knockon:
-                     assert self.debugger.note("scheduler.main", 5, "KNOCKON", knockon)
+                     if self.debugger.areDebugging("scheduler.main", 5):
+                        self.debugger.debugmessage("scheduler.main", "KNOCKON", knockon)
                      if isinstance(knockon, shutdownMicroprocess):
-                        assert self.debugger.note("scheduler.main", 5, "TO CLOSEDOWN", [(x.name,x.debugname) for x in knockon.microprocesses() ])
+                        if self.debugger.areDebugging("scheduler.main", 5):
+                           self.debugger.debugmessage("scheduler.main", "TO CLOSEDOWN", [(x.name,x.debugname) for x in knockon.microprocesses() ])
                         for i in xrange(len(self.threads)):
                            if self.threads[i] in knockon.microprocesses():
                               self.threads[i] = None
