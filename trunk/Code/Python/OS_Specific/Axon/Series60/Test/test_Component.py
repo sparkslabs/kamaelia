@@ -27,8 +27,9 @@
 import unittest
 import re
 #import sys ; sys.path.append(".") ; sys.path.append("..")
-from Component import *
-import Linkage
+from Axon.Component import *
+import Axon.Linkage
+Linkage = Axon.Linkage
 #from Scheduler 
 class TComponent(component):
     def __init__(self):

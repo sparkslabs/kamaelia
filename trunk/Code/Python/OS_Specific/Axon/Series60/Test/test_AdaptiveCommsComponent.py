@@ -26,14 +26,15 @@
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-import AdaptiveCommsComponent, Component
+import Axon.AdaptiveCommsComponent, Axon.Component
+AdaptiveCommsComponent = Axon.AdaptiveCommsComponent
 
 class AdaptiveCommsComponent_Test(unittest.TestCase):
    def test_SmokeTest_NoArguments(self):
       "__init__ - Called with no arguments is expected, results in component superconstructor being called. performs no local initialisation"
       a=AdaptiveCommsComponent.AdaptiveCommsComponent()
       self.assert_( isinstance(a,AdaptiveCommsComponent.AdaptiveCommsComponent), "Right Type")
-      self.assert_( isinstance(a,Component.component), "Right Base Type")
+      self.assert_( isinstance(a,Axon.Component.component), "Right Base Type")
       self.assert_( a.inboxes=={'control': [], 'inbox': []}, "Correct Basic inboxes")
       self.assert_( a.outboxes=={'outbox': [], 'signal': []}, "Correct Basic outboxes")
 

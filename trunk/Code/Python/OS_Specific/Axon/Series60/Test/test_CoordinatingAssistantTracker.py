@@ -26,9 +26,9 @@
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-from CoordinatingAssistantTracker import *
-from Component import component
-from AxonExceptions import *
+from Axon.CoordinatingAssistantTracker import *
+from Axon.Component import component
+from Axon.AxonExceptions import *
 
 class dummyComponent(component): pass
 

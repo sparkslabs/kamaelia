@@ -26,10 +26,11 @@
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-from Linkage import *
-import Component
-from Postman import postman
-from AxonExceptions import ArgumentsClash, noSpaceInBox
+from Axon.Linkage import *
+import Axon.Component
+Component = Axon.Component
+from Axon.Postman import postman
+from Axon.AxonExceptions import ArgumentsClash, noSpaceInBox
 #import gc as _gc
 import re
 

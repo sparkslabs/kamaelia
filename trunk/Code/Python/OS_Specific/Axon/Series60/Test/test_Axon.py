@@ -25,7 +25,7 @@
 
 # Test the module loads
 import unittest
-from Axon import AxonObject, AxonType
+from Axon.Axon import AxonObject, AxonType
 
 
 

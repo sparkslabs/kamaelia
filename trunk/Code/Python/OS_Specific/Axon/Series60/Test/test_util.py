@@ -26,9 +26,9 @@
 # Test the module loads
 import unittest
 #import sys ; sys.path.append("..")
-from util import *
-from Component import  component
-from AxonExceptions import AxonException, normalShutdown
+from Axon.util import *
+from Axon.Component import  component
+from Axon.AxonExceptions import AxonException, normalShutdown
 
 class util_Test(unittest.TestCase):
    def test_logError(self):
