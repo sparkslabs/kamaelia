@@ -98,7 +98,6 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
 
       if "signal" in pHandler.Outboxes:
-         print "SSC: Creating Linkage", (pHandler,"signal"),(CSA, "control")
          self.link((pHandler,"signal"),(CSA, "control"))
          _Axon.Foo = CSA
 
@@ -137,6 +136,7 @@ if __name__ == '__main__':
       def mainBody(self):
          if self.dataReady("inbox"):
             data = self.recv("inbox")
+            print "Got data", data
             assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "NetServ : We were sent data - ")
             assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "We should probably do something with it now? :-)")
             assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "I know, let's sling it straight back at them :-)")
