@@ -284,7 +284,7 @@ class Component_Test(unittest.TestCase):
       self.failIf(t.tc1.dataReady("control"),"There shouldn't be any data ready after these recv calls.")
       
    def test_link(self):
-      """link- Creates a link, handled by the component's postman, that links a source component to it's sink, honouring passthrough, pipewidth and synchronous attributes.
+      """link - Creates a link, handled by the component's postman, that links a source component to it's sink, honouring passthrough, pipewidth and synchronous attributes.
       Test is delicate to internal structure of component and linkage, extra default linkages may break test."""
 #      properlinkageclass = Linkage.linkage
 #      linkage = dummylinkage
