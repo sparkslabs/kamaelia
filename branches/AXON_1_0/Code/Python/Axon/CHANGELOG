@@ -1,3 +1,17 @@
+1.0.3 -> 1.0.4 - Debugging reactivated, Microprocess enhanced
+     Debugging subsystem re-activated for actual use. Still needs a bit
+     of work. (Ideally we should *merge* the debugging selected in the
+     debug.conf file with the defaults, rather than have them replace
+     the defaults)
+
+     Microprocess has gained a "run" method, which allows a microprocess to
+     be run standalone. (This should assist with testing)
+
+     self.link now returns the linkage created. This allows the user to do
+     the following when debugging a system:
+       l = self.link( ... )
+       l.setShowTransit(True)
+
 1.0.2 -> 1.0.3 - Performance Improvements
    * Split debug.debug.debug/debug.debug.note into two halves:
       * areDebugging(self,section,level)

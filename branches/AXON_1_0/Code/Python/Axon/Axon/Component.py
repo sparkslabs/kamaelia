@@ -314,7 +314,7 @@ class component(microprocess):
       """
       source_comp,sourcebox = source
       sink_comp,sinkbox = sink
-      linkage(source_comp, sink_comp, sourcebox, sinkbox,self.postoffice,passthrough=passthrough,pipewidth=pipewidth,synchronous=synchronous)
+      return linkage(source_comp, sink_comp, sourcebox, sinkbox,self.postoffice,passthrough=passthrough,pipewidth=pipewidth,synchronous=synchronous)
 
    def recv(self,boxname="inbox"):
       """'C.recv("boxname")' -
