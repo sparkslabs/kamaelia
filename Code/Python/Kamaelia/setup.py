@@ -32,6 +32,8 @@ setup(name = "Kamaelia",
                   "Kamaelia.Util",
                   "Kamaelia.Protocol",
                   "Kamaelia.Internet",
+                  "Kamaelia.Data",
+                  "Kamaelia.Sketch", # Empty on RELEASE branch
                   ""],
       long_description = """
 """
