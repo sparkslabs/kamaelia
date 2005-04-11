@@ -108,7 +108,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       CSA = data.caller
       bundle=self.retrieveTrackedResourceInformation(CSA)
       inboxes,outboxes,pHandler = bundle
-      self.send("shutdown",outboxes[0])
+      self.send(_ki.socketShutdown(),outboxes[0])
       assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
       self.removeChild(CSA)
       self.removeChild(pHandler)
