@@ -369,6 +369,7 @@ class component(microprocess):
       """
       result = self.outboxes[boxname][0]
       del self.outboxes[boxname][0]
+      self._unpause()
       return result
 
 
