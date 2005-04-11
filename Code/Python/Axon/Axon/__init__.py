@@ -22,7 +22,7 @@
 
 
 """
-import Component, Ipc, Linkage, Microprocess, Postman, Scheduler, debug, util, AdaptiveCommsComponent, AxonExceptions, CoordinatingAssistantTracker
+import Component, Ipc, Linkage, Microprocess, Postman, Scheduler, debug, util, AdaptiveCommsComponent, AxonExceptions, CoordinatingAssistantTracker, Splitter
 from Axon import AxonObject, AxonType
 
 Microprocess.microprocess.setSchedulerClass(Scheduler.scheduler)
