@@ -25,6 +25,7 @@ it's outbox - making it useful for inline (or end of line) debugging.
 
 """
 from Axon.Component import component, scheduler
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 import sys as _sys
 class consoleEchoer(component):
    Inboxes=["inbox","control"]
@@ -45,7 +46,7 @@ class consoleEchoer(component):
          return 2
       if self.dataReady("control"):
          data = self.recv("control")
-         if data == "shutdown":
+         if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
             return 0
       return 3
 
