@@ -54,7 +54,8 @@ def listSubset(requiredList, suppliedList):
    return sets.Set(requiredList).issubset(sets.Set(suppliedList))
 
 def testInterface(theComponent, interface):
-   "Look for a minimal match interface for the component"
+   """Look for a minimal match interface for the component.
+   The interface should be a tuple of lists, i.e. ([inboxes],[outboxes])."""
    (requiredInboxes,requiredOutboxes) = interface
    if not listSubset(requiredInboxes, theComponent.Inboxes):
       return axonRaise(invalidComponentInterface, "inboxes", theComponent, interface)
