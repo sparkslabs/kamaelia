@@ -27,6 +27,7 @@ from Axon.util import testInterface
 from Axon.Postman import postman
 from Axon.Linkage import linkage
 from Axon.AxonExceptions import noSpaceInBox
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 testedclass = Axon.LossyConnector.lossyConnector
 
@@ -113,9 +114,23 @@ class lossyConnector_test2(unittest.TestCase):
             self.runtestedcomponent()
             self.failUnless(self.tester.recv() == i - 1)
 
-# TODO: Shutdown tests.
-    def test_connectorshutsdown(self):
-        pass
+    def test_connectorshutsdown_producerfinished(self):
+        """This test confirms that the connector shuts itself down when it is
+        sent a producerFinished message."""
+        self.tester.send(producerFinished(), "signal")
+        self.deliver()
+        self.connector.next()
+        self.connector.next()
+        self.failUnlessRaises(StopIteration, self.connector.next)
+
+    def test_connectorshutsdown_shutdownmicroprocess(self):
+        """This test confirms that the connector shuts itself down when it is
+        sent a shutdownMicroprocess message."""
+        self.tester.send(shutdownMicroprocess(), "signal")
+        self.deliver()
+        self.connector.next()
+        self.connector.next()
+        self.failUnlessRaises(StopIteration, self.connector.next)
         
 def suite():
    #This returns a TestSuite made from the tests in the linkage_Test class.  It is required for eric3's unittest tool.
