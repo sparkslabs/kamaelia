@@ -48,37 +48,8 @@ inbox. MimeRequest objects come out the outbox.
 from Axon.Component import component, scheduler,linkage,newComponent
 from Axon.Ipc import errorInformation
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-import Kamaelia.requestLine
-
-class mimeObject(object):
-   """Accepts a Mime header represented as a dictionary object, and a body
-   as a string. Provides a way of handling as a coherant unit.
-   ATTRIBUTES:
-      header : dictionary. (keys == fields, values = field values)
-      body : body of MIME object
-   """
-   def __init__(self, header = {}, body = "",preambleLine=None):
-      "Creates a mimeObect"
-      self.header = dict(header)
-      self.body = body
-      if preambleLine:
-         self.preambleLine = preambleLine
-      else:
-         self.preambleLine = None
-
-   def __str__(self):
-      """Dumps the Mime object in printable format - specifically as a formatted
-      mime object"""
-      result = ""
-      for anItem in self.header.iteritems():
-         (key,[origkey, value]) = anItem                   # For simplifying/checking testing
-         result = result + origkey + ": "+value + "\n"
-      result = result + "\n"
-      result = result + self.body
-      if self.preambleLine:
-         result = str(self.preambleLine) + "\n"+result + self.body
-      return result
-
+from Kamaelia.Data.MimeObject import mimeObject
+import Kamaelia.Data.requestLine
 
 class MimeRequestComponent(component):
    """Component that accepts raw data, parses it into consituent
@@ -101,9 +72,7 @@ class MimeRequestComponent(component):
       self.body = ''
       self.step = 0
 
-   def initialiseComponent(self):
-      pass
-
+   def initialiseComponent(self): pass
    def nextLine(self):
       if self.dataReady("inbox"):
          theData = self.recv("inbox")
@@ -122,7 +91,7 @@ class MimeRequestComponent(component):
       return (got, newline)
 
    #
-   # This code structure would be alot cleaner in a single threaded environment,
+   # This code structure would be a lot cleaner in a single threaded environment,
    # or if "yield" could be nested. Unfortunately "yield" can't be nested and we're
    # not single threaded. It's not _too_ bad though.
    #
@@ -200,8 +169,8 @@ class MimeRequestComponent(component):
             return 1
       self.gotRequest = 1
       try:
-         self.request = requestLine.requestLine(self.requestLine)
-      except requestLine.BadRequest, br:
+         self.request = Kamaelia.Data.requestLine.requestLine(self.requestLine)
+      except Kamaelia.Data.requestLine.BadRequest, br:
          errinf = errorInformation(self, br)
          self.send(errinf, "signal")
          return 0
@@ -214,42 +183,29 @@ class MimeRequestComponent(component):
       assert self.debugger.note("MimeRequestComponent.mainBody",5, self.mimeRequest)
       self.send(self.mimeRequest, "outbox")
 
-   def closeDownComponent(self):
-      pass
-
 if __name__ =="__main__":
    class TestHarness(component):
-#		def __init__(self):
-#			component.__init__(self)
-# If we leave out this, we get a default minimal component!
 
-      def initialiseComponent(self):
-         print "DEBUG: TestHarness::initialiseComponent"
+      def main(self):
 
-         self.reader = ReadFileAdaptor(filename="SampleMIMERequest.txt")
-         self.decoder = MimeRequestComponent()
+         reader = ReadFileAdaptor(filename="Support/SampleMIMERequest.txt")
+         decoder = MimeRequestComponent()
+         self.link((reader,"outbox"), (decoder, "inbox"))
+         self.link((decoder, "outbox"), (self, "inbox"))
 
-         self.postoffice.name
-         linkage(self.reader, self.decoder, "outbox", "inbox", self.postoffice)
-         self.addChildren(self.reader,self.decoder)
-         return newComponent(self.reader, self.decoder)
+         self.addChildren(reader,decoder)
+         yield newComponent(*(self.children))
 
-      def mainBody(self):
-         "Don't really need to do much here..."
-         #print "bleh: Now in the main loop"
-         return 1
+         while 1:
+            if self.dataReady("inbox"):
+               message = self.recv("inbox")
+               print "MIME decoded:", repr(message)
+               return
+            yield 1
 
    TestHarness().activate()
    scheduler.run.runThreads()
 
-# The following code reads from an input string (foo) a request.
-# The request is split into the following 3 parts:
-# Request line, Headers, Body
-# Headers are stored in a dict, which multiple values concatenated using commas, as is normal for MIME.
-# How the values are used is up to the client of the module
-
-   #
-   # It uses the following logic...
    # We use nextLine reads into our buffer enough to extract a line, and
    # extracts it returning the line & the buffer
    #
@@ -270,55 +226,3 @@ if __name__ =="__main__":
    #
    # Finally any remaining request data is mopped up into a body value.
    #
-
-if 0: # The following is the original logic for sanity reasons.
-   # It uses the following logic...
-   # We use nextLine reads into our buffer enough to extract a line, and
-   # extracts it returning the line & the buffer
-   #
-   # We store the header key/value fields here in 'header'
-   # currentBytes forms an input buffer that we extract lines from.
-   #
-   # * We then grab the first line, which *SHOULD* be the request line.
-   # * We then grab the next line after that - this will either be empty,
-   #   ending the request header, or be a request header line.
-   #
-   # Assuming we're still processing the header, we then start looping, the
-   # exit condition is we hit the end of the header.
-   #
-   # Then for each line, we split it into key & value fields, use these to populate
-   # the 'header' dict. If we have a collision, values are comma separated.
-   # (comma is considered a special char by RFC822/2822 in headers, which
-   # HTTP/RTSP are at least partially based on and tend to follow by convention)
-   #
-   # Finally any remaining request data is mopped up into a body value.
-   #
-   def nextLine(line, wibble):
-      newline = None
-      got = 0
-      while not got:
-         try:
-            [newline,line] = line.split("\n",1)
-            got = 1
-         except ValueError:
-            line = line + wibble[0]
-            del wibble[0]
-      return (newline, line)
-
-   stream = [ "BIBBLE foo://bar:baz@sd.sd.", "sd/bla?this&that=other PROTO/3.3\nKey",
-               "1: Value1\nKey2: ","Value2\nKey3: Value3\nK","ey4: Bibble\n\nThis is th",
-               "e body text\n" ]
-   header = {}
-   currentBytes = ""
-   [requestLine,currentBytes] = nextLine(currentBytes,stream)
-   [currentLine, currentBytes] = nextLine(currentBytes,stream)
-   while(currentLine != ''):
-      [ key,value ] = currentLine.split(": ",1)
-      if not header.has_key(key):
-         header[key] = value
-      else:
-         header[key] = header[key]+ ", " + value
-      [currentLine, currentBytes] = nextLine(currentBytes,stream)
-   body = currentBytes
-   for i in stream: body = body + i
-   print (requestLine,header,body)

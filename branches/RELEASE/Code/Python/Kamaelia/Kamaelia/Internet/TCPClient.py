@@ -22,6 +22,7 @@
 
 import socket
 import errno
+
 import Axon
 from Axon.util import Finality
 from Axon.Component import component
@@ -51,10 +52,7 @@ class TCPClient(component):
          yield 1
       for v in self.runClient():
          yield v
-      print "We have indeed ceased looking at the connection. "
-      print "The stuff going on elsewhere is spurious"
-      print "if we're closing down, and we know we're closing down,"
-      print "then can send shutdown info from here"
+      # SMELL - we may need to send a shutdown message
 
    def setupCSA(self, sock):
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
@@ -85,7 +83,6 @@ class TCPClient(component):
             #   The  socket  is  non-blocking  and  a  previous connection
             #   attempt has not yet been completed.
          self.connecting=0
-         self.connected=1
          return True
       except socket.error, socket.msg:
          (errorno, errmsg) = socket.msg.args
@@ -95,21 +92,23 @@ class TCPClient(component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errorno==errno.EINPROGRESS:
+         if errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
+         if errorno == errno.EISCONN:
+             # This is a windows error indicating the connection has already been made.
+             self.connecting = 0 # as with the no exception case.
+             return True
          # Anything else is an error we don't handle
          raise socket.msg
 
    def runClient(self,sock=None):
       # The various numbers yielded here indicate progress through the function, and
       # nothing else specific.
-      message = None
       try:
-         print "TCPC: RHUBARB", 87
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
          try:
             sock.setblocking(0); yield 0.6
@@ -120,14 +119,11 @@ class TCPClient(component):
                while self.waitCSAClose():
                   self.pause()
                   yield 2
-               print "TCPC: I would expect to get here"
                raise Finality
             except Exception, x:
-               print "TCPC: I think we do indeed shutdown?"
-               result = sock.shutdown(1) ; yield 3
-               print "TCPC: We do indeed :)"
+               result = sock.shutdown(2) ; yield 3
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
-               # The logical place to send the error is to
+               # The logical place to send the error is to the signal outbox
          except Exception, x:
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
@@ -139,9 +135,8 @@ class TCPClient(component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-         message = e
-      self.send(message, "signal")
-      # "TCPC: Exitting run client"
+          self.send(e, "signal")
+        # "TCPC: Exitting run client"
 
 def _tests():
    from Axon.Linkage import linkage

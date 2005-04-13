@@ -5,6 +5,10 @@ include Docs/*/*
 include COPYING
 include AUTHORS
 include CHANGELOG
+include Kamaelia/test/*
+include Kamaelia/*/test/*
 include Kamaelia/afortune.pl
 include Kamaelia/debug.conf
 include Kamaelia/SampleMIMERequest.txt
+include Examples/*/*
+include Examples/*

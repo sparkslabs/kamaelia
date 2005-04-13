@@ -60,6 +60,7 @@
 
 import socket, time
 import errno
+
 import Axon
 from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
@@ -98,7 +99,7 @@ def _saferecv(sock, size=1024):
    except socket.error, socket.msg:
       (errorno, errmsg) = socket.msg.args
       if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
-         "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
+         #"Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
          raise socket.msg # rethrow
    return data
 
