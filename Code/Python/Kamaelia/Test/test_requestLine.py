@@ -24,7 +24,7 @@ import unittest
 import Kamaelia.requestLine
 
 class requestLineTestCase(unittest.TestCase):
-	def test_Method_FullURL_UsernamePasswordCGIArgs_Protocol(self)
+	def test_Method_FullURL_UsernamePasswordCGIArgs_Protocol(self):
 		"Accepted URL Format"
 		r = "BIBBLE foo://toor:letmein@server.bigcompany.com/bla?this&that=other PROTO/3.3"
 		try:
@@ -53,9 +53,9 @@ class requestLineTestCase(unittest.TestCase):
 	def test_http09_minimal(self):
 		"Rejected URL Format"
 		r = "/"
-                        foo=requestLine(r)
+                foo=requestLine(r)
                 except "BadRequest":
-		self.assertRaises("BadRequest", 
+
 		
 	def test_http09_typical(self):
 		"Rejected URL Format"
@@ -66,7 +66,7 @@ class requestLineTestCase(unittest.TestCase):
 		r = "http://server.bigcompany.com/some/file/on/server"
 
 	def test_AcceptedForms(self):
-		requests = 
+		requests = [
 			
 			
 			 ]
