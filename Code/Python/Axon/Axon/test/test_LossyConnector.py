@@ -33,7 +33,7 @@ testedclass = Axon.LossyConnector.lossyConnector
 
 class lossyConnector_test1(unittest.TestCase):
     def test_smoketest1(self):
-        "__init__ - Object can be created."
+        "__init__ - Object creation no arguments."
         self.failUnless(testedclass())
     
     def test_smoketest2(self):
@@ -68,7 +68,8 @@ class lossyConnector_test2(unittest.TestCase):
         
         
     def test_connectorpassesmessage(self):
-        "This test confirms a single message is passed from inbox to outbox of the connector"
+        """main - inbox - This test confirms a single message is passed from
+        inbox to outbox of the connector"""
         testmessage = "Test message."
         self.tester.send(testmessage)
         self.deliver()
@@ -77,7 +78,7 @@ class lossyConnector_test2(unittest.TestCase):
         self.failUnless(testmessage is self.tester.recv())
         
     def test_connectordropsmessages(self):
-        "This test confirms that messages are dropped if the outbox is full."
+        """ main - inbox - This test confirms that messages are dropped if the outbox is full."""
         self.tester.send(1)
         self.deliver()
         self.tester.send(2)
@@ -98,7 +99,7 @@ class lossyConnector_test2(unittest.TestCase):
         self.failIf(self.tester.dataReady()) #3 has been dropped.
         
     def test_connectorpassessomedropssome(self):
-        """This is an extended test of dropping and passing messages that uses
+        """main - inbox - This is an extended test of dropping and passing messages that uses
         a known pattern of full buffers to predict when they will be dropped.
         It is currently programmed with the expectation that the linkages can
         contain 2 items."""
@@ -115,7 +116,7 @@ class lossyConnector_test2(unittest.TestCase):
             self.failUnless(self.tester.recv() == i - 1)
 
     def test_connectorshutsdown_producerfinished(self):
-        """This test confirms that the connector shuts itself down when it is
+        """main - producerFinished->control - This test confirms that the connector shuts itself down when it is
         sent a producerFinished message."""
         self.tester.send(producerFinished(), "signal")
         self.deliver()
@@ -124,7 +125,7 @@ class lossyConnector_test2(unittest.TestCase):
         self.failUnlessRaises(StopIteration, self.connector.next)
 
     def test_connectorshutsdown_shutdownmicroprocess(self):
-        """This test confirms that the connector shuts itself down when it is
+        """main - shutdownMicroprocess->control - This test confirms that the connector shuts itself down when it is
         sent a shutdownMicroprocess message."""
         self.tester.send(shutdownMicroprocess(), "signal")
         self.deliver()

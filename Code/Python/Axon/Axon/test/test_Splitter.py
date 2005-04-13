@@ -64,11 +64,11 @@ class Splitter_Test(unittest.TestCase):
       self.split.postoffice.domessagedelivery()
    
    def test_isacomponent(self):
-      "Checks that Splitter instances are components"
+      "__init__ - Splitter is a component."
       self.failUnless(isinstance(self.split,component))
    
    def test_simplepassthrough_defaultbox(self):
-      "This test sets up a sink and checks it receives sent messages using the default box."
+      """mainBody - This test sets up a sink and checks it receives sent messages using the default box."""
       self.controller.send(addsink(self.dst))
       self.deliverhelper()
       runrepeat(self.runner)
@@ -81,7 +81,9 @@ class Splitter_Test(unittest.TestCase):
          self.failUnless(self.dst.recv() == i)
          
    def test_simplepassthrough(self):
-      "This test sets up a sink and checks it receives sent messages"
+      """mainBody - addsink -> configuration - An addsink object is sent to the
+      configuration box and it creates a new sink.  A new outbox is created and
+      linked to the sink."""
       self.controller.send(addsink(self.dst2,"test"))
       self.deliverhelper()
       runrepeat(self.runner)
@@ -94,7 +96,8 @@ class Splitter_Test(unittest.TestCase):
          self.failUnless(self.dst2.recv("test") == i)
    
    def test_addOutboxes(self):
-      "Adds a whole set of sinks and checks they all receive expected messages."
+      """mainBody - addsink->configurations - Adds a whole set of sinks and checks
+      they all receive expected messages."""
       boxes = 10
       boxlist = []
       for x in xrange(boxes):
@@ -113,8 +116,10 @@ class Splitter_Test(unittest.TestCase):
             self.failUnless(comp.recv() == i)
             
    def test_removeOutboxes_default(self):
-      """Tests addition and removal of sinks using the default box arguments.  Adds a array of sinks, removes the odd items and then checks that messages are delivered
-      to the even sinks and not the odd ones."""
+      """mainBody - addsink|removesink->configuration - Tests addition and removal
+      of sinks using the default box arguments.  Adds a array of sinks, removes
+      the odd items and then checks that messages are delivered to the even
+      sinks and not the odd ones."""
       boxes = 10
       boxlist = {}
       for x in xrange(boxes):
@@ -139,8 +144,9 @@ class Splitter_Test(unittest.TestCase):
             self.failIf(boxlist[j].dataReady("inbox"))
    
    def test_removeOutboxes(self):
-      """Tests addition and removal of sinks.  Adds a array of sinks, removes the odd items and then checks that messages are delivered
-      to the even sinks and not the odd ones."""
+      """mainBody - addsink|removesink->configuration inbox - Tests addition and
+      removal of sinks.  Adds a array of sinks, removes the odd items and then
+      checks that messages are delivered to the even sinks and not the odd ones."""
       boxes = 10
       boxlist = {}
       for x in xrange(boxes):
@@ -165,7 +171,8 @@ class Splitter_Test(unittest.TestCase):
             self.failIf(boxlist[j].dataReady("test"))
    
    def test_cleanup(self):
-      """Checks that there are no object leakages by adding and then removing a sink and checking the
+      """mainBody - addsink|removesink->configuration - Checks that there are no
+      object leakages by adding and then removing a sink and checking the
       garbage collecter for its count of AxonObjects and lists."""
       self.controller.send(addsink(self.dst))
       before = 0
@@ -187,7 +194,8 @@ class Splitter_Test(unittest.TestCase):
       self.deliverhelper()
       
    def test_multipleboxessinglecomponent(self):
-      """Checks that multiple sinks on a single component can be added and removed independently."""
+      """mainBody - addsink|removesink->configuration - Checks that multiple sink
+      inboxes on a single component can be added and removed independently."""
       self.controller.send(addsink(self.dst2,"test"))
       self.drd()
       self.src.send("ba")
@@ -239,8 +247,6 @@ class Splitter_Test(unittest.TestCase):
       self.failIf(self.dst2.dataReady("test"))
       self.failIf(self.dst2.dataReady("inbox"))
       self.failIf(self.dst2.dataReady("control"))
-      
-    
       
 if __name__=='__main__':
    unittest.main()
