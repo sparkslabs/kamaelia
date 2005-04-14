@@ -1,6 +1,14 @@
 
 0.1.3 (When released)
 
+Detailed:
+   * Util/Splitter added. This component allows a single outbox to be connected
+   to many inboxes.
+   * Util/test/test_Splitter added to test the above class.
+   * Util/LossyConnector added. Component drops messages if the outbox fills.
+   * Util/test/test_testSplitter added to test the above class.
+   * Util/test directory added.
+
 0.1.2
 
 Additionally tested under Windows ME, 2000 and Mac OS X, and compatibility
