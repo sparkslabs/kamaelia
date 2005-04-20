@@ -19,7 +19,10 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
+#
+# TODO: Need to handle attribute addition. 
+# TODO: (ie md["foo"] needs to update correctly!)
+#
 class MimeDict(dict):
    def __init__(self, **args):
       super(MimeDict,self).__init__(**args)
