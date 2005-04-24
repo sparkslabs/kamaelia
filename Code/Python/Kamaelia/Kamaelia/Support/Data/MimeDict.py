@@ -19,10 +19,8 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# TODO: Need to handle attribute addition. 
-# TODO: (ie md["foo"] needs to update correctly!)
-#
+
+
 class MimeDict(dict):
    def __init__(self, **args):
       super(MimeDict,self).__init__(**args)
@@ -43,25 +41,40 @@ class MimeDict(dict):
       except KeyError:
          self["__BODY__"] = ""
 
-   #
+   def __setitem__(self,i,y):
+      super(MimeDict, self).__setitem__(i,y)
+      if i != "__BODY__":
+           self.insertionorder = [ x for x in self.insertionorder if x != i ]
+           if isinstance(y,list):
+              for _ in y:
+                 self.insertionorder.append(i)
+           else:
+              self.insertionorder.append(i)
+
+   def __delitem__(self,y):
+      self.insertionorder = [ x for x in self.insertionorder if x != y ]
+      super(MimeDict, self).__delitem__(y)
+
    def __str__(self):
       # This is HIDEOUS
-      import copy
       result = []
-      toOutput = copy.deepcopy(self)
+
+      seen = {}
       for k in self.insertionorder:
-         if k != "__BODY__":
-            if not isinstance(toOutput[k],list):
-               result.append("%s: %s\r\n" % (k,toOutput[k]))
-               del toOutput[k]
-            else:
-               if toOutput[k] == []:
-                  result.append("%s: %s\r\n" % (k,""))
-                  del toOutput[k]
-               else:
-                  value = toOutput[k][0]
-                  result.append("%s: %s\r\n" % (k,value))
-                  del toOutput[k][0]
+         if k == "__BODY__": continue
+         try:
+            seen[k] += 1
+         except KeyError:
+            seen[k] = 0
+         if isinstance(self[k], list):
+            try:
+               value = self[k][seen[k]]
+            except IndexError: # Empty list, empty value
+               value = ""
+         else:
+            value = self[k]
+         result.append("%s: %s\r\n" % (k,value))
+
       result.append("\r\n")
       result.append(self["__BODY__"])
       resultString = "".join(result)
@@ -78,7 +91,7 @@ class MimeDict(dict):
       originalsource = source # preserve original in case of broken header
       # The leading space in the headervalue RE prevents a continuation line
       # being treated like a key: value line.
-      headervalueRE_s = "^([^: ]+[^:]*): *([^\r\n]+)\r\n" # TODO: This could be optimised
+      headervalueRE_s = "^([^: ]+[^:]*):( ?)([^\r]+)\r\n" # TODO: This could be optimised
       continuationHeaderRE_s = "^( +[^\r\n]*)\r\n"
       match = sre.search(headervalueRE_s,source)
 
@@ -88,7 +101,9 @@ class MimeDict(dict):
 
       while True: # We break out this loop when matching fails for any reason
          if match:
-            (key, value) = match.groups()
+            (key, spaces,value) = match.groups()
+            if value == " " and not spaces: # Empty header
+                  value = ""
             try:
                result[key].append(value)
             except KeyError:            
