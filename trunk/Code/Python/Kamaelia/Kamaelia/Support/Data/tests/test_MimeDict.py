@@ -1,28 +1,18 @@
 #!/usr/bin/python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
-#     All Rights Reserved.
+# Full coverage testing of the MimeDict object
 #
-# You may only modify and redistribute this under the terms of any of the
-# following licenses(2): Mozilla Public License, V1.1, GNU General
-# Public License, V2.0, GNU Lesser General Public License, V2.1
+# (C) Cerenity Contributors, All Rights Reserved.
 #
-# (1) Kamaelia Contributors are listed in the AUTHORS file and at
-#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
-#     not this notice.
-# (2) Reproduced in the COPYING file, and at:
-#     http://kamaelia.sourceforge.net/COPYING
-# Under section 3.5 of the MPL, we are using this text since we deem the MPL
-# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
-# notice is prohibited.
+# You may use and redistribute this under the terms of the modified BSD license 
+# http://cerenity.org/ModifiedBSDLicense
 #
-# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
-# to discuss alternative licensing.
-# -------------------------------------------------------------------------
-#
-import unittest
-from Kamaelia.Data.MimeDict import MimeDict
 
+import unittest
+#from Kamaelia.Data.MimeDict import MimeDict
+from MimeDict import MimeDict
+
+#class MimeDict_InitTests(object):
 class MimeDict_InitTests(unittest.TestCase):
    def test_SmokeTest_NoArguments(self):
       "__init__ - Creating an empty mime dict does not raise any exception"
@@ -45,7 +35,7 @@ class MimeDict_InitTests(unittest.TestCase):
       self.assert_("__BODY__" in x)
       self.assertEqual(x["__BODY__"],"Hello World")
 
-class MimeDict_StrTests(unittest.TestCase):
+#class MimeDict_StrTests(unittest.TestCase):
 
    def test__str__emptyDict(self):
       "__str__ - The string representation of an empty MimeDict should be precisely 1 empty line"
@@ -155,7 +145,7 @@ class MimeDict_StrTests(unittest.TestCase):
       self.assertEqual("Parting: Farewell\r\n", header[13])
       self.assertEqual("Parting: Goodbye\r\n", header[14])
 
-class MimeDict_FromStringTests(unittest.TestCase):
+#class MimeDict_FromStringTests(unittest.TestCase):
    def test_fromString_static(self):
       "fromString - Is a static method in MimeDict that returns a MimeDict object"
       x = MimeDict.fromString("")
@@ -278,7 +268,7 @@ class MimeDict_FromStringTests(unittest.TestCase):
       self.assertEqual(x["Heeder"], value2)
       self.assertEqual(x["Hooder"], value3)
 
-class MimeDict_FromStringTests_RepeatedHeaders(unittest.TestCase):
+#class MimeDict_FromStringTests_RepeatedHeaders(unittest.TestCase):
 
    def test_fromString_RepeatedHeaderResultsInList(self):
       "fromString - Repeated header with same key results in a list of values associated'"
@@ -312,7 +302,7 @@ class MimeDict_FromStringTests_RepeatedHeaders(unittest.TestCase):
       self.assertEqual(x["HeaderA"], ["value 1","value 2","value 3"])
       self.assertEqual(x["HeaderB"], ["value 4","value 5","value 6"])
 
-class MimeDict___str__fromString_Roundtrips(unittest.TestCase):
+#class MimeDict___str__fromString_Roundtrips(unittest.TestCase):
    def test___str__fromString_emptyDict(self):
       "performing __str__ on an empty dict and then fromString should result in empty dict"
       x = MimeDict()
@@ -359,7 +349,7 @@ class MimeDict___str__fromString_Roundtrips(unittest.TestCase):
       self.assertEqual(y["HeaderB"],[ "value 4", "value 5", "value 6" ]) 
       self.assert_(x is not y)
 
-class MimeDict_fromString__str___Roundtrips(unittest.TestCase):
+#class MimeDict_fromString__str___Roundtrips(unittest.TestCase):
    def test___str__fromString_emptyMessage(self):
       "Performing a fromString, __str__ roundtrip results in identity forthe empty message"
       x = "\r\n"
@@ -493,7 +483,7 @@ class MimeDict_fromString__str___Roundtrips(unittest.TestCase):
       self.assertEqual(str(x),str(y))
       self.assertEqual(str(y),message)
 
-class RoundtripHandlingForInvalids(unittest.TestCase):
+#class RoundtripHandlingForInvalids(unittest.TestCase):
    def test_Roundtrip_InvalidSourceMessageEmptyBody(self):
       "Roundtrip handling (fromString->__str__) for invalid messages with an empty body should NOT result in equality"
       header = "Header: Twinkle Twinkle Little Star\r\n"
@@ -509,6 +499,84 @@ class RoundtripHandlingForInvalids(unittest.TestCase):
       message = header + "" + body # empty "divider"
       x = MimeDict.fromString(message)
       self.assertEqual(str(x), message)
+
+#class DirectUpdateTests(unittest.TestCase):
+   def test_basicInsertion(self):
+      "Insertion into a dictionary succeeds"
+      x = MimeDict()
+      x["hello"] = "hello"
+      self.assertEqual("hello", x["hello"] )
+
+   def test_secondaryInsertion(self):
+      "Insertion of multiple values sequentially into a dictionary results in it remembering the last thing added"
+      x = MimeDict()
+      x["hello"] = "1hello1"
+      x["hello"] = "2hello2"
+      x["hello"] = "3hello3"
+      x["hello"] = "4hello4"
+      self.assertEqual("4hello4", x["hello"] )
+
+   def test_basicInsertion_Roundtrip(self):
+      "Insertion into a dictionary, then roundtripped -- fromString(str(x)) results in original value"
+      x = MimeDict()
+      x["hello"] =["2hello1", "2hello2"]
+      x["__BODY__"] = "Hello\nWorld\n"
+      stringified = str(x)
+      y = MimeDict.fromString(stringified)
+      self.assertEqual(x,y)
+
+   def test_InformationLossRoundtrip(self):
+      "If you put a list with a single string into a MimeDict, and try to send that across the network by itself, it will not be reconstituted as a list. This is because we have no real way of determining that the single value should or should not be a list"
+      x = MimeDict()
+      x["hello"] =["hello"]
+      x["__BODY__"] = "Hello\nWorld\n"
+
+      stringified = str(x)
+      y = MimeDict.fromString(stringified)
+      self.assertNotEqual(x,y)
+
+   def test_BasicDeletion(self):
+      "Deleting a key value succeeds correctly"
+      x = MimeDict()
+      x["hello"] ="hello"
+      x["__BODY__"] = "Hello\nWorld\n"
+      x["world"] ="world"
+      x["dolly"] ="dolly"
+      del x["world"]
+
+      y = MimeDict()
+      y["hello"] ="hello"
+      y["__BODY__"] = "Hello\nWorld\n"
+      y["dolly"] ="dolly"
+      str_x = str(x)
+      str_y = str(y)
+
+      self.assertEqual(x,y)
+      self.assertEqual(str_x, str_y)
+
+class BugFixes(unittest.TestCase):
+   def test_EmbeddedNewlineInHeaderRoundtrip_fromInsertion(self):
+      "A header which contains a single carriage return keeps the carriage return embedded since it *isn't* a carriage return/line feed"
+      x = MimeDict()
+      x["header"] = "Hello\nWorld"
+      y = MimeDict.fromString(str(x))
+      self.assertEqual(y["__BODY__"], "")
+      self.assertEqual(y["header"], x["header"])
+      self.assertEqual(x["header"], "Hello\nWorld")
+
+   def test_EmptyFieldRoundTrip(self):
+      "Empty header remains empty"
+      x = MimeDict()
+      x["header"] = ""
+      y = MimeDict.fromString(str(x))
+      self.assertEqual(x["header"],y["header"])
+
+   def test_SingleSpaceFieldRoundTrip(self):
+      "Header with a single space remains a header with a single space"
+      x = MimeDict()
+      x["header"] = " "
+      y = MimeDict.fromString(str(x))
+      self.assertEqual(x["header"],y["header"])
 
 
 if __name__=="__main__":
