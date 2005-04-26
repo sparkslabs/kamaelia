@@ -8,6 +8,36 @@
 # necessary for this system to have the maximum benefit.
 #
 #
+"""
+The script following shows the basics of how to run IPython as a foreground
+thread and Axon as a background thread - allowing live introspection of the
+running system.
+
+Example interaction:
+michaelsparks:~> ./axonshell.py
+In [1]: Axon
+Out[1]: <module 'Axon' from
+'/usr/lib/python2.3/site-packages/Axon/__init__.pyc'>
+
+In [2]: Axon.Scheduler.scheduler.run
+Out[2]: <Axon.Scheduler.scheduler object at 0x403e3eac>
+
+In [3]: Axon.Scheduler.scheduler.run.threads
+Out[3]: 
+[<Axon.Postman.postman object at 0x40447ccc>,
+ <__main__.Echo object at 0x40441a2c>]
+
+In [4]: Axon.Scheduler.scheduler.run.threads
+Out[4]: [<Axon.Postman.postman object at 0x40447ccc>]
+
+(Note that these two show the run queue updating in the background)
+
+In [5]: echo._deliver("Hello World")
+
+In [6]: Echo received:  Hello World
+
+In [6]: 
+"""
 
 import threading
 import time
@@ -60,3 +90,4 @@ if __name__ == "__main__":
 
    ipshell('***Called from top level. '
            'Hit Ctrl-D to exit interpreter and continue program.')
+
