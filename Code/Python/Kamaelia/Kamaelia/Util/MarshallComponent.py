@@ -61,7 +61,7 @@ class BasicMarshallComponent(component):
          self.pause()
          if self.dataReady("control"):
             data = self.recv("control")
-            if isinstance(data, Axon.Ipc.producerFinished)  # Not ideal, should be Axon.Ipc.Shutdown
+            if isinstance(data, Axon.Ipc.producerFinished):  # Not ideal, should be Axon.Ipc.Shutdown
                self.send(Axon.Ipc.producerFinished(), "signal")
                return
          if self.dataReady("marshall"):
