@@ -140,7 +140,7 @@ class Comparator_test2(unittest.TestCase):
 def suite():
    #This returns a TestSuite made from the tests in the linkage_Test class.  It is required for eric3's unittest tool.
    suite = unittest.makeSuite(Comparator_test1)
-#   suite.addTest(lossyConnector_test2)
+   suite.addTest(Comparator_test2)
    return suite
       
 if __name__=='__main__':
