@@ -27,7 +27,7 @@
 import unittest
 import sys ; sys.path.append("..")
 import Kamaelia.NullPayloadRTP
-
+NullPayloadRTP = Kamaelia.NullPayloadRTP
 
 class NullPayloadRTP_Test(unittest.TestCase):
    def test_packLengthAsString(self):
