@@ -247,6 +247,47 @@ class Splitter_Test(unittest.TestCase):
       self.failIf(self.dst2.dataReady("test"))
       self.failIf(self.dst2.dataReady("inbox"))
       self.failIf(self.dst2.dataReady("control"))
-      
+
+#-----------------
+   def test_createsink_defaultbox(self):
+      """createsink - Checks that a new sink is created and linked on calling creatsink with default box argument"""
+      self.split.createsink(self.dst)
+      for i in xrange(0,10):
+         self.src.send(i)
+         self.deliverhelper()
+         runrepeat(self.runner)
+         self.deliverhelper()
+         self.failUnless(self.dst.dataReady())
+         self.failUnless(self.dst.recv() == i)
+         
+   def test_simplepassthrough_createsink(self):
+      """createsink - Checks that a new sink is created and linked on calling creatsink with arguments"""
+      self.split.createsink(self.dst2,"test")
+      for i in xrange(0,10):
+         self.src.send(i)
+         self.deliverhelper()
+         runrepeat(self.runner)
+         self.deliverhelper()
+         self.failUnless(self.dst2.dataReady("test"))
+         self.failUnless(self.dst2.recv("test") == i)      
+
+   def test_addOutboxes_createsink(self):
+      """createsink - Called repeatedly.  Adds a whole set of sinks and checks
+      they all receive expected messages."""
+      boxes = 10
+      boxlist = []
+      for x in xrange(boxes):
+         c=component()
+         boxlist.append(c)
+         self.split.createsink(c)
+      for i in xrange(20):
+         self.src.send(i)
+         self.deliverhelper()
+         runrepeat(self.runner)
+         self.deliverhelper()
+         for comp in boxlist:
+            self.failUnless(comp.dataReady())
+            self.failUnless(comp.recv() == i)
+            
 if __name__=='__main__':
    unittest.main()

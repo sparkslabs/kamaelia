@@ -50,7 +50,8 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes = ["inbox", "control", "configuration"]
    Outboxes = ["signal"]
 
-   def initialiseComponent(self):
+   def __init__(self):
+      super(Splitter,self).__init__()
       #outlist is for tuples of (sinkcomponent, sinkbox) to a tuple of (outboxname, linkage)
       self.outlist = {}
    
@@ -62,7 +63,7 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             mes = self.recv("configuration")
             dontpause = True
             if isinstance(mes, addsink):
-               self.createsink(mes)
+               self.createsink(mes.sink,mes.sinkbox)
             elif isinstance(mes,removesink):
                self.deletesink(mes)
          if postponedmesage:
@@ -87,10 +88,10 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.pause()
          return 1
 
-   def createsink(self, newsink):
-      name = self.addOutbox(newsink.sink.name + '-' + newsink.sinkbox)
-      lnk = linkage(source = self, sourcebox = name, sink = newsink.sink, sinkbox = newsink.sinkbox, postoffice = self.postoffice)
-      self.outlist[(newsink.sink,newsink.sinkbox)] = (name, lnk, newsink)
+   def createsink(self, sink, sinkbox="inbox"):
+      name = self.addOutbox(sink.name + '-' + sinkbox)
+      lnk = linkage(source = self, sourcebox = name, sink = sink, sinkbox = sinkbox, postoffice = self.postoffice)
+      self.outlist[(sink,sinkbox)] = (name, lnk)
    
    def deletesink(self, oldsink):
       sink = self.outlist[(oldsink.sink,oldsink.sinkbox)]
