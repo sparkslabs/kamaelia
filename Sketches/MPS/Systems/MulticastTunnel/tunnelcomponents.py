@@ -25,19 +25,32 @@ tunnelled_port = 2500
 # I'm pretty certain it's not tunneling data from the outside world
 # correctly.
 #
-def AdHocSpecificMulticastTransceiver(destination_group, destination_port):
-    # This is wrong/incomplete. (output from the outbox is wrong)
-    class klass(Multicast_transceiver):
-        def __init__(self,*argv,**argd):
-            self.__super.__init__("0.0.0.0", 0, destination_group, destination_port)
-    return klass
+
+
+def AdHocSpecificDetupledMulticastTransceiver(destination_group, destination_port):
+   class klass(_Axon.Component.component):
+      def main(self):
+         transceiver = Multicast_transceiver("0.0.0.0", destination_port, destination_group, destination_port)
+         detupler = detuple(1)
+         
+         self.link((transceiver,"outbox"), (detupler,"inbox"))
+         self.link((detupler,"outbox"), (self,"outbox"), passthrough=2)
+         self.link((self,"inbox"), (transceiver,"inbox"), passthrough=1)
+
+         self.addChildren(transceiver, detupler)
+         yield _Axon.Ipc.newComponent(*(self.children))
+
+         while 1:
+            self.pause()
+            yield 1
+   return klass
 
 class Multicast_Tunnel_EndPoint(_Axon.Component.component):
    def main(self):
       import random
       clientServerTestPort=1500
 
-       server=SimpleServer(protocol=AdHocSpecificMulticastTransceiver(tunnelled_group, tunnelled_port), 
+      server=SimpleServer(protocol=AdHocSpecificDetupledMulticastTransceiver(tunnelled_group, tunnelled_port), 
                            port=clientServerTestPort)
 
       self.addChildren(server)
