@@ -36,17 +36,17 @@ class ParticleSystem:
         self.indexer = SpatialIndexer(laws.maxInteractRadius)
         
         self.laws      = laws
-        self.particles = initialParticles
+        self.particles = list(initialParticles)
         self.indexer.updateLoc(*self.particles)
         self.tick = initialTick
-    
-    
+        self.particleDict = {}
     
     def add(self, *newParticles):
         """Add the listed particles into the system"""
-        self.particles += newParticles
+        self.particles.extend(newParticles)
+        for p in newParticles:
+           self.particleDict[p.ID] = p
         self.indexer.updateLoc(*newParticles)
-  
 
     def remove(self, *oldParticles):
         """Remove the listed particles from the system.
@@ -54,6 +54,7 @@ class ParticleSystem:
         """
         for particle in oldParticles:
             self.particles.remove(particle)
+            del self.particleDict[particle.ID]
         self.indexer.remove(*oldParticles)
 
 
@@ -67,10 +68,10 @@ class ParticleSystem:
             for p in self.particles:
                 p.update(self.laws)
         self.indexer.updateAll()
-                
-                
 
-class Particle:
+
+
+class Particle(object):
     """Particle within a physics system with an arbitrary number of dimensions.
     
     Represents a particle that interacts with other particles. One set of forces are applied for
@@ -78,7 +79,7 @@ class Particle:
     set of forces.
     """
     
-    def __init__(self, position, initialTick = 0, velocity = None):
+    def __init__(self, position, initialTick = 0, velocity = None, ID = None):
         self.pos = position
         self.tick = initialTick
         self.static = False
@@ -87,13 +88,18 @@ class Particle:
             self.velocity = list(velocity)
         else:
             self.velocity = [ 0.0 for xx in self.pos ]
-        
+        if ID is None:
+           self.ID = str(id(self))
+        else:
+           self.ID = ID
     
     def getBonded(self):
         """Return list of particles this one is bonded to. Returns []
         Override this method to provide your own list."""
         return []
 
+    def addBond(self,particle_system, index):
+       self.bondedTo += [particle_system[index]]
 
     def getLoc(self):
         """Return current possition"""
