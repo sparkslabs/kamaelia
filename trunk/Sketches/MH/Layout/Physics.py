@@ -25,6 +25,7 @@
 # unbonded force acts between all non bonded particles
 # bonded force acts between bonded particles
 
+# TODO: add a law for straightening out chains of bonds
 
 from SpatialIndexer import SpatialIndexer
 
