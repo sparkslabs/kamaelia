@@ -25,13 +25,15 @@ from pygame.locals import *
 import time
 
 class PyGameApp:
-    def __init__(self, screensize, caption="PyGame Application"):
+    def __init__(self, screensize, caption="PyGame Application", border=100):
         pygame.init()
         self.screen = pygame.display.set_mode( screensize, DOUBLEBUF, 32 )
         pygame.display.set_caption(caption)
 
         self.eventHandlers = {}
         self.addHandler(QUIT, lambda event : self.handler_quit(event))
+        self.screensize = screensize
+        self.border = border
     
     def main(self):
         self.initialiseComponent()

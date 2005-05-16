@@ -35,13 +35,12 @@ class Particle(Physics.Particle):
     and a list of particles it is bonded to."""
 
     def __init__(self, position, pname, radius):
-        Physics.Particle.__init__(self, position, 0, (0.0, 0.0) )
-        self.pname = pname
+        super(Particle,self).__init__(position, 0, (0.0, 0.0), pname )
         self.radius = radius
         self.bondedTo = []
         
         font = pygame.font.Font(None, 24)
-        self.label = font.render(self.pname, False, (0,0,0))
+        self.label = font.render(self.ID, False, (0,0,0))
         
     def getBonded(self):
         return self.bondedTo
@@ -57,53 +56,56 @@ class Particle(Physics.Particle):
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
 
+class ParticleDragger(DragHandler):
+     def detect(self, pos):
+         inRange = self.app.physics.indexer.withinRadius( pos, app.particleRadius )
+         if len(inRange) > 0:
+             self.particle = inRange[0]
+             self.particle.freeze()
+             return self.particle.getLoc()
+         else:
+             return False
+
+     def drag(self,newx,newy):
+         self.particle.pos = (newx,newy)
+         self.app.physics.indexer.updateLoc(self.particle)
+
+     def release(self,newx, newy):
+         self.drag(newx, newy)
+         self.particle.unFreeze()                
+
 class PhysApp1(PyGameApp):
     """Simple physics demonstrator app"""
 
-    class ParticleDragger(DragHandler):
-        def detect(self, pos):
-            inRange = self.app.physics.indexer.withinRadius( pos, app.particleRadius )
-            if len(inRange) > 0:
-                self.particle = inRange[0]
-                self.particle.freeze()
-                return self.particle.getLoc()
-            else:
-                return False
+    def __init__(self, screensize, nodes = None, initialTopology=[], border=100):
+        PyGameApp.__init__(self, screensize, "Physics test 1, drag nodes to move them", border)
+        self.initialTopology = list(initialTopology)
+        self.particleRadius = 20
+        self.nodes = nodes
 
-        def drag(self,newx,newy):
-            self.particle.pos = (newx,newy)
-            self.app.physics.indexer.updateLoc(self.particle)
+    def makeBond(self, source, dest):
+        self.physics.particleDict[source].addBond(self.physics.particleDict, dest)
 
-        def release(self,newx, newy):
-            self.drag(newx, newy)
-            self.particle.unFreeze()                
-
-
-
-    def __init__(self, screensize):
-        PyGameApp.__init__(self, screensize, "Physics test 1, drag nodes to move them")
-
+    def makeParticle(self, label, position, nodetype, particleRadius):
+        if position == "randompos":
+           xpos = randrange(self.border,self.screensize[0]-self.border,1)
+           ypos = randrange(self.border,self.screensize[1]-self.border,1)
+        else:
+           xpos,ypos = position
+        particle = Particle( (xpos, ypos), label, particleRadius)
+        self.physics.add( particle )
 
     def initialiseComponent(self):
-        self.addHandler(MOUSEBUTTONDOWN, lambda event: self.ParticleDragger(event,self))
-        
-        self.particleRadius = 20
+        self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
         
         self.laws    = Physics.SimpleLaws(bondLength = 100)
         self.physics = Physics.ParticleSystem(self.laws, [], 0)
         
-        for i in range(0,7):
-            self.physics.add( Particle( (randrange(100,500,1),
-                                         randrange(100,300,1)), str(i), self.particleRadius) )
-            
-        self.physics.particles[0].bondedTo += [self.physics.particles[1]]
-        self.physics.particles[1].bondedTo += [self.physics.particles[2]]
-        self.physics.particles[2].bondedTo += [self.physics.particles[0]]
-        self.physics.particles[1].bondedTo += [self.physics.particles[3]]
-        self.physics.particles[1].bondedTo += [self.physics.particles[4]]
-        self.physics.particles[3].bondedTo += [self.physics.particles[5]]
-        self.physics.particles[3].bondedTo += [self.physics.particles[6]]
-        self.physics.particles[2].bondedTo += [self.physics.particles[6]]
+        for node in self.nodes:
+           self.makeParticle(*node)
+
+        for source,dest in self.initialTopology:
+           self.makeBond(source, dest)
 
     def mainLoop(self):
         self.screen.fill( (255,255,255) )
@@ -134,5 +136,24 @@ class PhysApp1(PyGameApp):
 
 
 if __name__=="__main__":
-    app = PhysApp1( (640, 480) )
+    nodes = [
+           ("0", "randompos", "circle", 20),
+           ("1", "randompos", "circle", 20),
+           ("2", "randompos", "circle", 20),
+           ("3", "randompos", "circle", 20),
+           ("4", "randompos", "circle", 20),
+           ("5", "randompos", "circle", 20),
+           ("6", "randompos", "circle", 20),
+    ]
+    links = [ 
+        ("0", "1"),
+        ("1", "2"),
+        ("2", "0"),
+        ("1", "3"),
+        ("1", "4"),
+        ("2", "5"),
+        ("3", "6"),
+        ("2", "6"),
+    ]
+    app = PhysApp1( (800, 600), nodes, links)
     app.mainloop()
