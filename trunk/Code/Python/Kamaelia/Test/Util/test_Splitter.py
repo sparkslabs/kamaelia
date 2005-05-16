@@ -114,6 +114,29 @@ class Splitter_Test(unittest.TestCase):
          for comp in boxlist:
             self.failUnless(comp.dataReady())
             self.failUnless(comp.recv() == i)
+
+   def test_addSinkInboxes_passthrough(self):
+      """mainBody - addsink->configurations - Adds a whole set of sinks and checks
+      they all receive expected messages.  Complicated by setting the sink to
+      passthrough and to be to an inbox."""
+      boxes = 10
+      boxlist = []
+      for x in xrange(boxes):
+         c=component()
+         boxlist.append(c)
+         self.links.append(linkage(source=c, sourcebox="outbox", sink=c, sinkbox="control"))
+         self.controller.send(addsink(c,"outbox",2))
+         self.deliverhelper()
+         runrepeat(self.runner)
+      for i in xrange(20):
+         self.src.send(i)
+         self.deliverhelper()
+         runrepeat(self.runner)
+         self.deliverhelper()
+         self.deliverhelper()
+         for comp in boxlist:
+            self.failUnless(comp.dataReady("control"))
+            self.failUnless(comp.recv("control") == i)
             
    def test_removeOutboxes_default(self):
       """mainBody - addsink|removesink->configuration - Tests addition and removal

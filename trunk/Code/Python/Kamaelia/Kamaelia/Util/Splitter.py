@@ -33,9 +33,10 @@ from Axon.Ipc import ipc
 from Axon.Linkage import linkage
 
 class addsink(ipc):
-   def __init__(self, sink, sinkbox="inbox"):#, sinkcontrol = None):
+   def __init__(self, sink, sinkbox="inbox", passthrough=0):#, sinkcontrol = None):
       self.sink = sink
       self.sinkbox = sinkbox
+      self.passthrough = passthrough
 #      self.sinkcontrol = sinkcontrol
 
 class removesink(ipc):
@@ -63,7 +64,7 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             mes = self.recv("configuration")
             dontpause = True
             if isinstance(mes, addsink):
-               self.createsink(mes.sink,mes.sinkbox)
+               self.createsink(mes.sink,mes.sinkbox, mes.passthrough)
             elif isinstance(mes,removesink):
                self.deletesink(mes)
          if postponedmesage:
@@ -88,9 +89,9 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.pause()
          return 1
 
-   def createsink(self, sink, sinkbox="inbox"):
+   def createsink(self, sink, sinkbox="inbox", passthrough=0):
       name = self.addOutbox(sink.name + '-' + sinkbox)
-      lnk = linkage(source = self, sourcebox = name, sink = sink, sinkbox = sinkbox, postoffice = self.postoffice)
+      lnk = linkage(source = self, sourcebox = name, sink = sink, sinkbox = sinkbox, postoffice = self.postoffice, passthrough=passthrough)
       self.outlist[(sink,sinkbox)] = (name, lnk)
    
    def deletesink(self, oldsink):
