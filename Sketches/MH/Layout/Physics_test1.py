@@ -29,6 +29,7 @@ import pygame
 from pygame.locals import *
 
 from random import randrange
+import random
 
 class Particle(Physics.Particle):
     """Version of Physics.Particle with added rendering functions,
@@ -55,6 +56,8 @@ class Particle(Physics.Particle):
         pygame.draw.circle(surface, (255,128,128), (int(self.pos[0]), int(self.pos[1])), self.radius)
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
+def QuitHandler(event):
+   raise "QUIT EVENT"
 
 class ParticleDragger(DragHandler):
      def detect(self, pos):
@@ -97,6 +100,7 @@ class PhysApp1(PyGameApp):
 
     def initialiseComponent(self):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
+        self.addHandler(KEYDOWN, QuitHandler)
         
         self.laws    = Physics.SimpleLaws(bondLength = 100)
         self.physics = Physics.ParticleSystem(self.laws, [], 0)
@@ -136,24 +140,20 @@ class PhysApp1(PyGameApp):
 
 
 if __name__=="__main__":
-    nodes = [
-           ("0", "randompos", "circle", 20),
-           ("1", "randompos", "circle", 20),
-           ("2", "randompos", "circle", 20),
-           ("3", "randompos", "circle", 20),
-           ("4", "randompos", "circle", 20),
-           ("5", "randompos", "circle", 20),
-           ("6", "randompos", "circle", 20),
-    ]
-    links = [ 
-        ("0", "1"),
-        ("1", "2"),
-        ("2", "0"),
-        ("1", "3"),
-        ("1", "4"),
-        ("2", "5"),
-        ("3", "6"),
-        ("2", "6"),
-    ]
-    app = PhysApp1( (800, 600), nodes, links)
+    N,L = 100,160
+
+    nodes = []
+    for i in xrange(N):
+       nodes.append((str(i), "randompos", "circle", 20))
+
+    linkDict = {}
+    while len(linkDict.keys()) <L:
+       start = random.randrange(0,len(nodes))
+       end = start
+       while end == start:
+          end = random.randrange(0,len(nodes))
+       linkDict[ nodes[start][0],nodes[end][0] ] = None
+    links = linkDict.keys()
+
+    app = PhysApp1( (1280, 1024), nodes, links)
     app.mainloop()
