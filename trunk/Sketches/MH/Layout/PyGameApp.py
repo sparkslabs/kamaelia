@@ -27,7 +27,7 @@ import time
 class PyGameApp:
     def __init__(self, screensize, caption="PyGame Application", border=100):
         pygame.init()
-        self.screen = pygame.display.set_mode( screensize, DOUBLEBUF, 32 )
+        self.screen = pygame.display.set_mode( screensize, DOUBLEBUF|FULLSCREEN, 32 )
         pygame.display.set_caption(caption)
 
         self.eventHandlers = {}
@@ -79,8 +79,6 @@ class PyGameApp:
     def mainLoop(self):
         return 1
 
-
-
 class DragHandler:
     def __init__(self, event, app):
         self.app = app
@@ -129,8 +127,6 @@ if __name__=="__main__":
                 self.drag(newx, newy)
                 self.app.circlevx = self.tvx
                 self.app.circlevy = self.tvy
-                
-                
                 
         def __init__(self, screensize):
             PyGameApp.__init__(self, screensize)
