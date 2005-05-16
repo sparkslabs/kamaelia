@@ -65,7 +65,8 @@ class FortuneCookieProtocol(component):
 
    def mainBody(self):
       """All the interesting work has been done by linking the file reader's output
-      to our output"""
+      to our output.  Messages sent to control are unchecked and the first
+      message causes the component to exit."""
       self.pause()
       if self.dataReady("control"):
          data = self.recv("control")
