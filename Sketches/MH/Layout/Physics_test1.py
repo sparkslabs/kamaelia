@@ -57,9 +57,6 @@ class Particle(Physics.Particle):
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
 
-
-
-
 class PhysApp1(PyGameApp):
     """Simple physics demonstrator app"""
 
@@ -87,7 +84,7 @@ class PhysApp1(PyGameApp):
         PyGameApp.__init__(self, screensize, "Physics test 1, drag nodes to move them")
 
 
-    def init(self):
+    def initialiseComponent(self):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: self.ParticleDragger(event,self))
         
         self.particleRadius = 20
@@ -108,12 +105,7 @@ class PhysApp1(PyGameApp):
         self.physics.particles[3].bondedTo += [self.physics.particles[6]]
         self.physics.particles[2].bondedTo += [self.physics.particles[6]]
 
-#        self.physics.particles[0].bondedTo += [self.physics.particles[6]]
-#        self.physics.particles[0].bondedTo += [self.physics.particles[5]]
-#        self.physics.particles[3].bondedTo += [self.physics.particles[5]]
-
-
-    def main(self):
+    def mainLoop(self):
         self.screen.fill( (255,255,255) )
         
         self.drawGrid()
@@ -125,6 +117,7 @@ class PhysApp1(PyGameApp):
             p.renderSelf(self.screen)
             
         self.physics.run()
+        return 1
 
 
     def drawGrid(self):

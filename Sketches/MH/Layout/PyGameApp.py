@@ -1,4 +1,23 @@
 #!/usr/bin/env python
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
 import pygame
 from pygame.locals import *
@@ -6,8 +25,6 @@ from pygame.locals import *
 import time
 
 class PyGameApp:
-    """Simple skeleton for a PyGame based application"""
-
     def __init__(self, screensize, caption="PyGame Application"):
         pygame.init()
         self.screen = pygame.display.set_mode( screensize, DOUBLEBUF, 32 )
@@ -16,19 +33,23 @@ class PyGameApp:
         self.eventHandlers = {}
         self.addHandler(QUIT, lambda event : self.handler_quit(event))
     
-    
-    def mainloop(self):
-        self.init()
+    def main(self):
+        self.initialiseComponent()
         self.quitting = False
 
         # Event loop
         while not self.quitting:
             self.dispatch()
             if not self.quitting:
-                self.main()
+                self.mainLoop()
             if not self.quitting:
                 pygame.display.flip()
                 time.sleep(0.01)
+            yield 1
+
+    def mainloop(self):
+        for i in self.main():
+           pass
 
     def dispatch(self):
         for event in pygame.event.get():
@@ -50,12 +71,11 @@ class PyGameApp:
     def handler_quit(self, event):
         self.quitting = True
     
-
-    def init(self):
+    def initialiseComponent(self):
         pass
         
-    def main(self):
-        pass
+    def mainLoop(self):
+        return 1
 
 
 
@@ -113,7 +133,7 @@ if __name__=="__main__":
         def __init__(self, screensize):
             PyGameApp.__init__(self, screensize)
 
-        def init(self):
+        def initialiseComponent(self):
             self.addHandler(MOUSEBUTTONDOWN, lambda event : self.CircleDragHandler(event,self))
 
             self.circlex = 100
@@ -123,7 +143,7 @@ if __name__=="__main__":
             self.circlerad = 32
             pass
 
-        def main(self):
+        def mainLoop(self):
             self.screen.fill( (255,255,255) )
             pygame.draw.circle(self.screen, (255,128,128), (self.circlex, self.circley), self.circlerad)
             self.circlex += self.circlevx
@@ -132,6 +152,7 @@ if __name__=="__main__":
             self.circley += self.circlevy
             if self.circley > self.screen.get_height()-self.circlerad or self.circley < self.circlerad:
               self.circlevy = - self.circlevy
+            return 1
 
 
     app = SimpleApp1( (320, 240) )
