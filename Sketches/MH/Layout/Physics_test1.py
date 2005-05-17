@@ -63,7 +63,7 @@ class ParticleDragger(DragHandler):
      def detect(self, pos):
          inRange = self.app.physics.indexer.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:
-             self.particle = inRange[0]
+             self.particle = inRange[0][0]
              self.particle.freeze()
              return self.particle.getLoc()
          else:

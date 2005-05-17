@@ -82,12 +82,19 @@ class SpatialIndexer:
             del self.entities[entity]
       
                         
-   def withinRadius(self, centre, radius, excluding=[]):
-      """Returns a list of zero or more entities within radius distance of
-         the specified centre coords.
-         
-         If the exclusion list is supplied, then any entities in it will
-         be excluded off the list this method returns."""
+   def withinRadius(self, centre, radius, filter=(lambda particle:True)):
+      """Returns a list of zero or more (particle, distSquared) tuples,
+         representing those particles within radius distance of the
+         specified centre coords.
+
+         distance-squared from the centre coords is returned too to negate
+         any need you may have to calculate it again yourself.
+
+         You can specify a filter function that takes a candidate particle
+         as an argument and should return True if it is to be included
+         (if it is within the radius, of course). This is to allow efficient
+         pre-filtering of the particles before the distance test is done.
+      """
       
       lbound = [ int((coord-radius) // self.cellSize) for coord in centre ]
       ubound = [ int((coord+radius) // self.cellSize) for coord in centre ]
@@ -103,7 +110,7 @@ class SpatialIndexer:
         # go through all entities in this cell
         if self.cells.has_key(tuple(cell)):
             for entity in self.cells[tuple(cell)]:
-                if not (entity in excluding):
+                if filter(entity):
                     # measure the distance from the coord
                     distsquared = 0.0
                     entcoord = entity.getLoc()
@@ -113,7 +120,7 @@ class SpatialIndexer:
                         
                     # if within range, then add to the list of nodes to return
                     if distsquared <= rsquared:
-                        inRange.append(entity)
+                        inRange.append( (entity, distsquared) )
             
         # increment coordinates onto next cell.
         # As each coord reaches ubound, do 'carry'
