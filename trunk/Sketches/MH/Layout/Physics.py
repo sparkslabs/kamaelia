@@ -25,8 +25,6 @@
 # unbonded force acts between all non bonded particles
 # bonded force acts between bonded particles
 
-# TODO: add a law for straightening out chains of bonds
-
 from SpatialIndexer import SpatialIndexer
 
 
@@ -124,9 +122,10 @@ class Particle(object):
         """Apply laws in relation to this particle with respect to other particles,
         to update the velocity of this particle.
         
-        particleIndex is an object with a withinRadius(centre, radius, excluding) method that
-        returns a list of particles within that distance of the specified coordinates, excluding
-        any in the exclusion list.
+        particleIndex is an object with a withinRadius(centre, radius, filter) method that
+        returns a list of (particles, distSquared) tuples, listing particles within that distance
+        of the specified coordinates. The filter argument is a function that returns true if a
+        given particle is to be included in the list.
         
         laws.maxInteractRadius is the max distance at which unbonded interactions are considered
         laws.unbonded(dist, distanceSquared) is the velocity change applied to both particles.
@@ -157,10 +156,12 @@ class Particle(object):
                     pass # dunno, ought to have an error i guess
 
         # repulsion of other particles (not self, or those bonded to)
-        particles = particleIndex.withinRadius(self.pos, laws.maxInteractRadius, bonded + [self])
-        for particle in particles:
-            if particle.tick != self.tick:
-                ds = self.distSquared(particle.pos)
+        filter = lambda particle : (particle.tick != self.tick) and not (particle in (bonded + [self]))
+
+        particles = particleIndex.withinRadius(self.pos, laws.maxInteractRadius, filter)
+        for (particle, ds) in particles:
+#            if particle.tick != self.tick:
+#                ds = self.distSquared(particle.pos)
                 if ds > 0.0:
                     dist = ds ** 0.5
                     dvelocity   = laws.unbonded(dist, ds)
