@@ -71,7 +71,7 @@ class ParticleDragger(DragHandler):
      def detect(self, pos):
          inRange = self.app.physics.indexer.withinRadius( pos, self.app.particleRadius )
          if len(inRange) > 0:
-             self.particle = inRange[0]
+             self.particle = inRange[0][0]
              self.particle.freeze()
              return self.particle.getLoc()
          else:
@@ -285,7 +285,6 @@ ADD LINK 9 6
 
     for point in range(0,len(source),32):
        chunks.append(source[point:(point+32)])
-
 
     from Kamaelia.SingleServer import SingleServer
     _app = testHarness(pipeline(chunks_to_lines(),
