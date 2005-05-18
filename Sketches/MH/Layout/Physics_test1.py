@@ -31,6 +31,8 @@ from pygame.locals import *
 from random import randrange
 import random
 
+class component(object): pass
+
 class Particle(Physics.Particle):
     """Version of Physics.Particle with added rendering functions,
     and a list of particles it is bonded to."""
@@ -77,11 +79,11 @@ class ParticleDragger(DragHandler):
          self.drag(newx, newy)
          self.particle.unFreeze()                
 
-class PhysApp1(PyGameApp):
+class PhysApp1(PyGameApp, component):
     """Simple physics demonstrator app"""
 
     def __init__(self, screensize, nodes = None, initialTopology=[], border=100):
-        PyGameApp.__init__(self, screensize, "Physics test 1, drag nodes to move them", border)
+        super(PhysApp1, self).__init__(screensize, "Physics test 1, drag nodes to move them", border)
         self.initialTopology = list(initialTopology)
         self.particleRadius = 20
         self.nodes = nodes
@@ -122,7 +124,7 @@ class PhysApp1(PyGameApp):
         for p in self.physics.particles:
             p.renderSelf(self.screen)
             
-        self.physics.run()
+        self.physics.run(5)
         return 1
 
 
@@ -140,7 +142,7 @@ class PhysApp1(PyGameApp):
 
 
 if __name__=="__main__":
-    N,L = 100,160
+    N,L = 4,1
 
     nodes = []
     for i in xrange(N):
@@ -155,5 +157,15 @@ if __name__=="__main__":
        linkDict[ nodes[start][0],nodes[end][0] ] = None
     links = linkDict.keys()
 
-    app = PhysApp1( (1280, 1024), nodes, links)
-    app.mainloop()
+    app = PhysApp1( (1280, 600), nodes, links)
+    X = N+1
+    for i in app.main():
+       if randrange(0,100)<5:
+          app.makeParticle(str(X), "randompos", "circle", 20)
+          X += 1
+       if randrange(0,100)<25:
+          start = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
+          end = start
+          while end == start:
+             end = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
+          app.makeBond(app.physics.particleDict[start].ID, app.physics.particleDict[end].ID)

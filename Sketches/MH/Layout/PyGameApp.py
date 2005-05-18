@@ -21,13 +21,17 @@
 
 import pygame
 from pygame.locals import *
+import Axon as _Axon
+component = _Axon.Component.component
 
 import time
 
-class PyGameApp:
+class PyGameApp(component):
     def __init__(self, screensize, caption="PyGame Application", border=100):
+        super(PyGameApp, self).__init__()
         pygame.init()
-        self.screen = pygame.display.set_mode( screensize, DOUBLEBUF|FULLSCREEN, 32 )
+#        self.screen = pygame.display.set_mode( screensize, DOUBLEBUF|FULLSCREEN, 32 )
+        self.screen = pygame.display.set_mode( screensize, DOUBLEBUF, 32 )
         pygame.display.set_caption(caption)
 
         self.eventHandlers = {}
@@ -38,7 +42,6 @@ class PyGameApp:
     def main(self):
         self.initialiseComponent()
         self.quitting = False
-
         # Event loop
         while not self.quitting:
             self.dispatch()
@@ -46,7 +49,6 @@ class PyGameApp:
                 self.mainLoop()
             if not self.quitting:
                 pygame.display.flip()
-                time.sleep(0.01)
             yield 1
 
     def mainloop(self):
@@ -129,7 +131,7 @@ if __name__=="__main__":
                 self.app.circlevy = self.tvy
                 
         def __init__(self, screensize):
-            PyGameApp.__init__(self, screensize)
+            super(SimpleApp1, self).__init__(screensize)
 
         def initialiseComponent(self):
             self.addHandler(MOUSEBUTTONDOWN, lambda event : self.CircleDragHandler(event,self))
@@ -153,5 +155,5 @@ if __name__=="__main__":
             return 1
 
 
-    app = SimpleApp1( (320, 240) )
+    app = SimpleApp1( (1280, 600) )
     app.mainloop()
