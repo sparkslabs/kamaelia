@@ -20,7 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# first test of Physics module
+# Simple physics server - takes textual commands from a single socket
+# and renders the appropriate graph
 
 import pygame
 from pygame.locals import *
@@ -38,6 +39,8 @@ from PyGameApp import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
+from Kamaelia.Util.PipelineComponent import pipeline
+
 class Particle(Physics.Particle):
     """Version of Physics.Particle with added rendering functions,
     and a list of particles it is bonded to."""
@@ -50,7 +53,10 @@ class Particle(Physics.Particle):
         
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.labelText, False, (0,0,0))
-        
+       
+    def addBond(self,particle_system, index):
+       self.bondedTo += [particle_system[index]]
+         
     def getBonded(self):
         return self.bondedTo
         
@@ -64,12 +70,10 @@ class Particle(Physics.Particle):
         pygame.draw.circle(surface, (255,128,128), (int(self.pos[0]), int(self.pos[1])), self.radius)
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
-def QuitHandler(event):
-   raise "QUIT EVENT"
 
 class ParticleDragger(DragHandler):
-     def detect(self, pos):
-         inRange = self.app.physics.indexer.withinRadius( pos, self.app.particleRadius )
+     def detect(self, pos, button):
+         inRange = self.app.physics.withinRadius( pos, self.app.particleRadius )
          if len(inRange) > 0:
              self.particle = inRange[0][0]
              self.particle.freeze()
@@ -79,17 +83,18 @@ class ParticleDragger(DragHandler):
 
      def drag(self,newx,newy):
          self.particle.pos = (newx,newy)
-         self.app.physics.indexer.updateLoc(self.particle)
+         self.app.physics.updateLoc(self.particle)
 
      def release(self,newx, newy):
          self.drag(newx, newy)
          self.particle.unFreeze()                
 
-class PhysApp1(PyGameApp):
+class PhysApp1(PyGameApp,component):
     """Simple physics demonstrator app"""
 
-    def __init__(self, screensize, nodes = None, initialTopology=[], border=100):
-        super(PhysApp1, self).__init__(screensize, "Physics test 1, drag nodes to move them", border)
+    def __init__(self, screensize, fullscreen=False, nodes = None, initialTopology=[], border=100):
+        super(PhysApp1, self).__init__(screensize, "Physics test 1, drag nodes to move them", fullscreen)
+        self.border = border
         self.initialTopology = list(initialTopology)
         self.particleRadius = 20
         self.nodes = nodes
@@ -108,7 +113,7 @@ class PhysApp1(PyGameApp):
 
     def initialiseComponent(self):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
-#        self.addHandler(KEYDOWN, QuitHandler)
+        self.addHandler(KEYDOWN, self.quit)
         
         self.laws    = Physics.SimpleLaws(bondLength = 100)
         self.physics = Physics.ParticleSystem(self.laws, [], 0)
@@ -144,6 +149,9 @@ class PhysApp1(PyGameApp):
         self.physics.run()
         return 1
 
+    def quit(self, event=None):
+        raise "QUITTING"
+        
     def drawGrid(self):
         for i in range(0,self.screen.get_height(), int(self.laws.maxInteractRadius)):
             pygame.draw.line(self.screen, (200,200,200),
@@ -225,30 +233,6 @@ class testHarness(component):
                self.pause()
          yield 1
 
-class pipeline(component):
-   def __init__(self, *components):
-      super(pipeline,self).__init__()
-      self.components = list(components)
-   def main(self):
-      self.addChildren(*self.components)
-      pipeline = self.components[:]
-      source = pipeline[0]
-      del pipeline[0]
-      while len(pipeline)>0:
-         dest = pipeline[0]
-         del pipeline[0]
-         self.link((source,"outbox"), (dest,"inbox"))
-         self.link((source,"signal"), (dest,"control"))
-         source = dest
-      self.link((self,"inbox"), (self.components[0],"inbox"), passthrough=1)
-      self.link((self,"control"), (self.components[0],"control"), passthrough=1)
-      self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
-      self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
-      yield _Axon.Ipc.newComponent(*(self.children))
-      while 1:
-         self.pause()
-         yield 1
-
 if __name__=="__main__":
     source = """\
 ADD NODE 0 A randompos circle 20
@@ -289,12 +273,12 @@ ADD LINK 9 6
     from Kamaelia.SingleServer import SingleServer
     _app = testHarness(pipeline(chunks_to_lines(),
                                node_message_parser(),
-                               PhysApp1((640, 480), [], [])),
+                               PhysApp1((640, 480), False, [], [])),
                       chunks, rate=0)
     app  = pipeline(SingleServer(port=1500),
                     chunks_to_lines(),
                     node_message_parser(),
-                    PhysApp1((640, 480), [], []))
+                    PhysApp1((640, 480), False, [], []))
     app.activate()
     _scheduler.run.runThreads(slowmo=0)
 

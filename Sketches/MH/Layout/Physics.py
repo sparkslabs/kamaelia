@@ -29,6 +29,12 @@ from SpatialIndexer import SpatialIndexer
 
 
 class ParticleSystem:
+    """System of particles.
+    
+    Maintains the set of particles and runs the physics simulation over them
+    the specified laws.
+    """
+
     def __init__(self, laws, initialParticles = [], initialTick = 0):
         """Initialise the particle system"""
         self.indexer = SpatialIndexer(laws.maxInteractRadius)
@@ -40,14 +46,15 @@ class ParticleSystem:
         self.particleDict = {}
     
     def add(self, *newParticles):
-        """Add the listed particles into the system"""
+        """Add the specified particle(s) into the system"""
         self.particles.extend(newParticles)
         for p in newParticles:
            self.particleDict[p.ID] = p
         self.indexer.updateLoc(*newParticles)
 
+        
     def remove(self, *oldParticles):
-        """Remove the listed particles from the system.
+        """Remove the specified particle(s) from the system.
            Note that this method does not 
         """
         for particle in oldParticles:
@@ -55,7 +62,31 @@ class ParticleSystem:
             del self.particleDict[particle.ID]
         self.indexer.remove(*oldParticles)
 
+        
+    def updateLoc(self, *particles):
+        """Notify this physics system that the specified particle(s)
+           have changed position.
+           
+           Must be called if you change a particle's position,
+           before calling run().
+        """
+        self.indexer.updateLoc(*particles)
 
+    def withinRadius(self, centre, radius, filter=(lambda particle:True)):
+        """Returns a list of zero or more (particle, distSquared) tuples,
+           representing those particles within radius distance of the
+           specified centre coords.
+
+           distance-squared from the centre coords is returned too to negate
+           any need you may have to calculate it again yourself.
+
+           You can specify a filter function that takes a candidate particle
+           as an argument and should return True if it is to be included
+           (if it is within the radius, of course). This is to allow efficient
+           pre-filtering of the particles before the distance test is done.
+        """
+        return self.indexer.withinRadius(centre, radius, filter)
+        
     def run(self, cycles = 1):
         """Run the simulation for a given number of cycles"""
         while cycles > 0:
@@ -95,9 +126,6 @@ class Particle(object):
         """Return list of particles this one is bonded to. Returns []
         Override this method to provide your own list."""
         return []
-
-    def addBond(self,particle_system, index):
-       self.bondedTo += [particle_system[index]]
 
     def getLoc(self):
         """Return current possition"""
@@ -160,22 +188,20 @@ class Particle(object):
 
         particles = particleIndex.withinRadius(self.pos, laws.maxInteractRadius, filter)
         for (particle, ds) in particles:
-#            if particle.tick != self.tick:
-#                ds = self.distSquared(particle.pos)
-                if ds > 0.0:
-                    dist = ds ** 0.5
-                    dvelocity   = laws.unbonded(dist, ds)
-                    deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
-                    self.velocity     = map(lambda delta,v : v+(+delta*dvelocity / dist), deltas, self.velocity)
-                    particle.velocity = map(lambda delta,v : v+(-delta*dvelocity / dist), deltas, particle.velocity)
-                else:
-                    pass # dunno, ought to have an error i guess
+            if ds > 0.0:
+                dist = ds ** 0.5
+                dvelocity   = laws.unbonded(dist, ds)
+                deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
+                self.velocity     = map(lambda delta,v : v+(+delta*dvelocity / dist), deltas, self.velocity)
+                particle.velocity = map(lambda delta,v : v+(-delta*dvelocity / dist), deltas, particle.velocity)
+            else:
+                pass # dunno, ought to have an error i guess
 
     
     def update(self, laws):
         """Update this particle's position, also apply dampening to velocity
         
-        laws.dampening( velocity) should return the new 
+        laws.dampening( velocity) should return the new velocity, that is then applied.
         """
         if self.static:
             self.velocity = [0 for x in self.velocity]
