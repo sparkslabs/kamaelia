@@ -45,6 +45,9 @@ class Particle(Physics.Particle):
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.ID, False, (0,0,0))
         
+    def addBond(self,particle_system, index):
+       self.bondedTo += [particle_system[index]]
+
     def getBonded(self):
         return self.bondedTo
         
@@ -58,12 +61,10 @@ class Particle(Physics.Particle):
         pygame.draw.circle(surface, (255,128,128), (int(self.pos[0]), int(self.pos[1])), self.radius)
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
-def QuitHandler(event):
-   raise "QUIT EVENT"
 
 class ParticleDragger(DragHandler):
-     def detect(self, pos):
-         inRange = self.app.physics.indexer.withinRadius( pos, app.particleRadius )
+     def detect(self, pos, button):
+         inRange = self.app.physics.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:
              self.particle = inRange[0][0]
              self.particle.freeze()
@@ -73,7 +74,7 @@ class ParticleDragger(DragHandler):
 
      def drag(self,newx,newy):
          self.particle.pos = (newx,newy)
-         self.app.physics.indexer.updateLoc(self.particle)
+         self.app.physics.updateLoc(self.particle)
 
      def release(self,newx, newy):
          self.drag(newx, newy)
@@ -82,8 +83,9 @@ class ParticleDragger(DragHandler):
 class PhysApp1(PyGameApp, component):
     """Simple physics demonstrator app"""
 
-    def __init__(self, screensize, nodes = None, initialTopology=[], border=100):
-        super(PhysApp1, self).__init__(screensize, "Physics test 1, drag nodes to move them", border)
+    def __init__(self, screensize, fullscreen = False, nodes = None, initialTopology=[], border=100):
+        super(PhysApp1, self).__init__(screensize, "Physics test 1, drag nodes to move them", fullscreen)
+        self.border = border
         self.initialTopology = list(initialTopology)
         self.particleRadius = 20
         self.nodes = nodes
@@ -93,8 +95,8 @@ class PhysApp1(PyGameApp, component):
 
     def makeParticle(self, label, position, nodetype, particleRadius):
         if position == "randompos":
-           xpos = randrange(self.border,self.screensize[0]-self.border,1)
-           ypos = randrange(self.border,self.screensize[1]-self.border,1)
+           xpos = randrange(self.border, self.screensize[0]-self.border, 1)
+           ypos = randrange(self.border, self.screensize[1]-self.border, 1)
         else:
            xpos,ypos = position
         particle = Particle( (xpos, ypos), label, particleRadius)
@@ -102,7 +104,7 @@ class PhysApp1(PyGameApp, component):
 
     def initialiseComponent(self):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
-        self.addHandler(KEYDOWN, QuitHandler)
+        self.addHandler(KEYDOWN, self.quit)
         
         self.laws    = Physics.SimpleLaws(bondLength = 100)
         self.physics = Physics.ParticleSystem(self.laws, [], 0)
@@ -124,7 +126,7 @@ class PhysApp1(PyGameApp, component):
         for p in self.physics.particles:
             p.renderSelf(self.screen)
             
-        self.physics.run(5)
+        self.physics.run(1)
         return 1
 
 
@@ -142,7 +144,7 @@ class PhysApp1(PyGameApp, component):
 
 
 if __name__=="__main__":
-    N,L = 4,1
+    N,L = 4,2
 
     nodes = []
     for i in xrange(N):
@@ -157,7 +159,7 @@ if __name__=="__main__":
        linkDict[ nodes[start][0],nodes[end][0] ] = None
     links = linkDict.keys()
 
-    app = PhysApp1( (1280, 600), nodes, links)
+    app = PhysApp1( (1280, 600), False, nodes, links)
     X = N+1
     for i in app.main():
        if randrange(0,100)<5:
