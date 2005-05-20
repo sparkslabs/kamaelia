@@ -38,18 +38,11 @@ class Particle(Physics.Particle):
     and a list of particles it is bonded to."""
 
     def __init__(self, position, pname, radius):
-        super(Particle,self).__init__(position, 0, (0.0, 0.0), pname )
+        super(Particle,self).__init__(position=position, ID=pname )
         self.radius = radius
-        self.bondedTo = []
         
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.ID, False, (0,0,0))
-        
-    def addBond(self,particle_system, index):
-       self.bondedTo += [particle_system[index]]
-
-    def getBonded(self):
-        return self.bondedTo
         
     def renderBonds(self, surface):
         """Renders lines representing the bonds going from this particle"""
@@ -91,7 +84,7 @@ class PhysApp1(PyGameApp, component):
         self.nodes = nodes
 
     def makeBond(self, source, dest):
-        self.physics.particleDict[source].addBond(self.physics.particleDict, dest)
+        self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
 
     def makeParticle(self, label, position, nodetype, particleRadius):
         if position == "randompos":

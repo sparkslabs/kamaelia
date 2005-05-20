@@ -36,14 +36,18 @@ class ParticleSystem:
     """
 
     def __init__(self, laws, initialParticles = [], initialTick = 0):
-        """Initialise the particle system"""
+        """Initialise the particle system.
+           laws             = laws object
+           initialParticles = list of particles
+           initialTick      = start value for tick counter
+        """
         self.indexer = SpatialIndexer(laws.maxInteractRadius)
         
-        self.laws      = laws
-        self.particles = list(initialParticles)
-        self.indexer.updateLoc(*self.particles)
-        self.tick = initialTick
+        self.laws         = laws
+        self.particles    = []
+        self.tick         = initialTick
         self.particleDict = {}
+        self.add(*initialParticles)
     
     def add(self, *newParticles):
         """Add the specified particle(s) into the system"""
@@ -55,13 +59,20 @@ class ParticleSystem:
         
     def remove(self, *oldParticles):
         """Remove the specified particle(s) from the system.
-           Note that this method does not 
+           Note that this method does not destroy bonds from other particles to these ones.
         """
         for particle in oldParticles:
             self.particles.remove(particle)
             del self.particleDict[particle.ID]
         self.indexer.remove(*oldParticles)
 
+    def removeByID(self, *ids):
+        """Remove particle(s) as specified by id(s) from the system.
+           Note that this method does not destroy bonds from other particles to these ones.
+        """
+        particles = [self.particleDict[id] for id in ids]
+        self.remove( *particles )
+            
         
     def updateLoc(self, *particles):
         """Notify this physics system that the specified particle(s)
@@ -106,12 +117,26 @@ class Particle(object):
     Represents a particle that interacts with other particles. One set of forces are applied for
     those particles that are unbonded. Interactions between bonded particles are controlled by another
     set of forces.
+    
+    Bonds are bi-directional. Establishing a bond from A to B, will also establish it back from B to A.
+    Similarly, breaking the bond will do so in both directions too.
     """
     
-    def __init__(self, position, initialTick = 0, velocity = None, ID = None):
-        self.pos = position
-        self.tick = initialTick
+    def __init__(self, position, initialTick = 0, ptype = None, velocity = None, ID = None):
+        """Initialise particle.
+           position    = tuple of coordinates
+           initialTick = initial value for tick counter (should be same as for particle system)
+           ptype       = particle type identifier
+           velocity    = tuple of initial velocity vectors
+           ID          = unique identifier
+        """
+        self.pos    = position
+        self.tick   = initialTick
         self.static = False
+        self.ptype  = ptype
+        self.bondedTo   = []
+        self.bondedFrom = []
+        self.latestInteractWith = (None,None)
         
         if velocity != None:
             self.velocity = list(velocity)
@@ -123,10 +148,54 @@ class Particle(object):
            self.ID = ID
     
     def getBonded(self):
-        """Return list of particles this one is bonded to. Returns []
-        Override this method to provide your own list."""
-        return []
+        """Return list of particles this one is bonded to (outgoing bonds)."""
+        return self.bondedTo
 
+    getBondedTo = getBonded
+                
+    def getBondedFrom(self):
+        """Return list of particles that bond to this one (incoming bonds)."""
+        return self.bondedFrom
+
+    def makeBond(self,particles, index):
+       """Make bond between this particle and another
+       Specified by its index into the 'particles' entity you provide.
+       
+       If the bond already exists, then this method does nothing.
+       """
+       
+       target = particles[index]
+       if not target in self.bondedTo:
+           self.bondedTo += [particles[index]]
+           particles[index].bondedFrom += [self]
+         
+    def breakBond(self, particles, index):
+        """Break bond between this particle and another
+        Specified by its index into the 'particles' entity you provide.
+        
+        If the bond doesnt already exist, this method will fail.
+        """
+        self.bondedTo.remove( particles[index] )
+        particles[index].bondedFrom.remove(self)
+       
+    def breakAllBonds(self, outgoing=True, incoming=True):
+        """Breaks all bonds between this particle to others.
+          Default behaviour is to break all bonds both from this node
+          to others (outgoing) and from others to this (incoming).
+          
+          If outgoing or incoming are set to false, then bonds in those
+          directions will not be broken
+        """
+        if outgoing:
+            for bondTo in self.bondedTo:
+                bondTo.bondedFrom.remove(self)
+            self.bondedTo = []
+            
+        if incoming:
+            for bondFrom in self.bondedFrom:
+                bondFrom.bondedTo.remove(Self)
+            self.bondedFrom = []
+        
     def getLoc(self):
         """Return current possition"""
         return self.pos
@@ -156,7 +225,7 @@ class Particle(object):
         given particle is to be included in the list.
         
         laws.maxInteractRadius is the max distance at which unbonded interactions are considered
-        laws.unbonded(dist, distanceSquared) is the velocity change applied to both particles.
+        laws.unbonded(ptype, ptype, dist, distanceSquared) is the velocity change applied to both particles.
         +ve = attraction -ve = repulsion
         laws.bonded(dist, distanceSquared) is the same but for bonded particles
         
@@ -164,19 +233,20 @@ class Particle(object):
         have reached 'tick' will not be interacted with since it will be assumed that
         that particle has already performed the interaction math.
         
-        It doesn't matter whether a bond is registered in one, or both directions,
-        the forces will act with the same magnitude
+        This code relies on any bonds being registered in both directions (a->b and b->a).
+        If you override the bonding code in this class, then make sure you maintain this property.
         """
         self.tick = tick    
 
         # bonded interactions with bonded particles        
-        bonded = self.getBonded()
+        bonded = self.getBondedTo() + self.getBondedFrom()
         for particle in bonded:
-            if particle.tick != self.tick or not (self in particle.getBonded()):
+            if particle.tick != self.tick and particle.latestInteractWith != (self.tick, self):
+                particle.latestInteractWith != (self.tick, self)
                 ds = self.distSquared(particle.pos)
                 if ds > 0.0:
                     dist = ds ** 0.5
-                    dvelocity = laws.bonded(dist, ds)
+                    dvelocity = laws.bonded(self.ptype, particle.ptype, dist, ds)
                     deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
                     self.velocity     = map(lambda delta,v : v + (delta*dvelocity / dist), deltas, self.velocity)
                     particle.velocity = map(lambda delta,v : v - (delta*dvelocity / dist), deltas, particle.velocity)
@@ -190,7 +260,7 @@ class Particle(object):
         for (particle, ds) in particles:
             if ds > 0.0:
                 dist = ds ** 0.5
-                dvelocity   = laws.unbonded(dist, ds)
+                dvelocity   = laws.unbonded(self.ptype, particle.ptype, dist, ds)
                 deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
                 self.velocity     = map(lambda delta,v : v+(+delta*dvelocity / dist), deltas, self.velocity)
                 particle.velocity = map(lambda delta,v : v+(-delta*dvelocity / dist), deltas, particle.velocity)
@@ -201,15 +271,14 @@ class Particle(object):
     def update(self, laws):
         """Update this particle's position, also apply dampening to velocity
         
-        laws.dampening( velocity) should return the new velocity, that is then applied.
+        laws.dampening( ptype, velocity ) should return the new velocity, that is then applied.
         """
         if self.static:
             self.velocity = [0 for x in self.velocity]
         else:
-            self.velocity = laws.dampening(self.velocity)
+            self.velocity = laws.dampening(self.ptype, self.velocity)
             self.pos      = map(lambda pos,vel: pos+vel, self.pos, self.velocity)
             
-
 
 
 
@@ -238,7 +307,7 @@ class SimpleLaws:
         
         
         
-    def unbonded(self, dist, distSquared):
+    def unbonded(self, ptype1, ptype2, dist, distSquared):
         """1/distance_squared unbonded repulsion force"""
         if distSquared < 1.0:
             return -self.maxRepulsionForce
@@ -246,7 +315,7 @@ class SimpleLaws:
             return -self.maxRepulsionForce / distSquared #* (self.particleRadius*self.particleRadius)
 
     
-    def bonded(self, dist, distSquared):
+    def bonded(self, ptype1, ptype2, dist, distSquared):
         """proportional to extension bond force"""
         # note, its import that this retains its sign, so the direction of the force is determined
         f = self.bondForce * (dist - self.bondLength)
@@ -258,7 +327,7 @@ class SimpleLaws:
             return f
     
     
-    def dampening(self, velocity):
+    def dampening(self, ptype, velocity):
         """velocity dampening and minimal velocity (friction-like) cutoff"""
         vmag = reduce(lambda a,b:abs(a)+abs(b), velocity)
         if vmag < self.dampcutoff:
