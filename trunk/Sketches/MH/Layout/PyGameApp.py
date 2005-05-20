@@ -69,7 +69,6 @@ class PyGameApp(component):
         while not self.quitting:
             self._dispatch()
             if not self.quitting:
-                print "."
                 self.mainLoop()
             if not self.quitting:
                 pygame.display.flip()
