@@ -152,7 +152,7 @@ if __name__=="__main__":
        linkDict[ nodes[start][0],nodes[end][0] ] = None
     links = linkDict.keys()
 
-    app = PhysApp1( (1280, 600), False, nodes, links)
+    app = PhysApp1( (640, 480), False, nodes, links)
     X = N+1
     for i in app.main():
        if randrange(0,100)<5:

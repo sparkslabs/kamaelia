@@ -193,7 +193,7 @@ class Particle(object):
             
         if incoming:
             for bondFrom in self.bondedFrom:
-                bondFrom.bondedTo.remove(Self)
+                bondFrom.bondedTo.remove(self)
             self.bondedFrom = []
         
     def getLoc(self):
@@ -290,17 +290,46 @@ class SimpleLaws:
        All force strengths etc. are set up to vaguely sensible values on the basis of
        the specified bond length
     """
-    def __init__(self, bondLength = 100):
+    def __init__(self, bondLength        = 100,
+                       maxRepelRadius    = None,
+                       repulsionStrength = None,
+                       maxBondForce      = None,
+                       damp              = None,
+                       dampcutoff        = None,
+                       maxVelocity       = None
+                 ):
+        """bondlength argument is the 'master control'
+              maxInteractRadius is the maximum distance repulsions are considered over
+              repulsionStrength = strength of repulsion (when at bondLength distance)
+              maxBondForce      = force at distance 0 or 2*bondLength (ie. bond spring constant)
+              damp              = dampening (drag) 0.0 = none, 1.0 = no movement at all!
+              dampcutoff        = minimum velocity below which friction stops movement all together
+              maxVelocity       = maximum velocity limit
+              
+           maxVelocity is a fiddle factor to help you stop the system spiralling out of control
+           
+           damp and dampcutoff are effectively wind resistance and friction
+           
+           bondLengthsInteractRadius gives the physics system a way to reduce the amount of
+           
+           computation needed because particles are greater distances are deemed to not interact
+        """
         self.bondLength = bondLength
 
         scale = 100.0 / self.bondLength
-        self.maxInteractRadius          = 200    /scale
-        self.repulsionForceAtBondLength = 3.2    /scale
-        self.maxBondForce               = 20.0   /scale
-        self.damp                       = 0.8
-        self.dampcutoff                 = 0.2*2  /scale
-        self.maxVelocity                = 32     /scale
-
+        
+        def defaultIfNone(value, default):
+            if value == None:
+                return default
+            else:
+                return value
+        
+        self.maxInteractRadius          = defaultIfNone(maxRepelRadius,    200  / scale)
+        self.repulsionForceAtBondLength = defaultIfNone(repulsionStrength, 3.2  / scale)
+        self.maxBondForce               = defaultIfNone(maxBondForce,      20.0 / scale)
+        self.damp                       = 1.0 - defaultIfNone(damp, 0.2)
+        self.dampcutoff                 = defaultIfNone(dampcutoff,        0.4  / scale)
+        self.maxVelocity                = defaultIfNone(maxVelocity,       32   / scale)
         
         self.bondForce         = self.maxBondForce / self.bondLength
         self.maxRepulsionForce = self.repulsionForceAtBondLength * self.bondLength**2
@@ -334,8 +363,61 @@ class SimpleLaws:
             return [0 for a in velocity]
         else:
             damp = self.damp
-            if vmag > self.maxVelocity:
-                damp = damp * self.maxVelocity / vmag
+            if damp * vmag > self.maxVelocity:
+                damp = self.maxVelocity / vmag
                 
             return [ damp * v for v in velocity ]
 
+
+class MultipleLaws(object):
+    """Laws framework for systems containing multiple particle types
+    """
+    def __init__(self, typesToLaws, defaultLaw = None):
+        """Initialisation.
+        typesToLaws = dictionary mapping particle type name pairs (type1, type2) to laws
+        
+        if you supply a pairing (t1, t2) it will also be applied to the case (t2,t1) without
+        you needing to explicitly specify it. If you do, then your choice takes precedence.
+        
+        If you do not provide enough mappings to build a complete mapping from all types to all types,
+        then the gaps will be automatically filled with mappings to defaultLaw.
+        """
+        
+        self.laws = {}
+
+        types = []
+        
+        # build specified mapping, reversing the pairings if not specified
+        for ((type1, type2), law) in typesToLaws.items():
+            self.laws[(type1,type2)] = law
+            if not (type2,type1) in typesToLaws.keys():
+                self.laws[(type2,type1)] = law
+                
+            # build a list of the different types of particles
+            if not type1 in types:
+                types.append(type1)
+            if not type2 in types:
+                types.append(type2)
+        
+        # go through the built links and check all combinations exist
+        for type1 in types:
+            for type2 in types:
+                if not (type1, type2) in self.laws.keys():
+                    self.laws[(type1,type2)] = defaultLaw
+        
+        # determine the maxInteractRadius        
+        self.maxInteractRadius = max( [law.maxInteractRadius for law in self.laws.values()] )
+        
+        
+    def unbonded(self, ptype1, ptype2, dist, distSquared):
+        law = self.laws[(ptype1, ptype2)]
+        return law.unbonded(ptype1, ptype2, dist, distSquared)
+    
+    
+    def bonded(self, ptype1, ptype2, dist, distSquared):
+        law = self.laws[(ptype1, ptype2)]
+        return law.bonded(ptype1, ptype2, dist, distSquared)
+   
+    def dampening(self, ptype, velocity):
+        law = self.laws[(ptype, ptype)]
+        return law.dampening(ptype, velocity)
