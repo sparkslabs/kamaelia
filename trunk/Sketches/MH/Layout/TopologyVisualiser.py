@@ -32,6 +32,7 @@ from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
 
 import Physics
+from Physics import Particle as BaseParticle
 from PyGameApp import PyGameApp, DragHandler
 
 component = _Axon.Component.component
@@ -40,7 +41,7 @@ from Kamaelia.Util.PipelineComponent import pipeline
 
 
 
-class Particle(Physics.Particle):
+class Particle(BaseParticle):
     """Version of Physics.Particle with added rendering functions.
     """
 
@@ -52,6 +53,29 @@ class Particle(Physics.Particle):
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.labelText, False, (0,0,0))
        
+    def render(self, surface):
+        """Rendering passes. A generator method that renders in multiple passes.
+        Use yields to specify a wait until the pass the next stage of rendering
+        should take place at.
+        
+        Example, that renders bonds 'behind' the blobs.
+            def render(self, surface):
+                yield 1
+                self.renderBonds(surface)        # render bonds on pass 1
+                yield 5 
+                self.renderSelf(surface)         # render 'blob' on pass 5
+        
+         If another particle type rendered, for example, on pass 3, then it
+         would be rendered on top of the bonds, but behind the blobs.
+         
+         Use this mechanism to order rendering into layers.
+         """
+        yield 1
+        self.renderBonds(surface)
+        yield 2
+        self.renderSelf(surface)
+        
+        
     def renderBonds(self, surface):
         """Renders lines representing the bonds going from this particle"""
         for p in self.bondedTo:
@@ -67,8 +91,16 @@ class Particle(Physics.Particle):
 class ParticleDragger(DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, self.app.biggestRadius )
+         inRange = filter(lambda (p, rsquared) : p.radius*p.radius >= rsquared, inRange)
+         
+         nearestRS = self.app.biggestRadius ** 2 + 1
+         for (p,rsquared) in inRange:
+             if rsquared < nearestRS:
+                 nearestRS = rsquared
+                 nearest = p
+                  
          if len(inRange) > 0:
-             self.particle = inRange[0][0]
+             self.particle = p
              self.particle.freeze()
              return self.particle.getLoc()
          else:
@@ -97,12 +129,14 @@ class TopologyViewerComponent(PyGameApp,component):
        See keyHandler() for keyboard controls.
     """
 
-    def __init__(self, screensize=(640,480),
-                       fullscreen=False, 
-                       caption="Topology Viewer", 
-                       initialTopology=None,
-                       laws     = None,
-                       border=100):
+    def __init__(self, screensize         = (640,480),
+                       fullscreen         = False, 
+                       caption            = "Topology Viewer", 
+                       initialTopology    = None,
+                       laws               = None,
+                       simCyclesPerRedraw = None,
+                       border             = 100,
+                       extraDrawing       = None):
                        
         super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen)
         self.border = border
@@ -116,6 +150,13 @@ class TopologyViewerComponent(PyGameApp,component):
             self.laws = Physics.SimpleLaws(bondLength=100)
         else:
             self.laws = laws
+            
+        if simCyclesPerRedraw==None:
+            self.simCyclesPerRedraw = 1
+        else:
+            self.simCyclesPerRedraw = simCyclesPerRedraw
+        
+        self.extraDrawing = extraDrawing
             
         self.biggestRadius = 0
           
@@ -134,31 +175,73 @@ class TopologyViewerComponent(PyGameApp,component):
            self.makeBond(source, dest)
         return 1
 
+        
     def mainLoop(self):
-        if self.dataReady("inbox"):
+        """Main loop.
+           1) Processing incoming commands.
+           2) Runs the physics simulation
+           3) Draws the white graph paper
+           4) Draws particles and any extra 'furniture'
+        """
+    
+        # process incoming messages
+        while self.dataReady("inbox"):
             message = self.recv("inbox")
             self.handleCommunication(message)
-            
-        self.screen.fill( (255,255,255) )
         
+        self.physics.run(self.simCyclesPerRedraw)
+        
+        # draw the background
+        self.screen.fill( (255,255,255) )
         self.drawGrid()
         
-        for p in self.physics.particles:
-            p.renderBonds(self.screen)
+        # rendering is done in multiple passes
+        # renderPasses is a dictionary of pass-number -> list of 'render' generators
+        # each render generator yields the next pass number on which it wishes to be called
+        renderPasses = {}
 
-        for p in self.physics.particles:
-            p.renderSelf(self.screen)
-            
-        self.physics.run()
+                
+        extra = []
+        if self.extraDrawing != None:
+            extra = [self.extraDrawing]
+                
+        # do the first pass - filling the renderPasses dictionary with rendering
+        # generators from all particles, and also the 'extra' rendering 
+        for p in extra + self.physics.particles:
+            r = p.render(self.screen)
+            if r != None:
+                try:
+                    n = r.next()
+                    if not renderPasses.has_key(n):
+                        renderPasses[n] = [r]
+                    else:
+                        renderPasses[n].append(r)
+                except StopIteration:
+                    pass
+        
+        # keep going through, extracting the lowers render pass number in the dictionary and
+        # processing generators listed in it, until the renderPasses dictionary is empty
+        while renderPasses:
+            nextPass = reduce( min, renderPasses.keys() )
+            for r in renderPasses.pop(nextPass):
+                try:
+                    n = r.next()
+                    if not renderPasses.has_key(n):
+                        renderPasses[n] = [r]
+                    else:
+                        renderPasses[n].append(r)
+                except StopIteration:
+                    pass
+                    
         return 1
         
 
     def keyHandler(self, event):
         """Handle keyboard input:
-           ESCAPE : quits
-           F      : toggles fullscreen mode
+           ESCAPE, Q : quits
+           F         : toggles fullscreen mode
         """
-        if event.key==K_ESCAPE:
+        if event.key==K_ESCAPE or event.key==K_q:
             self.quit()
         elif event.key==K_f:
             pygame.display.toggle_fullscreen()
@@ -181,13 +264,18 @@ class TopologyViewerComponent(PyGameApp,component):
            
            ("-LINK", fromId, toId)
                Remove a link, directional from fromID to toID
+               
+           ("-ALL", )
+               Clears all nodes and links
         """
         
         try:
             if message[0] == "+NODE":
-                factory, posSpec = message[1], message[2]
-                pos      = self._generateXY(posSpec)
-                particle = factory(pos)
+                ptype = message[1]
+                argDict = message[2]
+                posSpec = message[3]
+                pos = self._generateXY(posSpec)
+                particle = ptype(position = pos, **argDict)
                 self.addParticle(particle)
                 
             elif message[0] == "-NODE":
@@ -202,10 +290,15 @@ class TopologyViewerComponent(PyGameApp,component):
                 src, dst = message[1], message[2]
                 self.breakBond(src, dst)
                                 
+            elif message[0] == "-ALL":
+                self.removeParticle(*self.physics.particleDict.keys())
+            
             else:
                 raise
-        except:       
-            self.send("Error processing message : "+str(message) +" reason: " + str(sys.exc_info()[0])+"\n", "outbox")
+        except:     
+            import traceback
+            msg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
+            self.send("Error processing message : "+str(message) + " resason:\n"+msg, "outbox")
 
                 
     def _generateXY(self, posSpec):
@@ -229,20 +322,26 @@ class TopologyViewerComponent(PyGameApp,component):
 
         
     def addParticle(self, *particles):
+        """Adds particles to the system"""
         for p in particles:
             if p.radius > self.biggestRadius:
                 self.biggestRadius = p.radius
         self.physics.add( *particles )
         
     def removeParticle(self, *ids):
+        """Removes particles from the system by ID.
+           Also breaks bonds to/from that particle.
+        """
         for id in ids:
             self.physics.particleDict[id].breakAllBonds()
         self.physics.removeByID(*ids)
         
     def makeBond(self, source, dest):
+        """Make a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
 
     def breakBond(self, source, dest):
+        """Break a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
 
     
@@ -270,6 +369,7 @@ class topology_message_parser(component):
       DEL NODE <id>
       ADD LINK <id from> <id to>
       DEL LINK <id from> <id to>
+      DEL ALL
    """
 
    def __init__(self, particleTypes = None):
@@ -299,17 +399,29 @@ class topology_message_parser(component):
                 if cmd == ("ADD","NODE") and len(message) >= 6:
                     if self.pTypes.has_key(message[5]):
                         ptype = self.pTypes[message[5]]
-                        makeNewParticle = lambda (x,y) : ptype(ID=message[2], position=(x,y), name=message[3])
-                        self.send( ("+NODE", makeNewParticle, message[4]), "outbox")
+                        id    = message[2]
+                        name  = message[3]
+                        posSpec = message[4]
+
+                        self.send( ("+NODE", ptype, {"ID":id, "name":name}, posSpec), "outbox")
+
                 
                 elif cmd == ("ADD","LINK") and len(message) >= 4:
-                    self.send( ("+LINK", message[2], message[3]), "outbox")
+                    src = message[2]
+                    dst = message[3]
+                    self.send( ("+LINK", src,dst), "outbox")
                 
                 elif cmd == ("DEL","NODE") and len(message) >= 3:
-                    self.send( ("-NODE", message[2]), "outbox")
+                    id = message[2]
+                    self.send( ("-NODE", id), "outbox")
                 
                 elif cmd == ("DEL","LINK") and len(message) >= 3:
-                    self.send( ("-LINK", message[2], message[3]), "outbox")
+                    src = message[2]
+                    dst = message[3]
+                    self.send( ("-LINK", src, dst), "outbox")
+                    
+                elif cmd == ("DEL", "ALL"):
+                    self.send( ("-ALL",), "outbox")
             
             yield 1
          else:
@@ -339,16 +451,23 @@ class chunks_to_lines(component):
 
 
 class TopologyViewerServer(pipeline):
-    def __init__(self, particleTypes=None, laws=None):
+    def __init__(self, particleTypes=None, serverPort = None, **dictArgs):
+        """particleTypes = dictionary mapping names to particle classes
+        
+           All remaining named arguments are passed onto the TopologyViewerComponent
+        """
         
         from Kamaelia.SingleServer import SingleServer
         from Kamaelia.Util.ConsoleEcho import consoleEchoer
         
+        if serverPort == None:
+            serverPort = 1500
+
         super(TopologyViewerServer, self).__init__(
-                        SingleServer(port=1500),
+                        SingleServer(port=serverPort),
                         chunks_to_lines(),
                         topology_message_parser(particleTypes = particleTypes),
-                        TopologyViewerComponent(laws = laws),
+                        TopologyViewerComponent(**dictArgs),
                         consoleEchoer()
                     )
          
