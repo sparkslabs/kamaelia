@@ -33,7 +33,7 @@ Linkage = Axon.Linkage
 #from Scheduler 
 class TComponent(component):
     def __init__(self):
-        self.__super.__init__()
+        super(TComponent,self).__init__()
         self.tc1=component()
         self.tc2=component()
         #self.tc1.synchonisedBox()
@@ -43,7 +43,7 @@ class TComponent(component):
 
 class TComponentAsync(component):
     def __init__(self):
-        self.__super.__init__()
+        super(TComponentAsync,self).__init__()
         self.tc1=component()
         self.tc2=component()
         #self.tc1.synchonisedBox()
@@ -53,7 +53,7 @@ class TComponentAsync(component):
 
 class TestMainLoopComponent(component):
     def __init__(self):
-        self.__super.__init__()
+        super(TestMainLoopComponent, self).__init__()
         self.count = 0
     def mainBody(self):
         self.count = self.count + 1

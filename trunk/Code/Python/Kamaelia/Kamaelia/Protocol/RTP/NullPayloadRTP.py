@@ -147,7 +147,7 @@ class NullPayloadPreFramer(component):
          * Data Rate - at __init__
          * Chunksize - at __init__
       """
-      self.__super.__init__()
+      super(NullPayloadPreFramer,self).__init__()
       self.sourcename=sourcename           # Note source
       self.sourcebitrate=sourcebitrate     # Note source bit rate
       self.sourceoctetrate=sourcebitrate/8.0 # Cache source octet rate
@@ -249,7 +249,7 @@ if __name__ =="__main__":
       #Usescomponents=[] # List of classes used.
 
       def __init__(self):
-         self.__super.__init__() # !!!! Must happen, if this method exists
+         super(NullPayloadPreFramer_testHarness,self).__init__() # !!!! Must happen, if this method exists
          self.source = ReadFileAdaptor("Support/BlankFile.txt", readsize="1450", steptime=0)
          self.transform = NullPayloadPreFramer("TestSource", 65536, chunksize=257)
          self.sink = consoleEchoer()

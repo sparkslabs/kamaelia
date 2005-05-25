@@ -40,19 +40,19 @@ class Axon_Test(unittest.TestCase):
 
       class bar(foo):
          def __init__(self):
-            self.__super.__init__()
+            super(bar,self).__init__()
             self.gee = 1
             self.gah += 1
 
       class bla(foo):
          def __init__(self):
-            self.__super.__init__()
+            super(bla,self).__init__()
             self.goo = 2
             self.gah += 1
 
       class barbla(bar,bla): # Classic hardcase - diagram inheritance.
          def __init__(self):
-            self.__super.__init__()
+            super(barbla,self).__init__()
             self.gee += 1
             self.goo += 2
             self.gah += 1   # If common base class called once result is 4, 5 otherwise.
@@ -69,12 +69,12 @@ class Axon_Test(unittest.TestCase):
 
 
    def test_AxonType(self):
-      "AxonType.__init__ - adds an extra __super method to all objects created from classes with this metaclass simplifying superclass method calling. ttbChecked"
+      "AxonType.__init__ - adds an extra __super method to all objects created from classes with this metaclass simplifying superclass method calling. DEPRECATED"
       self.failUnless(type(AxonType) is type,"AxonType is not a python type")
       class base(object):
          __metaclass__ = AxonType
 
-      self.failUnless(type(base._base__super) == super)
+      # self.failUnless(type(base._base__super) == super)
       self.multipleInheritanceTest(base)
 
 

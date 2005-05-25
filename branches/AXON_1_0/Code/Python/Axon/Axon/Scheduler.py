@@ -59,7 +59,7 @@ class scheduler(microprocess):
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
-      self.__super.__init__()
+      super(scheduler, self).__init__()
       if not scheduler.run:         # If no scheduler already allocated...
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 

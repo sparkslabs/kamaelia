@@ -118,7 +118,7 @@ class MicroProcess_Test(str_Test):
       class testthread(microprocess):
          def __init__(self):
             self.i = 0
-            self.__super.__init__()
+            super(testthread,self).__init__()
          def main(self):
             while self.i < 100:
                self.i = self.i + 1
@@ -162,7 +162,7 @@ class MicroProcess_Test(str_Test):
       class testthread(microprocess):
          def __init__(self):
             self.i = 0
-            self.__super.__init__()
+            super(testthread,self).__init__()
          def main(self):
             while 1:
                self.i = self.i + 1

@@ -12,7 +12,7 @@ import e32
 
 class testHarness(component): # Spike component to test interoperability with TCPServer
    def __init__(self):
-      self.__super.__init__() # I wonder if this can get forced to be called automagically?
+      super(testHarness,self).__init__() # I wonder if this can get forced to be called automagically?
       self.display = consoleEchoer()
       self.displayerr = consoleEchoer()
       self.client = ThreadedTCPClient("132.185.133.18",4444)

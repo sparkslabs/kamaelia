@@ -44,11 +44,11 @@ class HelloServer(component):
 		self.debug = debug
 		#self.__class__.maxid = self.__class__.maxid + 1
 		#id = str(self.__class__) + "_" + str(self.__class__.maxid)
-		self.__super.__init__()
+		super(HelloServer, self).__init__()
 #		component.__init__(self, id, inboxes=["datain","inbox"], outboxes=["outbox"])
 
 	def initialiseComponent(self):
-		myDataSource = ReadFileAdaptor(filename="/video/buffy-100.mpg",
+		myDataSource = ReadFileAdaptor(filename="/video/sample-100.mpg",
 					readmode="bitrate",
 					bitrate=375000, chunkrate=24 )
 		linkage(myDataSource,self,"outbox","datain", self.postoffice)

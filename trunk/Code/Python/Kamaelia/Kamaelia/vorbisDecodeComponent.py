@@ -35,7 +35,7 @@ import ao
 
 class AOAudioPlaybackAdaptor(component):
    def __init__(self, id=None):
-      self.__super.__init__()
+      super(AOAudioPlaybackAdaptor, self).__init__()
       self.dev = ao.AudioDevice("oss")
 
    def main(self):
@@ -54,7 +54,7 @@ class AOAudioPlaybackAdaptor(component):
 
 class VorbisDecode(component):
    def __init__(self, *args):
-      self.__super.__init__(*args)
+      super(VorbisDecode, self).__init__(*args)
       self.decoder = vorbissimple.vorbissimple()
       
    def main(self):
@@ -91,7 +91,7 @@ if __name__ =="__main__":
    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
    class testHarness(component):
       def __init__(self):
-         self.__super.__init__()
+         super(testHarness, self).__init__()
          source = ReadFileAdaptor("./Support/ogg/khangman-splash.ogg",
                                readmode="bitrate", bitrate=400000)
          decoder = VorbisDecode()

@@ -30,7 +30,7 @@ class ToStringComponent(component):
    #Outboxes=["outbox"] List of outbox names if different
    #Usescomponents=[] # List of classes used.
    def __init__(self):
-      self.__super.__init__() # !!!! Must happen, if this method exists
+      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
       self.activate()
 
    def initialiseComponent(self):

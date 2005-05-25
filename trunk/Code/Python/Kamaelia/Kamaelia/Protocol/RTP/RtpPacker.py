@@ -33,7 +33,7 @@ class RtpPacker(component):
    Outboxes=["outbox"] # List of outbox names if different
    #Usescomponents=[] # List of classes used.
    def __init__(self,label,looptimes,selfstart=0):
-      self.__super.__init__() # !!!! Must happen, if this method exists
+      super(RtpPacker, self).__init__() # !!!! Must happen, if this method exists
 
    def initialiseComponent(self):
       return 1

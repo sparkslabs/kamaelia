@@ -39,7 +39,7 @@ class DummyPostman:
       
 class TestComponent(Component.component):
    def __init__(self):
-      self.__super.__init__()
+      super(TestComponent,self).__init__()
       self.syncboxes=list()
    def _synchronisedBox(self , boxtype="sink",boxdirection="outbox",boxname="outbox", maxdepth=1):
       self.syncboxes.append((boxtype,boxdirection,boxname,maxdepth))

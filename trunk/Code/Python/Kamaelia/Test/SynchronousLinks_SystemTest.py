@@ -53,7 +53,7 @@ class testConsumer(component):
 
 class adHocPostman(component):
    def __init__(self,producer,consumer):
-      self.__super.__init__()
+      super(adHocPostman, self).__init__()
       self.producer = producer
       self.consumer = consumer
       self.link = linkage(self.producer,self.consumer,synchronous=True) # Link outbox to inbox

@@ -57,7 +57,7 @@ class MimeRequestComponent(component):
    however.
    """
    def __init__(self):
-      self.__super.__init__()
+      super(MimeRequestComponent, self).__init__()
 
       self.header = {}
       self.requestLineRead = 0

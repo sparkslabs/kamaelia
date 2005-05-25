@@ -32,7 +32,7 @@ class consoleEchoer(component):
    Outboxes=["outbox","signal"]
 
    def __init__(self, forwarder=False):
-      self.__super.__init__()# !!!! Must happen, if this method exists
+      super(consoleEchoer, self).__init__()# !!!! Must happen, if this method exists
       self.forwarder=forwarder
 
    def mainBody(self):

@@ -204,7 +204,7 @@ class microprocess(Axon.AxonObject):
 
    def __init__(self):
       """Microprocess constructor.
-      Subclasses must call this using the idiom self.__super.__init__()      """
+      Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
       self.id,self.name = tupleId(self)
       self.__runnable =1

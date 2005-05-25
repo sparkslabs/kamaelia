@@ -53,7 +53,7 @@ class BasicMarshallComponent(component):
    Inboxes =["control", "demarshall", "marshall"] 
    Outboxes=["signal", "demarshalled", "marshalled"]
    def __init__(self,klass):
-      self.__super.__init__() # Accept default in/outboxes
+      super(BasicMarshallComponent, self).__init__() # Accept default in/outboxes
       self.klass = klass
 
    def main(self):
@@ -84,7 +84,7 @@ from Kamaelia.Data.MimeDict import MimeDict
 
 class MimeDictMarshaller(Kamaelia.Util.MarshallComponent.MarshallComponent):
     def __init__(self,*argv,**argd):
-        self.__super.__init__(MimeDict, *argv,**argd)
+        super(MimeDictMarshaller, self).__init__(MimeDict, *argv,**argd)
 
 Create components after that thus:
 
@@ -94,7 +94,7 @@ Or:
 def MarshallerFactory(klass):
    class newclass(Kamaelia.Util.MarshallComponent.MarshallComponent):
       def __init__(self,*argv,**argd):
-         self.__super.__init__(klass, *argv,**argd)
+         super(newclass, self).__init__(klass, *argv,**argd)
    return newclass
 
 MimeDictMarshaller=MarshallerFactory(MimeDict)

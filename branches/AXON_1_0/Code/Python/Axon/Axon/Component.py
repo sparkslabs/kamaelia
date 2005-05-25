@@ -184,11 +184,11 @@ class component(microprocess):
    Outboxes=["outbox","signal"]
    Usescomponents=[]
 
-   def __init__(self ):
+   def __init__(self):
       """You want to overide this method locally. You MUST call this superconstructor for
-      things to work however. The way you do this is self.__super.__init__()
+      things to work however. The way you do this super(YourClass,self).__init__()
       """
-      self.__super.__init__()
+      super(component, self).__init__()
       self.inboxes = dict()
       self.outboxes = dict()
       # Create the FIFOs associated with the inboxes/outboxes. (dict(string->list))
@@ -488,7 +488,7 @@ if __name__ == '__main__':
          Inboxes=[]
          Outboxes=["result"]
          def __init__(self):
-            self.__super.__init__()
+            super(producersConsumersSystemTest, self).__init__()
          def main(self):
             i = 100
             while(i):
@@ -500,7 +500,7 @@ if __name__ == '__main__':
          Inboxes=["source"]
          Outboxes=["result"]
          def __init__(self):
-            self.__super.__init__()
+            super(Consumer, self).__init__()
             self.count = 0
             self.i = 30
          def doSomething(self):
@@ -521,7 +521,7 @@ if __name__ == '__main__':
          Inboxes=["_output"]
          Outboxes=["output"]
          def __init__(self):
-            self.__super.__init__()
+            super(testComponent, self).__init__()
 
             self.lackofinterestingthingscount = 0
             self.total = 0

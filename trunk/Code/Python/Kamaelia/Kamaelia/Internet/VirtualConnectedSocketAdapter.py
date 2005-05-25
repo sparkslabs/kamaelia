@@ -75,7 +75,7 @@ class VirtualConnectedSocketAdapter(component):
    Outboxes=["outbox", "FactoryFeedback","signal"]
 
    def __init__(self, listensocket,addr):
-      self.__super.__init__()
+      super(VirtualConnectedSocketAdapter, self).__init__()
       self.time = time.time()
       self.socket = listensocket
       self.remoteaddr = addr

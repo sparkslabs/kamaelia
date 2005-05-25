@@ -17,7 +17,7 @@ import Axon
 
 class Multicast_transceiver(Axon.Component.component):
    def __init__(self, local_addr, local_port, remote_addr, remote_port):
-       self.__super.__init__()
+       super(Multicast_transceiver, self).__init__()
        self.local_addr = local_addr   # Multicast address we join
        self.local_port = local_port   # and port
        self.remote_addr = remote_addr # Multicast address we send to (may be same)

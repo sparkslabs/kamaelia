@@ -12,6 +12,8 @@
        l = self.link( ... )
        l.setShowTransit(True)
 
+     All usage of __super removed. It will disappear completely in 1.0.5
+
 1.0.2 -> 1.0.3 - Performance Improvements
    * Split debug.debug.debug/debug.debug.note into two halves:
       * areDebugging(self,section,level)

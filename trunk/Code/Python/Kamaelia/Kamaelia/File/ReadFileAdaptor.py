@@ -109,8 +109,8 @@ class ReadFileAdaptor(component):
                   chunkrate = 24,                # Overrides steptime
                   debug=0):
       """Standard constructor, see class docs for details"""
-      # self.__super.__init__() # Take default in/out boxes
-      self.__super.__init__() # Take default in/out boxes
+      # super(ReadFileAdaptor, self).__init__() # Take default in/out boxes
+      super(ReadFileAdaptor, self).__init__() # Take default in/out boxes
 
       self.filename = filename
       self.command = command

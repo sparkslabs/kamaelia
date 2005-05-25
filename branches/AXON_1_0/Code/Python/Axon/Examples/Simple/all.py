@@ -7,7 +7,7 @@ class Consumer(component):
     Outboxes = ["result"]
 
     def __init__(self):
-        self.__super.__init__()
+        super(Consumer, self).__init__()
         #this variable is not used for anything important
         self.i = 30
     
@@ -29,7 +29,7 @@ class Producer(component):
    Inboxes=[]
    Outboxes=["result"]
    def __init__(self):
-      self.__super.__init__()
+      super(Producer, self).__init__()
    def main(self):
       i = 30
       while(i):
@@ -43,7 +43,7 @@ class testComponent(component):
     Inboxes = ["_input"]
     Outboxes = []
     def __init__(self):
-        self.__super.__init__()
+        super(testComponent, self).__init__()
         self.producer = Producer()
         self.consumer = Consumer()
         self.addChildren(self.producer,self.consumer)

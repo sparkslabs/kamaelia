@@ -26,7 +26,8 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import AdaptiveCommsComponent, Component
+import AdaptiveCommsComponent
+import Component
 
 class AdaptiveCommsComponent_Test(unittest.TestCase):
    def test_SmokeTest_NoArguments(self):

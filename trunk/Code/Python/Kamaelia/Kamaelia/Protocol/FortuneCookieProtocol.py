@@ -46,7 +46,7 @@ from Kamaelia.SimpleServerComponent import SimpleServer
 
 class FortuneCookieProtocol(component):
    def __init__(self,filename="Ulysses", debug=0):
-      self.__super.__init__()
+      super(FortuneCookieProtocol, self).__init__()
 
       self.filename=filename
       self.debug = debug

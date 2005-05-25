@@ -108,7 +108,7 @@ class ConnectedSocketAdapter(component):
    Outboxes=["outbox", "FactoryFeedback","signal"]
 
    def __init__(self, listensocket):
-      self.__super.__init__()
+      super(ConnectedSocketAdapter, self).__init__()
       self.time = time.time()
       self.socket = listensocket
 

@@ -81,7 +81,7 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
 #   Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
    def __init__(self,host,port,chargen=0,delay=0, initialsendmessage=None):
-      self.__super.__init__()
+      super(ThreadedTCPClient,self).__init__()
       self.host = host
       self.port = port
       self.chargen=chargen
@@ -231,7 +231,7 @@ if __name__ =="__main__":
 
    class testHarness(component): # Spike component to test interoperability with TCPServer
       def __init__(self):
-         self.__super.__init__() # I wonder if this can get forced to be called automagically?
+         super(testHarness,self).__init__() # I wonder if this can get forced to be called automagically?
          self.serverport = 4444
 #         self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
          self.client = None
