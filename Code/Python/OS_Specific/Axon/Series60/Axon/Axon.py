@@ -44,19 +44,19 @@ if __name__ == "__main__":
 
    class bar(foo):
       def __init__(self):
-         self.__super.__init__()
+         super(bar, self).__init__()
          self.gee = 1
          self.gah += 1
 
    class bla(foo):
       def __init__(self):
-         self.__super.__init__()
+         super(bla, self).__init__()
          self.goo = 2
          self.gah += 1
 
    class barbla(bar,bla): # Classic hardcase - diagram inheritance.
       def __init__(self):
-         self.__super.__init__()
+         super(barbla, self).__init__()
          self.gee += 1
          self.goo += 2
          self.gah += 1   # If common base class called once result is 4, 5 otherwise.

@@ -51,7 +51,7 @@ class coordinatingassistanttracker(object):
       name = strId(self)
       if self.basecat is None:
          self.__class__.basecat = self
-#      self.__super.__init__(name)
+#      super(coordinatingassistanttracker,self).__init__(name)
       self._informationLogged = dict()
       self._servicesRegistered = dict()
       if parent:

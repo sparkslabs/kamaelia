@@ -42,7 +42,7 @@ class SingleServer(_Axon.Component.component):
    Inboxes=["inbox","control", "_oobinfo"]
    Outboxes=["outbox", "signal", "_CSA_signal"]
    def __init__(self, port=1601):
-      self.__super.__init__()
+      super(SingleServer,self).__init__()
       self.listenport = port
       self.CSA = None
 

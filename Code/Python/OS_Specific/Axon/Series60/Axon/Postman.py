@@ -75,7 +75,7 @@ class postman(microprocess):
       The super class's constructor is then called to make this a fully initialised
       microprocess.
       """
-      self.__super.__init__()
+      super(postman, self).__init__()
       if debugname:
          self.debugname = debugname + ":debug "
       else:

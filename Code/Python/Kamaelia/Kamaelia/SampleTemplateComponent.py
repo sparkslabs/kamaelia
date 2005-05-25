@@ -30,7 +30,7 @@ class myComponent(component):
    #Outboxes=["outbox","signal"] List of outbox names if different
    #Usescomponents=[] # List of classes used.
    def __init__(self,label,looptimes,selfstart=0):
-      self.__super.__init__() # !!!! Must happen, if this method exists
+      super(myComponent, self).__init__() # !!!! Must happen, if this method exists
       self.looptimes = looptimes
       self.label = label
       if selfstart:

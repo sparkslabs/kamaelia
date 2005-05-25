@@ -32,7 +32,7 @@ file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            self.__super.__init__(filename, readmode="bitrate", bitrate=400000)
+            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
 
 class SimpleStreamer(_Axon.Component.component):

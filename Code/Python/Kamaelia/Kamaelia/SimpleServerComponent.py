@@ -53,7 +53,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes=["_oobinfo"]
    Outboxes=[]
    def __init__(self, protocol=None, port=1601):
-      self.__super.__init__()
+      super(SimpleServer, self).__init__()
       if not protocol:
          raise "Need a protocol to handle!"
       self.protocolhandlers = None
@@ -130,7 +130,7 @@ if __name__ == '__main__':
    from Axon.Scheduler import scheduler
    class SimpleServerTestProtocol(simpleServerProtocol):
       def __init__(self):
-         self.__super.__init__()
+         super(SimpleServerTestProtocol, self).__init__()
          assert self.debugger.note("SimpleServerTestProtocol.__init__",1, "Starting test protocol")
 
       def mainBody(self):

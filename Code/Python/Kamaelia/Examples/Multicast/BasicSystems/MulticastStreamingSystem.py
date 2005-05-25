@@ -11,7 +11,7 @@ file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
 
 class detuple(Axon.Component.component):
    def __init__(self, index):
-      self.__super.__init__()
+      super(detuple, self).__init__()
       self.index = index
    def main(self):
       while 1:

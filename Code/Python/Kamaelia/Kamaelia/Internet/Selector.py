@@ -84,7 +84,7 @@ class selectorComponent(AdaptiveCommsComponent):
       complex than it had to be, and the functionality has been removed to simplify the code. Server
       CSA factories and CSA's now need to be supplied via inboxes. Quite dramatically simplifies the
       code"""
-      self.__super.__init__() # !!!! Must happen, if this method exists
+      super(selectorComponent, self).__init__() # !!!! Must happen, if this method exists
       self.t = 0
       self.readers=[]
       self.writers=[]

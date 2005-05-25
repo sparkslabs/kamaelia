@@ -69,7 +69,7 @@ class TCPServer(_component):
    Outboxes=["protocolHandlerSignal", "signal"]
 
    def __init__(self,listenport):
-      self.__super.__init__()
+      super(TCPServer, self).__init__()
       self.listenport = listenport
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
 

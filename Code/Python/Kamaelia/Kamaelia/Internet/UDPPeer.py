@@ -37,7 +37,7 @@ class UDPPeer(component):
    Usescomponents=[VirtualConnectedSocketAdapter] # List of classes used.
 
    def __init__(self,host,port,chargen=0,delay=0):
-      self.__super.__init__()
+      super(UDPPeer, self).__init__()
       self.host = host
       self.port = port
       self.chargen=chargen
@@ -194,7 +194,7 @@ if __name__ =="__main__":
 
    class testHarness(component):
       def __init__(self):
-         self.__super.__init__()
+         super(testHarness, self).__init__()
          self.serverport = 1701
          self.time = time.time()
          self.start = self.time
@@ -222,7 +222,7 @@ if __name__ =="__main__":
    if 0:
       class testHarness(component): # Spike component to test interoperability with TCPServer
          def __init__(self):
-            self.__super.__init__() # I wonder if this can get forced to be called automagically?
+            super(testHarness, self).__init__() # I wonder if this can get forced to be called automagically?
             import random
             self.serverport = random.randint(4000,8000)
             self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)

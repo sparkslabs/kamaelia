@@ -37,7 +37,7 @@ class EchoProtocol(component):
    import time
    allEchoers = []
    def __init__(self):
-      self.__super.__init__() # Accept default in/outboxes
+      super(EchoProtocol, self).__init__() # Accept default in/outboxes
       EchoProtocol.allEchoers.append(self)
 
    def mainBody(self):
