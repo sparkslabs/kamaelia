@@ -173,9 +173,9 @@ class scheduler(microprocess):
                         #for i in xrange(len(newthreads)):
                         #   if newthreads[i] in knockon.microprocesses():
                         #      newthreads[i] = None
-               self.threads=newthreads             # Make the new runset the run set
                #_gc.collect()
             running = activeMicroprocesses > 0
+         self.threads=newthreads             # Make the new runset the run set
 
    def runThreads(self,slowmo=0):
       for i in self.main(slowmo): pass
