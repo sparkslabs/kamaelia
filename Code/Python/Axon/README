@@ -6,7 +6,8 @@ The install procedure is python's usual dance:
 
    * python setup.py install
 
-Documentation is held in two places:
+
+Code based documentation is held in two places:
    * The usual 'pydoc name' - probably worth starting with: 
      pydoc Axon.Component
 
@@ -17,6 +18,9 @@ Documentation is held in two places:
      docstring for each test to be dumped in a form that allows collation,
      and summarisation. (For an example of what we expect to automate from
      the test suite, see the end of this README file)
+
+The "Docs" directory contains the output from these two, combined and
+santisation is in progress.
 
 Sample producer/consumber & wrapper component system:
 
@@ -43,11 +47,13 @@ the running system)
 
 Example code:
 
+from Axon.Component import *
+
 class Producer(component):
    Inboxes=[]
    Outboxes=["result"]
    def __init__(self):
-      self.__super.__init__()
+      super(Producer,self).__init__()
    def main(self):
       i = 100
       while(i):
@@ -59,7 +65,7 @@ class Consumer(component):
    Inboxes=["source"]
    Outboxes=["result"]
    def __init__(self):
-      self.__super.__init__()
+      super(Consumer,self).__init__()
       self.count = 0
       self.i = 30
    def doSomething(self):
@@ -80,28 +86,23 @@ class testComponent(component):
    Inboxes=["_input"]
    Outboxes=[]
    def __init__(self):
-      self.__super.__init__()
+      super(testComponent,self).__init__()
       self.producer = Producer()
       self.consumer = Consumer()
       self.addChildren(self.producer, self.consumer)
       self.link((self.producer, "result"), (self.consumer, "source"))
-      linkage(self.consumer,self,"result","_input", self.postoffice)
+      self.link((self.consumer, "result"), (self, "_input"))
+      self.addChildren(self.producer, self.consumer)
 
-   def childComponents(self):
-      return [self.producer, self.consumer]
-
-   def mainBody(self):
-      while len(self.inboxes["_input"]) < 1:
+   def main(self):
+      yield newComponent(*self.childComponents())
+      while not self.dataReady("_input"):
          yield 1
       result = self.recv("_input")
       print "Consumer finished with result:", result, "!"
 
-r = scheduler()
 p = testComponent()
-children = p.childComponents()
 p.activate()
-for p in children:
-   p.activate()
 scheduler.run.runThreads(slowmo=0)# context = r.runThreads()
 
 (It would probably be nice to have better syntactic sugar here by using
@@ -109,15 +110,9 @@ dictionaries, operators (eg '|' ) and decorators. The presentation on the
 website on Kamaelia shows a partial semi-reimplementation of ideas using
 decorators to eliminate the classes above)
 
-For various reasons it makes sense to run all Axon code using the -OO flags
-- this is due to the currently highly inefficient debug framework. One
-downside of async systems is that debuggers tend to have a hard time - but
-this has been thought of upfront :), the downside is that if you run with
-debugging enabled/possible, then the system runs like a pig. (Due to some
-rather heavy duty fumbling around in the garbage collector)
 
 
-Michael, December 2004
+Michael, January 2005
 
 -----------------------------------------------------------------------------
 
@@ -237,3 +232,4 @@ private:
    _safeCollect
        Wrapper around _collect - returns None where an IndexError would
        normally be thrown. Internall Function.
+
