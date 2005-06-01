@@ -20,7 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Physics_server1 import TopologyViewerServer, BaseParticle, Particle
+import TopologyVisualiser
+from TopologyVisualiser import TopologyViewerServer, BaseParticle
 from Physics import SimpleLaws, MultipleLaws
 
 import pygame
@@ -31,7 +32,7 @@ def abbreviate(string):
     out = ""
     prev = ""
     for c in string:
-        if c.isupper() or c.isdigit() or c == "_" or (c.isalpha() and not prev.isalpha()):
+        if c.isupper() or c.isdigit() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
             out += c.upper()
         prev = c
     return out
@@ -78,40 +79,86 @@ class PComponent(BaseParticle):
         self.name = name
         self.ptype = "component"
         self.shortname = abbreviate(name)
+        self.left = 0
+        self.top = 0
+        self.selected = False
         
-        font = pygame.font.Font(None, 16)
-        self.slabel   = font.render(self.shortname, False, (0,0,0))
+        font = pygame.font.Font(None, 20)
+        self.slabel   = font.render(self.shortname, True, (0,0,0))
         self.slabelxo = - self.slabel.get_width()/2
         self.slabelyo = - self.slabel.get_height()/2
         
         self.radius = _COMPONENT_RADIUS
-    
+        
+        self.desclabel = font.render("Component "+self.shortname+" : "+self.name, True, (0,0,0), (255,255,255))
+        
     def render(self, surface):
+        x = int(self.pos[0] - self.left)
+        y = int(self.pos[1] - self.top )
+    
         yield 1
         for p in self.bondedTo:
-            pygame.draw.line(surface, (255,0,0), [int(i) for i in self.pos],  [int(i) for i in p.pos])
+            px = int(p.pos[0] - self.left)
+            py = int(p.pos[1] - self.top )
+            pygame.draw.line(surface, (192,192,192), (x,y), (px,py))
         
         yield 2
-        pygame.draw.circle(surface, (192,192,192), (int(self.pos[0]), int(self.pos[1])), self.radius)
-        surface.blit(self.slabel, ( int(self.pos[0]) + self.slabelxo,
-                                    int(self.pos[1]) + self.slabelyo )
-                     )
-    
+        colour = (192,192,192)
+        if self.selected:
+            colour = (160,160,255)
+        pygame.draw.circle(surface, colour, (x,y), self.radius)
+        surface.blit(self.slabel, ( x+self.slabelxo, y+self.slabelyo ) )
+        if self.selected:
+            yield 10
+            surface.blit(self.desclabel, (72,16) )
+                     
+    def setOffset( self, (x,y) ):
+        self.left = x
+        self.top  = y
+
+    def select( self ):
+        """Tell this particle it is selected"""
+        self.selected = True
+
+    def deselect( self ):
+        """Tell this particle it is selected"""
+        self.selected = False
+        
+            
 class PPostbox(BaseParticle):
     labelangles =  { 0:2, 45:3, 90:0, 135:1, 180:2, 225:3, 270:0, 315:1 } # angles to which label tile
+    
+    colours = { ("inbox",  "outbox"):(0,160,0),
+                ("outbox", "inbox" ):(0,160,0),
+                ("inbox",  "inbox" ):(224,128,0),
+                ("outbox", "outbox"):(224,128,0)  }
 
-    def __init__(self, ID, position, name):
+    def Inbox(ID, position, name):
+        return PPostbox(ID=ID, position=position, name=name, boxtype="inbox")
+    def Outbox(ID, position, name):
+        return PPostbox(ID=ID, position=position, name=name, boxtype="outbox")
+    Inbox  = staticmethod(Inbox)
+    Outbox = staticmethod(Outbox)
+                
+    def __init__(self, ID, position, name, boxtype):
         super(PPostbox,self).__init__(position=position, ID = ID )
-        self.name = name
-        self.ptype = "postbox"
-
-        font = pygame.font.Font(None, 12)
-        
+        self.name   = name
+        self.ptype  = "postbox"
+        self.postboxtype = boxtype
+        self.left   = 0
+        self.top    = 0
         self.radius = 16
+        self.buildLabels()
+        self.selected = False
+        
+        
+    def buildLabels(self):
         from pygame.transform import rotozoom, rotate
         
-        label = font.render(self.name, False, (0,0,0), (255,255,255))
-        self.label   = []
+        font = pygame.font.Font(None, 14)
+        
+        label = font.render(" "+abbreviate(self.name)+" ", True, (0,0,0), )
+        self.label   = []   # 'selected' labels
         self.labelxo = []
         self.labelyo = []
         self.label.append(rotate(label, 90))
@@ -119,44 +166,83 @@ class PPostbox(BaseParticle):
         self.label.append(label)
         self.label.append(rotozoom(label, -45, 1.0))
 
+        slabel = font.render(" "+abbreviate(self.name)+" ", True, (96,96,255), )
+        self.slabel  = []
+        self.slabel.append(rotate(slabel, 90))
+        self.slabel.append(rotozoom(slabel, 45, 1.0))
+        self.slabel.append(slabel)
+        self.slabel.append(rotozoom(slabel, -45, 1.0))
+        
+        
         for l in self.label:
             self.labelxo.append( - l.get_width()  / 2 )
             self.labelyo.append( - l.get_height() / 2 )
-        
+
+        font = pygame.font.Font(None, 20)
+        self.desclabel = font.render(self.postboxtype.upper()+" : "+self.name, True, (0,0,0), (255,255,255))
+                    
+            
     def render(self, surface):
+        direction = (0,0) # default direction for the text label
+        
         yield 1
-        direction = (0,0)
+        x = int(self.pos[0] - self.left)
+        y = int(self.pos[1] - self.top )
         for p in self.bondedTo:
-            start = [int(i) for i in self.pos]
-            end   = [int(i) for i in p.pos]
-            pygame.draw.line(surface, (0,160,0), start,  end)
+            endx = int(p.pos[0] - self.left)
+            endy = int(p.pos[1] - self.top)
+            
+            colour = PPostbox.colours[ (self.postboxtype, p.postboxtype) ]
+            
+            pygame.draw.line(surface, colour, (x,y),  (endx,endy) )
             
             # draw a pwetty arrow on the line, showing the direction
-            mid   = map(lambda a,b: (a+b*3)/4, start, end)
+            mid = ( (x+endx*3)/4, (y+endy*3)/4 )
             
-            direction = ( (end[0]-start[0]), (end[1]-start[1]) )
-            length    = ( direction[0]**2 + direction[1]**2 )**0.5 / 6
-            direction = [ x / length for x in direction ]
+            direction = ( (endx-x), (endy-y) )
+            length    = ( direction[0]**2 + direction[1]**2 )**0.5
+            direction = [ 6*n / length for n in direction ]
             
             norm      = ( -direction[1], direction[0] )
             
-            pygame.draw.line(surface, (0,160,0), mid, ( mid[0] - direction[0] - norm[0], mid[1] - direction[1] - norm[1]) )
-            pygame.draw.line(surface, (0,160,0), mid, ( mid[0] - direction[0] + norm[0], mid[1] - direction[1] + norm[1]) )
+            leftarrow  = ( mid[0] - direction[0] - norm[0], mid[1] - direction[1] - norm[1] )
+            rightarrow = ( mid[0] - direction[0] + norm[0], mid[1] - direction[1] + norm[1] )
+            
+            pygame.draw.line(surface, colour, mid, leftarrow  )
+            pygame.draw.line(surface, colour, mid, rightarrow )
         
         yield 3
+        # if we've not got a 'direction' yet for the text label (from bonds 'from' this node )
+        # then look at bonds 'to' this node from other nodes of the same type
         if direction==(0,0):
             for p in self.bondedFrom:
                 if p.ptype == self.ptype:
-                    start = [int(i) for i in p.pos]
-                    end   = [int(i) for i in self.pos]
-                    direction = ( (end[0]-start[0]), (end[1]-start[1]) )
+                    endx = int(p.pos[0] - self.left)
+                    endy = int(p.pos[1] - self.top)
+                    direction = ( (endx-x), (endy-y) )
         
+        # render name label, tilted along the 'direction'
         i = PPostbox.labelangles[ nearest45DegreeStep(direction) ]
-        surface.blit(self.label[i], ( int(self.pos[0]) + self.labelxo[i],
-                                      int(self.pos[1]) + self.labelyo[i] )
-                    )
+        if self.selected:
+            l = self.slabel[i]
+        else:
+            l = self.label[i]
+        surface.blit(l, ( x + self.labelxo[i], y + self.labelyo[i] ) )
 
+        if self.selected:
+            yield 10
+            surface.blit(self.desclabel, (72,16) )
+
+                                 
+    def setOffset( self, (x,y) ):
+        self.left = x
+        self.top  = y
                      
+    def select( self ):
+        self.selected = True
+
+    def deselect( self ):
+        self.selected = False
                      
                      
 class AxonLaws(MultipleLaws):
@@ -167,7 +253,7 @@ class AxonLaws(MultipleLaws):
         dampcutoff = 0.4
         maxvel     = 32
         
-        forceScaler = 2.0
+        forceScaler = 1.0
         
         component_component = SimpleLaws( bondLength        = postboxBondLength,
                                           maxRepelRadius    = 2.3 * postboxBondLength,
@@ -196,18 +282,19 @@ class AxonLaws(MultipleLaws):
         typesToLaws = { ("component", "component") : component_component,
                         ("postbox",   "postbox")   : postbox_postbox,
                         ("component", "postbox")   : component_postbox,
-                        ("postbox", "component")   : component_postbox    }
+                        ("postbox",   "component") : component_postbox    }
         
         super(AxonLaws, self).__init__( typesToLaws = typesToLaws )
         
 
-
         
 class ExtraWindowFurniture(object):
-   """Rendering for some extra 'furniture' for this 'axon/kamaelia' branded version
-      of the TopologyViewer
-   """
+    """Rendering for some extra 'furniture' for this 'axon/kamaelia' branded version
+       of the TopologyViewer.
+    """
     def __init__(self):
+        super(ExtraWindowFurniture,self).__init__()
+        
         self.logo = pygame.image.load("kamaelia_logo.png")
         
         biggest = max( self.logo.get_width(), self.logo.get_height() )
@@ -217,84 +304,62 @@ class ExtraWindowFurniture(object):
     def render(self, surface):
         """Rendering generator, draws kamaelia logo. Awwww!"""
         yield 10
-        surface.blit(self.logo, (0,0))
-
+        surface.blit(self.logo, (8,8))
+        
+    def setOffset( self, (x,y) ):
+        pass
     
     
 class AxonVisualiserServer(TopologyViewerServer):
 
     def __init__(self, **dictArgs):
         particleTypes = { "component" : PComponent,
-                          "inbox"     : PPostbox,
-                          "outbox"    : PPostbox
+                          "inbox"     : PPostbox.Inbox,
+                          "outbox"    : PPostbox.Outbox
                         }
                         
         super(AxonVisualiserServer,self).__init__( particleTypes = particleTypes,
                                                    laws = AxonLaws(),
-                                                   simCyclesPerRedraw = 5,
+                                                   simCyclesPerRedraw = 3,
                                                    extraDrawing = ExtraWindowFurniture(),
                                                    **dictArgs
                                                  )
 
+                                                 
+def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
+    shortargs = "s" + extraShortArgs
+    longargs  = ["navelgaze"] + extraLongArgs
 
+    dictArgs, optlist, remargs = TopologyVisualiser.parseArgs(args, shortargs, longargs)
+    
+    for o,a in optlist:
+    
+        if o in ("-n","--navelgaze"):
+            dictArgs['navelgaze'] = True
+
+    
+    return dictArgs, optlist, remargs
+
+    
 if __name__=="__main__":
     from Axon.Scheduler import scheduler as _scheduler
 
-    a_little_test_script = """
-add node 0 MyComponent1 randompos component
-add node 1 CSA randompos component
-add node i0 inbox randompos inbox
-add node i1 inbox randompos inbox
-add node o0 outbox randompos outbox
-add node o1 outbox randompos outbox
-add link 0 i0
-add link 0 o0
-add link 1 i1
-add link 1 o1
-add link i0 o1
-add link i1 o0
-del link i0 o1
-add link i0 o1
-del link i0 o1
-add link i0 o1
-add node 2 Fwibble randompos component
-del node o1
-add node o1
-add link o1 1
-add node o1 outbox randompos outbox
-add link 1 o1
-add node i2 inbox randompos inbox
-add link 2 i2
-add link i2 o1
-add node c0 control randompos inbox
-add node s0 signal randompos outbox
-add link 0 c0
-add link 0 s0
-add node c1 control randompos inbox
-add node s1 signal randompos outbox
-add link 1 s1
-add link 1 c1
-add link s0 c1
-add node c2 control randompos inbox
-add link 2 c2
-add link s1 c2
-add node o2 outbox randompos outbox
-add link 2 o2
-add node s2 signal randompos outbox
-add link 2 s2
-add link s2 c0
-add link i0 o2
-add node 3 ABC randompos component
-add node 3i inbox randompos inbo
-add node 3i inbox randompos inbox
-add link 3 3i
-add link 3i o0
-del link 3i o0
-add node t outbox2 randompos outbox
-add link 1 t
-add link t i3
-add link t 3i
-"""    
-    app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser")
+    import sys
+    dictArgs, optlist, remargs = parseArgs(sys.argv[1:])
+    
+    i = None
+    if "navelgaze" in dictArgs:
+        del dictArgs["navelgaze"]
+        dictArgs['noServer'] = True
+        from Introspector import Introspector
+        i = Introspector()
+    
+    app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser", **dictArgs)
+    
+    if i:
+        i.link( (i,"outbox"), (app,"inbox") )
+        i.activate()
+
     app.activate()
+    
     _scheduler.run.runThreads(slowmo=0)

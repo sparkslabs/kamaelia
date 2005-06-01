@@ -3,6 +3,7 @@
 # some test code for AxonVisualiser
 
 import unittest
+import sys ; sys.path.append("..")
 from AxonVisualiser import *
 
 class AxonVisualiser_Test(unittest.TestCase):

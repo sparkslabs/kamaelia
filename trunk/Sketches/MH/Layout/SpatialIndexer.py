@@ -54,21 +54,29 @@ class SpatialIndexer:
    def updateLoc(self, *entities):
       """Add new entit(ies), or notify of a position change of entit(ies)."""
       for entity in entities:
-         if self.entities.has_key(entity):
+         try:
             oldCell = self.entities[entity]
-         else:
+         except KeyError:
             oldCell = None
+#         if self.entities.has_key(entity):
+#            oldCell = self.entities[entity]
+#         else:
+#            oldCell = None
          
          newCell = self._coord2cell(*entity.getLoc())
          
          if newCell != oldCell:
             if oldCell != None:
                self.cells[oldCell].remove(entity)
-               
-            if not self.cells.has_key(newCell):
-               self.cells[newCell] = [entity]
-            else:
-               self.cells[newCell].append(entity)
+ 
+            try:
+                self.cells[newCell].append(entity)
+            except KeyError:
+                self.cells[newCell] = [entity]
+#            if not self.cells.has_key(newCell):
+#               self.cells[newCell] = [entity]
+#            else:
+#               self.cells[newCell].append(entity)
                
             self.entities[entity] = newCell
             
@@ -108,7 +116,8 @@ class SpatialIndexer:
       while inc == 0:
       
         # go through all entities in this cell
-        if self.cells.has_key(tuple(cell)):
+#        if self.cells.has_key(tuple(cell)):
+        try:
             for entity in self.cells[tuple(cell)]:
                 if filter(entity):
                     # measure the distance from the coord
@@ -121,6 +130,8 @@ class SpatialIndexer:
                     # if within range, then add to the list of nodes to return
                     if distsquared <= rsquared:
                         inRange.append( (entity, distsquared) )
+        except KeyError:
+            pass
             
         # increment coordinates onto next cell.
         # As each coord reaches ubound, do 'carry'
