@@ -28,7 +28,7 @@ class AdaptiveCommsComponent(component):
    # Public Methods
    #
    def __init__(self):
-      self.__super.__init__()
+      super(AdaptiveCommsComponent, self).__init__()
       self._resourceStore = {}
       self._resourceLookup = {}
 

@@ -23,6 +23,7 @@
 import time
 import random
 import debugConfigFile
+import debugConfigDefaults
 
 class debug(object):
    configs = None
@@ -42,8 +43,11 @@ class debug(object):
             debug.configs = self.readConfig(filename)
          except IOError:
             # Can't read the debug config file.
-            # For now disable debug.
-            debug.noConfig = True
+            #
+            # Use defaults instead.
+            #
+            debug.configs = debugConfigDefaults.defaultConfig()
+#            debug.noConfig = True
       if debug.configs:
          try:
             for section in debug.configs.keys():
