@@ -65,6 +65,7 @@ class scheduler(microprocess):
 
       self.time = time.time()
       self.threads = list()     # Don't use [] to avoid Python wierdness
+      self.newthreads = list()
       if self.debugger.areDebugging("scheduler.__init__", 1):
          self.debugger.debugmessage("scheduler.__init__", "STARTED: ", self.name, self.id)
 
@@ -74,7 +75,7 @@ class scheduler(microprocess):
       use this method to activate themselves, see the component class to see
       how you do that.
       """
-      self.threads.append(mprocess)
+      self.newthreads.append(mprocess)
 
    def main(self,slowmo=0):
       """This is the meat of the scheduler  - this actively loops round the threads
@@ -91,16 +92,16 @@ class scheduler(microprocess):
       complete. (Think of it as a "hello world" of soft-real time scheduling)
       """
       crashAndBurnWithErrors = True
-      mprocesses = self.threads          # Grab the singleton set of threads.
+      mprocesses = self.newthreads          # Grab the singleton set of threads.
       if self.debugger.areDebugging("scheduler.main", 1):
          self.debugger.debugmessage("scheduler.main", "SCHEDULER:",self)
          self.debugger.debugmessage("scheduler.main", "Scheduler Starting, # threads to run:")
-         self.debugger.debugmessage("scheduler.main", "   ", len(self.threads))
+         self.debugger.debugmessage("scheduler.main", "   ", len(self.newthreads))
 
       yield 1
-      running = len(self.threads) > 0
+      running = len(self.newthreads) > 0
       if self.debugger.areDebugging("scheduler.main", 5):
-         self.debugger.debugmessage("scheduler.main", "THR", self.threads)
+         self.debugger.debugmessage("scheduler.main", "THR", self.newthreads)
       cx=0
       lastcx=0
       lasttime = time.time()
@@ -110,6 +111,9 @@ class scheduler(microprocess):
       while(running):           # Threads gets re-assigned so this can reduce to []
         now = time.time()
         if (now - self.time) > slowmo or slowmo == 0:
+         self.threads=self.newthreads             # Make the new runset the run set
+         self.newthreads = list()  # We go through all the threads,
+                                   # if they don't exit they get put here.
          self.time = now   # Update last run time - only really useful if slowmo != 0
          if self.debugger.areDebugging("scheduler.main.threads", 1):
             self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", len(self.threads))
@@ -121,8 +125,6 @@ class scheduler(microprocess):
             self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x.__class__) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
          if self.debugger.areDebugging("scheduler.objecttrack", 15):
             self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
-         newthreads = list()  # We go through all the threads,
-                              # if they don't exit they get put here.
 
          if self.debugger.areDebugging("scheduler.scheduler", 1):
             self.debugger.debugmessage("scheduler.main", "SCHEDULED", self.name,self.id)
@@ -155,7 +157,7 @@ class scheduler(microprocess):
                            activeMicroprocesses +=1
                   if mprocess._activityCreator():
                      activeMicroprocesses +=1
-                  newthreads.append(mprocess)    # Add the current thread to the new run set
+                  self.newthreads.append(mprocess)    # Add the current thread to the new run set
                except StopIteration:             # Thread exited
                   if self.debugger.areDebugging("scheduler.main", 5):
                      self.debugger.debugmessage("scheduler.main", "STOP ITERATION THROWN", mprocess)
@@ -173,7 +175,6 @@ class scheduler(microprocess):
                         #for i in xrange(len(newthreads)):
                         #   if newthreads[i] in knockon.microprocesses():
                         #      newthreads[i] = None
-               self.threads=newthreads             # Make the new runset the run set
                #_gc.collect()
             running = activeMicroprocesses > 0
 

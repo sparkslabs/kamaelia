@@ -41,18 +41,21 @@ if __name__ == "__main__":
    class foo(AxonObject):
       def __init__(self):
          self.gah =1
+         print "foo", self
 
    class bar(foo):
       def __init__(self):
          super(bar, self).__init__()
          self.gee = 1
          self.gah += 1
+         print "bar", self
 
    class bla(foo):
       def __init__(self):
          super(bla, self).__init__()
          self.goo = 2
          self.gah += 1
+         print "bla", self
 
    class barbla(bar,bla): # Classic hardcase - diagram inheritance.
       def __init__(self):
@@ -60,6 +63,7 @@ if __name__ == "__main__":
          self.gee += 1
          self.goo += 2
          self.gah += 1   # If common base class called once result is 4, 5 otherwise.
+         print "barbla", self
 
    a=foo()
    assert a.gah==1,"Foo's initialisation failed"

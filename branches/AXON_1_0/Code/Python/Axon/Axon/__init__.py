@@ -30,5 +30,3 @@ Microprocess.microprocess.setSchedulerClass(Scheduler.scheduler)
 Microprocess.microprocess.setTrackerClass(None)
 CoordinatingAssistantTracker.coordinatingassistanttracker()
 Scheduler.scheduler() # Initialise the class.
-
-
