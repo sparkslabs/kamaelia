@@ -30,7 +30,6 @@ from Axon.Scheduler import scheduler as axonScheduler
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-
 class Introspector(_Axon.Component.component):
     """This component introspects the current local topology of an axon system.
     
@@ -71,7 +70,7 @@ class Introspector(_Axon.Component.component):
             if isinstance(self.scheduler, axonScheduler):
                 oldNodes    = nodes
                 oldLinkages = linkages
- 
+                
                 nodes    = dict()
                 linkages = dict()
             
@@ -122,8 +121,10 @@ class Introspector(_Axon.Component.component):
                     delnodemsgs += 'DEL NODE "'+str(id)+'"\n'
                 
                 # now go through inter-postbox linkages and do the same as we did for nodes
+                # note, we check not only that the link exists, but that it still goes to the same thing!
+                # otherwise leave the old link to be destroyed, and add a new one
                 for src in linkages.iterkeys():
-                    if oldLinkages.has_key(src):
+                    if oldLinkages.has_key(src) and oldLinkages[src] == linkages[src]:
                         del oldLinkages[src]
                     else:
                         dst = linkages[src]
