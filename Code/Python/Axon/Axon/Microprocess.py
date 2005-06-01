@@ -198,20 +198,13 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass=classmethod(setSchedulerClass)
 
-# The conflict here is the constructor.
-# This *should* be the correct resolution
-#<<<<<<< Microprocess.py
-#   def __init__(self,name="foo",scheduler=None, tracker=None):
-#      """'M.__init__(name="unique name", scheduler=<scheduler object>)'
-#      Microprocess constructor.
-#=======
    def setSchedulerClass(cls,newSchedulerClass):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
    def __init__(self):
       """Microprocess constructor.
-      Subclasses must call this using the idiom self.__super.__init__()      """
+      Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
       self.id,self.name = tupleId(self)
       self.__runnable =1
@@ -219,11 +212,6 @@ class microprocess(Axon.AxonObject):
       self.__thread = None
       self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
-      if 0:
-         if microprocess.trackerClass:
-            self.tracker = microprocess.trackerClass()
-         else:
-            print "GAH!"
 
       # If the client has defined a debugger in their class we don't want to override it.
       # However if they haven't, we provide them with one
@@ -292,16 +280,10 @@ class microprocess(Axon.AxonObject):
       present may wish to manipulate this sort of flag.  Does nothing if
       microprocess has been stopped.
       ."""
-# Again this looks like the right way to resolve this conflict
-#<<<<<<< Microprocess.py
-#      assert self.debugger.note("microprocess._unpause",1, "Microprocess UNPAUSED", self.id,self.name,self)
-#      self.__runnable = 1
-#=======
       if self.debugger.areDebugging("microprocess._unpause", 1):
          self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
       if not self._isStopped():
          self.__runnable = 1
-#>>>>>>> 1.10
 
    def main(self):
       """'M.main()' - stub function. Client classes are expected to override this.
@@ -362,12 +344,10 @@ class microprocess(Axon.AxonObject):
       else:
          self.__class__.schedulerClass.run._addThread(self)
          self.scheduler = self.__class__.schedulerClass.run
-
       if Tracker is not None:
          self.tracker = Tracker
       else:
          pass
-         #self.tracker = microprocess.trackerClass.tracker
 
       if self.debugger.areDebugging("microprocess.activate", 5):
          self.debugger.debugmessage("microprocess.activate", "Using Scheduler",self.scheduler)
@@ -377,6 +357,14 @@ class microprocess(Axon.AxonObject):
       "Stub method that is overridden internally in Axon but not clients"
       return 0
 
+   def run(self):
+      "run - activates the microprocess and runs it from start to finish until StopIteration"
+      self.activate()
+      try:
+         while 1:
+            self.next()
+      except StopIteration:
+         pass # Expect this!
 
 if __name__ == '__main__':
    print "Test code currently disabled"

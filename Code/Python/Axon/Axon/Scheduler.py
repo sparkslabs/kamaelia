@@ -59,7 +59,7 @@ class scheduler(microprocess):
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
-      self.__super.__init__()
+      super(scheduler, self).__init__()
       if not scheduler.run:         # If no scheduler already allocated...
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 
@@ -113,7 +113,7 @@ class scheduler(microprocess):
         if (now - self.time) > slowmo or slowmo == 0:
          self.threads=self.newthreads             # Make the new runset the run set
          self.newthreads = list()  # We go through all the threads,
-                              # if they don't exit they get put here.
+                                   # if they don't exit they get put here.
          self.time = now   # Update last run time - only really useful if slowmo != 0
          if self.debugger.areDebugging("scheduler.main.threads", 1):
             self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", len(self.threads))
