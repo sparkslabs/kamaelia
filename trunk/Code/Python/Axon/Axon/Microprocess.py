@@ -360,20 +360,9 @@ class microprocess(Axon.AxonObject):
          Scheduler._addThread(self)
          self.scheduler = Scheduler
       else:
-# Almost completely eradicates this section, however the Tracker code is
-# still needed and copied below.
-#<<<<<<< Microprocess.py
-#         microprocess.schedulerClass.run._addThread(self)
-#         self.scheduler = microprocess.schedulerClass.run
-#      if Tracker is not None:
-#         self.tracker = Tracker
-#      else:
-#         pass
-#         #self.tracker = microprocess.trackerClass.tracker
-#=======
          self.__class__.schedulerClass.run._addThread(self)
          self.scheduler = self.__class__.schedulerClass.run
-#>>>>>>> 1.10
+
       if Tracker is not None:
          self.tracker = Tracker
       else:

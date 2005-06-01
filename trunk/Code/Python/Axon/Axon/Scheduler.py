@@ -91,7 +91,6 @@ class scheduler(microprocess):
       nor guaranteed and can be extended by threads that take too long to
       complete. (Think of it as a "hello world" of soft-real time scheduling)
       """
-      print "WO?",self.newthreads
       crashAndBurnWithErrors = True
       mprocesses = self.newthreads          # Grab the singleton set of threads.
       if self.debugger.areDebugging("scheduler.main", 1):
