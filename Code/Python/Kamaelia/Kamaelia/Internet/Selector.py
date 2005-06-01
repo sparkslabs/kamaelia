@@ -111,6 +111,18 @@ class selectorComponent(AdaptiveCommsComponent):
       #
       self.lookupBoxes[theSocket] = (feedbackInboxName, signalOutboxName, theComponent)
 
+   def wireOutComponent(self, socketComponentPair):
+      # remove any lookup table entries
+      # unwire
+      # delete in/outboxes it used
+      theComponent,theSocket = socketComponentPair
+      (feedbackInboxName, signalOutboxName, theComponentL) = self.lookupBoxes[theSocket]
+      assert(theComponent == theComponentL)
+      del self.lookupBoxes[theSocket]
+      self.postoffice.deregisterlinkage(thecomponent=theComponent)
+      self.deleteInbox(feedbackInboxName)
+      self.deleteOutbox(signalOutboxName)
+      
    def checkForClosedSockets(self):
       pass
       #print "We're checking for closed sockets, but we're not really..."
@@ -130,12 +142,13 @@ class selectorComponent(AdaptiveCommsComponent):
             #    * It doesn't remove any new in/out boxes
             #
             self.writersockets.remove(sock)
+            self.wireOutComponent((managingComponent, sock))
          else:
             if message.handlesWriting():
                self.writersockets.append(sock)
             else:
                self.readersockets.append(sock)
-         self.wireInComponent((managingComponent, sock))  ### PROBLEM IS HERE... COOL.
+            self.wireInComponent((managingComponent, sock))  ### PROBLEM IS HERE... COOL.
 
    def handleExceptionalSocket(self, sock):
       """ Currently there is no support for exceptional sockets"""
