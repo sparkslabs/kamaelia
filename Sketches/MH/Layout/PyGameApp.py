@@ -43,13 +43,15 @@ class PyGameApp(component):
         
         flags = DOUBLEBUF
         if fullscreen:
-            flags = flags | FULLSCREEN
+            flags = flags | -abs(FULLSCREEN)
         self.screen = pygame.display.set_mode( screensize, flags, depth )
         pygame.display.set_caption(caption)
 
         self.eventHandlers = {}
         self.screensize = self.screen.get_width(), self.screen.get_height()
         self.addHandler(QUIT, lambda event : self.quit(event))
+        
+        self.flip = True
     
     def initialiseComponent(self):
         pass
@@ -70,7 +72,7 @@ class PyGameApp(component):
             self._dispatch()
             if not self.quitting:
                 self.mainLoop()
-            if not self.quitting:
+            if not self.quitting and self.flip:
                 pygame.display.flip()
                 yield 1
             else:

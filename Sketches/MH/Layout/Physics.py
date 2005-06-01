@@ -402,7 +402,7 @@ class MultipleLaws(object):
         # go through the built links and check all combinations exist
         for type1 in types:
             for type2 in types:
-                if not (type1, type2) in self.laws.keys():
+                if not self.laws.has_key((type1, type2)):
                     self.laws[(type1,type2)] = defaultLaw
         
         # determine the maxInteractRadius        
