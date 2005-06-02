@@ -27,6 +27,9 @@
 
 from SpatialIndexer import SpatialIndexer
 
+from operator import sub as _sub
+from operator import add as _add
+from operator import mul as _mul
 
 class ParticleSystem:
     """System of particles.
@@ -100,14 +103,17 @@ class ParticleSystem:
         
     def run(self, cycles = 1):
         """Run the simulation for a given number of cycles"""
+        _indexer = self.indexer
+        _laws    = self.laws
         while cycles > 0:
             cycles -= 1
             self.tick += 1
+            _tick = self.tick
             for p in self.particles:
-                p.doInteractions(self.indexer, self.laws, self.tick)
+                p.doInteractions(_indexer, _laws, _tick)
             for p in self.particles:
-                p.update(self.laws)
-        self.indexer.updateAll()
+                p.update(_laws)
+        _indexer.updateAll()
 
 
 
@@ -236,7 +242,10 @@ class Particle(object):
         This code relies on any bonds being registered in both directions (a->b and b->a).
         If you override the bonding code in this class, then make sure you maintain this property.
         """
-        self.tick = tick    
+        self.tick = tick
+        _bonded   = laws.bonded
+        _unbonded = laws.unbonded
+        __add, __sub, __mul = _add, _sub, _mul
 
         # bonded interactions with bonded particles        
         bonded = self.getBondedTo() + self.getBondedFrom()
@@ -246,24 +255,32 @@ class Particle(object):
                 ds = self.distSquared(particle.pos)
                 if ds > 0.0:
                     dist = ds ** 0.5
-                    dvelocity = laws.bonded(self.ptype, particle.ptype, dist, ds)
-                    deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
-                    self.velocity     = map(lambda delta,v : v + (delta*dvelocity / dist), deltas, self.velocity)
-                    particle.velocity = map(lambda delta,v : v - (delta*dvelocity / dist), deltas, particle.velocity)
+                    dvelocity = _bonded(self.ptype, particle.ptype, dist, ds)
+                    deltas = map(__sub, particle.pos, self.pos)
+                    dv_d = dvelocity / dist
+                    scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                    self.velocity     = map(__add, self.velocity,     scaleddeltas)
+                    particle.velocity = map(__sub, particle.velocity, scaleddeltas)
+#                    self.velocity     = map(lambda delta,v : v + (delta*dv_d), deltas, self.velocity)
+#                    particle.velocity = map(lambda delta,v : v - (delta*dv_d), deltas, particle.velocity)
                 else:
                     pass # dunno, ought to have an error i guess
 
         # repulsion of other particles (not self, or those bonded to)
         filter = lambda particle : (particle.tick != self.tick) and not (particle in (bonded + [self]))
 
-        particles = particleIndex.withinRadius(self.pos, laws.maxInteractRadius, filter)
+        particles = particleIndex.withinRadius(self.pos, laws.particleMaxInteractRadius(self.ptype), filter)
         for (particle, ds) in particles:
             if ds > 0.0:
                 dist = ds ** 0.5
-                dvelocity   = laws.unbonded(self.ptype, particle.ptype, dist, ds)
-                deltas = map(lambda x1,x2 : x2-x1, self.pos, particle.pos)
-                self.velocity     = map(lambda delta,v : v+(+delta*dvelocity / dist), deltas, self.velocity)
-                particle.velocity = map(lambda delta,v : v+(-delta*dvelocity / dist), deltas, particle.velocity)
+                dvelocity   = _unbonded(self.ptype, particle.ptype, dist, ds)
+                deltas = map(__sub, particle.pos, self.pos)
+                dv_d = dvelocity / dist
+                scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                self.velocity     = map(__add, self.velocity,     scaleddeltas)
+                particle.velocity = map(__sub, particle.velocity, scaleddeltas)
+#                self.velocity     = map(lambda delta,v : v+(+delta*dv_d), deltas, self.velocity)
+#                particle.velocity = map(lambda delta,v : v+(-delta*dv_d), deltas, particle.velocity)
             else:
                 pass # dunno, ought to have an error i guess
 
@@ -277,7 +294,7 @@ class Particle(object):
             self.velocity = [0 for x in self.velocity]
         else:
             self.velocity = laws.dampening(self.ptype, self.velocity)
-            self.pos      = map(lambda pos,vel: pos+vel, self.pos, self.velocity)
+            self.pos      = map(_add, self.pos, self.velocity)
             
 
 
@@ -334,7 +351,8 @@ class SimpleLaws:
         self.bondForce         = self.maxBondForce / self.bondLength
         self.maxRepulsionForce = self.repulsionForceAtBondLength * self.bondLength**2
         
-        
+    def particleMaxInteractRadius(self, ptype):
+        return self.maxInteractRadius
         
     def unbonded(self, ptype1, ptype2, dist, distSquared):
         """1/distance_squared unbonded repulsion force"""
@@ -360,13 +378,14 @@ class SimpleLaws:
         """velocity dampening and minimal velocity (friction-like) cutoff"""
         vmag = reduce(lambda a,b:abs(a)+abs(b), velocity)
         if vmag < self.dampcutoff:
-            return [0 for a in velocity]
+            return [0] * len(velocity) #[0 for a in velocity]
         else:
             damp = self.damp
             if damp * vmag > self.maxVelocity:
                 damp = self.maxVelocity / vmag
                 
-            return [ damp * v for v in velocity ]
+            return map(_mul, velocity, [damp] * len(velocity) )
+#            return [ damp * v for v in velocity ]
 
 
 class MultipleLaws(object):
@@ -409,6 +428,10 @@ class MultipleLaws(object):
         self.maxInteractRadius = max( [law.maxInteractRadius for law in self.laws.values()] )
         
         
+    def particleMaxInteractRadius(self, ptype):
+        return self.laws[(ptype,ptype)].maxInteractRadius
+    
+    
     def unbonded(self, ptype1, ptype2, dist, distSquared):
         law = self.laws[(ptype1, ptype2)]
         return law.unbonded(ptype1, ptype2, dist, distSquared)
