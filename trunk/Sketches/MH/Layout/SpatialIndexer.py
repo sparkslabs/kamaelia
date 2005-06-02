@@ -19,6 +19,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+from operator import mul as _mul
+from operator import sub as _sub
 
 class SpatialIndexer:
    """Allows fast spatial lookups of entities -
@@ -103,6 +105,7 @@ class SpatialIndexer:
          (if it is within the radius, of course). This is to allow efficient
          pre-filtering of the particles before the distance test is done.
       """
+      __sub, __mul = _sub, _mul
       
       lbound = [ int((coord-radius) // self.cellSize) for coord in centre ]
       ubound = [ int((coord+radius) // self.cellSize) for coord in centre ]
@@ -111,7 +114,7 @@ class SpatialIndexer:
       
       inRange = []
       
-      cell = [ coord for coord in lbound ]
+      cell = lbound[:]# [ coord for coord in lbound ]
       inc = 0
       while inc == 0:
       
@@ -121,11 +124,15 @@ class SpatialIndexer:
             for entity in self.cells[tuple(cell)]:
                 if filter(entity):
                     # measure the distance from the coord
-                    distsquared = 0.0
+#                    distsquared = 0.0
                     entcoord = entity.getLoc()
-                    for j in range(0, len(centre)):
-                        sep = (centre[j] - entcoord[j])
-                        distsquared += sep*sep
+                    
+                    sep = map(__sub, centre, entcoord)
+                    distsquared = sum(map(__mul, sep,sep))
+                    
+#                    for j in range(0, len(centre)):
+#                        sep = (centre[j] - entcoord[j])
+#                        distsquared += sep*sep
                         
                     # if within range, then add to the list of nodes to return
                     if distsquared <= rsquared:

@@ -265,13 +265,13 @@ class AxonLaws(MultipleLaws):
                                         )
         postbox_postbox     = SimpleLaws( bondLength        = postboxBondLength,
                                           maxRepelRadius    = _COMPONENT_RADIUS * 1.0,
-                                          repulsionStrength = 0.25 * forceScaler,
-                                          maxBondForce      = 10.0 * forceScaler,
+                                          repulsionStrength = 0.05 * forceScaler,
+                                          maxBondForce      = 5.0 * forceScaler,
                                           damp              = damp,
                                           dampcutoff        = dampcutoff,
                                           maxVelocity       = maxvel
                                         )
-        component_postbox   = SimpleLaws( bondLength        = _COMPONENT_RADIUS,
+        component_postbox   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*1.2,
                                           maxRepelRadius    = _COMPONENT_RADIUS,
                                           repulsionStrength = 0.0 * forceScaler,
                                           maxBondForce      = 10.0 * forceScaler,
