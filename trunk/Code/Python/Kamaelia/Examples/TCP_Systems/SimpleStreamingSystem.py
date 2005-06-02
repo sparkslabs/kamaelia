@@ -29,21 +29,18 @@ from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 
-file_to_stream = "/home/matteh/music/Rodeohead.ogg" # "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
-
-import sys ; sys.path.append("../../../../../Sketches/Layout")
-from Introspector import *
+file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
+            super(AdHocFileProtocolHandler,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
 
 class SimpleStreamingSystem(_Axon.Component.component):
    def main(self):
       import random
-      clientServerTestPort=1501
+      clientServerTestPort=1500
 
       server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
                            port=clientServerTestPort)
@@ -56,12 +53,7 @@ class SimpleStreamingSystem(_Axon.Component.component):
       self.link((decoder,"outbox"), (player,"inbox"))
       self.link((decoder,"signal"), (player, "control") )
 
-      introspector = Introspector()
-      iclient = TCPClient("127.0.0.1", 1500)
-      self.link((introspector,"outbox"), (iclient,"inbox"))
-      
       self.addChildren(server, decoder, player, client)
-      self.addChildren(introspector, iclient)
       yield _Axon.Ipc.newComponent(*(self.children))
 
       while 1:
@@ -70,7 +62,7 @@ class SimpleStreamingSystem(_Axon.Component.component):
 
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
-   t = SimpleStreamingSystem()
+   t = SimpleStreamingSystem().activate()
    t.activate()
    scheduler.run.runThreads(slowmo=0)
 
