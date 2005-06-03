@@ -204,6 +204,7 @@ class TopologyViewerComponent(PyGameApp,component):
                        
         super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen)
         self.border = border
+	pygame.mixer.quit()
         
         if particleTypes == None:
             self.particleTypes = {"-":Particle}
