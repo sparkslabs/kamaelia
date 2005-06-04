@@ -1,3 +1,7 @@
+1.1.0 -> 1.1.1 -
+     (FILL IN CHANGES AS MADE)
+
+
 1.0.3 -> 1.1.0 - Debugging reactivated, Microprocess enhanced
 
      Added the facility to allow components to be wrapped threads rather
