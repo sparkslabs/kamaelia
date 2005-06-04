@@ -1,0 +1,15 @@
+These files are lightly adapted files from Ciaran Eaton's project whilst
+working with the Kamaelia Project at BBC R&D from Janurary 2005. The
+adaptations are largely made to remove an assumption of what operating
+system the code is running under. 
+
+Also the code branching trying to detect if the code is running on a mobile
+or not has been removed. (This works/ed reliably when the only two options
+were Windows/Series60, but when extended to Mac OS X, and other unices
+becomes too clever for it's own boots :)
+
+The text files are taken from output from the BSD "fortune" program. I
+took the photos (for better or worse :), so feel free to use them.
+
+
+Michael, June 2005
