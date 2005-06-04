@@ -523,7 +523,7 @@ if __name__ == '__main__':
          Inboxes=["_output"]
          Outboxes=["output"]
          def __init__(self):
-            super(testComponent, self)__init__()
+            super(testComponent, self).__init__()
 
             self.lackofinterestingthingscount = 0
             self.total = 0
