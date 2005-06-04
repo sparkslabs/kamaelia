@@ -1,0 +1,8 @@
+include Axon/test/*
+include COPYING
+include AUTHORS
+include CHANGELOG
+include Docs/*/*
+include Docs/*
+include Examples/*
+include Examples/*/*
