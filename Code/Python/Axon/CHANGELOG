@@ -1,8 +1,7 @@
 1.0.3 -> 1.0.4 - Debugging reactivated, Microprocess enhanced
-     Debugging subsystem re-activated for actual use. Still needs a bit
-     of work. (Ideally we should *merge* the debugging selected in the
-     debug.conf file with the defaults, rather than have them replace
-     the defaults)
+
+     Added the facility to allow components to be wrapped threads rather
+     than wrapped generators.
 
      Microprocess has gained a "run" method, which allows a microprocess to
      be run standalone. (This should assist with testing)
@@ -12,7 +11,13 @@
        l = self.link( ... )
        l.setShowTransit(True)
 
+     Debugging subsystem re-activated for actual use. Still needs a bit
+     of work. (Ideally we should *merge* the debugging selected in the
+     debug.conf file with the defaults, rather than have them replace
+     the defaults) (Decent docs for debug subsystem still to come)
+
      All usage of __super removed. It will disappear completely in 1.0.5
+
 
 1.0.2 -> 1.0.3 - Performance Improvements
    * Split debug.debug.debug/debug.debug.note into two halves:
