@@ -1,9 +1,0 @@
-BIBBLE foo://bar:baz@sd.sd.sd/bla?this&that=other PROTO/3.3
-Key1: AB
-Content-Length: 51
-Key2: CD
-Key3: GH
-Key4: IJ
-Key2: EF
-
-....5....1....5....2....5....3....5....4....5....5
