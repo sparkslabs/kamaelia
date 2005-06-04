@@ -1,7 +1,10 @@
-1.0.3 -> 1.0.4 - Debugging reactivated, Microprocess enhanced
+1.0.3 -> 1.1.0 - Debugging reactivated, Microprocess enhanced
 
      Added the facility to allow components to be wrapped threads rather
-     than wrapped generators.
+     than wrapped generators. Since this is a major addition, that's why
+     the version has been bumped to 1.1.0
+
+     All usage of __super removed. It will disappear completely in 1.2.0
 
      Microprocess has gained a "run" method, which allows a microprocess to
      be run standalone. (This should assist with testing)
@@ -16,7 +19,6 @@
      debug.conf file with the defaults, rather than have them replace
      the defaults) (Decent docs for debug subsystem still to come)
 
-     All usage of __super removed. It will disappear completely in 1.0.5
 
 
 1.0.2 -> 1.0.3 - Performance Improvements
