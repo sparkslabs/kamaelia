@@ -4,7 +4,7 @@ import pygame
 import pygame.font
 import time
 from pygame.locals import *
-#from Axon.Scheduler import scheduler
+from Axon.Scheduler import scheduler
 from Axon.Component import component 
 
 
@@ -114,13 +114,13 @@ class Ticker(component):
 
          display.blit(word_render, position)
          pygame.display.update()
-         waitkey()
          position[0] += wordsize[0]
          if wordsize[1] > maxheight:
             maxheight = wordsize[1]
+         yield 1
 
-      waitkey(0)
 
 t = Ticker()
-t.run()
+t.activate()
+scheduler.run.runThreads(slowmo=0)
 
