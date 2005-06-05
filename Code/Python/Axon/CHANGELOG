@@ -1,5 +1,12 @@
 1.1.0 -> 1.1.1 -
-     (FILL IN CHANGES AS MADE)
+     Change made to Microprocess that massively simplifies Kamaelia scripts
+     that are just pipeline systems. For example, the following is now all
+     that's needed for a pipeline system:
+
+     pipeline(TCPClient(tickerIP,tickerPort)
+              Ticker()
+             ).run()
+
 
 
 1.0.3 -> 1.1.0 - Debugging reactivated, Microprocess enhanced
