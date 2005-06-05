@@ -34,7 +34,7 @@ cat_appear_wav_file  = "KDE_Beep_Bottles.wav"
 cat_pop_wav = pygame.mixer.Sound(cat_pop_wav_file)
 cat_appear_wav = pygame.mixer.Sound(cat_appear_wav_file)
 
-screensize      = (1280,600)
+screensize      = (800,600)
 back_colour     = (255,255,255)
 border          = 40
 
@@ -158,8 +158,8 @@ class bouncingFloat(send_one_component):
       direction = 1
       while 1:
          scale = scale + (0.1 * self.scale_speed * direction)
-         if scale >1.9:
-            scale = 1.95
+         if scale >1.0:
+            scale = 1.05
             direction = direction * -1
          if scale <0.1:
             scale = 0.05
@@ -332,8 +332,9 @@ def randomFromRangeExcludingZero(min,max):
 
 def make_cat(cat_location, screensize, border ):
       # Get the cat again!
-      files = os.listdir("pictures")
+      files = [ x for x in os.listdir("pictures") if x not in ("README","CVS") ]
       image_location = files[random.randint(0,len(files)-1)]
+      print "XXX", image_location
       cat_surface = pygame.image.load("pictures/"+image_location)
 #      cat_surface = pygame.image.load(cat_location)
       cat = cat_surface.convert()
@@ -501,6 +502,8 @@ class MyGamesEvents(EventHandler):
          print "PAUSE ALL MOVEMENT"
          for sprite in where.allsprites.sprites():
             sprite.pause()
+      if key == 113: # "Q"
+         raise "QUIT"
       if key == 117: # "U"
          print "UNPAUSE ALL MOVEMENT"
          for sprite in where.allsprites.sprites():
@@ -619,7 +622,7 @@ class SimpleGame(component):
             yield newComponent(*components)
          yield 1
 
-screen_surface = pygame.display.set_mode(screensize)
+screen_surface = pygame.display.set_mode(screensize, DOUBLEBUF|FULLSCREEN)
 background = makeAndInitialiseBackground(banner_location, screensize, screen_surface,back_colour)
 cat_sprites = make_cats(cat_location, screensize, border,1)
 cat_args = (cat_location, screensize, border)
