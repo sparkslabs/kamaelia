@@ -4,18 +4,10 @@ import pygame
 import pygame.font
 import time
 from pygame.locals import *
+
 from Axon.Scheduler import scheduler
 from Axon.Component import component 
-
-
-def waitkey(timeout=0.025):
-   t = time.time()
-   while 1:
-       for event in pygame.event.get():
-          if event.type in (QUIT, KEYDOWN):
-             return 
-       if timeout and time.time()-t>timeout:
-          return
+from Kamaelia.Util.PipelineComponent import pipeline
 
 # Excerpt from Tennyson's Ulysses
 text = """\
@@ -38,15 +30,17 @@ Made weak by time and fate, but strong in will
 To strive, to seek, to find, and not to yield.
 """
 
-def word_source():
-   for x in text.split():
-      yield x
+
+class datasource(component):
+   def main(self):
+      for x in text.split():
+         self.send(x,"outbox")
+         yield 1
 
 
 class Ticker(component):
 
    def __init__(self, **argd):
-
       super(Ticker,self).__init__()
       #
       # Bunch of initial configs.
@@ -91,36 +85,40 @@ class Ticker(component):
       pygame.display.update()
       maxheight = 0
       import sys
-      for word in word_source():
-         word = " " + word
-         wordsize = my_font.size(word)
-         word_render= my_font.render(word, 1, self.text_colour)
+      while 1:
+         if self.dataReady("inbox"):
+            word = self.recv("inbox")
+            word = " " + word
+            wordsize = my_font.size(word)
+            word_render= my_font.render(word, 1, self.text_colour)
 
-         if position[0]+wordsize[0] > self.render_area.right:
-            position[0] = initial_postition[0]
-            if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
-               display.blit(display, 
-                            (self.render_area.left, self.render_area.top),
-                            (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                               self.render_area.width-1, position[1]-self.render_area.top ))
-               pygame.draw.rect(display, 
-                               self.ticker_background_colour, 
-                               (self.render_area.left, position[1], 
-                                  self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
-                               0)
-               pygame.display.update()
-            else:
-               position[1] += maxheight + self.line_spacing
+            if position[0]+wordsize[0] > self.render_area.right:
+               position[0] = initial_postition[0]
+               if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                  display.blit(display, 
+                               (self.render_area.left, self.render_area.top),
+                               (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
+                                  self.render_area.width-1, position[1]-self.render_area.top ))
+                  pygame.draw.rect(display, 
+                                  self.ticker_background_colour, 
+                                  (self.render_area.left, position[1], 
+                                     self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
+                                  0)
+                  pygame.display.update()
+               else:
+                  position[1] += maxheight + self.line_spacing
 
-         display.blit(word_render, position)
-         pygame.display.update()
-         position[0] += wordsize[0]
-         if wordsize[1] > maxheight:
-            maxheight = wordsize[1]
+            display.blit(word_render, position)
+            pygame.display.update()
+            position[0] += wordsize[0]
+            if wordsize[1] > maxheight:
+               maxheight = wordsize[1]
          yield 1
 
 
-t = Ticker()
-t.activate()
+app  = pipeline(datasource(),
+                Ticker()
+               )
+app.activate()
 scheduler.run.runThreads(slowmo=0)
 
