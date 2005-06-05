@@ -327,16 +327,29 @@ class AxonVisualiserServer(TopologyViewerServer):
 
                                                  
 def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
-    shortargs = "s" + extraShortArgs
-    longargs  = ["navelgaze"] + extraLongArgs
+    shortargs = "n" + extraShortArgs
+    longargs  = ["navelgaze","introspect="] + extraLongArgs
 
     dictArgs, optlist, remargs = TopologyVisualiser.parseArgs(args, shortargs, longargs)
     
-    for o,a in optlist:
-    
-        if o in ("-n","--navelgaze"):
-            dictArgs['navelgaze'] = True
+    if "help" in dictArgs:
+        dictArgs["help"] += "   -n, --navelgaze\n" + \
+                            "      Directly wire in an introspector instead of listening on a port\n\n" + \
+                            "   --introspect=server:port\n\n" + \
+                            "      Plug in an introspector that sends data to 'server' on 'port'\n" + \
+                            "      (have fun! - loop back: \"--port=1500 --introspect=127.0.0.1:1500\")\n\n"
+        
+    else:
+        for o,a in optlist:
 
+            if o in ("-n","--navelgaze"):
+                dictArgs['navelgaze'] = True
+            if o in ("--introspect="):
+                import re
+                match = re.match(r"^([^:]+):(\d+)$", a)
+                server=match.group(1)
+                port=int(match.group(2))
+                dictArgs['introspect'] = (server,port)
     
     return dictArgs, optlist, remargs
 
@@ -346,20 +359,37 @@ if __name__=="__main__":
 
     import sys
     dictArgs, optlist, remargs = parseArgs(sys.argv[1:])
-    
-    i = None
-    if "navelgaze" in dictArgs:
-        del dictArgs["navelgaze"]
-        dictArgs['noServer'] = True
-        from Introspector import Introspector
-        i = Introspector()
-    
-    app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser", **dictArgs)
-    
-    if i:
-        i.link( (i,"outbox"), (app,"inbox") )
-        i.activate()
 
-    app.activate()
+    if "help" in dictArgs:
+        print dictArgs["help"]
+        
+    else:
     
-    _scheduler.run.runThreads(slowmo=0)
+        i = None
+        if "navelgaze" in dictArgs:
+            del dictArgs["navelgaze"]
+            dictArgs['noServer'] = True
+            from Introspector import Introspector
+            i = Introspector()
+
+        if "introspect" in dictArgs:
+            (server, port) = dictArgs["introspect"]
+            del dictArgs["introspect"]
+            
+            from Introspector import Introspector
+            from Kamaelia.Internet.TCPClient import TCPClient
+            from Kamaelia.Util.PipelineComponent import pipeline
+            
+            pipeline( Introspector(), 
+                      TCPClient(server, port) 
+                    ).activate()
+
+        app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser", **dictArgs)
+
+        if i:
+            i.link( (i,"outbox"), (app,"inbox") )
+            i.activate()
+
+        app.activate()
+
+        _scheduler.run.runThreads(slowmo=0)
