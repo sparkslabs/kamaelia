@@ -204,7 +204,7 @@ class TopologyViewerComponent(PyGameApp,component):
                        
         super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen)
         self.border = border
-	pygame.mixer.quit()
+        pygame.mixer.quit()
         
         if particleTypes == None:
             self.particleTypes = {"-":Particle}
@@ -604,15 +604,25 @@ class TopologyViewerServer(pipeline):
 def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
     import getopt
     
-    shortargs = "f" + extraShortArgs
-    longargs  = ["fullscreen","resolution=","port="] + extraLongArgs
+    shortargs = "fh" + extraShortArgs
+    longargs  = ["help","fullscreen","resolution=","port="] + extraLongArgs
             
     optlist, remargs = getopt.getopt(argv, shortargs, longargs)
     
     dictArgs = {}
     for o,a in optlist:
+        if o in ("-h","--help"):
+            dictArgs['help'] = "Arguments:\n" + \
+                               "   -h, --help\n" + \
+                               "      This help message\n\n" + \
+                               "   -f, --fullscreen\n" + \
+                               "      Full screen mode\n\n" + \
+                               "   --resolution=WxH\n" + \
+                               "      Set window size to W by H pixels\n\n" + \
+                               "   --port=N\n" + \
+                               "      Listen on port N (default is 1500)\n\n"
     
-        if o in ("-f","--fullscreen"):
+        elif o in ("-f","--fullscreen"):
             dictArgs['fullscreen'] = True
             
         elif o in ("--resolution"):
@@ -631,8 +641,12 @@ if __name__=="__main__":
     import sys
     dictArgs, remargs = parseArgs(sys.argv[1:])
     
-    app = TopologyViewerServer(**dictArgs)
-    app.activate()
-    _scheduler.run.runThreads(slowmo=0)
+    if "help" in dictArgs:
+        print dictArgs["help"]
+        
+    else:
+        app = TopologyViewerServer(**dictArgs)
+        app.activate()
+        _scheduler.run.runThreads(slowmo=0)
 
 
