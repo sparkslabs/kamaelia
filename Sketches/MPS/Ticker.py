@@ -4,6 +4,8 @@ import pygame
 import pygame.font
 import time
 from pygame.locals import *
+#from Axon.Scheduler import scheduler
+from Axon.Component import component 
 
 
 def waitkey(timeout=0.025):
@@ -41,10 +43,11 @@ def word_source():
       yield x
 
 
-class Ticker:
+class Ticker(component):
 
    def __init__(self, **argd):
 
+      super(Ticker,self).__init__()
       #
       # Bunch of initial configs.
       #
@@ -119,4 +122,5 @@ class Ticker:
       waitkey(0)
 
 t = Ticker()
-t.main()
+t.run()
+
