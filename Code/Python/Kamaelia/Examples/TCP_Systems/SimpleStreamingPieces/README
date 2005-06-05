@@ -12,5 +12,16 @@ By comparison if you run the server & client on different machines (this
 will need changing the remote address in the client) you should not have
 this issue.
 
+SimplerStreamingClient.py
+
 
 Michael, April 2005
+------------------------------------------------------------------
+
+UPDATED: SimplerStreamingClient.py has been added. This uses the facilities
+of Axon 1.1.1 in order to MASSIVELY simplify the code needed to write the
+streaming client. In short it reduces the amount of code down to something
+fairly trivial)
+
+
+Michael, June 2006
