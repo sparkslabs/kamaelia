@@ -109,16 +109,14 @@ class Ticker(component):
                   position[1] += maxheight + self.line_spacing
 
             display.blit(word_render, position)
-            pygame.display.update()
             position[0] += wordsize[0]
             if wordsize[1] > maxheight:
                maxheight = wordsize[1]
+         pygame.display.update()
          yield 1
 
 
-app  = pipeline(datasource(),
-                Ticker()
-               )
-app.activate()
-scheduler.run.runThreads(slowmo=0)
-
+if __name__ == "__main__":
+   pipeline(datasource(),
+                   Ticker()
+           ).run()
