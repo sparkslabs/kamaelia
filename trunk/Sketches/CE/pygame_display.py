@@ -234,6 +234,9 @@ class MyDisplay:
         Continueously polls an event queue for two particular events (closure
         of window and a keyboard key press). Closes image upon discovery of either event.
         """
+        import time
+        timeout=3
+        t = time.time()
         while 1:
            for event in pygame.event.get():
                if event.type == pygame.QUIT:
@@ -241,3 +244,5 @@ class MyDisplay:
                    pygame.quit()
                if event.type == pygame.KEYDOWN:
                    return 0
+           if timeout and time.time()-t>timeout:
+              return
