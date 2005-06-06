@@ -35,6 +35,7 @@ class Colour(object):
       return (r,g,b)
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished
 #from SubtitleFilter import SubtitleFilter2
 class SubtitleColourDecoder(object):
    def __init__(self):
