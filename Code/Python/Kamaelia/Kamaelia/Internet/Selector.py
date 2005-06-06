@@ -141,7 +141,10 @@ class selectorComponent(AdaptiveCommsComponent):
             #    * It doen't unwire any components
             #    * It doesn't remove any new in/out boxes
             #
-            self.writersockets.remove(sock)
+            try: self.writersockets.remove(sock)
+            except: pass
+            try: self.readersockets.remove(sock)
+            except: pass
             self.wireOutComponent((managingComponent, sock))
          else:
             if message.handlesWriting():
