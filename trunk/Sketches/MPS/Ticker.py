@@ -8,6 +8,7 @@ from pygame.locals import *
 from Axon.Scheduler import scheduler
 from Axon.Component import component 
 from Kamaelia.Util.PipelineComponent import pipeline
+from SubtitleColourDecoderComponent import Colour
 
 # Excerpt from Tennyson's Ulysses
 text = """\
@@ -93,30 +94,33 @@ class Ticker(component):
                   raise "Quitting Program"
          if self.dataReady("inbox"):
             word = self.recv("inbox")
-            word = " " + word
-            wordsize = my_font.size(word)
-            word_render= my_font.render(word, 1, self.text_colour)
-
-            if position[0]+wordsize[0] > self.render_area.right:
-               position[0] = initial_postition[0]
-               if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
-                  display.blit(display, 
-                               (self.render_area.left, self.render_area.top),
-                               (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                                  self.render_area.width-1, position[1]-self.render_area.top ))
-                  pygame.draw.rect(display, 
-                                  self.ticker_background_colour, 
-                                  (self.render_area.left, position[1], 
-                                     self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
-                                  0)
-                  pygame.display.update()
-               else:
-                  position[1] += maxheight + self.line_spacing
-
-            display.blit(word_render, position)
-            position[0] += wordsize[0]
-            if wordsize[1] > maxheight:
-               maxheight = wordsize[1]
+            if isinstance(word, Colour):
+               self.text_colour = word.getPygameColour()
+            else:
+               word = " " + word
+               wordsize = my_font.size(word)
+               word_render= my_font.render(word, 1, self.text_colour)
+   
+               if position[0]+wordsize[0] > self.render_area.right:
+                  position[0] = initial_postition[0]
+                  if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                     display.blit(display, 
+                                  (self.render_area.left, self.render_area.top),
+                                  (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
+                                     self.render_area.width-1, position[1]-self.render_area.top ))
+                     pygame.draw.rect(display, 
+                                     self.ticker_background_colour, 
+                                     (self.render_area.left, position[1], 
+                                        self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
+                                     0)
+                     pygame.display.update()
+                  else:
+                     position[1] += maxheight + self.line_spacing
+   
+               display.blit(word_render, position)
+               position[0] += wordsize[0]
+               if wordsize[1] > maxheight:
+                  maxheight = wordsize[1]
          pygame.display.update()
          yield 1
 
