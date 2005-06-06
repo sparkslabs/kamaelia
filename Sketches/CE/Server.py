@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os, pygame, random, time, string, Image
 from Axon.Component import component, scheduler, linkage
@@ -48,7 +48,7 @@ class ServerProtocolHandler(component):
    def __init__(self,
                 contentDirectory="servercontent",
                 tempFileDirectory=os.path.join("servercontent","temp"),
-                delay=3,
+                delay=5,
                 number_of_files_to_find=5,
                 number_of_snapshots_to_get=10):
        
@@ -118,7 +118,10 @@ class ServerProtocolHandler(component):
       if self.dataReady("_readFinished"):
          print "ServerProtocolHandler: Message received (_readFinished)"
          self.readFinished = self.recv("_readFinished")
-  
+         for child in self.childComponents():
+           self.postoffice.deregister(component=child)
+
+           
          if isinstance(self.readFinished, producerFinished): 
             self.send(producerFinished("Done"), "signal")
             return 0
@@ -331,14 +334,14 @@ class grab_image_from_video(component):
                self.send(producerFinished("Done"), "signal")
                self.myMovie.stop()
                self.gotMovie = False
-               pygame.quit()
+#               pygame.quit()
                return 0
             return 1 
          print "grab_image_from_video: Saved the number of requested snapshots so shutting down"
          self.send(producerFinished("Done"), "signal")
          self.myMovie.stop()
          self.gotMovie = False
-         pygame.quit()
+#         pygame.quit()
          return 0
        
 #      print "grab_image_from_video: Checking mail..."
@@ -473,8 +476,106 @@ class char_count_and_read(component):
       print "char_count_and_read: Shutting down"
       
             
+class UserInterface(component):
+   def __init__(self,
+                protocol=ServerProtocolHandler,
+                port=1616,
+                demo_mode=False):
+       
+      #self.__super.__init__()
+      super(UserInterface,self).__init__()
+
+      self.protocol = protocol
+      self.port = port
+      self.demo_mode = demo_mode
+
+      self.displaySet = False
+      self.size = width, height = 800, 600
+      self.black = 0, 0, 0
+      FULLSCREEN = pygame.constants.FULLSCREEN
+      
+     # self.screen = pygame.display.set_mode(self.size,FULLSCREEN)
+      self.screen = pygame.display.set_mode(self.size) 
+                
+   def mainBody(self):
+      if self.demo_mode == True:
+         if self.displaySet == False:                           
+            try: self.start_button = pygame.image.load("UI_Pics/Start button.jpg")             
+            except: raise "ErrorLoadingImage", "couldn't load start button"
+
+            self.start_buttonRect = self.start_button.get_rect()               
+            self.start_buttonRect = self.start_buttonRect.move(100, 100)
+
+            try: self.reset_button = pygame.image.load("UI_Pics/Reset button.jpg")             
+            except: raise "ErrorLoadingImage", "couldn't load start button"
+            
+            self.reset_buttonRect = self.reset_button.get_rect()               
+            self.reset_buttonRect = self.reset_buttonRect.move(100, 100)
+
+            self.screen.fill(self.black)
+            self.screen.blit(self.start_button, self.start_buttonRect)
+#            self.screen.blit(reset_button, self.reset_buttonRect)
+                
+            pygame.display.flip()
+            self.displaySet = True
+
+         for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+              pygame.quit()
+              raise "QUIT"
+              return 0
+           if event.type == pygame.MOUSEBUTTONDOWN:
+              pos = pygame.mouse.get_pos()
+              mouseRect = [[pos[0],pos[1]],[5,5]]
+              mouseRect = pygame.Rect(mouseRect)
+                  
+              if pygame.mouse.get_pressed() == (1,0,0):                     
+                 clickedStart = mouseRect.colliderect(self.start_buttonRect)
+                 clickedReset = mouseRect.colliderect(self.reset_buttonRect)
+                     
+                 if clickedStart == True:
+                    clickedStart = False
+
+#                    try: self.reset_button = pygame.image.load("UI_Pics/Reset button.jpg")             
+#                    except: raise "ErrorLoadingImage", "couldn't load start button"
+#
+#                    self.reset_buttonRect = self.reset_button.get_rect()               
+#                    self.reset_buttonRect = self.reset_buttonRect.move(350, 350)
+
+                    self.screen.fill(self.black)
+#                    self.screen.blit(self.start_button, self.start_buttonRect)
+                    self.screen.blit(self.reset_button, self.reset_buttonRect)
+                
+                    pygame.display.flip()
+
+                    myServer = SimpleServer(self.protocol, self.port)
+                    self.addChildren(myServer)
+                    return newComponent(myServer)
+                    
+                 elif clickedReset == True:
+                    clickedReset = False
+                    sys.exit()
+                
+      elif self.demo_mode == False:
+         myServer = SimpleServer(self.protocol, self.port)
+         self.addChildren(myServer)
+         return newComponent(myServer)
+      return 1       
+            
 if __name__ == "__main__":
    from Kamaelia.SimpleServerComponent import SimpleServer
    
-   SimpleServer(protocol=ServerProtocolHandler, port=1616).activate()
+   protocol=ServerProtocolHandler
+   port=1616
+   demo_mode = True
+
+   UserInterface(protocol, port, demo_mode).activate()
+   
+   import sys
+   sys.path.append("../Layout")
+   from Introspector import Introspector
+   from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
+   from Kamaelia.Util.PipelineComponent import pipeline
+   pipeline(Introspector(),_TCPClient("132.185.133.29",1500)).activate()
+   
    scheduler.run.runThreads(slowmo=0)
