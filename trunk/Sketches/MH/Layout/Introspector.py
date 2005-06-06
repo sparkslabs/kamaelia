@@ -123,16 +123,14 @@ class Introspector(_Axon.Component.component):
                 # now go through inter-postbox linkages and do the same as we did for nodes
                 # note, we check not only that the link exists, but that it still goes to the same thing!
                 # otherwise leave the old link to be destroyed, and add a new one
-                for src in linkages.iterkeys():
-                    if oldLinkages.has_key(src) and oldLinkages[src] == linkages[src]:
-                        del oldLinkages[src]
+                for (src,dst) in linkages.iterkeys():
+                    if oldLinkages.has_key((src, dst)): 
+                        del oldLinkages[(src,dst)]
                     else:
-                        dst = linkages[src]
                         addlinkmsgs += 'ADD LINK "'+str(src)+'" "'+str(dst)+'"\n'
                         
                 # delete linkages that no longer exist
-                for src in oldLinkages.iterkeys():
-                    dst = oldLinkages[src]
+                for (src,dst) in oldLinkages.iterkeys():
                     dellinkmsgs += 'DEL LINK "'+str(src)+'" "'+str(dst)+'"\n'
 
                 # note: order of the final messages is important - delete old things
@@ -160,7 +158,7 @@ class Introspector(_Axon.Component.component):
             for link in postman.linkages:
                 src = (link.source.id, Introspector.srcBoxType[link.passthrough], link.sourcebox)
                 dst = (link.sink.id  , Introspector.dstBoxType[link.passthrough], link.sinkbox)
-                linkages[src] = dst
+                linkages[(src,dst)] = 1
                 # some components may not have been detected from the scheduler
                 # but maybe linked to, so we need to detect them now
                 if not components.has_key(link.source):
