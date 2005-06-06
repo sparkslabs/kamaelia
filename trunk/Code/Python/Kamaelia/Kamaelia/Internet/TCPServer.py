@@ -66,7 +66,7 @@ import time
 
 class TCPServer(_component):
    Inboxes=["DataReady", "_csa_feedback"]
-   Outboxes=["protocolHandlerSignal", "signal"]
+   Outboxes=["protocolHandlerSignal", "signal","_selectorSignal"]
 
    def __init__(self,listenport):
       super(TCPServer, self).__init__()
@@ -100,8 +100,10 @@ class TCPServer(_component):
    def closeSocket(self, shutdownMessage):
       theComponent,sock = shutdownMessage.caller, shutdownMessage.message
       sock.close()
-      # Tell the selector that the socket is no longer valid
-      self.send(_ki.shutdownCSA(self, (theComponent,sock)), "signal")
+      # tell the selector about it shutting down
+      self.send(_ki.shutdownCSA(self, (theComponent, theComponent.socket)), "_selectorSignal")
+      # tell protocol handlers
+      self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
       # Delete the child component
       self.removeChild(theComponent)
 
@@ -123,8 +125,8 @@ class TCPServer(_component):
       selectorService, newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
-      self.link((self, "signal"),selectorService)
-      self.send(_ki.newServer(self, (self,self.listener)), "signal")
+      self.link((self, "_selectorSignal"),selectorService)
+      self.send(_ki.newServer(self, (self,self.listener)), "_selectorSignal")
       return Axon.Ipc.newComponent(*(self.children))
 
    def handleNewConnection(self):
@@ -143,7 +145,7 @@ class TCPServer(_component):
             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
             self.addChildren(CSA)
             self.link((CSA, "FactoryFeedback"),(self,"_csa_feedback"))
-            self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "signal")
+            self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "_selectorSignal")
             return CSA
 
    def mainBody(self):
