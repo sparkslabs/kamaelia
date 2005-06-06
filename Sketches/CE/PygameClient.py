@@ -320,7 +320,7 @@ class show(component):
          self.pygame_displayHandler(pygame, text_surface, screensize, back_colour)
          self.pygame_eventHandler(pygame)
 
-   def display_pygame_image_file(self, image_location, screensize=[600,600], back_colour=(0,0,0)):
+   def display_pygame_image_file(self, image_location, screensize=[800,600], back_colour=(0,0,0)):
 
 #      print "display_pygame_image_file: creating image surface"
       image_surface = pygame.image.load(image_location)
@@ -349,11 +349,26 @@ class show(component):
       rect = rect.move([horizonal_to_move,vertical_to_move])
 
 #      print "pygame_displayHandler: creating display"
-      screen_surface = pygame.display.set_mode(screensize)
+      screen_surface = pygame.display.set_mode(screensize, pygame.FULLSCREEN)
+
 
 #      print "display_pygame_image: display"
       screen_surface.fill(back_colour)
       screen_surface.blit(surface, rect)
+
+      my_font = pygame.font.Font(None, 64)
+      firstline = my_font.render("Simple Streaming Client", 1, (232,232,48) )
+
+      my_font = pygame.font.Font(None, 48)
+      secondline = my_font.render("(PC Version)", 1, (232,232,48) )
+
+      my_font = pygame.font.Font(None, 32)
+      tagline = my_font.render("Please also see the mobile version", 1, (232,232,48) )
+
+      screen_surface.blit(firstline, (100,40))
+      screen_surface.blit(secondline, (150,95))
+      screen_surface.blit(tagline, (100,500))
+
       pygame.display.flip()
 
 
@@ -367,14 +382,17 @@ class show(component):
             if event.type == pygame.KEYDOWN:
                print "pygame_eventHandler: User pushed a button, shutting down"
                pygame.quit()
+               raise "Quit"
                return 0
          return 1
 
         
    def pygame_eventHandler_2(self):
       print "pygame_eventHandler_2: Waiting for user response..." 
-      while 1: 
-         for event in pygame.event.get():
+      timeout=2
+      t = time.time()
+      while 1:
+          for event in pygame.event.get():
             if event.type == pygame.QUIT:
                print "pygame_eventHandler_2: User closed window, shutting down"
                pygame.quit()
@@ -383,7 +401,8 @@ class show(component):
                print "pygame_eventHandler_2: User pushed a button, shutting down"
                pygame.quit()
                return 0
-
+          if timeout and time.time()-t>timeout:
+             return
 
                       #   def display_nokia6600(self, fullfilename):
                       #      try:
