@@ -61,7 +61,8 @@ class Ticker(component):
    def main(self):
       pygame.init()
 
-      display = pygame.display.set_mode((self.screen_width, self.screen_height))
+      display = pygame.display.set_mode((self.screen_width, self.screen_height), FULLSCREEN )
+
       my_font = pygame.font.Font(None, self.text_height)
 
       initial_postition = (self.render_area.left,self.render_area.top)
@@ -86,6 +87,10 @@ class Ticker(component):
       maxheight = 0
       import sys
       while 1:
+         for event in pygame.event.get():
+            if event.type == KEYDOWN:
+               if event.key == 113:
+                  raise "Quitting Program"
          if self.dataReady("inbox"):
             word = self.recv("inbox")
             word = " " + word
