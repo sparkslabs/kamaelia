@@ -21,9 +21,15 @@
 # -------------------------------------------------------------------------
 """
 This is a simpler server than the SimpleServer component. Specifically it
-only allows a single connection to occur. Any data received on that
+only allows a single connection to occur at a time. Any data received on that
 connection is sent to the component's outbox, and any data received on its
 inbox is sent to the connection.
+When a connection closes, it sends a producerFinished signal.
+
+TODO:
+If there is already a connection, then any new connections are shutdown. It would
+be better if they weren't accepted in the first place, but that requires changes to
+TCPServer.
 """
 
 import Axon as _Axon
@@ -45,6 +51,7 @@ class SingleServer(_Axon.Component.component):
       super(SingleServer,self).__init__()
       self.listenport = port
       self.CSA = None
+      self.rejectedCSAs = []
 
    def main(self):
       myPLS = TCPServer(listenport=self.listenport)
@@ -57,34 +64,43 @@ class SingleServer(_Axon.Component.component):
             data = self.recv("_oobinfo")
             if isinstance(data,_ki.newCSA):
                yield self.handleNewCSA(data)
-            if isinstance(data,_ki.socketShutdown):
+            if isinstance(data,_ki.shutdownCSA):# socketShutdown):
                # Socket shutdown and died.
-               # This means we should keel over again.
-               self.send(producerFinished(self), "signal")
-               yield 0
-               return
+               # Unlink the CSA. A new one might connect!
+               theCSA = data.object
+               if theCSA in self.rejectedCSAs:
+                   self.rejectedCSAs.remove(theCSA)
+               else:
+                   self.send(producerFinished(self), "signal")
+                   self.CSA = None
+               self.removeChild(theCSA)
+               yield 1
+#               return
          yield 1
 
    def handleNewCSA(self, data):
+      newCSA = data.object
       if self.CSA is None:
-         self.CSA = data.object
+         self.CSA = newCSA
 
          # Wire in the CSA to the outside connectivity points
          self.link((self.CSA,"outbox"),(self,"outbox"), passthrough=2)
          self.link((self,"inbox"),(self.CSA,"DataSend"), passthrough=1)
 
-         self.link((self.CSA,"signal"),(self,"_oobinfo"))
+#         self.link((self.CSA,"signal"),(self,"_oobinfo"))
          self.link((self,"_CSA_signal"), (self.CSA, "control"))
-
-         self.addChildren(self.CSA)
-         return _Axon.Ipc.newComponent(self.CSA)
 
       else:
          # We already have a connected socket, so we want to throw this connection away.
-         print "Already have connection"
-         CSA = data.object
-         CSA._deliver(producerFinished(self),"control")
-         return 1
+         # we'll send it a stop signal, but we still need to add it to the scheduler
+         # otherwise itdoesn't get a chance to act on it. We'll add it to a 'rejected'
+         # list so we know to clean it up slightly differently when we get told it has
+         # shut down
+         newCSA._deliver(producerFinished(self),"control")
+         self.rejectedCSAs.append(newCSA)
+
+      self.addChildren(newCSA)
+      return _Axon.Ipc.newComponent(newCSA)
 
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
