@@ -450,7 +450,7 @@ class char_count_and_read(component):
                self.send(self.message, "outbox")
 
 #            print "char_count_and_read: closing file..."
-            self.file_object.close
+            self.file_object.close()
             
             self.fileRead = True
          return 1
