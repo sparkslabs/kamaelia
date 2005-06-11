@@ -1,0 +1,235 @@
+Axon is the core of Kamaelia. The contents of this directory must be
+installed before the rest of Kamaelia can be used. It can also be used
+independently of Kamaelia.
+
+The install procedure is python's usual dance:
+
+   * python setup.py install
+
+
+Code based documentation is held in two places:
+   * The usual 'pydoc name' - probably worth starting with: 
+     pydoc Axon.Component
+
+   * The test suite is designed to allow you to get low level API behaviour
+     information - "should X,Y, Z work? If so, what happens?". It's a partly
+     retrofitted test suite, but some is TDD. (TDD took over late in the
+     project) As a result, for example, passing a -v flag result in the
+     docstring for each test to be dumped in a form that allows collation,
+     and summarisation. (For an example of what we expect to automate from
+     the test suite, see the end of this README file)
+
+The "Docs" directory contains the output from these two, combined and
+santisation is in progress.
+
+Sample producer/consumber & wrapper component system:
+
+    /-- testComponent -----------------------------------------------\
+    |                                                                |
+    |  +-- Producer ----+          +-- Consumer ----+                |
+    |  |            |result|--->|source|         |result|--->|_input||
+    |  +----------------+          +----------------+                |
+    |                                                                |
+    \----------------------------------------------------------------/
+
+The testComponent creates 2 subcomponents, creates the links in place, and
+takes the output from the consumer and links it to its own private/internal
+_input inbox. When it recieves a value from the consumer, it reports this
+fact and ceases operation.
+
+   Producer sends values to its result outbox
+   Consumer takes values from its source, does some work and sends results to
+      its outbox
+
+(It's probably worth noting that an introspection system would be possible
+to write/nice to see that would be able to derive the above diagram from
+the running system)
+
+Example code:
+
+from Axon.Component import *
+
+class Producer(component):
+   Inboxes=[]
+   Outboxes=["result"]
+   def __init__(self):
+      super(Producer,self).__init__()
+   def main(self):
+      i = 100
+      while(i):
+         i = i -1
+         self.send("hello", "result")
+         yield  1
+
+class Consumer(component):
+   Inboxes=["source"]
+   Outboxes=["result"]
+   def __init__(self):
+      super(Consumer,self).__init__()
+      self.count = 0
+      self.i = 30
+   def doSomething(self):
+      print self.name, "Woo",self.i
+      if self.dataReady("source"):
+         self.recv("source")
+         self.count = self.count +1
+         self.send(self.count, "result")
+
+   def main(self):
+      yield 1
+      while(self.i):
+         self.i = self.i -1
+         self.doSomething()
+         yield 1
+
+class testComponent(component):
+   Inboxes=["_input"]
+   Outboxes=[]
+   def __init__(self):
+      super(testComponent,self).__init__()
+      self.producer = Producer()
+      self.consumer = Consumer()
+      self.addChildren(self.producer, self.consumer)
+      self.link((self.producer, "result"), (self.consumer, "source"))
+      self.link((self.consumer, "result"), (self, "_input"))
+      self.addChildren(self.producer, self.consumer)
+
+   def main(self):
+      yield newComponent(*self.childComponents())
+      while not self.dataReady("_input"):
+         yield 1
+      result = self.recv("_input")
+      print "Consumer finished with result:", result, "!"
+
+p = testComponent()
+p.activate()
+scheduler.run.runThreads(slowmo=0)# context = r.runThreads()
+
+(It would probably be nice to have better syntactic sugar here by using
+dictionaries, operators (eg '|' ) and decorators. The presentation on the
+website on Kamaelia shows a partial semi-reimplementation of ideas using
+decorators to eliminate the classes above)
+
+
+
+Michael, January 2005
+
+-----------------------------------------------------------------------------
+
+Example of expected autodocs from test suite: 
+(Ideally these would be merged with (or replace!)the doc strings/output
+from pydoc.)
+
+./test_Component.py -v 2>&1 | ~/bin/parsetestResults.pl
+
+Standard:
+   __init__
+       Class constructor is expected to be called without arguments.
+
+   __str__
+       Returns a string representation of the component - consisting of
+       Component, representation of inboxes, representation of outboxes.
+       Returns a string that contains the fact that it is a component object
+       and the name of it.
+
+Public:
+   addChildren
+       All arguments are added as child components of the component.
+
+   childComponents
+       Returns the list of children components of this component.
+
+   closeDownComponent
+       stub method, returns 1, expected to be overridden by clients.
+
+   dataReady
+       Returns true if the supplied inbox has data ready for processing.
+
+   initialiseComponent
+       Stub method, returns 1, expected to be overridden by clients.
+
+   link
+       Creates a link, handled by the component's postman, that links a
+       source component to it's sink, honouring passthrough, pipewidth and
+       synchronous attributes.
+
+   main
+       Returns a generator that implements the documented behaviour of a
+       highly simplistic approach component statemachine.
+       This ensures that the closeDownComponent method is called at the end
+       of the loop.  It also repeats the above test.
+
+   mainBody
+       stub method, returns None, expected to be overridden by clients as the
+       main loop.
+
+   recv
+       Takes the first item available off the specified inbox, and returns
+       it.
+
+   removeChild
+       Removes the specified component from the set of child components and
+       deregisters it from the postoffice.
+
+   send
+       Takes the message and places it into the specified outbox, throws
+       an exception if there is no space in a synchronous outbox.
+
+   synchronisedBox
+       Called with no arguments sets the outbox 'outbox' to being a
+       synchronised box, with a maximum depth of 1.
+
+   synchronisedSend
+       Takes a list of things to send, and returns a generator that when
+       repeatedly called tries to send data over a synchronised outbox.
+
+private:
+   __addChild==
+       Registers the component as a child of the component. Internal function.
+
+   _activityCreator
+       Always returns true.  Components are microprocesses instantiated by
+       users typically - thus they are creators of activity, not slaves to
+       it. Internal function.
+
+   _closeDownMicroprocess
+       Checks the shutdownMicroprocess message for the scheduler contains a
+       reference to the postoffice associated with the component.
+       Returns a shutdownMicroprocess. Internal Function.
+
+   _collect
+       Takes the first piece of data in an outbox and returns it. Raises
+       IndexError if empty. Internal function.
+
+   _collectInbox
+       Tests with default args. All these deliveries should suceed. Internal
+       Function.
+       Tests with default args. Should raise IndexError as the box should be
+       empty in this test. Internal Function.
+       Tests with inbox arg. Should raise IndexError as the box should be
+       empty in this test. Internal Function.
+       Tests with inbox arg. Tests collection. Internal Function.
+
+   _deliver
+       Appends the given message to the given inbox. Internal Function.
+       Checks delivery to a synchronised inbox fails when it is full using the
+       force method.
+       Checks delivery to a synchronised inbox fails when it is full.
+
+   _passThroughDeliverIn
+       Appends the given message to the given inbox. Internal Function.
+       Should throw noSpaceInBox if a synchronised box is full.
+       When force is passed as true the box can be overfilled.
+
+   _passThroughDeliverOut
+       Appends the given message to the given outbox. Internal Function.
+       Checks delivery is limited to the pipewidth.
+       Checks delivery is limited to the pipewidth.
+
+   _passThroughDeliverOut_Sync
+       Appends messages to given outbox. Should throw noSpaceInBox when full.
+
+   _safeCollect
+       Wrapper around _collect - returns None where an IndexError would
+       normally be thrown. Internall Function.
+

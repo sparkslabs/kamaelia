@@ -1,0 +1,19 @@
+This directory contains the multicast transceiver version of the TCP based
+simple streaming server in examples 2 & 3. If you are running this on a
+single system, then you will want to run the "System" version. If you are
+running this on 2 or more machines, you will want to run the server on one
+of them, and clients on the rest. If you wish the server to also be a
+client, simply run the "System" version, on that and clients on the rest.
+
+However!
+
+START THE CLIENTS FIRST - this is partly due to a limitation in ogg vorbis.
+
+(Codebooks are stored just once in the stream, so clients joining a stream
+halfway through have to deal with this problem by getting the codebook
+packets from elsewhere, amongst other problems.)
+
+Furthermore, expect the stream to be *very* choppy.
+
+
+Michael, April 2005
