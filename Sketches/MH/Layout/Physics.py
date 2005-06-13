@@ -31,7 +31,7 @@ from operator import sub as _sub
 from operator import add as _add
 from operator import mul as _mul
 
-class ParticleSystem:
+class ParticleSystem(object):
     """System of particles.
     
     Maintains the set of particles and runs the physics simulation over them
@@ -299,7 +299,7 @@ class Particle(object):
 
 
 
-class SimpleLaws:
+class SimpleLaws(object):
     """Implements a simple set of physics laws for the particle system.
        repulsion force : force proportional to 1/distance_squared 
        bonds : force proportional to extension (Hook's law)
