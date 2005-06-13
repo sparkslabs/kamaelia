@@ -1,5 +1,5 @@
 
-0.1.3 (When released)
+0.2.0 (When released)
 
 Detailed:
    * Util/Splitter added. This component allows a single outbox to be connected
@@ -8,6 +8,44 @@ Detailed:
    * Util/LossyConnector added. Component drops messages if the outbox fills.
    * Util/test/test_testSplitter added to test the above class.
    * Util/test directory added.
+   * UI/ UI/Pygame directories added
+      * The "pygamedisplay" service now exists. Furthermore UI.Pygame.Ticker
+        is an example of a component that uses the pygamedisplay to
+        demonstrate how to have multiple objects on screen at once, acting
+        as if they're the only ones using the screen. This is still at a
+        very nascent stage, but should be indicative of future directions.
+        One clear thing that arises from this is that "pygamedisplay" is
+        currently the most basic one thinkable, and there could be many more
+        which effectively act as simple window managers. (However these
+        window managers know how to move, scale, position and rotate the
+        windows under their control...) (This could mean that these displays
+        could be much more candy than even Apple's "Expose" :)
+
+        Clients of the pygamedisplay service get back a raw surface to work
+        with :)
+
+TODO before 0.2.0 release:
+   * Add Tools directory at top level
+      * Introspection viewer gets added here (as a "binary", support code
+        goes in main tree)
+      * axon_shell gets added here
+   * Introspector classes added
+   * Change examples to use newstyle pipelines
+   * Copy over Ciaran's examples into the examples directory
+   * Copy over Colour class into Kamaelia.Data
+   * Find suitable homes for the Subtitling code examples
+
+DESIRABLE before 0.2.0 release:
+   * Button widget. (click and sends message out "signal")
+   * Palette widget (think aggregation of Buttons)
+   * Image widget. (Can display an image, and when receives new one, just
+     displays it)
+      * Combo of these three would allow for simple slideshows to occur.
+   * Port sprite widget (from Sketches/OptimisationTest/simplegame.py to
+     main Kamaelia system)
+   * Ask Matt to implement a change to his physics engine to force objects
+     in his system to always stay inside a bounding box.
+   * Filtering of events for PygameDisplay clients.
 
 0.1.2
 
