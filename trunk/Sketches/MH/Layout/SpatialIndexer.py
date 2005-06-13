@@ -22,7 +22,7 @@
 from operator import mul as _mul
 from operator import sub as _sub
 
-class SpatialIndexer:
+class SpatialIndexer(object):
    """Allows fast spatial lookups of entities -
       quickly find all entities within a given radius of a set of coordinates.
       
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     x = SpatialIndexer()
     print x.withinRadius( (0,0), 1.0)
     
-    class Entity:
+    class Entity(object):
       def __init__(self, coords):
         self.coords = coords
       def getLoc(self):

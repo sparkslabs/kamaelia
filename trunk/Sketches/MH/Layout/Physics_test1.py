@@ -23,7 +23,7 @@
 # first test of Physics module
 
 import Physics
-from PyGameApp import PyGameApp, DragHandler
+import UI
 
 import pygame
 from pygame.locals import *
@@ -33,12 +33,12 @@ import random
 
 class component(object): pass
 
-class Particle(Physics.Particle):
+class VisibleParticle(Physics.Particle):
     """Version of Physics.Particle with added rendering functions,
     and a list of particles it is bonded to."""
 
     def __init__(self, position, pname, radius):
-        super(Particle,self).__init__(position=position, ID=pname )
+        super(VisibleParticle,self).__init__(position=position, ID=pname )
         self.radius = radius
         
         font = pygame.font.Font(None, 24)
@@ -55,7 +55,7 @@ class Particle(Physics.Particle):
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
 
-class ParticleDragger(DragHandler):
+class ParticleDragger(UI.DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:
@@ -73,7 +73,7 @@ class ParticleDragger(DragHandler):
          self.drag(newx, newy)
          self.particle.unFreeze()                
 
-class PhysApp1(PyGameApp, component):
+class PhysApp1(UI.PyGameApp, component):
     """Simple physics demonstrator app"""
 
     def __init__(self, screensize, fullscreen = False, nodes = None, initialTopology=[], border=100):
@@ -92,7 +92,7 @@ class PhysApp1(PyGameApp, component):
            ypos = randrange(self.border, self.screensize[1]-self.border, 1)
         else:
            xpos,ypos = position
-        particle = Particle( (xpos, ypos), label, particleRadius)
+        particle = VisibleParticle( (xpos, ypos), label, particleRadius)
         self.physics.add( particle )
 
     def initialiseComponent(self):

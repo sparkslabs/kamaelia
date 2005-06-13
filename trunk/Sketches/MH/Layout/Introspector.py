@@ -22,15 +22,9 @@
 
 # introspector component
 
-import Axon as _Axon
+import Axon
 
-from Axon.Component import component as axonComponent
-from Axon.Postman   import postman   as axonPostman
-from Axon.Scheduler import scheduler as axonScheduler
-
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-
-class Introspector(_Axon.Component.component):
+class Introspector(Axon.Component.component):
     """This component introspects the current local topology of an axon system.
     
     Local? This component examines its scheduler to find components and postmen.
@@ -64,10 +58,10 @@ class Introspector(_Axon.Component.component):
             # shutdown if requested
             if self.dataReady("control"):
                 data = self.recv("control")
-                if isinstance(data, shutdownMicroprocess):
+                if isinstance(data, Axon.Ipc.shutdownMicroprocess):
                     return
         
-            if isinstance(self.scheduler, axonScheduler):
+            if isinstance(self.scheduler, Axon.Scheduler.scheduler):
                 oldNodes    = nodes
                 oldLinkages = linkages
                 
@@ -142,19 +136,17 @@ class Introspector(_Axon.Component.component):
                 
             yield 1
 
-            
-            
     def introspect(self):
         """returns the current set of components, postboxes and interpostbox linkages"""
         
         # fetch components currently active with the scheduler
         # (note that this is not necessarily all components - as they may have only just been 
         #  activated, in which case they may not register yet)
-        components = dict([ (p,(p.id,p.name)) for p in self.scheduler.threads if isinstance(p, axonComponent) ])
+        components = dict([ (p,(p.id,p.name)) for p in self.scheduler.threads if isinstance(p, Axon.Component.component) ])
         
         # go through all postmen and find all linkages
         linkages = {}
-        for postman in [ p for p in self.scheduler.threads if isinstance(p, axonPostman) ]:
+        for postman in [ p for p in self.scheduler.threads if isinstance(p, Axon.Postman.postman) ]:
             for link in postman.linkages:
                 src = (link.source.id, Introspector.srcBoxType[link.passthrough], link.sourcebox)
                 dst = (link.sink.id  , Introspector.dstBoxType[link.passthrough], link.sinkbox)
@@ -178,11 +170,9 @@ class Introspector(_Axon.Component.component):
         cdict = dict([ components[c] for c in components.iterkeys() ])
         
         return cdict, postboxes, linkages
-            
-                    
 
 if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
+
    i = Introspector()
    i.activate()
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
@@ -194,5 +184,4 @@ if __name__ == '__main__':
    print "We both have inbox, control, signal and outbox postboxes"
    print "The Introspector's outbox is linked to the consoleEchoer's inbox"
    print
-   scheduler.run.runThreads(slowmo=0)
-
+   Axon.Scheduler.scheduler.run.runThreads(slowmo=0)

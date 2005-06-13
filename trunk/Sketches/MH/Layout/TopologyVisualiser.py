@@ -33,7 +33,7 @@ import Axon as _Axon
 
 import Physics
 from Physics import Particle as BaseParticle
-from PyGameApp import PyGameApp, DragHandler
+from UI import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
