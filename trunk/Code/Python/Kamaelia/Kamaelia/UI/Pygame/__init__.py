@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# Needed to allow import
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,24 +19,3 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
-from distutils.core import setup
-
-setup(name = "Kamaelia",
-      version = "0.1.2",
-      description = "Kamaelia - Server Development Kit",
-      author = "Michael",
-      author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/",
-      packages = ["Kamaelia",
-                  "Kamaelia.Util",
-                  "Kamaelia.Protocol",
-                  "Kamaelia.Internet",
-                  "Kamaelia.Data",
-                  "Kamaelia.UI",
-                  "Kamaelia.UI.Pygame",  
-                  "Kamaelia.Sketch", # Empty on RELEASE branch
-                  ""],
-      long_description = """
-"""
-      )
