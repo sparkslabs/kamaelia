@@ -40,12 +40,12 @@ component = _Axon.Component.component
 from Kamaelia.Util.PipelineComponent import pipeline
 
 
-class Particle(BaseParticle):
+class RenderingParticle(BaseParticle):
     """Version of Physics.Particle with added rendering functions.
     """
 
     def __init__(self, ID, position, name):
-        super(Particle,self).__init__(position=position, ID = ID )
+        super(RenderingParticle,self).__init__(position=position, ID = ID )
         self.radius = 20
         self.labelText = name
         
@@ -192,7 +192,7 @@ class TopologyViewerComponent(PyGameApp,component):
        
        See keyDownHandler() for keyboard controls.
     """
-    def __init__(self, screensize         = (640,480),
+    def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
                        caption            = "Topology Viewer", 
                        particleTypes      = None,
@@ -207,7 +207,7 @@ class TopologyViewerComponent(PyGameApp,component):
         pygame.mixer.quit()
         
         if particleTypes == None:
-            self.particleTypes = {"-":Particle}
+            self.particleTypes = {"-":RenderingParticle}
         else:
             self.particleTypes = particleTypes
             
@@ -639,7 +639,10 @@ def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
                     
 if __name__=="__main__":
     import sys
-    dictArgs, remargs = parseArgs(sys.argv[1:])
+    print "X1", sys.argv
+    print "X2", sys.argv[1:]
+    print "X3", parseArgs(sys.argv[1:])
+    dictArgs, remargs, junk = parseArgs(sys.argv[1:])
     
     if "help" in dictArgs:
         print dictArgs["help"]
