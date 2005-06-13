@@ -19,17 +19,16 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import pygame
-from pygame.locals import *
 # import Axon as _Axon
 # component = _Axon.Component.component
 
-import time
 
 from PyGameApp import PyGameApp
 from DragHandler import DragHandler
         
 if __name__=="__main__":
+    import pygame
+    from pygame.locals import *
     #
     # Acceptance test of classes in this directory
     #
