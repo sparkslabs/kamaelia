@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -20,29 +20,30 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from distutils.core import setup
+import Kamaelia.Visualisation
+from Kamaelia.Visualisation.PhysicsGraph import TopologyViewerServer, BaseParticle
+from Kamaelia.Physics.Simple import SimpleLaws, MultipleLaws
 
-setup(name = "Kamaelia",
-      version = "0.1.2",
-      description = "Kamaelia - Server Development Kit",
-      author = "Michael",
-      author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/",
-      packages = ["Kamaelia",
-                  "Kamaelia.Util",
-                  "Kamaelia.Protocol",
-                  "Kamaelia.Internet",
-                  "Kamaelia.Data",
-                  "Kamaelia.UI",
-                  "Kamaelia.UI.MH",
-                  "Kamaelia.UI.Pygame",  
-                  "Kamaelia.Physics",
-                  "Kamaelia.Physics.Simple",
-                  "Kamaelia.Visualisation",
-                  "Kamaelia.Visualisation.Axon",
-                  "Kamaelia.Visualisation.PhysicsGraph",
-                  "Kamaelia.Sketch", # Empty on RELEASE branch
-                  ""],
-      long_description = """
-"""
-      )
+import pygame
+from pygame.locals import *
+
+class ExtraWindowFurniture(object):
+    """Rendering for some extra 'furniture' for this 'axon/kamaelia' branded version
+       of the TopologyViewer.
+    """
+    def __init__(self):
+        super(ExtraWindowFurniture,self).__init__()
+        
+        self.logo = pygame.image.load("kamaelia_logo.png")
+        
+        biggest = max( self.logo.get_width(), self.logo.get_height() )
+        from pygame.transform import rotozoom
+        self.logo = rotozoom(self.logo, 0.0, 64.0 / biggest)
+        
+    def render(self, surface):
+        """Rendering generator, draws kamaelia logo. Awwww!"""
+        yield 10
+        surface.blit(self.logo, (8,8))
+        
+    def setOffset( self, (x,y) ):
+        pass

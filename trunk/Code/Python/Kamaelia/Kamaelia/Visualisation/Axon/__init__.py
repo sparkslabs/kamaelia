@@ -1,5 +1,5 @@
-# Needed to allow import
-#
+#!/usr/bin/env python
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -19,4 +19,3 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
