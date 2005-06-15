@@ -58,7 +58,7 @@ class VisibleParticle(Physics.Simple.Particle):
 
 class ParticleDragger(Kamaelia.UI.MH.DragHandler):
      def detect(self, pos, button):
-         inRange = self.app.physics.withinRadius( pos, app.particleRadius )
+         inRange = self.app.physics.withinRadius( pos, self.app.particleRadius )
          if len(inRange) > 0:
              self.particle = inRange[0][0]
              self.particle.freeze()
@@ -83,6 +83,7 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
         self.initialTopology = list(initialTopology)
         self.particleRadius = 20
         self.nodes = nodes
+        self.physics = None
 
     def makeBond(self, source, dest):
         self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
@@ -122,7 +123,6 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
             
         self.physics.run(1)
         return 1
-
 
     def drawGrid(self):
         for i in range(0,self.screen.get_height(), int(self.laws.maxInteractRadius)):

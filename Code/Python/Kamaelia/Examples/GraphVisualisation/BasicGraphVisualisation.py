@@ -43,13 +43,15 @@ if __name__=="__main__":
 
     app = PhysApp1( (640, 480), False, nodes, links)
     X = N+1
-    for i in app.main():
-       if random.randrange(0,100)<5:
-          app.makeParticle(str(X), "randompos", "circle", 20)
-          X += 1
-       if random.randrange(0,100)<25:
-          start = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
-          end = start
-          while end == start:
-             end = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
-          app.makeBond(app.physics.particleDict[start].ID, app.physics.particleDict[end].ID)
+    app.run()
+#    for i in app.main():
+#       if app.physics:
+#          if random.randrange(0,100)<5:
+#             app.makeParticle(str(X), "randompos", "circle", 20)
+#             X += 1
+#          if random.randrange(0,100)<25:
+#             start = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
+#             end = start
+#             while end == start:
+#                end = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
+#             app.makeBond(app.physics.particleDict[start].ID, app.physics.particleDict[end].ID)
