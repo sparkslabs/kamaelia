@@ -26,6 +26,11 @@ import Axon
 
 _cat = Axon.CoordinatingAssistantTracker
 
+#"events" : (self, "events"),#
+
+
+class Bunch: pass
+
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes={ "inbox" : "Default inbox, not currently used",
              "control": "Default control inbox, not currently used",
@@ -61,6 +66,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (50,50)
       self.surfaces = []
+      self.visibility = {}
 
    def surfacePosition(self,surface):
       position = self.next_position
@@ -71,18 +77,65 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          if self.dataReady("notify"):
             message = self.recv("notify")
             callbackservice = message["callback"]
+            eventservice = message.get("events", None)
             size = message["size"]
             surface = pygame.Surface(size)
             position = self.surfacePosition(surface)
-            self.surfaces.append( (surface, position) )
             callbackcomms = self.addOutbox("displayerfeedback")
+            if eventservice is not None:
+               eventcomms = self.addOutbox("eventsfeedback")
+               self.link((self,eventcomms), eventservice)
+               self.visibility[eventcomms] = (surface,size,position)
             self.link((self, callbackcomms), callbackservice)
             self.send(surface, callbackcomms)
+            self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
    def updateDisplay(self,display):
       display.fill(self.background_colour)
-      for surface, position in self.surfaces:
+      listeners = [] # THIS WILL BE BROKE INITIALLY (SEND TO ALL(!))
+      for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
+         if eventcomms is not None:
+            listeners.append(eventcomms)
+         for event in pygame.event.get():
+            remapPos = False
+
+            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                pos = event.pos[0],event.pos[1]
+                remapPos = True
+            if event.type == pygame.MOUSEMOTION:
+               e = Bunch()
+               e.type = event.type
+               e.pos = event.pos
+               e.rel = event.rel
+               e.buttons = event.buttons
+               event = e
+               pos = event.pos[0],event.pos[1]
+               remapPos = True
+
+            if event.type == pygame.MOUSEBUTTONUP:
+               e = Bunch()
+               e.type = event.type
+               e.pos = event.pos
+               e.button = event.button
+               event = e
+               pos = event.pos[0],event.pos[1]
+               remapPos = True
+
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+               e = Bunch()
+               e.type = event.type
+               e.pos = event.pos
+               e.button = event.button
+               event = e
+               pos = event.pos[0],event.pos[1]
+               remapPos = True
+
+            for listener in listeners:
+               if remapPos:
+                  event.pos = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+               self.send(event, listener)
 
    def main(self):
       pygame.init()

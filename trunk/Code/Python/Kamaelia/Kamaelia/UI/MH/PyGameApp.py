@@ -34,12 +34,8 @@ class PyGameApp(_Axon.Component.component):
     Use addHandler() and removeHandler() register handlers for pygame events.
         
     """
-
-    def waitBox(self,boxname):
-      waiting = True
-      while waiting:
-         if self.dataReady(boxname): return
-         else: yield 1
+    Inboxes = ["inbox", "events", "control"]
+    Outboxes = [ "signal", "outbox", "displaysignal" ]
 
     def __init__(self, screensize, caption="PyGame Application", fullscreen=False, depth=0):
         super(PyGameApp, self).__init__()
@@ -48,33 +44,34 @@ class PyGameApp(_Axon.Component.component):
         flags = DOUBLEBUF
         if fullscreen:
             flags = flags | -abs(FULLSCREEN)
-#        self.screen = pygame.display.set_mode( screensize, flags, depth )
-        self.screen = None
+        self.flags = flags
+        self.depth = depth
+        self.screensize = screensize
+        self.caption = caption
 
         self.eventHandlers = {}
-        self.screensize = screensize
-        self.caption = "PyGame Application"
         
         self.flip = False
     
-    def initialiseComponent(self):
-        pass
-        
-    def go(self):
-        """Call this to run the pygame app, without using an Axon scheduler.
-        
-           Returns when the app 'quits'
-        """
-        for i in self.main():
-           pass
+    def waitBox(self,boxname):
+        waiting = True
+        while waiting:
+           if self.dataReady(boxname): return
+           else: yield 1
 
     def main(self):
         displayservice = PygameDisplay.getDisplayService()
-        self.link((self,"signal"), displayservice)
-        self.send({ "callback" : (self,"control"), "size": (self.screensize)}, "signal")
-        for _ in self.waitBox("control"): yield 1
-        self.screen = self.recv("control")
+        self.link((self,"displaysignal"), displayservice)
+        self.send({ "callback" : (self,"control"), 
+                    "events" : (self, "events"),
+                    "size" : self.screensize
+                  }, "displaysignal")
+        for _ in self.waitBox("control"): 
+            print "Waiting for display"
+            yield 1
+        display = self.recv("control")
 
+        self.screen = display
         pygame.display.set_caption(self.caption)
         self.screensize = self.screen.get_width(), self.screen.get_height()
         self.addHandler(QUIT, lambda event : self.quit(event))
@@ -92,11 +89,28 @@ class PyGameApp(_Axon.Component.component):
                 yield 1
             else:
                 yield 0
+        print "QUIT"
+
+    def initialiseComponent(self):
+        pass
+        
+    def go(self):
+        """Call this to run the pygame app, without using an Axon scheduler.
+        
+           Returns when the app 'quits'
+        """
+        for i in self.main():
+           pass
 
     def mainLoop(self):
         """Implement your runtime loop in this method here."""
         return 1
 
+
+    def events(self):
+       while self.dataReady("events"):
+          data = self.recv("events")
+          yield data
 
     def _dispatch(self):
         """Internal pygame event dispatcher.
@@ -104,7 +118,8 @@ class PyGameApp(_Axon.Component.component):
            For all events received, it calls all event handlers in sequence
            until one returns True
         """
-        for event in pygame.event.get():
+#        for event in pygame.event.get():
+        for event in self.events():
             if self.eventHandlers.has_key(event.type):
                 for handler in self.eventHandlers[event.type]:
                     if handler(event):
