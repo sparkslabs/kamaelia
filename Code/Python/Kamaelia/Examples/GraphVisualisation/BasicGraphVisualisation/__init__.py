@@ -1,5 +1,5 @@
-# Needed to allow import
-#
+#!/usr/bin/env python
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -20,3 +20,14 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+# physics code for forces between particles
+#
+# unbonded force acts between all non bonded particles
+# bonded force acts between bonded particles
+
+#from SpatialIndexer import SpatialIndexer
+#
+#from ParticleSystem import ParticleSystem
+#from Particle import Particle
+#from SimpleLaws import SimpleLaws
+#from MultipleLaws import MultipleLaws

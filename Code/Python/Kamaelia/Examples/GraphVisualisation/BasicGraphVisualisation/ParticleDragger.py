@@ -1,5 +1,5 @@
-# Needed to allow import
-#
+#!/usr/bin/env python
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -19,4 +19,28 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
+import UI
+
+# from pygame.locals import *
+
+
+
+class ParticleDragger(UI.MH.DragHandler):
+     def detect(self, pos, button):
+         inRange = self.app.physics.withinRadius( pos, app.particleRadius )
+         if len(inRange) > 0:
+             self.particle = inRange[0][0]
+             self.particle.freeze()
+             return self.particle.getLoc()
+         else:
+             return False
+
+     def drag(self,newx,newy):
+         self.particle.pos = (newx,newy)
+         self.app.physics.updateLoc(self.particle)
+
+     def release(self,newx, newy):
+         self.drag(newx, newy)
+         self.particle.unFreeze()                
 
