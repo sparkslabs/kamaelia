@@ -22,6 +22,7 @@
 import pygame
 from pygame.locals import *
 import Axon as _Axon
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class PyGameApp(_Axon.Component.component):
     """Simple Axon component for a PyGame application.
@@ -34,6 +35,12 @@ class PyGameApp(_Axon.Component.component):
         
     """
 
+    def waitBox(self,boxname):
+      waiting = True
+      while waiting:
+         if self.dataReady(boxname): return
+         else: yield 1
+
     def __init__(self, screensize, caption="PyGame Application", fullscreen=False, depth=0):
         super(PyGameApp, self).__init__()
         pygame.init()
@@ -41,14 +48,14 @@ class PyGameApp(_Axon.Component.component):
         flags = DOUBLEBUF
         if fullscreen:
             flags = flags | -abs(FULLSCREEN)
-        self.screen = pygame.display.set_mode( screensize, flags, depth )
-        pygame.display.set_caption(caption)
+#        self.screen = pygame.display.set_mode( screensize, flags, depth )
+        self.screen = None
 
         self.eventHandlers = {}
-        self.screensize = self.screen.get_width(), self.screen.get_height()
-        self.addHandler(QUIT, lambda event : self.quit(event))
+        self.screensize = screensize
+        self.caption = "PyGame Application"
         
-        self.flip = True
+        self.flip = False
     
     def initialiseComponent(self):
         pass
@@ -62,6 +69,17 @@ class PyGameApp(_Axon.Component.component):
            pass
 
     def main(self):
+        displayservice = PygameDisplay.getDisplayService()
+        self.link((self,"signal"), displayservice)
+        self.send({ "callback" : (self,"control"), "size": (self.screensize)}, "signal")
+        for _ in self.waitBox("control"): yield 1
+        self.screen = self.recv("control")
+
+        pygame.display.set_caption(self.caption)
+        self.screensize = self.screen.get_width(), self.screen.get_height()
+        self.addHandler(QUIT, lambda event : self.quit(event))
+        self.flip = True
+
         self.initialiseComponent()
         self.quitting = False
         # Event loop
