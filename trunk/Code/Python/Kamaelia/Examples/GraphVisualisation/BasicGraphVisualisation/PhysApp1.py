@@ -84,6 +84,7 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
         self.particleRadius = 20
         self.nodes = nodes
         self.physics = None
+        self.X = 5
 
     def makeBond(self, source, dest):
         self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
@@ -110,6 +111,19 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
         for source,dest in self.initialTopology:
            self.makeBond(source, dest)
 
+    def extra(self):
+       if self.physics:
+          if random.randrange(0,100)<5:
+             self.makeParticle(str(self.X), "randompos", "circle", 20)
+             self.X += 1
+          if random.randrange(0,100)<25:
+             start = self.physics.particleDict.keys()[random.randrange(0,len(self.physics.particleDict.keys()))]
+             end = start
+             while end == start:
+                end = self.physics.particleDict.keys()[random.randrange(0,len(self.physics.particleDict.keys()))]
+             self.makeBond(self.physics.particleDict[start].ID, self.physics.particleDict[end].ID)
+
+
     def mainLoop(self):
         self.screen.fill( (255,255,255) )
         
@@ -122,6 +136,7 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
             p.renderSelf(self.screen)
             
         self.physics.run(1)
+        self.extra()
         return 1
 
     def drawGrid(self):

@@ -52,7 +52,13 @@ class Ticker(Axon.Component.component):
    def main(self):
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"signal"), displayservice)
-      self.send({ "callback" : (self,"control"), "size": (400,300)}, "signal")
+      self.send({ "DISPLAYREQUEST" : True,
+                  "callback" : (self,"control"),
+#                  "events" : (self, "events"),
+                  "size": (400,300)},
+                  "signal")
+
+
       for _ in self.waitBox("control"): yield 1
       display = self.recv("control")
 

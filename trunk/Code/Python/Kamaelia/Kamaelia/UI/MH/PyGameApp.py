@@ -34,7 +34,7 @@ class PyGameApp(_Axon.Component.component):
     Use addHandler() and removeHandler() register handlers for pygame events.
         
     """
-    Inboxes = ["inbox", "events", "control"]
+    Inboxes = ["inbox", "events", "displaycontrol", "control"]
     Outboxes = [ "signal", "outbox", "displaysignal" ]
 
     def __init__(self, screensize, caption="PyGame Application", fullscreen=False, depth=0):
@@ -62,14 +62,15 @@ class PyGameApp(_Axon.Component.component):
     def main(self):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"displaysignal"), displayservice)
-        self.send({ "callback" : (self,"control"), 
+        self.send({ "DISPLAYREQUEST" : True,
                     "events" : (self, "events"),
-                    "size" : self.screensize
+                    "callback" : (self, "displaycontrol"),
+                    "size" : self.screensize,
                   }, "displaysignal")
-        for _ in self.waitBox("control"): 
-            print "Waiting for display"
+        for _ in self.waitBox("displaycontrol"): 
+#             print "Waiting for display"
             yield 1
-        display = self.recv("control")
+        display = self.recv("displaycontrol")
 
         self.screen = display
         pygame.display.set_caption(self.caption)
@@ -109,8 +110,9 @@ class PyGameApp(_Axon.Component.component):
 
     def events(self):
        while self.dataReady("events"):
-          data = self.recv("events")
-          yield data
+          event_bundle = self.recv("events")
+          for event in event_bundle:
+             yield event
 
     def _dispatch(self):
         """Internal pygame event dispatcher.
@@ -140,13 +142,21 @@ class PyGameApp(_Axon.Component.component):
         """
         if not self.eventHandlers.has_key(eventtype):
             self.eventHandlers[eventtype] = []
+            self.send({ "ADDLISTENEVENT" : eventtype,
+                        "surface" : self.screen,
+                      }, "displaysignal")
         self.eventHandlers[eventtype] += [handler]
         return handler
             
     def removeHandler(self, eventtype, handler):
         """Remove the specified pygame event handler"""
-        if self.eventHandlers.has_key(eventtype):
-            self.eventHandlers[eventtype].remove(handler)
+        if self.eventHandlers.has_key(eventtype): 
+            self.eventHandlers[eventtype].remove(handler) # Latent bug, handler not in list
+#            if len(self.eventHandlers[eventtype]) == 0:
+#               self.send({ "REMOVELISTENEVENT" : eventtype,
+#                           "surface" : self.screen,
+#                         }, "displaysignal")
+
 
     def quit(self, event = None):
         """Call this method/event handler to finish"""

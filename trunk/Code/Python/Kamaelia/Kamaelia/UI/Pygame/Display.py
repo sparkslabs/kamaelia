@@ -67,6 +67,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.next_position = (50,50)
       self.surfaces = []
       self.visibility = {}
+      self.events_wanted = {}
+      self.surface_to_eventcomms = {}
 
    def surfacePosition(self,surface):
       position = self.next_position
@@ -76,19 +78,34 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def handleDisplayRequest(self):
          if self.dataReady("notify"):
             message = self.recv("notify")
-            callbackservice = message["callback"]
-            eventservice = message.get("events", None)
-            size = message["size"]
-            surface = pygame.Surface(size)
-            position = self.surfacePosition(surface)
-            callbackcomms = self.addOutbox("displayerfeedback")
-            if eventservice is not None:
-               eventcomms = self.addOutbox("eventsfeedback")
-               self.link((self,eventcomms), eventservice)
-               self.visibility[eventcomms] = (surface,size,position)
-            self.link((self, callbackcomms), callbackservice)
-            self.send(surface, callbackcomms)
-            self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
+            if message.get("DISPLAYREQUEST", False):
+               callbackservice = message["callback"]
+               eventservice = message.get("events", None)
+               size = message["size"]
+               surface = pygame.Surface(size)
+               position = self.surfacePosition(surface)
+               callbackcomms = self.addOutbox("displayerfeedback")
+               eventcomms = None
+               if eventservice is not None:
+                  eventcomms = self.addOutbox("eventsfeedback")
+                  self.events_wanted[eventcomms] = {}
+                  self.link((self,eventcomms), eventservice)
+                  self.visibility[eventcomms] = (surface,size,position)
+                  self.surface_to_eventcomms[str(id(surface))] = eventcomms
+               self.link((self, callbackcomms), callbackservice)
+               self.send(surface, callbackcomms)
+               self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
+
+            elif message.get("ADDLISTENEVENT", None) is not None:
+#               print "ADD LISTENER", message["ADDLISTENEVENT"]
+               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+               self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
+
+            elif message.get("REMOVELISTENEVENT", None) is not None:
+#               print "REMOVE LISTENER", message["REMOVELISTENEVENT"]
+               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+               self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+            
 
    def updateDisplay(self,display):
       display.fill(self.background_colour)
@@ -97,45 +114,39 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          display.blit(surface, position)
          if eventcomms is not None:
             listeners.append(eventcomms)
+         events = []
          for event in pygame.event.get():
             remapPos = False
-
+            pos = None
             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
                 pos = event.pos[0],event.pos[1]
                 remapPos = True
-            if event.type == pygame.MOUSEMOTION:
-               e = Bunch()
-               e.type = event.type
-               e.pos = event.pos
-               e.rel = event.rel
-               e.buttons = event.buttons
-               event = e
-               pos = event.pos[0],event.pos[1]
-               remapPos = True
+                e = Bunch()
+                e.type = event.type
+                e.pos = event.pos
+                if event.type == pygame.MOUSEMOTION:
+#                   print "MOTION", event
+                   e.rel = event.rel
+                if event.type == pygame.MOUSEMOTION:
+                   e.buttons = event.buttons
+                else:
+                   e.button = event.button
+                event = e
+                pos = event.pos[0],event.pos[1]
+                remapPos = True
+            events.append((event,remapPos,pos))
 
-            if event.type == pygame.MOUSEBUTTONUP:
-               e = Bunch()
-               e.type = event.type
-               e.pos = event.pos
-               e.button = event.button
-               event = e
-               pos = event.pos[0],event.pos[1]
-               remapPos = True
-
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-               e = Bunch()
-               e.type = event.type
-               e.pos = event.pos
-               e.button = event.button
-               event = e
-               pos = event.pos[0],event.pos[1]
-               remapPos = True
-
-            for listener in listeners:
-               if remapPos:
-                  event.pos = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
-               self.send(event, listener)
+         for listener in listeners:
+            bundle = []
+            for event,remapPos,pos in events:
+               try:
+                  if self.events_wanted[listener][event.type]:
+                    if remapPos:
+                       event.pos = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                    bundle.append(event)
+               except KeyError:
+                  pass
+            self.send(bundle, listener)
 
    def main(self):
       pygame.init()
