@@ -28,7 +28,7 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 class Image(Axon.Component.component):
    """Simple 'Image display widget' for PygameDisplay"""
    
-   Inboxes = { "inbox"    : "Specify (new) filename / surfaces",
+   Inboxes = { "inbox"    : "Specify (new) filename",
                "control"  : "",
                "callback" : "Receive callbacks from PygameDisplay",
                "bgcolour" : "Set the background colour"
@@ -37,7 +37,7 @@ class Image(Axon.Component.component):
     
    def __init__(self, image = None, bgcolour = (128,128,128), size = None):
       """Initialisation.
-         image = filename or pygame.Surface containing image
+         image = filename of file containing image
          bgcolour = (r,g,b) pygame colour specification (defaults to grey)
          size  = None (defaults to image size, or (240,192) if no image specified)
                  or (width, height) tuple
@@ -77,9 +77,15 @@ class Image(Axon.Component.component):
 #      self.display = self.recv("callback")
 #      self.blitToSurface()      
 #      yield 1
-        
-      while 1:
-         change = False    
+      
+      done = False
+      change = False    
+      while not done:
+      
+         if self.dataReady("control"):
+            cmsg = self.recv("control")
+            if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+               done = True
          
          # if we're given a new surface, use that instead
          if self.dataReady("callback"):
@@ -97,22 +103,18 @@ class Image(Axon.Component.component):
             
          if change:
             self.blitToSurface()
+            change = False
         
          yield 1
-        
+
         
    def fetchImage(self, newImage):
       if newImage is None:
          self.image = None
     
-      elif type(newImage) is not pygame.Surface:
-         filename = newImage
-         newImage = None
-         newImage = pygame.image.load(filename)
+      else:
+         self.image = pygame.image.load(newImage)
         
-      if not newImage is None:
-         self.image = newImage
-         
          if self.size is None:
              self.size = self.image.get_size()
         
@@ -140,14 +142,13 @@ if __name__ == "__main__":
       def __init__(self, speed = 4):
          super(IChange,self).__init__()
          self.speed = speed
-         self.altimage = pygame.image.load(testImageFile1)
            
       def main(self):
          while 1:
             for g in range(0,256,self.speed):
                self.send( (0,g,0),"outcolour")
                yield 1
-            self.send( self.altimage, "outimage")
+            self.send( testImageFile1, "outimage")
             for g in range(255,0,-self.speed):
                self.send( (0,g,0),"outcolour")
                yield 1
