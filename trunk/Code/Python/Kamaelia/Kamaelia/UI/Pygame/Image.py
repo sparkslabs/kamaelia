@@ -36,9 +36,10 @@ class Image(Axon.Component.component):
              }
    Outboxes = { "signal" : "" }
     
-   def __init__(self, image = None, bgcolour = (128,128,128), size = None):
+   def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None):
       """Initialisation.
          image = filename of file containing image
+         position = (x,y) or None for default
          bgcolour = (r,g,b) pygame colour specification (defaults to grey)
          size  = None (defaults to image size, or (240,192) if no image specified)
                  or (width, height) tuple
@@ -54,6 +55,13 @@ class Image(Axon.Component.component):
       
       if self.size is None:
          self.size = (240,192)
+         
+      self.disprequest = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "size": self.size}
+      
+      if not position is None:
+         self.disprequest["position"] = position
     
         
    def waitBox(self,boxname):
@@ -68,17 +76,9 @@ class Image(Axon.Component.component):
       self.link((self,"signal"), displayservice)
       
       # request a surface
-      self.send({ "DISPLAYREQUEST" : True,
-                  "callback" : (self,"callback"),
-#                     "events" : (self, "events"),
-                  "size": self.size},
+      self.send(self.disprequest,
                   "signal")
     
-#      for _ in self.waitBox("callback"): yield 1
-#      self.display = self.recv("callback")
-#      self.blitToSurface()      
-#      yield 1
-      
       done = False
       change = False    
       while not done:

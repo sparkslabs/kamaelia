@@ -36,12 +36,12 @@ files = os.listdir(path)
 files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
 
 chooser = Chooser(items = files).activate()
-image = Image(size=(640,480)).activate()
+image = Image(size=(780,540), position=(8,48)).activate()
 
-bnext  = Button(caption="Next", msg="NEXT").activate()
-bprev  = Button(caption="Previous", msg="PREV").activate()
-bfirst = Button(caption="First", msg="FIRST").activate()
-blast  = Button(caption="Last", msg="LAST").activate()
+bnext  = Button(caption="Next", msg="NEXT", position=(72,8)).activate()
+bprev  = Button(caption="Previous", msg="PREV",position=(8,8)).activate()
+bfirst = Button(caption="First", msg="FIRST",position=(256,8)).activate()
+blast  = Button(caption="Last", msg="LAST",position=(320,8)).activate()
 
 bnext.link(  (bnext, "outbox"),  (chooser, "inbox") )
 bprev.link(  (bprev, "outbox"),  (chooser, "inbox") )

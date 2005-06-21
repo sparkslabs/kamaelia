@@ -40,9 +40,10 @@ class Button(Axon.Component.component):
    Outboxes = { "outbox" : "button click events emitted here",
                 "signal" : "" }
    
-   def __init__(self, caption=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None):
+   def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None):
       """Creates and activates a button widget
          caption  = text label for the button / None for default label
+         position = (x,y) pair / None
          margin   = margin size (around the text) in pixels
          bgcolour = background colour
          fgcolour = text colour
@@ -63,6 +64,14 @@ class Button(Axon.Component.component):
       if msg is None:
          msg = ("CLICK", self.id)
       self.eventMsg = msg      
+      
+      self.disprequest = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "events" : (self, "inbox"),
+                           "size": self.size }
+      
+      if not position is None:
+        self.disprequest["position"] = position
          
 
    def buildCaption(self, text):
@@ -88,10 +97,7 @@ class Button(Axon.Component.component):
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"signal"), displayservice)
 
-      self.send({ "DISPLAYREQUEST" : True,
-                  "callback" : (self,"callback"),
-                  "events" : (self, "inbox"),
-                  "size": self.size },
+      self.send( self.disprequest,
                   "signal")
              
       for _ in self.waitBox("callback"): yield 1
