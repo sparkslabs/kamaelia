@@ -83,7 +83,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                eventservice = message.get("events", None)
                size = message["size"]
                surface = pygame.Surface(size)
-               position = self.surfacePosition(surface)
+#               position = self.surfacePosition(surface)
+               position = message.get("position", self.surfacePosition(surface))
                callbackcomms = self.addOutbox("displayerfeedback")
                eventcomms = None
                if eventservice is not None:
