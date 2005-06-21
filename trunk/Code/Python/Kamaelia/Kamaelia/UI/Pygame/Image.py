@@ -23,6 +23,7 @@
 
 import pygame
 import Axon
+from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
