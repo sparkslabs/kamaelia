@@ -47,6 +47,10 @@ def xfloat_range(min, max, steps):
        yield min + i*((max-min)/float(intermediate))
     yield max
 
+def x_range(min, max, steps):
+    for x in xfloat_range(min, max, steps):
+       yield int(x)
+
 
 class Ticker(Axon.Component.component):
    def __init__(self, **argd):
@@ -64,12 +68,13 @@ class Ticker(Axon.Component.component):
          if self.dataReady(boxname): return
          else: yield 1
 
-   def requestDisplay(self, size=(400,300)):
+   def requestDisplay(self, size=(400,300), fullscreen=0):
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"signal"), displayservice)
       self.send({ "DISPLAYREQUEST" : True,
                   "callback" : (self,"control"),
                   "size": size,
+                  "fullscreen" : fullscreen,
                   "scaling" : 1.0},
                   "signal")
 
@@ -185,32 +190,38 @@ class Ticker(Axon.Component.component):
       return result
 
    def main(self):
-      self.requestDisplay(size=(self.display_width, self.display_height))
+      self.requestDisplay(size=(self.display_width, self.display_height),
+                          fullscreen=1)
       for _ in self.waitBox("control"): yield 1
       self.display = self.recv("control")
-      rectangles = []
 
-      while len(rectangles)<20:
-         add = self.randomRectangle(700,500,20,20,300,300)
-         rectangles.append(add)
-         self.renderRectangles(rectangles)
+      while True:
+         rectangles = []
+
+         while len(rectangles)<20:
+            add = self.randomRectangle(700,500,20,20,300,300)
+            rectangles.append(add)
+            self.renderRectangles(rectangles)
+            yield 1
+
          yield 1
+         while self.overlappingRectangles(rectangles):
+            rectangles = self.spreadRectangles(rectangles)
 
-      yield 1
-      while self.overlappingRectangles(rectangles):
-         rectangles = self.spreadRectangles(rectangles)
+         offset, scale = self.getOffsetRescale(rectangles)
+         for frame in self.renderAnimatedRectangles(rectangles, offset, scale):
+            time.sleep(0.01)
+            yield 1
 
-      offset, scale = self.getOffsetRescale(rectangles)
-      for frame in self.renderAnimatedRectangles(rectangles, offset, scale):
-         time.sleep(0.01)
+         self.renderRectangles(rectangles,rescale=True)
+         my_font = pygame.font.Font(None, 48)
+         word_render= my_font.render("ALL DONE", 1, (48,48,224))
+                     
+         self.display.blit(word_render, (200,200))
          yield 1
-
-      self.renderRectangles(rectangles,rescale=True)
-      my_font = pygame.font.Font(None, 48)
-      word_render= my_font.render("ALL DONE", 1, (48,48,224))
-                  
-      self.display.blit(word_render, (200,200))
-
+         yield 1
+         time.sleep(3)
+ 
 
    def renderAnimatedRectangles(self, rectangles, offset, scale, steps = 25):
       animators = []
@@ -233,20 +244,15 @@ class Ticker(Axon.Component.component):
         left = r.rect[0] - offset[0]
         o_top = r.orig[1]
         top = r.rect[1] - offset[1]
-        print "X", o_left, left
-        print "Y", o_top, top
-        try:
-            xchange = iter(xrange(o_left, left, (left-o_left)/float(steps)))
-            ychange = iter(xrange(o_top, top, (top-o_top)/float(steps)))
-            scale_change = iter(xfloat_range(1.0, scale, steps))
-            for i in xrange(steps):
-               x = xchange.next()
-               y = ychange.next()
-               s = scale_change.next()
-               a,b,c,d = [ z * s for z in x, y, r.rect.width, r.rect.height ]
-               yield a,b,c,d
-        except ValueError:
-           print "SKIPPING : ValueError: xrange() arg 3 must not be zero"
+        xchange = iter(x_range(o_left, left, steps))
+        ychange = iter(x_range(o_top, top, steps))
+        scale_change = iter(xfloat_range(1.0, scale, steps))
+        for i in xrange(steps):
+           x = xchange.next()
+           y = ychange.next()
+           s = scale_change.next()
+           a,b,c,d = [ z * s for z in x, y, r.rect.width, r.rect.height ]
+           yield a,b,c,d
 
 if __name__ == "__main__":
 
