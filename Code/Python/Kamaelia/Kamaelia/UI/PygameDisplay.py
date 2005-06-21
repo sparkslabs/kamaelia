@@ -97,7 +97,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
             elif message.get("ADDLISTENEVENT", None) is not None:
-#               print "ADD LISTENER", message["ADDLISTENEVENT"]
+#               print "ADD LISTENER", message["ADDLISTENEVENT"], str(id(message["surface"]))
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
 
@@ -109,44 +109,47 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def updateDisplay(self,display):
       display.fill(self.background_colour)
-      listeners = [] # THIS WILL BE BROKE INITIALLY (SEND TO ALL(!))
+      
+      # pre-fetch all waiting events in one go
+      events = [ event for event in pygame.event.get() ]
+      
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
+         
+         # see if this component is interested in events
          if eventcomms is not None:
-            listeners.append(eventcomms)
-         events = []
-         for event in pygame.event.get():
-            remapPos = False
-            pos = None
-            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                pos = event.pos[0],event.pos[1]
-                remapPos = True
-                e = Bunch()
-                e.type = event.type
-                e.pos = event.pos
-                if event.type == pygame.MOUSEMOTION:
-#                   print "MOTION", event
-                   e.rel = event.rel
-                if event.type == pygame.MOUSEMOTION:
-                   e.buttons = event.buttons
-                else:
-                   e.button = event.button
-                event = e
-                pos = event.pos[0],event.pos[1]
-                remapPos = True
-            events.append((event,remapPos,pos))
+            listener = eventcomms
 
-         for listener in listeners:
+            # go through events, for each, check if the listener is interested in that time of event         
             bundle = []
-            for event,remapPos,pos in events:
-               try:
-                  if self.events_wanted[listener][event.type]:
-                    if remapPos:
-                       event.pos = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
-                    bundle.append(event)
-               except KeyError:
-                  pass
-            self.send(bundle, listener)
+            for event in events:
+               wanted = False
+               try:   wanted = self.events_wanted[listener][event.type]
+               except KeyError: pass
+                  
+               if wanted:
+                  # if event contains positional information, remap it
+                  # for the surface's coordiate origin
+                  if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                     e = Bunch()
+                     e.type = event.type
+                     pos = event.pos[0],event.pos[1]
+                     e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                     if event.type == pygame.MOUSEMOTION:
+                        e.rel = event.rel
+                     if event.type == pygame.MOUSEMOTION:
+                        e.buttons = event.buttons
+                     else:
+                        e.button = event.button
+                     event = e
+                  bundle.append(event)
+
+            # only send events to listener if we've actually got some
+            if bundle != []:
+               self.send(bundle, listener)
+#               print "Sent "+repr(bundle)+" to "+str(listener)
+                  
+                                           
 
    def main(self):
       pygame.init()
