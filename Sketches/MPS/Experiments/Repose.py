@@ -34,11 +34,18 @@ class myRectangle(object):
    def __init__(self, **argd):
       global count
       self.rect = argd["rect"]
+      self.orig = self.rect[:]
       self.centre = argd["centre"]
       self.scale = argd["scale"]
       self.collided = False
       self.id = count
       count = count + 1
+
+def xfloat_range(min, max, steps):
+    intermediate = steps -1
+    for i in xrange(intermediate):
+       yield min + i*((max-min)/float(intermediate))
+    yield max
 
 
 class Ticker(Axon.Component.component):
@@ -48,6 +55,8 @@ class Ticker(Axon.Component.component):
       # Bunch of initial configs.
       #
       self.display = None
+      self.display_height = 700
+      self.display_width = 900
 
    def waitBox(self,boxname):
       waiting = True
@@ -74,7 +83,6 @@ class Ticker(Axon.Component.component):
       width = random.randint(int(maxwidth*0.75), maxwidth)
       height = random.randint(int(maxheight*0.25), maxheight)
 
-      print "WIDTH, HEIGHT", width,height
       centre = left+width/2, top+height/2
       scale = 1.0
 
@@ -103,8 +111,7 @@ class Ticker(Axon.Component.component):
                     (left+width, top),
                     2)
 
-   def renderRectangles(self, rectangles,rescale = False):
-       self.display.fill((255,255,255))
+   def getOffsetRescale(self, rectangles):
        minleft = 0
        maxright = 0
        mintop = 0
@@ -115,27 +122,29 @@ class Ticker(Axon.Component.component):
           if mintop > rectangle.rect.top: mintop = rectangle.rect.top
           if maxbottom < rectangle.rect.bottom: maxbottom = rectangle.rect.bottom
           
-#       print "MAX BORDER", minleft, mintop, maxright, maxbottom
        width = maxright-minleft
        height = maxbottom-mintop
-#       print "WIDTH, HEIGHT", width, height
        scale = 1
        try:
-          horiz_scale = 950/float(width)
-          vert_scale = 700/float(height)
-#          print "SCALE HORIZ", horiz_scale
-#          print "SCALE VERT", vert_scale
+          horiz_scale = self.display_width/float(width)
+          vert_scale = self.display_height/float(height)
           scale = horiz_scale
           if scale > vert_scale: scale = vert_scale
           if scale > 1: scale = 1
-#          print "SCALE", scale
        except ZeroDivisionError:
           scale = 1.0
-       if not rescale:
-          scale = 1.0
-          
+
+       return (minleft, mintop), scale
+
+   def renderRectangles(self, rectangles,rescale = False):
+       self.display.fill((255,255,255))
+       if rescale:   
+          offset, scale = self.getOffsetRescale(rectangles)
+       else:
+          offset, scale = (0,0), 1.0
+       
        for rectangle in rectangles:
-           self.renderRectangle(rectangle,(minleft,mintop),scale)
+           self.renderRectangle(rectangle,offset,scale)
 
    def overlappingRectangles(self,rects):
       result = False
@@ -176,7 +185,7 @@ class Ticker(Axon.Component.component):
       return result
 
    def main(self):
-      self.requestDisplay(size=(950,700))
+      self.requestDisplay(size=(self.display_width, self.display_height))
       for _ in self.waitBox("control"): yield 1
       self.display = self.recv("control")
       rectangles = []
@@ -187,19 +196,57 @@ class Ticker(Axon.Component.component):
          self.renderRectangles(rectangles)
          yield 1
 
-      time.sleep(3)
-
+      yield 1
       while self.overlappingRectangles(rectangles):
-         time.sleep(0.01)
          rectangles = self.spreadRectangles(rectangles)
-         self.renderRectangles(rectangles,rescale=True)
+
+      offset, scale = self.getOffsetRescale(rectangles)
+      for frame in self.renderAnimatedRectangles(rectangles, offset, scale):
+         time.sleep(0.01)
          yield 1
 
+      self.renderRectangles(rectangles,rescale=True)
       my_font = pygame.font.Font(None, 48)
       word_render= my_font.render("ALL DONE", 1, (48,48,224))
                   
       self.display.blit(word_render, (200,200))
-            
+
+
+   def renderAnimatedRectangles(self, rectangles, offset, scale, steps = 25):
+      animators = []
+      for i in xrange(len(rectangles)):
+        r = rectangles[i]
+        animators.append(self.animateRectangle(r, offset, scale, steps))
+
+      for i in xrange(steps):
+        self.display.fill((255,255,255))
+        for A in animators:
+           abcd = A.next()
+           pygame.draw.rect(self.display,
+                      (240,64,64),
+                      abcd,
+                      2)
+        yield 1
+        
+   def animateRectangle(self,r, offset, scale, steps):
+        o_left = r.orig[0]
+        left = r.rect[0] - offset[0]
+        o_top = r.orig[1]
+        top = r.rect[1] - offset[1]
+        print "X", o_left, left
+        print "Y", o_top, top
+        try:
+            xchange = iter(xrange(o_left, left, (left-o_left)/float(steps)))
+            ychange = iter(xrange(o_top, top, (top-o_top)/float(steps)))
+            scale_change = iter(xfloat_range(1.0, scale, steps))
+            for i in xrange(steps):
+               x = xchange.next()
+               y = ychange.next()
+               s = scale_change.next()
+               a,b,c,d = [ z * s for z in x, y, r.rect.width, r.rect.height ]
+               yield a,b,c,d
+        except ValueError:
+           print "SKIPPING : ValueError: xrange() arg 3 must not be zero"
 
 if __name__ == "__main__":
 
