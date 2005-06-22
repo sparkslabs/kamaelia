@@ -16,28 +16,68 @@ import javax.microedition.lcdui.Display;
  */
 
 /**
- * @author josephl
+ * @author Joseph Lord
  *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Wraps the necessary to handle creation of TCP connection and also
+ * reconnection if the connection is lost. 
+ *
  */
 public class TCPConnection implements Runnable
 {
-    DataParser sink;
+    /**
+     * The target to send the data to.
+     */
+    private DataParser sink;
 //    DataReceiver sink;
-    boolean connected = false;
-    String address;
-    InputStream is;
-    OutputStream os;
-    SocketConnection stream;
+    /**
+     * Determines whether the socket is or should be connected.
+     */
+    private boolean connected = false;
+    /**
+     * The address to connect to/we are connected to.
+     */
+    private String address;
+    /**
+     * InputStream of the connected socket.
+     */
+    private InputStream is;
+    /**
+     * OutputStream of the connected socket - not used ATM in Subtitle Midlet. 
+     */
+    private OutputStream os;
+    /**
+     * The SocketConnection which is the source of the input and output streams.
+     */
+    private SocketConnection stream;
+    /**
+     * A temporary storage of the last caught and ignored network exception.
+     */
     Exception lastexception;
+    /**
+     * The main display object so that it can display Exception messages, this
+     * is useful for debugging but should probably be removed when they are all
+     * handled.
+     */
     Display disp;
+    /**
+     * 
+     * @param tp The object to pass received data to.
+     * @param dis The main Display object so that alerts can be displayed on
+     *   exceptions.
+     */
     TCPConnection(DataParser tp, Display dis)//DataReceiver datasink)
     {
         sink = tp;
         disp = dis;
     }
-    
+    /**
+     * Attempts to connect to socket and set it up for ongoing streamed data
+     * and to create the associated input and output streams.
+     * 
+     * @param conaddress The address to connect to in "socket://123.456.789.123:4567" format.
+     * @return true if it suceeds in connecting.
+     * @throws IOException as thrown by several different socket operations.
+     */
     boolean connect(String conaddress) throws IOException
     {
         if(connected)
@@ -56,13 +96,22 @@ public class TCPConnection implements Runnable
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see DataReceiver#handleData(java.lang.Byte[])
+    /**
+     * Sends data to the connected socket.  Wrapper round sendData to implement DataReceiver if required.
+     * 
+     * @param data The data to send.
+     * @return true if sending suceeds.
      */
     public boolean handleData(byte[] data)
     {
         return sendData(data);
     }
+    /**
+     * Sends data to the connected socket.
+     * 
+     * @param data The data to send.
+     * @return true if sending suceeds.
+     */
     public boolean sendData(byte[] data)
     {
         if(connected)
@@ -84,8 +133,8 @@ public class TCPConnection implements Runnable
     }
     
 
-    /* (non-Javadoc)
-     * @see java.lang.Runnable#run()
+    /**
+     * The socket runs in a thread reading data and passing it on.  This is run when the thread is started.
      */
     public void run()
     {
@@ -96,6 +145,11 @@ public class TCPConnection implements Runnable
         
     }
     
+    /**
+     * Reads data and passes it to sink.  Catches exceptions and displays an
+     * error message.  Tries to reconnect if disconnected.
+     *
+     */
     public void readDataRobust()
     {
         try
@@ -113,9 +167,11 @@ public class TCPConnection implements Runnable
     }
 
     /**
+     * Reads available data from socket and passes to the the sink DataParser.
      * 
+     * @throws IOException Any network exception.
      */
-    private void readData() throws IOException
+         private void readData() throws IOException
     {
 //        int ch = isr.read();
         int bufsize = 40;
@@ -154,23 +210,12 @@ public class TCPConnection implements Runnable
         }
     }
     
-    byte readByte() throws IOException
-    {
-        int tmp;
-        tmp = is.read();
-        if(tmp ==-1)
-        {
-            throw new IOException("End of connection.");
-        }
-        return (byte)tmp;
-    }
 
     /**
-     * 
+     * Repeatedly tries to reconnect the socket with a short fixed timeout between attempts. 
      */
     private void reconnect()
     {
-        // TODO Auto-generated method stub
         disconnect();
         while(!connected)
         {
@@ -179,23 +224,23 @@ public class TCPConnection implements Runnable
         connect(address);
         }
         catch(Exception e)
+        // TODO This should be far more specific and handle errors better.
         {
             
         }
         try
         {
-        Thread.sleep(500);
+        Thread.sleep(2000);
         }
         catch(Exception e){}
         }
     }
 
     /**
-     * 
+     * Disconnects and closes the streams.
      */
     public void disconnect()
     {
-        // TODO Auto-generated method stub
         connected = false;
         try
         {

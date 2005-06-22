@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Display;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
-
+// Nokia only API.  Can be removed or replace with another method of turning the lights on.
 import com.nokia.mid.ui.DeviceControl;
 
 /*
@@ -16,10 +16,11 @@ import com.nokia.mid.ui.DeviceControl;
  */
 
 /**
- * @author josephl
+ * @author Joseph Lord
+ * 
+ * The top level class of the Subtitle Midlet.  Sets up all the other
+ * components, joins them together and sets them running.
  *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class SubtitleMidlet extends MIDlet
 {
@@ -30,20 +31,31 @@ public class SubtitleMidlet extends MIDlet
     public SubtitleMidlet()
     {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    /* (non-Javadoc)
-     * @see javax.microedition.midlet.MIDlet#startApp()
+    /**
+     * List of things done here:
+     * 
+     * On Series 40 Nokias it turns on the backlight.
+     * 
+     * Creates TCPConnecion, connects it and starts the network reading thread.
+     * 
+     * Creates and sets the display to a TextDisplayCanvas
+     * 
+     * Creates a TextParser and DataParser set to pass the data through to the TextDisplayCanvas
+     * 
+     * 
      */
     protected void startApp() throws MIDletStateChangeException
     {
         Thread readthread;
         try
         {
+            // This only works on S40 Nokias.  Different versions could probably be
+            // built for other phones to turn their backlights on.
             DeviceControl.setLights(0,100); // Turns on the backlight on Nokias.
         }
-        finally{}
+        finally{}// If DeviceControl does not exist or fails it doesn't matter but backlight may go off.
         try
         {
         TextDisplayCanvas tdc = new TextDisplayCanvas();
