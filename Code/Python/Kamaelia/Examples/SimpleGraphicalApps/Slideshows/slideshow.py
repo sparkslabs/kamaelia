@@ -26,28 +26,27 @@ import Axon
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Util.Chooser import Chooser
-
+from Kamaelia.Util.Graphline import Graphline
 
 import os
 
-path = "/home/matteh/Kamaelia presentation"
-extn = ".png"
+path = "/home/zathras/Documents/Presentations/Kamaelia_200504"
+extn = ".gif"
 files = os.listdir(path)
 files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
 
-chooser = Chooser(items = files).activate()
-image = Image(size=(780,540), position=(8,48)).activate()
-
-bnext  = Button(caption="Next", msg="NEXT", position=(72,8)).activate()
-bprev  = Button(caption="Previous", msg="PREV",position=(8,8)).activate()
-bfirst = Button(caption="First", msg="FIRST",position=(256,8)).activate()
-blast  = Button(caption="Last", msg="LAST",position=(320,8)).activate()
-
-bnext.link(  (bnext, "outbox"),  (chooser, "inbox") )
-bprev.link(  (bprev, "outbox"),  (chooser, "inbox") )
-bfirst.link( (bfirst, "outbox"), (chooser, "inbox") )
-blast.link(  (blast, "outbox"),  (chooser, "inbox") )
-
-chooser.link( (chooser, "outbox"), (image, "inbox") )
-
-Axon.Scheduler.scheduler.run.runThreads()  
+Graphline(
+     CHOOSER = Chooser(items = files),
+     IMAGE = Image(size=(800,600), position=(8,48)),
+     NEXT = Button(caption="Next", msg="NEXT", position=(72,8)),
+     PREVIOUS = Button(caption="Previous", msg="PREV",position=(8,8)),
+     FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
+     LAST = Button(caption="Last", msg="LAST",position=(320,8)),
+     linkages = {
+        ("NEXT","outbox") : ("CHOOSER","inbox"),
+        ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
+        ("FIRST","outbox") : ("CHOOSER","inbox"),
+        ("LAST","outbox") : ("CHOOSER","inbox"),
+        ("CHOOSER","outbox") : ("IMAGE","inbox"),
+     }
+).run()
