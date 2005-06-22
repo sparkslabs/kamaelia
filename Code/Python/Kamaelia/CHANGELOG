@@ -2,6 +2,8 @@
 0.2.0 (When released)
 
 Detailed:
+   * Util/Graphline added
+   * Util/PipelineComponent added
    * Util/Splitter added. This component allows a single outbox to be connected
    to many inboxes.
    * Util/test/test_Splitter added to test the above class.
