@@ -21,14 +21,22 @@
 # -------------------------------------------------------------------------
 import string
 
+
 class Colour(object):
+   """This is a general colour class and could possibly be pulled out into a
+   general datatypes module for reuse and extension to increase the capabilities
+   which are currently fairly limited."""
    def __init__(self, col = 0xFFFFFF):
+      """Creates the Colour object setting the colour by passing a 24bit integer
+      with 8 bits for each of red, green and blue."""
       self.colourval = col
       
    def getColour(self):
+      """Returns the integer value of the current colour."""
       return self.colourval
    
    def getPygameColour(self):
+      """Returns an (R,G,B) tuple suitable for use with pygame."""
       r = self.colourval / 0x010000
       g = (self.colourval / 0x000100) % 0x000100
       b = self.colourval % 0x000100
@@ -38,42 +46,64 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 #from SubtitleFilter import SubtitleFilter2
 class SubtitleColourDecoder(object):
+   """Processes text as received from the subtitle server removing tags (HTML
+   style markup) and if they are colour tags then it will will also return the
+   colour.  Filtered text is returned."""
    def __init__(self):
-      self.intag = False
-      self.leftover = ""
+      self.intag = False # self.intag should be true if the current scanning position is inside markup.
+      self.leftover = "" # self.leftover is used to store the undecodable sections that need to wait for more data or just another empty string call to allow multiple returns.
    def filter(self, newtext = ""):
+      """Call it with text to filter.  It will return either
+         1) Filtered text containing no tags.  More text may be available if called again.
+         2) A Colour object if it has decoded a colour tag.  More text may be available if called again.
+         3) An empty string "".  More text may be available if called again.
+         3) None.  No more text is available unless more is passed to it for filtering.
+      """
       if self.leftover != "":
          newtext = self.leftover + newtext
          self.leftover = ""
       pos = 0
       try:
          if self.intag:
-            end = newtext.index("/>",pos) + 2
+            end = newtext.index("/>",pos) + 2 # Search for end of markup.  Will throw ValueError if not found.
+            # This code only runs if exception not thrown. i.e. "/>" was found.
             self.intag = False
-            self.leftover = newtext[end:]
-            num = newtext[pos + 14:end - 3]
+            self.leftover = newtext[end:] # Save anything after the markup to self.leftover.
+            num = newtext[pos + 14:end - 3] # Extract the hex if it is a proper colour tag.
             if newtext[pos:pos + 14] == '<font color="#' and newtext[end - 3] == '"' and self.ishex(num):
+               # It is a colour tag.  Return the colour object.
                return Colour(int(num, 16))
+            # Not a colour tag.  Return empty string but can process more if called again.  Text after the tag was saved to self.leftover
             return ""
-         else:
-            pnext = newtext.index("<",pos)
-            self.leftover = newtext[pnext:]
+         else: # Not in a tag.
+            pnext = newtext.index("<",pos) # Find next tag start
+            #Tag has been found or exception would have been thrown.
+            self.leftover = newtext[pnext:] # Saves start of tag onwards.
             self.intag = True
-            return newtext[pos:pnext]
+            return newtext[pos:pnext] #Returns text that precedes the tag.
       except ValueError, e:
          # Got to end of string without finding next tag or end of tag.
          if not self.intag:
+            # If everything we have is before any tag starts we can just return it.
             return newtext[pos:]
          else:
+            # If we haven't got the end of the tag we need more data.
+            # Save what we have.
             self.leftover = newtext[pos:] # in case we have got '/' but not '>'
+            # return None to indicate that we have no more text to return without data.
             return None
    def ishex(self, s):
+      """A utility function to check that all the characters in a string are
+      valid hexidecimal digits."""
       for x in s:
          if not x in string.hexdigits:
             return False
       return True
       
 class SubtitleColourDecoderComponent(component):
+   """This is more or less the standard filter component with a
+   SubtitleColourDecoder filter being used.  This class could be refactored out
+   and a factory could be used."""
    def __init__(self):
       super(SubtitleColourDecoderComponent, self).__init__() # Take default in/out boxes
       self.filt = SubtitleColourDecoder()
