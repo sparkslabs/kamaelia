@@ -62,36 +62,35 @@ class SubtitleColourDecoder(object):
       if self.leftover != "":
          newtext = self.leftover + newtext
          self.leftover = ""
-      pos = 0
-      try:
-         if self.intag:
-            end = newtext.index("/>",pos) + 2 # Search for end of markup.  Will throw ValueError if not found.
-            # This code only runs if exception not thrown. i.e. "/>" was found.
-            self.intag = False
-            self.leftover = newtext[end:] # Save anything after the markup to self.leftover.
-            num = newtext[pos + 14:end - 3] # Extract the hex if it is a proper colour tag.
-            if newtext[pos:pos + 14] == '<font color="#' and newtext[end - 3] == '"' and self.ishex(num):
-               # It is a colour tag.  Return the colour object.
-               return Colour(int(num, 16))
-            # Not a colour tag.  Return empty string but can process more if called again.  Text after the tag was saved to self.leftover
-            return ""
-         else: # Not in a tag.
-            pnext = newtext.index("<",pos) # Find next tag start
-            #Tag has been found or exception would have been thrown.
-            self.leftover = newtext[pnext:] # Saves start of tag onwards.
-            self.intag = True
-            return newtext[pos:pnext] #Returns text that precedes the tag.
-      except ValueError, e:
-         # Got to end of string without finding next tag or end of tag.
-         if not self.intag:
-            # If everything we have is before any tag starts we can just return it.
-            return newtext[pos:]
-         else:
+      if self.intag:
+         try:
+            end = newtext.index("/>") + 2 # Search for end of markup.  Will throw ValueError if not found.
+         except ValueError, e:
             # If we haven't got the end of the tag we need more data.
             # Save what we have.
-            self.leftover = newtext[pos:] # in case we have got '/' but not '>'
+            self.leftover = newtext[:] 
             # return None to indicate that we have no more text to return without data.
-            return None
+            return None         
+         # This code only runs if exception not thrown. i.e. "/>" was found.
+         self.intag = False
+         self.leftover = newtext[end:] # Save anything after the markup to self.leftover.
+         num = newtext[14:end - 3] # Extract the hex if it is a proper colour tag.
+         if newtext[:14] == '<font color="#' and newtext[end - 3] == '"' and self.ishex(num):
+            # It is a colour tag.  Return the colour object.
+            return Colour(int(num, 16))
+         # Not a colour tag.  Return empty string but can process more if called again.  Text after the tag was saved to self.leftover
+         return ""
+      else: # Not in a tag.
+         try:
+            pnext = newtext.index("<") # Find next tag start
+         except ValueError, e:
+            # If everything we have is before any tag starts we can just return it.
+            return newtext[:]
+         #Tag has been found or exception would have been thrown.
+         self.leftover = newtext[pnext:] # Saves start of tag onwards.
+         self.intag = True
+         return newtext[:pnext] #Returns text that precedes the tag.
+            
    def ishex(self, s):
       """A utility function to check that all the characters in a string are
       valid hexidecimal digits."""
