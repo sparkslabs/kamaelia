@@ -41,6 +41,13 @@ from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
 
+try:
+   from ctypes import *
+   libc = cdll.LoadLibrary("/lib/libc.so.6")
+   sched_yield = libc.sched_yield
+except ImportError:
+   def sched_yield(): pass
+
 def _sort(somelist):
    a=[ x for x in somelist]
    a.sort()
@@ -130,6 +137,7 @@ class scheduler(microprocess):
             self.debugger.debugmessage("scheduler.main", "SCHEDULED", self.name,self.id)
          activeMicroprocesses = 0
          for mprocess in self.threads:
+            sched_yield()
             cx=cx+1
             if (now - lasttime)> 1:
                  if self.debugger.areDebugging("scheduler.main", 10):
