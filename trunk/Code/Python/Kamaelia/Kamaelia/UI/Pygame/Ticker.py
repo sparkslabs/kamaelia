@@ -54,6 +54,7 @@ class Ticker(Axon.Component.component):
       self.link((self,"signal"), displayservice)
       self.send({ "DISPLAYREQUEST" : True,
                   "callback" : (self,"control"),
+                  "transparency": (128,48,128),
 #                  "events" : (self, "events"),
                   "size": (400,300)},
                   "signal")
@@ -86,15 +87,17 @@ class Ticker(Axon.Component.component):
             if position[0]+wordsize[0] > self.render_area.right:
                position[0] = initial_postition[0]
                if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                  display.set_colorkey(None)
                   display.blit(display,
                                (self.render_area.left, self.render_area.top),
                                (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                                  self.render_area.width-1, position[1]-self.render_area.top ))
+                                self.render_area.width-1, position[1]-self.render_area.top ))
                   pygame.draw.rect(display, 
                                   self.background_colour, 
                                   (self.render_area.left, position[1], 
                                    self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
                                   0)
+                  display.set_colorkey((128,48,128))
                   pygame.display.update()
                else:
                   position[1] += maxheight + self.line_spacing

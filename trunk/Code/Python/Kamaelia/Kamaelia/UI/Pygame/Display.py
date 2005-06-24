@@ -60,7 +60,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def __init__(self, **argd):
       super(PygameDisplay,self).__init__()
-      self.width = argd.get("width",950)
+      self.width = argd.get("width",1024)
       self.height = argd.get("height",768)
       self.background_colour = argd.get("background_colour", (48,48,128))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
@@ -83,6 +83,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                eventservice = message.get("events", None)
                size = message["size"]
                surface = pygame.Surface(size)
+               if message.get("transparency", None):
+                  surface.set_colorkey(message["transparency"])
 #               position = self.surfacePosition(surface)
                position = message.get("position", self.surfacePosition(surface))
                callbackcomms = self.addOutbox("displayerfeedback")
@@ -117,31 +119,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          
          # see if this component is interested in events
          if eventcomms is not None:
-#<<<<< PygameDisplay.py
-#           listeners.append(eventcomms)
-#        events = []
-#        for event in pygame.event.get():
-#           remapPos = False
-#           pos = None
-#           if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-#               pos = event.pos[0],event.pos[1]
-#               remapPos = True
-#               e = Bunch()
-#               e.type = event.type
-#               e.pos = event.pos
-#               if event.type == pygame.MOUSEMOTION:
-#                  e.rel = event.rel
-#               if event.type == pygame.MOUSEMOTION:
-#                  e.buttons = event.buttons
-#               else:
-#                  e.button = event.button
-#               event = e
-#               pos = event.pos[0],event.pos[1]
-#               remapPos = True
-#           events.append((event,remapPos,pos))
-#======
             listener = eventcomms
-#>>>>>> 1.5
 
             # go through events, for each, check if the listener is interested in that time of event         
             bundle = []
