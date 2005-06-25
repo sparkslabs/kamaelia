@@ -37,7 +37,12 @@ class PyGameApp(_Axon.Component.component):
     Inboxes = ["inbox", "events", "displaycontrol", "control"]
     Outboxes = [ "signal", "outbox", "displaysignal" ]
 
-    def __init__(self, screensize, caption="PyGame Application", fullscreen=False, depth=0):
+    def __init__(self, screensize, 
+                 caption="PyGame Application", 
+                 fullscreen=False, 
+                 depth=0, 
+                 transparency = None,
+                 position = None):
         super(PyGameApp, self).__init__()
         pygame.init()
         
@@ -48,8 +53,9 @@ class PyGameApp(_Axon.Component.component):
         self.depth = depth
         self.screensize = screensize
         self.caption = caption
-
+        self.transparency = transparency
         self.eventHandlers = {}
+        self.position = position
         
         self.flip = False
     
@@ -62,11 +68,15 @@ class PyGameApp(_Axon.Component.component):
     def main(self):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"displaysignal"), displayservice)
-        self.send({ "DISPLAYREQUEST" : True,
+        displayrequest = { "DISPLAYREQUEST" : True,
                     "events" : (self, "events"),
                     "callback" : (self, "displaycontrol"),
+                    "transparency": self.transparency,
                     "size" : self.screensize,
-                  }, "displaysignal")
+                  }
+        if self.position is not None:
+           displayrequest["position"] = self.position
+        self.send(displayrequest, "displaysignal")
         for _ in self.waitBox("displaycontrol"): 
 #             print "Waiting for display"
             yield 1
