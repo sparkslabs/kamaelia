@@ -13,3 +13,5 @@ include Kamaelia/afortune.pl
 include Kamaelia/debug.conf
 include Examples/*/*
 include Examples/*
+include Tools/*/*
+include Tools/*
