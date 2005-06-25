@@ -58,9 +58,12 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                        laws               = None,
                        simCyclesPerRedraw = None,
                        border             = 100,
-                       extraDrawing       = None):
+                       extraDrawing       = None,
+                       showGrid           = True,
+                       transparency       = None,
+                       position           = None):
                        
-        super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen)
+        super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
         pygame.mixer.quit()
         
@@ -85,7 +88,8 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
             self.simCyclesPerRedraw = simCyclesPerRedraw
         
         self.graphicalFurniture = []
-        self.graphicalFurniture.append( GridRenderer(self.laws.maxInteractRadius, (200,200,200)) )
+        if showGrid:
+           self.graphicalFurniture.append( GridRenderer(self.laws.maxInteractRadius, (200,200,200)) )
         if extraDrawing != None:
             self.graphicalFurniture.append(extraDrawing)
             
