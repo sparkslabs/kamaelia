@@ -32,7 +32,7 @@ from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
 
 import sys ; sys.path.append("../../../../../Sketches/Layout")
-from Introspector import *
+from Kamaelia.Util.Introspector import *
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
