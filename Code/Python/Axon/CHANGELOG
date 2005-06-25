@@ -7,11 +7,7 @@
               Ticker()
              ).run()
 
-     Modified the scheduler such that if ctypes is installed locally that
-     under linux, the system tries to find sched_yield and makes calls to
-     sched_yield deep inside the main scheduler loop. This results in better
-     behaviour with regard to interoperating with other programs on the
-     system.
+
 
 1.0.3 -> 1.1.0 - Debugging reactivated, Microprocess enhanced
 

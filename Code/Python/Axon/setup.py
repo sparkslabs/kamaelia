@@ -23,7 +23,7 @@
 from distutils.core import setup
 
 setup(name = "Axon",
-      version = "1.1.1",
+      version = "1.1.1-ep",
       description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
