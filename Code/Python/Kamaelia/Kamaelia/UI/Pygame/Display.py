@@ -60,8 +60,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def __init__(self, **argd):
       super(PygameDisplay,self).__init__()
-      self.width = argd.get("width",1024)
-      self.height = argd.get("height",768)
+      self.width = argd.get("width",800)
+      self.height = argd.get("height",600)
       self.background_colour = argd.get("background_colour", (48,48,128))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (10,10)
