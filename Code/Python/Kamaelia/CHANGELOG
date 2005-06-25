@@ -2,8 +2,6 @@
 0.2.0 (When released)
 
 Detailed:
-   * Util/Graphline added
-   * Util/PipelineComponent added
    * Util/Splitter added. This component allows a single outbox to be connected
    to many inboxes.
    * Util/test/test_Splitter added to test the above class.
@@ -27,27 +25,27 @@ Detailed:
         with :)
 
 TODO before 0.2.0 release:
-   * Add Tools directory at top level
+   * Add Tools directory at top level -- DONE
       * Introspection viewer gets added here (as a "binary", support code
         goes in main tree)
       * axon_shell gets added here
-   * Introspector classes added
-   * Change examples to use newstyle pipelines
-   * Copy over Ciaran's examples into the examples directory
+   * Introspector classes added -- DONE
+   * Change examples to use newstyle pipelines -- SOME DONE, DO REST IN 0.2.1
+   * Copy over Ciaran's examples into the examples directory -- LEAVE FOR 0.2.1 (too much stuff!)
    * Copy over Colour class into Kamaelia.Data
-   * Find suitable homes for the Subtitling code examples
+   * Find suitable homes for the Subtitling code examples -- 
 
 DESIRABLE before 0.2.0 release:
-   * Button widget. (click and sends message out "signal")
-   * Palette widget (think aggregation of Buttons)
+   * Button widget. (click and sends message out "signal")  --  DONE
+   * Palette widget (think aggregation of Buttons) -- DESIRABLE, DEFER TO 0.2.1
    * Image widget. (Can display an image, and when receives new one, just
-     displays it)
-      * Combo of these three would allow for simple slideshows to occur.
+     displays it)  --  DONE
+      * Combo of these three would allow for simple slideshows to occur.  -- DONE
    * Port sprite widget (from Sketches/OptimisationTest/simplegame.py to
-     main Kamaelia system)
+     main Kamaelia system) -- NOT NEEDED
    * Ask Matt to implement a change to his physics engine to force objects
-     in his system to always stay inside a bounding box.
-   * Filtering of events for PygameDisplay clients.
+     in his system to always stay inside a bounding box. -- NOT NEEDED
+   * Filtering of events for PygameDisplay clients. -- DONE
 
 0.1.2
 
