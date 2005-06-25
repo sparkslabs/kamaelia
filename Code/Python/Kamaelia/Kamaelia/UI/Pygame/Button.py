@@ -38,9 +38,11 @@ class Button(Axon.Component.component):
                "callback" : "Receive callbacks from PygameDisplay"
              }
    Outboxes = { "outbox" : "button click events emitted here",
-                "signal" : "" }
+                "signal" : "",
+                "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
+                key = None,
                 transparent = False):
       """Creates and activates a button widget
          caption  = text label for the button / None for default label
@@ -55,7 +57,9 @@ class Button(Axon.Component.component):
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
-
+      self.key = key
+###      print "KEY",key
+      
       if caption is None:
          caption = "Button "+str(self.id)
       
@@ -99,10 +103,10 @@ class Button(Axon.Component.component):
    
    def main(self):
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
+      self.link((self,"display_signal"), displayservice)
 
       self.send( self.disprequest,
-                  "signal")
+                  "display_signal")
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
@@ -110,12 +114,20 @@ class Button(Axon.Component.component):
       
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
-                  "signal")
-                  
-
+                  "display_signal")
+      if self.key is not None:
+###         print "ADDING LISTEN", self.key, pygame.KEYDOWN, self.display
+         message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
+                     "surface" : self.display,
+                     "TRACE" : "ME"}
+###         print "----------------", message
+         self.send(message, "display_signal")
+#      while self.outboxes["display_signal"]  != []:
+#         print dir(self)
+#         print "Waiting clean out", self.outboxes["display_signal"], self
+#         yield 1
       done = False
       while not done:
-      
          if self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
@@ -123,10 +135,15 @@ class Button(Axon.Component.component):
          
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
+###                print event
                 if event.type == pygame.MOUSEBUTTONDOWN:
 #                   print "BUTTON", event.button
                    bounds = self.display.get_rect()
                    if bounds.collidepoint(*event.pos):
+                      self.send( self.eventMsg, "outbox" )
+                if event.type == pygame.KEYDOWN:
+###                   print "EVENT", event.type, event.key
+                   if event.key == self.key:
                       self.send( self.eventMsg, "outbox" )
          yield 1
             

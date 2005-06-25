@@ -102,18 +102,18 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
+###               print message
 
             elif message.get("REMOVELISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
-            
 
    def updateDisplay(self,display):
       display.fill(self.background_colour)
       
       # pre-fetch all waiting events in one go
       events = [ event for event in pygame.event.get() ]
-      
+#      if events != []: print events
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
@@ -127,8 +127,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                wanted = False
                try:   wanted = self.events_wanted[listener][event.type]
                except KeyError: pass
-                  
                if wanted:
+###                  if event.type == pygame.KEYDOWN:
+###                     print "BANG", wanted, listener, event
                   # if event contains positional information, remap it
                   # for the surface's coordiate origin
                   if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
@@ -144,6 +145,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         e.button = event.button
                      event = e
                   bundle.append(event)
+###                  print "BUNDLE", bundle
 
             # only send events to listener if we've actually got some
             if bundle != []:
