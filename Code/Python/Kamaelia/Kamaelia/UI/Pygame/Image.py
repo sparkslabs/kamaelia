@@ -34,7 +34,6 @@ class Image(Axon.Component.component):
                "callback" : "Receive callbacks from PygameDisplay",
                "bgcolour" : "Set the background colour"
              }
-   Outboxes = { "signal" : "" }
     
    def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None):
       """Initialisation.

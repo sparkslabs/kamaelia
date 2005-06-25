@@ -26,7 +26,7 @@ import Axon
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
-class Button(Axon.Component.component):
+class Multiclick(Axon.Component.component):
    """Simple button widget.
       Specify a text label, and whenever it is clicked, it
       will send ("CLICK", self.id) out of its outbox, unless you specify
@@ -40,8 +40,11 @@ class Button(Axon.Component.component):
    Outboxes = { "outbox" : "button click events emitted here",
                 "signal" : "" }
    
-   def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
-                transparent = False):
+   def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), 
+                msg=None,
+                msgs = None,
+                transparent = True,
+                size = None):
       """Creates and activates a button widget
          caption  = text label for the button / None for default label
          position = (x,y) pair / None
@@ -50,11 +53,13 @@ class Button(Axon.Component.component):
          fgcolour = text colour
          msg      = message to be sent when this button is clicked / None for default
          """
-      super(Button,self).__init__()
+      super(Multiclick,self).__init__()
       
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
+      self.size = size
+      self.msgs = msgs
 
       if caption is None:
          caption = "Button "+str(self.id)
@@ -86,7 +91,8 @@ class Button(Axon.Component.component):
       self.image = font.render(text,True, self.foregroundColour, )
       
       (w,h) = self.image.get_size()
-      self.size = (w + 2*self.margin, h + 2*self.margin)
+      if self.size is None:
+          self.size = (w + 2*self.margin, h + 2*self.margin)
       self.imagePosition = (self.margin, self.margin)
       
        
@@ -124,10 +130,17 @@ class Button(Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-#                   print "BUTTON", event.button
                    bounds = self.display.get_rect()
                    if bounds.collidepoint(*event.pos):
-                      self.send( self.eventMsg, "outbox" )
+                      try:
+                         message = self.msgs[event.button]
+                      except KeyError: # No message for this key
+                         continue
+                      except IndexError: # No message for this key
+                         continue
+                      except TypeError: # No lookup table
+                         message = self.eventMsg
+                      self.send( message, "outbox" )
          yield 1
             
       
@@ -139,15 +152,16 @@ class Button(Axon.Component.component):
            pass
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
-   
-   button1 = Button().activate()
-   button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
-   button3 = Button(caption="Mary...",msg="Mary had a little lamb").activate()
-   
-   ce = consoleEchoer().activate()
-   button1.link( (button1,"outbox"), (ce,"inbox") )
-   button2.link( (button2,"outbox"), (ce,"inbox") )
-   button3.link( (button3,"outbox"), (ce,"inbox") )
-   
-   Axon.Scheduler.scheduler.run.runThreads()  
+   pass
+#   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+#   
+#   button1 = Button().activate()
+#   button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
+#   button3 = Button(caption="Mary...",msg="Mary had a little lamb").activate()
+#   
+#   ce = consoleEchoer().activate()
+#   button1.link( (button1,"outbox"), (ce,"inbox") )
+#   button2.link( (button2,"outbox"), (ce,"inbox") )
+#   button3.link( (button3,"outbox"), (ce,"inbox") )
+#   
+#   Axon.Scheduler.scheduler.run.runThreads()  
