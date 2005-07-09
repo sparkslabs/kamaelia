@@ -50,7 +50,7 @@ class HTTPServer(component):
    Inboxes=["inbox","_frommime", "_errmon", "_fromfile", "_sigfromfile"]# List of inbox names if different
    Outboxes=["outbox","_pass","signal"]# List of outbox names if different
    def __init__(self, debug=0):
-      self.__super.__init__()
+      super(HTTPServer, self).__init__()
       self.debug = debug
 
    def initialiseComponent(self):
@@ -140,7 +140,7 @@ class HTTPServer(component):
 
 class HTTPReqestHandler(component):
    def __init__(self, debug=0):
-      self.__super.__init__()
+      super(HTTPReqestHandler).__init__()
       self.debug = debug
 
    def mainBody(self):

@@ -9,7 +9,7 @@ import Axon
 
 class Multicast_sender(Axon.Component.component):
    def __init__(self, local_addr, local_port, remote_addr, remote_port):
-       self.__super.__init__()
+       super(Multicast_sender, self).__init__()
        self.local_addr = local_addr
        self.local_port = local_port
        self.remote_addr = remote_addr

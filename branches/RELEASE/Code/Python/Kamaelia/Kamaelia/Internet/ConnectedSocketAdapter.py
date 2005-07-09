@@ -64,7 +64,7 @@ import errno
 import Axon
 from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
-from Kamaelia.KamaeliaIPC import socketShutdown,newCSA
+from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.KamaeliaExceptions import *
 
 whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
@@ -108,7 +108,7 @@ class ConnectedSocketAdapter(component):
    Outboxes=["outbox", "FactoryFeedback","signal"]
 
    def __init__(self, listensocket):
-      self.__super.__init__()
+      super(ConnectedSocketAdapter, self).__init__()
       self.time = time.time()
       self.socket = listensocket
 
@@ -159,15 +159,18 @@ class ConnectedSocketAdapter(component):
          return wouldblock(self)
       except connectionDied, cd: # Client went away or socket error
          self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-         self.send(socketShutdown(self), "signal")
+#         self.send(socketShutdown(self), "signal")
+         self.send(shutdownCSA(self, (self,self.socket)), "signal")
          return 0
       except connectionServerShutdown, cd: # Client went away or socket error
          self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-         self.send(socketShutdown(self), "signal")
+#         self.send(socketShutdown(self), "signal")
+         self.send(shutdownCSA(self, (self,self.socket)), "signal")
          return 0
       except Exception, ex: # Some other exception
          self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-         self.send(socketShutdown(self), "signal")
+#         self.send(socketShutdown(self), "signal")
+         self.send(shutdownCSA(self, (self,self.socket)), "signal")
          if crashAndBurn["uncheckedSocketShutdown"]:
             raise ex
          return 0

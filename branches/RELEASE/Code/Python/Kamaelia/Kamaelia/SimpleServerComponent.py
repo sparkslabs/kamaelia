@@ -53,7 +53,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes=["_oobinfo"]
    Outboxes=[]
    def __init__(self, protocol=None, port=1601):
-      self.__super.__init__()
+      super(SimpleServer, self).__init__()
       if not protocol:
          raise "Need a protocol to handle!"
       self.protocolhandlers = None
@@ -94,7 +94,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.link((CSA,"outbox"),(pHandler,"inbox"))
       self.link((pHandler,"outbox"),(CSA,"DataSend"))
 
-      self.link((CSA,"signal"),(self,"_oobinfo"))
+#      self.link((CSA,"signal"),(self,"_oobinfo"))
       self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
 
       if "signal" in pHandler.Outboxes:
@@ -105,7 +105,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def handleClosedCSA(self,data):
       assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
-      CSA = data.caller
+      CSA = data.object
       bundle=self.retrieveTrackedResourceInformation(CSA)
       inboxes,outboxes,pHandler = bundle
       self.send(_ki.socketShutdown(),outboxes[0])
@@ -121,7 +121,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          data = self.recv("_oobinfo")
          if isinstance(data,_ki.newCSA):
             return self.handleNewCSA(data)
-         if isinstance(data,_ki.socketShutdown):
+         if isinstance(data,_ki.shutdownCSA):
             assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
             self.handleClosedCSA(data)
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
    from Axon.Scheduler import scheduler
    class SimpleServerTestProtocol(simpleServerProtocol):
       def __init__(self):
-         self.__super.__init__()
+         super(SimpleServerTestProtocol, self).__init__()
          assert self.debugger.note("SimpleServerTestProtocol.__init__",1, "Starting test protocol")
 
       def mainBody(self):
