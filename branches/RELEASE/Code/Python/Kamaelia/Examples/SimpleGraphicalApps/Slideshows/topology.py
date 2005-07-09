@@ -20,41 +20,35 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-# Simple udp /multicast/ sender and receiver
-# Logically these map to being a single component each
-#
 
-import socket
 import Axon
 
-class Chargen(Axon.Component.component):
-   # SMELL: Might be nice to set a rate.
-   def main(self):
-      while 1:
-         self.send("Hello World", "outbox")
-         yield 1
+from Kamaelia.UI.Pygame.Button import Button
+from Kamaelia.Util.Chooser import Chooser
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Util.PipelineComponent import pipeline
 
-def tests():
-   from Axon.Scheduler import scheduler
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+import os
 
-   class testComponent(Axon.Component.component):
-      def main(self):
-        chargen= Chargen()
-        display = consoleEchoer()
+graph = """\
 
-        self.link((chargen,"outbox"), (display,"inbox"))
-        self.addChildren(chargen, display)
-        yield Axon.Ipc.newComponent(*(self.children))
-        while 1:
-           self.pause()
-           yield 1
+ADD NODE TCPClient TCPClient auto -
+ADD NODE VorbisDecode VorbisDecode auto -
+ADD NODE AOPlayer AOPlayer auto -
+ADD LINK TCPClient VorbisDecode
+ADD LINK VorbisDecode AOPlayer
+ADD NODE Multicast_Transceiver Multicast_Transceiver auto -
+ADD NODE detuple detuple auto -
+ADD LINK Multicast_Transceiver detuple
+DEL NODE TCPClient
+ADD LINK detuple VorbisDecode
+DEL ALL
+""".split("\n")
 
-   harness = testComponent()
-   harness.activate()
-   scheduler.run.runThreads(slowmo=0)
-
-if __name__=="__main__":
-
-    tests()
-     # Needed to allow import
+pipeline(
+     Button(caption="Next", msg="NEXT", position=(72,8)),
+     Chooser(items = graph),
+     lines_to_tokenlists(),
+     TopologyViewerComponent(transparency = (255,255,255), showGrid = False),
+).run()

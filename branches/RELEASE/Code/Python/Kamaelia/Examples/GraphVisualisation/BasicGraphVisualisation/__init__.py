@@ -1,5 +1,5 @@
-#!/usr/bin/env python2.3
-#
+#!/usr/bin/env python
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -19,33 +19,15 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
-A simple component that takes objects in on its inbox, creates a stringized
-version and returns that.
 
-"""
-from Axon.Component import component, scheduler
-class ToStringComponent(component):
-   #Inboxes=["inbox"] List of inbox names if different
-   #Outboxes=["outbox"] List of outbox names if different
-   #Usescomponents=[] # List of classes used.
-   def __init__(self):
-      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
-      self.activate()
+# physics code for forces between particles
+#
+# unbonded force acts between all non bonded particles
+# bonded force acts between bonded particles
 
-   def initialiseComponent(self):
-      return 1
-
-   def mainBody(self):
-      if self.dataReady("inbox"):
-         theData = self.recv("inbox")
-         self.send(str(theData), "outbox")
-      return 1
-
-   def closeDownComponent(self):
-      pass
-
-if __name__ =="__main__":
-   myComponent("A",3,1)
-   myComponent("B",2).activate()
-   scheduler.run.runThreads()
+#from SpatialIndexer import SpatialIndexer
+#
+#from ParticleSystem import ParticleSystem
+#from Particle import Particle
+#from SimpleLaws import SimpleLaws
+#from MultipleLaws import MultipleLaws

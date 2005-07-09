@@ -1,5 +1,5 @@
-#!/usr/bin/env python2.3
-#
+#!/usr/bin/env python
+
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -19,33 +19,28 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
-A simple component that takes objects in on its inbox, creates a stringized
-version and returns that.
 
-"""
-from Axon.Component import component, scheduler
-class ToStringComponent(component):
-   #Inboxes=["inbox"] List of inbox names if different
-   #Outboxes=["outbox"] List of outbox names if different
-   #Usescomponents=[] # List of classes used.
-   def __init__(self):
-      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
-      self.activate()
+import UI
 
-   def initialiseComponent(self):
-      return 1
+# from pygame.locals import *
 
-   def mainBody(self):
-      if self.dataReady("inbox"):
-         theData = self.recv("inbox")
-         self.send(str(theData), "outbox")
-      return 1
 
-   def closeDownComponent(self):
-      pass
 
-if __name__ =="__main__":
-   myComponent("A",3,1)
-   myComponent("B",2).activate()
-   scheduler.run.runThreads()
+class ParticleDragger(UI.MH.DragHandler):
+     def detect(self, pos, button):
+         inRange = self.app.physics.withinRadius( pos, app.particleRadius )
+         if len(inRange) > 0:
+             self.particle = inRange[0][0]
+             self.particle.freeze()
+             return self.particle.getLoc()
+         else:
+             return False
+
+     def drag(self,newx,newy):
+         self.particle.pos = (newx,newy)
+         self.app.physics.updateLoc(self.particle)
+
+     def release(self,newx, newy):
+         self.drag(newx, newy)
+         self.particle.unFreeze()                
+

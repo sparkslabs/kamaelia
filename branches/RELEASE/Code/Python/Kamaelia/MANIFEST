@@ -68,12 +68,14 @@ Kamaelia/Protocol/EchoProtocolComponent.py
 Kamaelia/Protocol/FortuneCookieProtocol.py
 Kamaelia/Protocol/HTTPServer.py
 Kamaelia/Protocol/__init__.py
+Kamaelia/Sketch/DEADJOE
 Kamaelia/Sketch/__init__.py
 Kamaelia/Support/BlankFile.txt
 Kamaelia/Support/README
 Kamaelia/Support/SampleMIMERequest.txt
 Kamaelia/Support/Ulysses
 Kamaelia/Support/Ulysses.short
+Kamaelia/Support/ogg/khangman-splash.ogg
 Kamaelia/Util/Chargen.py
 Kamaelia/Util/ConsoleEcho.py
 Kamaelia/Util/ToStringComponent.py
