@@ -2,7 +2,13 @@
 
 import Axon
 
+from Escape import escape as _escape
+from Escape import unescape as _unescape
+
 class CorruptFrame(Exception):
+   pass
+
+class IncompleteChunk(Exception):
    pass
 
 class SimpleFrame(object):
@@ -84,8 +90,7 @@ class DataChunker(Axon.Component.component):
         return False
 
     def escapeSyncMessage(self, message):
-        message = message.replace("\\","\\\\")
-        message = message.replace(self.syncmessage, "\\S")
+        message = _escape(message, self.syncmessage)
         return message
 
     def encodeChunk(self,message):
@@ -104,6 +109,10 @@ class DataChunker(Axon.Component.component):
             yield 1
 
 class DataDeChunker(Axon.Component.component):
+    Inboxes = { "inbox" : "location we expect to recieve partial chunks on",
+                "control" : "We expect to receive producerFinished messages here",
+                "flush" : "Box we can expect to be told to flush our current chunks from",
+    }
     def __init__(self, syncmessage="XXXXXXXXXXXXXXXXXXXXXXXX"):
         super(DataDeChunker, self).__init__()
         self.syncmessage = syncmessage
@@ -118,21 +127,47 @@ class DataDeChunker(Axon.Component.component):
         return False
 
     def unEscapeSyncMessage(self, message):
-        message = message.replace("\\S", self.syncmessage)
-        message = message.replace("\\\\","\\")
+        message = _unescape(message, self.syncmessage)
         return message
 
     def decodeChunk(self,chunk):
-        message = chunk[len(self.syncmessage):]
+        if chunk[:len(self.syncmessage)] == self.syncmessage:
+           message = chunk[len(self.syncmessage):]
+        else:
+           print
+           print "FAILING"
+           print "CHUNK = ", repr(chunk)
+           raise IncompleteChunk
         message = self.unEscapeSyncMessage(message)
-        return chunk
+        return message
+
+    def shouldFlush(self):
+        if self.dataReady("flush"):
+            d =self.recv("flush")
+            self.last_message = d
+            return 1
+        return 0
 
     def main(self):
+        message = ""
+        buffer = ''
+        foundFirstChunk = 0     
         while 1:
-            if self.shutdown():
-                return
+            if self.shutdown(): return
+
             if self.dataReady("inbox"):
-                message = self.recv("inbox")
-                newMessage = self.decodeChunk(message)
-                self.send(newMessage, "outbox")
+                data = self.recv("inbox")
+
+                buffer += data
+                location = buffer.find(self.syncmessage,len(self.syncmessage))
+                if location != -1:
+                    if foundFirstChunk:
+                        chunk = buffer[:location]
+                        self.send(self.decodeChunk(chunk), "outbox")
+                    buffer = buffer[location:]
+                    foundFirstChunk = 1
+
+            if self.shouldFlush():
+                self.send(self.decodeChunk(buffer), "outbox")
+                buffer = ""
             yield 1
