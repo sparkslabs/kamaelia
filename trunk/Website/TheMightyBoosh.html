@@ -1,0 +1,34 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:8pt;font-family:Verdana">
+<p><span style="font-weight:600">Multicast streaming system</span></p>
+<p>A simple kamaelia based system to multicast stream programmes. Aiming to stream carousel(s) to clients containing 1/2 hour programme episodes (pre-recorded, pre-compressed to files)</p>
+<p>System consisting of:</p>
+<ul type="circle"><li>playout system</li>
+<li>client 'tuner' application</li>
+<div></div></ul>
+<p><span style="font-weight:600">Target schedule</span></p>
+<ul type="disc"><li>Wed 13th July - code written</li>
+<li>Mon 18th July - testing begins</li></ul>
+<p></p>
+<p><span style="font-weight:600">Server pipeline:</span></p>
+<p>CRON (MH)</p>
+<ul type="disc"><li>system cron, eventually to be a 'component' cron, probably a combination of both for a while</li>
+<li>determine shape of text file 'scripts' for component cron</li></ul>
+<p>DATA SOURCE  (MH)</p>
+<ul type="disc"><li>improved file reader. sequence of files to read coming from a new CHOOSER component, separate out bitrate limiting</li></ul>
+<p>TAG (MS)</p>
+<ul type="disc"><li>MS/TG's code. Finishing tidying testing.</li>
+<li>Provide factory interface for MH to do testing</li></ul>
+<p>Multicast client (sending) (MS)</p>
+<p></p>
+<p><span style="font-weight:600">Client pipeline</span></p>
+<p>Mulicast client (receiving) (MS)</p>
+<p>Correction (MS)</p>
+<ul type="disc"><li>MS/TG's code. Finishing tidying testing.</li></ul>
+<p>HTTP Server (MS)</p>
+<ul type="disc"><li>restreaming locally</li>
+<li>must be turned into threaded component</li></ul>
+<p>Client player (eg. VLC, <span style="text-decoration:underline">not our responsibility</span>)</p>
+<ul type="disc"><li>receiving locally restreamed HTTP</li></ul>
+<p></p>
+<p></p>
+</body></html>
