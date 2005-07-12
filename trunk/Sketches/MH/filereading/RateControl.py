@@ -12,7 +12,8 @@ class RateControl(component):
        Requests data from a data source at the specified rate in the specified chunksize
     """
    
-    Inboxes = { "control" : ""
+    Inboxes = { "inbox"   : "",
+                "control" : ""
               }
     Outboxes = { "outbox" : "requests for 'n' items",
                  "signal" : ""
