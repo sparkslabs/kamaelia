@@ -69,11 +69,13 @@ class ReadFileAdapter(component):
                    self.send(data,"outbox")
                except:
                    self.send(producerFinished(self), "signal")
+                   done = True
            
            if self.shutdown():
                done = True
            else:
                self.pause()
+#       print "RFA done"
 
                
    def shutdown(self):
