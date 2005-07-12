@@ -36,27 +36,39 @@ class Chooser(Axon.Component.component):
    
    def __init__(self, items = []):
       """Initialisation.
-         items = set of items that can be iterated over
+         items = set of items that can be iterated over. Must be finite.
+         If an iterator is supplied, it is enumerated into a list during initialisation.
       """
       super(Chooser,self).__init__()
       
-      self.items = [item for item in items]
+      self.items = list(items)
       self.useditems = []
 
       
+   def shutdown(self):
+        if self.dataReady("control"):
+            message = self.recv("control")
+            if isinstance(message, shutdownMicroprocess):
+                self.send(message, "signal")
+                return True
+        return False
+
+
+            
    def main(self):
       try:
          self.send( self.getCurrentChoice(), "outbox")
       except IndexError:
          pass
          
-      while 1:
+      done = False
+      while not done:
          yield 1
-         
+
          while self.dataReady("inbox"):
             send = True
             msg = self.recv("inbox")
-            
+
             if msg == "SAME":
                pass
             elif msg == "NEXT":
@@ -69,13 +81,15 @@ class Chooser(Axon.Component.component):
                self.gotoLast()
             else:
                send = False
-               
+
             if send:
                try:
                   self.send( self.getCurrentChoice(), "outbox")
                except IndexError:
                   pass
-               
+
+         done = self.shutdown()
+
    
    def getCurrentChoice(self):
       """Return the current choice to the outbox"""
