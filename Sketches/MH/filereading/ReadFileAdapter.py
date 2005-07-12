@@ -10,14 +10,14 @@ class ReadFileAdapter(component):
       Data is returned in response.
       
       Bytes returned as a single string
-      Line(s) returned as a **list** of strings
+      Line(s) returned as a single string
       
       Shuts down in response to a shutdownMicroprocess message
    """
    Inboxes = { "inbox" : "requests to 'n' read bytes/lines",
                "control" : ""
              }
-   Outboxes = { "outbox" : "data output"
+   Outboxes = { "outbox" : "data output",
                 "signal" : "outputs 'producerFinished' after all data has been read"
               }
 
@@ -32,24 +32,26 @@ class ReadFileAdapter(component):
        super(ReadFileAdapter, self).__init__()
        
        if readmode == "bytes":
-          self.read = readNBytes
-       elif:
-          self.read = readNLines
+          self.read = self.readNBytes
+       elif readmode == "lines":
+          self.read = self.readNLines
        else:
            raise ValueError("readmode must be 'bytes' or 'lines'")
        
        self.file = open(filename, "rb",0)
        
        
-   def readNBytes(n):
+   def readNBytes(self, n):
        data = self.file.read(n)
        if not data:
            raise "EOF"
        return data
    
    
-   def readNLines(n)
-       data = self.file.readlines(n)
+   def readNLines(self, n):
+       data = ""
+       for i in xrange(0,n):
+           data += self.file.readline()
        if not data:
            raise "EOF"
        return data
@@ -74,7 +76,7 @@ class ReadFileAdapter(component):
                self.pause()
 
                
-   def shutdown(self)
+   def shutdown(self):
       if self.dataReady("control"):
           msg = self.recv("control")
           if isinstance(msg, shutdownMicroprocess):
