@@ -2,7 +2,7 @@
 
 import Axon
 from Axon.Component import component
-from Axon.Ipc import shutdownMicroprocess
+from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 import time
 
@@ -64,12 +64,12 @@ class RateControl(component):
                 self.send( chunk, "outbox" )
 
             yield 1
-
+#        print "RC done"
 
     def shutdown(self):
         if self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, shutdownMicroprocess):
+            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
                 self.send( msg, "signal")
                 return True
         return False
