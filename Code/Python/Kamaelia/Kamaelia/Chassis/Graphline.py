@@ -45,8 +45,8 @@ class Graphline(component):
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
 
-         if fromComponent not in components: components.append(fromComponent)
-         if toComponent not in components: components.append(toComponent)
+         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
+         if toComponent   != self and toComponent   not in components: components.append(toComponent)
 
          passthrough = 0
          if fromComponent == self: passthrough = 1
