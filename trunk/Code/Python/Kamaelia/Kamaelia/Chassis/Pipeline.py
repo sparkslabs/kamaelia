@@ -34,7 +34,7 @@ class pipeline(component):
    def __init__(self, *components):
       super(pipeline,self).__init__()
       self.components = list(components)
-   
+
    def main(self):
       self.addChildren(*self.components)
       pipeline = self.components[:]
@@ -51,10 +51,34 @@ class pipeline(component):
       self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
       self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
       yield _Axon.Ipc.newComponent(*(self.children))
-      while 1:
-         self.pause()
-         yield 1
+#      while 1:
+#         self.pause()
+#         yield 1
 
+      # run until all child components have terminated
+      # at which point this component can implode
+
+      # could just look for the first and last component terminating (the ends of the pipe)
+      # BUT the creator of this pipeline might assume that the pipeline terminating means ALL
+      # children have finished.
+      while not self.childrenDone():
+          self.pause()
+          yield 1
+          
+      self.unplugChildren()
+      
+
+   def childrenDone(self):
+       """Returns true if all components have terminated
+          (ie. their microproceses have finished)
+       """
+       return False not in [ child._isStopped() for child in self.components ]
+
+   def unplugChildren(self):
+      for child in self.components:
+         self.postoffice.deregisterlinkage(thecomponent=child)
+         self.removeChild(child)
+          
 
                   
 if __name__=="__main__":
@@ -73,7 +97,7 @@ if __name__=="__main__":
             for i in self.outlist:
                 self.send(i,"outbox")
                 yield 1
-            self.send(producerFinished(), "signal")
+            self.send(producerFinished(self), "signal")
             yield 1
 
     
@@ -90,9 +114,11 @@ if __name__=="__main__":
             self.addChildren(self.source, self.pipe, self.dest)
             
             self.link((self.source, "outbox"),  (self.pipe, "inbox"))
-            self.link((self.pipe,   "outbox"),  (self.dest, "inbox"))
             self.link((self.source, "signal"),  (self.pipe, "control"))
+            
+            self.link((self.pipe,   "outbox"),  (self.dest, "inbox"))
             self.link((self.pipe,   "signal"),  (self,      "_control"))
+            
             self.link((self,        "_signal"), (self.dest, "control"))
 
         def childComponents(self):
