@@ -25,7 +25,12 @@ import Axon
 from Axon.Ipc import producerFinished
 
 class Chooser(Axon.Component.component):
-   """Chooses items out of a set, as directed by commands sent to its inbox"""
+   """Chooses items out of a set, as directed by commands sent to its inbox
+
+      Emits the first item at initialisation, then whenever a command is received
+      it emits another item (unless you're asking it to step beyond the start or
+      end of the set)
+   """
    
    Inboxes = { "inbox"   : "receive commands",
                "control" : ""
@@ -72,13 +77,13 @@ class Chooser(Axon.Component.component):
             if msg == "SAME":
                pass
             elif msg == "NEXT":
-               self.gotoNext()
+               send = self.gotoNext()
             elif msg == "PREV":
-               self.gotoPrev()
+               send = self.gotoPrev()
             elif msg == "FIRST":
-               self.gotoFirst()
+               send = self.gotoFirst()
             elif msg == "LAST":
-               self.gotoLast()
+               send = self.gotoLast()
             else:
                send = False
 
@@ -100,23 +105,28 @@ class Chooser(Axon.Component.component):
       if len(self.items) > 1:
          self.useditems.append(self.items[0])
          del(self.items[0])
+         return True
+      return False
 
    def gotoPrev(self):
       """Backstep the choice backwards one"""
       try:
          self.items.insert(0, self.useditems[-1])
          del(self.useditems[-1])
+         return True
       except IndexError:
-         pass
+         return False
    
    def gotoLast(self):
       """Goto the last item in the set"""
       self.useditems.extend(self.items[:-1])
       self.items = [self.items[-1]]
+      return True
             
    def gotoFirst(self):
       """Goto the first item in the set"""
       self.useditems.extend(self.items)
       self.items = self.useditems
       self.useditems = []
+      return True
       

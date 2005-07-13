@@ -59,9 +59,32 @@ class Graphline(component):
 
       self.addChildren(*components)
       yield _Axon.Ipc.newComponent(*(self.children))
-      while 1:
-         self.pause()
-         yield 1
+#      while 1:
+#         self.pause()
+#         yield 1
+
+      # run until all child components have terminated
+      # at which point this component can implode
+
+      # could just look for the first and last component terminating (children with linkages to graphline)
+      # BUT the creator of this pipeline might assume that the graphline terminating means ALL
+      # children have finished.
+      while not self.childrenDone():
+          yield 1
+          
+      self.unplugChildren()
+      
+
+   def childrenDone(self):
+       """Returns true if all components have terminated
+          (ie. their microproceses have finished)
+       """
+       return False not in [ child._isStopped() for child in self.components.values() ]
+
+   def unplugChildren(self):
+      for child in self.components.values():
+         self.postoffice.deregisterlinkage(thecomponent=child)
+         self.removeChild(child)
                   
 if __name__=="__main__":
    pass    
