@@ -27,7 +27,7 @@ import Axon as _Axon
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.SimpleServerComponent import SimpleServer
 
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg" #"/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
