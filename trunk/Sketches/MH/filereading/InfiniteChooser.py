@@ -21,12 +21,20 @@
 # -------------------------------------------------------------------------
 #
 
+# This component is rather poorly named at the mo, since its behaviour is more one of (forwards) iteration
+# and termination
+
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class InfiniteChooser(Axon.Component.component):
-   """Chooses items out of something iterable, as directed by commands sent to its inbox"""
+   """Iterates forwards items out of something iterable, as directed by commands sent to its inbox.
    
+      Emits the first item at initialisation, then whenever a command is received
+      it emits another item (unless you're asking it to step beyond the end of the set)
+
+      Stepping beyond the end will cause this component to shutdown and emit a producerFinished msg
+   """   
    Inboxes = { "inbox"   : "receive commands",
                "control" : ""
              }
@@ -69,7 +77,11 @@ class InfiniteChooser(Axon.Component.component):
             if msg == "SAME":
                pass
             elif msg == "NEXT":
-               self.gotoNext()
+               send = self.gotoNext()
+#               print "NEXT ", send
+               if not send:
+                   done = True
+                   self.send( producerFinished(self), "signal")
             else:
                send = False
 
@@ -79,8 +91,8 @@ class InfiniteChooser(Axon.Component.component):
                except IndexError:
                   pass
 
-         done = self.shutdown()
-
+         done = done or self.shutdown()
+#      print "InfiniteChooser done"
 
    def getCurrentChoice(self):
       """Return the current choice"""
@@ -94,5 +106,6 @@ class InfiniteChooser(Axon.Component.component):
       """Advance the choice forwards one"""
       try:
          self.currentitem = self.items.next()
+         return True
       except StopIteration:
-         pass
+         return False

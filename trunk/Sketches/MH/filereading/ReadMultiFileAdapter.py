@@ -38,10 +38,12 @@ def JoinChooserSequencer(chooser, sequencer):
        outbox for outputting 'next' style messages.
     """
     return Graphline(CHOOSER = chooser, SEQUENCER = sequencer,
-                     linkages = { ("CHOOSER", "outbox") : ("SEQUENCER", "next"),
+                     linkages = { ("CHOOSER", "outbox")        : ("SEQUENCER", "next"),
+                                  ("CHOOSER", "signal")        : ("SEQUENCER", "control"),
+                                  ("self", "inbox")            : ("SEQUENCER", "inbox"),
                                   ("SEQUENCER", "requestNext") : ("CHOOSER", "inbox"),
-                                  ("self", "inbox") : ("SEQUENCER", "inbox"),
-                                  ("SEQUENCER", "outbox") : ("self", "outbox")
+                                  ("SEQUENCER", "outbox")      : ("self", "outbox"),
+                                  ("SEQUENCER", "signal")      : ("self", "signal")
                                 }
                     )
 
@@ -63,8 +65,13 @@ def RateControlledReadFileAdapter(filename, readmode = "bytes", **rateargs):
                     )
 
 
-#def ReadMultiFileAdapter():
-#    return Sequencer( FileReaderAdapter )
+def ReadMultiFileAdapter(readmode = "bytes"):
+    """Returns a Sequencer for file reading, with no rate control component.
+    """
+    def factory(filename):
+        return ReadFileAdapter(filename=filename, readmode=readmode)
+    
+    return Sequencer( factory )
 
 
 def PerFileRateReadMultiFileAdapter(readmode = "bytes"):
@@ -79,6 +86,24 @@ def PerFileRateReadMultiFileAdapter(readmode = "bytes"):
 
 
 
+def FixedRateReadMultiFileAdapter(readmode = "bytes", **rateargs):
+    """Returns a Sequencer, liked with a RateControl.
+       The Sequencer's 'requestNext' and 'next' postboxes are accessible.
+    """
+    return Graphline(RC  = RateControl(**rateargs),
+                     SEQ = ReadMultiFileAdapter(readmode),
+                     linkages = { ("self", "inbox")      : ("RC", "inbox"),
+                                  ("self", "control")    : ("RC", "control"),
+                                  ("RC", "outbox")       : ("SEQ", "inbox"),
+                                  ("RC", "signal")       : ("SEQ", "control"),
+                                  ("SEQ", "outbox")      : ("self", "outbox"),
+                                  ("SEQ", "signal")      : ("self", "signal"),
+                                  ("SEQ", "requestNext") : ("self", "requestNext"),
+                                  ("self", "next")       : ("SEQ", "next")
+                                }
+                    )
+                     
+
 
 if __name__ == "__main__":
 
@@ -87,27 +112,46 @@ if __name__ == "__main__":
    from InfiniteChooser import InfiniteChooser
 
 
-#   pipeline(
-#     RateControlledReadFileAdapter("./filereadingtest1.py", readmode = "lines", rate=2, chunksize=1),
-#     consoleEchoer()
-#     ).activate()
+#   test = "RateControlledReadFileAdapter"
+#   test = "PerFileRateReadMultiFileAdapter"
+   test = "FixedRateReadMultiFileAdapter"
 
-   def filelist():
-       while 1:
-           yield ( "./Sequencer.py", {"rate":500, "chunkrate":1} )
-           yield ( "./Sequencer.py", {"rate":100} )
+   if test == "RateControlledReadFileAdapter":
+   
+        pipeline( RateControlledReadFileAdapter("./Sequencer.py", readmode = "lines", rate=20, chunksize=1),
+                  consoleEchoer()
+                ).activate()
 
-   pipeline(
-     JoinChooserSequencer(
-        InfiniteChooser(filelist()),
-        PerFileRateReadMultiFileAdapter(readmode="bytes")
-        ),
-     consoleEchoer()
-     ).activate()
+   elif test == "PerFileRateReadMultiFileAdapter":
+        def filelist():
+        #       while 1:
+                yield ( "./Sequencer.py", {"rate":500, "chunkrate":1} )
+                yield ( "./Sequencer.py", {"rate":400, "chunkrate":20} )
+                yield ( "./Sequencer.py", {"rate":1000, "chunkrate":100} )
+        
+        pipeline( JoinChooserSequencer( InfiniteChooser(filelist()),
+                                        PerFileRateReadMultiFileAdapter(readmode="bytes")
+                                      ),
+                  consoleEchoer()
+                ).activate()
 
-#   from Kamaelia.Internet.TCPClient import TCPClient
-#   from Kamaelia.Util.Introspector import Introspector
-#   pipeline(Introspector(), TCPClient("127.0.0.1",1500)).activate()
+   elif test == "FixedRateReadMultiFileAdapter":
+        files = [ "./Sequencer.py" for _ in range(0,3) ]
+        rate  = {"rate":400, "chunkrate":100}
+       
+        pipeline( JoinChooserSequencer( InfiniteChooser(files),
+                                        FixedRateReadMultiFileAdapter(readmode="bytes", **rate)
+                                      ),
+                  consoleEchoer()
+                ).activate()
+
+   else:
+       pass
+
+   if 0:
+        from Kamaelia.Internet.TCPClient import TCPClient
+        from Kamaelia.Util.Introspector import Introspector
+        pipeline(Introspector(), TCPClient("127.0.0.1",1500)).activate()
 
    scheduler.run.runThreads(slowmo=0)
     
