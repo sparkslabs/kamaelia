@@ -53,9 +53,11 @@ class Sequencer(component):
             
             yield self.handleNewChild()
 
-        self.unplugChild()
+        self.unplugChildren()
+#        print"SEQUENCER done"
             
     def requestNext(self):
+#        print "REQUESTING NEXT"
         self.send( "NEXT", "requestNext" )
     
 
@@ -82,11 +84,14 @@ class Sequencer(component):
             while self.dataReady("_control"):
                 self.recv("_control")
 
-            self.unplugChild()
+            self.unplugChildren()
 
             # create new child
             newChild = self.factory(arg)
             self.addChildren( newChild )
+            
+            # set flag for handleFinishedChild's sake
+            self.childDone = False
 
             # wire it in
             self.link( (self,     "inbox"),   (newChild, "inbox"),  passthrough=1 )
@@ -100,7 +105,7 @@ class Sequencer(component):
         return 1
 
 
-    def unplugChild(self):
+    def unplugChildren(self):
         for child in self.childComponents():
             self.postoffice.deregisterlinkage(thecomponent=child)
             self.removeChild(child)
@@ -109,7 +114,7 @@ class Sequencer(component):
     def shutdown(self):
         if self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, shutdownMicroprocess):
+            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
                 self.send( msg, "signal")
                 return True
         return False
