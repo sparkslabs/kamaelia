@@ -30,13 +30,45 @@ component = _Axon.Component.component
 
 
 class Graphline(component):
+   Inboxes = {"inbox":"", "control":""}
+   Outboxes = {"outbox":"", "signal":""}
+    
    def __init__(self, linkages = None, **components):
       if linkages is None:
          raise ValueError("linkages must be set")
-      super(Graphline,self).__init__()
+
       self.layout = linkages
       self.components = dict(components)
 
+      # adds to 'Inboxes' and 'Outboxes' before superclass takes those lists to create them
+      self.addExternalPostboxes()
+      
+      super(Graphline,self).__init__()
+
+
+   def addExternalPostboxes(self):
+      """Adds to self.Inboxes and self.Outboxes any postboxes mentioned in self.layout that don't yet exist"""
+      for componentRef,sourceBox in self.layout:
+         toRef, toBox = self.layout[(componentRef,sourceBox)]
+         fromComponent = self.components.get(componentRef, self)
+         toComponent = self.components.get(toRef, self)
+
+         if fromComponent == self:
+             if sourceBox not in self.Inboxes:
+                 # add inbox to list, and copy any description text (if it exists)
+                 try:
+                     self.Inboxes[sourceBox] = toComponent.Inboxes[toBox]
+                 except KeyError, IndexError:
+                     self.Inboxes[sourceBox] = ""
+
+         if toComponent == self:
+             if toBox not in self.Outboxes:
+                 # add outbox to list, and copy any description text (if it exists)
+                 try:
+                     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
+                 except KeyError, IndexError:
+                     self.Outboxes[toBox] = ""
+      
    def main(self):
       # NEW CODE
       components = []
@@ -70,6 +102,7 @@ class Graphline(component):
       # BUT the creator of this pipeline might assume that the graphline terminating means ALL
       # children have finished.
       while not self.childrenDone():
+          # can't self.pause since components may not terminate immediately after sending their last data out
           yield 1
           
       self.unplugChildren()
