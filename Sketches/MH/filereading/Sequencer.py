@@ -53,6 +53,7 @@ class Sequencer(component):
             
             yield self.handleNewChild()
 
+        self.send( shutdownMicroprocess(self), "_signal" )  # force child to terminate too
         self.unplugChildren()
 #        print"SEQUENCER done"
             
