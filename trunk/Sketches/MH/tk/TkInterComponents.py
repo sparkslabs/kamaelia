@@ -83,7 +83,7 @@ class TkWindow(component):
             yield 1
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished()) or isinstance(msg, shutdownMicroprocess()):
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
                     self.window.destroy()
             self.tkupdate()
