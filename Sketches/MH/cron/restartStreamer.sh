@@ -3,7 +3,8 @@
 LOCKFILE=/tmp/.lock_restartStreamer
 
 WORKINGDIR=/home/matteh/kamaelia/Sketches/filereading
-TASK=./SimpleMultiFileStreamer.py \>\>stdout.log 2\>\>errout.log
+TASK=./SimpleMultiFileStreamer.py
+REDIRECTS="\>\>stdout.log 2\>\>errout.log"
 
 SECONDS_RESTART_PAUSE=1
 
@@ -15,7 +16,7 @@ stoptask()
     if [ -f $LOCKFILE ]
     then
         pidtokill=`cat $LOCKFILE`
-        pids=`ps aux | grep $TASK | grep -v grep | awk '{print $2}' | grep \^$pidtokill\$`
+        pids=`ps aux | grep "$TASK" | grep -v grep | awk '{print $2}' | grep \^$pidtokill\$`
         for p in $pids
         do
             kill -9 $p
@@ -30,14 +31,14 @@ starttask()
     if [ -f $LOCKFILE ]
     then
         thepid=`cat $LOCKFILE`
-        pids=`ps aux | grep $TASK | grep -v grep | awk '{print $2}' | grep \^$thepid\$`
+        pids=`ps aux | grep "$TASK" | grep -v grep | awk '{print $2}' | grep \^$thepid\$`
 
         if [ -z $pids ]
         then
             # start the task
             pushd .
             cd $WORKINGDIR
-            $TASK &
+            $TASK $REDIRECTS &
             popd
             
             # log process id for the task we just started
