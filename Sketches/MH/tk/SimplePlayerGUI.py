@@ -33,7 +33,13 @@ from ReadMultiFileAdapter import FixedRateReadMultiFileAdapter
 
 
 class ControlWindow(TkWindow):
-    """
+    """A simple audio player control window.
+
+       Clicking "PLAY" emits a filename on the outbox
+       Closing the window doesn't immediately close it, but sends a shutdownMicroprocess()
+       message out of the outbox.
+       The window will actually close when this component receives a shutdownMicroproces()
+       message itself.
     """
 
     Inboxes = { "inbox":"",
@@ -47,6 +53,8 @@ class ControlWindow(TkWindow):
     def __init__(self):
         super(ControlWindow, self).__init__()
 
+    # default main() waits for shutdownMicroprocess() and then destroys this component
+        
     def setupWindow(self):
         self.frame = Tkinter.Frame(self.window)
 
@@ -60,6 +68,7 @@ class ControlWindow(TkWindow):
         self.playbutton = Tkinter.Button(self.frame, text="PLAY!", command=lambda: self.playAudio() )
         self.playbutton.grid(row=1, column=0, padx=4, pady=4)
 
+        self.window.protocol("WM_DELETE_WINDOW", self.handleCloseWindowRequest )
 
     def playAudio(self):
         self.send( "/opt/kde3/share/apps/khangman/sounds/new_game.ogg", "outbox")
@@ -68,18 +77,30 @@ class ControlWindow(TkWindow):
         if str(event.widget) == str(self.window):
             self.send( shutdownMicroprocess(self), "signal")
 
-            
+    def handleCloseWindowRequest(self):
+        # we won't close the window, we'll send on a shutdown message to children
+        self.send( shutdownMicroprocess(self), "signal")
+        # we'll destroy outselves when we receive a shutdown message ourselves
+        self.label["text"] = "Shutting down..."
+        self.playbutton.destroy()
 
+        
 if __name__ == "__main__":
     from Axon.Scheduler import scheduler
 
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+
+    # make pipeline, but make the signal->control path loop round, so a shutdownMicroprocess()
+    # message sent by ControlWindow will eventually get back to ControlWindow()
+    c = ControlWindow()
+    a = AOAudioPlaybackAdaptor()
+    c.link( (a,"signal"), (c,"control") )
     
-    pipeline( ControlWindow(),
+    pipeline( c,
               FixedRateReadMultiFileAdapter( readmode="bytes", rate=128000/8, chunksize=1024 ),
               VorbisDecode(),
-              AOAudioPlaybackAdaptor()
+              a
             ).activate()
     
     
