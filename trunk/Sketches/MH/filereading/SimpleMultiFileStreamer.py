@@ -42,7 +42,7 @@ from Kamaelia.Util.Graphline import Graphline
 shortfile = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 FILES_TO_STREAM = [ shortfile, shortfile, shortfile ]# [  file_to_stream, file_to_stream2 ]
-BITRATE         = 38000 # 800000
+BITRATE         = 800000 # 38000
 CHUNKSIZEBYTES  = 512
 SERVERPORT      = 1500
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
    server     = SimpleServer( protocol = filereader, port = SERVERPORT ).activate()
 
-   if 1:
+   if 0:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
         pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()

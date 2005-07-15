@@ -92,7 +92,7 @@ def FixedRateReadMultiFileAdapter(readmode = "bytes", **rateargs):
     """
     return Graphline(RC  = RateControl(**rateargs),
                      SEQ = ReadMultiFileAdapter(readmode),
-                     linkages = { ("self", "inbox")      : ("RC", "inbox"),
+                     linkages = { ("self", "inbox")      : ("SEQ", "next"),
                                   ("self", "control")    : ("RC", "control"),
                                   ("RC", "outbox")       : ("SEQ", "inbox"),
                                   ("RC", "signal")       : ("SEQ", "control"),
