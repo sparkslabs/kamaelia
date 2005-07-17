@@ -2,6 +2,9 @@
 0.2.0 (When released)
 
 Detailed:
+   * Util/FilterComponent A component to plug in filter objects to perform and
+   sort of filtering or general data processing on a data.  Not yet used by
+   the Subtitling related filter classes in Sketches.
    * Util/Splitter added. This component allows a single outbox to be connected
    to many inboxes.
    * Util/test/test_Splitter added to test the above class.
