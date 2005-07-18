@@ -10,5 +10,5 @@ tickerPort = 1500
 
 pipeline(TCPClient(tickerIP,tickerPort),
          SubtitleColourDecoderComponent(),
-                Ticker()
+         Ticker()
         ).run()

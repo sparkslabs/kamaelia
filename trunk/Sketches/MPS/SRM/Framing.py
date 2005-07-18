@@ -69,12 +69,6 @@ class DeFramer(Axon.Component.component):
                 self.send(SimpleFrame.fromString(message),"outbox")
             yield 1
 
-def chunked_datasource():
-    while 1:
-        yield "XXXXXXXXXXXXXXXXXXXXXXXX"
-        for i in xrange(1000):
-            yield str(i)
-
 class DataChunker(Axon.Component.component):
     def __init__(self, syncmessage="XXXXXXXXXXXXXXXXXXXXXXXX"):
         super(DataChunker, self).__init__()

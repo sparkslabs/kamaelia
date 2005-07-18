@@ -62,7 +62,7 @@ class Ticker(component):
    def main(self):
       pygame.init()
 
-      display = pygame.display.set_mode((self.screen_width, self.screen_height), FULLSCREEN )
+      display = pygame.display.set_mode((self.screen_width, self.screen_height))#, FULLSCREEN )
 
       my_font = pygame.font.Font(None, self.text_height)
 
