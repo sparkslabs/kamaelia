@@ -1,5 +1,5 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
-<p align="center"><span style="font-size:19pt;font-weight:600">Kamaelia - Networking Using Generators</span></p>
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p align="center"><span style="font-size:15pt;font-weight:600">Kamaelia - Networking Using Generators</span></p>
 <p align="center">Michael Sparks</p>
 <p align="center">BBC Research &amp; Development</p>
 <p align="center"><span style="font-weight:600">ABSTRACT</span></p>
@@ -12,7 +12,7 @@
 <p>Using python generators seems to result in performance similar to that of traditional state machines, with an ease of use similar to that of process based concurrency. BBC R&amp;D is building Kamaelia as a testbed for developing open large scale internet media delivery protocols. This paper provides an overview of the core technology allowing others to use the technology for other uses.</p></td></tr>
 </table>
 </p>
-<p><span style="font-size:21pt;font-weight:600">Kamaelia</span></p>
+<p><span style="font-size:17pt;font-weight:600">Kamaelia</span></p>
 <p>Kamaelia is a project aimed at exploring long term systems for large scale media delivery. At its core is a concurrency toolkit, focussed mainly on experimenting with network protocols. This toolkit has 2 key portions - Axon and Kamaelia.</p>
 <p>Axon itself is the core component infrastructure aimed at making concurrent systems easy to work with. It is written in the python, though a simplistic C++ version also exists. In python terms it implements components using generators, and systems are make by setting up communications between components.</p>
 <p>The Kamaelia portion is the larger of the two sections, which is why it is named after the main project - since it is a collection of components that use Axon. These range from components for building network servers and clients through to music playback, audio codec decode through to components suitable for viewing network topologies.</p>
@@ -38,7 +38,7 @@
 <p>Other issues arise when you scale up to these levels as well. The only open protocol currently in heavy use for streaming is the Realtime Transport Protocol (RTP). However, RTP was  originally concieved for internet based Audio/Video conferencing/telephony, which means certain aspects don't scale well for large scale unidirectional streaming.</p>
 <p>As a result we needed a platform for designing, implementing and testing new open standards to scale in this way. Unfortunately, scalability and ability to experiment often conflict, which is why we needed to write our own system. Furthermore large scale means highly parallel, and scalable concurrency often has a high barrier to entry. From our perspective this was a real problem since a high barrier to entry can limit the ability to take in new ideas, and limits areas of collaboration. After all those most capable of implementing an idea may not be the same people capable of imagining the idea.</p>
 <p></p>
-<p><span style="font-size:21pt;font-weight:600">Axon's Design Background</span></p>
+<p><span style="font-size:17pt;font-weight:600">Axon's Design Background</span></p>
 <p>As previously noted, Axon forms the core concurrency subsystem in Kamaelia, is largely aimed at providing those core concurrency elements. It tries to provide the smallest useful toolset for concurrency needed for Kamaelia components, but no smaller (By comparison it is possible to produce smaller systems, which are useful for exploring various ideas, but tend to be incomplete).</p>
 <p>The keys aims in Axon's basic design were as follows:</p>
 <ul type="disc"><li>It should first and foremost use a scalable approach, which is also portable between operating systems.</li>
@@ -92,7 +92,7 @@
 <ul type="disc"><li>How data passes between processes. In Unix pipelines processes can send data to the pipeline whenever they want, and will simply block when the hidden intermediate buffers between processes are full. This allows to operating system to handle race hazards between processes. (Consider a program that produces data faster than another that consumes and uses that data)</li>
 <li>The system environment. This allows processes to place information in a standard place for notification of standard resources. The most commonly used standard resource for example is where to find other commands - specifically the PATH variable in the standard environment. At it's most basic though the system environment forms a basic key/value lookup tool.</li></ul>
 <p></p>
-<p><span style="font-size:21pt;font-weight:600">Axon</span></p>
+<p><span style="font-size:17pt;font-weight:600">Axon</span></p>
 <p>Having discussed the background to the key decisions made during Axon's design we now discuss the key features of Axon, what they do and how to use them. The key classes in Axon are as follows:</p>
 <ul type="disc"><li><span style="font-weight:600">Component</span>. A component is a self pausing sequential objects - typically a generator - that sends data to local interfaces</li>
 <li><span style="font-weight:600">Linkage</span>. A linkage is a facility for joining interfaces, allowing system composition</li>
@@ -218,7 +218,7 @@
 <li>The next server that starts up can also check for the existance of a selector. This server finds a selector service. It can then send that service a message stating &quot;wake me up on this inbox if you find a this socket&quot;. It does this, effectively, by sending a reference to the socket, itself and the inbox name to the selector. (This is why we talk about sending a service to a service)</li></ul>
 <p>It's worth noting that the only one of these two components needs to know how to create a selector component. It is possible that as time progresses that this aspect of services may expand.</p>
 <p></p>
-<p><span style="font-size:21pt;font-weight:600">Component Creation Howto</span></p>
+<p><span style="font-size:17pt;font-weight:600">Component Creation Howto</span></p>
 <p></p>
 <p>In this section we shall describe how to create a basic component that deals with one of the most common network formats, and translates this from textual form to a python dictionary.</p>
 <p>MIME/RFC2822 type objects are common in network protocols, used in email, web, usenet systems and several others. </p>
@@ -281,7 +281,7 @@
 <li>When the code works, then convert to components</li>
 <li>Change control methods into inboxes/outboxes</li></ul>
 <p></p>
-<p><span style="font-size:21pt;font-weight:600">Ease of use Hypothesis</span></p>
+<p><span style="font-size:17pt;font-weight:600">Ease of use Hypothesis</span></p>
 <p>As noted we have hypothesised that using simple components communicating to/from local inboxes/outboxes composed into systems may be simpler to work with when building concurrent systems than traditional approaches.</p>
 <p>We were recently able to test this hypothesis on a pre-university trainee, who was happy to let me describe him as a novice programmer. We'll call him &quot;C&quot; for the rest of this document. Prior to joining our group &quot;C&quot; had done A-Level computer studies. This involved a small amount of Visual Basic programming and creating a small Access database.</p>
 <p>This trainee had a 3 month placement within our group which involved the following:</p>
@@ -328,7 +328,7 @@
 <p>You'll note that any returned value from a callback is yielded back to the scheduler allowing components using the callback form to start new components as required.</p>
 <p>The secondary advantage of also having this callback mechanism in addition to the generator approach is that some programmers simply find a callback approach easier to work with. As a result having this call back approach as well as the generator approach is extremely useful.</p>
 <p></p>
-<p><span style="font-size:21pt;font-weight:600">Futures</span></p>
+<p><span style="font-size:17pt;font-weight:600">Futures</span></p>
 <p>Currently the version number of Kamaelia, whilst stable and useful stands at 0.1.2. We there see a lot of enhancements to come to both Axon and Kamaelia before we reach a 1.0 release which we consider feature stable and sufficiently complete. This section details a few of the areas which we may extend Kamaelia and Axon into given sufficient interest and resources.</p>
 <p></p>
 <p><span style="font-weight:600">Axon for C++</span></p>
