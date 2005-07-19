@@ -3,7 +3,7 @@
 
 import unittest
 
-import Escape
+import Kamaelia.Data.Escape as Escape
 
 class Escape_tests(unittest.TestCase):
     def test_escape_emptyString(self):
@@ -51,7 +51,16 @@ class Escape_tests(unittest.TestCase):
         result = Escape.escape(message,escape_string)
         self.assertEqual(expectResult, result)
 
-
+    def test_escape_LongString_EscapeSubStr_PartialMatching(self):
+        # We should not be able to find the escaped string earlier than it
+        # was inserted into an escaped sequence.
+        messages = [ "   x", "   x"]
+        escape_string = "xxxx"
+        encoded = [ Escape.escape(message,escape_string) for message in messages ]
+        joined = escape_string + escape_string.join(encoded)
+        self.assertEqual(joined.find(escape_string),0)
+        self.assert_(joined.find(escape_string,1)>7) 
+        
 class Unescape_tests(unittest.TestCase):
     def test_unescape_emptyString(self):
         message = ""
@@ -98,6 +107,15 @@ class Unescape_tests(unittest.TestCase):
         result = Escape.unescape(message,escape_string)
         self.assertEqual(expectResult, result)
 
+
+    def test_escape_LongString_UnEscapeSubStr_PartialMatch(self):
+        # We should not be able to find the escaped string earlier than it
+        # was inserted into an escaped sequence.
+        messages = [ "   x", "   x"]
+        escape_string = "xxxx"
+        encoded = [ Escape.escape(message,escape_string) for message in messages ]
+        decoded = [ Escape.unescape(message,escape_string) for message in encoded ]
+        self.assertEqual(messages, decoded)
 
 if __name__=="__main__":
     unittest.main()
