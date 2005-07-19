@@ -62,7 +62,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       super(PygameDisplay,self).__init__()
       self.width = argd.get("width",800)
       self.height = argd.get("height",600)
-      self.background_colour = argd.get("background_colour", (48,48,128))
+#      self.background_colour = argd.get("background_colour", (48,48,128))
+      self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (10,10)
       self.surfaces = []
@@ -83,6 +84,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                eventservice = message.get("events", None)
                size = message["size"]
                surface = pygame.Surface(size)
+               alpha = message.get("alpha", 255)
+               surface.set_alpha(alpha)
                if message.get("transparency", None):
                   surface.set_colorkey(message["transparency"])
 #               position = self.surfacePosition(surface)
@@ -107,6 +110,12 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             elif message.get("REMOVELISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+# Does this *really* need to be here?
+#
+#            elif message.get("CHANGEALPHA", None) is not None:
+#               surface = self.surface_to_eventcomms[str(id(message["surface"]))]
+#               alpha = message.get("alpha", 255)
+#               surface.set_alpha(alpha)
 
    def updateDisplay(self,display):
       display.fill(self.background_colour)

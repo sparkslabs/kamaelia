@@ -34,6 +34,7 @@ class Multicast_transceiver(Axon.Component.component):
                                     socket.inet_aton(self.remote_addr) + socket.inet_aton("0.0.0.0"))
 
         sock.setblocking(0)
+        tosend = []
         while 1:
            try:
               data, addr = sock.recvfrom(1024)
@@ -45,7 +46,13 @@ class Multicast_transceiver(Axon.Component.component):
            yield 1
            if self.dataReady("inbox"):
               data = self.recv()
-              l = sock.sendto(data, (self.remote_addr,self.remote_port) );
+              tosend.append(data)
+              try:
+                  l = sock.sendto(tosend[0], (self.remote_addr,self.remote_port) );
+                  del tosend[0]
+              except socket.error, e:
+                  # Just keep trying next time
+                  pass
 
 def tests():
    print "This module is acceptance tested as part of a system."
