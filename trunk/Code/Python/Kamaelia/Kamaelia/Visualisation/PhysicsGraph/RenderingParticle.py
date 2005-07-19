@@ -65,8 +65,15 @@ class RenderingParticle(BaseParticle):
             pygame.draw.line(surface, (128,128,255), (x,y),  (int(p.pos[0] -self.left),int(p.pos[1] - self.top)) )
         
         yield 2
+        self.renderNode(x,y,self.selected,surface)
+#        pygame.draw.circle(surface, (255,128,128), (x,y), self.radius)
+#        if self.selected:
+#            pygame.draw.circle(surface, (0,0,0), (x,y), self.radius, 2)
+#        surface.blit(self.label, (x - self.label.get_width()/2, y - self.label.get_height()/2))
+
+    def renderNode(self,x,y,selected, surface):
         pygame.draw.circle(surface, (255,128,128), (x,y), self.radius)
-        if self.selected:
+        if selected:
             pygame.draw.circle(surface, (0,0,0), (x,y), self.radius, 2)
         surface.blit(self.label, (x - self.label.get_width()/2, y - self.label.get_height()/2))
         

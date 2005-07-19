@@ -32,7 +32,13 @@ class Image(Axon.Component.component):
    Inboxes = { "inbox"    : "Specify (new) filename",
                "control"  : "",
                "callback" : "Receive callbacks from PygameDisplay",
-               "bgcolour" : "Set the background colour"
+               "bgcolour" : "Set the background colour",
+               "events"   : "Place where we recieve events from the outside world",
+             }
+   Outboxes = {
+               "outbox" : "unused",
+               "signal" : "unused",
+               "display_signal" : "Outbox used for sending signals of various kinds to the display service"
              }
     
    def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None):
@@ -57,6 +63,7 @@ class Image(Axon.Component.component):
          
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
+                           "events" : (self, "events"),
                            "size": self.size}
       
       if not position is None:
@@ -72,16 +79,22 @@ class Image(Axon.Component.component):
             
    def main(self):
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
+      self.link((self,"display_signal"), displayservice)
       
       # request a surface
-      self.send(self.disprequest,
-                  "signal")
+      self.send(self.disprequest, "display_signal")
+
+
     
       done = False
       change = False    
+      alpha = 250
+      dir = -10
       while not done:
-      
+         alpha = alpha + dir
+#         if alpha > 245 or alpha < 45: dir = -dir
+#         if self.display:
+#            self.display.set_alpha(alpha)
          if self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
@@ -89,8 +102,14 @@ class Image(Axon.Component.component):
          
          # if we're given a new surface, use that instead
          if self.dataReady("callback"):
-            self.display = self.recv("callback")
-            change = True
+            if self.display is None:
+               self.display = self.recv("callback")
+               print id(self.display), "XXXX", self.display
+               change = True
+               for x in xrange(15): yield 1
+               message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
+                           "surface" : self.display}
+               self.send(message, "display_signal")
 
          if self.dataReady("inbox"):
             newImg = self.recv("inbox")
@@ -120,11 +139,6 @@ class Image(Axon.Component.component):
         
         
    def blitToSurface(self):
-#      if not self.display is None:
-#         self.display.fill( (0,128,0) )
-#        
-#         if not self.image is None:
-#            self.display.blit(self.image, (0,0) )
        try:
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
