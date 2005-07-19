@@ -2,32 +2,42 @@
 
 import Axon
 
-from Escape import escape as _escape
-from Escape import unescape as _unescape
+from Kamaelia.Data.Escape import escape as _escape
+from Kamaelia.Data.Escape import unescape as _unescape
 
 class CorruptFrame(Exception):
    pass
 
+class ShortFrame(Exception):
+   pass
+
 class IncompleteChunk(Exception):
    pass
+
+COUNT = 0
 
 class SimpleFrame(object):
     def __init__(self, *args):
         self.t = args
 
     def __str__(self):
-        tag, data = self.t
+        try:
+            tag, data = self.t
+        except ValueError, e:
+            raise e
         length = len(data)
         frame = "%s %s\n%s" % (tag, length, data)
         return frame
        
     def fromString(s):
+        global COUNT
         newlineIndex = s.find("\n")
         header = s[:newlineIndex]
         body = s[newlineIndex+1:]
         frameIndex, bodyLength = [ int(x) for x in header.split() ]
         if bodyLength > len(body):
-           raise CorruptFrame
+           raise ShortFrame(frameIndex, body[:bodyLength], COUNT, len(s), len(body), s)
+        COUNT = COUNT + 1
         return (frameIndex, body[:bodyLength])
     fromString = staticmethod(fromString)
 
@@ -68,12 +78,6 @@ class DeFramer(Axon.Component.component):
                 message = self.recv("inbox")
                 self.send(SimpleFrame.fromString(message),"outbox")
             yield 1
-
-def chunked_datasource():
-    while 1:
-        yield "XXXXXXXXXXXXXXXXXXXXXXXX"
-        for i in xrange(1000):
-            yield str(i)
 
 class DataChunker(Axon.Component.component):
     def __init__(self, syncmessage="XXXXXXXXXXXXXXXXXXXXXXXX"):
@@ -134,9 +138,6 @@ class DataDeChunker(Axon.Component.component):
         if chunk[:len(self.syncmessage)] == self.syncmessage:
            message = chunk[len(self.syncmessage):]
         else:
-           print
-           print "FAILING"
-           print "CHUNK = ", repr(chunk)
            raise IncompleteChunk
         message = self.unEscapeSyncMessage(message)
         return message
@@ -151,23 +152,28 @@ class DataDeChunker(Axon.Component.component):
     def main(self):
         message = ""
         buffer = ''
-        foundFirstChunk = 0     
+        foundFirstChunk = 0
         while 1:
             if self.shutdown(): return
 
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
-
                 buffer += data
                 location = buffer.find(self.syncmessage,len(self.syncmessage))
                 if location != -1:
                     if foundFirstChunk:
                         chunk = buffer[:location]
-                        self.send(self.decodeChunk(chunk), "outbox")
-                    buffer = buffer[location:]
+                        try:
+                            self.send(self.decodeChunk(chunk), "outbox")
+                        except IncompleteChunk:
+                            pass
+                        buffer = buffer[location:]
                     foundFirstChunk = 1
 
             if self.shouldFlush():
-                self.send(self.decodeChunk(buffer), "outbox")
+                try:
+                    self.send(self.decodeChunk(buffer), "outbox")
+                except IncompleteChunk:
+                    pass
                 buffer = ""
             yield 1

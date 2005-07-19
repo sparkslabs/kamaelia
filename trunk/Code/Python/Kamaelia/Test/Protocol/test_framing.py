@@ -2,7 +2,7 @@
 
 
 import unittest
-import Framing
+import Kamaelia.Protocol.Framing as Framing
 
 from Axon.Ipc import producerFinished
 
@@ -93,7 +93,7 @@ class Framing_Tests(unittest.TestCase):
         try:
              result = Framing.SimpleFrame.fromString('1 2\n')
              self.fail("Should have died")
-        except Framing.CorruptFrame:
+        except Framing.ShortFrame:
            # Success
            pass
 
@@ -264,12 +264,6 @@ class DeFramingComponent_Tests(unittest.TestCase):
                 X.next()
             result = X._collect("outbox")
             self.assertEqual(original, result)
-
-def chunked_datasource():
-    while 1:
-        yield "XXXXXXXXXXXXXXXXXXXXXXXX"
-        for i in xrange(1000):
-            yield str(i)
 
 FramerMarshall = makeTestCase(Framing.Framer)
 FramerDeMarshall = makeTestCase(Framing.DeFramer)
@@ -520,6 +514,38 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
 
 
 
+    def test_Message_chunkDeChunk_remainsintact(self):
+        from Kamaelia.Util.PipelineComponent import pipeline
+	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+	File = open("../../Support/Ulysses").read()
+	chunks = [File[y:y+20] for y in xrange(0,len(File),20) ]
+	
+        chunker = Framing.DataChunker(syncmessage=syncmessage)
+        dechunker = Framing.DataDeChunker(syncmessage=syncmessage)
+        system = pipeline(
+           chunker, 
+           dechunker, 
+        ).activate()
+        	    
+        for chunk in chunks:
+            system._deliver(chunk, "inbox")
+        
+        activeScheduler = system.schedulerClass.run.main()
+        for _ in xrange(2000):
+           activeScheduler.next()
+
+        resultchunks = []
+        try:
+            while 1:
+                chunk = system._collect("outbox")
+                resultchunks.append(chunk)
+        except IndexError:
+           pass # We collect all items in the outbox
+	
+	result = "".join(resultchunks)
+	self.assertEqual(File[:20],result[:20])
+
+
 if 0:
   class default_test(unittest.TestCase):
     def test_marshalling(self):
@@ -528,9 +554,3 @@ if 0:
 
 if __name__=="__main__":
     unittest.main()
-
-
-
-
-
-
