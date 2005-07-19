@@ -1,25 +1,35 @@
 #!/usr/bin/python
-import random
-#import string
+#
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
+import Axon
+from Kamaelia.Util.PipelineComponent import pipeline
 
-from Axon.Component import component
-import time
+from Kamaelia.Protocol.Framing import Framer as _Framer
+from Kamaelia.Protocol.Framing import DeFramer as _DeFramer
 
-class Source(component):
-   def __init__(self,  size=100):
-      super(Source, self).__init__()
-      self.size = size
-   def main(self):
-      i = 0
-      t = time.time()
-      while 1:
-         yield 1
-         if time.time() - t > 0.01:
-            i = i + 1
-            self.send(str(i), "outbox")
-            t = time.time()
+from Kamaelia.Protocol.Framing import DataChunker as _DataChunker
+from Kamaelia.Protocol.Framing import DataDeChunker as _DataDeChunker
 
-class Annotator(component):
+class Annotator(Axon.Component.component):
    def main(self):
       n=1
       while 1:
@@ -29,41 +39,9 @@ class Annotator(component):
             self.send((n, item), "outbox")
             n = n + 1
 
-class Duplicate(component):
-   def main(self):
-      while 1:
-         yield 1
-         if self.dataReady("inbox"):
-            item = self.recv("inbox")
-            if random.randrange(0,10) == 0:
-               self.send(item, "outbox")
-               self.send(item, "outbox")
-            else:
-               self.send(item, "outbox")
 
-class Throwaway(component):
-   def main(self):
-      while 1:
-         yield 1
-         if self.dataReady("inbox"):
-            item = self.recv("inbox")
-            if random.randrange(0,10) != 0:
-               self.send(item, "outbox")
 
-class Reorder(component):
-    def main(self):
-        newlist = []
-        while 1:
-            yield 1
-            if self.dataReady("inbox"):
-                item = self.recv("inbox")
-                newlist.append(item)
-                if len(newlist) == 8:
-                    temp = random.randrange(0,7)
-                    self.send(newlist[temp], "outbox")
-                    newlist.remove(newlist[temp])
-
-class RecoverOrder(component):
+class RecoverOrder(Axon.Component.component):
    def main(self):
       bufsize = 30
       datasource = []
@@ -92,41 +70,46 @@ class RecoverOrder(component):
                      self.send(datasource[0], "outbox")
             del datasource[0]
 
-from Kamaelia.Util.PipelineComponent import pipeline
-from Kamaelia.Util.ConsoleEcho import consoleEchoer
+def SRM_Sender():
+    return pipeline(
+        Annotator(),
+        _Framer(),
+        _DataChunker()
+    )
 
-class Tuple2string(component):
-    def main(self):
-        while 1:
-            yield 1
-            if self.dataReady("inbox"):
-                item = self.recv("inbox")
-                data_id = str(item[0])
-                data_length = str(len(str(item[1])))
-                data = str(item[1])
-                item = "%s %s %s" % (data_id, data_length, data)
-                self.send(item, "outbox")
+def SRM_Receiver():
+    return pipeline(
+        _DataDeChunker(),
+        _DeFramer(),
+        RecoverOrder()
+    )
 
-class String2tuple(component):
-    def main(self):
-        while 1:
-            yield 1
-            if self.dataReady("inbox"):
-                item = self.recv("inbox")
-                temp_list = str.split(item)
-                data_id = int(temp_list[0])
-                data = temp_list[2]
-                item = (data_id, data)
-                self.send(item, "outbox")
+if __name__ == "__main__":
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Internet.Simulate.BrokenNetwork import Duplicate, Throwaway, Reorder
+    
+    import time
+    import random
 
+    class Source(Axon.Component.component):
+       def __init__(self,  size=100):
+          super(Source, self).__init__()
+          self.size = size
+       def main(self):
+          i = 0
+          t = time.time()
+          while 1:
+             yield 1
+             if time.time() - t > 0.01:
+                i = i + 1
+                self.send(str(i), "outbox")
+                t = time.time()
 
-pipeline(Source(),
-         Annotator(),
-         Tuple2string(),
-         Duplicate(),
-         Throwaway(),
-         Reorder(),
-         String2tuple(),
-         RecoverOrder(),
-         consoleEchoer()
-).run()
+    pipeline(Source(),
+             SRM_Sender(),
+             Duplicate(),
+             Throwaway(),
+             Reorder(),
+             SRM_Receiver(),
+             consoleEchoer()
+    ).run()
