@@ -53,10 +53,10 @@ banner_location = "banner.gif"
 cat_location    = "cat.gif"
 cat_pop_wav_file     = "hold.wav"
 cat_appear_wav_file  = "KDE_Beep_Bottles.wav"
-screensize      = (640,480)
+screensize      = (700,550)
 back_colour     = (255,255,255)
 border          = 40
-flags = pygame.DOUBLEBUF | pygame.FULLSCREEN # 
+flags = pygame.DOUBLEBUF # | pygame.FULLSCREEN # 
 
 cat_pop_wav = pygame.mixer.Sound(cat_pop_wav_file)
 cat_appear_wav = pygame.mixer.Sound(cat_appear_wav_file)
