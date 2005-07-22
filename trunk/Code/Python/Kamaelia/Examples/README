@@ -49,6 +49,11 @@ example.
      components. An example of how this can work is provided - allowing
      stepping through some graph visualisations along with the presentation.
 
+   * Example 9 : Simple component based game using pygame. Not quite fully
+     integrated with the other pygame code (will be), but fully reusable &
+     reconfigurable code and it's a useful start for people wanting to see
+     how to write things varying from games through other interactive
+     systems.
 
 
-Michael, June 2005
+Updated: Michael, July 2005
