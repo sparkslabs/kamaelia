@@ -12,5 +12,6 @@ include Kamaelia/test/*
 include Kamaelia/*/test/*
 include Kamaelia/afortune.pl
 include Kamaelia/debug.conf
+include Examples/*/*/*
 include Examples/*/*
 include Examples/*
