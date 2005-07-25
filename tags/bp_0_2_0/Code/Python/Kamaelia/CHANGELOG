@@ -1,0 +1,111 @@
+
+0.2.0 (When released)
+
+Detailed:
+   * Util/FilterComponent A component to plug in filter objects to perform and
+   sort of filtering or general data processing on a data.  Not yet used by
+   the Subtitling related filter classes in Sketches.
+   * Util/Splitter added. This component allows a single outbox to be connected
+   to many inboxes.
+   * Util/test/test_Splitter added to test the above class.
+   * Util/LossyConnector added. Component drops messages if the outbox fills.
+   * Util/test/test_testSplitter added to test the above class.
+   * Util/test directory added.
+   * UI/ UI/Pygame directories added
+      * The "pygamedisplay" service now exists. Furthermore UI.Pygame.Ticker
+        is an example of a component that uses the pygamedisplay to
+        demonstrate how to have multiple objects on screen at once, acting
+        as if they're the only ones using the screen. This is still at a
+        very nascent stage, but should be indicative of future directions.
+        One clear thing that arises from this is that "pygamedisplay" is
+        currently the most basic one thinkable, and there could be many more
+        which effectively act as simple window managers. (However these
+        window managers know how to move, scale, position and rotate the
+        windows under their control...) (This could mean that these displays
+        could be much more candy than even Apple's "Expose" :)
+
+        Clients of the pygamedisplay service get back a raw surface to work
+        with :)
+
+TODO before 0.2.0 release:
+   * Add Tools directory at top level -- DONE
+      * Introspection viewer gets added here (as a "binary", support code
+        goes in main tree)
+      * axon_shell gets added here
+   * Introspector classes added -- DONE
+   * Change examples to use newstyle pipelines -- SOME DONE, DO REST IN 0.2.1
+   * Copy over Ciaran's examples into the examples directory -- LEAVE FOR 0.2.1 (too much stuff!)
+   * Copy over Colour class into Kamaelia.Data
+   * Find suitable homes for the Subtitling code examples -- 
+
+DESIRABLE before 0.2.0 release:
+   * Button widget. (click and sends message out "signal")  --  DONE
+   * Palette widget (think aggregation of Buttons) -- DESIRABLE, DEFER TO 0.2.1
+   * Image widget. (Can display an image, and when receives new one, just
+     displays it)  --  DONE
+      * Combo of these three would allow for simple slideshows to occur.  -- DONE
+   * Port sprite widget (from Sketches/OptimisationTest/simplegame.py to
+     main Kamaelia system) -- NOT NEEDED
+   * Ask Matt to implement a change to his physics engine to force objects
+     in his system to always stay inside a bounding box. -- NOT NEEDED
+   * Filtering of events for PygameDisplay clients. -- DONE
+
+0.1.2
+
+Additionally tested under Windows ME, 2000 and Mac OS X, and compatibility
+updates made.  An examples directory was added, with 3 examples - 2 of which
+are a basic audio streaming system (client and server). Ability to make
+simple multicast servers, clients and transceivers added.
+
+Detailed:
+   * Examples/example1 added (see below). "Fortune Cookie" server and client
+   * Examples/example2 added. This is an ogg vorbis server/client system
+   * Examples/example3 added. Server and client for a simple ogg vorbis
+     system.
+   * Examples/example4 added. Multicast based client/server ogg vorbis
+     streamer.
+   * Kamaelia.Data
+      * Created, and a few classes that belong there moved into there.
+   * Kamaelia.FortuneCookie_InternetHandlingTests
+      * Replaced by Kamaelia.Internet.test.test_TCPServerClientSystem
+      * Moved to Examples/example1
+
+   * Kamaelia.Internet.Multicast_transceiver
+      * Combination of the sender and receiver
+      * Tested, with test harness
+      * Sends all data received on its inbox to a given multicast group.
+      * Sends all data received on a given multicast group to its outbox.
+      * A transceiver MUST transmit and receive to the same group
+        For anything else you need to have separate senders and receivers
+        This may get separated out to a subdirectory.
+   * Kamaelia.Internet.Multicast_sender
+      * First version
+      * Sends all data received on its inbox to a given multicast group.
+   * Kamaelia.Internet.Multicast_receiver
+      * First version
+      * Sends all data received on a given multicast group to its outbox.
+   * Kamaelia.Util.Chargen
+      * First version
+      * Spits out a simple string continuously to its outbox
+   * Kamaelia.Util.ConsoleEcho
+   * Kamaelia.SimpleServerComponent
+      * Uses a KamaeliaIPC message instead of a string for shutdown
+   * Kamaelia.Util.NullSinkComponent
+      * Initial version. (May have name change)
+   * Kamaelia.KamaeliaIPC
+      * Removed debugging comment
+   * Kamaelia.Internet.ConnectedSocketAdapter
+      * Comment style change
+      * Changes aimed at windows error handling added and "toned" down
+   * Kamaelia.Internet.Selector
+      * Added a set selector function
+   * Kamaelia.Internet.TCPClient
+      * Debugging code removal
+      * Handles EWOULDBLOCK as well as EINPROGRESS.
+      * Socket shutdown changed to indicate both sides of the connection
+        closed. (shutdown(2) rather than shutdown(1))
+   * Kamaelia.Protocol.FortuneCookieProtocol
+      * Debugging comment removed.
+
+0.1.1 
+   Initial Release
