@@ -1,5 +1,7 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-size:24pt;font-weight:600">Modules Overview</span></p>
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
+<p><a href="http://kamaelia.sourceforge.net/"><img align="right" src="cat.gif" alt="Kamaelia - BBC Open Source Network Platform"></a></p>
+<p><span style="font-size:25pt">Kamaelia</span><span style="font-size:23pt;font-weight:600"> Modules Overview</span></p>
+<p></p>
 <p>This file provides an overview of the current Kamaelia files, what they are and where appropriate, how they work. This is designed to be a living document, but not designed as raw API documentation. (There are better ways of building API documentation) Essentially the purpose of this documentis to act as &quot;the next layer up&quot; the documentation layers - stating how and why the different parts are joined together.</p>
 <ul type="disc"><li>Base Modules</li>
 <li>Internet Adaption Modules</li>
@@ -7,7 +9,7 @@
 <li>UDP Components</li>
 <li>Utility Modules</li></ul>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Base Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Base Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- __init__.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- KamaeliaExceptions.py<br />|-- KamaeliaIPC.py</span></div></ul>
@@ -15,7 +17,7 @@
 <p><span style="font-family:Courier 10 Pitch">KamaeliaExceptions.py</span> contains a number of exceptions covering different potential failure points in the modules. These exceptions generally inherit from <span style="font-family:Courier 10 Pitch">AxonException</span>.</p>
 <p><span style="font-family:Courier 10 Pitch">KamaeliaIPC.py</span> however defines some specific payloads for intercomponent communication. These are generally control messages used by various Internet Adaption components for signalling various events - normally relating to new or closed socket events. The IPC messages inherit from <span style="font-family:Courier 10 Pitch">Axon.IPC</span>, and are mainly notify events. Currently the only <span style="font-family:Courier 10 Pitch">producerFinished </span>class is <span style="font-family:Courier 10 Pitch">socketShutdown </span>- issued by Internet Abstraction Modules.</p>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Internet Adaption Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Internet Adaption Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- Internet.<br />|   |-- __init__.py<br />|   |-- socketConstants.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|   |-- TCPServer.py</span></div>
@@ -49,7 +51,7 @@
 <li> <span style="font-family:Courier 10 Pitch">InternetHandlingTests.py</span> is the current test code being used to drive integration between client/server/selector service. This is a relatively complex example:</li>
 <ul type="disc"><li>It creates a SimpleServer running and EchoProtocol, and a client running an EchoCheckerProtocolComponent, and a TCPClient. The EchoCheckerProtocolComponent is wired in to handle the application communications. The client connects to the server making a complete loop.</li></ul></ul></ul>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Network Protocol Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Network Protocol Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- Protocol.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|   |-- __init__.py<br />|   |-- AudioCookieProtocol.py<br />|   |-- EchoProtocolComponent.py<br />|   |-- FortuneCookieProtocol.py<br />|   |-- HTTPServer.py<br />|   |-- SimpleVideoCookieServer.py</span></div></ul>
@@ -60,7 +62,7 @@
 <p><span style="font-family:Courier 10 Pitch">AudioCookieProtocol.py</span> is a logical extension to <span style="font-family:Courier 10 Pitch">FortuneCookieProtocol.py</span>. Similar to <span style="font-family:Courier 10 Pitch">FortuneCookieProtocol.py</span> it too runs an external program and sends the result to its outbox. In this case however rather than a short piece of text, it is a short snippet of audio. </p>
 <p><span style="font-family:Courier 10 Pitch">SimpleVideoCookieServer.py</span> does essentially the same as <span style="font-family:Courier 10 Pitch">FortuneCookieProtocol.py</span> and <span style="font-family:Courier 10 Pitch">AudioCookieProtocol.py</span>, but this time with a short piece of video.</p>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Utility Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Utility Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- Util.<br />|   |-- __init__.py<br />|   |-- ToStringComponent.py<br />|   `-- ConsoleEcho.py</span></div></ul>
 <p>This is a small collection of utility components. They're designed as simple filters for various uses - some perform simple, but useful transformations that convert data into a format suitable for other components, others are designed to be dropped in the middle of existing linkages to allow debugging and/or output.</p>
@@ -68,7 +70,7 @@
 <p><span style="font-family:Courier 10 Pitch">ConsoleEcho.py</span> is designed to allow the system to take any data given on its inbox and send it to stdout. It can also optionally forward the data recieved to it's outbox meaning that it can be dropped in the middle of a linkage to enable precise debugging when you wish to know what communications is taking place.</p>
 <p><span style="font-family:Courier 10 Pitch">ToStringComponent.py </span>is a simple filter component  - it takes every object supplied via its inbox, calls <span style="font-family:Courier 10 Pitch">str()</span> on the object, and forwards the result to its outbox. This allows, for example, a user to take the output of any component, convert it to a string suitable for output to a console. This doesn't require the console component to do the conversion (since someone may wish to send the objects to a console as an easy way to check types), and doesn't require components to provide special behaviour.</p>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Multimedia Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Multimedia Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- AOPlayer.py </span><span style="font-family:Century Schoolbook L;font-style:italic;font-weight:600">deprecated</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- vorbisDecodeComponent.py<br />`-- oggFilePlayComponent.py </span><span style="font-family:Century Schoolbook L;font-style:italic;font-weight:600">deprecated</span></div></ul>
@@ -98,7 +100,7 @@
 <ul type="disc"><li><span style="font-family:Cursor">The python bindings supplied with </span><span style="font-family:Courier 10 Pitch">libvorbissimple</span></li>
 <li><span style="font-family:Cursor">Pyrex is therefore also required.</span></li></ul>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">RTP Related Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">RTP Related Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- bitfieldrec.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- NullPayloadPreFramer.py<br />|-- NullPayloadRTP.py<br />|-- RTCPHeader.py<br />|-- RTPHeader.py<br />|-- RtpPacker.py</span></div></ul>
@@ -136,19 +138,23 @@
 <p>a<span style="font-family:Courier 10 Pitch"> RtpPacker.py</span> adf</p>
 <p></p>
 <p></p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">MIME &amp; Disk Related modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">MIME &amp; Disk Related modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- ReadFileAdaptor.py<br />|-- MimeRequestComponent.py<br />|-- SampleMIMERequest.txt<br />|-- SimpleServerComponent.py<br />|-- requestLine.py</span></div></ul>
 <p>adf</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Testing Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Testing Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- runTests.sh<br />|-- FortuneCookie_InternetHandlingTests.py<br />|-- test<br />|   |-- SynchronousLinks_SystemTest.py<br />|   |-- debug.conf<br />|   |-- test.log<br />|   |-- test_ConsoleEcho.py<br />|   |-- test_InternetConnection.py<br />|   |-- test_MimeRequestComponent.py<br />|   |-- test_NullPayloadRTP.py<br />|   |-- test_RtpPacker.py<br />|   |-- test_Selector.py<br />|   `-- test_requestLine.py</span></div></ul>
 <p>adf</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Experimentation Modules</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Experimentation Modules</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">|-- Sketch<br />|   |-- AO_TEST.py<br />|   |-- DONE.list<br />|   |-- DataSteps.txt<br />|   |-- EchoCheckerProtocolComponent.py<br />|   |-- Forking.py<br />|   |-- PygameTest.py<br />|   |-- TODO.list<br />|   |-- oggFilePlayComponent-refactor.py<br />|   |-- oggPlayComponent.py<br />|   |-- rgrailspuds.txt<br />|   |-- run.log<br />|   |-- simple_decoder.py<br />|   `-- test.py</span></div></ul>
 <p>d</p>
-<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:13pt;font-weight:600">Support Files</span></p>
+<p><span style="font-family:Century Schoolbook L;font-style:italic;font-size:16pt;font-weight:600">Support Files</span></p>
 <ul type="disc"><div><span style="font-family:Courier 10 Pitch">|-- Makefile<br />|-- ComponentClasses.py<br />|-- SampleTemplateComponent.py</span></div>
 <div><span style="font-family:Courier 10 Pitch">|-- debug.conf<br />|-- makeDocs.sh<br />|-- afortune.pl<br />|-- Support/ - various support files. Wav Audio comes from the OpenOffice.org suite.<br />|-- doc/ - Autogenerated documentation<br />|-- docs/ - More autogenerated docs</span></div></ul>
+<p>d</p>
+<p>df</p>
 <p></p>
+<hr />
+<p> <a href="http://www.opensource.org/docs/definition.php"> <img align="right" src="http://opensource.org/trademarks/open_source_button.png" border="0" width="88" height="31"></a> <a href="http://sourceforge.net"> <img align=right alt="SourceForge.net Logo" border=0 height=31 src=http://sourceforge.net/sflogo.php?group_id=122494&type=1 width=88 ></a></p>
 </body></html>
