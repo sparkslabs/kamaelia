@@ -23,34 +23,13 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Axon as _Axon
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
 
-class SimpleStreamingClient(_Axon.Component.component):
-   def main(self):
-      import random
-      clientServerTestPort=1500
-
-      client=TCPClient("127.0.0.1",clientServerTestPort, chargen=1)
-      decoder = VorbisDecode()
-      player = AOAudioPlaybackAdaptor()
-
-      self.link((client,"outbox"), (decoder,"inbox"))
-      self.link((client,"signal"), (decoder,"control"))
-      self.link((decoder,"outbox"), (player,"inbox"))
-      self.link((decoder,"signal"), (player, "control") )
-
-      self.addChildren(decoder, player, client)
-      yield _Axon.Ipc.newComponent(*(self.children))
-
-      while 1:
-         self.pause()
-         yield 1
-
-if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
-   t = SimpleStreamingClient().activate()
-   t.activate()
-   scheduler.run.runThreads(slowmo=0)
+clientServerTestPort=1500
+pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+         VorbisDecode(),
+         AOAudioPlaybackAdaptor()
+        ).run()
 

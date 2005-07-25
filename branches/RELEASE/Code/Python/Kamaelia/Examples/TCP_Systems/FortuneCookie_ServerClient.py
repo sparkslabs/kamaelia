@@ -29,35 +29,14 @@ from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol as _Fo
 from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
 from Kamaelia.Util.ConsoleEcho import consoleEchoer as _consoleEchoer
-import Axon as _Axon
+from Kamaelia.Util.PipelineComponent import pipeline
+import random
 
-from Axon.Component import component, scheduler
-class InternetHandlingTest(component):
-   def initialiseComponent(self):
-      import random
-      clientServerTestPort=random.randint(1500,1599)
-      server=_SimpleServer(protocol=_FortuneCookieProtocol, port=clientServerTestPort).activate()
-      self.server=server
-      self.addChildren(server)
+clientServerTestPort=random.randint(1500,1599)
 
-      conecho = _consoleEchoer()
-      self.addChildren(conecho)
+_SimpleServer(protocol=_FortuneCookieProtocol, port=clientServerTestPort).activate()
+pipeline(_TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
+          _consoleEchoer()
+        ).activate()
 
-      client=_TCPClient("127.0.0.1",clientServerTestPort, chargen=1)
-      self.addChildren(client)
-      self.link((client,"outbox"), (conecho,"inbox"))
-      return _Axon.Ipc.newComponent(*(self.children))
-
-   def mainBody(self):
-      self.pause()
-      try:
-         pass
-         #print self.server.children[1]
-      except IndexError:
-         pass
-      return 1
-if __name__ == '__main__':
-   t = InternetHandlingTest().activate()
-
-   _scheduler.run.runThreads(slowmo=0)
-
+_scheduler.run.runThreads(slowmo=0)

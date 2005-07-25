@@ -32,7 +32,7 @@ def tests():
 
    harness = testComponent()
    harness.activate()
-   scheduler.run.runThreads(slowmo=0.1)
+   scheduler.run.runThreads(slowmo=0)
 
 if __name__=="__main__":
 

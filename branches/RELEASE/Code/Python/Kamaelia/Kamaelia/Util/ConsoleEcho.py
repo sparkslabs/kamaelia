@@ -31,14 +31,18 @@ class consoleEchoer(component):
    Inboxes=["inbox","control"]
    Outboxes=["outbox","signal"]
 
-   def __init__(self, forwarder=False):
+   def __init__(self, forwarder=False, use_repr=False):
       super(consoleEchoer, self).__init__()# !!!! Must happen, if this method exists
       self.forwarder=forwarder
+      if use_repr:
+          self.serialise = repr
+      else:
+          self.serialise = str
 
    def mainBody(self):
       if self.dataReady("inbox"):
          data = self.recv("inbox")
-         _sys.stdout.write(str(data))
+         _sys.stdout.write(self.serialise(data))
          _sys.stdout.flush()
          if self.forwarder:
             self.send(data, "outbox")

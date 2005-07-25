@@ -23,46 +23,26 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Axon as _Axon
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
-import Kamaelia.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
-
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+import Kamaelia.ReadFileAdaptor
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            self.__super.__init__(filename, readmode="bitrate", bitrate=400000)
+            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
 
-class SimpleStreamingSystem(_Axon.Component.component):
-   def main(self):
-      import random
-      clientServerTestPort=1500
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+clientServerTestPort=1500
 
-      server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
-                           port=clientServerTestPort)
-      client=TCPClient("127.0.0.1",clientServerTestPort, chargen=1)
-      decoder = VorbisDecode()
-      player = AOAudioPlaybackAdaptor()
+server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
+                    port=clientServerTestPort).activate()
 
-      self.link((client,"outbox"), (decoder,"inbox"))
-      self.link((client,"signal"), (decoder,"control"))
-      self.link((decoder,"outbox"), (player,"inbox"))
-      self.link((decoder,"signal"), (player, "control") )
-
-      self.addChildren(server, decoder, player, client)
-      yield _Axon.Ipc.newComponent(*(self.children))
-
-      while 1:
-         self.pause()
-         yield 1
-
-if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
-   t = SimpleStreamingSystem().activate()
-   t.activate()
-   scheduler.run.runThreads(slowmo=0)
-
+pipeline(
+   TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
+   VorbisDecode(),
+   AOAudioPlaybackAdaptor() 
+).run()

@@ -30,13 +30,45 @@ component = _Axon.Component.component
 
 
 class Graphline(component):
+   Inboxes = {"inbox":"", "control":""}
+   Outboxes = {"outbox":"", "signal":""}
+    
    def __init__(self, linkages = None, **components):
       if linkages is None:
          raise ValueError("linkages must be set")
-      super(Graphline,self).__init__()
+
       self.layout = linkages
       self.components = dict(components)
 
+      # adds to 'Inboxes' and 'Outboxes' before superclass takes those lists to create them
+      self.addExternalPostboxes()
+      
+      super(Graphline,self).__init__()
+
+
+   def addExternalPostboxes(self):
+      """Adds to self.Inboxes and self.Outboxes any postboxes mentioned in self.layout that don't yet exist"""
+      for componentRef,sourceBox in self.layout:
+         toRef, toBox = self.layout[(componentRef,sourceBox)]
+         fromComponent = self.components.get(componentRef, self)
+         toComponent = self.components.get(toRef, self)
+
+         if fromComponent == self:
+             if sourceBox not in self.Inboxes:
+                 # add inbox to list, and copy any description text (if it exists)
+                 try:
+                     self.Inboxes[sourceBox] = toComponent.Inboxes[toBox]
+                 except KeyError, IndexError:
+                     self.Inboxes[sourceBox] = ""
+
+         if toComponent == self:
+             if toBox not in self.Outboxes:
+                 # add outbox to list, and copy any description text (if it exists)
+                 try:
+                     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
+                 except KeyError, IndexError:
+                     self.Outboxes[toBox] = ""
+      
    def main(self):
       # NEW CODE
       components = []
@@ -45,8 +77,8 @@ class Graphline(component):
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
 
-         if fromComponent not in components: components.append(fromComponent)
-         if toComponent not in components: components.append(toComponent)
+         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
+         if toComponent   != self and toComponent   not in components: components.append(toComponent)
 
          passthrough = 0
          if fromComponent == self: passthrough = 1
@@ -59,9 +91,33 @@ class Graphline(component):
 
       self.addChildren(*components)
       yield _Axon.Ipc.newComponent(*(self.children))
-      while 1:
-         self.pause()
-         yield 1
+#      while 1:
+#         self.pause()
+#         yield 1
+
+      # run until all child components have terminated
+      # at which point this component can implode
+
+      # could just look for the first and last component terminating (children with linkages to graphline)
+      # BUT the creator of this pipeline might assume that the graphline terminating means ALL
+      # children have finished.
+      while not self.childrenDone():
+          # can't self.pause since components may not terminate immediately after sending their last data out
+          yield 1
+          
+      self.unplugChildren()
+      
+
+   def childrenDone(self):
+       """Returns true if all components have terminated
+          (ie. their microproceses have finished)
+       """
+       return False not in [ child._isStopped() for child in self.components.values() ]
+
+   def unplugChildren(self):
+      for child in self.components.values():
+         self.postoffice.deregisterlinkage(thecomponent=child)
+         self.removeChild(child)
                   
 if __name__=="__main__":
    pass    

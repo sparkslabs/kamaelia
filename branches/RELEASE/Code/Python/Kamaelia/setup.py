@@ -23,7 +23,7 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia",
-      version = "0.1.2",
+      version = "0.2.0",
       description = "Kamaelia - Server Development Kit",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
@@ -32,7 +32,16 @@ setup(name = "Kamaelia",
                   "Kamaelia.Util",
                   "Kamaelia.Protocol",
                   "Kamaelia.Internet",
+                  "Kamaelia.Internet.Simulate",
                   "Kamaelia.Data",
+                  "Kamaelia.UI",
+                  "Kamaelia.UI.MH",
+                  "Kamaelia.UI.Pygame",  
+                  "Kamaelia.Physics",
+                  "Kamaelia.Physics.Simple",
+                  "Kamaelia.Visualisation",
+                  "Kamaelia.Visualisation.Axon",
+                  "Kamaelia.Visualisation.PhysicsGraph",
                   "Kamaelia.Sketch", # Empty on RELEASE branch
                   ""],
       long_description = """

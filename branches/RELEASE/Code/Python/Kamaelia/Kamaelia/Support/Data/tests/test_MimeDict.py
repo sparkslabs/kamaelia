@@ -9,8 +9,8 @@
 #
 
 import unittest
-#from Kamaelia.Data.MimeDict import MimeDict
-from MimeDict import MimeDict
+from Kamaelia.Data.MimeDict import MimeDict
+#from MimeDict import MimeDict
 
 #class MimeDict_InitTests(object):
 class MimeDict_InitTests(unittest.TestCase):

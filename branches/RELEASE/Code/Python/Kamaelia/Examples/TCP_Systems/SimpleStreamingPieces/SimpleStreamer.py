@@ -27,32 +27,15 @@ import Axon as _Axon
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.SimpleServerComponent import SimpleServer
 
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            self.__super.__init__(filename, readmode="bitrate", bitrate=400000)
+            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
 
-class SimpleStreamer(_Axon.Component.component):
-   def main(self):
-      import random
-      clientServerTestPort=1500
+clientServerTestPort=1500
 
-      server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
-                           port=clientServerTestPort)
-
-      self.addChildren(server)
-      yield _Axon.Ipc.newComponent(*(self.children))
-
-      while 1:
-         self.pause()
-         yield 1
-
-if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
-   t = SimpleStreamer().activate()
-   t.activate()
-   scheduler.run.runThreads(slowmo=0)
-
+SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),
+             port=clientServerTestPort).run()

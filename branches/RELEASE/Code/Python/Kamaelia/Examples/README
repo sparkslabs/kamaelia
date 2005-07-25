@@ -23,5 +23,37 @@ example.
      *start all the client machines first* and *then* the server.
      Uses the multicast transceiver object exclusively.
 
+   * Example 5 : An introspecting version of Examples 2/3. This creates a
+     simple streaming system, and looks inside to see what components are
+     running/active, and passes the resulting information over a network
+     connection to an Axon Visualisation server.
 
-Michael, April 2005
+   * Example 6 : This is a simple/generic topology visualisation server. The
+     server listens on port 1500, and accepts the following commands:
+
+     ADD NODE id label auto -
+     ADD LINK id id
+     DEL NODE id
+     DEL ALL
+
+     As this stands this is pretty useful, but that's pretty much everything
+     it does like this.
+
+   * Example 7 : This shows how the visualisation subsystem can be extended
+     to work in different ways. What this does by default when run is
+     randomly create new nodes and new linkages quite quickly, allowing you
+     to see how the system works.
+
+   * Example 8 : Sample slideshow/presentation tool. Unlike traditional
+     slideshow/presentation tools, you can modify this to run arbitrary
+     components. An example of how this can work is provided - allowing
+     stepping through some graph visualisations along with the presentation.
+
+   * Example 9 : Simple component based game using pygame. Not quite fully
+     integrated with the other pygame code (will be), but fully reusable &
+     reconfigurable code and it's a useful start for people wanting to see
+     how to write things varying from games through other interactive
+     systems.
+
+
+Updated: Michael, July 2005

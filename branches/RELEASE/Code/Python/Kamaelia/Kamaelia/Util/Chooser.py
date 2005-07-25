@@ -25,7 +25,12 @@ import Axon
 from Axon.Ipc import producerFinished
 
 class Chooser(Axon.Component.component):
-   """Chooses items out of a set, as directed by commands sent to its inbox"""
+   """Chooses items out of a set, as directed by commands sent to its inbox
+
+      Emits the first item at initialisation, then whenever a command is received
+      it emits another item (unless you're asking it to step beyond the start or
+      end of the set)
+   """
    
    Inboxes = { "inbox"   : "receive commands",
                "control" : ""
@@ -36,46 +41,60 @@ class Chooser(Axon.Component.component):
    
    def __init__(self, items = []):
       """Initialisation.
-         items = set of items that can be iterated over
+         items = set of items that can be iterated over. Must be finite.
+         If an iterator is supplied, it is enumerated into a list during initialisation.
       """
       super(Chooser,self).__init__()
       
-      self.items = [item for item in items]
+      self.items = list(items)
       self.useditems = []
 
       
+   def shutdown(self):
+        if self.dataReady("control"):
+            message = self.recv("control")
+            if isinstance(message, shutdownMicroprocess):
+                self.send(message, "signal")
+                return True
+        return False
+
+
+            
    def main(self):
       try:
          self.send( self.getCurrentChoice(), "outbox")
       except IndexError:
          pass
          
-      while 1:
+      done = False
+      while not done:
          yield 1
-         
+
          while self.dataReady("inbox"):
             send = True
             msg = self.recv("inbox")
-            
+
             if msg == "SAME":
                pass
             elif msg == "NEXT":
-               self.gotoNext()
+               send = self.gotoNext()
             elif msg == "PREV":
-               self.gotoPrev()
+               send = self.gotoPrev()
             elif msg == "FIRST":
-               self.gotoFirst()
+               send = self.gotoFirst()
             elif msg == "LAST":
-               self.gotoLast()
+               send = self.gotoLast()
             else:
                send = False
-               
+
             if send:
                try:
                   self.send( self.getCurrentChoice(), "outbox")
                except IndexError:
                   pass
-               
+
+         done = self.shutdown()
+
    
    def getCurrentChoice(self):
       """Return the current choice to the outbox"""
@@ -86,23 +105,28 @@ class Chooser(Axon.Component.component):
       if len(self.items) > 1:
          self.useditems.append(self.items[0])
          del(self.items[0])
+         return True
+      return False
 
    def gotoPrev(self):
       """Backstep the choice backwards one"""
       try:
          self.items.insert(0, self.useditems[-1])
          del(self.useditems[-1])
+         return True
       except IndexError:
-         pass
+         return False
    
    def gotoLast(self):
       """Goto the last item in the set"""
       self.useditems.extend(self.items[:-1])
       self.items = [self.items[-1]]
+      return True
             
    def gotoFirst(self):
       """Goto the first item in the set"""
       self.useditems.extend(self.items)
       self.items = self.useditems
       self.useditems = []
+      return True
       
