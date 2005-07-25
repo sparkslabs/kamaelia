@@ -360,11 +360,12 @@ class microprocess(Axon.AxonObject):
    def run(self):
       "run - activates the microprocess and runs it from start to finish until StopIteration"
       self.activate()
-      try:
-         while 1:
-            self.next()
-      except StopIteration:
-         pass # Expect this!
+      self.__class__.schedulerClass.run.runThreads()
+#      try:
+#         while 1:
+#            self.next()
+#      except StopIteration:
+#         pass # Expect this!
 
 if __name__ == '__main__':
    print "Test code currently disabled"

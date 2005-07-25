@@ -161,6 +161,7 @@ class scheduler(microprocess):
                except StopIteration:             # Thread exited
                   if self.debugger.areDebugging("scheduler.main", 5):
                      self.debugger.debugmessage("scheduler.main", "STOP ITERATION THROWN", mprocess)
+                  mprocess.stop() # set the stop flag on the microprocess, so anyone observing can see
                   knockon = mprocess._closeDownMicroprocess()
                   if knockon:
                      if self.debugger.areDebugging("scheduler.main", 5):
