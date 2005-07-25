@@ -1,4 +1,4 @@
-SHELL=/usr/bin/bash
+SHELL=/bin/sh
 
 # run
 #    crontab streamer_crontab           - to activate
@@ -8,4 +8,4 @@ SHELL=/usr/bin/bash
 #   min hour dd month weekday      cmd
 
 # task that runs every minute of every day, Monday-Friday only
-* * * * Mon-Fri       /home/matteh/kamaelia/Sketches/cron/restartStreamer.sh start >> /tmp/stdout 2>> /tmp/errlog
+* * * * Mon-Fri       /home/warrenking/Kamaelia/Sketches/cron/restartStreamer.sh start >> /tmp/stdout 2>> /tmp/errlog
