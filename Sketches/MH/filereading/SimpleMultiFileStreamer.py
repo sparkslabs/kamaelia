@@ -30,7 +30,7 @@ import Axon as _Axon
 from Kamaelia.SimpleServerComponent import SimpleServer
 
 
-from ReadMultiFileAdapter import JoinChooserSequencer
+from ReadMultiFileAdapter import JoinChooserToCarousel
 from ReadMultiFileAdapter import FixedRateReadMultiFileAdapter
 from InfiniteChooser import InfiniteChooser
 
@@ -49,11 +49,14 @@ SERVERPORT      = 1500
 
 def MultiFileReaderProtocol(filenames, bitrate, chunksizebytes):
 
-    def func(*argv, **argd):
-        return JoinChooserSequencer( InfiniteChooser(filenames),
-                                     FixedRateReadMultiFileAdapter(readmode="bytes", rate=bitrate/8, chunksize=chunksizebytes)
-                                   )
-    return func
+    def protocolFactory(*argv, **argd):
+        return JoinChooserToCarousel(
+            InfiniteChooser(filenames),
+            FixedRate_ReadFileAdapter_Carousel(readmode="bytes",
+                                               rate=bitrate/8,
+                                               chunksize=chunksizebytes)
+          )
+    return protocolFactory
 
 
 

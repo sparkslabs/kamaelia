@@ -5,8 +5,8 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, newComponent
 
 
-class Sequencer(component):
-    """Encapsulates a changing sequence of components. The current component(s) are wired 
+class Carousel(component):
+    """Encapsulates a changing carousel of components. The current component is wired
        such that it's inbox and outbox are exported  as "inbox" and "outbox".
        When the component emits producerFinished on its 'signal' output, a 'next' message is
        sent from 'requestNext'.
@@ -15,17 +15,18 @@ class Sequencer(component):
        a 'next' request, the components are destroyed and replaced with new ones, created
        with the arguments specified.
 
-       After initialisation, Sequencer will wait for the first  set of instructions, unless you
+       After initialisation, Carousel will wait for the first  set of instructions, unless you
        set the make1stRequest argument, in which case it will issue a 'next' request immediately
 
-       A factory method that takes a single argument should be supplied to create the component.
+       A factory method that takes a single argument should be supplied to create the components
+       for the carousel.
        If you want to support more complex argument forms, you'll need to put a wrapper in.
     """
 
     Inboxes = { "inbox" : "child's inbox",
                 "next" : "single argument for factory method new child component",
                 "control" : "",
-                "_control" : "for child to signal 'producerFinished' or 'shutdownMicroprocess' to Sequencer"
+                "_control" : "for child to signal 'producerFinished' or 'shutdownMicroprocess' to Carousel"
               }
     Outboxes = { "outbox" : "child's outbox",
                  "signal" : "",
@@ -34,7 +35,7 @@ class Sequencer(component):
                }
 
     def __init__(self, componentFactory, make1stRequest=False):
-        super(Sequencer, self).__init__()
+        super(Carousel, self).__init__()
         
         self.factory = componentFactory
         self.childDone = False
@@ -55,7 +56,7 @@ class Sequencer(component):
 
         self.send( shutdownMicroprocess(self), "_signal" )  # force child to terminate too
         self.unplugChildren()
-#        print"SEQUENCER done"
+#        print"Carousel done"
             
     def requestNext(self):
 #        print "REQUESTING NEXT"

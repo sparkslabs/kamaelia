@@ -27,10 +27,6 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Tkinter
 from TkInterComponents import TkWindow
 
-import sys ; sys.path.append("../filereading")
-from ReadMultiFileAdapter import FixedRateReadMultiFileAdapter
-
-
 
 class ControlWindow(TkWindow):
     """A simple audio player control window.
@@ -90,17 +86,23 @@ if __name__ == "__main__":
 
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+    
+    import sys ; sys.path.append("../filereading")
+    from ReadMultiFileAdapter import FixedRate_ReadFileAdapter_Carousel
 
     # make pipeline, but make the signal->control path loop round, so a shutdownMicroprocess()
     # message sent by ControlWindow will eventually get back to ControlWindow()
-    c = ControlWindow()
-    a = AOAudioPlaybackAdaptor()
-    c.link( (a,"signal"), (c,"control") )
+    chooser = ControlWindow()
+    soundout = AOAudioPlaybackAdaptor()
     
-    pipeline( c,
-              FixedRateReadMultiFileAdapter( readmode="bytes", rate=128000/8, chunksize=1024 ),
+    chooser.link( (soundout,"signal"), (chooser,"control") )
+    
+    pipeline( chooser,
+              FixedRate_ReadFileAdapter_Carousel( readmode="bytes",
+                                                  rate=128000/8,
+                                                  chunksize=1024 ),
               VorbisDecode(),
-              a
+              soundout
             ).activate()
     
     
