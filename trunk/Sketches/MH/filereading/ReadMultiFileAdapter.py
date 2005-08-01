@@ -22,7 +22,7 @@
 #
 # A collection of factory methods for making useful use of ReadFileAdapter
 
-from Sequencer import Sequencer
+from Carousel import Carousel
 from ReadFileAdapter import ReadFileAdapter
 from RateControl import RateControl
 
@@ -30,31 +30,50 @@ from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import Graphline
 
 
-def JoinChooserSequencer(chooser, sequencer):
-    """Joins a chooser to a sequencer.
+class JoinChooserToCarousel(Graphline):
+    """Combines a Chooser with a Carousel
+
+       This component encapsulates and connects together a Chooser and a Carousel component.
+       
        The chooser must have an inbox that accepts 'next' style commands, and an outbox for outputting
        the next file information.
-       The sequencer must have a 'next' inbox for receiving next file info, and a 'requestNext'
+       
+       The carousel must have a 'next' inbox for receiving next file info, and a 'requestNext'
        outbox for outputting 'next' style messages.
     """
-    return Graphline(CHOOSER = chooser, SEQUENCER = sequencer,
-                     linkages = { ("CHOOSER", "outbox")        : ("SEQUENCER", "next"),
-                                  ("CHOOSER", "signal")        : ("SEQUENCER", "control"),
-                                  ("self", "inbox")            : ("SEQUENCER", "inbox"),
-                                  ("SEQUENCER", "requestNext") : ("CHOOSER", "inbox"),
-                                  ("SEQUENCER", "outbox")      : ("self", "outbox"),
-                                  ("SEQUENCER", "signal")      : ("self", "signal")
-                                }
-                    )
+    
+    def __init__(self, chooser, carousel):
+        """Initialisation.
+           chooser = A Chooser component, or any with similar behaviour and interfaces.
+           carousel = A Carousel component, or any with similar behaviour and interfaces.
+        """
+        linkages = { ("CHOOSER", "outbox")        : ("CAROUSEL", "next"),
+                     ("CHOOSER", "signal")        : ("CAROUSEL", "control"),
+                     ("self", "inbox")            : ("CAROUSEL", "inbox"),
+                     ("CAROUSEL", "requestNext") : ("CHOOSER", "inbox"),
+                     ("CAROUSEL", "outbox")      : ("self", "outbox"),
+                     ("CAROUSEL", "signal")      : ("self", "signal")
+                   }
+        
+        super(JoinChooserToCarousel, self).__init__( CHOOSER = chooser,
+                                                     CAROUSEL = carousel,
+                                                     linkages = linkages
+                                                   )
+                                             
 
     
-def RateControlledReadFileAdapter(filename, readmode = "bytes", **rateargs):
-    """Returns a component encapsulating RateControl and ReadFileAdapter.
-         filename   = filename
-         readmode   = "bytes" or "lines"
-         **rateargs = named arguments to be passed to RateControl
+class RateControlledReadFileAdapter(Graphline):
+    """ReadFileAdapter combined with a RateControl component
     """
-    return Graphline(RC  = RateControl(**rateargs),
+    
+    def __init__(self, filename, readmode = "bytes", **rateargs):
+        """Returns a component encapsulating a RateControl and ReadFileAdapter components.
+            filename   = filename
+            readmode   = "bytes" or "lines"
+            **rateargs = named arguments to be passed to RateControl
+        """
+        super(RateControlledReadFileAdapter, self).__init__(
+                     RC  = RateControl(**rateargs),
                      RFA = ReadFileAdapter(filename, readmode),
                      linkages = { ("RC",  "outbox")  : ("RFA", "inbox"),
                                   ("RFA", "outbox")  : ("---", "outbox"),
@@ -62,47 +81,59 @@ def RateControlledReadFileAdapter(filename, readmode = "bytes", **rateargs):
                                   ("RC",  "signal")  : ("---", "signal"),
                                   ("---", "control") : ("RFA", "control")
                                 }
-                    )
+                   )
 
-
-def ReadMultiFileAdapter(readmode = "bytes"):
-    """Returns a Sequencer for file reading, with no rate control component.
+class ReadFileAdapter_Carousel(Carousel):
+    """A Carousel for file reading (with no rate control).
+       Takes string filenames.
     """
-    def factory(filename):
-        return ReadFileAdapter(filename=filename, readmode=readmode)
+    def __init__(self, readmode = "bytes"):
+        """Initialisation
+        """
+        def RFAfactory(filename):
+            return ReadFileAdapter(filename=filename, readmode=readmode)
+
+        super(ReadFileAdapter_Carousel, self).__init__( RFAfactory )
+
+
+        
+class RateControlledReadFileAdapter_Carousel(Carousel):
+    """A Carousel for file reading (with rate control specified per file).
+       Takes ( filename, rateargdict )
+    """
+
+    def __init__(self, readmode = "bytes"):
+        def RCRFAfactory(arg):
+            filename, rateargs = arg
+            return RateControlledReadFileAdapter(filename, readmode, **rateargs)
+
+        super(RateControlledReadFileAdapter_Carousel, self).__init__( RCRFAfactory )
+
+
+
+class FixedRate_ReadFileAdapter_Carousel(Graphline):
+    """A file reading carousel, that reads at a fixed rate.
+
+       Takes filenames on its inbox
+    """
+    def __init__(self, readmode = "bytes", **rateargs):
+        """Initialisation
+        """
+        linkages = { ("self", "inbox")      : ("CAR", "next"),
+                    ("self", "control")    : ("RC", "control"),
+                    ("RC", "outbox")       : ("CAR", "inbox"),
+                    ("RC", "signal")       : ("CAR", "control"),
+                    ("CAR", "outbox")      : ("self", "outbox"),
+                    ("CAR", "signal")      : ("self", "signal"),
+                    ("CAR", "requestNext") : ("self", "requestNext"),
+                    ("self", "next")       : ("CAR", "next")
+                }
     
-    return Sequencer( factory )
-
-
-def PerFileRateReadMultiFileAdapter(readmode = "bytes"):
-    """Returns a Sequencer for file reading, with rates specified per file.
-       sequencer 'next' argument = (filename, rateargdict)
-    """
-    def factory(arg):
-        filename, rateargs = arg
-        return RateControlledReadFileAdapter(filename, readmode, **rateargs)
-
-    return Sequencer( factory )
-
-
-
-def FixedRateReadMultiFileAdapter(readmode = "bytes", **rateargs):
-    """Returns a Sequencer, liked with a RateControl.
-       The Sequencer's 'requestNext' and 'next' postboxes are accessible.
-    """
-    return Graphline(RC  = RateControl(**rateargs),
-                     SEQ = ReadMultiFileAdapter(readmode),
-                     linkages = { ("self", "inbox")      : ("SEQ", "next"),
-                                  ("self", "control")    : ("RC", "control"),
-                                  ("RC", "outbox")       : ("SEQ", "inbox"),
-                                  ("RC", "signal")       : ("SEQ", "control"),
-                                  ("SEQ", "outbox")      : ("self", "outbox"),
-                                  ("SEQ", "signal")      : ("self", "signal"),
-                                  ("SEQ", "requestNext") : ("self", "requestNext"),
-                                  ("self", "next")       : ("SEQ", "next")
-                                }
-                    )
-                     
+        super(FixedRate_ReadFileAdapter_Carousel, self).__init__(
+                        RC       = RateControl(**rateargs),
+                        CAR      = ReadFileAdapter_Carousel(readmode),
+                        linkages =linkages
+                        )
 
 
 if __name__ == "__main__":
@@ -113,42 +144,47 @@ if __name__ == "__main__":
 
 
 #   test = "RateControlledReadFileAdapter"
-#   test = "PerFileRateReadMultiFileAdapter"
-   test = "FixedRateReadMultiFileAdapter"
+   test = "PerFileRateReadMultiFileAdapter"
+#   test = "FixedRateReadMultiFileAdapter"
 
    if test == "RateControlledReadFileAdapter":
    
-        pipeline( RateControlledReadFileAdapter("./Sequencer.py", readmode = "lines", rate=20, chunksize=1),
+        pipeline( RateControlledReadFileAdapter("./Carousel.py",
+                                                readmode = "lines",
+                                                rate=20,
+                                                chunksize=1),
                   consoleEchoer()
                 ).activate()
 
    elif test == "PerFileRateReadMultiFileAdapter":
         def filelist():
         #       while 1:
-                yield ( "./Sequencer.py", {"rate":500, "chunkrate":1} )
-                yield ( "./Sequencer.py", {"rate":400, "chunkrate":20} )
-                yield ( "./Sequencer.py", {"rate":1000, "chunkrate":100} )
+                yield ( "./Carousel.py", {"rate":500, "chunkrate":1} )
+                yield ( "./Carousel.py", {"rate":400, "chunkrate":20} )
+                yield ( "./Carousel.py", {"rate":1000, "chunkrate":100} )
         
-        pipeline( JoinChooserSequencer( InfiniteChooser(filelist()),
-                                        PerFileRateReadMultiFileAdapter(readmode="bytes")
-                                      ),
+        pipeline( JoinChooserToCarousel(
+                      InfiniteChooser(filelist()),
+                      RateControlledReadFileAdapter_Carousel(readmode="bytes")
+                    ),
                   consoleEchoer()
                 ).activate()
 
    elif test == "FixedRateReadMultiFileAdapter":
-        files = [ "./Sequencer.py" for _ in range(0,3) ]
+        files = [ "./Carousel.py" for _ in range(0,3) ]
         rate  = {"rate":400, "chunkrate":100}
        
-        pipeline( JoinChooserSequencer( InfiniteChooser(files),
-                                        FixedRateReadMultiFileAdapter(readmode="bytes", **rate)
-                                      ),
+        pipeline( JoinChooserToCarousel(
+                      InfiniteChooser(files),
+                      FixedRate_ReadFileAdapter_Carousel(readmode="bytes", **rate)
+                    ),
                   consoleEchoer()
                 ).activate()
 
    else:
        pass
 
-   if 0:
+   if 1:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
         pipeline(Introspector(), TCPClient("127.0.0.1",1500)).activate()
