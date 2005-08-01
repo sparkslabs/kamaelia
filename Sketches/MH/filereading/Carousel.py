@@ -54,7 +54,6 @@ class Carousel(component):
             
             yield self.handleNewChild()
 
-        self.send( shutdownMicroprocess(self), "_signal" )  # force child to terminate too
         self.unplugChildren()
 #        print"Carousel done"
             
@@ -72,10 +71,8 @@ class Carousel(component):
                 if not self.childDone:
                     self.childDone = True
                     self.requestNext()
-                    if not isinstance(msg, shutdownMicroprocess):
-                        self.send( shutdownMicroprocess(self), "_signal" )
-                    # note that we don't unwire the child component here, as the shutdown message may
-                    # not have had time to propogate to it
+                self.unplugChildren()
+
     
 
     def handleNewChild(self):
@@ -109,6 +106,7 @@ class Carousel(component):
 
     def unplugChildren(self):
         for child in self.childComponents():
+            self.send( shutdownMicroprocess(self), "_signal" )
             self.postoffice.deregisterlinkage(thecomponent=child)
             self.removeChild(child)
 

@@ -92,18 +92,18 @@ if __name__ == "__main__":
 
     # make pipeline, but make the signal->control path loop round, so a shutdownMicroprocess()
     # message sent by ControlWindow will eventually get back to ControlWindow()
-    chooser = ControlWindow()
-    soundout = AOAudioPlaybackAdaptor()
+    p=pipeline( ControlWindow(),
+                FixedRate_ReadFileAdapter_Carousel( readmode="bytes",
+                                                    rate=128000/8,
+                                                    chunksize=1024 ),
+                VorbisDecode(),
+                AOAudioPlaybackAdaptor()
+              ).activate()
+    p.link( (p,"signal"), (p,"control") )
     
-    chooser.link( (soundout,"signal"), (chooser,"control") )
-    
-    pipeline( chooser,
-              FixedRate_ReadFileAdapter_Carousel( readmode="bytes",
-                                                  rate=128000/8,
-                                                  chunksize=1024 ),
-              VorbisDecode(),
-              soundout
-            ).activate()
-    
+    if 0:
+        from Kamaelia.Internet.TCPClient import TCPClient
+        from Kamaelia.Util.Introspector import Introspector
+        pipeline(Introspector(), TCPClient("127.0.0.1",1500)).activate()
     
     scheduler.run.runThreads(slowmo=0)
