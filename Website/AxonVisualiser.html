@@ -71,7 +71,7 @@
 <p></p>
 <p><span style="font-style:italic;font-weight:600">What am I seeing?</span></p>
 <p>Why are there so many components, when the SimpleStreamer surely only consists of a few? The simple answer is that you're not only seeing the SimpleServer components, but also the ones you added to perform the introspection.</p>
-<p>[[boxright] [ Introspector (5) is the source of introspection data. Pipeline (5) joins it to TCPClient (7) which is using ConnectedSocketAdapter (17) to send the data to the visualiser. ] ]</p>
+<p>[[boxright] Introspector (5) is the source of introspection data. Pipeline (5) joins it to TCPClient (7) which is using ConnectedSocketAdapter (17) to send the data to the visualiser. ]</p>
 <p>The highlighted Selector component represents the unix 'select' statement, waiting for events on all socket bindings. Notice that both the introspection 'system' and the server share the Selector. Obviously, the moral of the story is that you can't observe a system without modifying and affecting it.</p>
 <p></p>
 <p><span style="font-size:13pt;font-weight:600">Watching a changing system</span></p>
@@ -83,9 +83,9 @@
 <div></div>
 <div><span style="font-family:courier">clientServerTestPort=1500</span></div>
 <div><span style="font-family:courier">pipeline(TCPClient(</span><span style="font-family:courier;font-weight:600;color:#008002">&quot;127.0.0.1&quot;</span><span style="font-family:courier">,clientServerTestPort),</span></div>
-<div><span style="font-family:courier">         VorbisDecode(),</span></div>
-<div><span style="font-family:courier">         AOAudioPlaybackAdaptor()</span></div>
-<div><span style="font-family:courier">        ).run()</span></div></ul>
+<ul type="disc"><div><span style="font-family:courier">VorbisDecode(),</span></div>
+<div><span style="font-family:courier">AOAudioPlaybackAdaptor()</span></div></ul>
+<div><span style="font-family:courier">).run()</span></div></ul>
 <p><span style="font-family:verdana">Now lets run the client...</span></p>
 <ul type="disc"><div><span style="font-family:courier;font-style:italic;font-weight:600"># ./SimpleStreamingClient.py</span></div></ul>
 <p>...and see what happens:</p>
