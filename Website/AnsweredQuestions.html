@@ -833,6 +833,10 @@
 <p>stage :-)</p>
 <p>---------------------------------------------------------------------------------------------------------------------------------</p>
 <p></p>
+<p></p>
+<p></p>
+<p>---------------------------------------------------------------------------------------------------------------------------------</p>
+<p></p>
 <p>&gt; It seems as though all components basically have to do busy waiting now.</p>
 <p></p>
 <p>You are right - components are, for the most part, busy-waiting. Which</p>
@@ -876,5 +880,223 @@
 <p>I'd hope that even if the components and postboxes model doesn't</p>
 <p>work out in the long run, the underlying generator based</p>
 <p>microprocesses code could still be of some value to others!</p>
+<p>-----------------------------------------------------------------------------------------------------------------------------------</p>
+<p>&gt; At what stage of completion is it? </p>
 <p></p>
+<p>This is something we deliberately try to reflect in the version number.</p>
+<p>Yes, you can build network servers and new protocols relatively simply</p>
+<p>at the moment. Yes, you can integrate with pygame in a limited useful</p>
+<p>fashion at present. Yes we have audio playback.</p>
+<p></p>
+<p>However we don't have yet... (some examples)</p>
+<p>   * Decent GUI integration yet. </p>
+<p>   * /Full/ pygame integration. </p>
+<p>   * Nice integration with pymedia</p>
+<p>   * Direct support for Dirac.</p>
+<p>Which aside from other things means you can't build (say) a video</p>
+<p>&amp; SMIL playback system trivially, yet.</p>
+<p></p>
+<p>As a result that's why the version number is 0.2 - whilst you /can/ do a</p>
+<p>lot, there's a lot more to do. Clearly that also naturally implies that</p>
+<p>we don't expect any end user to be looking at the site. (The low</p>
+<p>version number will normally scare them away)</p>
+<p></p>
+<p>&gt;&gt;The project aims to make it simple to build networked multimedia</p>
+<p>&gt;&gt;systems (eg audio, video, interactive systems),</p>
+<p>&gt; </p>
+<p>&gt; There's plenty of software that facilitates networking, for example</p>
+<p>&gt; Python already has software for tcp and http clients/servers, and</p>
+<p>&gt; for xmlrpc remote procedure calls.</p>
+<p></p>
+<p>There is indeed.</p>
+<p></p>
+<p>&gt; So what does Kamaelia do that's extra? I imagine it's to to with</p>
+<p>&gt; streaming large amounts of data. For example, a streaming video or</p>
+<p>&gt; audio player. Or VoIP, perhaps.</p>
+<p></p>
+<p>It's designed to make bolting things together to make these sorts of</p>
+<p>system simpler and easier. At the same time it's designed to encourage</p>
+<p>writing code in a way that makes it simpler. The natural side effect of</p>
+<p>this is the  system might make it easier to take advantage of multiple</p>
+<p>CPU systems as they come online, since it makes a system naturally</p>
+<p>concurrent. As the original announcement said &quot;Kamaelia is designed as</p>
+<p>a testbed&quot;. And by testbed I mean testbed as it testing out new ideas,</p>
+<p>see if they work and see if they pan out. (Not as in a testing suite)</p>
+<p></p>
+<p>Probably the best way of describing the difference is this... After my</p>
+<p>talk about Kamaelia at Europython, I had an long chat with Tommi</p>
+<p>Virtinan about integration between Kamaelia and Twisted. I haven't had</p>
+<p>a chance to follow up with him yet regarding how this would work, though</p>
+<p>I have set a line in the sand aiming to have easy integration between</p>
+<p>Kamaelia and Twisted before Kamaelia hits version 1.0.0. The impression</p>
+<p>I got from Tommi was that he was most interested in the communications</p>
+<p>aspect - the fact we can bolt together systems in a manner directly</p>
+<p>akin to Unix pipelines, though I suspect he found the graphines aspect</p>
+<p>more interesting. </p>
+<p></p>
+<p>Or as someone asking a similar question at Open Tech exclaimed after</p>
+<p>I finally managed to explain it better to them &quot;Ooooh - you're trying</p>
+<p>to make concurrency EASY!&quot;.</p>
+<p></p>
+<p>&gt; OK, so what do the components in the pipelines do?  What sort of data</p>
+<p>&gt; do they hold? Unix pipelines act on ascii files; I assume you are</p>
+<p>&gt; do this on audio and visual data. What langauage will the ele,ments</p>
+<p>&gt; in thne pipelines be written it? I assume some will be in C/C++ for</p>
+<p>&gt; speed.</p>
+<p></p>
+<p>Components are object instances of python classes. The data passed</p>
+<p>between components are object instances. Clearly these python classes</p>
+<p>can be written in python, C, C++, pyrex etc. Currently all of Kamaelia's</p>
+<p>components are python based. Some existing components make calls</p>
+<p>into some related C libraries via python bindings.. An example of</p>
+<p>writing a component using Pyrex can be found here:</p>
+<p>   * http://kamaelia.sourceforge.net/PyrexComponents.html</p>
+<p></p>
+<p>&gt;&gt;It is designed as a practical toolkit, such that you can build systems</p>
+<p>&gt;&gt;such as:</p>
+<p>&gt; When you say &quot;you&quot; who do you mean? </p>
+<p></p>
+<p>Generally I expect the readership of c.l.p/python-l...@python.org to be</p>
+<p>programmers. Python is generally easy to pick up and having asked</p>
+<p>someone who's not done much programming beforehand (beyond</p>
+<p>a small amount of VB and Access), and is pre-university to use the</p>
+<p>system to build a simple streaming system prototyping visualising PVR</p>
+<p>content on a mobile (and watching them succeed), they seem</p>
+<p>relatively reasonable examples.</p>
+<p></p>
+<p>At some point, the ability to allow non-programmers to bolt together</p>
+<p>Kamaelia systems would be desirable, but a first step is making it</p>
+<p>simpler for programmers to bolt together systems. We currently have an</p>
+<p>interactive visualisation tool(*), and the logical extension of that is</p>
+<p>a tool that allows systems to be bolted together without knowing any</p>
+<p>code.</p>
+<p>   (*) http://kamaelia.sourceforge.net/AxonVisualiser.html</p>
+<p></p>
+<p>It'd be an interesting side project for someone to take forward, and</p>
+<p>might be low hanging fruit in terms of projects. (Especially if viewed</p>
+<p>initially as a tool for assisting development, rather than replacing</p>
+<p>development)</p>
+<p></p>
+<p>&gt; Is the audience programmers or</p>
+<p>&gt; less technical people? A project that allows non-technical people</p>
+<p>&gt; to build complex network applications is an ambitious one, but not</p>
+<p>&gt; impossible (I'd find it very impressive and very exciting,</p>
+<p>&gt; particularly if it runs on devices such as mobile phones).</p>
+<p></p>
+<p>It's a little ambitious at this stage, yes.</p>
+<p></p>
+<p>&gt;&gt;   * Ogg Vorbis streaming server/client systems (via vorbissimple)</p>
+<p>&gt;&gt;   * Simple network aware games (via pygame)</p>
+<p>&gt;&gt;   * Quickly build TCP based network servers and clients</p>
+<p>&gt; </p>
+<p>&gt; What sort of servers and clients? </p>
+<p></p>
+<p>Whatever you feel like. If you want a server to split and serve audio,</p>
+<p>you could do that. if you want a server to spit out fortune cookies,</p>
+<p>you can do that. (Useful only really as an alternative to a chargen</p>
+<p>test protocol IMO)</p>
+<p></p>
+<p>&gt;&gt;   * Quickly build Multicast based network servers and clients</p>
+<p>&gt; Serving what? Could I use it, for example, to build an n-player</p>
+<p>&gt; encrypted  VoIP server to allow people to do conference calls over</p>
+<p>&gt; the Internet?</p>
+<p></p>
+<p>You could do that probably. (Though we don't have a component</p>
+<p>for audio capture (though a read file adaptor reading from /dev/audio</p>
+<p>might work depending on your platform I suppose) and audio</p>
+<p>encoding at the moment, so those would probably be the core</p>
+<p>components to integrate. If you want to use multicast over the wide</p>
+<p>area internet you'd also have to convince all the people using the</p>
+<p>system to use ISPs that support multicast......)</p>
+<p></p>
+<p>&gt; (I mean proper encryption here, the sort GCHQ or the NSA can't break)</p>
+<p></p>
+<p>I'd be impressed if that could be written, using anything really. (Can't</p>
+<p>implies never)</p>
+<p></p>
+<p>&gt;&gt;The basic underlying metaphor of a component us like an office worker</p>
+<p>&gt;&gt;with inboxes and outboxes, with deliveries occuring between desks,</p>
+<p></p>
+<p>&gt; That metaphor brings up an image (at least to me) that the sorts of</p>
+<p>&gt; data that can be communicated are things like documents,</p>
+<p>&gt; spreadsheets, business graphs, memos. </p>
+<p></p>
+<p>They could indeed. The underlying framework doesn't differentiate</p>
+<p>between data nor have any realtime aspect embedded in the system</p>
+<p>at present. Just because we're focussing on systems that have a realtime</p>
+<p>element and are multimedia based, this does not mean the system is</p>
+<p>limited to that.</p>
+<p></p>
+<p>&gt; May I suggest a different metaphor?  [hifi]</p>
+<p></p>
+<p>I'll think about it. It's closer to the model that pysonic seems</p>
+<p>to take, and it implies a functional transform - ie /just/ dataflow</p>
+<p>- rather than connected processing units that /might/ take time</p>
+<p>to do processing. </p>
+<p></p>
+<p>&gt; OK, I get the straming part of it. But what asbout non-streaming</p>
+<p>&gt; stuff? What other protocols are necessary?</p>
+<p></p>
+<p>One example is peer to peer mesh setup. People normally</p>
+<p>think of P2P as a distribution mechanism. However, the underlying</p>
+<p>approach also very good at setting up communications meshes.</p>
+<p>This could be of use in many areas, such as GRID based systems</p>
+<p>for distributed rendering, application layer multicast, and network</p>
+<p>multicast island joining.</p>
+<p></p>
+<p>Due to the illegal /uses/ of P2P, much work in this area is difficult to</p>
+<p>reuse due to defensive coding. Decoupling development of protocols</p>
+<p>from use of those protocols is generally a wide idea IMO.</p>
+<p></p>
+<p>&gt;&gt;Is that clearer ?</p>
+<p>&gt;&gt;</p>
+<p>&gt;&gt;A short summary of all that could be:</p>
+<p>[ new descscription followed by useful comments, we'll take</p>
+<p>  them on board, I think I've answered most points inline ]</p>
+<p></p>
+<p>&gt; &quot;innovative&quot;. This actually has two meanings. One is &quot;is new /</p>
+<p>&gt; allows new things to be built&quot;.</p>
+<p></p>
+<p>Bingo. It could be argued the other is misuse as buzzword.</p>
+<p></p>
+<p>&gt; That's certainly less lines of code than it would take in Tkinter.</p>
+<p>&gt; And easier to follow.</p>
+<p></p>
+<p>We're looking at tkinter as well. (Some tests at tkinter integration</p>
+<p>are in CVS)</p>
+<p></p>
+<p>&gt;&gt;And you have a simple presentation tool !</p>
+<p>&gt; Now I'm confused. Is Kamaelia a GUI builder?</p>
+<p></p>
+<p>Multimedia systems have many aspects. They include taking in</p>
+<p>audio/video and spitting out audio/video/pictures/text/... Take </p>
+<p>a look a SMIL if you're curious - it's a system that Kamaelia would be</p>
+<p>incomplete if it made decoding/display/interpretation of SMIL</p>
+<p>difficult.</p>
+<p></p>
+<p>We also have to be able to demonstrate system to other people</p>
+<p>inside the BBC in a way non-technical people understand. That means</p>
+<p>showing structures in a friendly dynamic way, showing pictures,</p>
+<p>playing sounds (hence visualisation - looking inside running systems).</p>
+<p></p>
+<p>That means we need ways of integrating with systems like pygame &amp;</p>
+<p>other toolkits. If however I'm talking outside the BBC I'll try to give</p>
+<p>examples which people might find interesting - such as building a</p>
+<p>presentation tool. The blocks are very much like Lego &amp; K'Nex and</p>
+<p>adding in a new block enables all sorts of new applications.</p>
+<p></p>
+<p>For example, we could take the text ticker, combine that with a text</p>
+<p>feed and have a personal autocue/teleprompter. Alternatively someone</p>
+<p>could use it to have subtitles (say) at the opera displayed on a Nokia</p>
+<p>770 (maemo) based device. </p>
+<p></p>
+<p>&gt; Ah, so now I'm guessing it allows me to write networked PyGame</p>
+<p>&gt; applications, where with just a few lines of code I can have</p>
+<p>&gt; networked streaming video on my pyGame screen... am I right?</p>
+<p></p>
+<p>As yet, no. When we hit version 1.0, yes. Why? Because we haven't</p>
+<p>built components for video decode &amp; display (and that's the only</p>
+<p>reason). That's why I don't mention video normally - I prefer to focus</p>
+<p>on where we are when announcing things, rather than where we're</p>
+<p>going (leaving that to more appropriate forums). </p>
 </body></html>
