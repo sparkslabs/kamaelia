@@ -831,5 +831,50 @@
 <p>just simply reiterate that we're at version 0.2, and we're getting</p>
 <p>to the crawling/walking stage first before the walking/talking/running</p>
 <p>stage :-)</p>
+<p>---------------------------------------------------------------------------------------------------------------------------------</p>
+<p></p>
+<p>&gt; It seems as though all components basically have to do busy waiting now.</p>
+<p></p>
+<p>You are right - components are, for the most part, busy-waiting. Which</p>
+<p>is not a good thing!</p>
+<p>   * However the scheduler does periodic POSIX sched_yield calls</p>
+<p></p>
+<p>&gt; So do you plan on including a kind of scheduler-aware blocking</p>
+<p>&gt; communication (like the `channels` of the `tasklets` in stackless)?</p>
+<p>&gt;</p>
+<p>&gt; (as you have a postman already - not a bad idea i think if you compare</p>
+<p>&gt; with multi-agent-systems theory (see jade) - it could be responsible for</p>
+<p>&gt; alerting the scheduler of box.has_data)</p>
+<p></p>
+<p>There is basic support for components to block, by calling the</p>
+<p>self.pause() method. From the next yield, this blocks further execution</p>
+<p>until data arrives on any inbox.</p>
+<p></p>
+<p>The un-pausing action is actually performed by code within the component</p>
+<p>itself, though this is in effect, as you suggested it might be, instigated by</p>
+<p>the postman microprocess.</p>
+<p></p>
+<p>A simple example would be an improved 'consoleEcho' component:</p>
+<p></p>
+<p>class consoleEchoer(Axon.Component.component):</p>
+<p>    ....</p>
+<p>    def main(self):</p>
+<p>        while 1:</p>
+<p>            yield 1</p>
+<p>            while self.dataReady(&quot;inbox&quot;):</p>
+<p>                print self.recv(&quot;inbox&quot;)</p>
+<p>            self.pause()</p>
+<p></p>
+<p>That said, if you look at the code, you'll see that probably the</p>
+<p>majority of components do not make good use of this yet!</p>
+<p></p>
+<p>There are quite probably better mechanisms around - hence the</p>
+<p>distinction, in the code, between microprocesses and components.</p>
+<p>We'd be very interested if yourself or other people want to play with</p>
+<p>alternative communication &amp; blocking mechanisms.</p>
+<p></p>
+<p>I'd hope that even if the components and postboxes model doesn't</p>
+<p>work out in the long run, the underlying generator based</p>
+<p>microprocesses code could still be of some value to others!</p>
 <p></p>
 </body></html>
