@@ -1,3 +1,9 @@
+Post 0.2.0
+
+   * Util/Marhsalling.py and Util/test/test_Marshalling.py added
+     Pipeline-able marhsalling/demarshalling components and some basic tests
+     Derived from Util/MarshallComponent.py
+
 
 0.2.0 (When released)
 
