@@ -19,7 +19,7 @@ class RateControl(component):
                  "signal" : ""
                }
    
-    def __init__(self, rate=100000, chunksize=None, chunkrate=10, allowchunkaggregation = True):
+    def __init__(self, rate=100000, chunksize=None, chunkrate=10, allowchunkaggregation = False):
         """Initialisation
             rate = qty data per second target rate
             
@@ -29,7 +29,7 @@ class RateControl(component):
                                 Eg. if chunkrate = 10, then chunksize=rate/10
     
             allowchunkaggregation = True/False - if true, chunks requested may be aggregated
-                                    if 'catching up' is necessary.
+                                    if 'catching up' is necessary, otherwise multiple chunks are sent
             
             Non-integer values are permitted. Requested chunk sizes will be integer, but
             rounding errors are averaged out over time. Rounding will occur if chunksize, either
