@@ -50,6 +50,7 @@ class JoinChooserToCarousel(Graphline):
         linkages = { ("CHOOSER", "outbox")        : ("CAROUSEL", "next"),
                      ("CHOOSER", "signal")        : ("CAROUSEL", "control"),
                      ("self", "inbox")            : ("CAROUSEL", "inbox"),
+                     ("self", "control")          : ("CHOOSER", "control"),
                      ("CAROUSEL", "requestNext") : ("CHOOSER", "inbox"),
                      ("CAROUSEL", "outbox")      : ("self", "outbox"),
                      ("CAROUSEL", "signal")      : ("self", "signal")
@@ -184,7 +185,7 @@ if __name__ == "__main__":
    else:
        pass
 
-   if 1:
+   if 0:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
         pipeline(Introspector(), TCPClient("127.0.0.1",1500)).activate()
