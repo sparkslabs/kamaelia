@@ -61,8 +61,10 @@ class pipeline(component):
       # could just look for the first and last component terminating (the ends of the pipe)
       # BUT the creator of this pipeline might assume that the pipeline terminating means ALL
       # children have finished.
+
+      # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
       while not self.childrenDone():
-          self.pause()
+#          self.pause()     
           yield 1
           
       self.unplugChildren()
