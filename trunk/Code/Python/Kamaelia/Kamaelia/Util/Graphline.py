@@ -99,11 +99,10 @@ class Graphline(component):
       # BUT the creator of this pipeline might assume that the graphline terminating means ALL
       # children have finished.
       while not self.childrenDone():
-          # can't self.pause() as children may not pass data in/out of this graphline, or may not immediately terminate
+          # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
           yield 1
-          
-      self.unplugChildren()
-      
+
+
 
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -112,15 +111,10 @@ class Graphline(component):
        for child in self.childComponents():
            if child._isStopped():
                self.removeChild(child)   # deregisters linkages for us
-               
+
        return 0==len(self.childComponents())
 
-           
-   def unplugChildren(self):
-      for child in self.childComponents():
-         self.removeChild(child)   # deregisters linkages for us
 
-         
-                  
+
 if __name__=="__main__":
    pass    
