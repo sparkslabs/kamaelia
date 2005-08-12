@@ -44,7 +44,7 @@ def make_SmokeTests(klass,name):
     
         def test_InstantiateComponent(self):
             """ instantiates when passed an object with __str__ and fromString methods"""
-            k=Marshaller(SerialiseInt)
+            k=klass(SerialiseInt)
             k.activate()
 
         def test_Shutdown(self):
@@ -52,7 +52,7 @@ def make_SmokeTests(klass,name):
             from Axon.Ipc import producerFinished, shutdownMicroprocess
 
             for msgtype in [producerFinished, shutdownMicroprocess]:
-                k=Marshaller(SerialiseInt)
+                k=klass(SerialiseInt)
                 k.activate()
 
                 # let it run for a bit, checking nothing silly comes out
