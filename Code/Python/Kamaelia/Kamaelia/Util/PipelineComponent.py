@@ -61,10 +61,8 @@ class pipeline(component):
       while not self.childrenDone():
           # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
           yield 1
-          
-      self.unplugChildren()
-#      print "PIPELINE done"
-      
+
+
 
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -73,14 +71,11 @@ class pipeline(component):
        for child in self.childComponents():
            if child._isStopped():
                self.removeChild(child)   # deregisters linkages for us
-               
+
        return 0==len(self.childComponents())
 
-           
-   def unplugChildren(self):
-      for child in self.childComponents():
-         self.removeChild(child)   # deregisters linkages for us
-          
+
+
 
                   
 if __name__=="__main__":
