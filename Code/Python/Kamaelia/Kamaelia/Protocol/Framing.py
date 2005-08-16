@@ -76,7 +76,10 @@ class DeFramer(Axon.Component.component):
                 return
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
-                self.send(SimpleFrame.fromString(message),"outbox")
+                try:
+                    self.send(SimpleFrame.fromString(message),"outbox")
+                except ShortFrame:
+                    pass     # if a frame is short (and therefore corrupt) don't pass it on
             yield 1
 
 class DataChunker(Axon.Component.component):
