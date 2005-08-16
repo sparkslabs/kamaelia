@@ -265,6 +265,28 @@ class DeFramingComponent_Tests(unittest.TestCase):
             result = X._collect("outbox")
             self.assertEqual(original, result)
 
+    def test_demarshalling_frame_missing_end(self):
+        """DeFramer, will not pass on a frame if a chunk is missing out of it"""
+        X = Framing.DeFramer()
+        X.activate()
+        originals = []
+        for i in xrange(1,10):
+            original = (i, "a" * i)
+            originals.append(original)
+            message = str(Framing.SimpleFrame(*original))
+            if i==5:
+                message = message[:-2]
+            X._deliver(message, "inbox")
+        for i in xrange(200):
+            X.next()
+        for i in xrange(1,10):
+            if i!=5:
+                result = X._collect("outbox")
+                print result
+                self.assertEqual(originals[0], result)
+            del originals[0]
+
+            
 FramerMarshall = makeTestCase(Framing.Framer)
 FramerDeMarshall = makeTestCase(Framing.DeFramer)
 DataChunkerBasics = makeTestCase(Framing.DataChunker)
@@ -277,21 +299,21 @@ class DataChunker_test(unittest.TestCase):
         
     def test_makeChunk(self):
         message = "1234567890qwertyuiopasdfghjklzxcvbnm\n"*20
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         X = Framing.DataChunker(syncmessage=syncmessage)
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
         result = X._collect("outbox")
-	result_start = result[:len(syncmessage)]
-	result_message = result[len(syncmessage):]
+        result_start = result[:len(syncmessage)]
+        result_message = result[len(syncmessage):]
 
-	self.assertEqual(message, result_message)
-	self.assertEqual(syncmessage, result_start)
+        self.assertEqual(message, result_message)
+        self.assertEqual(syncmessage, result_start)
 
     def test_makeChunk_oneSync(self):
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         message += syncmessage
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
@@ -302,7 +324,7 @@ class DataChunker_test(unittest.TestCase):
             X.next()
         result = X._collect("outbox")
 
-	result_message = result[len(syncmessage):]
+        result_message = result[len(syncmessage):]
         index = result_message.find(syncmessage)
         self.assertEqual(-1, index, "Should not be able to find the syncmessage in the chunked version")
 
@@ -319,71 +341,71 @@ class DataDeChunker_Basictest(unittest.TestCase):
 
     def test_DeChunkFullChunk(self):
         message = "1234567890qwertyuiopasdfghjklzxcvbnm\n"*20
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         chunk = self.makeBasicChunk(message, syncmessage)
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	X._deliver(chunk, "inbox")
-	for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+        X.activate()
+        X._deliver(chunk, "inbox")
+        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+                X.next()
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-	result = X._collect("outbox")
- 	self.assertEqual(result, message)
+        result = X._collect("outbox")
+        self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_1(self):
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         message += syncmessage
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         chunk = self.makeBasicChunk(message, syncmessage)
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	X._deliver(chunk, "inbox")
-	for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+        X.activate()
+        X._deliver(chunk, "inbox")
+        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+                X.next()
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-	result = X._collect("outbox")
- 	self.assertEqual(result, message)
+        result = X._collect("outbox")
+        self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_2(self):
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = "1234567890%25qwertyuiopa\Ssdfghjklzxcvbnm\n"*10
         message += syncmessage
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         chunk = self.makeBasicChunk(message, syncmessage)
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	X._deliver(chunk, "inbox")
-	for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+        X.activate()
+        X._deliver(chunk, "inbox")
+        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+                X.next()
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-	result = X._collect("outbox")
- 	self.assertEqual(result, message)
+        result = X._collect("outbox")
+        self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_3(self):
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = "1234567890qwertyu\iopa\Ssdfghjklzxcvbnm\n"*10
         message += syncmessage
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         chunk = self.makeBasicChunk(message, syncmessage)
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	X._deliver(chunk, "inbox")
-	for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+        X.activate()
+        X._deliver(chunk, "inbox")
+        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+                X.next()
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-	result = X._collect("outbox")
- 	self.assertEqual(result, message)
+        result = X._collect("outbox")
+        self.assertEqual(result, message)
 
 class DataDeChunker_BlocksTest(unittest.TestCase):
 
@@ -405,7 +427,7 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
 
     def test_DeChunk_SingleChunk_ManyBlocks(self):
         "The dechunker handles taking a chunk that's in many blocks and putting it back together"
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = "123\\S\4567\\890qwer\\\tyuiopasdfg\\\\hjklzxcvbnm\n"*10
         message += syncmessage
         message += "1234567890q\\Swertyuiopasdfghjklzxcvbnm\n"*10
@@ -413,49 +435,49 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         chunk = self.makeBasicChunk(message, syncmessage)
 
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	for block in self.blocks(chunk):
-	    X._deliver(block, "inbox")
+        X.activate()
+        for block in self.blocks(chunk):
+            X._deliver(block, "inbox")
 
         try:
             for i in xrange(200): # More than sufficient cycles (should be lots less...)
-		X.next()
-	    X._deliver("junk", "flush")
+                X.next()
+            X._deliver("junk", "flush")
             for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+                X.next()
             result = X._collect("outbox")
         except Framing.IncompleteChunk:
             self.fail("IncompleteChunk exception should not propogate")
- 	self.assertEqual(result, message)
+        self.assertEqual(result, message)
 
     def test_DeChunk_RandomChunk_ManyBlocks(self):
         "The dechunker handles taking a chunk that's in many blocks and putting it back together"
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         message = ("".join([str(x) for x in xrange(10,50)]) + "\n")*10
         chunk = self.makeBasicChunk(message, syncmessage)
 
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
-	for block in self.blocks(chunk,blocksize=1):
-	    X._deliver(block, "inbox")
+        X.activate()
+        for block in self.blocks(chunk,blocksize=1):
+            X._deliver(block, "inbox")
 
         try:
             for i in xrange(2000): # More than sufficient cycles (should be lots less...)
-		X.next()
-	    X._deliver("junk", "flush")
+                X.next()
+            X._deliver("junk", "flush")
             for i in xrange(20): # More than sufficient cycles (should be lots less...)
-		X.next()
+                X.next()
             result = X._collect("outbox")
         except Framing.IncompleteChunk:
             self.fail("IncompleteChunk exception should not propogate")
- 	self.assertEqual(result, message)
+        self.assertEqual(result, message)
 
     def test_DeChunk_MultipleChunks_ManyBlocks(self):
         "The dechunker handles taking many chunks that are in many blocks and putting it back together"
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
+        X.activate()
 
         for base in xrange(10,1000,50):
             message = ("".join([str(x) for x in xrange(base,base+50)]) + "\n")*10
@@ -477,10 +499,10 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
 
     def test_non_aligned_chunk_blocks(self):
         "The dechunker handles taking many chunks that are in many blocks and putting it back together"
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
-	X.activate()
+        X.activate()
         message = ("".join([str(x) for x in xrange(10,60)]) + "\n")*10
         chunk = self.makeBasicChunk(message, syncmessage)
 
@@ -516,17 +538,17 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
 
     def test_Message_chunkDeChunk_remainsintact(self):
         from Kamaelia.Util.PipelineComponent import pipeline
-	syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
-	File = open("../../Support/Ulysses").read()
-	chunks = [File[y:y+20] for y in xrange(0,len(File),20) ]
-	
+        syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
+        File = open("../../Support/Ulysses").read()
+        chunks = [File[y:y+20] for y in xrange(0,len(File),20) ]
+        
         chunker = Framing.DataChunker(syncmessage=syncmessage)
         dechunker = Framing.DataDeChunker(syncmessage=syncmessage)
         system = pipeline(
            chunker, 
            dechunker, 
         ).activate()
-        	    
+                
         for chunk in chunks:
             system._deliver(chunk, "inbox")
         
@@ -541,9 +563,9 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
                 resultchunks.append(chunk)
         except IndexError:
            pass # We collect all items in the outbox
-	
-	result = "".join(resultchunks)
-	self.assertEqual(File[:20],result[:20])
+        
+        result = "".join(resultchunks)
+        self.assertEqual(File[:20],result[:20])
 
 
 if 0:
