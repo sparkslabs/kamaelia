@@ -33,6 +33,7 @@ class RenderingParticle(BaseParticle):
         super(RenderingParticle,self).__init__(position=position, ID = ID )
         self.radius = 20
         self.labelText = name
+        self.name = name
         
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.labelText, False, (0,0,0))
