@@ -35,9 +35,9 @@ class ParticleDragger(DragHandler):
         inRange = self.app.physics.withinRadius( pos, self.app.biggestRadius )
         inRange = filter(lambda (p, rsquared) : p.radius*p.radius >= rsquared, inRange)
         
-        # deselect any particle already selected
-        if self.app.selectedParticle != None:
-            self.app.selectedParticle.deselect()
+#        # deselect any particle already selected
+#        if self.app.selectedParticle != None:
+#            self.app.selectedParticle.deselect()
             
         if len(inRange) > 0:
             # of those in range, find one whose centre is nearest to the mouse pos
@@ -50,13 +50,19 @@ class ParticleDragger(DragHandler):
             self.particle.freeze() # tell the particle its not allowed to move (zero velocity)
              
             # select this particle
-            self.app.selectedParticle = self.particle
-            self.particle.select()
+            self.app.selectParticle(self.particle)
+#            if self.app.selectedParticle != self.particle:
+#                self.app.send( ("SELECT","NODE", self.particle.ID), "outbox")
+#            self.app.selectedParticle = self.particle
+#            self.particle.select()
 
             # return the drag start coordinates             
             return self.particle.getLoc()
         else:
-            self.app.selectedParticle = None
+            self.app.selectParticle(None)
+#            if self.app.selectedParticle != None:
+#                self.app.send( ("SELECT", None), "outbox")
+#            self.app.selectedParticle = None
             return False
 
     def drag(self,newx,newy):
