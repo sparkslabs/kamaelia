@@ -27,7 +27,7 @@ class DragHandler(object):
     
     Implement detect() drag() and release() to create a dragging handler.
     Register this handler like this:
-       pygameapp.addHandler(MOUSEMOTION, lambda event : MyDragHandler(event, pygameapp, *args, **argsd))
+       pygameapp.addHandler(MOUSEDOWN, lambda event : MyDragHandler(event, pygameapp, *args, **argsd))
        
     If you add your own constructor, remember to initialise any variables you may need before calling the super
     class constructor.
@@ -42,7 +42,7 @@ class DragHandler(object):
             self.offsetx = centre[0] - event.pos[0]
             self.offsety = centre[1] - event.pos[1]
             
-            self.mm_handler = self.app.addHandler(MOUSEMOTION,   lambda event : self._drag(event.pos) )
+            self.mm_handler = self.app.addHandler(MOUSEMOTION,   lambda event : self._drag(event.pos, event.buttons) )
             self.mu_handler = self.app.addHandler(MOUSEBUTTONUP, lambda event : self._release(event.pos) )
     
     def detect(self, pos, button):
@@ -51,8 +51,11 @@ class DragHandler(object):
         to abort the drag"""
         return False
         
-    def _drag(self, pos):
-        self.drag( pos[0] + self.offsetx, pos[1] + self.offsety )
+    def _drag(self, pos, buttons):
+        if [ True for button in buttons if button ]:
+            self.drag( pos[0] + self.offsetx, pos[1] + self.offsety )
+        else:
+            self._release(pos)
         
     def _release(self, pos):
         self.app.removeHandler(MOUSEMOTION,   self.mm_handler)
