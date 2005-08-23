@@ -33,6 +33,7 @@ COMPONENTS = {
     "Kamaelia.Internet.Multicast_sender" : ["Multicast_sender"],
     "Kamaelia.Internet.Multicast_receiver" : ["Multicast_receiver"],
     "Kamaelia.Internet.Simulate.BrokenNetwork" : ["Duplicate","Throwaway","Reorder"],
+    "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ]
     }
 
 import inspect
