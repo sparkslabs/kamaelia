@@ -30,8 +30,8 @@ import Tkinter
 
 
 class ArgumentsPanel(Tkinter.Frame):
-    def __init__(self, parent, theclass, callback):
-        Tkinter.Frame.__init__(self,parent)
+    def __init__(self, parent, theclass):
+        Tkinter.Frame.__init__(self, parent)
 
         self.theclass = theclass
 
@@ -41,17 +41,19 @@ class ArgumentsPanel(Tkinter.Frame):
         if self.theclass['classdoc']:
             self.classdoclabel = Tkinter.Label(self, text = self.theclass['classdoc'], justify="left")
             self.classdoclabel['font'] = " ".join(self.classdoclabel['font'].split(" ")[0:2])
-            self.classdoclabel.grid(row=row, column=0,columnspan=2, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+            self.classdoclabel.grid(row=row, column=0,columnspan=2,
+                                    sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S, padx=4, pady=4)
             row+=1
 
         if self.theclass['initdoc']:
             self.initdoclabel = Tkinter.Label(self, text = self.theclass['initdoc'], justify="left")
             self.initdoclabel['font'] = " ".join(self.initdoclabel['font'].split(" ")[0:2])
-            self.initdoclabel.grid(row=row, column=0, columnspan=2,sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+            self.initdoclabel.grid(row=row, column=0, columnspan=2,
+                                   sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S, padx=4, pady=4)
             row+=1
 
         self.label = Tkinter.Label(self, text="ARGUMENTS:")
-        self.label.grid(row=row, column=0, columnspan=2,sticky=Tkinter.W+Tkinter.S)
+        self.label.grid(row=row, column=0, columnspan=2,sticky=Tkinter.W+Tkinter.S, padx=4, pady=4)
         row+=1
 
         
@@ -86,10 +88,9 @@ class ArgumentsPanel(Tkinter.Frame):
                 
                 self.args.append( (argname, svar, "") )
                 row+=1
-
-        self.addbutton = Tkinter.Button(self, text="ADD Component", command=callback )
-        self.addbutton.grid(row=row, column=0)
-        row+=1
+                
+#        self.rowconfigure(row, weight=1)
+#        self.grid()
 
         
     def getDef(self):
@@ -132,26 +133,40 @@ class BuilderControlsGUI(TkWindow):
     def setupWindow(self):
         self.window.title("Pipeline Builder")
 
-        self.addframe = Tkinter.Frame(self.window)
-        self.addframe.grid(row=0, column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+        self.addframe = Tkinter.Frame(self.window, borderwidth=2, relief=Tkinter.GROOVE)
+        self.addframe.grid(row=0, column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S, padx=4, pady=4)
+        
+        self.choosebutton = Tkinter.Button(self.addframe, text="<<no component>>", command=self.click_chooseComponent )
+        self.choosebutton.grid(row=0, column=0, columnspan=2, sticky=Tkinter.N)
 
-        self.choosebutton = Tkinter.Button(self.addframe, text="ADD Component", command=self.click_chooseComponent )
-        self.choosebutton.grid(row=0, column=0)
         self.argPanel = None
+        self.argCanvas = Tkinter.Canvas(self.addframe, relief=Tkinter.SUNKEN, borderwidth=2)
+        self.argCanvas.grid(row=1, column=0, sticky=Tkinter.N+Tkinter.S+Tkinter.E+Tkinter.W)
+        self.argCanvasWID = self.argCanvas.create_window(0,0, anchor=Tkinter.NW)
+        self.argCanvasScroll = Tkinter.Scrollbar(self.addframe, orient=Tkinter.VERTICAL)
+        self.argCanvasScroll.grid(row=1, column=1, sticky=Tkinter.N+Tkinter.S+Tkinter.E)
+        self.argCanvasScroll['command'] = self.argCanvas.yview
+        self.argCanvas['yscrollcommand'] = self.argCanvasScroll.set
+        
         self.click_menuChoice(self.classes[1])
 
-        self.remframe = Tkinter.Frame(self.window)
-        self.remframe.grid(row=1, column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+        self.addbutton = Tkinter.Button(self.addframe, text="ADD Component", command=self.click_addComponent )
+        self.addbutton.grid(row=2, column=0, columnspan=2, sticky=Tkinter.S)
+        self.addframe.rowconfigure(1, weight=1)
+        self.addframe.columnconfigure(0, weight=1)
+        
+        self.remframe = Tkinter.Frame(self.window, borderwidth=2, relief=Tkinter.GROOVE)
+        self.remframe.grid(row=1, column=0, columnspan=2, sticky=Tkinter.S+Tkinter.E+Tkinter.W, padx=4, pady=4)
 
         self.selectedlabel = Tkinter.Label(self.remframe, text="<no component selected>")
-        self.selectedlabel.grid(row=0, column=0)
+        self.selectedlabel.grid(row=0, column=0, sticky=Tkinter.S)
         
         self.delbutton = Tkinter.Button(self.remframe, text="REMOVE Component", command=self.click_removeComponent )
-        self.delbutton.grid(row=1, column=0)
+        self.delbutton.grid(row=1, column=0, sticky=Tkinter.S)
         self.delbutton.config(state=Tkinter.DISABLED)
 
-        self.window.rowconfigure(0, weight=2)
-        self.window.rowconfigure(1, weight=1)
+        self.window.rowconfigure(0, weight=1)
+        self.window.columnconfigure(0, weight=1)
 
         self.window.protocol("WM_DELETE_WINDOW", self.handleCloseWindowRequest )
 
@@ -222,10 +237,12 @@ class BuilderControlsGUI(TkWindow):
         if self.argPanel != None:
             self.argPanel.destroy()
         
-        self.argPanel = ArgumentsPanel(self.addframe, theclass, self.click_addComponent )
-        self.argPanel.grid(row=1, column=0)
-        self.addframe.rowconfigure(1, weight = 3)
+        self.argPanel = ArgumentsPanel(self.argCanvas, theclass)
+        self.argPanel.update_idletasks()
+        self.argCanvas.itemconfigure(self.argCanvasWID, window=self.argPanel)
+        self.argCanvas['scrollregion'] = self.argCanvas.bbox("all")
         self.choosebutton['text'] = theclass['module']+"."+theclass['class']
+
 
             
 # -------------------------------------------------------------------
