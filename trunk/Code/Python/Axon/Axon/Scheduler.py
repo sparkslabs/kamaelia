@@ -135,7 +135,7 @@ class scheduler(microprocess):
                          activeMicroprocesses +=1
 
                       if isinstance(result, WaitComplete):
-                         newMprocess = microprocess(result.args[0], result.args[1])
+                         newMprocess = microprocess(result.args[0], reactivate(mprocess))
                          newMprocess.activate()
                          mprocess = None
                          
