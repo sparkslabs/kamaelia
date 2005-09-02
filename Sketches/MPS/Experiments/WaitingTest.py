@@ -23,7 +23,7 @@ class printer(component):
    def main(self):
       ID = randint(0,20000)
       print "PRE-WAIT"
-      yield WaitComplete(self.tick(ID), reactivate(self))
+      yield WaitComplete(self.tick(ID))
       print "POST-WAIT"
       while 1:
          yield 1
@@ -34,7 +34,7 @@ class printer(component):
            print "NO DATA READY, LETS WAIT A BIT"
            ID = randint(0,20000)
            print "PRE-WAIT"
-           yield WaitComplete(self.tick(ID),reactivate(self))
+           yield WaitComplete(self.tick(ID))
            print "POST-WAIT"
 
 pipeline(
