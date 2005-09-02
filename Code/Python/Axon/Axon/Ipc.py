@@ -28,6 +28,14 @@ class ipc(object):
    """Message base class"""
    pass
 
+class WaitComplete(ipc):
+   def __init__(self, *args):
+      self.args = args
+
+class reactivate(ipc):
+   def __init__(self, original):
+      self.original = original
+
 class newComponent(ipc):
    """Message used to inform the scheduler of a new component that needs a thread
    of control and activating"""

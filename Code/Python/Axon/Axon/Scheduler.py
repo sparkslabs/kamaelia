@@ -46,6 +46,19 @@ def _sort(somelist):
    a.sort()
    return a
 
+
+def activateMicroprocesses(result):
+     "activatedMicroprocesses = self.activateMicroprocesses(result)"
+     # The class sent us a newComponent message, which
+     # can contain several components.
+     activatedMicroprocesses = 0
+     for C in result.components():   # For each one
+        t = C.activate()      # Activate it - adds itself to the runset
+        if t._activityCreator():
+           activatedMicroprocesses +=1
+     return activatedMicroprocesses
+
+
 class scheduler(microprocess):
    """Scheduler - runs microthreads of control."""
    run = None
@@ -66,8 +79,6 @@ class scheduler(microprocess):
       self.time = time.time()
       self.threads = list()     # Don't use [] to avoid Python wierdness
       self.newthreads = list()
-      if self.debugger.areDebugging("scheduler.__init__", 1):
-         self.debugger.debugmessage("scheduler.__init__", "STARTED: ", self.name, self.id)
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -77,107 +88,64 @@ class scheduler(microprocess):
       """
       self.newthreads.append(mprocess)
 
+   def handleMicroprocessShutdownKnockon(self, knockon):
+     if isinstance(knockon, shutdownMicroprocess):
+        for i in xrange(len(self.threads)):
+           if self.threads[i] in knockon.microprocesses():
+              self.threads[i] = None
+              
+     if isinstance(knockon, reactivate):
+        self._addThread(knockon.original)
+
    def main(self,slowmo=0):
       """This is the meat of the scheduler  - this actively loops round the threads
       that it has available to run, and runs them. The only control over the scheduler
       at present is a means to slow it down - ie run in slow motion.
       The way this is runn is as follows:
-      scheduler.run.runThreads(slowmo=/delay/)
+          scheduler.run.runThreads(slowmo=/delay/)
       where delay is in seconds. If the delay is 0, the the system runs all the
       threads as fast as it can. If the delay is non zero - eg 0.5, then the system
       runs all the threads for one "cycle", waits until the delay has passed, and then
       times again. Note : the delay is between the start points of cycles, and not
       between the start and end points of cycles. The delay is NOT 100% accurate
-      nor guaranteed and can be extended by threads that take too long to
+      nor guaranteed and can be extended by threads that take too long to;
       complete. (Think of it as a "hello world" of soft-real time scheduling)
       """
-      crashAndBurnWithErrors = True
-      mprocesses = self.newthreads          # Grab the singleton set of threads.
-      if self.debugger.areDebugging("scheduler.main", 1):
-         self.debugger.debugmessage("scheduler.main", "SCHEDULER:",self)
-         self.debugger.debugmessage("scheduler.main", "Scheduler Starting, # threads to run:")
-         self.debugger.debugmessage("scheduler.main", "   ", len(self.newthreads))
 
       yield 1
-      running = len(self.newthreads) > 0
-      if self.debugger.areDebugging("scheduler.main", 5):
-         self.debugger.debugmessage("scheduler.main", "THR", self.newthreads)
-      cx=0
-      lastcx=0
-      lasttime = time.time()
-      starttime= lasttime
-      if self.debugger.areDebugging("scheduler.main", 5):
-         self.debugger.debugmessage("scheduler.main", "# CX Ave, CX this")
+      running = len(self.newthreads) > 0 
       while(running):           # Threads gets re-assigned so this can reduce to []
-        now = time.time()
-        if (now - self.time) > slowmo or slowmo == 0:
-         self.threads=self.newthreads             # Make the new runset the run set
-         self.newthreads = list()  # We go through all the threads,
-                                   # if they don't exit they get put here.
-         self.time = now   # Update last run time - only really useful if slowmo != 0
-         if self.debugger.areDebugging("scheduler.main.threads", 1):
-            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", len(self.threads))
-         if self.debugger.areDebugging("scheduler.main.threads", 2):
-            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", _sort([ thr.name for thr in self.threads if thr is not None]))
-         if self.debugger.areDebugging("scheduler.main.threads", 5):
-            self.debugger.debugmessage("scheduler.main.threads", "Axon Objects active", len([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
-         if self.debugger.areDebugging("scheduler.objecttrack", 10):
-            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x.__class__) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
-         if self.debugger.areDebugging("scheduler.objecttrack", 15):
-            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         now = time.time()
+         if (now - self.time) > slowmo or slowmo == 0:
+             self.threads=self.newthreads     # Make the new runset the run set
+             self.newthreads = []             # We go through all the threads,
+                                              # if they don't exit they get put here.
+             self.time = now   # Update last run time - only really useful if slowmo != 0
+             activeMicroprocesses = 0
+             for mprocess in self.threads:
+                if mprocess:
+                   try:
+                      yield 1                       # Relinquish control between every thread
+                      result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
 
-         if self.debugger.areDebugging("scheduler.scheduler", 1):
-            self.debugger.debugmessage("scheduler.main", "SCHEDULED", self.name,self.id)
-         activeMicroprocesses = 0
-         for mprocess in self.threads:
-            cx=cx+1
-            if (now - lasttime)> 1:
-                 if self.debugger.areDebugging("scheduler.main", 10):
-                    self.debugger.debugmessage("scheduler.main", cx/(now-starttime), ",", cx-lastcx)
-                 lasttime = now
-                 lastcx=cx
-            if mprocess:
-               try:
-                  if self.debugger.areDebugging("scheduler.main", 10):
-                     self.debugger.debugmessage("scheduler.main", "Scheduler about to yield",self)
-                  yield 1                       # Relinquish control between every thread
+                      if (isinstance(result, newComponent)):
+                         activeMicroprocesses += activateMicroprocesses(result)
 
-                  if self.debugger.areDebugging("scheduler.main", 10):
-                     self.debugger.debugmessage("scheduler.main", "Scheduler back yield",self)
-                  result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
+                      if mprocess._activityCreator():
+                         activeMicroprocesses +=1
 
-                  if (issubclass(result.__class__, newComponent)):
-                     # The class sent us a newComponent message, which
-                     # can contain several components.
-                     for component in result.components():   # For each one
-                        if self.debugger.areDebugging("scheduler.main", 5):
-                           self.debugger.debugmessage("scheduler.main", "Starting a new component",component)
-                        t = component.activate()      # Activate it - adds itself to the runset
-                        if t._activityCreator():
-                           activeMicroprocesses +=1
-                  if mprocess._activityCreator():
-                     activeMicroprocesses +=1
-                  self.newthreads.append(mprocess)    # Add the current thread to the new run set
-               except StopIteration:             # Thread exited
-                  if self.debugger.areDebugging("scheduler.main", 5):
-                     self.debugger.debugmessage("scheduler.main", "STOP ITERATION THROWN", mprocess)
-                  mprocess.stop() # set the stop flag on the microprocess, so anyone observing can see
-                  knockon = mprocess._closeDownMicroprocess()
-                  if knockon:
-                     if self.debugger.areDebugging("scheduler.main", 5):
-                        self.debugger.debugmessage("scheduler.main", "KNOCKON", knockon)
-                     if isinstance(knockon, shutdownMicroprocess):
-                        if self.debugger.areDebugging("scheduler.main", 5):
-                           self.debugger.debugmessage("scheduler.main", "TO CLOSEDOWN", [(x.name,x.debugname) for x in knockon.microprocesses() ])
-                        for i in xrange(len(self.threads)):
-                           if self.threads[i] in knockon.microprocesses():
-                              self.threads[i] = None
-                        # In-efficient first pass at handling knockon threads without having expensive deletions.
-                        #for i in xrange(len(newthreads)):
-                        #   if newthreads[i] in knockon.microprocesses():
-                        #      newthreads[i] = None
-               #_gc.collect()
-            running = activeMicroprocesses > 0
+                      if isinstance(result, WaitComplete):
+                         newMprocess = microprocess(result.args[0], result.args[1])
+                         newMprocess.activate()
+                         mprocess = None
+                         
+                      if mprocess:
+                          self.newthreads.append(mprocess)    # Add the current thread to the new run set
+                   except StopIteration:             # Thread exited
+                      mprocess.stop() # set the stop flag on the microprocess, so anyone observing can see
+                      knockon = mprocess._closeDownMicroprocess()
+                      self.handleMicroprocessShutdownKnockon(knockon)
+                running = activeMicroprocesses > 0
 
    def runThreads(self,slowmo=0):
       for i in self.main(slowmo): pass

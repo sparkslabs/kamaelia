@@ -202,14 +202,20 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
-   def __init__(self):
+   def __init__(self, thread = None, closeDownValue = 0):
       """Microprocess constructor.
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
       self.id,self.name = tupleId(self)
       self.__runnable =1
       self.__stopped = 0
-      self.__thread = None
+      if thread is not None:
+         self.__thread = thread
+      else:
+         self.__thread = None # Explicit better than implicit
+         
+      self.closeDownValue = closeDownValue
+         
       self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
 
@@ -329,7 +335,8 @@ class microprocess(Axon.AxonObject):
 
       if self.debugger.areDebugging("microprocess.activate", 1):
          self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
-      self.__thread = self._microprocessGenerator(self)
+      if not self.__thread:
+         self.__thread = self._microprocessGenerator(self)
 
       #
       # Whilst a basic microprocess does not "need" a local scheduler,
@@ -355,17 +362,12 @@ class microprocess(Axon.AxonObject):
 
    def _closeDownMicroprocess(self):
       "Stub method that is overridden internally in Axon but not clients"
-      return 0
+      return self.closeDownValue
 
    def run(self):
       "run - activates the microprocess and runs it from start to finish until StopIteration"
       self.activate()
       self.__class__.schedulerClass.run.runThreads()
-#      try:
-#         while 1:
-#            self.next()
-#      except StopIteration:
-#         pass # Expect this!
 
 if __name__ == '__main__':
    print "Test code currently disabled"
