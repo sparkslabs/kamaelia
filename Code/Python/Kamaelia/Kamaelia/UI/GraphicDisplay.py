@@ -34,7 +34,7 @@ class Bunch: pass
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes={ "inbox" : "Default inbox, not currently used",
              "control": "Default control inbox, not currently used",
-             "notify":  "Inbox on which we expect to receive requests for surfaces" }
+             "notify":  "Inbox on which we expect to receive requests for surfaces, overlays and events" }
 
    def setDisplayService(pygamedisplay, tracker = None):
         "Sets the given pygamedisplay as the service for the selected tracker or the default one."
@@ -65,8 +65,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 #      self.background_colour = argd.get("background_colour", (48,48,128))
       self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
-      self.next_position = (10,10)
+      self.next_position = (0,0)
       self.surfaces = []
+      self.overlays = []
       self.visibility = {}
       self.events_wanted = {}
       self.surface_to_eventcomms = {}
@@ -102,6 +103,34 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.send(surface, callbackcomms)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
+            elif message.get("OVERLAYREQUEST", False):
+                size = message["size"]
+                pixformat = message["pixformat"]
+                position = message.get("position", (0,0))
+                overlay = pygame.Overlay(pixformat, size)
+                yuvdata = message.get("yuv", ("","",""))
+
+                yuvservice = message.get("yuvservice",False)
+                if yuvservice:
+                    yuvinbox = self.addInbox("overlay_yuv")
+                    self.link( yuvservice, (self, yuvinbox) )
+                    yuvservice = (yuvinbox, yuvservice)
+
+                posservice = message.get("positionservice",False)
+                if posservice:
+                    posinbox = self.addInbox("overlay_position")
+                    self.link (posservice, (self, posinbox) )
+                    posservice = (posinbox, posservice)
+                
+                self.overlays.append( {"overlay":overlay,
+                                       "yuv":yuvdata,
+                                       "position":position,
+                                       "size":size,
+                                       "yuvservice":yuvservice,
+                                       "posservice":posservice}
+                                    )
+                
+
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
@@ -123,6 +152,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       # pre-fetch all waiting events in one go
       events = [ event for event in pygame.event.get() ]
 #      if events != []: print events
+
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
@@ -160,8 +190,28 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if bundle != []:
                self.send(bundle, listener)
 #               print "Sent "+repr(bundle)+" to "+str(listener)
-                  
-                                           
+
+      # now update overlays
+      for theoverlay in self.overlays:
+
+          # receive new image data for display
+          if theoverlay['yuvservice']:
+              theinbox, _ = theoverlay['yuvservice']
+              while self.dataReady(theinbox):
+                  theoverlay['yuv'] = self.recv(theinbox)
+
+          # receive position updates
+          if theoverlay['posservice']:
+              theinbox, _ = theoverlay['posservice']
+              while self.dataReady(theinbox):
+                  theoverlay['position'] = self.recv(theinbox)
+                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
+
+          # redraw the overlay
+          theoverlay['overlay'].display( theoverlay['yuv'] )
+
+
+
 
    def main(self):
       pygame.init()
@@ -230,7 +280,7 @@ To strive, to seek, to find, and not to yield.
       def main(self):
          displayservice = PygameDisplay.getDisplayService()
          self.link((self,"signal"), displayservice)
-         self.send({ "callback" : (self,"control"), "size": (400,300)}, "signal")
+         self.send({ "DISPLAYREQUEST":True, "callback" : (self,"control"), "size": (400,300)}, "signal")
          for _ in self.waitBox("control"): yield 1
          display = self.recv("control")
 
