@@ -61,8 +61,7 @@ class RawYUVFramer(component):
         while not done:
             while self.dataReady("inbox"):
                 raw = self.recv("inbox")
-                for _ in self.packAndSend(raw):
-                    pass
+                self.packAndSend(raw)
                     
     
             if self.dataReady("control"):
@@ -103,5 +102,3 @@ class RawYUVFramer(component):
 
             if filled:
                 self.flushFrame()
-
-            yield 1
