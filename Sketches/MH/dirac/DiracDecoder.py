@@ -39,53 +39,75 @@ class DiracDecoder(component):
 
        decodes dirac video!
 
-       At the moment, reads it direct from a file, but that'll change shortly
+       Receives dirac encoded video as strings on inbox
+
+       Responds only to shutdownMicroprocess msgs (ignores producerFinished)
+       as dirac encoder is perfectly capable of working out that the stream has
+       finished, at which point it sends its own producerFinished msg.
     """
        
     def __init__(self):
         super(DiracDecoder, self).__init__()
         self.decoder = DiracParser()
+        self.inputbuffer = ""
 
     def main(self):
 
-        f=open("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", "rb")
+        done = False
+        while not done:
+            dataShortage = False
+        
+            while self.dataReady("inbox"):
+                self.inputbuffer += self.recv("inbox")
 
-        while self.doDecoding(f):
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    done=True
+        
+            try:
+                frame = self.decoder.getFrame()
+                frame['pixformat'] = map_chroma_type(frame['chroma_type'])
+                self.send(frame,"outbox")
+            
+            except "NEEDDATA":
+                if self.inputbuffer:
+                    self.decoder.sendBytesForDecode(self.inputbuffer)
+                    self.inputbuffer = ""
+                else:
+                    datashortage = True
+        
+            except "SEQINFO":
+                # sequence info dict in self.decoder.getSeqData()
+                pass
+            
+            except "END":
+                done = True
+                self.send(producerFinished(self), "signal")
+        
+            except "STREAMERROR":
+                print "Stream error"
+                raise "STREAMERROR"
+        
+            except "INTERNALFAULT":
+                print "Internal fault"
+                raise "INTERNALFAULT"
+
+            if dataShortage and not done:
+                self.pause()
+
             yield 1
 
-    def doDecoding(self, f):
-        try:
-            frame = self.decoder.getFrame()
-            frame['pixformat'] = map_chroma_type(frame['chroma_type'])
-            self.send(frame,"outbox")
-            return True
-        
-        except "NEEDDATA":
-            data = f.read(4096)
-            self.decoder.sendBytesForDecode(data)
-            return True
-    
-        except "SEQINFO":
-            # sequence info dict in self.decoder.getSeqData()
-            return True
-        
-        except "END":
-            return False
-    
-        except "STREAMERROR":
-            print "Stream error"
-            return False
-    
-        except "INTERNALFAULT":
-            print "Internal fault"
-            return False
-
+            
 
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from VideoOverlay import VideoOverlay
     
-    pipeline( DiracDecoder(),
+    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 200000*8/5),
+              DiracDecoder(),
               VideoOverlay(),
             ).run()
     
