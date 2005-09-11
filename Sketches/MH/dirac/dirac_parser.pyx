@@ -134,7 +134,7 @@ cdef class DiracParser:
     
             elif state == STATE_PICTURE_AVAIL:
                 frame =  self.__buildFrame()
-#                self.allocBuffers()
+                self.__allocBuffers()
                 return frame
     
             elif state == STATE_SEQUENCE_END:
