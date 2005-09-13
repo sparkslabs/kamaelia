@@ -216,11 +216,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       print "HMM"
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
       print "BINGLE?", display
-      import time
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()
-         time.sleep(1)
          self.updateDisplay(display)
          yield 1
 
