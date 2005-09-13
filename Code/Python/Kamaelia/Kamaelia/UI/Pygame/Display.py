@@ -62,7 +62,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       super(PygameDisplay,self).__init__()
       self.width = argd.get("width",800)
       self.height = argd.get("height",600)
-#      self.background_colour = argd.get("background_colour", (48,48,128))
       self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
@@ -89,7 +88,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                surface.set_alpha(alpha)
                if message.get("transparency", None):
                   surface.set_colorkey(message["transparency"])
-#               position = self.surfacePosition(surface)
                position = message.get("position", self.surfacePosition(surface))
                callbackcomms = self.addOutbox("displayerfeedback")
                eventcomms = None
@@ -153,6 +151,32 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       events = [ event for event in pygame.event.get() ]
 #      if events != []: print events
 
+      #
+      # Update overlays
+      #
+      for theoverlay in self.overlays:
+
+          # receive new image data for display
+          if theoverlay['yuvservice']:
+              theinbox, _ = theoverlay['yuvservice']
+              while self.dataReady(theinbox):
+                  theoverlay['yuv'] = self.recv(theinbox)
+
+          # receive position updates
+          if theoverlay['posservice']:
+              theinbox, _ = theoverlay['posservice']
+              while self.dataReady(theinbox):
+                  theoverlay['position'] = self.recv(theinbox)
+#                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
+                  theoverlay['overlay'].set_location( (theoverlay['position'], 
+                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
+                                                      ))
+
+          # redraw the overlay
+#          theoverlay['overlay'].set_location(0,0,352/2,288)
+#          theoverlay['overlay'].set_location(0,0,704,576)
+          theoverlay['overlay'].display( theoverlay['yuv'] )
+
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
@@ -167,8 +191,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                try:   wanted = self.events_wanted[listener][event.type]
                except KeyError: pass
                if wanted:
-###                  if event.type == pygame.KEYDOWN:
-###                     print "BANG", wanted, listener, event
                   # if event contains positional information, remap it
                   # for the surface's coordiate origin
                   if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
@@ -184,42 +206,21 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         e.button = event.button
                      event = e
                   bundle.append(event)
-###                  print "BUNDLE", bundle
 
             # only send events to listener if we've actually got some
             if bundle != []:
                self.send(bundle, listener)
-#               print "Sent "+repr(bundle)+" to "+str(listener)
-
-      # now update overlays
-      for theoverlay in self.overlays:
-
-          # receive new image data for display
-          if theoverlay['yuvservice']:
-              theinbox, _ = theoverlay['yuvservice']
-              while self.dataReady(theinbox):
-                  theoverlay['yuv'] = self.recv(theinbox)
-
-          # receive position updates
-          if theoverlay['posservice']:
-              theinbox, _ = theoverlay['posservice']
-              while self.dataReady(theinbox):
-                  theoverlay['position'] = self.recv(theinbox)
-                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
-
-          # redraw the overlay
-          theoverlay['overlay'].display( theoverlay['yuv'] )
-
-
-
 
    def main(self):
       pygame.init()
-      display = pygame.display.set_mode((self.width, self.height), self.fullscreen )
-
+      print "HMM"
+      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
+      print "BINGLE?", display
+      import time
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()
+         time.sleep(1)
          self.updateDisplay(display)
          yield 1
 
@@ -336,4 +337,5 @@ To strive, to seek, to find, and not to yield.
    Axon.Scheduler.scheduler.run.runThreads()
 
 
-
+"""
+"""
