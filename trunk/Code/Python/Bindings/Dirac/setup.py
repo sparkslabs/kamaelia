@@ -1,5 +1,5 @@
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -23,7 +23,12 @@ from distutils.extension import Extension
 from Pyrex.Distutils import build_ext
 
 setup(
-  name = 'Diracdecode',
+  name = 'Dirac',
+  version = "0.0.1",
+  description = "Dirac bindings for python",
+  author = "Michael",
+  author_email = "ms_@users.sourceforge.net",
+  url = "http://kamaelia.sourceforge.net/",
   ext_modules=[ 
     Extension("dirac_parser",
               ["dirac_parser.pyx"],
@@ -31,5 +36,10 @@ setup(
               include_dirs = ["/usr/local/include/dirac"],
              ),
     ],
-  cmdclass = {'build_ext': build_ext}
+  cmdclass = {'build_ext': build_ext},
+  long_description = """Initial set of python bindings for Dirac. 
+This API is subject to change. Requires Pyrex, Dirac, and Dirac
+headers are expected to live in /usr/local/include/dirac
+For information on dirac, see http://dirac.sf.net/
+"""
 )
