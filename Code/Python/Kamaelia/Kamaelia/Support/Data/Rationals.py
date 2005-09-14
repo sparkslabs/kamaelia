@@ -20,6 +20,12 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+# Functions for assisting with creating rational fractions (numbers represented
+# by a fraction, consisting of an integer numerator and denominator)
+#
+# In particular, conversion from a floating point value to a (rational) fraction
+# ... or at least as close an approximation as reasonably possible!
+#
 # rational(...) - convert a floating point value to a rational
 # gcd(...)      - guess!
 # limit(...) - limit a rational's numerator and denominator to within bounds
