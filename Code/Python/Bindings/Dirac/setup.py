@@ -35,6 +35,11 @@ setup(
               libraries = ["dirac_decoder"],
               include_dirs = ["/usr/local/include/dirac"],
              ),
+    Extension("dirac_encoder",
+              ["dirac_encoder.pyx"],
+              libraries = ["dirac_encoder"],
+              include_dirs = ["/usr/local/include/dirac"],
+             ),
     ],
   cmdclass = {'build_ext': build_ext},
   long_description = """Initial set of python bindings for Dirac. 
