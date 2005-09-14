@@ -51,10 +51,9 @@ def rational(floatval,maxdepth=10):
             break
         
     div = gcd(num, denom)
-    while div > 1:
+    if div > 1:
         num = num / div
         denom = denom / div
-        div = gcd(num, denom)
         
     return sign * num, denom
 
