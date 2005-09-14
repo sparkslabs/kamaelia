@@ -25,7 +25,9 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import pygame
 from dirac_parser import DiracParser
+from dirac_encoder import DiracEncoder as EncoderWrapper
 
+from Kamaelia.Data.Rationals import rational
 
 def map_chroma_type(chromatype):
     if chromatype == "420":
@@ -101,59 +103,86 @@ class DiracDecoder(component):
 
             
 
-if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
-    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-    from VideoOverlay import VideoOverlay
+class DiracEncoder(component):
+    """Dirac encoder component
 
-    class rateMeasure(component):
-        def main(self):
-            now = self.scheduler.time
-            while 1:
-               try:
-                  data = self.recv("inbox")
-                  self.send(data, "outbox")
-               except IndexError:
-                  pass
-               yield 1
+       Encodes dirac video!
 
-    class rateLimit(component):
-        def __init__(self, messages_per_second):
-            super(rateLimit, self).__init__()
-            self.mps = messages_per_second
-            self.interval = 1.0/(messages_per_second*1.1)
-        def main(self):
-            while self.dataReady("inbox") <60:
-                self.pause()
-                yield 1
-            c = 0
-            start = 0
-            last = start
-            interval = self.interval # approximate rate interval
-            mps = self.mps
-            while 1:
-                try:
-                    while not( self.scheduler.time - last > interval):
-                       yield 1
-                    c = c+1
-                    last = self.scheduler.time
-                    if last - start > 1:
-                        rate = (last - start)/float(c)
-                        start = last
-                        c = 0
-                    data = self.recv("inbox")
+       Receives frame dictionaries containing a 'yuv' key containing (y,u,v)
+       tuple of strings
+
+       Emits byte stream as strings
+
+       Finishes the stream in response to a producerFinished msg.
+       shutdownMicroprocess does not do this, but will still shut the component
+       down.
+
+       Does not yet support output of instrumentation or locally decoded frames
+    """
+
+    def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}):
+        """Initialisation.
+
+        Either specify a preset and/or encoder and sequence parameters
+        to set up the encoder. Any encoder or sequence params manually specified will
+        override those specified through a preset.
+
+        bufsize is recommended to be at least 1 MByte. It is the buffer into which the
+        compressed stream is output. If the buffer size is too small, the encoder will
+        generate errors.
+        """
+
+        super(DiracEncoder, self).__init__()
+
+        if 'frame_rate' in seqParams:
+            seqParams['frame_rate'] = rational(seqParams['frame_rate'])
+            
+        self.encoder = EncoderWrapper(preset=preset, bufsize=1024*1024, verbose=verbose, encParams=encParams, seqParams=seqParams)
+
+        
+    def main(self):
+
+        done = False
+        msg = None
+        while not done:
+
+            while self.dataReady("inbox"):
+                frame = self.recv("inbox")
+                data = "".join(frame['yuv'])
+                self.encoder.sendFrameForEncode(data)
+
+                while 1:  # loop until 'needdata' event breaks out of this
+                    try:
+                        bytes = self.encoder.getCompressedData()
+                        self.send(bytes,"outbox")
+
+                    except "NEEDDATA":
+                        break
+
+                    except "ENCODERERROR":
+                        print "Encoder Error"
+                        raise "ENCODERERROR"
+
+                    except "INTERNALFAULT":
+                        print "Internal Fault"
+                        raise "INTERNALFAULT"
+
+
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg,"signal")
+                    done=True
+                    
+                elif isinstance(msg, producerFinished):
+                    # write 'end of sequence' data
+                    data = self.encoder.getEndSequence()
                     self.send(data, "outbox")
-                except IndexError:
-                    pass
-                yield 1
+                    yield 1
+                    self.send(msg, "signal")
+                    
 
-    file = "/data/dirac-video/foobar.dirac.drc"
-#    file = "/data/dirac-video/snowboard-jum-352x288x75.dirac.drc"
-    framerate = 15
-    pipeline(
-              ReadFileAdaptor(file, readmode="bitrate", 
-                              bitrate = 300000*8/5),
-              DiracDecoder(),
-              rateLimit(framerate),
-              VideoOverlay(),
-            ).run()
+            if not done:
+                self.pause()
+
+            yield 1
