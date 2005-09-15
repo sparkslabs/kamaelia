@@ -162,6 +162,12 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         else:
             self.flip = False
 
+        if self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):
+                self.send(msg, "signal")
+                self.quit()
+            
         return 1
         
     def render(self):        
@@ -277,7 +283,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                         
                         posSpec = msg[4]
                         pos     = self._generateXY(posSpec)
-                        
+
                         particle = ptype(position = pos, ID=id, name=name)
                         particle.originaltype = msg[5]
                         self.addParticle(particle)
@@ -381,6 +387,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         
     
     def quit(self, event=None):
+        super(TopologyViewerComponent,self).quit(event)
         raise "QUITTING"
         
     def scroll( self, (dx, dy) ):
