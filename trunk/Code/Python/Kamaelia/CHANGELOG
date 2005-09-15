@@ -3,6 +3,10 @@ Post 0.2.0
    * Util/Marhsalling.py and Util/test/test_Marshalling.py added
      Pipeline-able marhsalling/demarshalling components and some basic tests
      Derived from Util/MarshallComponent.py
+   * UI/Pygame/VideoOverlay added and PygameDisplay extended to support it
+     providing video 'overlay' surface capabilities
+   * Codec/RawYUVFramer added to support 'framing' of raw yuv video frames
+   * Codec/Dirac added with Dirac video codec encoder and decoder components
 
 
 0.2.0 (When released)

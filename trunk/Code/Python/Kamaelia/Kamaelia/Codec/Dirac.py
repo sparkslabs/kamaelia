@@ -23,7 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-import pygame
+
 from dirac_parser import DiracParser
 from dirac_encoder import DiracEncoder as EncoderWrapper
 
@@ -31,7 +31,7 @@ from Kamaelia.Data.Rationals import rational
 
 def map_chroma_type(chromatype):
     if chromatype == "420":
-        return pygame.IYUV_OVERLAY
+        return "YUV420_planar"
     else:
         raise "Dont know how to deal with this chroma type yet, sorry! - " + chromtype
 

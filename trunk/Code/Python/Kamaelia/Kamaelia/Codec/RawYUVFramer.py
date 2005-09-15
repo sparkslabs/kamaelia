@@ -23,7 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-import pygame
+
 
 class RawYUVFramer(component):
     """Receives a raw data stream containing YUV data and frames it
@@ -32,21 +32,23 @@ class RawYUVFramer(component):
 
        frame format:
                { "size" : (pixels_width, pixels_height),
-                 "pixformat" : pygamepixelformat,
+                 "pixformat" : pixel data format (see below)
                  "yuv" : ( ydata_string, udata_string, vdata_string ),
                }
 
-       Currently only supports pygame.IYUV_OVERLAY pixel format.
-
        Incoming data should be a byte stream as strings. They can be of any chunk size.
+
+       Currently supported pixel formats:
+           
+         "YUV420_planar" - (y,u,v) where u and v are half horizontal and vertical resolutions
     """
        
-    def __init__(self, size, pixformat = pygame.IYUV_OVERLAY):
+    def __init__(self, size, pixformat = "YUV420_planar"):
         super(RawYUVFramer, self).__init__()
         self.size = size
         self.pixformat = pixformat
-#        if pixformat != pygame.IYUV_OVERLAY:
-#            raise ValueError("Can't handle anything except pygame.IYUV_OVERLAY at the mo. Sorry!")
+#        if pixformat != YUV420_planar
+#            raise ValueError("Can't handle anything except YUV420_planar at the mo. Sorry!")
 
         ysize = size[0]*size[1]
         usize = ysize / 4
@@ -80,7 +82,7 @@ class RawYUVFramer(component):
         """Send out a frame, flushing buffers"""
         frame = { "pixformat":self.pixformat,
                   "size":self.size,
-                  "yuv":(self.planes['y'], self.planes['v'], self.planes['u'])
+                  "yuv":(self.planes['y'], self.planes['u'], self.planes['v'])
                 }
         self.send( frame, "outbox" )
         self.planes['y'] = ""
