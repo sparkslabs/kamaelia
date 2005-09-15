@@ -201,9 +201,7 @@ cdef class DiracEncoder:
         cdef dirac_encoder_state_t state
 
         self.__setOutBuffer()
-        print "x"
         state = dirac_encoder_output(self.encoder)
-        print "1"
 
         if state == ENC_STATE_INVALID:
             print "z"
