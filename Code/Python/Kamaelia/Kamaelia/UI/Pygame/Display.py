@@ -107,6 +107,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 position = message.get("position", (0,0))
                 overlay = pygame.Overlay(pixformat, size)
                 yuvdata = message.get("yuv", ("","",""))
+                
+                # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                if len(yuvdata) == 3:
+                      yuvdata = (yuvdata[0], yuvdata[2], yuvdata[1])
 
                 yuvservice = message.get("yuvservice",False)
                 if yuvservice:
@@ -160,7 +164,13 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
           if theoverlay['yuvservice']:
               theinbox, _ = theoverlay['yuvservice']
               while self.dataReady(theinbox):
-                  theoverlay['yuv'] = self.recv(theinbox)
+                  yuv = self.recv(theinbox)
+
+                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                  if len(yuv) == 3:
+                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                  else:
+                      theoverlay['yuv'] = yuv
 
           # receive position updates
           if theoverlay['posservice']:
@@ -213,9 +223,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def main(self):
       pygame.init()
-      print "HMM"
+#      print "HMM"
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
-      print "BINGLE?", display
+#      print "BINGLE?", display
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()

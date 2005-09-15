@@ -26,8 +26,20 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 import pygame
 
+
+# mappings of 'frame' pixformat values to pygame overlay modes
+pygame_pixformat_map = { "YUV420_planar" : pygame.IYUV_OVERLAY }
+
+
+
 class VideoOverlay(component):
-    """Sets up a video overlay using pygame, and feeds yuv video data to it"""
+    """Sets up a video overlay using pygame, and feeds yuv video data to it.
+
+       Video overlay is created when the first frame of data is received, using
+       the parameters within the frame.
+
+       NB: Currently, the only supported pixel format is "YUV420_planar"
+    """
     
     Inboxes = {"inbox":"uncompressed video frames",
                "control":""
@@ -37,7 +49,8 @@ class VideoOverlay(component):
                 "displayctrl":"pygame display service",
                 "yuvdata":"yuv data sent to overlay display service"
                }
-    
+
+
     def __init__(self, **argd):
         super(VideoOverlay,self).__init__()
         self.size = None
@@ -59,11 +72,12 @@ class VideoOverlay(component):
         """Request an overlay to suit the supplied frame of data"""
         self.size = frame['size']
         self.pixformat = frame['pixformat']
+        self.pygamepixformat = pygame_pixformat_map[self.pixformat]
                 
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"displayctrl"), displayservice)
         self.send({ "OVERLAYREQUEST":True,
-                    "pixformat":self.pixformat,
+                    "pixformat":self.pygamepixformat,
                     "yuvservice":(self, "yuvdata"),
                     "size":self.size,
                     "position":self.position,

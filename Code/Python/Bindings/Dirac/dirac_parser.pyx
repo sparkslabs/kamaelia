@@ -201,7 +201,7 @@ cdef class DiracParser:
     def __buildFrame(self):
         frame = {}
         frame.update(self.getSeqData())
-        frame['yuv'] = (self.ybuffer, self.vbuffer, self.ubuffer)
+        frame['yuv'] = (self.ybuffer, self.ubuffer, self.vbuffer)
         return frame
 
         
