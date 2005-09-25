@@ -22,34 +22,16 @@
 #
 # Simple control window for a looping audio player
 
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
-from Kamaelia.Physics.Simple import SimpleLaws
-
-
-class BuildViewer(TopologyViewerComponent):
-    """Specialisation of TopologyViewerComponent for visualising simple pipelines of components"""
-
-    def __init__(self, screensize = (800,600), fullscreen = False, transparency = None):
-        laws = SimpleLaws(bondLength=100)
-        
-        super(BuildViewer, self).__init__(screensize=screensize,
-                                          fullscreen=fullscreen,
-                                          caption = "The pipeline",
-                                          particleTypes = {"component":ComponentParticle},
-                                          laws = laws
-                                         )
-                                         
-
-
-
 import pygame
-from Kamaelia.Physics.Simple import Particle as BaseParticle
+
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Physics.Simple import SimpleLaws, Particle
+# from Kamaelia.Physics.Simple import Particle
 
 import time
 
-class ComponentParticle(BaseParticle):
+class ComponentParticle(Particle):
     """Version of Physics.Particle designed to represent components in a simple pipeline"""
 
     def __init__(self, ID, position, name):
@@ -141,3 +123,12 @@ class ComponentParticle(BaseParticle):
     def deselect( self ):
         """Tell this particle it is selected"""
         self.selected = False
+
+def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):                                        
+    laws = SimpleLaws(bondLength=100)
+    return TopologyViewerComponent( screensize=screensize,
+                                    fullscreen=fullscreen,
+                                    caption = "The pipeline",
+                                    particleTypes = {"component":ComponentParticle},
+                                    laws = laws
+                                  )
