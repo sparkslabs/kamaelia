@@ -17,10 +17,7 @@
 <ul type="disc"><li dir="ltr">yield control back periodically (eg <span style="font-family:Courier">yield 1</span> is sufficient)</li>
 <li dir="ltr">Check to see if <span style="font-family:Courier">data</span> is <span style="font-family:Courier">Ready</span> on the <span style="font-family:Courier">source</span> component's <span style="font-family:Courier">sourcebox</span>.</li>
 <li dir="ltr">If there is <span style="font-family:Courier">recv</span> the data from that box, and <span style="font-family:Courier">send</span> it to the <span style="font-family:Courier">sink</span> component's <span style="font-family:Courier">sinkbox</span>.</li></ul></ul></ul>
-<p dir="ltr"></p>
-<p dir="ltr"><span style="font-weight:600">Answer:</span></p>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class postman(microprocess):<br />    def __init__(self, source, sourcebox, sink, sinkbox):<br />        self.source = source<br />        self.sourcebox = sourcebox<br />        self.sink = sink<br />        self.sinkbox = sinkbox<br />    def main(self):<br />        while 1:<br />            yield 1<br />            if self.source.dataReady(self.sourcebox):<br />                d = self.source.recv(self.sourcebox)<br />                self.sink.send(d, self.sinkbox)]</span></div></ul>
-<p dir="ltr"></p>
+<p dir="ltr">[[tabs]<br />[pat1=MiniAxon/BlankAnswer.html]<br />[pat1_name=Answer Hidden]<br />[pat2=MiniAxon/PostmanAnswer.html]<br />[pat2_name=Show Answer]<br />[_tabstem=pat] ]</p>
 <p dir="ltr"><span style="font-weight:600">Discussion:</span></p>
 <p dir="ltr">Given this, we can now start building interesting systems. We have mechanisms for enabling concurrency in a single process (microprocess &amp; scheduler), a mechanism for adding communications (postboxes) to a microprocess (component) and a mechanism for enabling deliveries between components. Whilst we (the Kamaelia team) can see from an optimised version that the postman can actually be optimised out of the system, this simple mini-axon shows the core elements of Kamaelia quite nearly in a microcosm.</p>
 <p>One full version of this mini-axon can be found here: <a href="MiniAxonFull.html">Mini Axon Full</a>, which should now be clear what it's doing how and why.</p>
