@@ -1,7 +1,5 @@
 <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-size:24pt;font-weight:600">Mini-Axon</span></p>
-<p align="right"><span style="font-size:16pt">Build your own Kamaelia Core</span></p>
-<p dir="ltr"><a name="Microprocess"></a><span style="font-size:14pt;font-weight:600">1. Microprocesses - A Generator with Context</span></p>
+<p><a name="Microprocess"></a><span style="font-size:14pt;font-weight:600">1. Microprocesses - A Generator with Context</span></p>
 <p dir="ltr">Axon is built on top of generators with some added context. Whilst the most common version of this a user actually uses is called a component, this is a specialisation of the general concept - a generator with context.</p>
 <p dir="ltr"><span style="font-weight:600">Exercise:</span> Write a class called <span style="font-family:Courier;font-weight:600">microprocess</span> (make sure you subclass &quot;object&quot; !) with the following methods:</p>
 <ul type="disc"><li dir="ltr"><span style="font-family:Courier">__init__(self)</span></li>
@@ -21,5 +19,4 @@
 <p dir="ltr">We can then run these generators in the usual way (though these are fairly boring microprocesses):</p>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]&gt;&gt;&gt; for i in a.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in b.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in c.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1]</span></div></ul>
 <p dir="ltr">OK, so we have a mechanism for adding context to generators, and we've called that a microprocess. Let's make it simple to set lots of these running.</p>
-<p dir="ltr"></p>
 </body></html>
