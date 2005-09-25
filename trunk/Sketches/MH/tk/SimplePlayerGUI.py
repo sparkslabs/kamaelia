@@ -25,7 +25,8 @@
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import Tkinter
-from TkInterComponents import TkWindow
+from Kamaelia.UI.Tk.TkWindow import TkWindow
+#from TkInterComponents import TkWindow
 
 
 class ControlWindow(TkWindow):
