@@ -1,7 +1,5 @@
 <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-size:24pt;font-weight:600">Mini-Axon</span></p>
-<p align="right"><span style="font-size:16pt">Build your own Kamaelia Core</span></p>
-<p dir="ltr"><span style="font-size:14pt;font-weight:600">4<a name="Component"></a> Simple Component - Microprocesses with standard external interfaces</span></p>
+<p><span style="font-size:14pt;font-weight:600">4<a name="Component"></a> Simple Component - Microprocesses with standard external interfaces</span></p>
 <p dir="ltr"><span style="font-weight:600">Exercise: </span> Write a class called <span style="font-family:Courier;font-weight:600">component</span> that subclasses <span style="font-family:Courier">microprocess</span> with the following...</p>
 <p>Attributes:</p>
 <ul type="disc"><li><span style="font-family:Courier">self.boxes</span> - this should be a dictionary of the following form:</li>
@@ -57,5 +55,4 @@
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class spinnyThing(component):<br />    Boxes = {<br />        &quot;inbox&quot; : &quot;As per default&quot;,<br />        &quot;outbox&quot; : &quot;As per defaults&quot;,<br />        &quot;rotation&quot; : &quot;Expect an integer between 0 and 359 (degrees)&quot;,<br />    }]</span></div></ul>
 <p dir="ltr"></p>
 <p dir="ltr">That said, components by themselves are relatively boring. Unless we have some way of moving the data between generators we haven't gained anything (really) beyond the printer example above. So we need someone/something that can move data/messages from outboxes and deliver to inboxes...</p>
-<p dir="ltr"></p>
 </body></html>
