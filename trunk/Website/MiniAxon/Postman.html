@@ -1,7 +1,5 @@
 <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-size:24pt;font-weight:600">Mini-Axon</span></p>
-<p align="right"><span style="font-size:16pt">Build your own Kamaelia Core</span></p>
-<p dir="ltr"><span style="font-size:14pt;font-weight:600">5<a name="Postman"></a> Postman - A Microprocess that performs deliveries!</span></p>
+<p><span style="font-size:14pt;font-weight:600">5<a name="Postman"></a> Postman - A Microprocess that performs deliveries!</span></p>
 <p dir="ltr">Given we have outboxes and inboxes, it makes sense to have something that can handle deliveries between the two. For the purpose of this exercise, we'll create a microprocess that can look at a single outbox for a single component, take any messages deposited there and pass them the an inbox of another component. In terms of the component implementation so far we can use <span style="font-family:Courier;font-weight:600">dataReady</span> to check for availability of messages, <span style="font-family:Courier;font-weight:600">recv</span> to collect the message from the outbox, and <span style="font-family:Courier;font-weight:600">send</span> to deliver the message to the recipient inbox.</p>
 <p dir="ltr"><span style="font-weight:600">Exercise: </span> Write a class called <span style="font-family:Courier;font-weight:600">postman</span> that subclasses <span style="font-family:Courier">microprocess</span> with the following...</p>
 <p dir="ltr">Attributes:</p>
