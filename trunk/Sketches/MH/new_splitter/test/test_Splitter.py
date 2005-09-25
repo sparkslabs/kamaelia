@@ -6,7 +6,8 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import unittest
 
 import sys; sys.path.append("..")
-from Splitter import Splitter, addsink, removesink, Plug
+from Splitter import PlugSplitter as Splitter
+from Splitter import addsink, removesink, Plug
 
 import Axon.Scheduler
 

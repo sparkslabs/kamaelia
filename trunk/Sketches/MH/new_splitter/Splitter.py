@@ -21,7 +21,7 @@ class removesink(ipc):
         self.sinkcontrol = sinkcontrol
 
 
-class Splitter(AdaptiveCommsComponent):
+class PlugSplitter(AdaptiveCommsComponent):
     """Experimental version of Splitter (written from scratch)
 
        Provides fan-out of incoming messages on both 'inbox' and 'control' to
@@ -32,6 +32,8 @@ class Splitter(AdaptiveCommsComponent):
        in the initialiser for this class will wire that component in as the source
        feeding the splitter. This has been done to experiment with ways of expressing
        the wiring up of your system in a readable but neat fashion.
+       
+       This version is used by the pipe builder tool at present.
     """
     Inboxes = { "inbox":"",
                 "control":"",
@@ -41,7 +43,7 @@ class Splitter(AdaptiveCommsComponent):
               }
 
     def __init__(self, sourceComponent = None):
-        super(Splitter,self).__init__()
+        super(PlugSplitter,self).__init__()
 
         # set of wired in destinations (other than std 'outbox' and 'signal'
         self.outboxsinks = {}   #  (component, inboxname) --> splitter outboxname
@@ -60,8 +62,6 @@ class Splitter(AdaptiveCommsComponent):
             self.inboxname = "inbox"
             self.controlname = "control"
             self.usingChild = False
-
-
 
     def main(self):
 
@@ -181,7 +181,7 @@ class Plug(Axon.Component.component):
     This component provides encapsulation for that which you wish to plug in.
 
     Usage:
-        mysplitter = Splitter(...)
+        mysplitter = PlugSplitter(...)
         plug = Plug(mysplitter, Destination)
 
         mysplitter.activate()
