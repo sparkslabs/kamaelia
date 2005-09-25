@@ -27,7 +27,6 @@ import pygame
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Physics.Simple import SimpleLaws, Particle
-# from Kamaelia.Physics.Simple import Particle
 
 import time
 
