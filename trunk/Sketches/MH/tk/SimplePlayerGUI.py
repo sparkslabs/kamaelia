@@ -67,7 +67,7 @@ class ControlWindow(TkWindow):
         self.window.protocol("WM_DELETE_WINDOW", self.handleCloseWindowRequest )
 
     def playAudio(self):
-        self.send( "/opt/kde3/share/apps/khangman/sounds/new_game.ogg", "outbox")
+        self.send( "/opt/kde3/share/sounds/KDE_Startup_2.ogg", "outbox")
 
     def destroyHandler(self,event):
         if str(event.widget) == str(self.window):
