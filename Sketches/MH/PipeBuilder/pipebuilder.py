@@ -33,13 +33,20 @@ COMPONENTS = {
     "Kamaelia.Internet.Multicast_sender" : ["Multicast_sender"],
     "Kamaelia.Internet.Multicast_receiver" : ["Multicast_receiver"],
     "Kamaelia.Internet.Simulate.BrokenNetwork" : ["Duplicate","Throwaway","Reorder"],
-    "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ]
+    "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ],
+    "Kamaelia.Codec.Dirac" : [ "DiracDecoder" ],
+    "Kamaelia.Codec.Crypt" : [ "Cryptor","Decryptor" ],
+    "Kamaelia.Util.RateLimit" : [ "RateLimit" ],
+    "Kamaelia.UI.Pygame.VideoOverlay" : [ "VideoOverlay"],
+    
     }
 
 import inspect
     
 def getAllClasses( modules ):
-    for modname in modules:
+    _modules = list(modules.keys())
+    _modules.sort()
+    for modname in _modules:
         for entry in getModuleConstructorArgs( modname, modules[modname] ):
             yield entry
 
@@ -87,9 +94,9 @@ if __name__ == "__main__":
     from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 
     import sys
-    sys.path.append("../new_splitter")
     sys.path.append("../filereading")
-    from Splitter import Splitter, Plug
+    from Kamaelia.Util.Splitter import PlugSplitter as Splitter
+    from Kamaelia.Util.Splitter import Plug
 
 #    from Filters import FilterSelectMsgs, FilterTopologyMsgs
     from PipeBuild import PipeBuild
@@ -99,6 +106,7 @@ if __name__ == "__main__":
 
 
     items = list(getAllClasses( COMPONENTS ))
+
     
     pipegen = Splitter(pipeline( BuilderControlsGUI(items),
                                  PipeBuild()
