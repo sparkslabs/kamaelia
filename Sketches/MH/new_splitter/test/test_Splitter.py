@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+#
+# Code migrated into mainline: --> Kamaelia.Util.test.test_Splitter.py
+#
+#
 
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess

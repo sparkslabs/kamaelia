@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#
+# Moved to: Kamaelia.Util.Splitter.
+# class Splitter --> class PlugSplitter
+#
+
 
 import Axon
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
