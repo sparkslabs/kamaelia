@@ -21,7 +21,8 @@
 # -------------------------------------------------------------------------
 
 import unittest
-from Kamaelia.Util.Splitter import Splitter, addsink, removesink
+from Kamaelia.Util.Splitter import PlugSplitter as Splitter
+from Kamaelia.Util.Splitter import addsink, removesink
 from Axon.Scheduler import scheduler
 from Axon.Linkage import linkage
 from Axon.Component import component
@@ -36,7 +37,7 @@ class DummyPostman:
    def registerlinkage(self,linkage):
       self.linkage=linkage
    
-def runrepeat(gen, count = 10):
+def runrepeat(gen, count = 100):
    """This just runs the specified generator the specified number of times.  This
    is used to try to make sure expected behaviour has sufficient timeslots to
    succeed without taking too long."""
@@ -272,7 +273,7 @@ class Splitter_Test(unittest.TestCase):
       self.failIf(self.dst2.dataReady("control"))
 
 #-----------------
-   def test_createsink_defaultbox(self):
+   def __test_createsink_defaultbox(self):  # SMELL - internal diagnostic
       """createsink - Checks that a new sink is created and linked on calling creatsink with default box argument"""
       self.split.createsink(self.dst)
       for i in xrange(0,10):
@@ -283,7 +284,7 @@ class Splitter_Test(unittest.TestCase):
          self.failUnless(self.dst.dataReady())
          self.failUnless(self.dst.recv() == i)
          
-   def test_simplepassthrough_createsink(self):
+   def __test_simplepassthrough_createsink(self): # SMELL - internal diagnostic
       """createsink - Checks that a new sink is created and linked on calling creatsink with arguments"""
       self.split.createsink(self.dst2,"test")
       for i in xrange(0,10):
@@ -294,7 +295,7 @@ class Splitter_Test(unittest.TestCase):
          self.failUnless(self.dst2.dataReady("test"))
          self.failUnless(self.dst2.recv("test") == i)      
 
-   def test_addOutboxes_createsink(self):
+   def __test_addOutboxes_createsink(self):  # SMELL - internal diagnostic
       """createsink - Called repeatedly.  Adds a whole set of sinks and checks
       they all receive expected messages."""
       boxes = 10
