@@ -27,7 +27,7 @@
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class InfiniteChooser(Axon.Component.component):
+class ForwardIteratingChooser(Axon.Component.component):
    """Iterates forwards items out of something iterable, as directed by commands sent to its inbox.
    
       Emits the first item at initialisation, then whenever a command is received
@@ -46,7 +46,7 @@ class InfiniteChooser(Axon.Component.component):
       """Initialisation.
          items = set of items that can be iterated over. Can be infinite.
       """
-      super(InfiniteChooser,self).__init__()
+      super(ForwardIteratingChooser,self).__init__()
 
       self.items = iter(items)
       self.gotoNext()
@@ -78,7 +78,6 @@ class InfiniteChooser(Axon.Component.component):
                pass
             elif msg == "NEXT":
                send = self.gotoNext()
-#               print "NEXT ", send
                if not send:
                    done = True
                    self.send( producerFinished(self), "signal")
@@ -92,7 +91,6 @@ class InfiniteChooser(Axon.Component.component):
                   pass
 
          done = done or self.shutdown()
-#      print "InfiniteChooser done"
 
    def getCurrentChoice(self):
       """Return the current choice"""
