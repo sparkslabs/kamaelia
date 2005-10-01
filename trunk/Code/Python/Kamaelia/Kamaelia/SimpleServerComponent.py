@@ -40,13 +40,13 @@ the Simple Server - such as "new connection" on this connector)
 In practice, this component provides no external connectors for your use.
 """
 
+import Axon as _Axon
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
 class simpleServerProtocol(_Axon.Component.component):
    pass
 if 0:
 
-    import Axon as _Axon
     from Axon import AxonObject as _AxonObject
     import Kamaelia.Internet.TCPServer as _ic
     import Kamaelia.KamaeliaIPC as _ki
