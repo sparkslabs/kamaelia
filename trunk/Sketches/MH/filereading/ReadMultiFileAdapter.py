@@ -22,27 +22,59 @@
 #
 # A collection of factory methods for making useful use of ReadFileAdapter
 
-from Carousel import Carousel
-from ReadFileAdapter import ReadFileAdapter
-from RateControl import RateControl
+# RETIRED
+print """
+/Sketches/filereading/ReadMultiFileAdapter.py
 
+ This file has been retired.
+ It is retired because it's contents is now part of the main code base.
+
+ If you wanted it for:  RateControlledReadFileAdapter
+ This is now in: Kamaelia.File.Reading as RateControlledFileReader
+
+ If you wanted it for: ReadFileAdapter_Carousel
+ This is now in: Kamaelia.File.Reading as ReusableFileReader
+
+ If you wanted it for: RateControlledReadFileAdapter_Carousel
+ This is now in: Kamaelia.File.Reading as RateControlledReusableFileReader
+
+ If you wanted it for: JoinChooserToCarousel
+ This is now in: Kamaelia.Chassis.Prefab as JoinChooserToCarousel
+
+ If you wanted it for: FixedRate_ReadFileAdapter_Carousel
+ This is now in: Kamaelia.File.Reading as FixedRateControlledReusableFileReader
+
+ This file now deliberately exits to encourage you to fix your code :-)
+ (Hopefully contains enough info to help you fix it)
+"""
+
+import sys
+sys.exit(0)
+#
+from Kamaelia.Chassis.Carousel import Carousel
+from Kamaelia.File.Reading import PromptedFileReader as ReadFileAdapter
+from Kamaelia.File.Reading import PromptedFileReader
+from Kamaelia.Util.RateFilter import ByteRate_RequestControl as RateControl
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import Graphline
 
 
-class ReadFileAdapter_Carousel(Carousel):
-    """A Carousel for file reading (with no rate control).
-       Takes string filenames.
-    """
-    def __init__(self, readmode = "bytes"):
-        """Initialisation
-        """
-        def RFAfactory(filename):
-            return ReadFileAdapter(filename=filename, readmode=readmode)
+from Kamaelia.File.Reading import ReusableFileReader
+def __ReusableFileReader(readmode):
+    # File name here is passed to the this file reader factory every time
+    # the file reader is started. The /reason/ for this is due to the carousel
+    # can potentially pass different file names through each time. In essence,
+    # this allows the readfile adaptor to be /reusable/
+    print "Wibble"
+    def PromptedFileReaderFactory(filename):
+        return PromptedFileReader(filename=filename, readmode=readmode)
 
-        super(ReadFileAdapter_Carousel, self).__init__( RFAfactory )
-        
+    return Carousel(PromptedFileReaderFactory)
+
+
 class RateControlledReadFileAdapter_Carousel(Carousel):
+    # See below - this has been overridden by the version below which is the version
+    # now in the main code tree.
     """A Carousel for file reading (with rate control specified per file).
        Takes ( filename, rateargdict )
     """
@@ -54,7 +86,21 @@ class RateControlledReadFileAdapter_Carousel(Carousel):
 
         super(RateControlledReadFileAdapter_Carousel, self).__init__( RCRFAfactory )
 
-def JoinChooserToCarousel(chooser, carousel):
+def RateControlledReadFileAdapter_Carousel(readmode):
+    # The arguments passed over here are provided by the carousel each time an
+    # instance is required.
+    # 
+    # Specifically this means this creates a component that accepts on its 
+    # inbox filenames and arguments relating to the speed at which to read
+    # that file. That file is then read in that manner and when it's done,
+    # it waits to receive more commands regarding which files to read and
+    # how.
+    def RateControlledFileReaderFactory(args):
+        filename, rateargs = args
+        return RateControlledFileReader(filename, readmode, **rateargs)
+
+
+def JoinChooserToCarousel(chooser, carousel):  # CHASSIS
     """Combines a Chooser with a Carousel
            chooser = A Chooser component, or any with similar behaviour and interfaces.
            carousel = A Carousel component, or any with similar behaviour and interfaces.
@@ -78,7 +124,6 @@ def JoinChooserToCarousel(chooser, carousel):
                          ("CAROUSEL", "outbox")      : ("self", "outbox"),
                          ("CAROUSEL", "signal")      : ("self", "signal")
                      }
-    
     )
 
 def RateControlledReadFileAdapter(filename, readmode = "bytes", **rateargs):
@@ -103,7 +148,7 @@ def FixedRate_ReadFileAdapter_Carousel(readmode = "bytes", **rateargs):
        Takes filenames on its inbox
     """
     return Graphline(RC       = RateControl(**rateargs),
-                     CAR      = ReadFileAdapter_Carousel(readmode),
+                     CAR      = ReusableFileReader(readmode),
                      linkages = { 
                          ("self", "inbox")      : ("CAR", "next"),
                          ("self", "control")    : ("RC", "control"),
