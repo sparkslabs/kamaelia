@@ -20,9 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-# Simple Ogg Vorbis audio streaming system
-#
+# RETIRED
+print """
+/Sketches/filereading/ClientStreamToFile.py
 
+ This file has been retired.
+ It is retired because it is now part of the main code base.
+ If you want to use this, you can now find it in:
+     Kamaelia-Distribution/Examples/example12/ClientStreamToFile.py
+
+ (Hopefully contains enough info to do what you wanted to do.)
+"""
+
+import sys
+sys.exit(0)
+#
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.PipelineComponent import pipeline
 from WriteFileAdapter import WriteFileAdapter
