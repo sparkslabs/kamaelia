@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 
+print """
+/Sketches/filereading/VariableRateControl.py
+
+ This file has been retired.
+ It is retired because it is now part of the main code base.
+ If you want to use this, you should be using Kamaelia.Util.RateFilter.VariableByteRate_RequestControl
+
+ This file now deliberately exits to encourage you to fix your code :-)
+"""
+import sys
+sys.exit(0)
+
 import Axon
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
