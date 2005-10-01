@@ -23,20 +23,17 @@
 from Axon.Component import component
 from Axon.Scheduler import scheduler
 
-import sys
-sys.path.append("../new_splitter")
-sys.path.append("../filereading")
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Splitter import PlugSplitter as Splitter
+from Kamaelia.Util.Splitter import Plug
 
-from VariableRateControl import VariableRateControl
-from ReadFileAdapter import ReadFileAdapter
+from Kamaelia.Util.RateFilter import VariableByteRate_RequestControl as VariableRateControl
+from Kamaelia.File.Reading import PromptedFileReader as ReadFileAdapter
 
 from AudioDecoder import AudioDecoder
 from SoundOutput import SoundOutput
 from BitRateExtractor import BitRateExtractor
 
-from Kamaelia.Util.PipelineComponent import pipeline
-
-from Splitter import Splitter, Plug
 
 filepath = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
 extn = filepath[-3:].lower()
