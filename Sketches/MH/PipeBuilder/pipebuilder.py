@@ -93,8 +93,6 @@ if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 
-    import sys
-    sys.path.append("../filereading")
     from Kamaelia.Util.Splitter import PlugSplitter as Splitter
     from Kamaelia.Util.Splitter import Plug
 
