@@ -20,12 +20,15 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-# Development history: /Sketches/filereading/ReadFileAdapter.py
-#          ReadFileAdapter --> PromptedFileReader
-#
+# Development history: 
+#     ReadFileAdapter --> PromptedFileReader
+#          /Sketches/filereading/ReadFileAdapter.py
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Kamaelia.Util.RateFilter import ByteRate_RequestControl
+from Kamaelia.Chassis.Carousel import Carousel
+from Kamaelia.Util.Graphline import Graphline
 
 class PromptedFileReader(component):
    """Provides read access to a file.
@@ -78,7 +81,6 @@ class PromptedFileReader(component):
        if not data:
            raise "EOF"
        return data
-   
           
    def main(self):
        done = False
@@ -111,5 +113,80 @@ class PromptedFileReader(component):
    def closeDownComponent(self):
       self.file.close()
 
+def RateControlledFileReader(filename, readmode = "bytes", **rateargs):
+    """ReadFileAdapter combined with a RateControl component
+       Returns a component encapsulating a RateControl and ReadFileAdapter components.
+            filename   = filename
+            readmode   = "bytes" or "lines"
+            **rateargs = named arguments to be passed to RateControl
+        """
+    return Graphline(RC  = ByteRate_RequestControl(**rateargs),
+                     RFA = PromptedFileReader(filename, readmode),
+                     linkages = { ("RC",  "outbox")  : ("RFA", "inbox"),
+                                  ("RFA", "outbox")  : ("self", "outbox"),
+                                  ("RFA", "signal")  : ("RC",  "control"),
+                                  ("RC",  "signal")  : ("self", "signal"),
+                                  ("self", "control") : ("RFA", "control")
+                                }
+    )
+
+
+def ReusableFileReader(readmode):
+    # File name here is passed to the this file reader factory every time
+    # the file reader is started. The /reason/ for this is due to the carousel
+    # can potentially pass different file names through each time. In essence,
+    # this allows the readfile adaptor to be /reusable/
+
+    def PromptedFileReaderFactory(filename):
+        return PromptedFileReader(filename=filename, readmode=readmode)
+
+    return Carousel(PromptedFileReaderFactory)
+
+def RateControlledReusableFileReader(readmode):
+    # The arguments passed over here are provided by the carousel each time an
+    # instance is required.
+    #
+    # Specifically this means this creates a component that accepts on its
+    # inbox filenames and arguments relating to the speed at which to read
+    # that file. That file is then read in that manner and when it's done,
+    # it waits to receive more commands regarding which files to read and
+    # how.
+    def RateControlledFileReaderFactory(args):
+        filename, rateargs = args
+        return RateControlledFileReader(filename, readmode, **rateargs)
+
+    return Carousel( RateControlledFileReaderFactory )
+
+def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
+    """A file reading carousel, that reads at a fixed rate.
+       Takes filenames on its inbox
+    """
+    return Graphline(RC       = ByteRate_RequestControl(**rateargs),
+                     CAR      = ReusableFileReader(readmode),
+                     linkages = {
+                         ("self", "inbox")      : ("CAR", "next"),
+                         ("self", "control")    : ("RC", "control"),
+                         ("RC", "outbox")       : ("CAR", "inbox"),
+                         ("RC", "signal")       : ("CAR", "control"),
+                         ("CAR", "outbox")      : ("self", "outbox"),
+                         ("CAR", "signal")      : ("self", "signal"),
+                         ("CAR", "requestNext") : ("self", "requestNext"),
+                         ("self", "next")       : ("CAR", "next")
+                     }
+           )
+
+
+
+
+
+
+
 if __name__ == "__main__":
     pass
+    
+    
+
+
+
+
+
