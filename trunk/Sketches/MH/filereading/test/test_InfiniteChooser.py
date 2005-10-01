@@ -102,7 +102,7 @@ class InfiniteChooser_Internal_IterateTests(unittest.TestCase):
       x.gotoNext()
       
       result = x.getCurrentChoice()
-      print result
+      # print result
       self.assert_(result == fruitlist[2], "Current choice is 3rd item")
 
       x.gotoNext()
