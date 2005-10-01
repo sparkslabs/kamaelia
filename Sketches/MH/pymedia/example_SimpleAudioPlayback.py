@@ -20,15 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-
-
-import sys ; sys.path.append("../filereading")
-
-from ReadMultiFileAdapter import RateControlledReadFileAdapter
-
+from Kamaelia.File.Reading import RateControlledFileReader as RateControlledReadFileAdapter
 from AudioDecoder import AudioDecoder
 from SoundOutput import SoundOutput
-
 from Kamaelia.Util.PipelineComponent import pipeline
 
 filepath = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
