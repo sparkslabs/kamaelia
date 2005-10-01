@@ -27,19 +27,15 @@
 #
 
 import Axon as _Axon
-from Kamaelia.SimpleServerComponent import SimpleServer
-
-
-from ReadMultiFileAdapter import JoinChooserToCarousel
-from ReadMultiFileAdapter import FixedRateReadMultiFileAdapter
-from InfiniteChooser import InfiniteChooser
-
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.Chassis.Prefab import JoinChooserToCarousel
+from Kamaelia.File.Reading import FixedRateControlledReusableFileReader
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import Graphline
-
+from Kamaelia.Util.Chooser import ForwardIteratingChooser # InfiniteChooser import InfiniteChooser
 
 #shortfile = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
-shortfile = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+shortfile = "/opt/kde3/share/sounds/KDE_Startup_2.ogg"
 
 FILES_TO_STREAM = [ shortfile, shortfile, shortfile ]# [  file_to_stream, file_to_stream2 ]
 BITRATE         = 800000 # 38000
@@ -51,8 +47,8 @@ def MultiFileReaderProtocol(filenames, bitrate, chunksizebytes):
 
     def protocolFactory(*argv, **argd):
         return JoinChooserToCarousel(
-            InfiniteChooser(filenames),
-            FixedRate_ReadFileAdapter_Carousel(readmode="bytes",
+            ForwardIteratingChooser(filenames),
+            FixedRateControlledReusableFileReader(readmode="bytes",
                                                rate=bitrate/8,
                                                chunksize=chunksizebytes)
           )
