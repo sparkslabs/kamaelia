@@ -24,7 +24,7 @@
 
 import unittest
 import sys ; sys.path.append("..")
-from RateControl import RateControl
+from RateFilter import ByteRate_RequestControl as RateControl
 
 import time
 
