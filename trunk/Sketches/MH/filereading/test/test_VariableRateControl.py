@@ -1,5 +1,17 @@
 #!/usr/bin/python
 #
+print """
+/Sketches/filereading/test/test.*Rate*:
+
+ This file has been retired.
+ It is retired because it is now part of the main code base.
+ If you want to use this, you should be using Kamaelia.Util.RateFilter
+
+ This file now deliberately exits to encourage you to fix your code :-)
+"""
+import sys
+sys.exit(0)
+
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
