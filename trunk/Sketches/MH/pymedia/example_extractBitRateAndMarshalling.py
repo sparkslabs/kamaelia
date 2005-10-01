@@ -23,6 +23,16 @@
 from Axon.Component import component
 
 from AudioFrameMarshalling import AudioFrameMarshaller, AudioFrameDeMarshaller
+from Kamaelia.Util.RateFilter import VariableByteRate_RequestControl as VariableRateControl
+from Kamaelia.File.Reading import PromptedFileReader as ReadFileAdapter
+
+from AudioDecoder import AudioDecoder
+from SoundOutput import SoundOutput
+
+from Kamaelia.Util.PipelineComponent import pipeline
+
+filepath = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
+extn = filepath[-3:].lower()
 
 class BitRateExtractor(component):
     Inboxes  = { "inbox":"",  "control":"" }
@@ -43,20 +53,6 @@ class BitRateExtractor(component):
                 self.send( frame, "outbox" )
                 
         self.send( self.recv("control"), "signal")
-
-
-import sys ; sys.path.append("../filereading")
-
-from VariableRateControl import VariableRateControl
-from ReadFileAdapter import ReadFileAdapter
-
-from AudioDecoder import AudioDecoder
-from SoundOutput import SoundOutput
-
-from Kamaelia.Util.PipelineComponent import pipeline
-
-filepath = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
-extn = filepath[-3:].lower()
 
 rc = VariableRateControl(rate=4096, chunksize=1024)
 rfa = ReadFileAdapter(filename=filepath, readmode="bytes")
