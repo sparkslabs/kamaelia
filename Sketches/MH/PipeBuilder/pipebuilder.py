@@ -23,6 +23,20 @@
 # simple kamaelia pipeline builder GUI
 # run this program
 
+print """\
+***               ***
+*** W A R N I N G ***
+***               ***
+This version of the pipebuilder is no longer the production version.
+For experimental further development this is fine, however it would
+be preferable for work to be done on embedding functionality from
+tools/VisualPipeBuilder into the main codetree, and then extending
+that. The pipebuilder contains a number of components that could (and
+ideally should) be scavenged in much the same was as the Pygame code
+does - to allow large amounts of re-use. This might be simple, it might
+not.
+"""
+
 COMPONENTS = {
     "Kamaelia.Util.Introspector"    : ["Introspector"],
     "Kamaelia.Internet.TCPClient"   : ["TCPClient"],
