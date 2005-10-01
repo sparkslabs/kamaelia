@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#
+# RETIRED
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
