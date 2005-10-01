@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -40,90 +40,94 @@ the Simple Server - such as "new connection" on this connector)
 In practice, this component provides no external connectors for your use.
 """
 
-import Axon as _Axon
-from Axon import AxonObject as _AxonObject
-import Kamaelia.Internet.TCPServer as _ic
-import Kamaelia.KamaeliaIPC as _ki
-import time as _time
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
 class simpleServerProtocol(_Axon.Component.component):
    pass
+if 0:
 
-class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
-   Inboxes=["_oobinfo"]
-   Outboxes=[]
-   def __init__(self, protocol=None, port=1601):
-      super(SimpleServer, self).__init__()
-      if not protocol:
-         raise "Need a protocol to handle!"
-      self.protocolhandlers = None
-      self.protocolClass = protocol
-      self.iter = 0
-      self.time = _time.time()
-      self.listenport = port
+    import Axon as _Axon
+    from Axon import AxonObject as _AxonObject
+    import Kamaelia.Internet.TCPServer as _ic
+    import Kamaelia.KamaeliaIPC as _ki
+    import time as _time
 
-   def initialiseComponent(self):
-      myPLS = _ic.TCPServer(listenport=self.listenport)
-      self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
-      self.addChildren(myPLS)
-      return _Axon.Ipc.newComponent(myPLS)
 
-   def mainBody(self):
-      self.pause()
-      result = self.checkOOBInfo()
-      if result:
-         return result
-      if ((_time.time() - self.time) > 1):
-         self.time = _time.time()
+    class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+       Inboxes=["_oobinfo"]
+       Outboxes=[]
+       def __init__(self, protocol=None, port=1601):
+          super(SimpleServer, self).__init__()
+          if not protocol:
+             raise "Need a protocol to handle!"
+          self.protocolhandlers = None
+          self.protocolClass = protocol
+          self.iter = 0
+          self.time = _time.time()
+          self.listenport = port
 
-      self.iter = self.iter +1
-      return 1
+       def initialiseComponent(self):
+          myPLS = _ic.TCPServer(listenport=self.listenport)
+          self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
+          self.addChildren(myPLS)
+          return _Axon.Ipc.newComponent(myPLS)
 
-   def handleNewCSA(self, data):
-      CSA = data.object
-      pHandler = self.protocolClass()
+       def mainBody(self):
+          self.pause()
+          result = self.checkOOBInfo()
+          if result:
+             return result
+          if ((_time.time() - self.time) > 1):
+             self.time = _time.time()
 
-      pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
-      assert self.debugger.note("SimpleServer.handleNewCSA",5,"Allocated shutdown signal box", pHandlerShutdownOutbox)
+          self.iter = self.iter +1
+          return 1
 
-      self.trackResourceInformation(CSA, [], [pHandlerShutdownOutbox], pHandler)
-      assert self.debugger.note("SimpleServer.handleNewCSA",5, "tracking resource")
+       def handleNewCSA(self, data):
+          CSA = data.object
+          pHandler = self.protocolClass()
 
-      self.addChildren(CSA,pHandler)
+          pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
+          assert self.debugger.note("SimpleServer.handleNewCSA",5,"Allocated shutdown signal box", pHandlerShutdownOutbox)
 
-      self.link((CSA,"outbox"),(pHandler,"inbox"))
-      self.link((pHandler,"outbox"),(CSA,"DataSend"))
+          self.trackResourceInformation(CSA, [], [pHandlerShutdownOutbox], pHandler)
+          assert self.debugger.note("SimpleServer.handleNewCSA",5, "tracking resource")
 
-#      self.link((CSA,"signal"),(self,"_oobinfo"))
-      self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
+          self.addChildren(CSA,pHandler)
 
-      if "signal" in pHandler.Outboxes:
-         self.link((pHandler,"signal"),(CSA, "control"))
-         _Axon.Foo = CSA
+          self.link((CSA,"outbox"),(pHandler,"inbox"))
+          self.link((pHandler,"outbox"),(CSA,"DataSend"))
 
-      return _Axon.Ipc.newComponent(CSA,pHandler)
+    #      self.link((CSA,"signal"),(self,"_oobinfo"))
+          self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
 
-   def handleClosedCSA(self,data):
-      assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
-      CSA = data.object
-      bundle=self.retrieveTrackedResourceInformation(CSA)
-      inboxes,outboxes,pHandler = bundle
-      self.send(_ki.socketShutdown(),outboxes[0])
-      assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
-      self.removeChild(CSA)
-      self.removeChild(pHandler)
-      self.deleteOutbox(outboxes[0])
-      self.ceaseTrackingResource(CSA)
-      assert self.debugger.note("SimpleServer.handleClosedCSA",5, "GRRR... ARRRGG")
+          if "signal" in pHandler.Outboxes:
+             self.link((pHandler,"signal"),(CSA, "control"))
+             _Axon.Foo = CSA
 
-   def checkOOBInfo(self):
-      if self.dataReady("_oobinfo"):
-         data = self.recv("_oobinfo")
-         if isinstance(data,_ki.newCSA):
-            return self.handleNewCSA(data)
-         if isinstance(data,_ki.shutdownCSA):
-            assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
-            self.handleClosedCSA(data)
+          return _Axon.Ipc.newComponent(CSA,pHandler)
+
+       def handleClosedCSA(self,data):
+          assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
+          CSA = data.object
+          bundle=self.retrieveTrackedResourceInformation(CSA)
+          inboxes,outboxes,pHandler = bundle
+          self.send(_ki.socketShutdown(),outboxes[0])
+          assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
+          self.removeChild(CSA)
+          self.removeChild(pHandler)
+          self.deleteOutbox(outboxes[0])
+          self.ceaseTrackingResource(CSA)
+          assert self.debugger.note("SimpleServer.handleClosedCSA",5, "GRRR... ARRRGG")
+
+       def checkOOBInfo(self):
+          if self.dataReady("_oobinfo"):
+             data = self.recv("_oobinfo")
+             if isinstance(data,_ki.newCSA):
+                return self.handleNewCSA(data)
+             if isinstance(data,_ki.shutdownCSA):
+                assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
+                self.handleClosedCSA(data)
 
 if __name__ == '__main__':
 
