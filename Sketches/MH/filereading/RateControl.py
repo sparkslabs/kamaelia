@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+print """
+/Sketches/filereading/RateControl.py:
+
+ This file has been retired.
+ It is retired because it is now part of the main code base.
+ If you want to use this, you should be using Kamaelia.Util.RateFilter.ByteRate_RequestControl
+
+ This file now deliberately exits to encourage you to fix your code :-)
+"""
+import sys
+sys.exit(0)
+
+
 import Axon
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
@@ -64,7 +77,6 @@ class RateControl(component):
                 self.send( chunk, "outbox" )
 
             yield 1
-#        print "RC done"
 
     def shutdown(self):
         if self.dataReady("control"):
@@ -77,7 +89,7 @@ class RateControl(component):
 
     def resetTiming(self):
         """Resets the timing variable
-            used to determine when the next time to send a request is
+           used to determine when the next time to send a request is
         """
         self.nextTime = time.time()     # primed to start sending requests immediately
         self.toSend = 0.0               # 'persistent' between calls to getChunksToSend to accumulate rounding errors
@@ -85,7 +97,7 @@ class RateControl(component):
 
     def getChunksToSend(self):
         """Generator. Returns the size of chunks to be requested (if any) to 'catch up' since last
-            time this method was called"""
+           time this method was called"""
 
         # check timers
         while time.time() >= self.nextTime:
@@ -93,15 +105,12 @@ class RateControl(component):
             self.nextTime += self.timestep
 
         # send 'requests' if required
-#        if self.toSend >= 1:
-#           print "toSend = ",self.toSend
         while self.toSend >= 1:
             chunk = self.toSend                # aggregating ... send everything in one go
             if not self.aggregate:        # otherwise limit max size to self.chunksize
                 chunk = min(chunk, self.chunksize)
 
             chunk = int(chunk)
-#            print "  --> ", chunk
             yield chunk
             self.toSend -= chunk
 
