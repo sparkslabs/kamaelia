@@ -24,7 +24,7 @@
 
 import unittest
 import sys ; sys.path.append("..")
-from InfiniteChooser import InfiniteChooser
+from InfiniteChooser import ForwardIteratingChooser as InfiniteChooser
 
 import Axon
 
