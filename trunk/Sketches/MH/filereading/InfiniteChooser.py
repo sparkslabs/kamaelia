@@ -21,6 +21,23 @@
 # -------------------------------------------------------------------------
 #
 
+# RETIRED
+print """
+/Sketches/filereading/InfiniteChooser.py:
+
+ This file has been retired.
+ It is retired because it is now part of the main code base.
+ If you want to use this, you should be using Kamaelia.File.Chooser
+    InfiniteChooser here is named ForwardIteratingChooser there
+
+ This file now deliberately exits to encourage you to fix your code :-)
+ (Hopefully contains enough info to help you fix it)
+"""
+
+import sys
+sys.exit(0)
+#
+
 # This component is rather poorly named at the mo, since its behaviour is more one of (forwards) iteration
 # and termination
 
