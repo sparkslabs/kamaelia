@@ -29,12 +29,12 @@
 
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.PipelineComponent import pipeline
-from WriteFileAdapter import WriteFileAdapter
+from Kamaelia.File.Writing import SimpleFileWriter
 
 outputfile = "/tmp/received.raw"
 clientServerTestPort=1500
 
 pipeline(TCPClient("127.0.0.1",clientServerTestPort),
-         WriteFileAdapter(outputfile)
+         SimpleFileWriter(outputfile)
         ).run()
 
