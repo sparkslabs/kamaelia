@@ -43,7 +43,7 @@ class SimpleFileWriter(component):
        
           filename = name of file to write to
        """
-       super(SimpleWriter, self).__init__()
+       super(SimpleFileWriter, self).__init__()
        self.file = open(filename, "wb",0)
        
    def writeData(self, data):
