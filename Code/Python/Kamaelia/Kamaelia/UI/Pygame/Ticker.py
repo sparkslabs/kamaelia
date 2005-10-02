@@ -24,6 +24,8 @@
 import pygame
 import Axon
 from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Axon.Ipc import WaitComplete
+import time
 
 class Ticker(Axon.Component.component):
    def __init__(self, **argd):
@@ -36,12 +38,16 @@ class Ticker(Axon.Component.component):
       self.background_colour = argd.get("background_colour", (48,48,128))
       self.background_colour = argd.get("background_colour", (128,48,128))
       self.text_colour = argd.get("text_colour", (232, 232, 48))
-      self.outline_colour = argd.get("outline_colour", (128,232,128))
+      self.outline_colour = argd.get("outline_colour", self.background_colour)
       self.outline_width = argd.get("outline_width", 1)
+      self.position = argd.get("position",(1,1))
+      self.left = argd.get("render_left",1)
       self.render_area = pygame.Rect((argd.get("render_left",1),
                                       argd.get("render_top",1),
                                       argd.get("render_right",399),
                                       argd.get("render_bottom",299)))
+      self.words_per_second = 8
+      self.delay = 1.0/self.words_per_second
 
    def waitBox(self,boxname):
       waiting = True
@@ -49,25 +55,11 @@ class Ticker(Axon.Component.component):
          if self.dataReady(boxname): return
          else: yield 1
 
-   def main(self):
-      displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
-      self.send({ "DISPLAYREQUEST" : True,
-                  "callback" : (self,"control"),
-                  "transparency": (128,48,128),
-#                  "events" : (self, "events"),
-                  "size": (self.render_area.width, self.render_area.height)},
-                  "signal")
-
-
-      for _ in self.waitBox("control"): yield 1
-      display = self.recv("control")
-
-      my_font = pygame.font.Font(None, self.text_height)
-      initial_postition = (self.render_area.left,self.render_area.top)
-      position = [ self.render_area.left, self.render_area.top ]
-
-      display.fill(self.background_colour)
+   def clearDisplay(self):
+       self.display.fill(self.background_colour)
+       self.renderBorder(self.display)
+            
+   def renderBorder(self, display):
       pygame.draw.rect(display,
                        self.outline_colour,
                        ( self.render_area.left-self.outline_width,
@@ -75,48 +67,85 @@ class Ticker(Axon.Component.component):
                          self.render_area.width+self.outline_width,
                          self.render_area.height+self.outline_width),
                        self.outline_width)
+   
+
+   def requestDisplay(self, **argd):
+      displayservice = PygameDisplay.getDisplayService()
+      self.link((self,"signal"), displayservice)
+      self.send(argd, "signal")
+      for _ in self.waitBox("control"): yield 1
+      display = self.recv("control")
+      self.display = display
+
+
+   def main(self):
+      yield WaitComplete(
+          self.requestDisplay(DISPLAYREQUEST=True,
+                              callback = (self,"control"),
+# SMELL                              transparency = (128,48,128),
+                              size = (self.render_area.width, self.render_area.height),
+                              position = self.position
+                              )
+      ) 
+      display = self.display
+
+      my_font = pygame.font.Font(None, self.text_height)
+      initial_postition = (self.render_area.left,self.render_area.top)
+      position = [ self.render_area.left, self.render_area.top ]
+
+      self.clearDisplay()
 
       maxheight = 0
+      last=time.time()
       while 1:
          if self.dataReady("inbox"):
             word = self.recv("inbox")
             if word =="\n":
-               word = "BOING"
+               word = ""
             if "\n" in word:
-               lines = word.split("\n")
-               word = "BOING"
+#               print "SPLITTING:", repr(word)
+               lines = word.split("\n")[:-1]
+# SMELL              print "SPLIT:", repr(lines)
+               word = "BONG"
             else:
                lines = [word]
             c = len(lines)
-            for word in lines:
-                word = " " + word
-                wordsize = my_font.size(word)
-                word_render= my_font.render(word, 1, self.text_colour)
+            for line in lines:
+                word = line
+                words = line.split()
+                for word in words:
+                    while time.time() - last < self.delay:
+                       yield 1
+                    last = time.time()
+                    word = " " + word
+                    wordsize = my_font.size(word)
+                    word_render= my_font.render(word, 1, self.text_colour)
 
-                if position[0]+wordsize[0] > self.render_area.right or c > 1:
-                   position[0] = initial_postition[0]
-                   if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
-                      display.set_colorkey(None)
-                      display.blit(display,
-                                   (self.render_area.left, self.render_area.top),
-                                   (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                                    self.render_area.width-1, position[1]-self.render_area.top ))
-                      pygame.draw.rect(display, 
-                                      self.background_colour, 
-                                      (self.render_area.left, position[1], 
-                                       self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
-                                      0)
-                      display.set_colorkey((128,48,128))
-                      pygame.display.update()
-                      if c>1:
-                         c = c -1
-                   else:
-                      position[1] += maxheight + self.line_spacing
+                    if position[0]+wordsize[0] > self.render_area.right or c > 1:
+                       position[0] = initial_postition[0]
+                       if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                          display.set_colorkey(None)
+                          display.blit(display,
+                                       (self.render_area.left, self.render_area.top),
+                                       (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
+                                        self.render_area.width-1, position[1]-self.render_area.top ))
 
-                display.blit(word_render, position)
-                position[0] += wordsize[0]
-                if wordsize[1] > maxheight:
-                   maxheight = wordsize[1]
+                          pygame.draw.rect(display, 
+                                          self.background_colour, 
+                                          (self.render_area.left, position[1], 
+                                           self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
+                                          0)
+    # SMELL                     display.set_colorkey((128,48,128))
+                          pygame.display.update()
+                          if c>1:
+                             c = c -1
+                       else:
+                          position[1] += maxheight + self.line_spacing
+
+                    display.blit(word_render, position)
+                    position[0] += wordsize[0]
+                    if wordsize[1] > maxheight:
+                       maxheight = wordsize[1]
 
          yield 1
 
