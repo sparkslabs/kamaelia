@@ -41,7 +41,8 @@ class Image(Axon.Component.component):
                "display_signal" : "Outbox used for sending signals of various kinds to the display service"
              }
     
-   def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None):
+   def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None, displayExtra = None,
+                maxpect = 0):
       """Initialisation.
          image = filename of file containing image
          position = (x,y) or None for default
@@ -55,6 +56,7 @@ class Image(Axon.Component.component):
       self.backgroundColour = bgcolour
       self.size             = size
       self.imagePosition    = (0,0)
+      self.maxpect = maxpect
       
       self.fetchImage(image)
       
@@ -65,6 +67,8 @@ class Image(Axon.Component.component):
                            "callback" : (self,"callback"),
                            "events" : (self, "events"),
                            "size": self.size}
+      if displayExtra is not None:
+         self.disprequest.update(displayExtra)
       
       if not position is None:
          self.disprequest["position"] = position
@@ -104,7 +108,6 @@ class Image(Axon.Component.component):
          if self.dataReady("callback"):
             if self.display is None:
                self.display = self.recv("callback")
-               print id(self.display), "XXXX", self.display
                change = True
                for x in xrange(15): yield 1
                message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
@@ -134,6 +137,8 @@ class Image(Axon.Component.component):
       else:
          self.image = pygame.image.load(newImage)
         
+         if self.maxpect:
+              self.image = pygame.transform.scale(self.image, (self.maxpect[0], self.maxpect[1]))
          if self.size is None:
              self.size = self.image.get_size()
         
