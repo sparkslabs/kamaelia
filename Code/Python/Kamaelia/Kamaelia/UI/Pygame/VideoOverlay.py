@@ -31,6 +31,23 @@ import pygame
 pygame_pixformat_map = { "YUV420_planar" : pygame.IYUV_OVERLAY }
 
 
+#
+# SMELL : Periodically check if this is still needed or not.
+#
+# OVERLAY_FUDGE_OFFSET_FACTOR  is the result of experimentally
+# trying to get SDL_Overlay/pygame.Overlay to work with Xorg/fbdev
+# based displays on linux. If the overlay is precisely the right
+# size and shape for the data, it can't be displayed right.
+# The value must be even, and preferably small. Odd values
+# result in the picture being sheared/slanted.
+#
+# This problem rears itself when the following version numbers are aligned:
+#    SDL : 1.2.8
+#    pygame : Anything up to/including 1.7.1prerelease
+#    xorg : 6.8.2
+#    Linux (for fbdev) : 2.6.11.4
+#
+OVERLAY_FUDGE_OFFSET_FACTOR = 2
 
 class VideoOverlay(component):
     """Sets up a video overlay using pygame, and feeds yuv video data to it.
@@ -79,7 +96,7 @@ class VideoOverlay(component):
         self.send({ "OVERLAYREQUEST":True,
                     "pixformat":self.pygamepixformat,
                     "yuvservice":(self, "yuvdata"),
-                    "size":self.size,
+                    "size":(self.size[0]-OVERLAY_FUDGE_OFFSET_FACTOR, self.size[1]),
                     "position":self.position,
                     "yuv":frame['yuv'],
                   },
@@ -122,10 +139,10 @@ class VideoOverlay(component):
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-    from RawYUVFramer import RawYUVFramer
+    from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     
-#    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
-    pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
+    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+#    pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
               RawYUVFramer(size=(352,288), pixformat = pygame.IYUV_OVERLAY),
 #    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
 #              RawYUVFramer(size=(720,576), pixformat = pygame.IYUV_OVERLAY),
