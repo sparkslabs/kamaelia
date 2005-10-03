@@ -51,9 +51,6 @@ class pipeline(component):
       self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
       self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
       yield _Axon.Ipc.newComponent(*(self.children))
-#      while 1:
-#         self.pause()
-#         yield 1
 
       # run until all child components have terminated
       # at which point this component can implode
@@ -62,23 +59,23 @@ class pipeline(component):
       # BUT the creator of this pipeline might assume that the pipeline terminating means ALL
       # children have finished.
       while not self.childrenDone():
-          self.pause()
+          # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
           yield 1
-          
-      self.unplugChildren()
-      
+
+
 
    def childrenDone(self):
-       """Returns true if all components have terminated
-          (ie. their microproceses have finished)
+       """Unplugs any children that have terminated, and returns true if there are no
+          running child components left (ie. their microproceses have finished)
        """
-       return False not in [ child._isStopped() for child in self.components ]
+       for child in self.childComponents():
+           if child._isStopped():
+               self.removeChild(child)   # deregisters linkages for us
 
-   def unplugChildren(self):
-      for child in self.components:
-         self.postoffice.deregisterlinkage(thecomponent=child)
-         self.removeChild(child)
-          
+       return 0==len(self.childComponents())
+
+
+
 
                   
 if __name__=="__main__":

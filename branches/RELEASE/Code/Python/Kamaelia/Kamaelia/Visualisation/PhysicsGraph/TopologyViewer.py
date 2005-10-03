@@ -45,8 +45,11 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
     
        Receives command tuples on its inbox. See handleCommunication()
        for command syntax.
+
+       Output from outbox
+       ("ERROR", errorstring) - diagnostic and error messages
+       ("TOPOLOGY", topology) - current topology, in response to ("GET","ALL")
        
-       Outputs diagnostic and error messages on its outbox
        
        See keyDownHandler() for keyboard controls.
     """
@@ -102,6 +105,8 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.dtop  = 0
                  
         self.lastIdleTime = time.time()
+
+        self.selected = None
           
 
     def initialiseComponent(self):
@@ -157,6 +162,12 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         else:
             self.flip = False
 
+        if self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):
+                self.send(msg, "signal")
+                self.quit()
+            
         return 1
         
     def render(self):        
@@ -255,6 +266,10 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                
           [ "DEL", "ALL" ]
                Clears all nodes and links
+
+          [ "GET", "ALL" ]
+               Outputs the current topology as a list of commands, just like
+               those used to build it. The list begins with a 'DEL ALL'.
         """
         try:            
             if len(msg) >= 2:
@@ -268,8 +283,9 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                         
                         posSpec = msg[4]
                         pos     = self._generateXY(posSpec)
-                        
+
                         particle = ptype(position = pos, ID=id, name=name)
+                        particle.originaltype = msg[5]
                         self.addParticle(particle)
                 
                 elif cmd == ("DEL", "NODE") and len(msg) == 3:
@@ -288,7 +304,11 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                     
                 elif cmd == ("DEL", "ALL") and len(msg) == 2:
                     self.removeParticle(*self.physics.particleDict.keys())
-    
+
+                elif cmd == ("GET", "ALL") and len(msg) == 2:
+                    topology = [("DEL","ALL")]
+                    topology.extend(self.getTopology())
+                    self.send( ("TOPOLOGY", topology), "outbox" )
                 else:
                     raise "Command Error"
             else:
@@ -296,7 +316,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         except:     
             import traceback
             errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
-            self.send("Error processing message : "+str(msg) + " resason:\n"+errmsg, "outbox")
+            self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
                                                     
                 
     def _generateXY(self, posSpec):
@@ -333,6 +353,8 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         """
         for id in ids:
             self.physics.particleDict[id].breakAllBonds()
+            if self.selected == self.physics.particleDict[id]:
+                self.selectParticle(None)
         self.physics.removeByID(*ids)
         
     def makeBond(self, source, dest):
@@ -343,8 +365,29 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         """Break a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
 
+    def getTopology(self):
+        """Returns the current topology, as a list of commands to build it"""
+        topology = []
+        
+        # first, enumerate the particles
+        for particle in self.physics.particles:
+            topology.append( ( "ADD","NODE",
+                               particle.ID,
+                               particle.name,
+                               "random",
+                               particle.originaltype
+                           ) )
+                           
+        # now enumerate the linkages
+        for particle in self.physics.particles:
+            for dst in particle.getBondedTo():
+                topology.append( ( "ADD","LINK", particle.ID, dst.ID ) )
+            
+        return topology
+        
     
     def quit(self, event=None):
+        super(TopologyViewerComponent,self).quit(event)
         raise "QUITTING"
         
     def scroll( self, (dx, dy) ):
@@ -352,3 +395,17 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.top += dy
         for e in self.graphicalFurniture + self.physics.particles:
             e.setOffset( (self.left, self.top) )
+
+    def selectParticle(self, particle):
+        if self.selected != particle:
+            
+            if self.selected != None:
+                self.selected.deselect()
+                
+            self.selected = particle
+            nodeid = None
+            if self.selected != None:
+                self.selected.select()
+                nodeid = self.selected.ID
+            self.send( ("SELECT","NODE", nodeid), "outbox" )
+        

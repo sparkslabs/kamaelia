@@ -28,13 +28,14 @@ _COMPONENT_RADIUS = 32
 
 def abbreviate(string):
     """Abbreviates strings to capitals, word starts and numerics and underscores"""
-    out = ""
-    prev = ""
-    for c in string:
-        if c.isupper() or c.isdigit() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
-            out += c.upper()
-        prev = c
-    return out
+    return string.split(".")[-1]
+#    out = ""
+#    prev = ""
+#    for c in string:
+#        if c.isupper() or c.isdigit() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
+#            out += c.upper()
+#        prev = c
+#    return out
 
 class PComponent(BaseParticle):
     def __init__(self, ID, position, name):

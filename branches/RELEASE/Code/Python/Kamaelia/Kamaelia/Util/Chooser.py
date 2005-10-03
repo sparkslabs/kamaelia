@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
@@ -22,7 +23,7 @@
 #
 
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Chooser(Axon.Component.component):
    """Chooses items out of a set, as directed by commands sent to its inbox
@@ -39,7 +40,7 @@ class Chooser(Axon.Component.component):
                 "signal" : ""
               }
    
-   def __init__(self, items = []):
+   def __init__(self, items = [], loop = False):
       """Initialisation.
          items = set of items that can be iterated over. Must be finite.
          If an iterator is supplied, it is enumerated into a list during initialisation.
@@ -129,4 +130,85 @@ class Chooser(Axon.Component.component):
       self.items = self.useditems
       self.useditems = []
       return True
+
+class ForwardIteratingChooser(Axon.Component.component):
+   """Iterates forwards items out of something iterable, as directed by commands sent to its inbox.
+
+      Emits the first item at initialisation, then whenever a command is received
+      it emits another item (unless you're asking it to step beyond the end of the set)
+
+      Stepping beyond the end will cause this component to shutdown and emit a producerFinished msg
+   """
+   Inboxes = { "inbox"   : "receive commands",
+               "control" : ""
+             }
+   Outboxes = { "outbox" : "emits chosen items",
+                "signal" : ""
+              }
+
+   def __init__(self, items = []):
+      """Initialisation.
+         items = set of items that can be iterated over. Can be infinite.
+      """
+      super(ForwardIteratingChooser,self).__init__()
+
+      self.items = iter(items)
+      self.gotoNext()
+
+
+   def shutdown(self):
+        if self.dataReady("control"):
+            message = self.recv("control")
+            if isinstance(message, shutdownMicroprocess):
+                self.send(message, "signal")
+                return True
+        return False
+
+   def main(self):
+      try:
+         self.send( self.getCurrentChoice(), "outbox")
+      except IndexError:
+         pass
+
+      done = False
+      while not done:
+         yield 1
+
+         while self.dataReady("inbox"):
+            send = True
+            msg = self.recv("inbox")
+
+            if msg == "SAME":
+               pass
+            elif msg == "NEXT":
+               send = self.gotoNext()
+               if not send:
+                   done = True
+                   self.send( producerFinished(self), "signal")
+            else:
+               send = False
+
+            if send:
+               try:
+                  self.send( self.getCurrentChoice(), "outbox")
+               except IndexError:
+                  pass
+
+         done = done or self.shutdown()
+
+   def getCurrentChoice(self):
+      """Return the current choice"""
+      try:
+         return self.currentitem
+      except AttributeError:
+         raise IndexError()
+
+
+   def gotoNext(self):
+      """Advance the choice forwards one"""
+      try:
+         self.currentitem = self.items.next()
+         return True
+      except StopIteration:
+         return False
       

@@ -34,7 +34,7 @@ class Bunch: pass
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes={ "inbox" : "Default inbox, not currently used",
              "control": "Default control inbox, not currently used",
-             "notify":  "Inbox on which we expect to receive requests for surfaces" }
+             "notify":  "Inbox on which we expect to receive requests for surfaces, overlays and events" }
 
    def setDisplayService(pygamedisplay, tracker = None):
         "Sets the given pygamedisplay as the service for the selected tracker or the default one."
@@ -62,11 +62,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       super(PygameDisplay,self).__init__()
       self.width = argd.get("width",800)
       self.height = argd.get("height",600)
-#      self.background_colour = argd.get("background_colour", (48,48,128))
       self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
-      self.next_position = (10,10)
+      self.next_position = (0,0)
       self.surfaces = []
+      self.overlays = []
       self.visibility = {}
       self.events_wanted = {}
       self.surface_to_eventcomms = {}
@@ -88,7 +88,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                surface.set_alpha(alpha)
                if message.get("transparency", None):
                   surface.set_colorkey(message["transparency"])
-#               position = self.surfacePosition(surface)
                position = message.get("position", self.surfacePosition(surface))
                callbackcomms = self.addOutbox("displayerfeedback")
                eventcomms = None
@@ -101,6 +100,38 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.link((self, callbackcomms), callbackservice)
                self.send(surface, callbackcomms)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
+
+            elif message.get("OVERLAYREQUEST", False):
+                size = message["size"]
+                pixformat = message["pixformat"]
+                position = message.get("position", (0,0))
+                overlay = pygame.Overlay(pixformat, size)
+                yuvdata = message.get("yuv", ("","",""))
+                
+                # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                if len(yuvdata) == 3:
+                      yuvdata = (yuvdata[0], yuvdata[2], yuvdata[1])
+
+                yuvservice = message.get("yuvservice",False)
+                if yuvservice:
+                    yuvinbox = self.addInbox("overlay_yuv")
+                    self.link( yuvservice, (self, yuvinbox) )
+                    yuvservice = (yuvinbox, yuvservice)
+
+                posservice = message.get("positionservice",False)
+                if posservice:
+                    posinbox = self.addInbox("overlay_position")
+                    self.link (posservice, (self, posinbox) )
+                    posservice = (posinbox, posservice)
+                
+                self.overlays.append( {"overlay":overlay,
+                                       "yuv":yuvdata,
+                                       "position":position,
+                                       "size":size,
+                                       "yuvservice":yuvservice,
+                                       "posservice":posservice}
+                                    )
+                
 
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -123,6 +154,39 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       # pre-fetch all waiting events in one go
       events = [ event for event in pygame.event.get() ]
 #      if events != []: print events
+
+      #
+      # Update overlays
+      #
+      for theoverlay in self.overlays:
+
+          # receive new image data for display
+          if theoverlay['yuvservice']:
+              theinbox, _ = theoverlay['yuvservice']
+              while self.dataReady(theinbox):
+                  yuv = self.recv(theinbox)
+
+                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                  if len(yuv) == 3:
+                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                  else:
+                      theoverlay['yuv'] = yuv
+
+          # receive position updates
+          if theoverlay['posservice']:
+              theinbox, _ = theoverlay['posservice']
+              while self.dataReady(theinbox):
+                  theoverlay['position'] = self.recv(theinbox)
+#                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
+                  theoverlay['overlay'].set_location( (theoverlay['position'], 
+                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
+                                                      ))
+
+          # redraw the overlay
+#          theoverlay['overlay'].set_location(0,0,352/2,288)
+#          theoverlay['overlay'].set_location(0,0,704,576)
+          theoverlay['overlay'].display( theoverlay['yuv'] )
+
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
@@ -137,8 +201,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                try:   wanted = self.events_wanted[listener][event.type]
                except KeyError: pass
                if wanted:
-###                  if event.type == pygame.KEYDOWN:
-###                     print "BANG", wanted, listener, event
                   # if event contains positional information, remap it
                   # for the surface's coordiate origin
                   if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
@@ -154,19 +216,16 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         e.button = event.button
                      event = e
                   bundle.append(event)
-###                  print "BUNDLE", bundle
 
             # only send events to listener if we've actually got some
             if bundle != []:
                self.send(bundle, listener)
-#               print "Sent "+repr(bundle)+" to "+str(listener)
-                  
-                                           
 
    def main(self):
       pygame.init()
-      display = pygame.display.set_mode((self.width, self.height), self.fullscreen )
-
+#      print "HMM"
+      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
+#      print "BINGLE?", display
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()
@@ -230,7 +289,7 @@ To strive, to seek, to find, and not to yield.
       def main(self):
          displayservice = PygameDisplay.getDisplayService()
          self.link((self,"signal"), displayservice)
-         self.send({ "callback" : (self,"control"), "size": (400,300)}, "signal")
+         self.send({ "DISPLAYREQUEST":True, "callback" : (self,"control"), "size": (400,300)}, "signal")
          for _ in self.waitBox("control"): yield 1
          display = self.recv("control")
 
@@ -286,4 +345,5 @@ To strive, to seek, to find, and not to yield.
    Axon.Scheduler.scheduler.run.runThreads()
 
 
-
+"""
+"""

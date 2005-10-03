@@ -45,8 +45,14 @@ class echo(_Axon.Component.component):
          yield 1
 
 class SingleServer(_Axon.Component.component):
-   Inboxes=["inbox","control", "_oobinfo"]
-   Outboxes=["outbox", "signal", "_CSA_signal"]
+   Inboxes= { "inbox"    : "Data received on this inbox is sent to the first client who connects",
+              "control"  : "Default inbox, not actually listened to",  
+              "_oobinfo" : "We receive notification of connection on this inbox"
+            }
+   Outboxes={ "outbox"      : "Any data received from the first connection accepted is sent to this outbox",
+              "signal"      : "When the client disconnects a producerFinished message is sent here", 
+              "_CSA_signal" : "Outbox for sending messages to the CSA. Currently unused."
+            }
    def __init__(self, port=1601):
       super(SingleServer,self).__init__()
       self.listenport = port
