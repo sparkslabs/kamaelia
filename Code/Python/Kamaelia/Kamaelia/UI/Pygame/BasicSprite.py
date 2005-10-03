@@ -43,9 +43,13 @@ class BasicSprite(pygame.sprite.Sprite, component):
       self.rect = self.image.get_rect()
       self.rect.topleft = argd.get("position",(10,10))
       self.paused = False
-      self.update = self.logic().next
+      self.update = self.sprite_logic().next
 
-   def logic(self):
+   def main(self):
+      while 1:
+         yield 1
+
+   def sprite_logic(self):
       center = list(self.rect.center)
       self.image = self.original
       current = self.image
@@ -58,24 +62,21 @@ class BasicSprite(pygame.sprite.Sprite, component):
             if self.dataReady("imaging"):
                self.image = self.recv("imaging")
                current = self.image
-
             if self.dataReady("scaler"):
                # Scaling
                scale = self.recv("scaler")
             w,h = self.image.get_size()
-            self.image = pygame.transform.scale(self.image, (w*scale, h*scale))
+            self.image = pygame.transform.scale(self.image, (int(w*scale), int(h*scale)))
 
             if self.dataReady("rotator"):
-               angle = self.recv("rotator")
                # Rotation
+               angle = self.recv("rotator")
             self.image = pygame.transform.rotate(self.image, angle)
-
             if self.dataReady("translation"):
                # Translation
                pos = self.recv("translation")
             self.rect = self.image.get_rect()
             self.rect.center = pos
-
          yield 1
    def shutdown(self):
       self.send("shutdown", "signal")

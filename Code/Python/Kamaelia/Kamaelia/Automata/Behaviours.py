@@ -54,7 +54,7 @@ class bouncingFloat(send_one_component):
             if data == "togglepause":
                self.pause()
             if data == "unpause":
-               self.unpause()
+               pass # Simply being sent this message unpauses us
          yield 1
 
 class cartesianPingPong(send_one_component):
@@ -74,7 +74,7 @@ class cartesianPingPong(send_one_component):
          if self.point[0] < self.border: delta_x = 10
          if self.point[1] > self.height-self.border: delta_y = -10
          if self.point[1] < self.border: delta_y = 10
-         self.send(self.point, "outbox")
+         self.send([x for x in self.point], "outbox")
          if self.dataReady("control"):
             data = self.recv("control")
             if data == "shutdown":
@@ -83,7 +83,7 @@ class cartesianPingPong(send_one_component):
             if data == "togglepause":
                self.pause()
             if data == "unpause":
-               self.unpause()
+               pass # Simply being sent this message unpauses us
          yield 1
 
 class loopingCounter(send_one_component):
@@ -118,7 +118,7 @@ class continuousIdentity(send_one_component):
                self.send("shutdown", "signal")
                return
             if data == "unpause":
-               self.unpause()
+               pass # Simply being sent this message unpauses us
          yield 1
 
 class continuousZero(send_one_component):
@@ -133,7 +133,7 @@ class continuousZero(send_one_component):
                self.send("shutdown", "signal")
                return
             if data == "unpause":
-               self.unpause()
+               pass # Simply being sent this message unpauses us
          yield 1
 
 class continuousOne(send_one_component):
@@ -148,7 +148,7 @@ class continuousOne(send_one_component):
                self.send("shutdown", "signal")
                return
             if data == "unpause":
-               self.unpause()
+               pass # Simply being sent this message unpauses us
          yield 1
 
 
