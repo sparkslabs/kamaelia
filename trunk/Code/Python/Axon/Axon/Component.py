@@ -180,8 +180,12 @@ from Ipc import *
 #
 
 class component(microprocess):
-   Inboxes=["inbox","control"]
-   Outboxes=["outbox","signal"]
+   Inboxes  = {"inbox" : "Default inbox for bulk data. Used in a pipeline much like stdin",
+               "control" : "Secondary inbox often used for signals. The closest analogy is unix signals"
+              }
+   Outboxes = {"outbox": "Default data out outbox, used in a pipeline much like stdout",
+               "signal": "The default signal based outbox - kinda like stderr, but more for sending singal type signals",
+   }
    Usescomponents=[]
 
    def __init__(self):
