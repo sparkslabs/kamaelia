@@ -31,9 +31,11 @@ from Kamaelia.Util.Graphline import Graphline
 import os
 
 path = "/home/zathras/Documents/Presentations/Kamaelia_200504"
+path = "Slides"
 extn = ".gif"
 files = os.listdir(path)
 files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
+files.sort()
 
 Graphline(
      CHOOSER = Chooser(items = files),
