@@ -90,6 +90,7 @@ class Graphline(component):
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
 
       self.addChildren(*components)
+
       yield _Axon.Ipc.newComponent(*(self.children))
 
       # run until all child components have terminated
@@ -101,8 +102,6 @@ class Graphline(component):
       while not self.childrenDone():
           # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
           yield 1
-
-
 
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
