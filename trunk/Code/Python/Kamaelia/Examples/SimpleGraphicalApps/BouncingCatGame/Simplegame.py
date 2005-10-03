@@ -117,7 +117,7 @@ def make_cat(cat_location, screensize, border ):
 
     newCat = BasicSprite(image=cat)
 
-    Graphline(
+    X = Graphline(
        newCat = newCat,
        rotator = loopingCounter(rotation_speed),
        translation = cartesianPingPong(position,screensize[0],screensize[1],border),
@@ -182,18 +182,19 @@ class MyGamesEvents(EventHandler):
                spriteToZap.shutdown()
                where.allsprites.remove(spriteToZap)
     def keydown(self, unicode, key, mod, where):
+#        print "KEY", key
         if key == 112: # "P"
-            print "PAUSE ALL MOVEMENT"
+#            print "PAUSE ALL MOVEMENT"
             for sprite in where.allsprites.sprites():
                 sprite.pause()
         if key == 113: # "Q"
             raise "QUIT"
         if key == 117: # "U"
-            print "UNPAUSE ALL MOVEMENT"
+#            print "UNPAUSE ALL MOVEMENT"
             for sprite in where.allsprites.sprites():
                 sprite.unpause()
         if key == 116: # "T"
-            print "Toggle PAUSE ALL MOVEMENT"
+#            print "Toggle PAUSE ALL MOVEMENT"
             for sprite in where.allsprites.sprites():
                 sprite.togglePause()
 
