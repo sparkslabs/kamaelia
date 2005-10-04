@@ -47,6 +47,7 @@ class PComponent(BaseParticle):
         self.top = 0
         self.selected = False
         
+        pygame.font.init()
         font = pygame.font.Font(None, 20)
         self.slabel   = font.render(self.shortname, True, (0,0,0))
         self.slabelxo = - self.slabel.get_width()/2
