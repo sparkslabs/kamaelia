@@ -93,7 +93,7 @@ class PPostbox(BaseParticle):
         self.radius = 16
         self.buildLabels()
         self.selected = False
-        
+        pygame.font.init()        
         
     def buildLabels(self):
         from pygame.transform import rotozoom, rotate

@@ -35,6 +35,7 @@ class RenderingParticle(BaseParticle):
         self.labelText = name
         self.name = name
         
+        pygame.font.init()
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.labelText, False, (0,0,0))
         self.left = 0
