@@ -35,7 +35,7 @@ class passThrough(component):
       self.shutdownOn = shutdownOn
 
    def mainBody(self):
-      forwarded = 0
+      forwarded = 1
       
       for (inbox,outbox) in self.Connections.items():
       
