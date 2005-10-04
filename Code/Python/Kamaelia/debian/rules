@@ -1,0 +1,58 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+PYTHON_VERSIONS=2.3 2.4
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	rm -rf build
+	dh_clean
+
+install: $(foreach p,$(PYTHON_VERSIONS),install-python-$(p))
+
+docdir=debian/python$(1)-kamaelia/usr/share/doc/python$(1)-kamaelia
+
+install-python-%:
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+
+	mkdir -p $(call docdir,$*)
+	python$* setup.py install --prefix=debian/python$*-kamaelia/usr
+	install -m 644 CHANGELOG $(call docdir,$*)/changelog
+	gzip -9 $(call docdir,$*)/changelog
+	install -m 644 COPYING AUTHORS $(call docdir,$*)
+	cp -R Docs/ Examples/ $(call docdir,$*)
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_installexamples
+	dh_installman
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_python
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+# We have nothing to do by default.
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install install-python-%

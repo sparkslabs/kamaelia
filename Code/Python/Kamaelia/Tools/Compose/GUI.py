@@ -104,7 +104,7 @@ class ArgumentsPanel(Tkinter.Frame):
         for (argname, svar, default) in self.args:
             text = svar.get().strip()
             default = default.strip()
-            if argname != "*" and argname != "**":
+            if argname != "*":
                 if default=="" or text != default:
                     if not text:
                         text = "<<unspecified>>"

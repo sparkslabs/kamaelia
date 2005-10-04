@@ -1,6 +1,0 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:8pt;font-family:Verdana">
-<p><span style="font-weight:600">Answer:</span></p>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class postman(microprocess):<br />    def __init__(self, source, sourcebox, sink, sinkbox):</span></div>
-<div dir="ltr"><span style="font-family:Courier">        super(postman, self).__init__()<br />        self.source = source<br />        self.sourcebox = sourcebox<br />        self.sink = sink<br />        self.sinkbox = sinkbox<br />    def main(self):<br />        while 1:<br />            yield 1<br />            if self.source.dataReady(self.sourcebox):<br />                d = self.source.recv(self.sourcebox)<br />                self.sink.send(d, self.sinkbox)]</span></div></ul>
-<p dir="ltr"></p>
-</body></html>
