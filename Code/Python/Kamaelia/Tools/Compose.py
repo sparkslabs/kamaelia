@@ -35,7 +35,7 @@ COMPONENTS = {
     "Kamaelia.Internet.Simulate.BrokenNetwork" : ["Duplicate","Throwaway","Reorder"],
     "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ],
     "Kamaelia.Codec.Dirac" : [ "DiracDecoder" ],
-    "Kamaelia.Util.RateLimit" : [ "RateLimit" ],
+    "Kamaelia.Util.RateFilter" : [ "MessageRateLimit" ],
     "Kamaelia.UI.Pygame.VideoOverlay" : [ "VideoOverlay"],
     }
 
