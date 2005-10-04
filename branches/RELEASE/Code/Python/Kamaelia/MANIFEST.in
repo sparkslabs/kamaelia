@@ -7,7 +7,6 @@ include Docs/*/*
 include COPYING
 include AUTHORS
 include CHANGELOG
-include Tools/*
 include Kamaelia/test/*
 include Kamaelia/*/test/*
 include Kamaelia/afortune.pl
@@ -15,3 +14,5 @@ include Kamaelia/debug.conf
 include Examples/*/*/*
 include Examples/*/*
 include Examples/*
+include Tools/*/*
+include Tools/*
