@@ -1,10 +1,19 @@
 #!/usr/bin/python
 #
-# This is a mock server that accepts data sent to it, pretending to be an
-# encoding streaming systems
+# Mix Client. Passes received data onto stdout. Allows piping into a streaming server.
 #
+# IMPORTANT:
+# If the mix client is not receiving any audio data, it MUST send zero data to cover the gap.
+# This must be at a datarate of 44100Hz, 2 byte samples, 2 stereo samples. 
 #
-
+# Ie:
+#   44100 Hz
+#  *    2 2 channel (stereo)
+#  *    2 2 bytes per word (16 bit audio)
+#  *    8 Bytes -> bits
+#  ie 1411200b/s
+#  ie 1.3Mbit/s
+#
 
 import traceback
 import Axon
