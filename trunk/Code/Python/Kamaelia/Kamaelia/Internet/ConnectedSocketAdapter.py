@@ -66,18 +66,19 @@ from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.KamaeliaExceptions import *
+import traceback
 
 whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
 crashAndBurn = { "uncheckedSocketShutdown" : True,
                             "receivingDataFailed" : True,
                             "sendingDataFailed" : True }
 
-def _safesend(sock, data):
+def _safesend(sock, data,selffile = None):
    """Internal only function, used for sending data, and handling EAGAIN style
    retry scenarios gracefully"""
    try:
-      sock.send(data)
-      return 1
+      bytes_sent = sock.send(data)
+      return bytes_sent
    except socket.error, socket.msg:
       (errorno, errmsg) = socket.msg.args
       if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
@@ -111,6 +112,8 @@ class ConnectedSocketAdapter(component):
       super(ConnectedSocketAdapter, self).__init__()
       self.time = time.time()
       self.socket = listensocket
+      self.resend_queue = []
+      self.file = None
 
    def handleDataReady(self):
       if self.dataReady("DataReady"):
@@ -128,15 +131,27 @@ class ConnectedSocketAdapter(component):
                self.send(socketdata, "outbox")
 
    def handleDataSend(self):
-      if self.dataReady("DataSend"):
-         data = self.recv("DataSend")
-         try:
-            result = _safesend(self.socket, data) ### Sending may fail....
-         except Exception, e: # If it does, and we get an exception the connection is unstable or closed
-            if crashAndBurn["sendingDataFailed"]:
-               raise connectionDiedReceiving(e)
-            raise connectionClosedown(e)
-      return 1        # Since we got here, client is still around, so return true.
+       try:
+          if self.dataReady("DataSend"):
+             data = self.recv("DataSend")
+             self.resend_queue.append(data)
+          if len(self.resend_queue)>0:
+             data = self.resend_queue[0]
+             try:
+                bytes_sent = _safesend(self.socket, data, self.file) ### Sending may fail....
+                if bytes_sent:
+                    if bytes_sent == len(data):
+                        del self.resend_queue[0]
+                    else:
+                        self.resend_queue[0] = data[bytes_sent:]
+             except Exception, e: # If it does, and we get an exception the connection is unstable or closed
+                if crashAndBurn["sendingDataFailed"]:
+                   raise connectionDiedReceiving(e)
+                raise connectionClosedown(e)
+          return 1        # Since we got here, client is still around, so return true.
+       except:
+          print "TRACEBACK INSIDE CONNECTED SOCKET ADAPTOR"
+          traceback.print_exc()
 
    def handleControl(self):
       #if self is Axon.Foo:
