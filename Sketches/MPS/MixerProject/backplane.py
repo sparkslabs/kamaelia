@@ -35,6 +35,11 @@ if len(sys.argv) > 3:
 else:
    mockserverport = 1700
 
+if len(sys.argv) > 3:
+   musicport = int(sys.argv[2])
+else:
+   musicport = 1703
+
 class Backplane(Axon.Component.component):
     def __init__(self, name):
         super(Backplane,self).__init__()
@@ -110,30 +115,36 @@ class subscribeTo(Axon.Component.component):
 
 class MatrixMixer(Axon.Component.component):
     debug = 0
-    Inboxes = ["inbox", "control", "DJ1", "DJ2"]
+    Inboxes = ["inbox", "control", "DJ1", "DJ2","music"]
     def main(self):
         source_DJ1 = subscribeTo("DJ1").activate()
         source_DJ2 = subscribeTo("DJ2").activate()
+        source_music = subscribeTo("music").activate()
         self.link((source_DJ1, "outbox"), (self, "DJ1"))
         self.link((source_DJ2, "outbox"), (self, "DJ2"))
+        self.link((source_music, "outbox"), (self, "music"))
         data_dj1 = []
         data_dj2 = []
+        data_music = []
         count = 0
         while 1:
             self.pause()
             yield 1
             data_dj1 = []
             data_dj2 = []
+            data_music = []
             while self.dataReady("DJ1"):
                 data_dj1.append(self.recv("DJ1"))
             while self.dataReady("DJ2"):
                 data_dj2.append(self.recv("DJ2"))
+            while self.dataReady("music"):
+                data_music.append(self.recv("music"))
 
-            if data_dj1 != [] or data_dj2 != []:
-                data = self.mix(data_dj1, data_dj2)
+            if data_dj1 != [] or data_dj2 != [] or data_music:
+                data = self.mix(data_dj1, data_dj2, data_music)
                 self.send(data, "outbox")
 
-            if self.debug and (len(data_dj1) or len(data_dj2)):
+            if self.debug and (len(data_dj1) or len(data_dj2) or len(data_music)):
                 print self.id, "echoer #1",self.id,":", data_dj1, "count:", count
                 print self.id, "       #2",self.id,":", data_dj2, "count:", count
                 count = count +1
@@ -154,13 +165,17 @@ class MatrixMixer(Axon.Component.component):
             return chr(result)
         raw_dj1 = "".join(sources[0])
         raw_dj2 = "".join(sources[1])
+        raw_music = "".join(sources[2])
         len_dj1 = len(raw_dj1)
         len_dj2 = len(raw_dj2)
-        packet_size = max( len_dj1, len_dj2 )
+        len_music = len(raw_music)
+        packet_size = max( len_dj1, len_dj2, len_music )
         pad_dj1 = "\0"*(packet_size-len_dj1)
         pad_dj2 = "\0"*(packet_size-len_dj2)
+        pad_music = "\0"*(packet_size-len_music)
         raw_dj1 = raw_dj1 + pad_dj1
         raw_dj2 = raw_dj2 + pad_dj2
+        raw_music = raw_music + pad_music
         result = []
         try:
             for i in xrange(0, packet_size,2):
@@ -173,6 +188,7 @@ class MatrixMixer(Axon.Component.component):
                 else:
                     valuefrom2 = twos_complement_X
 
+
                 lsb1 = ord(raw_dj1[i])
                 msb1 = ord(raw_dj1[i+1])
 
@@ -182,7 +198,18 @@ class MatrixMixer(Axon.Component.component):
                 else:
                     valuefrom1 = twos_complement_X
 
-                mixed = (valuefrom2+valuefrom1) /2
+                lsbmusic = ord(raw_music[i])
+                msbmusic = ord(raw_music[i+1])
+
+                twos_complement_X = (msbmusic << 8) + lsbmusic
+                if twos_complement_X > 32767:
+                    valuefrommusic = -65536 + twos_complement_X
+                else:
+                    valuefrommusic = twos_complement_X
+
+
+
+                mixed = (valuefrom2+valuefrom1+valuefrommusic) /3
                 
                 if mixed < 0:
                     mixed = 65536 + mixed
@@ -198,6 +225,7 @@ class MatrixMixer(Axon.Component.component):
 
 Backplane("DJ1").activate()
 Backplane("DJ2").activate()
+Backplane("music").activate()
 
 pipeline(
     SingleServer(port=dj1port),
@@ -209,10 +237,34 @@ pipeline(
     publishTo("DJ2"),
 ).activate()
 
+pipeline(
+    SingleServer(port=musicport),
+    publishTo("music"),
+).activate()
+
 audienceout = pipeline(
     MatrixMixer(), 
     TCPClient("127.0.0.1", mockserverport)
-).run()
+#).run()
+).activate()
+
+
+class printer(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                sys.stdout.write(data)
+                sys.stdout.flush()
+            yield 1
+
+def dumping_server():
+    return pipeline(
+        SingleServer(mockserverport),
+        printer(),
+    )
+
+dumping_server().run()
 
 # Controller mix
 ####MatrixMixer().run()
