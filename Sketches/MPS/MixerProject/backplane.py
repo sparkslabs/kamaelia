@@ -165,6 +165,7 @@ class MatrixMixer(Axon.Component.component):
             while self.dataReady("mixcontrol"):
                 command = self.recv("mixcontrol")
                 result = self.handleCommand(command)+"\n"  # Response always ends with newline
+                print "RESPONSE TO COMMAND", repr(result)
                 self.send(result, "mixcontrolresponse")
 
             # Only bother mixing if the sources are active
@@ -188,6 +189,7 @@ class MatrixMixer(Axon.Component.component):
                 count = count +1
 
     def handleCommand(self, command):
+        print "COMMAND RECEIVED:", repr(command)
         if len(command)>0:
             command[0] = command[0].upper()
             if command[0] == "SWITCH":
@@ -317,8 +319,6 @@ class MatrixMixer(Axon.Component.component):
                 else:
                     valuefrommusic = twos_complement_X
 
-
-
                 mixed = (valuefrom2+valuefrom1+valuefrommusic) /3
                 
                 if mixed < 0:
@@ -352,61 +352,85 @@ pipeline(
     publishTo("music"),
 ).activate()
 
+livecontrol = 1
 
-class printer(Axon.Component.component):
-    def main(self):
-        while 1:
-            if self.dataReady("inbox"):
-                data = self.recv("inbox")
-                sys.stdout.write(data)
-                sys.stdout.write("\n")
-                sys.stdout.flush()
-            yield 1
+if livecontrol:
+    Graphline(
+        CONTROL =  SingleServer(port=controlport),
+        TOKENISER = lines_to_tokenlists(),
+        MIXER = MatrixMixer(), 
+        AUDIENCEMIX = SingleServer(port=mockserverport),
+        linkages = {
+           ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
+           ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
+           ("MIXER" , "mixcontrolresponse") : ("CONTROL" , "inbox"),
+           ("MIXER", "outbox") : ("AUDIENCEMIX", "inbox"),
+        }
+    ).run()
+else:
+    Graphline(
+        CONTROL = ConsoleReader("mixer desk >> "),
+        CONTROL_ = consoleEchoer(),
+        TOKENISER = lines_to_tokenlists(),
+        MIXER = MatrixMixer(), 
+        AUDIENCEMIX = SingleServer(port=mockserverport),
+        linkages = {
+           ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
+           ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
+           ("MIXER" , "mixcontrolresponse") : ("CONTROL_" , "inbox"),
+           ("MIXER", "outbox") : ("AUDIENCEMIX", "inbox"),
+        }
+    ).run()
 
-Graphline(
-    CONTROL = SingleServer(port=controlport),
-    TOKENISER = lines_to_tokenlists(),
-    USERRESPONSE = consoleEchoer(),
-    MIXER = MatrixMixer(), 
-    FILE = SimpleFileWriter("bingle.raw"),
-    linkages = {
-       ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
-       ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
-       ("MIXER" , "mixcontrolresponse") : ("CONTROL" , "inbox"),
-       ("MIXER", "outbox") : ("FILE", "inbox"),
-    }
-).run()
+if 0:
+    audienceout = pipeline(
+        MatrixMixer(), 
+        SingleServer(port=mockserverport)
+    ).run()
 
-commandlineMixer = Graphline(
-    USER = ConsoleReader("mixer desk >> "),
-    TOKENISER = lines_to_tokenlists(),
-    USERRESPONSE = consoleEchoer(),
-    MIXER = MatrixMixer(), 
-    FILE = SimpleFileWriter("bingle.raw"),
-    linkages = {
-       ("USER" , "outbox") : ("TOKENISER" , "inbox"),
-       ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
-       ("MIXER" , "mixcontrolresponse") : ("USERRESPONSE" , "inbox"),
-       ("MIXER", "outbox") : ("FILE", "inbox"),
-    }
-).run()
+    class printer(Axon.Component.component):
+        def main(self):
+            while 1:
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    sys.stdout.write(data)
+                    sys.stdout.flush()
+                yield 1
 
-audienceout = pipeline(
-    MatrixMixer(), 
-    SimpleFileWriter("bingle.raw"),
-#    TCPClient("127.0.0.1", mockserverport)
-).run()
-#).activate()
+    def dumping_server():
+        return pipeline(
+            SingleServer(mockserverport),
+            printer(),
+        )
 
+    dumping_server().run()
 
+    # Command line mixer control
+    commandlineMixer = Graphline(
+        TOKENISER = lines_to_tokenlists(),
+        MIXER = MatrixMixer(), 
+        FILE = SimpleFileWriter("bingle.raw"),
+        linkages = {
+           ("USER" , "outbox") : ("TOKENISER" , "inbox"),
+           ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
+           ("MIXER" , "mixcontrolresponse") : ("USERRESPONSE" , "inbox"),
+           ("MIXER", "outbox") : ("FILE", "inbox"),
+        }
+    ).run()
 
-def dumping_server():
-    return pipeline(
-        SingleServer(mockserverport),
-        printer(),
-    )
+    # TCP Client sending
+    audienceout = pipeline(
+        MatrixMixer(), 
+    #    SimpleFileWriter("bingle.raw"),
+        TCPClient("127.0.0.1", mockserverport)
+    ).run()
+    #).activate()
 
-dumping_server().run()
+    def dumping_server():
+        return pipeline(
+            SingleServer(mockserverport),
+            printer(),
+        )
 
 # Controller mix
 ####MatrixMixer().run()
@@ -414,8 +438,6 @@ dumping_server().run()
 # Bunch of code used when debugging various bits of code.
 #
 #
-
-if 0:
     pipeline(
         ReadFileAdaptor("audio.1.raw", readsize="60024"), #readmode="bitrate", bitrate =16000000),
         publishTo("DJ1"),
