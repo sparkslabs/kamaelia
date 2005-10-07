@@ -9,6 +9,7 @@ import Axon
 
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+from Axon.ThreadedComponent import threadedcomponent
 from Kamaelia.Util.Splitter import PlugSplitter as Splitter
 from Kamaelia.Util.Splitter import Plug
 from Kamaelia.Util.PipelineComponent import pipeline
@@ -18,6 +19,7 @@ from Kamaelia.SingleServer import SingleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 
 import sys
 if len(sys.argv) > 1:
@@ -39,6 +41,22 @@ if len(sys.argv) > 3:
    musicport = int(sys.argv[2])
 else:
    musicport = 1703
+
+if len(sys.argv) > 5:
+   controlport = int(sys.argv[2])
+else:
+   controlport = 1705
+
+class ConsoleReader(threadedcomponent):
+   def __init__(self, prompt=">>> "):
+      super(ConsoleReader, self).__init__()
+      self.prompt = prompt
+
+   def run(self):
+      while 1:
+         line = raw_input(self.prompt)
+         line = line + "\n"
+         self.outqueues["outbox"].put(line)
 
 class Backplane(Axon.Component.component):
     def __init__(self, name):
@@ -115,8 +133,12 @@ class subscribeTo(Axon.Component.component):
 
 class MatrixMixer(Axon.Component.component):
     debug = 0
-    Inboxes = ["inbox", "control", "DJ1", "DJ2","music"]
+    Inboxes = ["inbox", "control", "DJ1", "DJ2","music","mixcontrol"]
+    Outboxes = ["outbox", "signal", "mixcontrolresponse"]
     def main(self):
+        self.dj1_active = 1
+        self.dj2_active = 1
+        self.music_active = 1
         source_DJ1 = subscribeTo("DJ1").activate()
         source_DJ2 = subscribeTo("DJ2").activate()
         source_music = subscribeTo("music").activate()
@@ -140,16 +162,104 @@ class MatrixMixer(Axon.Component.component):
             while self.dataReady("music"):
                 data_music.append(self.recv("music"))
 
-            if data_dj1 != [] or data_dj2 != [] or data_music:
-                data = self.mix(data_dj1, data_dj2, data_music)
-                self.send(data, "outbox")
+            while self.dataReady("mixcontrol"):
+                command = self.recv("mixcontrol")
+                result = self.handleCommand(command)+"\n"  # Response always ends with newline
+                self.send(result, "mixcontrolresponse")
+
+            # Only bother mixing if the sources are active
+            if self.dj1_active or self.dj2_active or self.music_active:
+                mix_args = [[],[],[]]  # Mixer function expects 3 sources
+
+                if self.dj1_active:
+                   mix_args[0]= data_dj1
+                if self.dj2_active:
+                   mix_args[1]= data_dj2
+                if self.music_active:
+                   mix_args[2]= data_music
+
+                if data_dj1 != [] or data_dj2 != [] or data_music !=[]:
+                    data = self.mix(mix_args)
+                    self.send(data, "outbox")
 
             if self.debug and (len(data_dj1) or len(data_dj2) or len(data_music)):
                 print self.id, "echoer #1",self.id,":", data_dj1, "count:", count
                 print self.id, "       #2",self.id,":", data_dj2, "count:", count
                 count = count +1
 
-    def mix(self, *sources):
+    def handleCommand(self, command):
+        if len(command)>0:
+            command[0] = command[0].upper()
+            if command[0] == "SWITCH":
+                if len(command) !=4: return "FAIL"
+                command, dest, source, flag = command
+                command.upper()
+                dest.upper()
+                source.upper()
+                flag.upper()
+                if flag == "ONLY":
+                    if source == "DJ1":
+                        self.dj1_active, self.dj2_active, self.music_active = (1,0,0)
+                        return "OK"
+                    elif source == "DJ2":
+                        self.dj1_active, self.dj2_active, self.music_active = (0,1,0)
+                        return "OK"
+                    elif source == "PRERECORD":
+                        self.dj1_active, self.dj2_active, self.music_active = (0,0,1)
+                        return "OK"
+                    elif source == "ALL":
+                        self.dj1_active, self.dj2_active, self.music_active = (1,1,1)
+                        return "OK"
+                elif flag == "ON" or flag == "OFF":
+                    if flag == "ON":
+                        value = 1
+                    else:
+                        value = 0
+                    if source == "DJ1":
+                        self.dj1_active = value
+                        return "OK"
+                    elif source == "DJ2":
+                        self.dj2_active = value
+                        return "OK"
+                    elif source == "PRERECORD":
+                        self.music_active = value
+                        return "OK"
+                    elif source == "ALL":
+                        self.dj1_active, self.dj2_active, self.music_active = (value,value,value)
+                        return "OK"
+
+            if command[0] == "QUERY":
+                if len(command) !=3: return "FAIL"
+                command, dest, source = command
+                command.upper(), dest.upper(), source.upper()
+                if source == "DJ1":
+                    if self.dj1_active:
+                        return "ON"
+                    else:
+                        return "OFF"
+                elif source == "DJ2":
+                    if self.dj2_active:
+                        return "ON"
+                    else:
+                        return "OFF"
+                elif source == "PRERECORD":
+                    if self.music_active:
+                        return "ON"
+                    else:
+                        return "OFF"
+                elif source == "ALL":
+                    result = []
+                    if self.dj1_active: result.append("ON")
+                    else:               result.append("OFF")
+                    if self.dj2_active: result.append("ON")
+                    else:               result.append("OFF")
+                    if self.music_active: result.append("ON")
+                    else:               result.append("OFF")
+                    return " ".join(result)
+                    
+        return "FAIL"
+
+    def mix(self, sources):
         """ This is a correct, but very slow simple 2 source mixer """
         def char_to_ord(char):
             raw = ord(char)
@@ -242,12 +352,6 @@ pipeline(
     publishTo("music"),
 ).activate()
 
-audienceout = pipeline(
-    MatrixMixer(), 
-    TCPClient("127.0.0.1", mockserverport)
-#).run()
-).activate()
-
 
 class printer(Axon.Component.component):
     def main(self):
@@ -255,8 +359,46 @@ class printer(Axon.Component.component):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 sys.stdout.write(data)
+                sys.stdout.write("\n")
                 sys.stdout.flush()
             yield 1
+
+Graphline(
+    CONTROL = SingleServer(port=controlport),
+    TOKENISER = lines_to_tokenlists(),
+    USERRESPONSE = consoleEchoer(),
+    MIXER = MatrixMixer(), 
+    FILE = SimpleFileWriter("bingle.raw"),
+    linkages = {
+       ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
+       ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
+       ("MIXER" , "mixcontrolresponse") : ("CONTROL" , "inbox"),
+       ("MIXER", "outbox") : ("FILE", "inbox"),
+    }
+).run()
+
+commandlineMixer = Graphline(
+    USER = ConsoleReader("mixer desk >> "),
+    TOKENISER = lines_to_tokenlists(),
+    USERRESPONSE = consoleEchoer(),
+    MIXER = MatrixMixer(), 
+    FILE = SimpleFileWriter("bingle.raw"),
+    linkages = {
+       ("USER" , "outbox") : ("TOKENISER" , "inbox"),
+       ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
+       ("MIXER" , "mixcontrolresponse") : ("USERRESPONSE" , "inbox"),
+       ("MIXER", "outbox") : ("FILE", "inbox"),
+    }
+).run()
+
+audienceout = pipeline(
+    MatrixMixer(), 
+    SimpleFileWriter("bingle.raw"),
+#    TCPClient("127.0.0.1", mockserverport)
+).run()
+#).activate()
+
+
 
 def dumping_server():
     return pipeline(
