@@ -40,6 +40,12 @@ from debug import debug
 from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
+try:   
+    from ctypes import *   
+    libc = cdll.LoadLibrary("/lib/libc.so.6")   
+    sched_yield = libc.sched_yield   
+except ImportError:   
+    def sched_yield(): pass
 
 def _sort(somelist):
    a=[ x for x in somelist]
@@ -123,6 +129,7 @@ class scheduler(microprocess):
              self.time = now   # Update last run time - only really useful if slowmo != 0
              activeMicroprocesses = 0
              for mprocess in self.threads:
+                sched_yield()
                 if mprocess:
                    try:
                       yield 1                       # Relinquish control between every thread
