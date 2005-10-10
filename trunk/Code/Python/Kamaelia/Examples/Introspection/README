@@ -1,16 +1,12 @@
-This example demonstrates what could be used as a simple test harness for a
-simple streaming server. The component consists of two logical halves:
-   * A "null" streaming server: (Using SimpleServer)
-      * When a client connects, reads a pre-specified file at a constant
-        bitrate from disk and sends the data out to the client on his/her
-        connection. Uses the ReadFileAdaptor to handle reading, and uses it
-        to create an adhoc component class to use as a network protocol
-        handler.
-   * A "null" streaming client:
-      * Connects to a specified port (using TCPClient)
-      * Takes the received data and passes that to decoder
-      * Passes the decoded data to playback component
+This is a simple modification of an earlier incarnation of Example 2's
+SimpleStreamingSystem.py.
+
+It expects you to have the AxonVisualiser already running, and then allows
+you to look inside the running simple streamer. 
+
+Due to the AxonVisualiser being CPU intensive, this can result in the audio
+sounding choppy. However this does allow you see what's going on inside the
+system.
 
 
-
-Michael, April 2005
+Michael, October 2005
