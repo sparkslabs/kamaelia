@@ -35,10 +35,16 @@ class KeyEvent(Axon.Component.component):
                "callback" : "Receive callbacks from PygameDisplay"
              }
    Outboxes = { "outbox" : "button click events emitted here",
+                "allkeys" : "Outbox that receives *every* keystroke if enabled",
                 "signal" : "",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
-   def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
+   def __init__(self, caption=None, 
+                position=None, margin=8,
+                bgcolour = (224,224,224),
+                fgcolour = (0,0,0),
+                msg=None,
+                allkeys = False,
                 key_events = None,
                 transparent = False,
                 outboxes = {}):
@@ -53,11 +59,13 @@ class KeyEvent(Axon.Component.component):
       self.Outboxes = self.__class__.Outboxes
       self.Outboxes.update(outboxes)
       super(KeyEvent,self).__init__()
-      
+
+      self.allkeys = allkeys
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
       self.key_events = key_events
+      if self.key_events is None: self.key_events = {}
       
       if caption is None:
          caption = "Button "+str(self.id)
@@ -114,7 +122,7 @@ class KeyEvent(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
-      if self.key_events is not None:
+      if (self.key_events is not None) or self.allkeys:
          message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
                      "surface" : self.display,
                      "TRACE" : "ME"}
@@ -135,6 +143,8 @@ class KeyEvent(Axon.Component.component):
                 if event.type == pygame.KEYDOWN:
                    if event.key in self.key_events:
                       self.send( self.key_events[event.key][0] , self.key_events[event.key][1] )
+                   if self.allkeys:
+                      self.send(event.key, "allkeys")
          yield 1
             
       
