@@ -23,6 +23,12 @@ example.
      *start all the client machines first* and *then* the server.
      Uses the multicast transceiver object exclusively.
 
+     Example 4a - MulticastStreamingSystem_SRM.py
+     * This is a modification to the multicast streaming system that uses
+       the SimpleReliableMulticast protocol, to add a thin skein of
+       reliability over multicast. Passes basic lab tests, but needs real
+       world testing to be certain.
+
    * Example 5 : An introspecting version of Examples 2/3. This creates a
      simple streaming system, and looks inside to see what components are
      running/active, and passes the resulting information over a network
@@ -55,5 +61,34 @@ example.
      how to write things varying from games through other interactive
      systems.
 
+     * Simple bouncing images game. Designed for very small children who are
+       amused by things take beep and react when you press left/right mouse
+       buttons.
+     * Forms a demonstration of the new BasicSprite and SpriteScheduler
+       components, along with the associated EventHandler code, which is a
+       substantial subsystem. Shutdown of active bouncing sprites and their
+       associated components controlling them is controlled by a fanout
+       component. Also contains a nice demonstration of the flexibility of
+       Graphline
 
-Updated: Michael, July 2005
+   * Example 10: Simple dirac player. Shows how to play a specific file.
+
+   * Examples 11 - Ticker.py
+     * Simple example showing how to use the ticker. First developed for
+       showing subtitles.
+
+   * Example 12 - SimpleMultiFileStreamer.py
+     * Simple streamer that repeatedly streams (3 times) the same audio
+       file.
+     * This is a mainly a demonstration of how to use the
+       JoinChooserToCarousel Chassis, and the
+       FixedRateControlledReusableFileReader
+     * What really happens is a "chooser" takes a playlist of things to
+       serve, and the filereader asks the chooser what file it should be
+       reading next when it finishes reading a file.
+
+     Examples 12 -- ClientStreamToFile.py
+     * Simple client for the above streamer
+
+
+Updated: Michael, October 2005
