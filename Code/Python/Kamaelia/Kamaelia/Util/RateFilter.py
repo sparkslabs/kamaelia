@@ -38,7 +38,7 @@ class MessageRateLimit(component):
     """Class to limit the message rate per second. Buffers a number of messages before forwarding. 
        This can be reduced to a buffer size of zero"""
     def __init__(self, messages_per_second, buffer=60):
-        super(RateLimit, self).__init__()
+        super(MessageRateLimit, self).__init__()
         self.mps = messages_per_second
         self.interval = 1.0/(messages_per_second*1.1)
         self.buffer = buffer
