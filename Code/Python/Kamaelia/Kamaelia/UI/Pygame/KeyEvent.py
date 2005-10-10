@@ -127,6 +127,13 @@ class KeyEvent(Axon.Component.component):
                      "surface" : self.display,
                      "TRACE" : "ME"}
          self.send(message, "display_signal")
+
+      if self.allkeys:
+         message = { "ADDLISTENEVENT" : pygame.KEYUP,
+                     "surface" : self.display,
+                     "TRACE" : "METO"}
+         self.send(message, "display_signal")
+
       done = False
       while not done:
          if self.dataReady("control"):
@@ -144,7 +151,10 @@ class KeyEvent(Axon.Component.component):
                    if event.key in self.key_events:
                       self.send( self.key_events[event.key][0] , self.key_events[event.key][1] )
                    if self.allkeys:
-                      self.send(event.key, "allkeys")
+                      self.send(("DOWN", event.key), "allkeys")
+                if event.type == pygame.KEYDOWN:
+                   if self.allkeys:
+                      self.send(("UP", event.key), "allkeys")
          yield 1
             
       
