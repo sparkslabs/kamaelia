@@ -1,0 +1,10 @@
+Simple dirac encoder and decoders.
+
+In order to get some source material for the encoder, first decode the
+original dirac content included and pipe to a file rather than to a
+display. If your re-encode and re-encode you should expect the image to
+degrade. (like any lossy codec :)
+
+
+
+Michael, October 2005
