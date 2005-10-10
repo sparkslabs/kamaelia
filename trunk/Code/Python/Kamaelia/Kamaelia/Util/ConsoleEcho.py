@@ -27,6 +27,7 @@ it's outbox - making it useful for inline (or end of line) debugging.
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import sys as _sys
+
 class consoleEchoer(component):
    Inboxes=["inbox","control"]
    Outboxes=["outbox","signal"]

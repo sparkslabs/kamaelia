@@ -204,4 +204,10 @@ background = makeAndInitialiseBackground(banner_location, screensize, screen_sur
 cat_sprites = make_cats(cat_location, screensize, border,1)
 cat_args = (cat_location, screensize, border)
 
-SpriteScheduler(cat_args, cat_sprites, background, screen_surface, MyGamesEvents).run()
+try:
+    SpriteScheduler(cat_args, cat_sprites, background, screen_surface, MyGamesEvents).run()
+except:
+    pass
+
+print
+print
