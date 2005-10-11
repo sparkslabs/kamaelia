@@ -3,15 +3,13 @@
 <p align="right"><span style="font-size:18pt">1.1.2</span></p>
 <p><span style="font-size:18pt;font-weight:600">Summary</span></p>
 <p>Instated use of ctypes to use posix.sched_yield during the main loop. This makes the system a *little* bit more other-system friendly.</p>
-<li type="disc">Added in the ability to do, effectively, blocking calls to other components. The best example using this at present in Kamaelia.UI.Pygame.Ticker</li>
-<li type="disc">Specifically you can ask the system to run a different microprocess in the place of the running one, and wait until it ends.</li>
+<p>Added in the ability to do, effectively, blocking calls to other components. The best example using this at present in Kamaelia.UI.Pygame.Ticker</p>
+<p>Specifically you can ask the system to run a different microprocess in the place of the running one, and wait until it ends.</p>
 <ul type="disc"><div>[[pre] yield WaitComplete(<br />     self.requestDisplay(DISPLAYREQUEST=True,<br />                         callback = (self,&quot;control&quot;),<br />                         size = (self.render_area.width, self.render_area.height),<br />                         position = self.position<br />                         )<br /> )<br />]</div></ul>
-<li type="disc"></li>
-<li type="disc">Where self.requestDisplay is a generator with the following behaviour:</li>
+<p>Where self.requestDisplay is a generator with the following behaviour:</p>
 <ul type="disc"><div>[[pre]def requestDisplay(self, **argd):<br />       displayservice = PygameDisplay.getDisplayService()<br />       self.link((self,&quot;signal&quot;), displayservice)<br />       self.send(argd, &quot;signal&quot;)<br />       for _ in self.waitBox(&quot;control&quot;): yield 1 ## This could also be rewritten in this form :-)<br />       display = self.recv(&quot;control&quot;)<br />       self.display = display<br />]</div></ul>
-<li type="disc"></li>
-<li type="disc">This is experimental support that is likely to evolve with time. This does however allow effectively for a far more co-routine type behaviour than we had in place before - rather than generator type behaviour.</li>
-<li type="disc"></li>
+<p>This is experimental support that is likely to evolve with time. This does however allow effectively for a far more co-routine type behaviour than we had in place before - rather than generator type behaviour.</p>
+<p></p>
 <p><span style="font-size:18pt;font-weight:600">Detailed Changelog</span></p>
 <p><span style="font-size:14pt">Changed Files:</span></p>
 <p>Axon.Component.component:</p>
