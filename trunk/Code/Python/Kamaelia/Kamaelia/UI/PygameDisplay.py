@@ -141,6 +141,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             elif message.get("REMOVELISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+
 # Does this *really* need to be here?
 #
 #            elif message.get("CHANGEALPHA", None) is not None:
@@ -154,33 +155,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       # pre-fetch all waiting events in one go
       events = [ event for event in pygame.event.get() ]
 #      if events != []: print events
-
-      #
-      # Update overlays
-      #
-      for theoverlay in self.overlays:
-
-          # receive new image data for display
-          if theoverlay['yuvservice']:
-              theinbox, _ = theoverlay['yuvservice']
-              while self.dataReady(theinbox):
-                  yuv = self.recv(theinbox)
-
-                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
-                  if len(yuv) == 3:
-                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
-                  else:
-                      theoverlay['yuv'] = yuv
-
-          # receive position updates
-          if theoverlay['posservice']:
-              theinbox, _ = theoverlay['posservice']
-              while self.dataReady(theinbox):
-                  theoverlay['position'] = self.recv(theinbox)
-#                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
-                  theoverlay['overlay'].set_location( (theoverlay['position'], 
-                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
-                                                      ))
 
           # redraw the overlay
 #          theoverlay['overlay'].set_location(0,0,352/2,288)
@@ -220,6 +194,32 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # only send events to listener if we've actually got some
             if bundle != []:
                self.send(bundle, listener)
+      #
+      # Update overlays - We do these second, so as to avoid flicker.
+      #
+      for theoverlay in self.overlays:
+
+          # receive new image data for display
+          if theoverlay['yuvservice']:
+              theinbox, _ = theoverlay['yuvservice']
+              while self.dataReady(theinbox):
+                  yuv = self.recv(theinbox)
+
+                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                  if len(yuv) == 3:
+                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                  else:
+                      theoverlay['yuv'] = yuv
+
+          # receive position updates
+          if theoverlay['posservice']:
+              theinbox, _ = theoverlay['posservice']
+              while self.dataReady(theinbox):
+                  theoverlay['position'] = self.recv(theinbox)
+#                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
+                  theoverlay['overlay'].set_location( (theoverlay['position'], 
+                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
+                                                      ))
 
    def main(self):
       pygame.init()
