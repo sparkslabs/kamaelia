@@ -46,7 +46,7 @@ class Ticker(Axon.Component.component):
                                       argd.get("render_top",1),
                                       argd.get("render_right",399),
                                       argd.get("render_bottom",299)))
-      self.words_per_second = 8
+      self.words_per_second = 20
       self.delay = 1.0/self.words_per_second
 
    def waitBox(self,boxname):
@@ -97,15 +97,14 @@ class Ticker(Axon.Component.component):
 
       maxheight = 0
       last=time.time()
+      blankcount = 0
       while 1:
          if self.dataReady("inbox"):
             word = self.recv("inbox")
             if word =="\n":
                word = ""
             if "\n" in word:
-#               print "SPLITTING:", repr(word)
                lines = word.split("\n")[:-1]
-# SMELL              print "SPLIT:", repr(lines)
                word = "BONG"
             else:
                lines = [word]
@@ -113,6 +112,13 @@ class Ticker(Axon.Component.component):
             for line in lines:
                 word = line
                 words = line.split()
+                if len(words) == 0:
+                    if blankcount:
+                        blankcount = 0
+                        self.clearDisplay()
+                        position = [ self.render_area.left, self.render_area.top ]
+                    else:
+                        blankcount = 1
                 for word in words:
                     while time.time() - last < self.delay:
                        yield 1
@@ -135,7 +141,6 @@ class Ticker(Axon.Component.component):
                                           (self.render_area.left, position[1], 
                                            self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
                                           0)
-    # SMELL                     display.set_colorkey((128,48,128))
                           pygame.display.update()
                           if c>1:
                              c = c -1
