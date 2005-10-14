@@ -44,7 +44,7 @@ if len(sys.argv) > 1:
 else:
     basepath = "."
 
-GraphsFile = os.path.join(basepath, "OsconGraphs.xml")
+GraphsFile = os.path.join(basepath, "Graphs.xml")
 path = os.path.join(basepath, "Slides")
 extn = ".png"
 
