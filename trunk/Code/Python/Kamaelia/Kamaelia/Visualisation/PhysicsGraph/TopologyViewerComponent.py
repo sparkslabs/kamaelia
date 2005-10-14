@@ -53,6 +53,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
        
        See keyDownHandler() for keyboard controls.
     """
+    Inboxes = ["inbox", "control", "alphacontrol", "events", "displaycontrol"]
     def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
                        caption            = "Topology Viewer", 
@@ -65,7 +66,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                        showGrid           = True,
                        transparency       = None,
                        position           = None):
-                       
+
         super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
         pygame.mixer.quit()
@@ -142,6 +143,10 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         else:
             self.lastIdleTime = 0
         
+        if self.dataReady("alphacontrol"):
+            alpha = self.recv("alphacontrol")
+            self.screen.set_alpha(alpha)
+            
         if self.lastIdleTime + 1.0 < time.time():
             self.physics.run(self.simCyclesPerRedraw)
             
