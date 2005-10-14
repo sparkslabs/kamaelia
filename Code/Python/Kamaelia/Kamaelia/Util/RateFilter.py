@@ -296,3 +296,36 @@ class VariableByteRate_RequestControl(component):
         self.rate     = newRate
         self.timestep = self.chunksize / float(self.rate)
         self.nextTime = now + self.timestep * remaining
+
+class OnDemandLimit(component):
+    Inboxes = {
+         "inbox" : "The messages we receive here are supposed to be passed on, on demand.",
+         "control" : "When this receives a shutdown message, this shutdowns and sends on the message.",
+         "slidecontrol" : "We expect to recieve string messages of the form 'NEXT' on this inbox. This causes advancement to the next message",
+    }
+    def main(self):
+        send_queue = []
+        send_data = []
+        while 1:
+            self.pause()
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                send_queue.append(data)
+            if self.dataReady("control"):
+                data = self.recv("control")
+                if isinstance(data, Axon.Ipc.producerFinished):
+                    self.send(data, "signal") # pass on the shutdown
+                    return
+            while self.dataReady("slidecontrol"):
+                data = self.recv("slidecontrol")
+                if data == "NEXT":
+                    send_data.append(True)
+            if len(send_data)>0:
+                try:
+                    data = send_queue[0]
+                    del send_queue[0]
+                    self.send(data, "outbox")
+                    del send_data[0]
+                except IndexError:
+                    pass
+            yield 1

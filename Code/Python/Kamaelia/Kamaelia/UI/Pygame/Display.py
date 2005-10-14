@@ -101,6 +101,24 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.send(surface, callbackcomms)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
+            elif message.get("CHANGEDISPLAYGEO", False):
+                try:
+                    surface = message.get("surface", None)
+                    if surface is not None:
+                        c = 0
+                        found = False
+                        while c < len(self.surfaces) and not found:
+                            if self.surfaces[c][0] == surface:
+                                found = True
+                                break
+                            c += 1
+                        if found:
+                            (surface, position, callbackcomms, eventcomms) = self.surfaces[c]
+                            new_position = message.get("position", position)
+                            self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms)
+                except Exception, e:
+                    print "It all went horribly wrong", e   
+            
             elif message.get("OVERLAYREQUEST", False):
                 size = message["size"]
                 pixformat = message["pixformat"]
@@ -132,11 +150,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                        "posservice":posservice}
                                     )
                 
-
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
-###               print message
 
             elif message.get("REMOVELISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -154,12 +170,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       
       # pre-fetch all waiting events in one go
       events = [ event for event in pygame.event.get() ]
-#      if events != []: print events
-
-          # redraw the overlay
-#          theoverlay['overlay'].set_location(0,0,352/2,288)
-#          theoverlay['overlay'].set_location(0,0,704,576)
-          theoverlay['overlay'].display( theoverlay['yuv'] )
 
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
@@ -167,7 +177,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          # see if this component is interested in events
          if eventcomms is not None:
             listener = eventcomms
-
             # go through events, for each, check if the listener is interested in that time of event         
             bundle = []
             for event in events:
@@ -216,17 +225,15 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
               theinbox, _ = theoverlay['posservice']
               while self.dataReady(theinbox):
                   theoverlay['position'] = self.recv(theinbox)
-#                  theoverlay['overlay'].set_location( (theoverlay['position'], theoverlay['size'] ))
                   theoverlay['overlay'].set_location( (theoverlay['position'], 
                                                        (theoverlay['size'][0]/2, theoverlay['size'][1])
                                                       ))
+          theoverlay['overlay'].display( theoverlay['yuv'] )
 
    def main(self):
       pygame.init()
       pygame.mixer.quit()
-#      print "HMM"
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
-#      print "BINGLE?", display
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()

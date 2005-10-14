@@ -46,7 +46,7 @@ class Ticker(Axon.Component.component):
                                       argd.get("render_top",1),
                                       argd.get("render_right",399),
                                       argd.get("render_bottom",299)))
-      self.words_per_second = 20
+      self.words_per_second = 8
       self.delay = 1.0/self.words_per_second
 
    def waitBox(self,boxname):
@@ -115,8 +115,14 @@ class Ticker(Axon.Component.component):
                 if len(words) == 0:
                     if blankcount:
                         blankcount = 0
-                        self.clearDisplay()
-                        position = [ self.render_area.left, self.render_area.top ]
+#                        self.clearDisplay()
+#                        position = [ self.render_area.left, self.render_area.top ]
+#                        print "Hello? ", self.position
+                        self.send( {"CHANGEDISPLAYGEO": True,
+                                    "surface" : self.display,
+                                    "position":(108,60)
+                                   },
+                                  "signal")
                     else:
                         blankcount = 1
                 for word in words:

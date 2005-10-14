@@ -49,6 +49,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Codec",
                   "Kamaelia.Sketch", # Empty on RELEASE branch
                   ""],
+      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
 """
       )

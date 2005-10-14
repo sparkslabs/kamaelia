@@ -34,6 +34,7 @@ class Image(Axon.Component.component):
                "callback" : "Receive callbacks from PygameDisplay",
                "bgcolour" : "Set the background colour",
                "events"   : "Place where we recieve events from the outside world",
+               "alphacontrol" : "The alpha transparency of the image is controlled here. It expects a value 0..255",
              }
    Outboxes = {
                "outbox" : "unused",
@@ -92,10 +93,13 @@ class Image(Axon.Component.component):
     
       done = False
       change = False    
-      alpha = 250
+      alpha = 255
       dir = -10
       while not done:
-         alpha = alpha + dir
+         if self.dataReady("alphacontrol"):
+              alpha = self.recv("alphacontrol")
+              self.display.set_alpha(alpha)
+#         alpha = alpha + dir
 #         if alpha > 245 or alpha < 45: dir = -dir
 #         if self.display:
 #            self.display.set_alpha(alpha)
