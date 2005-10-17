@@ -83,106 +83,116 @@ class Ticker(Axon.Component.component):
       self.display = display
 
 
+   def handleAlpha(self):
+       if self.dataReady("alphacontrol"):
+            alpha = self.recv("alphacontrol")
+            self.display.set_alpha(alpha)
+
    def main(self):
-      yield WaitComplete(
+    yield WaitComplete(
           self.requestDisplay(DISPLAYREQUEST=True,
                               callback = (self,"control"),
 # SMELL                              transparency = (128,48,128),
-                              size = (self.render_area.width, self.render_area.height),
-                              position = self.position
-                              )
-      ) 
-      display = self.display
+                            size = (self.render_area.width, self.render_area.height),
+                            position = self.position
+                            )
+    ) 
+    display = self.display
 
-      my_font = pygame.font.Font(None, self.text_height)
-      initial_postition = (self.render_area.left,self.render_area.top)
-      position = [ self.render_area.left, self.render_area.top ]
+    my_font = pygame.font.Font(None, self.text_height)
+    initial_postition = (self.render_area.left,self.render_area.top)
+    position = [ self.render_area.left, self.render_area.top ]
 
-      self.clearDisplay()
+    self.clearDisplay()
 
-      maxheight = 0
-      last=time.time()
-      blankcount = 0
-      alpha = -1
-      while 1:
-         if self.dataReady("alphacontrol"):
-              alpha = self.recv("alphacontrol")
-              print "BOING", alpha
-              self.display.set_alpha(alpha)
-         if self.dataReady("control"):
-            if self.dataReady("control"):
-                data = self.recv("control")
-                if isinstance(data, Axon.Ipc.producerFinished):
-                    self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
-                    return
-         if self.dataReady("inbox"):
-            word = self.recv("inbox")
-            if word =="\n":
-               word = ""
-            if "\n" in word:
-               lines = word.split("\n")[:-1]
-               word = "BONG"
-            else:
-               lines = [word]
-            c = len(lines)
-            for line in lines:
-                word = line
-                words = line.split()
-                if len(words) == 0:
-                    if blankcount:
-                        blankcount = 0
-                        self.send( {"CHANGEDISPLAYGEO": True,
-                                    "surface" : self.display,
-                                    "position":(108,60)
-                                   },
-                                  "signal")
-                    else:
-                        blankcount = 1
-                for word in words:
-                    while time.time() - last < self.delay:
-                       
-                       yield 1
-                    if self.dataReady("control"): ### VOMIT : code duplication
-                        if self.dataReady("control"):
-                            data = self.recv("control")
-                            if isinstance(data, Axon.Ipc.producerFinished):
-                                 self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
-                                 return
-                    last = time.time()
-                    word = " " + word
-                    
-                    alpha = self.display.get_alpha()
-                    self.display.set_alpha(255)
-                    wordsize = my_font.size(word)
-                    word_render= my_font.render(word, 1, self.text_colour)
+    maxheight = 0
+    last=time.time()
+    blankcount = 0
+    alpha = -1
+    while 1:
+       self.handleAlpha()
+#       if self.dataReady("alphacontrol"):
+#            alpha = self.recv("alphacontrol")
+#            print "BOING", alpha
+#            self.display.set_alpha(alpha)
+       if self.dataReady("control"):
+          if self.dataReady("control"):
+              data = self.recv("control")
+              if isinstance(data, Axon.Ipc.producerFinished):
+                  self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
+                  return
+       if self.dataReady("inbox"):
+          word = self.recv("inbox")
+          if word =="\n":
+             word = ""
+          if "\n" in word:
+             lines = word.split("\n")[:-1]
+             word = "BONG"
+          else:
+             lines = [word]
+          c = len(lines)
+          for line in lines:
+              word = line
+              words = line.split()
+              if len(words) == 0:
+                  if blankcount:
+                      blankcount = 0
+                      self.send( {"CHANGEDISPLAYGEO": True,
+                                  "surface" : self.display,
+                                  "position":(108,60)
+                                 },
+                                "signal")
+                  else:
+                      blankcount = 1
+              for word in words:
+                  while time.time() - last < self.delay:
+                     self.handleAlpha()                     
+                     yield 1
+                  self.handleAlpha()
+#                  if self.dataReady("alphacontrol"):
+#                        alpha = self.recv("alphacontrol")
+#                        print "BOING", alpha
+#                        self.display.set_alpha(alpha)
+                  if self.dataReady("control"): ### VOMIT : code duplication
+                      if self.dataReady("control"):
+                          data = self.recv("control")
+                          if isinstance(data, Axon.Ipc.producerFinished):
+                               self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
+                               return
+                  last = time.time()
+                  word = " " + word
+                  
+                  alpha = self.display.get_alpha()
+                  self.display.set_alpha(255)
+                  wordsize = my_font.size(word)
+                  word_render= my_font.render(word, 1, self.text_colour)
 
-                    if position[0]+wordsize[0] > self.render_area.right or c > 1:
-                       position[0] = initial_postition[0]
-                       if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
-                          display.set_colorkey(None)
-                          display.blit(display,
-                                       (self.render_area.left, self.render_area.top),
-                                       (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                                        self.render_area.width-1, position[1]-self.render_area.top ))
+                  if position[0]+wordsize[0] > self.render_area.right or c > 1:
+                     position[0] = initial_postition[0]
+                     if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                        display.set_colorkey(None)
+                        display.blit(display,
+                                     (self.render_area.left, self.render_area.top),
+                                     (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
+                                      self.render_area.width-1, position[1]-self.render_area.top ))
 
-                          pygame.draw.rect(display, 
-                                          self.background_colour, 
-                                          (self.render_area.left, position[1], 
-                                           self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
-                                          0)
-                          # pygame.display.update()
-                          if c>1:
-                             c = c -1
-                       else:
-                          position[1] += maxheight + self.line_spacing
+                        pygame.draw.rect(display, 
+                                        self.background_colour, 
+                                        (self.render_area.left, position[1], 
+                                         self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
+                                        0)
+                        # pygame.display.update()
+                        if c>1:
+                           c = c -1
+                     else:
+                        position[1] += maxheight + self.line_spacing
 
-                    display.blit(word_render, position)
-                    position[0] += wordsize[0]
-                    if wordsize[1] > maxheight:
-                       maxheight = wordsize[1]
-                    self.display.set_alpha(alpha)
-#         self.pause()
-         yield 1
+                  display.blit(word_render, position)
+                  position[0] += wordsize[0]
+                  if wordsize[1] > maxheight:
+                     maxheight = wordsize[1]
+                  self.display.set_alpha(alpha)
+       yield 1
 
 
 if __name__ == "__main__":
