@@ -36,6 +36,8 @@ from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Kamaelia.Data.Experimental import onDemandGraphFileParser_Prefab
 
+import pygame
+
 import os
 import sys
 
@@ -81,10 +83,13 @@ Graphline(
      KEYS = KeyEvent(outboxes = { "fadesignal" : "Normal place for message",
                                   "graphfadesignal" : "Normal place for message",
                                   "graphcontrol" : "Sends a 'next' message to the slide control",
+                                  "slidecontrol" : "Keyboard control",
                                 },
                      key_events = {103: ("TOGGLE", "fadesignal"),  # Toggle Fade
                                    104: ("TOGGLE", "graphfadesignal"),  # Toggle Fade
                                    281: ("NEXT", "graphcontrol"),  # Advance "graph slides"
+                                   pygame.K_SPACE: ("NEXT", "slidecontrol"),  # Advance slides
+                                   pygame.K_BACKSPACE: ("PREV", "slidecontrol"),  # Advance slides
                                   }),
      DISPLAYFADER = BounceRange(255,0, -10), # Initially we want to fade
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
@@ -98,6 +103,7 @@ Graphline(
      linkages = {
          ("MOUSECLICKS","outbox"): ("IMAGELIST","inbox"),
          ("MOUSECLICKS","signal"): ("IMAGELIST","control"),
+         ("KEYS", "slidecontrol"): ("IMAGELIST","inbox"),
          
          ("KEYS", "fadesignal") : ("DISPLAYFADER", "inbox"),
          ("KEYS", "graphfadesignal") : ("GRAPHFADER", "inbox"),

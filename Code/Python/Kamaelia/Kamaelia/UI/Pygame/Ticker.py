@@ -109,9 +109,12 @@ class Ticker(Axon.Component.component):
               alpha = self.recv("alphacontrol")
               print "BOING", alpha
               self.display.set_alpha(alpha)
-#         if alpha != 255:
-#             self.display.set_alpha(255)
-#             print "BOING2", alpha
+         if self.dataReady("control"):
+            if self.dataReady("control"):
+                data = self.recv("control")
+                if isinstance(data, Axon.Ipc.producerFinished):
+                    self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
+                    return
          if self.dataReady("inbox"):
             word = self.recv("inbox")
             if word =="\n":
@@ -128,9 +131,6 @@ class Ticker(Axon.Component.component):
                 if len(words) == 0:
                     if blankcount:
                         blankcount = 0
-#                        self.clearDisplay()
-#                        position = [ self.render_area.left, self.render_area.top ]
-#                        print "Hello? ", self.position
                         self.send( {"CHANGEDISPLAYGEO": True,
                                     "surface" : self.display,
                                     "position":(108,60)
@@ -140,9 +140,19 @@ class Ticker(Axon.Component.component):
                         blankcount = 1
                 for word in words:
                     while time.time() - last < self.delay:
+                       
                        yield 1
+                    if self.dataReady("control"): ### VOMIT : code duplication
+                        if self.dataReady("control"):
+                            data = self.recv("control")
+                            if isinstance(data, Axon.Ipc.producerFinished):
+                                 self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
+                                 return
                     last = time.time()
                     word = " " + word
+                    
+                    alpha = self.display.get_alpha()
+                    self.display.set_alpha(255)
                     wordsize = my_font.size(word)
                     word_render= my_font.render(word, 1, self.text_colour)
 
@@ -170,10 +180,8 @@ class Ticker(Axon.Component.component):
                     position[0] += wordsize[0]
                     if wordsize[1] > maxheight:
                        maxheight = wordsize[1]
-
-         if alpha != -1:
-             self.display.set_alpha(alpha)
-             print "BOING3", alpha
+                    self.display.set_alpha(alpha)
+#         self.pause()
          yield 1
 
 

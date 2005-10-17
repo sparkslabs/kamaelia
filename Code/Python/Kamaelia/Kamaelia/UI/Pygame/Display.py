@@ -79,7 +79,27 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def handleDisplayRequest(self):
          if self.dataReady("notify"):
             message = self.recv("notify")
-            if message.get("DISPLAYREQUEST", False):
+            if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
+               print "SURFACE", message
+               surface = message.message
+               print "SURFACE", surface
+               message.message = None
+               message = None
+               print "BEFORE", [id(x[0]) for x in self.surfaces]
+               self.surfaces = [ x for x in self.surfaces if x[0] is not surface ]
+               print "AFTER", self.surfaces
+               print "Hmm...", self.surface_to_eventcomms.keys()
+               try:
+                   eventcomms = self.surface_to_eventcomms[str(id(surface))]
+               except KeyError:
+                   # This simply means the component wasn't listening for events!
+                   pass
+               else:
+                   print "EVENT OUTBOX:", eventcomms
+                   self.visibility = None
+                   self.removeOutbox(eventcomms)
+                   print "REMOVED OUTBOX"
+            elif message.get("DISPLAYREQUEST", False):
                callbackservice = message["callback"]
                eventservice = message.get("events", None)
                size = message["size"]
