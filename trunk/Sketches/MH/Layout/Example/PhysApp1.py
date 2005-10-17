@@ -34,7 +34,7 @@ import random
 from Axon.Component import component
 # class component(object): pass
 
-class VisibleParticle(Physics.Particle):
+class VisibleParticle(Physics.Simple.Particle):
     """Version of Physics.Particle with added rendering functions,
     and a list of particles it is bonded to."""
 
@@ -56,7 +56,7 @@ class VisibleParticle(Physics.Particle):
         surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
 
 
-class ParticleDragger(UI.DragHandler):
+class ParticleDragger(UI.MH.DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:
@@ -74,7 +74,7 @@ class ParticleDragger(UI.DragHandler):
          self.drag(newx, newy)
          self.particle.unFreeze()                
 
-class PhysApp1(UI.PyGameApp, component):
+class PhysApp1(UI.MH.PyGameApp, component):
     """Simple physics demonstrator app"""
 
     def __init__(self, screensize, fullscreen = False, nodes = None, initialTopology=[], border=100):
@@ -100,8 +100,8 @@ class PhysApp1(UI.PyGameApp, component):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
         self.addHandler(KEYDOWN, self.quit)
         
-        self.laws    = Physics.SimpleLaws(bondLength = 100)
-        self.physics = Physics.ParticleSystem(self.laws, [], 0)
+        self.laws    = Physics.Simple.SimpleLaws(bondLength = 100)
+        self.physics = Physics.Simple.ParticleSystem(self.laws, [], 0)
         
         for node in self.nodes:
            self.makeParticle(*node)

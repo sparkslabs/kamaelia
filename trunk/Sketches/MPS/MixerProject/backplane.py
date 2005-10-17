@@ -6,6 +6,7 @@
 
 import traceback
 import Axon
+import time
 
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
@@ -152,9 +153,6 @@ class MatrixMixer(Axon.Component.component):
         while 1:
             self.pause()
             yield 1
-            data_dj1 = []
-            data_dj2 = []
-            data_music = []
             while self.dataReady("DJ1"):
                 data_dj1.append(self.recv("DJ1"))
             while self.dataReady("DJ2"):
@@ -179,9 +177,14 @@ class MatrixMixer(Axon.Component.component):
                 if self.music_active:
                    mix_args[2]= data_music
 
-                if data_dj1 != [] or data_dj2 != [] or data_music !=[]:
+                if len(data_dj1) > 0 or len(data_dj2) > 0 or len(data_music) > 0:
+                    X = time.time()
                     data = self.mix(mix_args)
+#                    sys.stderr.write("mixtime ="+str( time.time() - X)+"\n")
                     self.send(data, "outbox")
+                    data_dj1 = []
+                    data_dj2 = []
+                    data_music = []
 
             if self.debug and (len(data_dj1) or len(data_dj2) or len(data_music)):
                 print self.id, "echoer #1",self.id,":", data_dj1, "count:", count
@@ -263,6 +266,7 @@ class MatrixMixer(Axon.Component.component):
 
     def mix(self, sources):
         """ This is a correct, but very slow simple 2 source mixer """
+#        sys.stderr.write("sourcelen:"+str( [ len(s) for s in sources] )+"\n")
         def char_to_ord(char):
             raw = ord(char)
             if raw >128:
@@ -336,6 +340,7 @@ class MatrixMixer(Axon.Component.component):
 Backplane("DJ1").activate()
 Backplane("DJ2").activate()
 Backplane("music").activate()
+Backplane("destination").activate()
 
 pipeline(
     SingleServer(port=dj1port),
@@ -353,13 +358,47 @@ pipeline(
 ).activate()
 
 livecontrol = 1
+networkserve = 0
+standalone = 1
+
+datarate = 1536000
+
+class printer(Axon.Component.component):
+        def main(self):
+            while 1:
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    sys.stdout.write(data)
+                    sys.stdout.flush()
+                yield 1
+
+#if standalone:
+if 0:
+    networkserve = 0
+    pipeline(
+         ReadFileAdaptor("audio.1.raw", chunkrate=1000, readmode="bitrate", bitrate=datarate),
+         TCPClient("127.0.0.1", dj1port),
+    ).activate()
+    pipeline(
+         ReadFileAdaptor("audio.2.raw", chunkrate=1000, readmode="bitrate", bitrate=datarate),
+         TCPClient("127.0.0.1", dj2port),
+    ).activate()
+    pipeline(
+         ReadFileAdaptor("audio.2.raw", chunkrate=1000, readmode="bitrate", bitrate=datarate),
+         TCPClient("127.0.0.1", musicport),
+    ).activate()
+
+if networkserve:
+    audiencemix = SingleServer(port=mockserverport)
+else:
+    audiencemix = printer() # SimpleFileWriter("bingle.raw")
 
 if livecontrol:
     Graphline(
         CONTROL =  SingleServer(port=controlport),
         TOKENISER = lines_to_tokenlists(),
         MIXER = MatrixMixer(), 
-        AUDIENCEMIX = SingleServer(port=mockserverport),
+        AUDIENCEMIX = audiencemix,
         linkages = {
            ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
            ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
@@ -373,7 +412,7 @@ else:
         CONTROL_ = consoleEchoer(),
         TOKENISER = lines_to_tokenlists(),
         MIXER = MatrixMixer(), 
-        AUDIENCEMIX = SingleServer(port=mockserverport),
+        AUDIENCEMIX = audiencemix,
         linkages = {
            ("CONTROL" , "outbox") : ("TOKENISER" , "inbox"),
            ("TOKENISER" , "outbox") : ("MIXER" , "mixcontrol"),
@@ -388,14 +427,6 @@ if 0:
         SingleServer(port=mockserverport)
     ).run()
 
-    class printer(Axon.Component.component):
-        def main(self):
-            while 1:
-                if self.dataReady("inbox"):
-                    data = self.recv("inbox")
-                    sys.stdout.write(data)
-                    sys.stdout.flush()
-                yield 1
 
     def dumping_server():
         return pipeline(

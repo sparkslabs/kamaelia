@@ -45,8 +45,8 @@ class RawYUVFramer(component):
         super(RawYUVFramer, self).__init__()
         self.size = size
         self.pixformat = pixformat
-        if pixformat != pygame.IYUV_OVERLAY:
-            raise ValueError("Can't handle anything except pygame.IYUV_OVERLAY at the mo. Sorry!")
+#        if pixformat != pygame.IYUV_OVERLAY:
+#            raise ValueError("Can't handle anything except pygame.IYUV_OVERLAY at the mo. Sorry!")
 
         ysize = size[0]*size[1]
         usize = ysize / 4

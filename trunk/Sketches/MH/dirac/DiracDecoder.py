@@ -105,9 +105,55 @@ if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from VideoOverlay import VideoOverlay
-    
-    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 200000*8/5),
+
+    class rateMeasure(component):
+        def main(self):
+            now = self.scheduler.time
+            while 1:
+               try:
+                  data = self.recv("inbox")
+                  self.send(data, "outbox")
+               except IndexError:
+                  pass
+               yield 1
+
+    class rateLimit(component):
+        def __init__(self, messages_per_second):
+            super(rateLimit, self).__init__()
+            self.mps = messages_per_second
+            self.interval = 1.0/(messages_per_second*1.1)
+        def main(self):
+            while self.dataReady("inbox") <60:
+                self.pause()
+                yield 1
+            c = 0
+            start = 0
+            last = start
+            interval = self.interval # approximate rate interval
+            mps = self.mps
+            while 1:
+                try:
+                    while not( self.scheduler.time - last > interval):
+                       yield 1
+                    c = c+1
+                    last = self.scheduler.time
+                    if last - start > 1:
+                        rate = (last - start)/float(c)
+                        start = last
+                        c = 0
+                    data = self.recv("inbox")
+                    self.send(data, "outbox")
+                except IndexError:
+                    pass
+                yield 1
+
+    file = "/data/dirac-video/foobar.dirac.drc"
+#    file = "/data/dirac-video/snowboard-jum-352x288x75.dirac.drc"
+    framerate = 15
+    pipeline(
+              ReadFileAdaptor(file, readmode="bitrate", 
+                              bitrate = 300000*8/5),
               DiracDecoder(),
+              rateLimit(framerate),
               VideoOverlay(),
             ).run()
-    

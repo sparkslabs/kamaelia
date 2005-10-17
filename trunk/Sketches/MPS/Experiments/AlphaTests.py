@@ -14,27 +14,6 @@ from Axon.Component import component
 from Kamaelia.Util.PipelineComponent import pipeline
 from SubtitleColourDecoderComponent import Colour
 
-# Excerpt from Tennyson's Ulysses
-text = """\
-The lights begin to twinkle from the rocks;
-The long day wanes; the slow moon climbs; the deep
-Moans round with many voices.  Come, my friends.
-'T is not too late to seek a newer world.
-Push off, and sitting well in order smite
-The sounding furrows; for my purpose holds
-To sail beyond the sunset, and the baths
-Of all the western stars, until I die.
-It may be that the gulfs will wash us down;
-It may be we shall touch the Happy Isles,
-And see the great Achilles, whom we knew.
-Tho' much is taken, much abides; and tho'
-We are not now that strength which in old days
-Moved earth and heaven, that which we are, we are,--
-One equal temper of heroic hearts,
-Made weak by time and fate, but strong in will
-To strive, to seek, to find, and not to yield.
-"""
-
 
 class datasource(component):
    def main(self):
@@ -95,12 +74,12 @@ class Ticker(component):
       word_render= my_font.render("Testing, testing", 1, (0,0,0))
       overlay.fill((255,255,255))
       overlay.blit(word_render, (10,10))
-      overlay.set_alpha(6)
+      overlay.set_alpha(10)
       overlay = overlay.convert_alpha()
       C = 0
       while 1:
          C = C+1
-         if C == 121: C=120
+         if C == 21: C=20
          display.blit(overlay, (50+C,50+C))
          for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -111,6 +90,4 @@ class Ticker(component):
 
 
 if __name__ == "__main__":
-   pipeline(datasource(),
-                   Ticker()
-           ).run()
+   Ticker().run()
