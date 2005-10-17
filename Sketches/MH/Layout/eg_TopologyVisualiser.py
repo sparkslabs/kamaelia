@@ -31,15 +31,15 @@ import random, time, re, sys
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
 
-import Physics
-from Physics import Particle as BaseParticle
-from UI import PyGameApp, DragHandler
+import Kamaelia.Physics
+from Kamaelia.Physics.Simple import Particle as BaseParticle
+from Kamaelia.UI.MH import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
 from Kamaelia.Util.PipelineComponent import pipeline
-from Visualisation.Graph.RenderingParticle import RenderingParticle
-from Visualisation.Graph.TopologyViewerServer import TopologyViewerServer
+from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer import TopologyViewerServer
 
 
 def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):

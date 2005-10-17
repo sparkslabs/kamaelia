@@ -57,7 +57,6 @@ class IRC_Client(_Axon.Component.component):
       chan.join()
       return chan
 
-
    def main(self):
       "Handling here is pretty naff really :-)"
       self.login(self.nick, self.nickinfo)
@@ -66,8 +65,8 @@ class IRC_Client(_Axon.Component.component):
       while 1:
          data=""
          if self.dataReady("talk"):
-            data = self.recv()
-            self.channels[self.defaultChannel].say("Woo: " + str(data[:80]))
+            data = self.recv("talk")
+            self.channels[self.defaultChannel].say(data))
          elif self.dataReady("inbox"):
             data = self.recv()
             if "PRIVMSG" in data:
@@ -109,10 +108,9 @@ class SimpleIRCClient(_Axon.Component.component):
 
    def main(self):
       import random
-      port=6667
+      port=self.port
 
-      host = "127.0.0.1"
-      host = "irc.freenode.net"
+      host = self.host
       
       client = TCPClient(host,port)
       clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
@@ -120,7 +118,7 @@ class SimpleIRCClient(_Axon.Component.component):
       self.link((client,"outbox"), (clientProtocol,"inbox"))
       self.link((clientProtocol,"outbox"), (client,"inbox"))
       self.link((clientProtocol, "heard"), (self, "heard"), passthrough=2)
-      self.link((clientProtocol, "talk"), (self, "talk"), passthrough=1)
+      self.link((self, "talk"), (clientProtocol, "talk"), passthrough=1)
 
       self.addChildren(clientProtocol, client)
       yield _Axon.Ipc.newComponent(*(self.children))

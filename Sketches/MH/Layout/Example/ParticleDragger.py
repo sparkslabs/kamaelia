@@ -26,7 +26,7 @@ import UI
 
 
 
-class ParticleDragger(UI.DragHandler):
+class ParticleDragger(UI.MH.DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:

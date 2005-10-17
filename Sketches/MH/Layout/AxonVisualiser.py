@@ -20,14 +20,14 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import Visualisation.Graph
-from Visualisation.Axon.AxonVisualiserServer import AxonVisualiserServer
+import Kamaelia.Visualisation.PhysicsGraph
+from Kamaelia.Visualisation.Axon.AxonVisualiserServer import AxonVisualiserServer
 
 def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
     shortargs = "n" + extraShortArgs
     longargs  = ["navelgaze","introspect="] + extraLongArgs
 
-    dictArgs, optlist, remargs = Visualisation.Graph.parseArgs(args, shortargs, longargs)
+    dictArgs, optlist, remargs = Kamaelia.Visualisation.PhysicsGraph.parseArgs(args, shortargs, longargs)
     
     if "help" in dictArgs:
         dictArgs["help"] += "   -n, --navelgaze\n" + \

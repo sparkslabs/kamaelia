@@ -32,7 +32,7 @@ class message_source(Axon.Component.component):
             yield 1
 
 pipeline(
-     ReadFileAdaptor("audio.2.raw", readsize="1024"), #, readmode="bitrate", bitrate =200000000),
+     ReadFileAdaptor("audio.2.raw", readmode="bitrate", bitrate =1536000),
 #     ReadFileAdaptor("audio.1.raw", readmode="bitrate", bitrate =200000000),
      TCPClient("127.0.0.1", dj1port),
 ).run()

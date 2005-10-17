@@ -573,9 +573,9 @@ if __name__ == "__main__":
    
    import sys
    sys.path.append("../Layout")
-   from Introspector import Introspector
+   from Kamaelia.Utils.Introspector import Introspector
    from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
    from Kamaelia.Util.PipelineComponent import pipeline
-   pipeline(Introspector(),_TCPClient("132.185.133.29",1500)).activate()
+   pipeline(Introspector(),_TCPClient("127.0.0.1",1500)).activate()
    
    scheduler.run.runThreads(slowmo=0)
