@@ -28,6 +28,11 @@ from Axon.Ipc import WaitComplete
 import time
 
 class Ticker(Axon.Component.component):
+   Inboxes = { "inbox"    : "Specify (new) filename",
+               "control"  : "",
+               "alphacontrol" : "The alpha transparency of the image is controlled here. It expects  a value 0..255",
+             }
+
    def __init__(self, **argd):
       super(Ticker,self).__init__()
       #
@@ -98,7 +103,15 @@ class Ticker(Axon.Component.component):
       maxheight = 0
       last=time.time()
       blankcount = 0
+      alpha = -1
       while 1:
+         if self.dataReady("alphacontrol"):
+              alpha = self.recv("alphacontrol")
+              print "BOING", alpha
+              self.display.set_alpha(alpha)
+#         if alpha != 255:
+#             self.display.set_alpha(255)
+#             print "BOING2", alpha
          if self.dataReady("inbox"):
             word = self.recv("inbox")
             if word =="\n":
@@ -147,7 +160,7 @@ class Ticker(Axon.Component.component):
                                           (self.render_area.left, position[1], 
                                            self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
                                           0)
-                          pygame.display.update()
+                          # pygame.display.update()
                           if c>1:
                              c = c -1
                        else:
@@ -158,6 +171,9 @@ class Ticker(Axon.Component.component):
                     if wordsize[1] > maxheight:
                        maxheight = wordsize[1]
 
+         if alpha != -1:
+             self.display.set_alpha(alpha)
+             print "BOING3", alpha
          yield 1
 
 
