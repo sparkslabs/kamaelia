@@ -71,9 +71,16 @@ class BounceRange(Axon.Component.component):
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
                 if message == "TOGGLE":
+                    last = None
                     for level in xrange(self.start, self.stop, self.step):
                         self.send(level, "outbox")
+                        last = level
                         yield 1
+                    print "last", last
+                    if last != self.stop:
+                       print "GRR at xrange"
+                       self.send(self.stop, "outbox")
+                       yield 1
                     self.start, self.stop, self.step = self.stop, self.start, -self.step
             else:
                 self.pause()
@@ -102,7 +109,7 @@ Graphline(
      IMAGELIST = Chooser(items = files),
      EXTRAIMAGELIST = Chooser(items = files2),
      DISPLAYFADER = BounceRange(255,0, -10), # Initially we want to fade
-     EXTRADISPLAYFADER = BounceRange(0,255, -10), # Initially we want to fade
+     EXTRADISPLAYFADER = BounceRange(255,0, -10), # Initially we want to fade
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
      DISPLAY = Image(size=(800,600), 
                      position=(0,0),
