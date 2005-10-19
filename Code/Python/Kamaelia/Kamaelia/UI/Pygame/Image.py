@@ -42,8 +42,12 @@ class Image(Axon.Component.component):
                "display_signal" : "Outbox used for sending signals of various kinds to the display service"
              }
     
-   def __init__(self, image = None, position=None, bgcolour = (128,128,128), size = None, displayExtra = None,
-                maxpect = 0):
+   def __init__(self, image = None,
+                      position=None,
+                      bgcolour = (128,128,128), 
+                      size = None, 
+                      displayExtra = None,
+                      maxpect = 0):
       """Initialisation.
          image = filename of file containing image
          position = (x,y) or None for default
@@ -99,11 +103,8 @@ class Image(Axon.Component.component):
          if self.dataReady("alphacontrol"):
               alpha = self.recv("alphacontrol")
               self.display.set_alpha(alpha)
-#         alpha = alpha + dir
-#         if alpha > 245 or alpha < 45: dir = -dir
-#         if self.display:
-#            self.display.set_alpha(alpha)
          if self.dataReady("control"):
+            print "we do get here..."
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                done = True
@@ -130,9 +131,14 @@ class Image(Axon.Component.component):
          if change:
             self.blitToSurface()
             change = False
-        
-         yield 1
 
+         self.pause()
+         yield 1
+      print "HERE"
+      self.display.set_alpha(0)
+      self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal") 
+      yield 1
+      print "NOT HERE"
         
    def fetchImage(self, newImage):
       if newImage is None:

@@ -97,7 +97,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                else:
                    print "EVENT OUTBOX:", eventcomms
                    self.visibility = None
-                   self.removeOutbox(eventcomms)
+                   try:
+                       self.removeOutbox(eventcomms)
+                   except:
+                       "This sucks"
+                       pass
                    print "REMOVED OUTBOX"
             elif message.get("DISPLAYREQUEST", False):
                callbackservice = message["callback"]
@@ -210,14 +214,19 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                      e = Bunch()
                      e.type = event.type
                      pos = event.pos[0],event.pos[1]
-                     e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
-                     if event.type == pygame.MOUSEMOTION:
-                        e.rel = event.rel
-                     if event.type == pygame.MOUSEMOTION:
-                        e.buttons = event.buttons
-                     else:
-                        e.button = event.button
-                     event = e
+                     try:
+                         e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                         if event.type == pygame.MOUSEMOTION:
+                            e.rel = event.rel
+                         if event.type == pygame.MOUSEMOTION:
+                            e.buttons = event.buttons
+                         else:
+                            e.button = event.button
+                         event = e
+                     except TypeError:
+                        "XXXX GRRR"
+                        pass
+
                   bundle.append(event)
 
             # only send events to listener if we've actually got some
