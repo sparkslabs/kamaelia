@@ -48,11 +48,16 @@ else:
 
 GraphsFile = os.path.join(basepath, "Graphs.xml")
 path = os.path.join(basepath, "Slides")
+path_extra = os.path.join(basepath, "Slides.extra")
 extn = ".png"
 
 files = os.listdir(path)
 files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
 files.sort()
+
+files2 = os.listdir(path_extra)
+files2 = [ os.path.join(path_extra,fname) for fname in files2 if fname[-len(extn):]==extn ]
+files2.sort()
 
 class BounceRange(Axon.Component.component):
     def __init__(self, start, stop, step=1):
@@ -74,26 +79,39 @@ class BounceRange(Axon.Component.component):
                 self.pause()
                 yield 1
 
-
 Graphline(
+     KEYS = KeyEvent(outboxes = { "fadesignal" : "Normal place for message",
+                                  "graphfadesignal" : "Normal place for message",
+                                  "extrafadesignal" : "Normal place for message",
+                                  "graphcontrol" : "Sends a 'next' message to the slide control",
+                                  "slidecontrol" : "Keyboard control",
+                                  "extraslidecontrol" : "Keyboard control",
+                                },
+                     key_events = {
+                                   103: ("TOGGLE", "fadesignal"),  # Toggle Fade
+                                   104: ("TOGGLE", "graphfadesignal"),  # Toggle Fade
+                                   106: ("TOGGLE", "extrafadesignal"),  # Toggle Fade
+                                   281: ("NEXT", "graphcontrol"),  # Advance "graph slides"
+                                   pygame.K_RETURN: ("NEXT", "extraslidecontrol"),  # Advance slides
+                                   pygame.K_SPACE: ("NEXT", "slidecontrol"),  # Advance slides
+                                   pygame.K_BACKSPACE: ("PREV", "slidecontrol"),  # Advance slides
+                                  }),
      MOUSECLICKS = Multiclick(caption="", position=(50,50), transparent=True,
                               msgs = [ "", "", "PREV", "NEXT", "PREV","NEXT" ],
                               size=(700,500)),
      IMAGELIST = Chooser(items = files),
-     KEYS = KeyEvent(outboxes = { "fadesignal" : "Normal place for message",
-                                  "graphfadesignal" : "Normal place for message",
-                                  "graphcontrol" : "Sends a 'next' message to the slide control",
-                                  "slidecontrol" : "Keyboard control",
-                                },
-                     key_events = {103: ("TOGGLE", "fadesignal"),  # Toggle Fade
-                                   104: ("TOGGLE", "graphfadesignal"),  # Toggle Fade
-                                   281: ("NEXT", "graphcontrol"),  # Advance "graph slides"
-                                   pygame.K_SPACE: ("NEXT", "slidecontrol"),  # Advance slides
-                                   pygame.K_BACKSPACE: ("PREV", "slidecontrol"),  # Advance slides
-                                  }),
+     EXTRAIMAGELIST = Chooser(items = files2),
      DISPLAYFADER = BounceRange(255,0, -10), # Initially we want to fade
+     EXTRADISPLAYFADER = BounceRange(0,255, -10), # Initially we want to fade
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
-     DISPLAY = Image(size=(800,600), position=(0,0)),
+     DISPLAY = Image(size=(800,600), 
+                     position=(0,0),
+                     displayExtra={ "transparency" : (255,255,255) },
+                    ),
+     EXTRADISPLAY = Image(size=(800,600), 
+                     position=(0,0),
+                     displayExtra={ "transparency" : (255,255,255) },
+                    ),
      GRAPHSLIDES = pipeline(
          onDemandGraphFileParser_Prefab(GraphsFile),
          chunks_to_lines(),
@@ -104,14 +122,20 @@ Graphline(
          ("MOUSECLICKS","outbox"): ("IMAGELIST","inbox"),
          ("MOUSECLICKS","signal"): ("IMAGELIST","control"),
          ("KEYS", "slidecontrol"): ("IMAGELIST","inbox"),
+         ("KEYS", "extraslidecontrol"): ("EXTRAIMAGELIST","inbox"),
          
          ("KEYS", "fadesignal") : ("DISPLAYFADER", "inbox"),
+         ("KEYS", "extrafadesignal") : ("EXTRADISPLAYFADER", "inbox"),
          ("KEYS", "graphfadesignal") : ("GRAPHFADER", "inbox"),
          ("KEYS", "graphcontrol") : ("GRAPHSLIDES", "inbox"),
          
+         ("EXTRADISPLAYFADER", "outbox") : ("EXTRADISPLAY", "alphacontrol"),
          ("DISPLAYFADER", "outbox") : ("DISPLAY", "alphacontrol"),
          ("GRAPHFADER", "outbox") : ("GRAPHVIEWER", "alphacontrol"),
          
+         ("EXTRAIMAGELIST","outbox"): ("EXTRADISPLAY","inbox"),
+         ("EXTRAIMAGELIST","signal"): ("EXTRADISPLAY","control"),
+
          ("IMAGELIST","outbox"): ("DISPLAY","inbox"),
          ("IMAGELIST","signal"): ("DISPLAY","control"),
          
