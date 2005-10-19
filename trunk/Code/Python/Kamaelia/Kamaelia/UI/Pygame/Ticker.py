@@ -31,6 +31,8 @@ class Ticker(Axon.Component.component):
    Inboxes = { "inbox"    : "Specify (new) filename",
                "control"  : "",
                "alphacontrol" : "The alpha transparency of the image is controlled here. It expects  a value 0..255",
+               "pausebox": "",
+               "unpausebox":"",
              }
 
    def __init__(self, **argd):
@@ -149,10 +151,11 @@ class Ticker(Axon.Component.component):
                      self.handleAlpha()                     
                      yield 1
                   self.handleAlpha()
-#                  if self.dataReady("alphacontrol"):
-#                        alpha = self.recv("alphacontrol")
-#                        print "BOING", alpha
-#                        self.display.set_alpha(alpha)
+                  if self.dataReady("pausebox"):
+                      data = self.recv("pausebox")
+                      while not self.dataReady("unpausebox"):
+                          yield 1
+                      self.recv("unpausebox")
                   if self.dataReady("control"): ### VOMIT : code duplication
                       if self.dataReady("control"):
                           data = self.recv("control")
