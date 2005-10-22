@@ -125,6 +125,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.send(surface, callbackcomms)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
+            elif message.get("ADDLISTENEVENT", None) is not None:
+               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+               self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
+
+            elif message.get("REMOVELISTENEVENT", None) is not None:
+               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+               self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+
             elif message.get("CHANGEDISPLAYGEO", False):
                 try:
                     surface = message.get("surface", None)
@@ -174,14 +182,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                        "posservice":posservice}
                                     )
                 
-            elif message.get("ADDLISTENEVENT", None) is not None:
-               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
-               self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
-
-            elif message.get("REMOVELISTENEVENT", None) is not None:
-               eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
-               self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
-
 # Does this *really* need to be here?
 #
 #            elif message.get("CHANGEALPHA", None) is not None:
