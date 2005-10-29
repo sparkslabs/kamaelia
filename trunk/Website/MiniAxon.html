@@ -1,18 +1,22 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:8pt;font-family:Verdana">
-<p><span style="font-size:19pt;font-weight:600">Mini-Axon</span></p>
-<p align="right"><span style="font-size:12pt">Build your own Kamaelia Core</span></p>
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Mini-Axon</span></p>
+<p align="right"><span style="font-size:16pt">Build your own Kamaelia Core</span></p>
 <p dir="ltr">It's interesting to note that there are two kinds of rich people in the world: those who made the money they have, and those who inherited it. Those who make it for themselves have often been noted to be greater risk takers than those who simply inherit. This is for the very simple reason - they've done it once, so they believe they can do it again.</p>
 <p dir="ltr">Likewise when using any system, library, or framework, you're likely to have a better understanding of the system and how to better use it if you really understand how it works. That is you've written the system rather than someone else. Our preferred approach to date so far for teaching a novice how to use to Kamaelia has been to get them to write a version of the core concurrency system. This is framed as a series of exercises. After having built it, they realise that the system is really just a simple skein over simple programs.</p>
 <p dir="ltr">Furthermore, this set of exercises has normally been done within less than 2 weeks of the novice learning python. If you're a new programmer, and you've learnt a certain core of python, you should be able to do and follow these exercises. It might look daunting, but it should be fine. If you get stuck, please feel free to come chat on IRC or on the mailing lists!</p>
 <p dir="ltr"><span style="font-weight:600">Python pre-requisitives:</span></p>
 <ul type="disc"><li>classes, methods, functions, if/elif/else, while, try..except, for..in.., generators (yield), lists, dictionaries, tuples.</li></ul>
-<span style="font-weight:600">What's in this tutorial?</span></p>
-<ol><li dir="ltr">Write a basic <span style="font-weight:600"><a href="#Microprocess">Microprocess</a></span></li>
-<li dir="ltr">Build a simple <span style="font-weight:600"><a href="#Scheduler">Scheduler</a> </span>to run the Microprocesses</li>
-<li dir="ltr">Turn a microprocess into a <span style="font-weight:600"><a href="#Component">Component</a></span></li>
-<li dir="ltr">Create a <span style="font-weight:600"><a href="#Postman">Postman</a> </span>to deliver data between microprocesses</li></ol>
-<p>At the end of this tutorial you will have your own mini-axon core, largely compatible with the absolute core of Kamaelia's Axon.</p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600"><a name="Microprocess">1. Microprocesses - A Generator with Context</a></span></p>
+<p><span style="font-weight:600">What's in this tutorial?</span></p>
+<ol><li dir="ltr">Write a basic <a href="#Microprocess"><span style="font-weight:600">Microprocess</span></a></li>
+<li dir="ltr">Build a simple <a href="#Scheduler"><span style="font-weight:600">Scheduler</span></a><span style="font-weight:600"> </span>to run the Microprocesses</li>
+<li dir="ltr"> Interlude, discussing progress so far and what you can do with microprocesses and schedulers, putting the next two exercises in context</li>
+<li dir="ltr">Turn a microprocess into a Simple <a href="#Component"><span style="font-weight:600">Component</span></a></li>
+<li dir="ltr">Create a <a href="#Postman"><span style="font-weight:600">Postman</span></a><span style="font-weight:600"> </span>to deliver data between microprocesses</li>
+<li dir="ltr">A second interlude where you see how to use your framework to build a simple multicast server that can serve a file over multicast. The resulting components can be used with the main Axon system as they can with your mini-axon system.</li>
+<li dir="ltr">Summary</li></ol>
+<p>At the end of this tutorial you will have your own mini-axon core, compatible with the absolute core of Kamaelia's Axon.</p>
+<p></p>
+<p dir="ltr"><a name="Microprocess"></a><span style="font-size:14pt;font-weight:600">1. Microprocesses - A Generator with Context</span></p>
 <p dir="ltr">Axon is built on top of generators with some added context. Whilst the most common version of this a user actually uses is called a component, this is a specialisation of the general concept - a generator with context.</p>
 <p dir="ltr"><span style="font-weight:600">Exercise:</span> Write a class called <span style="font-family:Courier;font-weight:600">microprocess</span> (make sure you subclass &quot;object&quot; !) with the following methods:</p>
 <ul type="disc"><li dir="ltr"><span style="font-family:Courier">__init__(self)</span></li>
@@ -21,7 +25,7 @@
 <li dir="ltr"><span style="font-family:Courier">main(self)</span></li>
 <ul type="disc"><li dir="ltr">Takes no arguments. (aside from self)</li>
 <li dir="ltr">This should be a generator that simply yields 1 value - specifically a 1</li></ul></ul>
-<p dir="ltr"><span style="font-weight:600"><br /></span></p>
+<p dir="ltr"></p>
 <p dir="ltr"><span style="font-weight:600">Answer:</span></p>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class microprocess(object):<br />    def __init__(self):<br />        super(microprocess, self).__init__()<br />    def main(self):<br />        yield 1]</span></div></ul>
 <p dir="ltr"><span style="font-weight:600">Discussion:</span></p>
@@ -33,7 +37,7 @@
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]&gt;&gt;&gt; for i in a.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in b.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in c.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1]</span></div></ul>
 <p dir="ltr">OK, so we have a mechanism for adding context to generators, and we've called that a microprocess. Let's make it simple to set lots of these running.</p>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600"><a name="Scheduler">2. Scheduler - A means of running lots of microprocesses</a></span></p>
+<p dir="ltr"><a name="Scheduler"></a><span style="font-size:14pt;font-weight:600">2. Scheduler - A means of running lots of microprocesses</span></p>
 <p dir="ltr"><span style="font-weight:600">Exercise: </span>Write a class called <span style="font-family:Courier;font-weight:600">scheduler</span> with the following characteristics.</p>
 <ul type="disc"><li dir="ltr">It should subclass microprocess.</li></ul>
 <p dir="ltr">Objects created shold have the following attributes:</p>
@@ -70,14 +74,14 @@
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]&gt;&gt;&gt; for _ in myscheduler.main():<br />...     pass<br />...<br />Hello World<br />Game Over<br />Hello World<br />Game Over<br />...<br />Hello World<br />Game Over<br />&gt;&gt;&gt;]</span></div></ul>
 <p dir="ltr">As you can see, the scheduler hits the 100th iteration and then halts.</p>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600">Interlude</span></p>
+<p dir="ltr"><span style="font-size:14pt;font-weight:600">3 Interlude</span></p>
 <p dir="ltr">So far we've created a mechanism for giving a generator some implicit context by embedding it inside a microprocess class. We've also created a simple microprocess that repeatedly displays the same message over and over again. We've also created a simple mechanism for setting lots of microprocesses running and watching them just go.</p>
 <p dir="ltr">This is all well and good and core aspects of Axon. However another core aspect is enabling these generators to talk to each other. Doing this means we can divide responsibility for a task between file reading, and display. The metaphor we choose to use in Axon is a very old one - that of a worker at a desk with a number of inboxes and a number of outboxes. The worker receives messages on his/her inboxes. He/She does some work, and send results on his/her outboxes. We can then have something that takes messages from an outbox (called saying &quot;finance&quot;) and delivers them to the inbox of somewhere else (say the inbox &quot;in&quot; on the finance desk/component). </p>
 <p dir="ltr">An alternate analogy we don't take here is one of computer chips with pins and wires. Signals would get sent to pins transmitted along the wires (links) to other pins on other chips. A more software oriented alternative is unix pipelines and standard file descriptors. A unix command line program always* has access to stdin, which it reads but has no idea of the source; stdout  it can write to, but has no idea of destination (and stderr). Obviously however unix command line programs don't know if they're in a pipeline, or standalone. </p>
 <p dir="ltr">The key point we have is <span style="font-style:italic">active </span>objects talking only to local interfaces, and not knowing how those local interfaces are used.</p>
 <p dir="ltr">So the next step is to first create this standard interface for external communications, and then a mechanism for allowing communication between these interface. </p>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600"><a name="Component">3. Simple Component - Microprocesses with standard external interfaces</a></span></p>
+<p dir="ltr"><span style="font-size:14pt;font-weight:600">4<a name="Component"></a> Simple Component - Microprocesses with standard external interfaces</span></p>
 <p dir="ltr"><span style="font-weight:600">Exercise: </span> Write a class called <span style="font-family:Courier;font-weight:600">component</span> that subclasses <span style="font-family:Courier">microprocess</span> with the following...</p>
 <p>Attributes:</p>
 <ul type="disc"><li><span style="font-family:Courier">self.boxes</span> - this should be a dictionary of the following form:</li>
@@ -134,7 +138,7 @@
 <p dir="ltr"></p>
 <p dir="ltr">That said, components by themselves are relatively boring. Unless we have some way of moving the data between generators we haven't gained anything (really) beyond the printer example above. So we need someone/something that can move data/messages from outboxes and deliver to inboxes...</p>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600"><a name="Postman">4. Postman - A Microprocess that performs deliveries!</a></span></p>
+<p dir="ltr"><span style="font-size:14pt;font-weight:600">5<a name="Postman"></a> Postman - A Microprocess that performs deliveries!</span></p>
 <p dir="ltr">Given we have outboxes and inboxes, it makes sense to have something that can handle deliveries between the two. For the purpose of this exercise, we'll create a microprocess that can look at a single outbox for a single component, take any messages deposited there and pass them the an inbox of another component. In terms of the component implementation so far we can use <span style="font-family:Courier;font-weight:600">dataReady</span> to check for availability of messages, <span style="font-family:Courier;font-weight:600">recv</span> to collect the message from the outbox, and <span style="font-family:Courier;font-weight:600">send</span> to deliver the message to the recipient inbox.</p>
 <p dir="ltr"><span style="font-weight:600">Exercise: </span> Write a class called <span style="font-family:Courier;font-weight:600">postman</span> that subclasses <span style="font-family:Courier">microprocess</span> with the following...</p>
 <p dir="ltr">Attributes:</p>
@@ -164,7 +168,7 @@
 <p dir="ltr">Running the above system then results in the following output:</p>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]Hello World 2<br />Hello World 3<br />...<br />Hello World 97<br />Hello World 98]</span></div></ul>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600">Interlude 2</span></p>
+<p dir="ltr"><span style="font-size:14pt;font-weight:600">6 Interlude 2</span></p>
 <p>If you've come this far, you may be wondering the worth of what you've acheived. Essentially you've managed to implement the core of a working Axon system, specifically on the most used aspects of the system. Sure, there is some syntactic sugar relating to creation and managing of links, but that's what it is - sugar.</p>
 <p>One of the longer examples on the Kamaelia website, specifically in the blog area, is how to build new components. That's probably the next logical place to start looking. However, taking one of the components on that page, we find that the core implementation of them matches the same core API as the component system you've implemented.</p>
 <p>For example, let's take a look at the multicast sender. </p>
@@ -183,7 +187,7 @@
 <p>That can then be activated and run in the usual way:</p>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]myscheduler = scheduler()<br />myscheduler.activateMicroprocess(reader)<br />myscheduler.activateMicroprocess(sender)<br />myscheduler.activateMicroprocess(postie)<br /><br />for _ in myscheduler.main():<br />    pass]</span></div></ul>
 <p dir="ltr"></p>
-<p dir="ltr"><span style="font-size:11pt;font-weight:600">Summary</span></p>
+<p dir="ltr"><span style="font-size:14pt;font-weight:600">7 Summary</span></p>
 <p>This page has hopefully helped you build a core component system based on Kamaelia's Axon. It should be clear as well from this that the core of Kamaelia is actually quite small. We've found a number of aspects which we can optimise, add in syntactic sugar, and we're discovering that certain facilities are needed, and can be useful. However the raw core is simple - it's about generators communicating with inboxes and outboxes, and then building interesting systems on top of that.</p>
 <p>The next step we'd normally recommend at this point is to build some interesting systems. Some exercises which will hopefully be helpful will appear as time progresses.</p>
 <p></p>
