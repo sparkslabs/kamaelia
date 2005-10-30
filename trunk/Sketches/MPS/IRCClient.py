@@ -39,9 +39,9 @@ class channel(object):
 class IRC_Client(_Axon.Component.component):
    Inboxes = ["inbox", "control", "talk"]
    Outboxes = ["outbox", "signal", "heard" ]
-   def __init__(self, nick="kamaeliabot",
-                      nickinfo="Kamaelia IRC",
-                      defaultChannel="#kamtest"):
+   def __init__(self, nick="michaels",
+                      nickinfo="Kamaelia",
+                      defaultChannel="#oscon"):
       self.__super.__init__()
       self.nick = nick
       self.nickinfo = nickinfo
@@ -66,7 +66,7 @@ class IRC_Client(_Axon.Component.component):
          data=""
          if self.dataReady("talk"):
             data = self.recv("talk")
-            self.channels[self.defaultChannel].say(data))
+            self.channels[self.defaultChannel].say(data)
          elif self.dataReady("inbox"):
             data = self.recv()
             if "PRIVMSG" in data:
@@ -93,10 +93,10 @@ class SimpleIRCClient(_Axon.Component.component):
    }
    Outboxes = ["outbox", "signal", "heard" ] 
    def __init__(self, host="127.0.0.1", 
-                      port="6667", 
-                      nick="kamaeliabot",
-                      nickinfo="Kamaelia IRC",
-                      defaultChannel="#kamtest",
+                      port=6667, 
+                      nick="michaels",
+                      nickinfo="Kamaelia",
+                      defaultChannel="#oscon",
                       IRC_Handler=IRC_Client):
       self.__super.__init__()
       self.host = host
@@ -134,21 +134,10 @@ if __name__ == '__main__':
 
    Graphline(
        SOURCE = ConsoleReader(),
-       CONNECTION = SimpleIRCClient(),
+       CONNECTION = SimpleIRCClient(host="127.0.0.1", defaultChannel="#oscon"),
        DISPLAY = Ticker(render_right = 800,render_bottom = 600),
        linkages = {
            ("SOURCE","outbox"):("CONNECTION","talk"),
            ("CONNECTION","heard"):("DISPLAY","inbox"),
        }
    ).run()
-
-"""
-   if data.find ( 'PING' ) != -1: # Handle network PINGs
-      irc.send ( 'PONG ' + data.split() [ 1 ] + '\r\n' )
-
-   if data.find ( 'PRIVMSG' ) != -1:
-      ":Nick!user@host PRIVMSG destination :Message"
-      nick = data.split ( '!' ) [ 0 ].replace ( ':', '' )
-      message = ':'.join ( data.split ( ':' ) [ 2: ] )
-      print nick + ':', message
-"""
