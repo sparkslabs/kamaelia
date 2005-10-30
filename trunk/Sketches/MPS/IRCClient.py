@@ -23,6 +23,7 @@
 
 import Axon as _Axon
 from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Util.Graphline import Graphline
 
 class channel(object):
    # Sock here is currently a component, and default inbox
@@ -111,7 +112,7 @@ class SimpleIRCClient(_Axon.Component.component):
       port=self.port
 
       host = self.host
-      
+
       client = TCPClient(host,port)
       clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
 
@@ -126,11 +127,44 @@ class SimpleIRCClient(_Axon.Component.component):
          self.pause()
          yield 1
 
+#
+# Logically this should be equivalent to the above, but causes a bug in Graphline to manifest
+# itself. Specific backtrace:
+# Traceback (most recent call last):
+#   File "./IRCClient.py", line 171, in ?
+#     CONNECTION = SimpleIRCClient(host="127.0.0.1", defaultChannel="#oscon"),
+#   File "./IRCClient.py", line 155, in SimpleIRCClient
+#     linkages = {
+#   File "/usr/lib/python2.4/site-packages/Kamaelia/Util/Graphline.py", line 44, in __init__
+#     self.addExternalPostboxes()
+#   File "/usr/lib/python2.4/site-packages/Kamaelia/Util/Graphline.py", line 68, in
+#  addExternalPostboxes
+#     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
+# TypeError: list indices must be integers
+#
+def __SimpleIRCClient(host="127.0.0.1", 
+                      port=6667, 
+                      nick="michaels",
+                      nickinfo="Kamaelia",
+                      defaultChannel="#oscon",
+                      IRC_Handler=IRC_Client):
+
+    Graphline(
+        CLIENT = TCPClient(host,port),
+        PROTOCOL = IRC_Handler(nick, nickinfo, defaultChannel),
+        linkages = {
+            ("CLIENT", "outbox") : ("PROTOCOL", "inbox"),
+            ("PROTOCOL", "outbox") : ("CLIENT", "inbox"),
+            ("PROTOCOL", "heard") : ("self", "heard"),
+            ("self", "talk") : ("PROTOCOL", "talk"),
+        }
+    )
+
+
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.Console import ConsoleReader
    from Kamaelia.UI.Pygame.Ticker import Ticker
-   from Kamaelia.Util.Graphline import Graphline
 
    Graphline(
        SOURCE = ConsoleReader(),
