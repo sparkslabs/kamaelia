@@ -27,42 +27,22 @@ from a broadcast carousel - where a programme (or set of programmes) is
 broadcast one after another, often on a loop. Alternatively, think of public
 information screens which display a looping carousel of slides of information.
 
-If this makes no sense, suppose you want to read data from a sequence of files -
-one after another. Provide a carousel with a filereader component and a source
-of filenames, and it will make a new filereader for each file in turn,
-outputting their data one after another. The carousel automatically asks the
-filename source for a new item when its current child signals that it has
-finished.
-
 You gain reusability from things that are not directly reusable and normally
-come to a halt.
+come to a halt. For example, make a carousel of file reader components, and you
+can read from more than one file, one after another. The carousel will make a
+new file reader component every time you make  new request.
 
 
 
-EXAMPLE USAGE : Reading from a sequence of files
-
-1. Write a factory function that takes a single argument and returns a new
-component for the carousel:
+EXAMPLE USAGE : A reusable file reader
 
     def makeFileReader(filename):
         return ReadFileAdapter(filename = filename, ...other args... )
 
-2. Make the carousel giving it the factory function:
+    reusableFileReader = Carousel componentFactory = makeFileReader)
 
-    carousel = Carousel( componentFactory = makeFileReader )
-
-3. Make a source of instructions for the carousel: (in this case, a source of
-filenames)
-
-    filenames = Chooser( ["file1","file2","file3", ... ] )
-
-4. Wire the source and carousel together:
-
-    filecarousel = JoinChooserToCarousel( chooser = filenames, carousel = carousel )
-
-5. Activate:
-
-    filecarousel.activate()
+Whenever you send a filename to the "next" inbox of the reusableFileReader
+component, it will read that file. You can do this as many times as you wish.
 
 
 
@@ -79,10 +59,11 @@ If the child sends an Axon.Ipc.shutdownMicroprocess or Axon.Ipc.producerFinished
 message then the carousel gets rid of that component and sends a "NEXT" message
 to its "requestNext" outbox.
 
-Another component, such as a Chooser, should respond to this message by sending
+Another component, such as a Chooser, can respond to this message by sending
 the new set of arguments (for the factory function) to the carousel's "next"
 inbox. The carousel then uses your factory function to create a new child
-component. And so the cycle repeats.
+component. This way, a sequence of operations can be automatically chained
+together.
 
 If the argument source needs to receive a "NEXT" message before sending its
 first set of arguments, then set the argument make1stRequest=True when creating
@@ -126,8 +107,7 @@ class Carousel(component):
 
     def __init__(self, componentFactory, make1stRequest=False):
         """
-        __init__(componentFactory)
-        __init__(componentFactory,make1stRequest=True)
+        __init__(componentFactory,[make1stRequest=False])
 
         componentFactory(argument) -> new component
             factory function for creating a new child according to specified arguments
