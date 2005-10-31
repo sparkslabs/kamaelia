@@ -30,10 +30,9 @@ A protocol handler is simply a component that can receive and send data (as
 byte strings) in a particular format and with a particular behaviour - ie.
 conforming to a particular protocol. 
 
-Provide this chassis with a factory function that will create a component to
-handle the protocol. Whenever a client connects it will be used to create a
-component to handle communications with that client.
-
+Provide this chassis with a factory function to create a component to
+handle the protocol. Whenever a client connects a handler component will then be
+created to handle communications with that client.
 
 
 
@@ -55,17 +54,10 @@ Using a simple echo protocol, that just echoes back anything sent by the client:
                 msg = self.recv("control")
                 return isinstance(msg, Axon.Ipc.producerFinished):
 
-1. Write a factory function that returns a new protocol handler component:
-
     def newProtocol():
         return EchoProtocol()
 
-2. Make the server:
-
     simpleServer = SimpleServer( protocol = newProtocol, port = PORTNUMBER )
-
-3. Activate:
-
     simpleServer.activate()
 
 
