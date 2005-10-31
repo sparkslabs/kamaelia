@@ -116,10 +116,16 @@ class SimpleIRCClient(_Axon.Component.component):
       client = TCPClient(host,port)
       clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
 
+#      self.link((client,"outbox"), (clientProtocol,"inbox"))
+#      self.link((clientProtocol,"outbox"), (client,"inbox"))
+#      self.link((clientProtocol, "heard"), (self, "heard"), passthrough=2)
+#      self.link((self, "talk"), (clientProtocol, "talk"), passthrough=1)
+
       self.link((client,"outbox"), (clientProtocol,"inbox"))
       self.link((clientProtocol,"outbox"), (client,"inbox"))
-      self.link((clientProtocol, "heard"), (self, "heard"), passthrough=2)
-      self.link((self, "talk"), (clientProtocol, "talk"), passthrough=1)
+
+      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
+      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
 
       self.addChildren(clientProtocol, client)
       yield _Axon.Ipc.newComponent(*(self.children))
@@ -165,13 +171,10 @@ if __name__ == '__main__':
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.Console import ConsoleReader
    from Kamaelia.UI.Pygame.Ticker import Ticker
+   from Kamaelia.Util.PipelineComponent import pipeline
 
-   Graphline(
-       SOURCE = ConsoleReader(),
-       CONNECTION = SimpleIRCClient(host="127.0.0.1", defaultChannel="#oscon"),
-       DISPLAY = Ticker(render_right = 800,render_bottom = 600),
-       linkages = {
-           ("SOURCE","outbox"):("CONNECTION","talk"),
-           ("CONNECTION","heard"):("DISPLAY","inbox"),
-       }
+   pipeline(
+       ConsoleReader(),
+       SimpleIRCClient(host="127.0.0.1", nick="kamaeliabot", defaultChannel="#kamtest"),
+       Ticker(render_right = 800,render_bottom = 600),
    ).run()
