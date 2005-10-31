@@ -3,7 +3,7 @@
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Codec.Dirac import DiracDecoder
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Util.RateLimit import RateLimit
+from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 
 file = "snowboard-jum-352x288x75.dirac.drc"
@@ -13,6 +13,6 @@ pipeline(
          ReadFileAdaptor(file, readmode="bitrate",
                          bitrate = 300000*8/5),
          DiracDecoder(),
-         RateLimit(framerate),
+         MessageRateLimit(framerate),
          VideoOverlay(),
 ).run()
