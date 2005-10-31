@@ -106,9 +106,9 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess, newComponent
 
 class Carousel(component):
     """
-    Carousel(...) -> new Carousel chassis component
+    Carousel(...) -> new Carousel chassis component (see __init__)
 
-    Creates a carousel component that makes child components one at a time
+    A carousel component that makes child components one at a time
     and lets them do their stuff. Replacing them when they terminate or if
     requested to do so.
     """
