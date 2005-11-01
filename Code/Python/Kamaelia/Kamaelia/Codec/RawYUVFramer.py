@@ -19,31 +19,59 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""
+Raw YUV video data framer.
+
+This component takes a raw stream of YUV video data and breaks it into
+invidual frames. It sends them out one at a time, tagged with relevant data
+such as the frame size.
+
+
+
+EXAMPLE USAGE : Reading and encoding raw video
+
+    imagesize = (352, 288)  # "CIF" size video
+    
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+             RawYUVFramer(imagesize),
+             DiracEncoder(preset="CIF"),
+            ).activate()
+
+
+
+MORE DETAIL
+
+Receives raw yuv video data, as strings on its "inbox" inbox.
+
+Sends out individual frames packaged in a dictionary:
+    ["yuv"] = (y_data, u_data, v_data)  -- a tuple of strings
+    ["size"] = (width, height)  -- in pixels
+    ["pixformat"] =  "YUV420_planar"
+
+The component will terminate if it receives a shutdownMicroprocess or
+producerFinished message on its "control" inbox. The message is passed on out of
+the "signal" outbox.
+
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
 class RawYUVFramer(component):
-    """Receives a raw data stream containing YUV data and frames it
+    """
+    RawYUVFramer(size,pixformat) -> raw yuv video data framing component
 
-       Outputting one frame at a time, as separate YUV planes, with additional metadata.
+    Creates a component that frames a raw stream of YUV video data into frames.
 
-       frame format:
-               { "size" : (pixels_width, pixels_height),
-                 "pixformat" : pixel data format (see below)
-                 "yuv" : ( ydata_string, udata_string, vdata_string ),
-               }
-
-       Incoming data should be a byte stream as strings. They can be of any chunk size.
-
-       Currently supported pixel formats:
-           
-         "YUV420_planar" - (y,u,v) where u and v are half horizontal and vertical resolutions
+    Keywork arguments:
+    size = (width,height)  -- size of a video frame in pixels
+    pixformat = "YUV420_Planar"  -- raw video data format
     """
        
     def __init__(self, size, pixformat = "YUV420_planar"):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(RawYUVFramer, self).__init__()
         self.size = size
         self.pixformat = pixformat
@@ -57,7 +85,7 @@ class RawYUVFramer(component):
         self.sizes = { "y":ysize, "u":usize, "v":vsize }
 
     def main(self):
-
+        """Main loop"""
         done = False
     
         while not done:
@@ -91,7 +119,12 @@ class RawYUVFramer(component):
         
 
     def packAndSend(self, raw):
-        """Pack incoming raw data into y,u,v planes, and trigger flushes when they fill"""
+        """
+        packAndSend(raw) -> None
+        
+        Pack incoming raw data into y,u,v planes, and triggers a flush when all
+        planes are full.
+        """
         while raw:
             filled = False
             for plane in ['y','u','v']:
