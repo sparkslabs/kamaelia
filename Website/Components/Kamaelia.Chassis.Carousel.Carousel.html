@@ -28,6 +28,16 @@
 <p dir="ltr"><span style="font-size:14pt;font-weight:600">Pydoc Style Docs</span></p>
 <p>class Carousel(Axon.Component.component)</p>
 <p>A carousel component that makes child components one at a time and lets them do their stuff. Replacing them when they terminate or if requested to do so.</p>
+<p><span style="font-weight:600">Inboxes:</span></p>
+<ul type="disc"><li>inbox - passthrough to child's inbox &quot;inbox&quot;</li>
+<li>next - where we recieve requests to replace the child component</li>
+<li>control - where we recieve shutdown requests from outside</li>
+<li>_control - internal use : to recieve 'producerFinished' or 'shutdownMicroprocess' from child</li></ul>
+<p><span style="font-weight:600">Outboxes:</span></p>
+<ul type="disc"><li>outbox - passthrough from child's outbox &quot;outbox&quot;</li>
+<li>signal -</li>
+<li>_signal - internal use: for sending 'shutdownMicroprocess' to child</li>
+<li>requestNext - for requesting new child component</li></ul>
 <p><span style="font-weight:600">All methods, except __init__ are private implementation details of the component</span></p>
 <p><span style="font-weight:600">__init__(self, componentFactory, make1stRequest=False)</span></p>
 <ul type="disc"><li>__init__(componentFactory)</li>
