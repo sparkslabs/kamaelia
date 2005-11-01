@@ -109,25 +109,21 @@ class simpleServerProtocol(_Axon.Component.component):
 
 class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
-    SimpleServer(...) -> new Simple protocol server Component (see __init__)
+    SimpleServer(protocol,[port]) -> new Simple protocol server component
 
-    A simple single port, multiple connection server. Instantiates a protocol
-    handler component to handle each connection.
+    A simple single port, multiple connection server, that instantiates a
+    protocol handler component to handle each connection.
+
+    Keyword arguments:
+    protocol -- function that returns a protocol handler component
+    port -- Port number to listen on for connections (default=1601)
     """
                     
     Inboxes = { "_oobinfo" : "internal use: Out Of Bounds Info - for receiving signalling of new and closing connections" }
     Outboxes = {}
     
     def __init__(self, protocol=None, port=1601):
-        """
-        __init__(protocol,[port=1601]) -> new SimpleServer Chassis component
-
-        protocol() -> protocol handler component
-            Factory function for creating new protocol handlers.
-
-        port
-            Port number to listen for connections on.
-        """
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleServer, self).__init__()
         if not protocol:
             raise "Need a protocol to handle!"
@@ -159,11 +155,11 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def handleNewCSA(self, data):
         """
         handleNewCSA(data) -> Axon.Ipc.newComponent(protocol handler)
-        
-        data.object
-            ConnectedSocketAdapter component for the connection
          
         Creates and returns a protocol handler for new connection.
+
+        Keyword arguments:
+        data -- data.object is the ConnectedSocketAdapter component for the connection
         """
         CSA = data.object
         pHandler = self.protocolClass()
@@ -190,12 +186,12 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def handleClosedCSA(self,data):
         """
-        handleClosedCSA(data)
-
-        data.object
-            ConnectedSocketAdapter for socket that is closing.
+        handleClosedCSA(data) -> None
         
         Terminates and unwires the protocol handler for the closing socket.
+
+        Keyword arguments:
+        data -- data.object is the ConnectedSocketAdapter for socket that is closing.
         """
         assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
         CSA = data.object

@@ -30,7 +30,10 @@ information screens which display a looping carousel of slides of information.
 You gain reusability from things that are not directly reusable and normally
 come to a halt. For example, make a carousel of file reader components, and you
 can read from more than one file, one after another. The carousel will make a
-new file reader component every time you make  new request.
+new file reader component every time you make new request.
+
+The Carousel automatically sends a "NEXT" message when a component finishes, to
+prompt you make a new request.
 
 
 
@@ -87,11 +90,14 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess, newComponent
 
 class Carousel(component):
     """
-    Carousel(...) -> new Carousel chassis component (see __init__)
+    Carousel(componentFactory,[make1stRequest]) -> new Carousel component
+        
+    Create a Carousel component that makes child components one at a time
+    (in carousel fashion) using the supplied factory function.
 
-    A carousel component that makes child components one at a time
-    and lets them do their stuff. Replacing them when they terminate or if
-    requested to do so.
+    Keyword arguments:
+    componentFactory -- function that takes a single argument and returns a component
+    make1stRequest -- if True, Carousel will send an initial "NEXT" request. (default=False)
     """
 
     Inboxes = { "inbox"    : "child's inbox",
@@ -106,16 +112,7 @@ class Carousel(component):
                }
 
     def __init__(self, componentFactory, make1stRequest=False):
-        """
-        __init__(componentFactory,[make1stRequest=False])
-
-        componentFactory(argument) -> new component
-            factory function for creating a new child according to specified arguments
-
-        make1stRequest = True
-            Carousel will, immediately after activation, send a "NEXT" message to its
-            "requestNext" outbox. Otherwise the carousel just waits. 
-        """
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Carousel, self).__init__()
         
         self.factory = componentFactory
