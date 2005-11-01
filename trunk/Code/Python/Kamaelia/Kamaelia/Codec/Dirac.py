@@ -87,7 +87,7 @@ RawYUVFramer is needed to frame raw YUV data into individual video frames.
 
 HOW DOES IT WORK?
 
-Reads raw video frames from the "inbox" inbox.
+Reads video frames from the "inbox" inbox.
 
 Sends out encoded video data (as strings) in chunks to the "outbox" outbox.
 
@@ -110,18 +110,22 @@ frames (the "verbose" option).
 
 ----
 
-RAW FRAMES FORMAT
+UNCOMPRESSED FRAME FORMAT
 
-Raw video frames are output by the decoder, or expected by the encoder, as
-dictionaries. Each contains the following entries:
+Uncompresed video frames are output by the decoder, as dictionaries. Each
+contains the following entries:
     ["yuv"] = (y_data, u_data, v_data)  -- a tuple of strings
     ["size"] = (width, height)  -- in pixels
     ["frame_rate"] = fps
     ["interlaced"] = 0 or not 0 -- non-zero if the frame is two interlaced fields
     ["topfieldfirst"] = 0 or not 0 -- non-zero the first field comes first in the data
-    ["chroma_type"] =  "Yonly" or "422" or "444" or "420" or "411" or "NK"
+    ["pixformat"] =  "YUV420_planar"
     ["chroma_size"] = (width, height) -- in pixels, for the u and v data
 
+The encoder expects data in the same format, but only expects these entries:
+    ["yuv"]
+    ["size"]
+    ["pixformat"]
 
 
 """
