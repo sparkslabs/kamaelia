@@ -2,6 +2,7 @@
 
 import textwrap
 import inspect
+from docutils import core
 
 # These don't follow the mould for various reasons.
 #    Kamaelia.Chassis.Prefab.JoinChooserToCarousel
@@ -94,6 +95,22 @@ class htmlRender(object):
         for l in lines:
             L.append("    "+l+"\n")
         return "<pre>\n"+"".join(L)+"\n</pre>\n"
+
+    def preformat(self, somestring):
+        doc = core.publish_parts(somestring,writer_name="html")["whole"]
+        doclines=doc.split("\n")
+        while """<div class="document">""" not in doclines[0]:
+            doclines = doclines[1:]
+        doclines = doclines[1:]
+        while """</div>""" not in doclines[-1]:
+            doclines = doclines[:-1]
+        try:
+            while """</div>""" in doclines[-1]:
+                doclines = doclines[:-1]
+        except IndexError:
+            pass
+        doc = "\n".join(doclines)
+        return doc
 
     def divider(self):
         return "\n"
