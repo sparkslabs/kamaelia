@@ -1,0 +1,67 @@
+<html><body>
+<h1>Kamaelia.Codec.RawYUVFramer.RawYUVFramer</h1>
+<h2>class RawYUVFramer(Axon.Component.component)</h2>
+
+<pre>
+    Receives a raw data stream containing YUV data and frames it
+    
+           Outputting one frame at a time, as separate YUV planes, with additional metadata.
+    
+           frame format:
+                   { "size" : (pixels_width, pixels_height),
+                     "pixformat" : pixel data format (see below)
+                     "yuv" : ( ydata_string, udata_string, vdata_string ),
+                   }
+    
+           Incoming data should be a byte stream as strings. They can be of any chunk size.
+    
+           Currently supported pixel formats:
+               
+             "YUV420_planar" - (y,u,v) where u and v are half horizontal and vertical resolutions
+        
+
+</pre>
+
+<h4>Inboxes</h4>
+<ul><li>   control : Secondary inbox often used for signals. The closest analogy is unix signals
+<li>   inbox : Default inbox for bulk data. Used in a pipeline much like stdin
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : Default data out outbox, used in a pipeline much like stdout
+<li>   signal : The default signal based outbox - kinda like stderr, but more for sending singal type signals
+</ul>
+<h2>Methods defined here</h2>
+
+*NOTE:* Aside from the __init__ method, which is defined above, you
+should not be using these methods, unless you're either a) subclassing
+this component and overriding specific behaviour. b) looking to modify
+this class.
+
+If you are simply using this component, you should not need to call
+any of these methods, and things might well break (unless otherwise
+noted) if you do.
+<h3>__init__(self, size, pixformat)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>flushFrame(self)</h3>
+<pre>
+    Send out a frame, flushing buffers
+
+</pre>
+
+<h3>main(self)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>packAndSend(self, raw)</h3>
+<pre>
+    Pack incoming raw data into y,u,v planes, and trigger flushes when they fill
+
+</pre>
+
+</body></html>

@@ -1,0 +1,292 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module Kamaelia.Chassis.Carousel</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="Kamaelia.html"><font color="#ffffff">Kamaelia</font></a>.<a href="Kamaelia.Chassis.html"><font color="#ffffff">Chassis</font></a>.Carousel</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.4/site-packages/Kamaelia/Chassis/Carousel.py">/usr/lib/python2.4/site-packages/Kamaelia/Chassis/Carousel.py</a></font></td></tr></table>
+    <p><tt>Component&nbsp;<a href="#Carousel">Carousel</a>&nbsp;Chassis.<br>
+&nbsp;<br>
+This&nbsp;chassis&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;is&nbsp;for&nbsp;making&nbsp;a&nbsp;carousel&nbsp;of&nbsp;components.&nbsp;It&nbsp;gets&nbsp;its&nbsp;name<br>
+from&nbsp;a&nbsp;broadcast&nbsp;carousel&nbsp;-&nbsp;where&nbsp;a&nbsp;programme&nbsp;(or&nbsp;set&nbsp;of&nbsp;programmes)&nbsp;is<br>
+broadcast&nbsp;one&nbsp;after&nbsp;another,&nbsp;often&nbsp;on&nbsp;a&nbsp;loop.&nbsp;Alternatively,&nbsp;think&nbsp;of&nbsp;public<br>
+information&nbsp;screens&nbsp;which&nbsp;display&nbsp;a&nbsp;looping&nbsp;carousel&nbsp;of&nbsp;slides&nbsp;of&nbsp;information.<br>
+&nbsp;<br>
+If&nbsp;this&nbsp;makes&nbsp;no&nbsp;sense,&nbsp;suppose&nbsp;you&nbsp;want&nbsp;to&nbsp;read&nbsp;data&nbsp;from&nbsp;a&nbsp;sequence&nbsp;of&nbsp;files&nbsp;-<br>
+one&nbsp;after&nbsp;another.&nbsp;Provide&nbsp;a&nbsp;carousel&nbsp;with&nbsp;a&nbsp;filereader&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;and&nbsp;a&nbsp;source<br>
+of&nbsp;filenames,&nbsp;and&nbsp;it&nbsp;will&nbsp;make&nbsp;a&nbsp;new&nbsp;filereader&nbsp;for&nbsp;each&nbsp;file&nbsp;in&nbsp;turn,<br>
+outputting&nbsp;their&nbsp;data&nbsp;one&nbsp;after&nbsp;another.&nbsp;The&nbsp;carousel&nbsp;automatically&nbsp;asks&nbsp;the<br>
+filename&nbsp;source&nbsp;for&nbsp;a&nbsp;new&nbsp;item&nbsp;when&nbsp;its&nbsp;current&nbsp;child&nbsp;signals&nbsp;that&nbsp;it&nbsp;has<br>
+finished.<br>
+&nbsp;<br>
+You&nbsp;gain&nbsp;reusability&nbsp;from&nbsp;things&nbsp;that&nbsp;are&nbsp;not&nbsp;directly&nbsp;reusable&nbsp;and&nbsp;normally<br>
+come&nbsp;to&nbsp;a&nbsp;halt.<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+EXAMPLE&nbsp;USAGE&nbsp;:&nbsp;Reading&nbsp;from&nbsp;a&nbsp;sequence&nbsp;of&nbsp;files<br>
+&nbsp;<br>
+1.&nbsp;Write&nbsp;a&nbsp;factory&nbsp;function&nbsp;that&nbsp;takes&nbsp;a&nbsp;single&nbsp;argument&nbsp;and&nbsp;returns&nbsp;a&nbsp;new<br>
+<a href="Axon.Component.html#component">component</a>&nbsp;for&nbsp;the&nbsp;carousel:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;makeFileReader(filename):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;ReadFileAdapter(filename&nbsp;=&nbsp;filename,&nbsp;...other&nbsp;args...&nbsp;)<br>
+&nbsp;<br>
+2.&nbsp;Make&nbsp;the&nbsp;carousel&nbsp;giving&nbsp;it&nbsp;the&nbsp;factory&nbsp;function:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;carousel&nbsp;=&nbsp;<a href="#Carousel">Carousel</a>(&nbsp;componentFactory&nbsp;=&nbsp;makeFileReader&nbsp;)<br>
+&nbsp;<br>
+3.&nbsp;Make&nbsp;a&nbsp;source&nbsp;of&nbsp;instructions&nbsp;for&nbsp;the&nbsp;carousel:&nbsp;(in&nbsp;this&nbsp;case,&nbsp;a&nbsp;source&nbsp;of<br>
+filenames)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filenames&nbsp;=&nbsp;Chooser(&nbsp;["file1","file2","file3",&nbsp;...&nbsp;]&nbsp;)<br>
+&nbsp;<br>
+4.&nbsp;Wire&nbsp;the&nbsp;source&nbsp;and&nbsp;carousel&nbsp;together:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filecarousel&nbsp;=&nbsp;JoinChooserToCarousel(&nbsp;chooser&nbsp;=&nbsp;filenames,&nbsp;carousel&nbsp;=&nbsp;carousel&nbsp;)<br>
+&nbsp;<br>
+5.&nbsp;Activate:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filecarousel.activate()<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+HOW&nbsp;DOES&nbsp;IT&nbsp;WORK?<br>
+&nbsp;<br>
+The&nbsp;carousel&nbsp;chassis&nbsp;creates&nbsp;and&nbsp;encapsulates&nbsp;(as&nbsp;a&nbsp;child)&nbsp;the&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;you<br>
+want&nbsp;it&nbsp;to,&nbsp;and&nbsp;lets&nbsp;it&nbsp;get&nbsp;on&nbsp;with&nbsp;it.<br>
+&nbsp;<br>
+Anything&nbsp;sent&nbsp;to&nbsp;the&nbsp;carousel's&nbsp;"inbox"&nbsp;inbox&nbsp;is&nbsp;passed&nbsp;onto&nbsp;the&nbsp;child<br>
+<a href="Axon.Component.html#component">component</a>.&nbsp;Anything&nbsp;the&nbsp;child&nbsp;sends&nbsp;out&nbsp;appears&nbsp;at&nbsp;the&nbsp;carousel's&nbsp;"outbox"&nbsp;and<br>
+"signal"&nbsp;outboxes.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;child&nbsp;sends&nbsp;an&nbsp;Axon.Ipc.shutdownMicroprocess&nbsp;or&nbsp;Axon.Ipc.producerFinished<br>
+message&nbsp;then&nbsp;the&nbsp;carousel&nbsp;gets&nbsp;rid&nbsp;of&nbsp;that&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;and&nbsp;sends&nbsp;a&nbsp;"NEXT"&nbsp;message<br>
+to&nbsp;its&nbsp;"requestNext"&nbsp;outbox.<br>
+&nbsp;<br>
+Another&nbsp;<a href="Axon.Component.html#component">component</a>,&nbsp;such&nbsp;as&nbsp;a&nbsp;Chooser,&nbsp;should&nbsp;respond&nbsp;to&nbsp;this&nbsp;message&nbsp;by&nbsp;sending<br>
+the&nbsp;new&nbsp;set&nbsp;of&nbsp;arguments&nbsp;(for&nbsp;the&nbsp;factory&nbsp;function)&nbsp;to&nbsp;the&nbsp;carousel's&nbsp;"next"<br>
+inbox.&nbsp;The&nbsp;carousel&nbsp;then&nbsp;uses&nbsp;your&nbsp;factory&nbsp;function&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;child<br>
+<a href="Axon.Component.html#component">component</a>.&nbsp;And&nbsp;so&nbsp;the&nbsp;cycle&nbsp;repeats.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;argument&nbsp;source&nbsp;needs&nbsp;to&nbsp;receive&nbsp;a&nbsp;"NEXT"&nbsp;message&nbsp;before&nbsp;sending&nbsp;its<br>
+first&nbsp;set&nbsp;of&nbsp;arguments,&nbsp;then&nbsp;set&nbsp;the&nbsp;argument&nbsp;make1stRequest=True&nbsp;when&nbsp;creating<br>
+the&nbsp;carousel.<br>
+&nbsp;<br>
+You&nbsp;can&nbsp;send&nbsp;new&nbsp;orders&nbsp;to&nbsp;the&nbsp;"next"&nbsp;inbox&nbsp;at&nbsp;any&nbsp;time.&nbsp;The&nbsp;carousel&nbsp;will<br>
+immediately&nbsp;unwire&nbsp;that&nbsp;child&nbsp;(and&nbsp;create&nbsp;the&nbsp;new&nbsp;one)&nbsp;and&nbsp;ask&nbsp;the&nbsp;old&nbsp;child&nbsp;to<br>
+shut&nbsp;down&nbsp;by&nbsp;sending&nbsp;an&nbsp;Axon.Ipc.shutdownMicroprocess&nbsp;message&nbsp;to&nbsp;its&nbsp;"control"<br>
+inbox.<br>
+&nbsp;<br>
+The&nbsp;carousel&nbsp;will&nbsp;shutdown&nbsp;in&nbsp;response&nbsp;to&nbsp;an&nbsp;Axon.Ipc.shutdownMicroprocess&nbsp;or<br>
+Axon.Ipc.producerFinished&nbsp;message.&nbsp;It&nbsp;will&nbsp;also&nbsp;terminate&nbsp;any&nbsp;child&nbsp;<a href="Axon.Component.html#component">component</a><br>
+in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;described&nbsp;above.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="Axon.html">Axon</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="Axon.Component.html#component">Axon.Component.component</a>(<a href="Axon.Microprocess.html#microprocess">Axon.Microprocess.microprocess</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="Kamaelia.Chassis.Carousel.html#Carousel">Carousel</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Carousel">class <strong>Carousel</strong></a>(<a href="Axon.Component.html#component">Axon.Component.component</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Carousel">Carousel</a>(...)&nbsp;-&gt;&nbsp;new&nbsp;<a href="#Carousel">Carousel</a>&nbsp;chassis&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;(see&nbsp;__init__)<br>
+&nbsp;<br>
+A&nbsp;carousel&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;that&nbsp;makes&nbsp;child&nbsp;components&nbsp;one&nbsp;at&nbsp;a&nbsp;time<br>
+and&nbsp;lets&nbsp;them&nbsp;do&nbsp;their&nbsp;stuff.&nbsp;Replacing&nbsp;them&nbsp;when&nbsp;they&nbsp;terminate&nbsp;or&nbsp;if<br>
+requested&nbsp;to&nbsp;do&nbsp;so.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="Kamaelia.Chassis.Carousel.html#Carousel">Carousel</a></dd>
+<dd><a href="Axon.Component.html#component">Axon.Component.component</a></dd>
+<dd><a href="Axon.Microprocess.html#microprocess">Axon.Microprocess.microprocess</a></dd>
+<dd><a href="Axon.Axon.html#AxonObject">Axon.Axon.AxonObject</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Carousel-__init__"><strong>__init__</strong></a>(self, componentFactory, make1stRequest<font color="#909090">=False</font>)</dt><dd><tt><a href="#Carousel-__init__">__init__</a>(componentFactory)<br>
+<a href="#Carousel-__init__">__init__</a>(componentFactory,make1stRequest=True)<br>
+&nbsp;<br>
+componentFactory(argument)&nbsp;-&gt;&nbsp;new&nbsp;<a href="Axon.Component.html#component">component</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;factory&nbsp;function&nbsp;for&nbsp;creating&nbsp;a&nbsp;new&nbsp;child&nbsp;according&nbsp;to&nbsp;specified&nbsp;arguments<br>
+&nbsp;<br>
+make1stRequest&nbsp;=&nbsp;True<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Carousel">Carousel</a>&nbsp;will,&nbsp;immediately&nbsp;after&nbsp;activation,&nbsp;send&nbsp;a&nbsp;"NEXT"&nbsp;message&nbsp;to&nbsp;its<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"requestNext"&nbsp;outbox.&nbsp;Otherwise&nbsp;the&nbsp;carousel&nbsp;just&nbsp;waits.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-handleFinishedChild"><strong>handleFinishedChild</strong></a>(self)</dt><dd><tt>Unplugs&nbsp;the&nbsp;child&nbsp;if&nbsp;a&nbsp;shutdownMicroprocess&nbsp;or&nbsp;producerFinished&nbsp;message&nbsp;is<br>
+received&nbsp;from&nbsp;it.&nbsp;Also&nbsp;sends&nbsp;a&nbsp;"NEXT"&nbsp;request&nbsp;if&nbsp;one&nbsp;has&nbsp;not&nbsp;already&nbsp;been&nbsp;sent.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-handleNewChild"><strong>handleNewChild</strong></a>(self)</dt><dd><tt>If&nbsp;data&nbsp;received&nbsp;on&nbsp;"next"&nbsp;inbox,&nbsp;removes&nbsp;any&nbsp;existing&nbsp;child&nbsp;and&nbsp;creates&nbsp;and&nbsp;wires<br>
+in&nbsp;a&nbsp;new&nbsp;one.<br>
+&nbsp;<br>
+Received&nbsp;data&nbsp;is&nbsp;passed&nbsp;as&nbsp;an&nbsp;argument&nbsp;to&nbsp;the&nbsp;factory&nbsp;function&nbsp;(supplied&nbsp;at<br>
+initialisation)&nbsp;that&nbsp;creates&nbsp;the&nbsp;new&nbsp;child.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-main"><strong>main</strong></a>(self)</dt><dd><tt>Main&nbsp;loop</tt></dd></dl>
+
+<dl><dt><a name="Carousel-requestNext"><strong>requestNext</strong></a>(self)</dt><dd><tt>Sends&nbsp;'next'&nbsp;out&nbsp;the&nbsp;'requestNext'&nbsp;outbox</tt></dd></dl>
+
+<dl><dt><a name="Carousel-shutdown"><strong>shutdown</strong></a>(self)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;a&nbsp;shutdownMicroprocess&nbsp;or&nbsp;producerFinished&nbsp;message&nbsp;was&nbsp;received.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-unplugChildren"><strong>unplugChildren</strong></a>(self)</dt><dd><tt>Sends&nbsp;'shutdownMicroprocess'&nbsp;to&nbsp;children&nbsp;and&nbsp;unwires&nbsp;and&nbsp;disowns&nbsp;them.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>Inboxes</strong> = {'_control': "internal use: to receive 'producerFinished' or 'shutdownMicroprocess' from child", 'control': '', 'inbox': "child's inbox", 'next': 'requests to replace child'}</dl>
+
+<dl><dt><strong>Outboxes</strong> = {'_signal': "internal use: for sending 'shutdownMicroprocess' to child", 'outbox': "child's outbox", 'requestNext': 'for requesting new child component', 'signal': ''}</dl>
+
+<hr>
+Methods inherited from <a href="Axon.Component.html#component">Axon.Component.component</a>:<br>
+<dl><dt><a name="Carousel-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Provides&nbsp;a&nbsp;useful&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;<a href="Axon.Component.html#component">component</a>.<br>
+You&nbsp;probably&nbsp;want&nbsp;to&nbsp;override&nbsp;this,&nbsp;and&nbsp;append&nbsp;this&nbsp;description&nbsp;using<br>
+something&nbsp;like:&nbsp;'<a href="Axon.Component.html#component">component</a>.<a href="#Carousel-__str__">__str__</a>(self)'</tt></dd></dl>
+
+<dl><dt><a name="Carousel-addChildren"><strong>addChildren</strong></a>(self, *children)</dt><dd><tt>'C.<a href="#Carousel-addChildren">addChildren</a>(list,of,components)'&nbsp;-<br>
+Register&nbsp;the&nbsp;components&nbsp;as&nbsp;children/subcomponents<br>
+This&nbsp;takes&nbsp;a&nbsp;list&nbsp;of&nbsp;children&nbsp;components&nbsp;and&nbsp;adds&nbsp;them&nbsp;to&nbsp;the&nbsp;children&nbsp;list&nbsp;of&nbsp;this<br>
+<a href="Axon.Component.html#component">component</a>.&nbsp;This&nbsp;is&nbsp;done&nbsp;by&nbsp;looping&nbsp;of&nbsp;the&nbsp;list&nbsp;and&nbsp;adding&nbsp;each&nbsp;one&nbsp;individually<br>
+by&nbsp;calling&nbsp;addChild.&nbsp;addChild&nbsp;has&nbsp;a&nbsp;number&nbsp;of&nbsp;effects&nbsp;internally&nbsp;described&nbsp;above.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-childComponents"><strong>childComponents</strong></a>(self)</dt><dd><tt>'C.<a href="#Carousel-childComponents">childComponents</a>()'&nbsp;-<br>
+Simple&nbsp;accessor&nbsp;method,&nbsp;returns&nbsp;list&nbsp;of&nbsp;child&nbsp;components</tt></dd></dl>
+
+<dl><dt><a name="Carousel-closeDownComponent"><strong>closeDownComponent</strong></a>(self)</dt><dd><tt>Stub&nbsp;method.&nbsp;**This&nbsp;method&nbsp;is&nbsp;designed&nbsp;to&nbsp;be&nbsp;overridden.**</tt></dd></dl>
+
+<dl><dt><a name="Carousel-dataReady"><strong>dataReady</strong></a>(self, boxname<font color="#909090">='inbox'</font>)</dt><dd><tt>'C.<a href="#Carousel-dataReady">dataReady</a>("boxname")'&nbsp;-<br>
+test,&nbsp;returns&nbsp;true&nbsp;if&nbsp;data&nbsp;is&nbsp;available&nbsp;in&nbsp;the&nbsp;requested&nbsp;inbox.<br>
+&nbsp;<br>
+Used&nbsp;by&nbsp;a&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;to&nbsp;check&nbsp;an&nbsp;inbox&nbsp;for&nbsp;ready&nbsp;data.<br>
+You&nbsp;will&nbsp;want&nbsp;to&nbsp;call&nbsp;this&nbsp;method&nbsp;to&nbsp;periodically&nbsp;check&nbsp;whether&nbsp;you've&nbsp;been<br>
+sent&nbsp;any&nbsp;messages&nbsp;to&nbsp;deal&nbsp;with!<br>
+&nbsp;<br>
+You&nbsp;are&nbsp;unlikely&nbsp;to&nbsp;want&nbsp;to&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-initialiseComponent"><strong>initialiseComponent</strong></a>(self)</dt><dd><tt>Stub&nbsp;method.&nbsp;**This&nbsp;method&nbsp;is&nbsp;designed&nbsp;to&nbsp;be&nbsp;overridden.**</tt></dd></dl>
+
+<dl><dt><a name="Carousel-link"><strong>link</strong></a>(self, source, sink, passthrough<font color="#909090">=0</font>, pipewidth<font color="#909090">=0</font>, synchronous<font color="#909090">=None</font>)</dt><dd><tt>'C.<a href="#Carousel-link">link</a>(source,sink)'&nbsp;-<br>
+create&nbsp;linkage&nbsp;between&nbsp;a&nbsp;source&nbsp;and&nbsp;sink.<br>
+&nbsp;<br>
+source&nbsp;is&nbsp;a&nbsp;tuple:&nbsp;(source_component,&nbsp;source_box)<br>
+sink&nbsp;is&nbsp;a&nbsp;tuple:&nbsp;(sink_component,&nbsp;sink_box)<br>
+&nbsp;<br>
+passthrough&nbsp;and&nbsp;pipewidth&nbsp;are&nbsp;defined&nbsp;as&nbsp;in&nbsp;the&nbsp;linkage&nbsp;class</tt></dd></dl>
+
+<dl><dt><a name="Carousel-mainBody"><strong>mainBody</strong></a>(self)</dt><dd><tt>Stub&nbsp;method.&nbsp;**This&nbsp;method&nbsp;is&nbsp;designed&nbsp;to&nbsp;be&nbsp;overridden.**</tt></dd></dl>
+
+<dl><dt><a name="Carousel-recv"><strong>recv</strong></a>(self, boxname<font color="#909090">='inbox'</font>)</dt><dd><tt>'C.<a href="#Carousel-recv">recv</a>("boxname")'&nbsp;-<br>
+returns&nbsp;the&nbsp;first&nbsp;piece&nbsp;of&nbsp;data&nbsp;in&nbsp;the&nbsp;requested&nbsp;inbox.<br>
+&nbsp;<br>
+Used&nbsp;by&nbsp;a&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;to&nbsp;recieve&nbsp;a&nbsp;message&nbsp;from&nbsp;the&nbsp;outside&nbsp;world.<br>
+All&nbsp;comms&nbsp;goes&nbsp;via&nbsp;a&nbsp;named&nbsp;box/input&nbsp;queue<br>
+&nbsp;<br>
+You&nbsp;will&nbsp;want&nbsp;to&nbsp;call&nbsp;this&nbsp;method&nbsp;to&nbsp;actually&nbsp;recieve&nbsp;messages&nbsp;you've&nbsp;been<br>
+sent.&nbsp;You&nbsp;will&nbsp;want&nbsp;to&nbsp;check&nbsp;for&nbsp;new&nbsp;messages&nbsp;using&nbsp;dataReady&nbsp;first<br>
+though.<br>
+&nbsp;<br>
+You&nbsp;are&nbsp;unlikely&nbsp;to&nbsp;want&nbsp;to&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-removeChild"><strong>removeChild</strong></a>(self, child)</dt><dd><tt>'C.<a href="#Carousel-removeChild">removeChild</a>(<a href="Axon.Component.html#component">component</a>)'&nbsp;-<br>
+Deregister&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;as&nbsp;a&nbsp;child.<br>
+&nbsp;<br>
+Removes&nbsp;the&nbsp;child&nbsp;<a href="Axon.Component.html#component">component</a>,&nbsp;and&nbsp;deregisters&nbsp;it&nbsp;as&nbsp;capable&nbsp;of&nbsp;recieving<br>
+messages.&nbsp;You&nbsp;probably&nbsp;want&nbsp;to&nbsp;do&nbsp;this&nbsp;when&nbsp;you&nbsp;enter&nbsp;a&nbsp;closedown&nbsp;state<br>
+of&nbsp;some&nbsp;kind&nbsp;for&nbsp;either&nbsp;your&nbsp;<a href="Axon.Component.html#component">component</a>,&nbsp;or&nbsp;the&nbsp;child&nbsp;<a href="Axon.Component.html#component">component</a>.<br>
+&nbsp;<br>
+You&nbsp;will&nbsp;want&nbsp;to&nbsp;call&nbsp;this&nbsp;function&nbsp;when&nbsp;shutting&nbsp;down&nbsp;child&nbsp;components&nbsp;of<br>
+your&nbsp;<a href="Axon.Component.html#component">component</a>.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-send"><strong>send</strong></a>(self, message, boxname<font color="#909090">='outbox'</font>, force<font color="#909090">=False</font>)</dt><dd><tt>'C.<a href="#Carousel-send">send</a>(message,&nbsp;"boxname")'&nbsp;-<br>
+appends&nbsp;message&nbsp;to&nbsp;the&nbsp;requested&nbsp;outbox.<br>
+&nbsp;<br>
+Used&nbsp;by&nbsp;a&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;to&nbsp;send&nbsp;a&nbsp;message&nbsp;to&nbsp;the&nbsp;outside&nbsp;world.<br>
+All&nbsp;comms&nbsp;goes&nbsp;via&nbsp;a&nbsp;named&nbsp;box/output&nbsp;queue<br>
+&nbsp;<br>
+You&nbsp;will&nbsp;want&nbsp;to&nbsp;call&nbsp;this&nbsp;method&nbsp;to&nbsp;send&nbsp;messages.&nbsp;They&nbsp;are&nbsp;NOT&nbsp;sent<br>
+immediately.&nbsp;They&nbsp;are&nbsp;placed&nbsp;in&nbsp;your&nbsp;outbox&nbsp;called&nbsp;'boxname',&nbsp;and&nbsp;are<br>
+periodically&nbsp;collected&nbsp;&amp;&nbsp;delivered&nbsp;by&nbsp;the&nbsp;postman.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;outbox&nbsp;is&nbsp;synchronised&nbsp;then&nbsp;noSpaceInBox&nbsp;will&nbsp;be&nbsp;raised&nbsp;if&nbsp;the&nbsp;box<br>
+is&nbsp;full&nbsp;unless&nbsp;force&nbsp;is&nbsp;True&nbsp;which&nbsp;should&nbsp;only&nbsp;be&nbsp;used&nbsp;with&nbsp;great&nbsp;care.<br>
+&nbsp;<br>
+You&nbsp;are&nbsp;unlikely&nbsp;to&nbsp;want&nbsp;to&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-synchronisedSend"><strong>synchronisedSend</strong></a>(self, thingsToSend, outbox<font color="#909090">='outbox'</font>)</dt><dd><tt>C.<a href="#Carousel-synchronisedSend">synchronisedSend</a>(list,&nbsp;of,&nbsp;things,to,&nbsp;send)&nbsp;-&gt;&nbsp;generator&nbsp;for&nbsp;sending&nbsp;the<br>
+objects&nbsp;when&nbsp;space&nbsp;is&nbsp;available.&nbsp;Expected&nbsp;to&nbsp;be&nbsp;used&nbsp;as:<br>
+&nbsp;&nbsp;&nbsp;for&nbsp;i&nbsp;in&nbsp;<a href="#Carousel-synchronisedSend">synchronisedSend</a>(thingsToSend):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yield&nbsp;1<br>
+Largely&nbsp;has&nbsp;to&nbsp;be&nbsp;done&nbsp;that&nbsp;way&nbsp;due&nbsp;to&nbsp;not&nbsp;being&nbsp;able&nbsp;to&nbsp;wrap&nbsp;yield.<br>
+See&nbsp;test/SynchronousLinks_SystemTest.py&nbsp;for&nbsp;an&nbsp;example</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="Axon.Component.html#component">Axon.Component.component</a>:<br>
+<dl><dt><strong>Usescomponents</strong> = []</dl>
+
+<hr>
+Methods inherited from <a href="Axon.Microprocess.html#microprocess">Axon.Microprocess.microprocess</a>:<br>
+<dl><dt><a name="Carousel-activate"><strong>activate</strong></a>(self, Scheduler<font color="#909090">=None</font>, Tracker<font color="#909090">=None</font>)</dt><dd><tt>calls&nbsp;the&nbsp;_microprocessGenerator&nbsp;function&nbsp;to&nbsp;create&nbsp;a&nbsp;generator<br>
+object,&nbsp;places&nbsp;this&nbsp;into&nbsp;the&nbsp;thread&nbsp;attribute&nbsp;of&nbsp;the&nbsp;microprocess<br>
+and&nbsp;appends&nbsp;the&nbsp;<a href="Axon.Component.html#component">component</a>&nbsp;to&nbsp;the&nbsp;scheduler's&nbsp;run&nbsp;queue.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-next"><strong>next</strong></a>(self)</dt><dd><tt>M.<a href="#Carousel-next">next</a>()&nbsp;-&nbsp;This&nbsp;is&nbsp;to&nbsp;provide&nbsp;a&nbsp;microprocess&nbsp;object&nbsp;with&nbsp;the<br>
+ability&nbsp;to&nbsp;be&nbsp;dropped&nbsp;in&nbsp;largely&nbsp;wherever&nbsp;a&nbsp;generator&nbsp;object&nbsp;can<br>
+be&nbsp;put.&nbsp;Internally&nbsp;this&nbsp;calls&nbsp;self.<strong>thread</strong>.<a href="#Carousel-next">next</a>()&nbsp;to&nbsp;pass&nbsp;the<br>
+timeslice&nbsp;down&nbsp;to&nbsp;the&nbsp;actual&nbsp;generator.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-pause"><strong>pause</strong></a>(self)</dt><dd><tt>'M.<a href="#Carousel-pause">pause</a>()'&nbsp;-&nbsp;Pauses&nbsp;the&nbsp;microprocess.<br>
+sets&nbsp;the&nbsp;runnable&nbsp;flag&nbsp;to&nbsp;false&nbsp;-&nbsp;thus&nbsp;pausing&nbsp;the&nbsp;microprocess.</tt></dd></dl>
+
+<dl><dt><a name="Carousel-run"><strong>run</strong></a>(self)</dt><dd><tt>run&nbsp;-&nbsp;activates&nbsp;the&nbsp;microprocess&nbsp;and&nbsp;runs&nbsp;it&nbsp;from&nbsp;start&nbsp;to&nbsp;finish&nbsp;until&nbsp;StopIteration</tt></dd></dl>
+
+<dl><dt><a name="Carousel-stop"><strong>stop</strong></a>(self)</dt><dd><tt>'M.<a href="#Carousel-stop">stop</a>()'&nbsp;-<br>
+Halts&nbsp;the&nbsp;microprocess,&nbsp;no&nbsp;way&nbsp;to&nbsp;"unstop"</tt></dd></dl>
+
+<hr>
+Class methods inherited from <a href="Axon.Microprocess.html#microprocess">Axon.Microprocess.microprocess</a>:<br>
+<dl><dt><a name="Carousel-setSchedulerClass"><strong>setSchedulerClass</strong></a>(cls, newSchedulerClass)<font color="#909090"><font face="helvetica, arial"> from <a href="Axon.Axon.html#AxonType">Axon.Axon.AxonType</a></font></font></dt></dl>
+
+<dl><dt><a name="Carousel-setTrackerClass"><strong>setTrackerClass</strong></a>(cls, newTrackerClass)<font color="#909090"><font face="helvetica, arial"> from <a href="Axon.Axon.html#AxonType">Axon.Axon.AxonType</a></font></font></dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="Axon.Microprocess.html#microprocess">Axon.Microprocess.microprocess</a>:<br>
+<dl><dt><strong>schedulerClass</strong> = &lt;class 'Axon.Scheduler.scheduler'&gt;<dd><tt>Scheduler&nbsp;-&nbsp;runs&nbsp;microthreads&nbsp;of&nbsp;control.</tt></dl>
+
+<dl><dt><strong>trackerClass</strong> = None</dl>
+
+<hr>
+Data and other attributes inherited from <a href="Axon.Axon.html#AxonObject">Axon.Axon.AxonObject</a>:<br>
+<dl><dt><strong>__dict__</strong> = &lt;dictproxy object&gt;<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dl>
+
+<dl><dt><strong>__metaclass__</strong> = &lt;class 'Axon.Axon.AxonType'&gt;</dl>
+
+<dl><dt><strong>__weakref__</strong> = &lt;attribute '__weakref__' of 'AxonObject' objects&gt;<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>
