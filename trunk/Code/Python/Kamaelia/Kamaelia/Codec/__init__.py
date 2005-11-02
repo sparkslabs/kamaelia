@@ -19,4 +19,16 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==============================
+Audio/Video Codecs and related
+==============================
 
+This module contains components for encoding and decoding audio and video
+data, and for framing raw streams of data (eg. chunking into frames of video).
+
+Currently supported codecs:
+- Dirac (encoding and decoding)
+- Ogg Vorbis (decoding)
+
+"""
