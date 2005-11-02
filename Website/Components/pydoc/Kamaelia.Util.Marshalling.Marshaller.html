@@ -2,14 +2,11 @@
 <h1>Kamaelia.Util.Marshalling.Marshaller</h1>
 <h2>class Marshaller(Axon.Component.component)</h2>
 
-<pre>
-    Marshalls (serialises) data presented on the inbox.
-           Use this component by providing an object with a __str__ method
-           that will convert (serialise) the data to a string
-        
-
-</pre>
-
+<dl class="docutils">
+<dt>Marshalls (serialises) data presented on the inbox.</dt>
+<dd>Use this component by providing an object with a __str__ method
+that will convert (serialise) the data to a string</dd>
+</dl>
 <h4>Inboxes</h4>
 <ul><li>   control : 
 <li>   inbox : data to be marshalled
@@ -20,26 +17,13 @@
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>__init__(self, klass)</h3>
-<pre>
-    Initialisation.
-               klass is an object with method klass.__str__( <item to be marshalled> )
-            
-
-</pre>
-
+<dl class="docutils">
+<dt>Initialisation.</dt>
+<dd>klass is an object with method klass.__str__( &lt;item to be marshalled&gt; )</dd>
+</dl>
 <h3>main(self)</h3>
-<pre>
-     
-
-</pre>
 
 </body></html>
