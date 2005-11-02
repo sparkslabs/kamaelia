@@ -2,17 +2,12 @@
 <h1>Kamaelia.Util.Chooser.ForwardIteratingChooser</h1>
 <h2>class ForwardIteratingChooser(Axon.Component.component)</h2>
 
-<pre>
-    Iterates forwards items out of something iterable, as directed by commands sent to its inbox.
-    
-          Emits the first item at initialisation, then whenever a command is received
-          it emits another item (unless you're asking it to step beyond the end of the set)
-    
-          Stepping beyond the end will cause this component to shutdown and emit a producerFinished msg
-       
-
-</pre>
-
+<p>Iterates forwards items out of something iterable, as directed by commands sent to its inbox.</p>
+<blockquote>
+<p>Emits the first item at initialisation, then whenever a command is received
+it emits another item (unless you're asking it to step beyond the end of the set)</p>
+<p>Stepping beyond the end will cause this component to shutdown and emit a producerFinished msg</p>
+</blockquote>
 <h4>Inboxes</h4>
 <ul><li>   control : 
 <li>   inbox : receive commands
@@ -23,44 +18,19 @@
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>__init__(self, items)</h3>
-<pre>
-    Initialisation.
-             items = set of items that can be iterated over. Can be infinite.
-          
-
-</pre>
-
+<dl class="docutils">
+<dt>Initialisation.</dt>
+<dd>items = set of items that can be iterated over. Can be infinite.</dd>
+</dl>
 <h3>getCurrentChoice(self)</h3>
-<pre>
-    Return the current choice
-
-</pre>
-
+<p>Return the current choice</p>
 <h3>gotoNext(self)</h3>
-<pre>
-    Advance the choice forwards one
-
-</pre>
-
+<p>Advance the choice forwards one</p>
 <h3>main(self)</h3>
-<pre>
-     
-
-</pre>
 
 <h3>shutdown(self)</h3>
-<pre>
-     
-
-</pre>
 
 </body></html>

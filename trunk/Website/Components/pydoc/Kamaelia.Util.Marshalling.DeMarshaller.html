@@ -2,14 +2,11 @@
 <h1>Kamaelia.Util.Marshalling.DeMarshaller</h1>
 <h2>class DeMarshaller(Axon.Component.component)</h2>
 
-<pre>
-    DeMarshalls (serialises) data presented on the inbox.
-           Use this component by providing an object with a fromString method
-           that will convert (deserialise) the data from a string to its original form
-        
-
-</pre>
-
+<dl class="docutils">
+<dt>DeMarshalls (serialises) data presented on the inbox.</dt>
+<dd>Use this component by providing an object with a fromString method
+that will convert (deserialise) the data from a string to its original form</dd>
+</dl>
 <h4>Inboxes</h4>
 <ul><li>   control : 
 <li>   inbox : data to be demarshalled
@@ -20,26 +17,13 @@
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>__init__(self, klass)</h3>
-<pre>
-    Initialisation.
-               klass is an object with method klass.fromString( <item to be demarshalled> )
-            
-
-</pre>
-
+<dl class="docutils">
+<dt>Initialisation.</dt>
+<dd>klass is an object with method klass.fromString( &lt;item to be demarshalled&gt; )</dd>
+</dl>
 <h3>main(self)</h3>
-<pre>
-     
-
-</pre>
 
 </body></html>

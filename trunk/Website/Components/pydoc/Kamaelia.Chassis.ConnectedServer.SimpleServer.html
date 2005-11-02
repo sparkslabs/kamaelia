@@ -2,61 +2,38 @@
 <h1>Kamaelia.Chassis.ConnectedServer.SimpleServer</h1>
 <h2>class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)</h2>
 
-<pre>
-     
-
-</pre>
-
+<p>SimpleServer(protocol,[port]) -&gt; new Simple protocol server component</p>
+<p>A simple single port, multiple connection server, that instantiates a
+protocol handler component to handle each connection.</p>
+<p>Keyword arguments:
+protocol -- function that returns a protocol handler component
+port -- Port number to listen on for connections (default=1601)</p>
 <h4>Inboxes</h4>
-<ul><li>   _oobinfo : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   _oobinfo : internal use: Out Of Bounds Info - for receiving signalling of new and closing connections
 </ul>
 <h4>Outboxes</h4>
 <ul><li>
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>__init__(self, protocol, port)</h3>
-<pre>
-     
-
-</pre>
-
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
 <h3>checkOOBInfo(self)</h3>
-<pre>
-     
-
-</pre>
-
+<p>Check and handle Out Of Bounds info - notifications of new and closed sockets.</p>
 <h3>handleClosedCSA(self, data)</h3>
-<pre>
-     
-
-</pre>
-
+<p>handleClosedCSA(data) -&gt; None</p>
+<p>Terminates and unwires the protocol handler for the closing socket.</p>
+<p>Keyword arguments:
+data -- data.object is the ConnectedSocketAdapter for socket that is closing.</p>
 <h3>handleNewCSA(self, data)</h3>
-<pre>
-     
-
-</pre>
-
+<p>handleNewCSA(data) -&gt; Axon.Ipc.newComponent(protocol handler)</p>
+<p>Creates and returns a protocol handler for new connection.</p>
+<p>Keyword arguments:
+data -- data.object is the ConnectedSocketAdapter component for the connection</p>
 <h3>initialiseComponent(self)</h3>
-<pre>
-     
-
-</pre>
-
+<p>Sets up socket binding to listen for incoming connections</p>
 <h3>mainBody(self)</h3>
-<pre>
-     
-
-</pre>
-
+<p>Main loop</p>
 </body></html>

@@ -2,19 +2,15 @@
 <h1>Kamaelia.File.Reading.PromptedFileReader</h1>
 <h2>class PromptedFileReader(Axon.Component.component)</h2>
 
-<pre>
-    Provides read access to a file.
-          You request numbers of bytes/lines of data.
-          Data is returned in response.
-          
-          Bytes returned as a single string
-          Line(s) returned as a single string
-          
-          Shuts down in response to a shutdownMicroprocess message
-       
-
-</pre>
-
+<dl class="docutils">
+<dt>Provides read access to a file.</dt>
+<dd><p class="first">You request numbers of bytes/lines of data.
+Data is returned in response.</p>
+<p>Bytes returned as a single string
+Line(s) returned as a single string</p>
+<p class="last">Shuts down in response to a shutdownMicroprocess message</p>
+</dd>
+</dl>
 <h4>Inboxes</h4>
 <ul><li>   control : 
 <li>   inbox : requests to 'n' read bytes/lines
@@ -25,54 +21,31 @@
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>__init__(self, filename, readmode)</h3>
-<pre>
-    Initialisation
-           
-              filename = name of file to read data from
-              readmode = "bytes" to read in 'n' byte chunks
-                       = "lines" to read 'n' line chunks
-                          ('n' sent to inbox to request the data)
-           
-
-</pre>
-
+<p>Initialisation</p>
+<blockquote>
+<p>filename = name of file to read data from
+readmode = &quot;bytes&quot; to read in 'n' byte chunks</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
+Unexpected indentation.</div>
+<blockquote>
+<dl class="docutils">
+<dt>= &quot;lines&quot; to read 'n' line chunks</dt>
+<dd>('n' sent to inbox to request the data)</dd>
+</dl>
+</blockquote>
+</blockquote>
 <h3>closeDownComponent(self)</h3>
-<pre>
-     
-
-</pre>
 
 <h3>main(self)</h3>
-<pre>
-     
-
-</pre>
 
 <h3>readNBytes(self, n)</h3>
-<pre>
-     
-
-</pre>
 
 <h3>readNLines(self, n)</h3>
-<pre>
-     
-
-</pre>
 
 <h3>shutdown(self)</h3>
-<pre>
-     
-
-</pre>
 
 </body></html>

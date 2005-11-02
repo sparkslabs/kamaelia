@@ -2,16 +2,14 @@
 <h1>Kamaelia.Util.Comparator.comparator</h1>
 <h2>class comparator(Axon.Component.component)</h2>
 
-<pre>
-    This class was originally written to assist in testing by making it easy
-        to compare an expected data stream with that from the tested system.
-        This is the current equality test between the two inputs.  I have however
-        realised that this can be generalised by making an overidable compare
-        function to do the real work.  Then I realised that it is in fact a general
-        system for combining two inputs into a single output!
-
-</pre>
-
+<dl class="docutils">
+<dt>This class was originally written to assist in testing by making it easy</dt>
+<dd>to compare an expected data stream with that from the tested system.
+This is the current equality test between the two inputs.  I have however
+realised that this can be generalised by making an overidable compare
+function to do the real work.  Then I realised that it is in fact a general
+system for combining two inputs into a single output!</dd>
+</dl>
 <h4>Inboxes</h4>
 <ul><li>   inA : Code uses old style inbox/outbox description - no metadata available
 <li>   inB : Code uses old style inbox/outbox description - no metadata available
@@ -23,24 +21,10 @@
 </ul>
 <h2>Methods defined here</h2>
 
-*NOTE:* Aside from the __init__ method, which is defined above, you
-should not be using these methods, unless you're either a) subclassing
-this component and overriding specific behaviour. b) looking to modify
-this class.
-
-If you are simply using this component, you should not need to call
-any of these methods, and things might well break (unless otherwise
-noted) if you do.
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
 <h3>combine(self, valA, valB)</h3>
-<pre>
-    Overide this function to change the type of comparison from equality testing.
-
-</pre>
-
+<p>Overide this function to change the type of comparison from equality testing.</p>
 <h3>mainBody(self)</h3>
-<pre>
-    Checks for equality on both inA and inB and outputs True or False.
-
-</pre>
-
+<p>Checks for equality on both inA and inB and outputs True or False.</p>
 </body></html>
