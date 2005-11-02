@@ -19,22 +19,77 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=====================================
+Rational fraction conversion/handling
+=====================================
 
-# Functions for assisting with creating rational fractions (numbers represented
-# by a fraction, consisting of an integer numerator and denominator)
-#
-# In particular, conversion from a floating point value to a (rational) fraction
-# ... or at least as close an approximation as reasonably possible!
-#
-# rational(...) - convert a floating point value to a rational
-# gcd(...)      - guess!
-# limit(...) - limit a rational's numerator and denominator to within bounds
+This set of functions assist in creating rational fractions (numbers represented
+by a fraction with an integer numerator and denominator).
+
+
+
+Conversion from floating point to rational fraction
+---------------------------------------------------
+
+The rational(...) function converts a floating point value to a rational
+fraction.
+
+It aims to generate as close an approximation as is reasonably possible, and to
+use as small (simple) a numerator and denominator as possible.
+
+
+
+Examples
+--------
+
+Conversion of a floating point number to a rational fraction::
+
+    >>> rational(0.75)
+    (3, 4)
+
+Scale a rational's numerator and denominator to fit within limits::
+
+    >>> limit( (1500,2000), 80, -80)
+    (60, 80)
+
+Find the greatest common divisor::
+
+    >>> gcd(18,42)
+    6
+
+
+
+How does conversion work?
+-------------------------
+
+rational(...) uses the "continuous fractions" recursive approximation technique.
+
+The algorithm effectively generates a continuous fractions up to a specified
+depth, and then multiplies them out to generate an integer numerator and
+denominator.
+
+All depths are tried up to the maximum depth specified. The least deep one that
+yields an exact match is returned. This is also the simplest.
+
+The numerator and denominator are simplified further by dividing them by their
+greatest common denominator.
+
+For more information on continuous fractions try these:
+- http://mathworld.wolfram.com/ContinuedFraction.html
+- http://ourworld.cs.com/christopherereed/confracs.htm
+- http://www.cut-the-knot.org/do_you_know/fraction.shtml
+- http://www.mcs.surrey.ac.uk/Personal/R.Knott/Fibonacci/cfINTRO.html#real
+"""
+
 
 def rational(floatval,maxdepth=10):
-    """Convert any floating point value to a best approximation fraction (rational)
-      floatval = floating point value
-      maxdepth = maximum recursion depth.
-    Returns (integer numerator, integer denominator)
+    """\
+    rational(floatval[,maxdepth]) -> (numerator, denominator)
+    
+    Convert any floating point value to a best approximation fraction (rational)
+      
+    maxdepth  -- the maximum recursion depth used by the algorithm (default=10)
     """
     if floatval == 0:
         return (0,1)
@@ -46,7 +101,7 @@ def rational(floatval,maxdepth=10):
         
     num, denom = 1,1
     for depth in range(1,maxdepth):
-        num, denom = f2r(floatval,depth)
+        num, denom = _f2r(floatval,depth)
         if float(num) / float(denom) == floatval:
             break
         
@@ -58,16 +113,16 @@ def rational(floatval,maxdepth=10):
     return sign * num, denom
 
 
-def f2r(v, depth=5):
-    """Recursive approximation of a rational fraction representation of a POSITIVE
-    floating point value. (Utilises continuous fractions based approximation)
-    
-      v = floating point value to approximate
-      depth = maximum recursion depth
+def _f2r(v, depth):
+    """\
+    _f2r(floatval,depth) -> (numerator, denominator)
 
-    Used rational() in preference. This function does not necessarily stop if an exact match is
-    found. rational() checks for this, and also simplifies the rational by finding the greatest
-    common divisors.
+    Generates a rational fraction representation of a *positive* floating point
+    value using the continuous fractions technique to the specified depth.
+
+    Used rational() in preference, to get the most optional match. This function
+    does guarantee stopping if an exact match is found. Nor does it simplify the
+    resulting fraction.
     """
     numerator = 1
     denominator = int(1.0/v)
@@ -90,24 +145,24 @@ def f2r(v, depth=5):
 
         
 def gcd(a,b):
-    """Find greatest common divisor"""
+    """gcd(a,b) -> greatest common divisor of a and b"""
     while b != 0:
         a, b = b, a%b
     return a
 
 
 def limit( rational, poslimit, neglimit):
-   """Limit the values of the numerator and denominator of a rational to
-   be within the specified negative and positive bounds, inclusive.
+   """\
+   limit((num,denom),poslimit,neglimit) -> (num,denom) scaled to fit within limits
 
-   Useful if either value is too large to be coerced into a limited range
-   data type (eg. a 'C' integer)
+   Scales the fraction (num,demon) so both the numerator and denominator are
+   within the specified negative and positive bounds, inclusive.
    """
    n,d = float(rational[0]), float(rational[1])
 
    divide = max( 1.0,
-                 n/poslimit, d/poslimit, divide,
-                 n/neglimit, d/neglimit, divide
+                 n/poslimit, d/poslimit,
+                 n/neglimit, d/neglimit
                )
 
    if divide > 1.0:

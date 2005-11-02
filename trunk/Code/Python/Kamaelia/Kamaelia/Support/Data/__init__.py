@@ -19,3 +19,12 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==========================================
+Data format/representation handler objects
+==========================================
+
+This directory contains objects for handling various data formats and
+representations, including rational fractions, mime typed data and specific XML
+formats.
+"""
