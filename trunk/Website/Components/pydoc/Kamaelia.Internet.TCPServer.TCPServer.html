@@ -1,0 +1,84 @@
+<html><body>
+<h1>Kamaelia.Internet.TCPServer.TCPServer</h1>
+<h2>class TCPServer(Axon.Component.component)</h2>
+
+<pre>
+     
+
+</pre>
+
+<h4>Inboxes</h4>
+<ul><li>   DataReady : Code uses old style inbox/outbox description - no metadata available
+<li>   _csa_feedback : Code uses old style inbox/outbox description - no metadata available
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   protocolHandlerSignal : Code uses old style inbox/outbox description - no metadata available
+<li>   signal : Code uses old style inbox/outbox description - no metadata available
+<li>   _selectorSignal : Code uses old style inbox/outbox description - no metadata available
+</ul>
+<h2>Methods defined here</h2>
+
+*NOTE:* Aside from the __init__ method, which is defined above, you
+should not be using these methods, unless you're either a) subclassing
+this component and overriding specific behaviour. b) looking to modify
+this class.
+
+If you are simply using this component, you should not need to call
+any of these methods, and things might well break (unless otherwise
+noted) if you do.
+<h3>__init__(self, listenport)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>checkForClosedSockets(self)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>closeSocket(self, shutdownMessage)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>createConnectedSocket(self, sock)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>handleNewConnection(self)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>initialiseComponent(self)</h3>
+<pre>
+    What else do we do with a selector?
+           * We want it to send us messages when our listen socket is ready.
+           * These messages tell us that a new connection is ready, and we should do
+             something with it. Anything else? Not yet.
+           * Client creates a link from it's own internal linkages to the selector service.
+           * Then sends the selector service a message.
+           * Basically the same idiom needed here.
+         
+
+</pre>
+
+<h3>mainBody(self)</h3>
+<pre>
+     
+
+</pre>
+
+<h3>makeTCPServerPort(self, suppliedport, HOST, minrange, maxrange, maxlisten)</h3>
+<pre>
+     
+
+</pre>
+
+</body></html>

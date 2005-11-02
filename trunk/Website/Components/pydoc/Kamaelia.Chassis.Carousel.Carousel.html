@@ -1,0 +1,91 @@
+<html><body>
+<h1>Kamaelia.Chassis.Carousel.Carousel</h1>
+<h2>class Carousel(Axon.Component.component)</h2>
+
+<pre>
+    Carousel(...) -> new Carousel chassis component (see __init__)
+    
+    A carousel component that makes child components one at a time
+    and lets them do their stuff. Replacing them when they terminate or if
+    requested to do so.
+
+</pre>
+
+<h4>Inboxes</h4>
+<ul><li>   control : 
+<li>   _control : internal use: to receive 'producerFinished' or 'shutdownMicroprocess' from child
+<li>   inbox : child's inbox
+<li>   next : requests to replace child
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : child's outbox
+<li>   signal : 
+<li>   _signal : internal use: for sending 'shutdownMicroprocess' to child
+<li>   requestNext : for requesting new child component
+</ul>
+<h2>Methods defined here</h2>
+
+*NOTE:* Aside from the __init__ method, which is defined above, you
+should not be using these methods, unless you're either a) subclassing
+this component and overriding specific behaviour. b) looking to modify
+this class.
+
+If you are simply using this component, you should not need to call
+any of these methods, and things might well break (unless otherwise
+noted) if you do.
+<h3>__init__(self, componentFactory, make1stRequest)</h3>
+<pre>
+    __init__(componentFactory)
+    __init__(componentFactory,make1stRequest=True)
+    
+    componentFactory(argument) -> new component
+        factory function for creating a new child according to specified arguments
+    
+    make1stRequest = True
+        Carousel will, immediately after activation, send a "NEXT" message to its
+        "requestNext" outbox. Otherwise the carousel just waits. 
+
+</pre>
+
+<h3>handleFinishedChild(self)</h3>
+<pre>
+    Unplugs the child if a shutdownMicroprocess or producerFinished message is
+    received from it. Also sends a "NEXT" request if one has not already been sent.
+
+</pre>
+
+<h3>handleNewChild(self)</h3>
+<pre>
+    If data received on "next" inbox, removes any existing child and creates and wires
+    in a new one.
+    
+    Received data is passed as an argument to the factory function (supplied at
+    initialisation) that creates the new child.
+
+</pre>
+
+<h3>main(self)</h3>
+<pre>
+    Main loop
+
+</pre>
+
+<h3>requestNext(self)</h3>
+<pre>
+    Sends 'next' out the 'requestNext' outbox
+
+</pre>
+
+<h3>shutdown(self)</h3>
+<pre>
+    Returns True if a shutdownMicroprocess or producerFinished message was received.
+
+</pre>
+
+<h3>unplugChildren(self)</h3>
+<pre>
+    Sends 'shutdownMicroprocess' to children and unwires and disowns them.
+
+</pre>
+
+</body></html>
