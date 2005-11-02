@@ -20,17 +20,25 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
-Raw YUV video data framer.
+=========================
+Raw YUV video data framer
+=========================
 
 This component takes a raw stream of YUV video data and breaks it into
 invidual frames. It sends them out one at a time, tagged with relevant data
 such as the frame size.
 
+Many components that expect uncompressed video require it to be structured into
+frames in this way, rather than as a raw stream of continuous data. This
+component fulfills that requirement.
 
 
-EXAMPLE USAGE : Reading and encoding raw video
+Example Usage
+-------------
 
-    imagesize = (352, 288)  # "CIF" size video
+Reading and encoding raw video::
+
+    imagesize = (352, 288)        # "CIF" size video
     
     pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
@@ -39,14 +47,17 @@ EXAMPLE USAGE : Reading and encoding raw video
 
 
 
-MORE DETAIL
+More Detail
+-----------
 
 Receives raw yuv video data, as strings on its "inbox" inbox.
 
-Sends out individual frames packaged in a dictionary:
-    ["yuv"] = (y_data, u_data, v_data)  -- a tuple of strings
-    ["size"] = (width, height)  -- in pixels
-    ["pixformat"] =  "YUV420_planar"
+Sends out individual frames packaged in a dictionary::
+    {
+      "yuv" : (y_data, u_data, v_data),  # a tuple of strings
+      "size" : (width, height),          # in pixels
+      "pixformat" : "YUV420_planar",     # raw video data format
+    }
 
 The component will terminate if it receives a shutdownMicroprocess or
 producerFinished message on its "control" inbox. The message is passed on out of
@@ -65,8 +76,8 @@ class RawYUVFramer(component):
 
     Creates a component that frames a raw stream of YUV video data into frames.
 
-    Keywork arguments:
-    size = (width,height)  -- size of a video frame in pixels
+    Keyword arguments:
+    size = (width,height)        -- size of a video frame in pixels
     pixformat = "YUV420_Planar"  -- raw video data format
     """
        

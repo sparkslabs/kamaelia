@@ -20,7 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
+===================
 Dirac video decoder
+===================
 
 This component decodes a stream of video, coded using the Dirac codec, into
 frames of YUV video data.
@@ -29,7 +31,9 @@ This component is a thin wrapper around the Dirac Python bindings.
 
 
 
-EXAMPLE USAGE : Simple video player
+Example Usage
+-------------
+A simple video player::
 
     pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
              DiracDecoder(),
@@ -39,8 +43,8 @@ EXAMPLE USAGE : Simple video player
 
 
 
-HOW DOES IT WORK?
-
+More detail
+-----------
 Reads a raw dirac data stream, as strings, from the "inbox" inbox.
 
 Sends out frames of decoded video to the "outbox" outbox.
@@ -61,9 +65,9 @@ For more information see the Dirac Python bindings documentation.
 
 
 
-----
-
+===================
 Dirac video encoder
+===================
 
 This component encodes frames of YUV video data with the Dirac codec.
 
@@ -71,9 +75,11 @@ This component is a thin wrapper around the Dirac Python bindings.
 
 
 
-EXAMPLE USAGE : Raw video file encoder
+Example Usage
+-------------
+Raw video file encoder::
 
-    imagesize = (352, 288)  # "CIF" size video
+    imagesize = (352, 288)      # "CIF" size video
     
     pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
@@ -85,7 +91,8 @@ RawYUVFramer is needed to frame raw YUV data into individual video frames.
 
 
 
-HOW DOES IT WORK?
+More detail
+-----------
 
 Reads video frames from the "inbox" inbox.
 
@@ -107,25 +114,24 @@ The component does not yet support output of instrumentation or locally decoded
 frames (the "verbose" option).
  
 
-
-----
-
+=========================
 UNCOMPRESSED FRAME FORMAT
+=========================
 
 Uncompresed video frames are output by the decoder, as dictionaries. Each
-contains the following entries:
-    ["yuv"] = (y_data, u_data, v_data)  -- a tuple of strings
-    ["size"] = (width, height)  -- in pixels
-    ["frame_rate"] = fps
-    ["interlaced"] = 0 or not 0 -- non-zero if the frame is two interlaced fields
-    ["topfieldfirst"] = 0 or not 0 -- non-zero the first field comes first in the data
-    ["pixformat"] =  "YUV420_planar"
-    ["chroma_size"] = (width, height) -- in pixels, for the u and v data
+contains the following entries::
+    {
+      "yuv" : (y_data, u_data, v_data)  # a tuple of strings
+      "size" : (width, height)          # in pixels
+      "frame_rate" : fps                # frames per second
+      "interlaced" : 0 or not 0         # non-zero if the frame is two interlaced fields
+      "topfieldfirst" : 0 or not 0      # non-zero the first field comes first in the data
+      "pixformat" :  "YUV420_planar"    # format of raw video data
+      "chroma_size" : (width, height)   # in pixels, for the u and v data
+    }
 
-The encoder expects data in the same format, but only expects these entries:
-    ["yuv"]
-    ["size"]
-    ["pixformat"]
+The encoder expects data in the same format, but only requires "yuv", "size",
+and "pixformat".
 
 
 """
@@ -224,10 +230,10 @@ class DiracEncoder(component):
     optional preset, optionally overriden by individual encoder and sequence parameters.
 
     Keyword arguments:
-    preset -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
-    verbose -- NOT YET IMPLEMENTED (IGNORED)
-    encParams -- dict of encoder setup parameters
-    seqParams -- dict of video sequence info parameters
+    preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
+    verbose    -- NOT YET IMPLEMENTED (IGNORED)
+    encParams  -- dict of encoder setup parameters
+    seqParams  -- dict of video sequence info parameters
     """
 
     def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}):
