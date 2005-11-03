@@ -36,9 +36,11 @@ class channel(object):
       self.sock.send ( 'PRIVMSG %s :%s\r\n' % (self.channel, message))
    def leave(self):
       self.sock.send("PART %s\r\n" % self.channel)
+   def topic(self, newTopic):
+       self.sock.send("TOPIC %s :%s\r\n" % (self.channel, newTopic))
 
 class IRC_Client(_Axon.Component.component):
-   Inboxes = ["inbox", "control", "talk"]
+   Inboxes = ["inbox", "control", "talk", "topic"]
    Outboxes = ["outbox", "signal", "heard" ]
    def __init__(self, nick="michaels",
                       nickinfo="Kamaelia",
@@ -68,6 +70,9 @@ class IRC_Client(_Axon.Component.component):
          if self.dataReady("talk"):
             data = self.recv("talk")
             self.channels[self.defaultChannel].say(data)
+         elif self.dataReady("topic"):
+             data = self.recv("topic")
+             self.channels[self.defaultChannel].topic(data)
          elif self.dataReady("inbox"):
             data = self.recv()
             if "PRIVMSG" in data:
@@ -90,11 +95,12 @@ class SimpleIRCClient(_Axon.Component.component):
    Inboxes = {
        "inbox" : "Stuff that's being said on the channel",
        "control" : "Shutdown control/info",
-       "talk" : "Something to say on the channel",
+#       "talk" : "Something to say on the channel",
+       "topic" : "Change topic on the channel",
    }
-   Outboxes = ["outbox", "signal", "heard" ] 
-   def __init__(self, host="127.0.0.1", 
-                      port=6667, 
+   Outboxes = ["outbox", "signal", "heard" ]
+   def __init__(self, host="127.0.0.1",
+                      port=6667,
                       nick="michaels",
                       nickinfo="Kamaelia",
                       defaultChannel="#oscon",
@@ -126,6 +132,7 @@ class SimpleIRCClient(_Axon.Component.component):
 
       self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
+      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
 
       self.addChildren(clientProtocol, client)
       yield _Axon.Ipc.newComponent(*(self.children))
@@ -148,8 +155,8 @@ class SimpleIRCClient(_Axon.Component.component):
 #     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
 # TypeError: list indices must be integers
 #
-def __SimpleIRCClient(host="127.0.0.1", 
-                      port=6667, 
+def __SimpleIRCClient(host="127.0.0.1",
+                      port=6667,
                       nick="michaels",
                       nickinfo="Kamaelia",
                       defaultChannel="#oscon",
@@ -175,6 +182,6 @@ if __name__ == '__main__':
 
    pipeline(
        ConsoleReader(),
-       SimpleIRCClient(host="127.0.0.1", nick="kamaeliabot", defaultChannel="#kamtest"),
+       SimpleIRCClient(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
        Ticker(render_right = 800,render_bottom = 600),
    ).run()
