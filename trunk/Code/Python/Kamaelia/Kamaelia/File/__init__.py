@@ -19,4 +19,10 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+========================================
+Components for reading and writing files
+========================================
 
+This directory contains components for reading and writing files.
+"""
