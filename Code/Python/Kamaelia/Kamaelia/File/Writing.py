@@ -20,60 +20,106 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-# Development history: /Sketches/filereading/WriteFileAdapter.py
-#          WriteFileAdapter --> FileWriter
-#
+"""
+==================
+Simple File Writer
+==================
+
+This component writes any data it receives to a file.
+
+
+Example Usage
+-------------
+
+Copying a file::
+
+    pipeline(RateControlledFileReader("sourcefile",rate=1000000),
+             SimpleFileWriter("destinationfile")
+            ).activate()
+
+
+
+More detail
+-----------
+
+Any data sent to this component's inbox is written to the specified file. 
+Any existing file with the same name is overwritten.
+
+The file is opened for writing when the component is activated, and is closed
+when it shuts down.
+
+This component terminates, closing the file, if it receives a
+shutdownMicroprocess or producerFinished message on its "control" inbox. The
+message is passed on out of its "signal" outbox.
+
+
+
+Development history
+-------------------
+
+SimpleFileWriter
+- prototyped in /Sketches/filereading/WriteFileAdapter.py
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class SimpleFileWriter(component):
-   """Provides write access to a file.
-      Shuts down in response to a shutdownMicroprocess message or producerFinished message
-   """
-   Inboxes = { "inbox" : "data to write to file",
-               "control" : ""
-             }
-   Outboxes = { "outbox" : "",
-                "signal" : "outputs 'producerFinished' after all data has been read"
-              }
+    class SimpleFileWriter(component):
+    """\
+    SimpleFileWriter(filename) -> component that writes data to the file
 
-   def __init__(self, filename, readmode="bytes"):
-       """Initialisation
-       
-          filename = name of file to write to
-       """
-       super(SimpleFileWriter, self).__init__()
-       self.file = open(filename, "wb",0)
-       
-   def writeData(self, data):
-       data = self.file.write(data)
-          
-   def main(self):
-       done = False
-       while not done:
-           yield 1
-           
-           if self.dataReady("inbox"):
-               data = self.recv("inbox")
-               self.writeData(data)
-           
-           if self.shutdown():
-               done = True
-           else:
-               self.pause()
-               
-   def shutdown(self):
-      if self.dataReady("control"):
-          msg = self.recv("control")
-          if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-              self.send(msg, "signal")
-              return True
-      return False
-      
-               
-   def closeDownComponent(self):
-      self.file.close()
+    Writes any data sent to its inbox to the specified file.
+    """
+    Inboxes = { "inbox" : "data to write to file",
+                "control" : "to receive shutdown/finished messages"
+              }
+    Outboxes = { "outbox" : "not used",
+                 "signal" : "shutdown/finished signalling"
+               }
+    
+    def __init__(self, filename):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(SimpleFileWriter, self).__init__()
+        
+    def writeData(self, data):
+        """Writes the data to the file"""
+        data = self.file.write(data)
+
+        
+    def main(self):
+        """Main loop"""
+        self.file = open(filename, "wb",0)
+        done = False
+        while not done:
+            yield 1
+            
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                self.writeData(data)
+            
+            if self.shutdown():
+                done = True
+            else:
+                self.pause()
+
+                
+    def shutdown(self):
+        """\
+        Returns True if a shutdownMicroprocess or producerFinished message is received.
+
+        Also passes the message on out of the "signal" outbox.
+        """
+        if self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
+                self.send(msg, "signal")
+                return True
+        return False
+        
+                
+    def closeDownComponent(self):
+        """Closes the file handle"""
+        self.file.close()
 
       
 if 0:
