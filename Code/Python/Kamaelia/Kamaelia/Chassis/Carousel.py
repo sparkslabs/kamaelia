@@ -19,7 +19,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
+"""\
 Component Carousel Chassis.
 
 This chassis component is for making a carousel of components. It gets its name
@@ -60,7 +60,7 @@ component. Anything the child sends out appears at the carousel's "outbox" and
 
 If the child sends an Axon.Ipc.shutdownMicroprocess or Axon.Ipc.producerFinished
 message then the carousel gets rid of that component and sends a "NEXT" message
-to its "requestNext" outbox.
+to its "requestNext" outbox. It does not pass the message on.
 
 Another component, such as a Chooser, can respond to this message by sending
 the new set of arguments (for the factory function) to the carousel's "next"
