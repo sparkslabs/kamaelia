@@ -19,3 +19,10 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===================
+Internet Simulation
+===================
+
+Components to simulate properties of a network connection, such as lossyness or
+re-ordering of data.
