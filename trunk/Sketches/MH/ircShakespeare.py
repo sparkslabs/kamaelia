@@ -25,6 +25,9 @@ class demodulation(component):
                         if text[4:9] == "Enter":
                             # actors walking on
                             self.send(("ENTER",text[9:].strip()), "outbox")
+                        elif text[4:12] == "Re-enter":
+                            # actors walking on
+                            self.send(("ENTER",text[12:].strip()), "outbox")
                         elif text[4:10] == "Exeunt":
                             # actors leaving
                             if not text[10:]: text+="all"
@@ -250,6 +253,7 @@ class director(AdaptiveCommsComponent):
 
 
     def makeActor(self,name):
+        name = name.replace(" ","")  # spaces not possible in nicks
         return SimpleIRCClient(host=self.host, nick=name, defaultChannel=self.channel)
 
     
@@ -326,7 +330,7 @@ if __name__ == "__main__":
               demodulation(),
               error_correction(),
               demultiplexing(),
-              director("irc.freenode.net", "#theglobe"),
+              director("127.0.0.1", "#theglobe"),
               consoleEchoer(),
             ).run()
             
