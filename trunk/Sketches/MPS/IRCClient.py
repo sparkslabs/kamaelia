@@ -24,6 +24,8 @@
 import Axon as _Axon
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Graphline import Graphline
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+
 
 class channel(object):
    # Sock here is currently a component, and default inbox
@@ -65,14 +67,14 @@ class IRC_Client(_Axon.Component.component):
       self.login(self.nick, self.nickinfo)
       self.channels[self.defaultChannel] = self.join(self.defaultChannel)
       seen_VERSION = False
-      while 1:
+      while not self.shutdown():
          data=""
          if self.dataReady("talk"):
             data = self.recv("talk")
             self.channels[self.defaultChannel].say(data)
          elif self.dataReady("topic"):
-             data = self.recv("topic")
-             self.channels[self.defaultChannel].topic(data)
+             newtopic = self.recv("topic")
+             self.channels[self.defaultChannel].topic(newtopic)
          elif self.dataReady("inbox"):
             data = self.recv()
             if "PRIVMSG" in data:
@@ -89,7 +91,15 @@ class IRC_Client(_Axon.Component.component):
                break
          self.pause() # Wait for response :-)
          yield 1
-      self.channels[self.defaultChannel] .leave()
+      self.channels[self.defaultChannel].leave()
+      print self.nick + "... is leaving\n"
+
+   def shutdown(self):
+       while self.dataReady("control"):
+           msg = self.recv("control")
+           if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+               return True
+       return False
 
 class SimpleIRCClient(_Axon.Component.component):
    Inboxes = {
@@ -133,6 +143,10 @@ class SimpleIRCClient(_Axon.Component.component):
       self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
       self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
+      
+      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
+      self.link((clientProtocol, "signal"), (client, "control"))
+      self.link((client, "signal"), (self, "signal"), passthrough=2)
 
       self.addChildren(clientProtocol, client)
       yield _Axon.Ipc.newComponent(*(self.children))
@@ -170,6 +184,10 @@ def __SimpleIRCClient(host="127.0.0.1",
             ("PROTOCOL", "outbox") : ("CLIENT", "inbox"),
             ("PROTOCOL", "heard") : ("self", "heard"),
             ("self", "talk") : ("PROTOCOL", "talk"),
+            ("self", "topic") : ("PROTOCOL", "topic"),
+            ("self", "control") : ("PROTOCOL", "control"),
+            ("PROTOCOL", "signal") : ("CLIENT", "control"),
+            ("CLIENT", "signal") : ("self", "signal"),
         }
     )
 
