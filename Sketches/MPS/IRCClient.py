@@ -28,6 +28,10 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
 class channel(object):
+   """\
+      This is an ugly hack - the send here is one helluvahack. 
+      (works with a socket and a component. It's deliberate but
+      ugly as hell"""
    # Sock here is currently a component, and default inbox
    def __init__(self, sock, channel):
       self.sock = sock
@@ -42,20 +46,44 @@ class channel(object):
        self.sock.send("TOPIC %s :%s\r\n" % (self.channel, newTopic))
 
 class IRC_Client(_Axon.Component.component):
+   """\
+      This is the base client. It is broken in the same was as
+      the earliest internet handling code was. In many respects this
+      is the logical counterpart to a TCPServer which upon connection
+      should spawn the equivalent of a Connected Socket Adaptor. Since
+      this could happen in various different ways, please hack on a
+      COPY of this file, rather that this file. (Keeps this file
+      relatively simple)
+
+      Specifically - consider that in order to make this work "properly"
+      it needs to handle the chat session multiplexing that happens by
+      default in IRC. There are MANY ways this could be achieved.
+   """
    Inboxes = ["inbox", "control", "talk", "topic"]
    Outboxes = ["outbox", "signal", "heard" ]
-   def __init__(self, nick="michaels",
+   def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
-                      defaultChannel="#oscon"):
+                      defaultChannel="#kamaeliatest"):
       self.__super.__init__()
       self.nick = nick
       self.nickinfo = nickinfo
       self.defaultChannel = defaultChannel
       self.channels = {}
 
-   def login(self, nick, nickinfo):
+   def login(self, nick, nickinfo, password = None, username=None):
+      """Should be abstracted out as far as possible.
+         Protocol can be abstracted into the following kinds of items:
+             - The independent atoms of the transactions in the protocol
+             - The orchestration of the molecules of the atoms of
+               transactions of the protocol.
+             - The higher level abstractions for handling the protocol
+      """
       self.send ( 'NICK %s\r\n' % nick )
-      self.send ( 'USER %s %s %s :%s\r\n' % (nick,nick,nick, nickinfo))
+      if password:
+          self.send('PASS %s\r\n' % password )
+      if not username:
+          username = nick
+      self.send ( 'USER %s %s %s :%s\r\n' % (username,nick,nick, nickinfo))
 
    def join(self, someChannel):
       chan = channel(self,someChannel)
@@ -67,6 +95,7 @@ class IRC_Client(_Axon.Component.component):
       self.login(self.nick, self.nickinfo)
       self.channels[self.defaultChannel] = self.join(self.defaultChannel)
       seen_VERSION = False
+
       while not self.shutdown():
          data=""
          if self.dataReady("talk"):
@@ -97,15 +126,12 @@ class IRC_Client(_Axon.Component.component):
             if data.find("LEAVE") != -1:
                break
 
-         if not (self.dataReady("inbox") or
-                 self.dataReady("control") or
-                 self.dataReady("talk") or
-                 self.dataReady("topic")):
+         if not self.anyReady(): # Axon 1.1.3 (See CVS)
             self.pause() # Wait for response :-)
          yield 1
          
       self.channels[self.defaultChannel].leave()
-      print self.nick + "... is leaving\n"
+      # print self.nick + "... is leaving\n" # Check with and IRC client instead.
 
    def shutdown(self):
        while self.dataReady("control"):
@@ -115,18 +141,18 @@ class IRC_Client(_Axon.Component.component):
        return False
 
 class SimpleIRCClient(_Axon.Component.component):
+   "Sample integration of the IRCClient into a networked environment"
    Inboxes = {
        "inbox" : "Stuff that's being said on the channel",
        "control" : "Shutdown control/info",
-#       "talk" : "Something to say on the channel",
        "topic" : "Change topic on the channel",
    }
-   Outboxes = ["outbox", "signal", "heard" ]
+   Outboxes = ["outbox", "signal"]
    def __init__(self, host="127.0.0.1",
                       port=6667,
-                      nick="michaels",
+                      nick="kamaeliabot",
                       nickinfo="Kamaelia",
-                      defaultChannel="#oscon",
+                      defaultChannel="#kamaeliatest",
                       IRC_Handler=IRC_Client):
       self.__super.__init__()
       self.host = host
@@ -145,11 +171,6 @@ class SimpleIRCClient(_Axon.Component.component):
       client = TCPClient(host,port)
       clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
 
-#      self.link((client,"outbox"), (clientProtocol,"inbox"))
-#      self.link((clientProtocol,"outbox"), (client,"inbox"))
-#      self.link((clientProtocol, "heard"), (self, "heard"), passthrough=2)
-#      self.link((self, "talk"), (clientProtocol, "talk"), passthrough=1)
-
       self.link((client,"outbox"), (clientProtocol,"inbox"))
       self.link((clientProtocol,"outbox"), (client,"inbox"))
 
@@ -167,44 +188,6 @@ class SimpleIRCClient(_Axon.Component.component):
          self.pause()
          yield 1
 
-#
-# Logically this should be equivalent to the above, but causes a bug in Graphline to manifest
-# itself. Specific backtrace:
-# Traceback (most recent call last):
-#   File "./IRCClient.py", line 171, in ?
-#     CONNECTION = SimpleIRCClient(host="127.0.0.1", defaultChannel="#oscon"),
-#   File "./IRCClient.py", line 155, in SimpleIRCClient
-#     linkages = {
-#   File "/usr/lib/python2.4/site-packages/Kamaelia/Util/Graphline.py", line 44, in __init__
-#     self.addExternalPostboxes()
-#   File "/usr/lib/python2.4/site-packages/Kamaelia/Util/Graphline.py", line 68, in
-#  addExternalPostboxes
-#     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
-# TypeError: list indices must be integers
-#
-def __SimpleIRCClient(host="127.0.0.1",
-                      port=6667,
-                      nick="michaels",
-                      nickinfo="Kamaelia",
-                      defaultChannel="#oscon",
-                      IRC_Handler=IRC_Client):
-
-    Graphline(
-        CLIENT = TCPClient(host,port),
-        PROTOCOL = IRC_Handler(nick, nickinfo, defaultChannel),
-        linkages = {
-            ("CLIENT", "outbox") : ("PROTOCOL", "inbox"),
-            ("PROTOCOL", "outbox") : ("CLIENT", "inbox"),
-            ("PROTOCOL", "heard") : ("self", "heard"),
-            ("self", "talk") : ("PROTOCOL", "talk"),
-            ("self", "topic") : ("PROTOCOL", "topic"),
-            ("self", "control") : ("PROTOCOL", "control"),
-            ("PROTOCOL", "signal") : ("CLIENT", "control"),
-            ("CLIENT", "signal") : ("self", "signal"),
-        }
-    )
-
-
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.Console import ConsoleReader
@@ -213,6 +196,6 @@ if __name__ == '__main__':
 
    pipeline(
        ConsoleReader(),
-       SimpleIRCClient(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
+       SimpleIRCClient(host="127.0.0.1", nick="kamaeliabot", defaultChannel="#kamtest"),
        Ticker(render_right = 800,render_bottom = 600),
    ).run()
