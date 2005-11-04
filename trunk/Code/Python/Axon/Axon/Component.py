@@ -294,6 +294,17 @@ class component(microprocess):
       Simple accessor method, returns list of child components"""
       return self.children
 
+   def anyReady(self):
+       """'C.anyReady()' -
+       test, returns true if any inbox has any data ready.
+
+       You are unlikely to want to override this method.
+       """
+       for box in self.inboxes:
+          if self.dataReady(box):
+             return True
+       return False
+
    def dataReady(self,boxname="inbox"):
       """'C.dataReady("boxname")' -
       test, returns true if data is available in the requested inbox.
