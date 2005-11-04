@@ -76,21 +76,34 @@ class IRC_Client(_Axon.Component.component):
              newtopic = self.recv("topic")
              self.channels[self.defaultChannel].topic(newtopic)
          elif self.dataReady("inbox"):
-            data = self.recv()
-            if "PRIVMSG" in data:
-                if data[0] == ":":
-                    data = data[1:]
-                if ("VERSION" in data) and not seen_VERSION:
-                    seen_Version = True
-                else:
-                    data = data[data.find(":")+1:]
-                    self.send(data, "heard")
+            lines = self.recv()
+            if "\r" in lines:
+                lines.replace("\r","\n")
+            lines = lines.split("\n")
+            for data in lines:
+                if "PRIVMSG" in data:
+                    if data[0] == ":":
+                        data = data[1:]
+                    if ("VERSION" in data) and not seen_VERSION:
+                        seen_Version = True
+                    else:
+                        data = data[data.find(":")+1:]
+                        self.send(data, "heard")
+                elif "PING" in data:
+                    reply = "PONG" + data[data.find("PING")+4:]
+                    self.send(reply+"\r\n")
 
          if data.find(self.nick) != -1:
             if data.find("LEAVE") != -1:
                break
-         self.pause() # Wait for response :-)
+
+         if not (self.dataReady("inbox") or
+                 self.dataReady("control") or
+                 self.dataReady("talk") or
+                 self.dataReady("topic")):
+            self.pause() # Wait for response :-)
          yield 1
+         
       self.channels[self.defaultChannel].leave()
       print self.nick + "... is leaving\n"
 
