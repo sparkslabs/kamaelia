@@ -19,6 +19,58 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=================
+Simple TCP Client
+=================
+
+This component is for making a TCP connection to a server. Send to its "inbox"
+inbox to send data to the server. Pick up data received from the server on its
+"outbox" outbox.
+
+
+
+Example Usage
+-------------
+
+Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
+
+    pipeline( RateControlledFileReader("myfile", rate=100000),
+              TCPClient("1.2.3.4", 1000),
+            ).activate()
+
+
+
+How does it work?
+-----------------
+
+TCPClient opens a socket connection to the specified server on the specified
+port. Data received over the connection appears at the component's "outbox"
+outbox as strings. Data can be sent as strings by sending it to the "inbox"
+inbox.
+
+An optional delay (between component activation and attempting to connect) can
+be specified. The default is no delay.
+
+It creates a ConnectedSocketAdapter (CSA) to handle the socket connection and
+registers it with a selectorComponent so it is notified of incoming data. The
+selectorComponent is obtained by calling
+selectorComponent.getSelectorService(...) to look it up with the local
+Coordinating Assistant Tracker (CAT).
+
+TCPClient wires itself to the "FactoryFeedback" outbox of the CSA. It also wires
+its "inbox" inbox to pass data straight through to the CSA's "DataSend" inbox,
+and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
+
+Socket errors (after the connection has been successfully established) may be
+sent to the "signal" outbox.
+
+This component will terminate if the CSA sends a socketShutdown message to its
+"FactoryFeedback" outbox.
+
+Messages sent to the "control" inbox are ignored - users of this component
+cannot ask it to close the connection.
+"""
 
 import socket
 import errno
@@ -34,11 +86,29 @@ import Axon.CoordinatingAssistantTracker as cat
 import Selector
 
 class TCPClient(component):
-   Inboxes = ["inbox", "_socketFeedback", "control"]
-   Outboxes = ["outbox","signal","_selectorSignal"]
+   """\
+   TCPClient(host,port[,chargen][,delay]) -> component with a TCP connection to a server.
+
+   Establishes a TCP connection to the specified server.
+   
+   Keyword arguments:
+   - host     -- address of the server to connect to (string)
+   - port     -- port number to connect on
+   - chargen  -- ? UNUSED
+   - delay    -- delay (seconds) after activation before connecting (default=0)
+   """
+   Inboxes  = { "inbox"           : "data to send to the socket",
+                "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
+                "control"         : "NOT USED"
+              }
+   Outboxes = { "outbox"         :  "data received from the socket",
+                "signal"         :  "",
+                "_selectorSignal" : "communicating with a selectorComponent",
+              }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
    def __init__(self,host,port,chargen=0,delay=0):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPClient, self).__init__()
       self.host = host
       self.port = port
@@ -46,15 +116,25 @@ class TCPClient(component):
       self.delay=delay
 
    def main(self):
+      """Main loop."""
+
+      # wait before connecting
       import time
       t=time.time()
       while time.time()-t<self.delay:
          yield 1
+
       for v in self.runClient():
          yield v
       # SMELL - we may need to send a shutdown message
 
    def setupCSA(self, sock):
+      """\
+      setupCSA(sock) -> new ConnectedSocketAdapter component
+
+      Creates a ConnectedSocketAdapter component for the socket, and wires up to
+      it. Also sends the CSA to the "selector" service.
+      """
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
       self.addChildren(CSA)
       selectorService , newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
@@ -70,6 +150,7 @@ class TCPClient(component):
       return self.childComponents()
 
    def waitCSAClose(self):
+      """Returns True if a socketShutdown message is received on "_socketFeedback" inbox."""
       if self.dataReady("_socketFeedback"):
          message = self.recv("_socketFeedback")
          if isinstance(message, socketShutdown):
@@ -77,6 +158,12 @@ class TCPClient(component):
       return True
 
    def safeConnect(self, sock, *sockArgsList):
+      """\
+      Connect to socket and handle possible errors that may occur.
+
+      Returns True if successful, or False on failure. Unhandled errors are raised
+      as exceptions.
+      """
       try:
          sock.connect(*sockArgsList); # Expect socket.error: (115, 'Operation now in progress')
             # EALREADY

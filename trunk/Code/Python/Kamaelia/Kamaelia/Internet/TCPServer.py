@@ -19,41 +19,67 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# TCP Server Socket class
-#
-# The TCP Server component provides a component for building a TCP based
-# network server. You specify a single port number, the system then hunts
-# for a selector process, and waits for new connection messages from the
-# selector.
-#
-# When the Server recieves a new connection it performs an accept, and creates
-# a connected socket adaptor (CSA) to handle the activity on that connection. This
-# CSA is then passed to the TCP Server's protocolHandlerSignal outbox.
-# (Internally the CSA is also currently handed over to a selector service to perform
-# activity checking)
-#
-# Inboxes:
-#    * DataReady - Data ready on a server socket means the TCP server should
-#                    accept a new connection.
-#    * _csa_feedback - We recieve feedback from Connected Socket adaptors
-#                    on this inbox. Currently this feedback is limited to connection
-#                    shutdown messages.
-#
-# Outboxes:
-#    * protocolHandlerSignal - This is used to send a connected socket adaptor
-#                    component back to the protocol handler level.
-#    * signal - Used to communiate with the selector sending either NewCSA
-#                    messages
-#
-# The client using the TCPServer is then expected to deal with the input/output
-# required directly with the CSA. (See SimpleServer component example)
-#
-# Essentially the steps are:
-#    * Create a TCP Server
-#    * Wait for CSA messages from the TCP Server
-#    * Send what you like to CSA's, ensure you recieve data from the CSAs
-#    * Send shutdown messages when done.
+"""\
+=================
+TCP Socket Server
+=================
+
+A building block for creating a TCP based network server. It accepts incoming
+connection requests and sets up a component to handle the socket which it then
+passes on.
+
+This component does not handle the instantiation of components to handle an
+accepted connection request. Another component is needed that responds to this
+component and actually does something with the newly established connection.
+If you require a more complete implementation that does this, see SingleServer
+or SimpleServer.
+
+
+
+Example Usage
+-------------
+
+See SimpleServer or SingleServer for examples of how this component can be used.
+
+The process of using a TCPServer component can be summarised as:
+- Create a TCP Server
+- Wait for newCSA messages from the TCP Server's "protocolHandlerSignal" outbox
+- Send what you like to CSA's, ensure you recieve data from the CSAs
+- Send producerFinished to the CSA to shut it down.
+
+
+How does it work?
+-----------------
+
+This component creates a listener socket, bound to the specified port, and
+registers itself and the socket with a selectorComponent so it is notified of
+incoming connections. The selectorComponent is obtained by calling
+selectorComponent.getSelectorService(...) to look it up with the local
+Coordinating Assistant Tracker (CAT).
+
+When the it recieves a new connection it performs an accept, and creates
+a ConnectedSocketAdapter (CSA) to handle the activity on that connection.
+
+The CSA is passed in a newCSA(self,CSA) message to TCPServer's
+"protocolHandlerSignal" outbox.
+
+The CSA is also registered with the selector service by sending it a
+newCSA(self,(CSA,sock)) message, to ensure the CSA is notified of incoming data
+on its socket.
+
+The client component(s) using the TCPServer should handle the newly created CSA
+passed to it in whatever way it sees fit.
+
+If a socketShutdown message is received on the "_csa_feedback" inbox, then a
+shutdownCSA(self, CSA) message is sent to TCPServer's "protocolHandlerSignal"
+outbox to notify the client component that the connection has closed.
+
+Also, a shutdownCSA(self, (CSA, sock)) message is sent to the selector service
+to deregister the CSA from receiving notifications.
+
+This component does not terminate.
+"""
+
 
 import socket, errno, random, Axon, Selector
 import Kamaelia.KamaeliaIPC as _ki
@@ -65,15 +91,36 @@ wouldblock = Axon.Ipc.wouldblock
 import time
 
 class TCPServer(_component):
-   Inboxes=["DataReady", "_csa_feedback"]
-   Outboxes=["protocolHandlerSignal", "signal","_selectorSignal"]
+   """\
+   TCPServer(listenport) -> TCPServer component listening on the specified port.
+
+   Creates a TCPServer component that accepts all connection requests on the
+   specified port.
+   """
+   
+   Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
+                "_csa_feedback" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
+              }
+   Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
+                "signal"                : "NOT USED",
+                "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+              }
 
    def __init__(self,listenport):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPServer, self).__init__()
       self.listenport = listenport
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
 
    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
+      """\
+      Returns (socket,port) - a bound TCP listener socket and the port number it is listening on.
+
+      If suppliedPort is not specified, then a random port is chosen between
+      minrange and maxrange inclusive.
+
+      maxlisten is the max number of pending requests the server will allow (queue up).
+      """
       if HOST is None: HOST=''
       if suppliedport is None:
          PORT=random.randint(minrange,maxrange) # Built in support for testing
@@ -88,6 +135,10 @@ class TCPServer(_component):
       return s,PORT
 
    def createConnectedSocket(self, sock):
+      """\
+      Accepts the connection request on the specified socket and returns a
+      ConnectedSocketAdapter component for it.
+      """
       tries = 0
       maxretries = 10
       gotsock=False
@@ -98,6 +149,12 @@ class TCPServer(_component):
       return CSA
 
    def closeSocket(self, shutdownMessage):
+      """\
+      Respond to a socketShutdown message by closing the socket.
+
+      Sends a shutdownCSA(self, (theCSA, sock)) message to the selectorComponent.
+      Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
+      """
       theComponent,sock = shutdownMessage.caller, shutdownMessage.message
       sock.close()
       # tell the selector about it shutting down
@@ -108,19 +165,17 @@ class TCPServer(_component):
       self.removeChild(theComponent)
 
    def checkForClosedSockets(self):
+      """Check "_csa_feedback" inbox for socketShutdown messages, and close sockets in response."""
       if self.dataReady("_csa_feedback"):
          data = self.recv("_csa_feedback")
          if isinstance( data, _ki.socketShutdown):
             self.closeSocket(data)
 
    def initialiseComponent(self):
-      """ What else do we do with a selector?
-        * We want it to send us messages when our listen socket is ready.
-        * These messages tell us that a new connection is ready, and we should do
-          something with it. Anything else? Not yet.
-        * Client creates a link from it's own internal linkages to the selector service.
-        * Then sends the selector service a message.
-        * Basically the same idiom needed here.
+      """\
+      Obtains a selector service and wires up to it, registering self to be notified
+      of incoming connection requests on a socket bound to the port its supposed to
+      be listening to.
       """
       selectorService, newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
       if newSelector:
@@ -130,6 +185,12 @@ class TCPServer(_component):
       return Axon.Ipc.newComponent(*(self.children))
 
    def handleNewConnection(self):
+      """\
+      Handle notifications from the selector service of new connection requests.
+
+      Accepts and sets up new connections, wiring them up and passing them on via
+      the "protocolHandlerSignal" outbox.
+      """
       if self.dataReady("DataReady"):
          data = self.recv("DataReady")
          # If we recieve information on data ready, for a server it means we have a new connection
@@ -149,6 +210,7 @@ class TCPServer(_component):
             return CSA
 
    def mainBody(self):
+      """Main loop"""
       self.pause()
       self.checkForClosedSockets()
       self.handleNewConnection() # Data ready means that we have a connection waiting.
