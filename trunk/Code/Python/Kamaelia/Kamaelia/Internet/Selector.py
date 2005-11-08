@@ -19,8 +19,59 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
+"""\
+======================================
+NOTIFICATION OF SOCKET AND FILE EVENTS
+======================================
 
+The selectorComponent listens for events on sockets and sends out notifications.
+It is effectively a wrapper around the unix 'select' statement.
+
+Components should register their ConnectedSocketAdapter (CSA) components with
+the selectorComponent. The selector will then wire up to the CSA and provide it
+with the notifications it needs.
+
+The selectorComponent is a service that registers with the Coordinating
+Assistant Tracker (CAT).
+
+
+
+Example Usage
+-------------
+
+See the source code for TCPClient for an example of how the selectorComponent
+can be used.
+
+
+
+How does it work?
+-----------------
+
+The selectorComponent is a service. obtain it by calling the
+selectorComponent.getSelectorService(...) static method. Any existing instance
+will be returned, otherwise a new one is automatically created.
+
+To register a socket with the selector, send a newCSA(self, (CSA, sock)) message
+to the "notify" inbox. Where CSA is the component to be notified (usually a
+ConnectedSocketAdapter component), and sock is the corresponding socket object
+that selectorComponent should watch.
+
+selectorComponent will wire itself to the target component's "DataReady" inbox
+and "signal" outbox. (selectorComponent adds its own unique inbox(es) and
+outbox(es) for this purpose).
+
+When there is activity on the socket, the selectorComponent will send a
+status("write ready") or status("data ready") message (as appropriate) to the
+target component's "DataReady" inbox.
+
+The socket is deregistered if the target component sends a
+shutdownCSA(self, (CSA,sock)) message to its "signal" outbox. The
+selectorComponent will stop sending it notifications and will unwire from it.
+
+The selectorComponent does not terminate, even if there are no sockets for it
+to watch. If termination is added, it must be taken into account that other
+components in the system may still be retaining a reference to the
+selectorComponent instance.
 """
 import socket
 import Axon
@@ -32,20 +83,38 @@ AdaptiveCommsComponent=Axon.AdaptiveCommsComponent.AdaptiveCommsComponent
 import time
 
 class selectorComponent(AdaptiveCommsComponent):
-   Inboxes=["inbox", "control","notify"]
-   Outboxes=["outbox","signal"]
-   requiredInboxes=["DataReady"]
-   requiredOutboxes=["signal"]
+   """\
+   selectorComponent() -> new selectorComponent component
+
+   Use selectorComponent.getSelectorService(...) in preference as it returns an
+   existing instance, or automatically creates a new one.
+   """
+   
+   Inboxes  = { "inbox"   : "NOT USED",
+                "control" : "NOT USED",
+                "notify"  : "newCSA(...) and shutdownCSA(...) notifications",
+              }
+   Outboxes = { "outbox" : "NOT USED",
+                "signal" : "NOT USED",
+              }
+              
+   requiredInboxes=["DataReady"]    # required inboxes on target component
+   requiredOutboxes=["signal"]      # required outboxes on target component
    
    def setSelectorService(selector, tracker = None):
-        "Sets the given selector as the service for the selected tracker or the default one."
+        """Sets the given selector as the service for the selected tracker or the default one."""
         if not tracker:
             tracker = cat.coordinatingassistanttracker.getcat()
         tracker.registerService("selector", selector, "notify")
    setSelectorService = staticmethod(setSelectorService)
 
    def getSelectorService(tracker=None): # STATIC METHOD
-      "Returns any live selector in the system, or creates one for the system to use"
+      """\
+      Returns any live selector registered with the specified (or default) tracker,
+      or creates one for the system to use.
+
+      (static method)
+      """
       if tracker is None:
          tracker = cat.coordinatingassistanttracker.getcat()
       try:
@@ -59,6 +128,12 @@ class selectorComponent(AdaptiveCommsComponent):
    getSelectorService = staticmethod(getSelectorService)
 
    def validComponentInput(message):
+      """\
+      validComponentInput((component,sock)) -> True/False
+      
+      True if the component is suitable to wire to the selectorComponent and
+      sock is a socket.
+      """
       interfaceOK = Axon.util.testInterface
       interfaceRequired = (selectorComponent.requiredInboxes,selectorComponent.requiredOutboxes)
       x,y = message
@@ -66,7 +141,12 @@ class selectorComponent(AdaptiveCommsComponent):
    validComponentInput=staticmethod(validComponentInput)
 
    def checkComponents(*components):
-      "Check that the supplied components actually have the interface we require to link with"
+      """\
+      checkComponents( *(component,sock) ) -> True/False
+
+      True if all components are suitable to wire to the selectorComponent and
+      if all socks are sockets.
+      """
       safeList=Axon.util.safeList
       theComponents = reduce(list.__add__,[safeList(x) for x in components])
       try:
@@ -80,11 +160,10 @@ class selectorComponent(AdaptiveCommsComponent):
    checkComponents=staticmethod(checkComponents)
 
    def __init__(self):
-      """This used to take readers, writers, etc at creation time, but this made the system far more
-      complex than it had to be, and the functionality has been removed to simplify the code. Server
-      CSA factories and CSA's now need to be supplied via inboxes. Quite dramatically simplifies the
-      code"""
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(selectorComponent, self).__init__() # !!!! Must happen, if this method exists
+      # Kept simple by NOT taking readers/writers etc at creation time - they're registered
+      # via messages to an inbox instead
       self.t = 0
       self.readers=[]
       self.writers=[]
@@ -98,9 +177,14 @@ class selectorComponent(AdaptiveCommsComponent):
       self.inboxToSocket = {}
 
    def wireInComponent(self, socketComponentPair):
-      # Needs to check to see if the component pair has already been wired
-      # in - due to changes in usage...
-      # Actually now need to ensure that components have their interfaces checked *here*
+      """\
+      Wires in the (component, socket) pair, so the component receives 
+      notifications of events on socket.
+
+      Checks their interfaces with validComponentInput().
+      
+      Does not check if the component,socket pair has already been wired in.
+      """
       theComponent,theSocket = socketComponentPair
       selectorComponent.validComponentInput(socketComponentPair) # Raises invalidComponentInterface if wrong
       feedbackInboxName = self.addInbox("socketAdaptorFeedback")
@@ -112,6 +196,10 @@ class selectorComponent(AdaptiveCommsComponent):
       self.lookupBoxes[theSocket] = (feedbackInboxName, signalOutboxName, theComponent)
 
    def wireOutComponent(self, socketComponentPair):
+      """\
+      Unwires the specified (component, socket) pair, so it no longer receives
+      notifications of events on the socket.
+      """
       # remove any lookup table entries
       # unwire
       # delete in/outboxes it used
@@ -128,19 +216,15 @@ class selectorComponent(AdaptiveCommsComponent):
       #print "We're checking for closed sockets, but we're not really..."
 
    def handleNotify(self):
+      """\
+      Handle requests to register/deregister (component,socket) pairs.
+      """
       if self.dataReady("notify"):
          message = self.recv("notify")
 
          payload,caller = message.object, message.caller
          managingComponent, sock = payload
          if isinstance(message, shutdownCSA): # This is cack - this should use a different inbox
-            #
-            # Problems with this:
-            #    * This removes writing sockets only
-            #    * It doesn't remove reading sockets
-            #    * It doen't unwire any components
-            #    * It doesn't remove any new in/out boxes
-            #
             try: self.writersockets.remove(sock)
             except: pass
             try: self.readersockets.remove(sock)
@@ -151,21 +235,24 @@ class selectorComponent(AdaptiveCommsComponent):
                self.writersockets.append(sock)
             else:
                self.readersockets.append(sock)
-            self.wireInComponent((managingComponent, sock))  ### PROBLEM IS HERE... COOL.
+            self.wireInComponent((managingComponent, sock))
 
    def handleExceptionalSocket(self, sock):
       """ Currently there is no support for exceptional sockets"""
       pass
 
    def handleWriteableSocket(self, sock):
+      """Notifys corresponding component that its socket is ready for writing new data."""
       (feedbackInboxName, signalOutboxName, theComponent) = self.lookupBoxes[sock]
       self.send(status("write ready"),signalOutboxName)
 
    def handleReadableSocket(self, sock):
+      """Notifys corresponding component that its socket is ready for reading new data."""
       (feedbackInboxName, signalOutboxName, theComponent) = self.lookupBoxes[sock]
       self.send(status("data ready"),signalOutboxName)
 
    def main(self):
+      """Main loop"""
       while 1:
          # print "ME", self
          # print "SERVER SOCKETS", self.readersockets
@@ -212,8 +299,15 @@ class selectorComponent(AdaptiveCommsComponent):
                      raise e
          yield status("ready")
 
+
+
 def getSelectorService(tracker=None):
-   "Returns any live selector in the system, or creates one for the system to use"
+   """\
+      Returns any live selector registered with the specified (or default) tracker,
+      or creates one for the system to use.
+
+      (Identical to selectorComponent.getSelectorService(...)
+   """
    if tracker is None:
       tracker = cat.coordinatingassistanttracker.getcat()
    try:
