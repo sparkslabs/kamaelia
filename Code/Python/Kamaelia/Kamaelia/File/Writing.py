@@ -64,7 +64,7 @@ SimpleFileWriter
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-    class SimpleFileWriter(component):
+class SimpleFileWriter(component):
     """\
     SimpleFileWriter(filename) -> component that writes data to the file
 

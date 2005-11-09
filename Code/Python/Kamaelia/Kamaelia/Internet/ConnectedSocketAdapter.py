@@ -202,11 +202,11 @@ class ConnectedSocketAdapter(component):
       #      print "CSA: DATASEND", self.dataReady("DataSend"),
       #      print "CSA: DATAREADY", self.dataReady("DataReady")
       #if not (self.dataReady("DataSend") or self.dataReady("DataReady")):
-         if self.dataReady("control"):
-            data = self.recv("control")
-            if isinstance(data, producerFinished):
-               #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
-               raise connectionServerShutdown()
+      if self.dataReady("control"):
+          data = self.recv("control")
+          if isinstance(data, producerFinished):
+              #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
+              raise connectionServerShutdown()
 
    def mainBody(self):
       """Main loop."""
