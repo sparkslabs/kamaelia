@@ -39,8 +39,8 @@ class AOAudioPlaybackAdaptor(component):
 
    Expects to recieve data from standard inbox, and plays it using libao.
    When it recieves a message on the control port:
-   * Sends a producerConsumed to its outbox
-   * Then shutsdown
+   Sends a producerConsumed to its outbox.
+   Then shutsdown.
 
    **Requires** libao and pyao (python bindings)
 
@@ -63,11 +63,13 @@ class AOAudioPlaybackAdaptor(component):
        "outbox" : "UNUSED",
        "signal" : "When the component shutsdown, it sends a producerFinished message out this outbox",
    }
-   def __init__(self, id=None):
+   def __init__(self):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(AOAudioPlaybackAdaptor, self).__init__()
       self.dev = ao.AudioDevice("oss")
 
    def main(self):
+      """Performs the logic described above"""
       playing = True
       while playing:
          if self.dataReady("inbox"):
@@ -118,7 +120,15 @@ class VorbisDecode(component):
       self.decoder = vorbissimple.vorbissimple()
       
    def main(self):
-      """This contains no user serviceable parts :-)"""
+      """\
+      This contains no user serviceable parts :-)
+
+      Theory of operation is simple. It simply repeatedly asks the decoder
+      object for audio. That decoded audio is sent to the component's outbox.
+      If the decoder object responds with RETRY, the component retries.
+      If the decoder object responds with NEEDDATA, the component waits
+      for data on any inbox until some is available (from an inbox)
+      """
       decoding = True
       producerDone = False
       while decoding:
