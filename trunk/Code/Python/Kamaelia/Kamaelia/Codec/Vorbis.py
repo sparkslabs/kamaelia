@@ -34,6 +34,35 @@ import time
 import ao
 
 class AOAudioPlaybackAdaptor(component):
+   """\
+   AOAudioPlaybackAdaptor() -> new AOAudioPlaybackAdaptor
+
+   Expects to recieve data from standard inbox, and plays it using libao.
+   When it recieves a message on the control port:
+   * Sends a producerConsumed to its outbox
+   * Then shutsdown
+
+   **Requires** libao and pyao (python bindings)
+
+   **Example**
+
+   A simple player::
+
+       pipeline(
+           ReadFileAdaptor("somefile.ogg"),
+           VorbisDecode(),
+           AOAudioPlaybackAdaptor(),
+       ).run()
+
+   """
+   Inboxes = {
+       "inbox" : "Any raw PCM encoded data recieved here is played through the default oss playback device",
+       "control" : "If a message is received here, the component shutsdown",
+   }
+   Outboxes = {
+       "outbox" : "UNUSED",
+       "signal" : "When the component shutsdown, it sends a producerFinished message out this outbox",
+   }
    def __init__(self, id=None):
       super(AOAudioPlaybackAdaptor, self).__init__()
       self.dev = ao.AudioDevice("oss")
@@ -49,15 +78,47 @@ class AOAudioPlaybackAdaptor(component):
                self.recv("control")
                sig = producerFinished(self)
                self.send(sig, "signal")
-               playing = False
+               return
          yield 1
 
 class VorbisDecode(component):
-   def __init__(self, *args):
-      super(VorbisDecode, self).__init__(*args)
+   """\
+   VorbisDecode() -> new VorbisDecoder
+
+   A Vorbis decoder accepts data on its inbox "inbox", as would be read
+   from an ogg vorbis file, decodes it and sends on the decompressed data on
+   out of its outbox "outbox". It doesn't provide any further information
+   at this stage, such as bitrate, or any other frills.
+   
+   **Requires** libvorbissimple and python bindings (see kamaelia downloads)
+
+   **Example**
+
+   A simple player::
+
+       pipeline(
+           ReadFileAdaptor("somefile.ogg"),
+           VorbisDecode(),
+           AOAudioPlaybackAdaptor(),
+       ).run()
+
+   This component expects to recieve OGG VORBIS data as you would
+   get from a .ogg file containing vorbis data. (rather than raw
+   vorbis data)
+   """
+   Inboxes = { "inbox" : "Ogg wrapped vorbis data",
+               "control" : "Receiving a message here causes component shutdown",
+   }
+   Outboxes = { "outbox" : "As data is decompresessed it is sent to this outbox",
+                "signal" : "When the component shuts down, it sends on a producerFinished message",
+   } 
+   def __init__(self):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+      super(VorbisDecode, self).__init__()
       self.decoder = vorbissimple.vorbissimple()
       
    def main(self):
+      """This contains no user serviceable parts :-)"""
       decoding = True
       producerDone = False
       while decoding:
