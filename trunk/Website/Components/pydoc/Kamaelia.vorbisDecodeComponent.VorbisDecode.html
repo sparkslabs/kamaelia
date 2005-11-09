@@ -2,11 +2,12 @@
 <h1>Kamaelia.vorbisDecodeComponent.VorbisDecode</h1>
 <h2>class VorbisDecode(Axon.Component.component)</h2>
 
-<p>VorbisDecode() - new VorbisDecoder</p>
+<p>VorbisDecode() -&gt; new VorbisDecoder</p>
 <p>A Vorbis decoder accepts data on its inbox &quot;inbox&quot;, as would be read
 from an ogg vorbis file, decodes it and sends on the decompressed data on
 out of its outbox &quot;outbox&quot;. It doesn't provide any further information
 at this stage, such as bitrate, or any other frills.</p>
+<p><strong>Requires</strong> libvorbissimple and python bindings (see kamaelia downloads)</p>
 <p><strong>Example</strong></p>
 <p>A simple player:</p>
 <pre class="literal-block">
@@ -35,4 +36,9 @@ bottom=1] ] ]
 <p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
 <h3>main(self)</h3>
 <p>This contains no user serviceable parts :-)</p>
+<p>Theory of operation is simple. It simply repeatedly asks the decoder
+object for audio. That decoded audio is sent to the component's outbox.
+If the decoder object responds with RETRY, the component retries.
+If the decoder object responds with NEEDDATA, the component waits
+for data on any inbox until some is available (from an inbox)</p>
 </body></html>
