@@ -202,6 +202,7 @@ formatter = docFormatter(htmlRender)
 for MODULE in COMPONENTS:
     module = __import__(MODULE, [], [], COMPONENTS[MODULE])
     for COMPONENT in COMPONENTS[MODULE]:
+        print "Processing: "+MODULE+"."+COMPONENT+" ..."
         F = open(MODULE+"."+COMPONENT+".html","w")
         X = getattr(module, COMPONENT)
         F.write(formatter.preamble())
