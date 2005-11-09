@@ -189,15 +189,7 @@ class docFormatter(object):
                self.boxes("Inboxes", X.Inboxes) + \
                self.boxes("Outboxes", X.Outboxes) + \
                self.SectionHeader("Methods defined here")+ \
-               self.paragraph("*NOTE:* Aside from the __init__ method, which is"
-                                  " defined above, you should not be using these methods, "
-                                  "unless you're either a) subclassing this component and "
-                                  "overriding specific behaviour. b) looking to modify "
-                                  "this class. ") + \
-               self.paragraph("If you are simply using this component, "
-                                  "you should not need to call any of these methods, "
-                                  "and things might well break (unless otherwise noted) "
-                                  "if you do.") + \
+               self.paragraph("[[boxright][[include][file=Components/MethodNote.html][croptop=1][cropbottom=1] ] ]") +\
                self.formatMethodDocStrings(X)
 
     def preamble(self): return self.renderer.start()
