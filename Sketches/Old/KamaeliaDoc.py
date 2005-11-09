@@ -115,7 +115,19 @@ class htmlRender(object):
     def divider(self):
         return "\n"
     def start(self): return "<html><body>\n"
-    def stop(self): return "</body></html>\n"
+    def stop(self): 
+        return """\
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
+"""
 
 class docFormatter(object):
     def __init__(self, renderer=plainRender):
