@@ -202,7 +202,7 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
-   def __init__(self, thread = None, closeDownValue = 0):
+   def __init__(self, thread = None, closeDownValue = 0, ac = False):
       """Microprocess constructor.
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
@@ -218,6 +218,7 @@ class microprocess(Axon.AxonObject):
          
       self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
+      self.ac = ac
 
       # If the client has defined a debugger in their class we don't want to override it.
       # However if they haven't, we provide them with one
@@ -246,7 +247,8 @@ class microprocess(Axon.AxonObject):
       return self.__thread.next()
 
    def _activityCreator(self):
-      return False
+      return self.ac
+#      return False
 
    def _isStopped(self):
       """'M._isStopped()' - test, boolean result indicating if the microprocess is halted."""
