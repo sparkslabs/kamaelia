@@ -1,4 +1,60 @@
-1.1.0 -> 1.1.1 -
+1.1.2 -> 1.1.3
+     Bug fix to make Wait* work cleaner
+
+    Axon.Component.Component
+    * Default documentation for Component class in/out- boxes added
+    * anyReady() added. Returns true if any has data in it.
+
+
+    Axon.Microprocess.Microprocess
+    * Can activate an arbitrary thread of control from a generator
+      (The thing you normally call .next() on)
+    * Can pass on a closeDownValue
+    * Can be set as an activity creator
+    * Now conditionally starts the thread. Actually helps with re-entrant
+      calls inside a single active microprocess.
+
+    Axon.Scheduler.Scheduler
+    * Now handles shutdown knockons more gracefully
+    * Removal of lots of debugging code no longer needed (hasn't been needed
+      in a long while)
+    * Code cleanup
+
+     
+1.1.1 -> 1.1.2
+     Instated use of ctypes to use posix.sched_yield during the main loop.
+     This makes the system a *little* bit more other-system friendly.
+
+     Added in the ability to do, effectively, blocking calls to other
+     components. The best example using this at present in
+         Kamaelia.UI.Pygame.Ticker
+
+     Specifically you can ask the system to run a different microprocess in
+     the place of the running one, and wait until it ends.
+
+      yield WaitComplete(
+          self.requestDisplay(DISPLAYREQUEST=True,
+                              callback = (self,"control"),
+                              size = (self.render_area.width, self.render_area.height),
+                              position = self.position
+                              )
+      )
+
+     Where self.requestDisplay is a generator with the following behaviour:
+
+         def requestDisplay(self, **argd):
+            displayservice = PygameDisplay.getDisplayService()
+            self.link((self,"signal"), displayservice)
+            self.send(argd, "signal")
+            for _ in self.waitBox("control"): yield 1 ## This could also be rewritten in this form :-)
+            display = self.recv("control")
+            self.display = display
+
+     This is experimental support that is likely to evolve with time. This
+     does however allow effectively for a far more co-routine type behaviour
+     than we had in place before - rather than generator type behaviour.
+
+1.1.0 -> 1.1.1
      Change made to Microprocess that massively simplifies Kamaelia scripts
      that are just pipeline systems. For example, the following is now all
      that's needed for a pipeline system:

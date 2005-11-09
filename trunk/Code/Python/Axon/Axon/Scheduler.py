@@ -115,8 +115,7 @@ class scheduler(microprocess):
       times again. Note : the delay is between the start points of cycles, and not
       between the start and end points of cycles. The delay is NOT 100% accurate
       nor guaranteed and can be extended by threads that take too long to;
-      complete. (Think of it as a "hello world" of soft-real time scheduling)
-      """
+      complete. (Think of it as a "hello world" of soft-real time scheduling)"""
 
       yield 1
       running = len(self.newthreads) > 0 
@@ -142,10 +141,9 @@ class scheduler(microprocess):
                          activeMicroprocesses +=1
 
                       if isinstance(result, WaitComplete):
-                         newMprocess = microprocess(result.args[0], reactivate(mprocess))
+                         newMprocess = microprocess(result.args[0], reactivate(mprocess),True)
                          newMprocess.activate()
                          mprocess = None
-                         
                       if mprocess:
                           self.newthreads.append(mprocess)    # Add the current thread to the new run set
                    except StopIteration:             # Thread exited
