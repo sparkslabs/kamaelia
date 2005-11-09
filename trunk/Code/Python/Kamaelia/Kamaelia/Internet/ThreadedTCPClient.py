@@ -19,78 +19,102 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==========================
+Simple Threaded TCP Client
+==========================
+
+This component is for making a TCP connection to a server. Send to its "inbox"
+inbox to send data to the server. Pick up data received from the server on its
+"outbox" outbox.
+
+This component runs in its own separate thread so it can block on the socket
+connection. This was written because some platforms that don't support
+non-blocking calls to read/write data from sockets (eg. Python for
+Nokia Series-60).
+
+
+
+Example Usage
+-------------
+
+Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
+
+    pipeline( RateControlledFileReader("myfile", rate=100000),
+              ThreadedTCPClient("1.2.3.4", 1000),
+            ).activate()
+
+
+
+How does it work?
+-----------------
+
+The component opens a socket connection to the specified server on the specified
+port. Data received over the connection appears at the component's "outbox"
+outbox as strings. Data can be sent as strings by sending it to the "inbox"
+inbox.
+
+The component will shutdown in response to a producerFinished message arriving
+on its "control" inbox. The socket will be closed, and a socketShutdown message
+will be sent to the "signal" outbox.
+
+All socket errors exceptions are passed on out of the "signal" outbox. This will
+always result in the socket being closed (if open) and a socketShutdown message
+also being sent to the "signal" outbox (after the exception).
+
+It does not use a ConnectedSocketAdapter, instead handling all socket
+communications itself.
+
+The compnent is based on Axon.ThreadedComponent.threadedcomponent
+"""
+
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# XXX VOMIT
+#
+# - needs reworking somewhat - bit messy, plus lacks error handling
+# - and spits all kinds of crud out of its "signal" outbox
+# - shutdown behaviour is different to that of TCPClient
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 import socket
 import errno
 import Axon
-from Axon.util import Finality
 from Axon.Component import component
-from Axon.Ipc import newComponent, status
-from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
-from Kamaelia.KamaeliaExceptions import connectionDiedReceiving
-from Queue import Empty, Queue
-import threading
+from Kamaelia.KamaeliaIPC import socketShutdown
+from Queue import Empty
 import Axon.ThreadedComponent
-#from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
-#import Axon.CoordinatingAssistantTracker as cat
 
-whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
-crashAndBurn = { "uncheckedSocketShutdown" : True,
-                            "receivingDataFailed" : True,
-                            "sendingDataFailed" : True }
 
-class receiveThread(threading.Thread):
-   """
-   This class is intended purely to make blocking receive calls.
-   """
-   def __init__(self,socket, outputqueue,controlqueue,signalqueue,size = 1024):
-      self.oq = outputqueue
-      self.cq = controlqueue
-      self.sq = signalqueue
-      self.size = size
-      self.sock = socket
-      threading.Thread.__init__(self)
-   def run(self):
-      try:
-         while 1:
-            data = self.sock.recv(self.size)
-            if not data: # This implies the connection has barfed.
-               raise connectionDiedReceiving(self.sock,self.size)
-            self.oq.put(data)
-            try:
-               msg = self.cq.get(False)
-               if msg == "StopThread":
-                  break # Stop the iteration ignoring unread data.  The consumer is no longer
-                            # iterested.
-            except Empty: # This is the normal case
-               pass
-      except socket.error, socket.msg:
-         # This is an actual error as we are blocking so should not receive errors
-         (errorno, errmsg) = socket.msg.args # Copied from CSA
-         self.sq.put(socket.msg)
-      except connectionDiedReceiving, cd:
-         self.sq.put(cd)
-      except Exception, e: # Unexpected error that might cause crash. Do we want to really crash & burn?
-         self.sq.put(e)
-      self.sq.put("StoppedThread")
-         
+
 
 class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
-   Inboxes = ["inbox", "control"]
-   Outboxes = ["outbox","signal"]
-#   Usescomponents=[ConnectedSocketAdapter] # List of classes used.
+   """\
+   ThreadedTCPClient(host,port[,chargen][,initalsendmessage]) -> threaded component with a TCP connection to a server.
 
-   def __init__(self,host,port,chargen=0,delay=0, initialsendmessage=None):
+   Establishes a TCP connection to the specified server.
+   
+   Keyword arguments:
+   - host     -- address of the server to connect to (string)
+   - port     -- port number to connect on
+   - initialsendmessage  -- to be send immediately after connection is established (default=None)
+   """
+   Inboxes  = { "inbox"   : "data to send to the socket",
+                "control" : "",
+              }
+   Outboxes = { "outbox" : "data received from the socket",
+                "signal" : "diagnostic output, errors and shutdown messages",
+              }
+
+   def __init__(self,host,port,chargen=0,initialsendmessage=None):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       self.__super.__init__()
       self.host = host
       self.port = port
       self.chargen=chargen
-      self.delay=delay
       self.sendmessage = initialsendmessage
-#      self.recvthreadsignal = Queue()
-#      self.recvthreadcontrol = Queue()
 
    def run(self):
+     """Main (thread) loop"""
      try:
       self.outqueues["signal"].put("Thread running",True)
       try:
@@ -103,7 +127,6 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
          # for?
          self.outqueues["signal"].put(e)
          # I am assuming that by using queues there are no race conditions between this operations.
-#         self.threadtoaxonqueue.put("StoppedThread")
          self.outqueues["signal"].put(socketShutdown())
          return
       self.outqueues["signal"].put("socket object created")
@@ -115,15 +138,10 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
             result = sock.close()
          except:
             pass
-#         self.threadtoaxonqueue.put("StoppedThread")
          self.outqueues["signal"].put(socketShutdown())
          return
       self.outqueues["signal"].put("socket connected")
-#      timeout = 0.1
-#      sock.settimeout(timeout)
-#      receivethread = receiveThread(socket = sock, outputqueue = self.outqueues["outbox"],controlqueue = self.recvthreadcontrol,signalqueue = self.recvthreadsignal)
-#      receivethread.setDaemon(True)
-#      receivethread.start()
+      
       producerFinished = 0
       if self.sendmessage != None:
         try:
@@ -142,36 +160,6 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       # time.  One non-blocking call will operate with a short timeout to
       # prevent busy wait taking too much CPU time.
       while 1:
-#         try:
-            # This blocks for a short time to avoid busy wait if there is
-            # nothing to do.  Should mean thread doesn't hog CPU.
-#            data = self.inqueues["inbox"].get(True, 0.2)
-#            while 1:
-#               try:
- #           sock.send(data)
-#                  break
-#               except socket.timeout, to:
-#                  timeout = timeout * 2
-#                  sock.settimeout(timeout)
-#                  self.outqueues["signal"].put(("sendtimeout = ", timeout),True)
-#            if producerFinished:
-               #As there is still data coming extend the time window for data to
-               # get in the queue
-#               producerFinished = time.time()
-#         except Empty, e:
-#             if producerFinished: # This is an efficiency guard to prevent time.time
-                                             # being called repeatedly.
-#               if time.time() > producerFinished + 4:
-               # A four second delay ought to be enough for the component to get
-               # a timeslice and move some data from inbox to the queue.  Yet it
-               # shouldn't cause critical errors, delays or leaks if it allowed
-               # to take this long.  This must be done on a time basis as the
-               # items are being added to our queue by an Axon component so are
-               # being copied in only when there is a timeslice.  The
-               # alternative is to have a reasonable liklyhood of dropping some
-               # data.
-#                  recvthreadcontrol.put("StopThread")
-#                  break
             try:
                data = sock.recv(1024)
                if not data: # This implies the connection has barfed.
@@ -183,19 +171,9 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
                self.outqueues["signal"].put(err,True)
                break # The task is finished now.
          
-#         try:
-#            msg = self.recvthreadsignal.get(False)
-#            if msg == "ThreadStopped":
-#               break # Receiving has stopped.  We are doing a symetrical close.
- #           else:
-#               self.outqueues["signal"].put(msg)
-#         except Empty, e:
-#            pass # This is the common case.
-
             try:
                msg = self.inqueues["control"].get(False)
                if isinstance(msg, Axon.Ipc.producerFinished):
-#               producerStopTime = time.time()
                   break
                   # Want to give opportunity for inbox messages to get into the
                   # inbox queue before shutting down the sending system.
@@ -226,6 +204,7 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer
+   from Axon.Ipc import newComponent
    import Axon
    # _tests()
 
@@ -239,8 +218,7 @@ if __name__ =="__main__":
          self.displayerr = consoleEchoer()
 
       def initialiseComponent(self):
-         self.client = ThreadedTCPClient("132.185.133.18",self.serverport, delay=1)
-         #self.client = ThreadedTCPClient("82.44.62.55",self.serverport, delay=1)
+         self.client = ThreadedTCPClient("132.185.133.18",self.serverport)
          self.addChildren(self.client,self.display,self.displayerr)
 #         self.addChildren(self.server, self.display)
          self.link((self.client,"outbox"), (self.display,"inbox") )
