@@ -2,21 +2,26 @@
 <h1>Kamaelia.Internet.ThreadedTCPClient.ThreadedTCPClient</h1>
 <h2>class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent)</h2>
 
-
+<p>ThreadedTCPClient(host,port[,chargen][,initalsendmessage]) -&gt; threaded component with a TCP connection to a server.</p>
+<p>Establishes a TCP connection to the specified server.</p>
+<p>Keyword arguments:
+- host     -- address of the server to connect to (string)
+- port     -- port number to connect on
+- initialsendmessage  -- to be send immediately after connection is established (default=None)</p>
 <h4>Inboxes</h4>
-<ul><li>   inbox : Code uses old style inbox/outbox description - no metadata available
-<li>   control : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   control : 
+<li>   inbox : data to send to the socket
 </ul>
 <h4>Outboxes</h4>
-<ul><li>   outbox : Code uses old style inbox/outbox description - no metadata available
-<li>   signal : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   outbox : data received from the socket
+<li>   signal : diagnostic output, errors and shutdown messages
 </ul>
 <h2>Methods defined here</h2>
 
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
-<h3>__init__(self, host, port, chargen, delay, initialsendmessage)</h3>
-
+<h3>__init__(self, host, port, chargen, initialsendmessage)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
 <h3>run(self)</h3>
-
+<p>Main (thread) loop</p>
 </body></html>
