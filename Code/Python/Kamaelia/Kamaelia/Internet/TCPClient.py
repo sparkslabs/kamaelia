@@ -87,14 +87,13 @@ import Selector
 
 class TCPClient(component):
    """\
-   TCPClient(host,port[,chargen][,delay]) -> component with a TCP connection to a server.
+   TCPClient(host,port[,delay]) -> component with a TCP connection to a server.
 
    Establishes a TCP connection to the specified server.
    
    Keyword arguments:
    - host     -- address of the server to connect to (string)
    - port     -- port number to connect on
-   - chargen  -- ? UNUSED
    - delay    -- delay (seconds) after activation before connecting (default=0)
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
@@ -102,17 +101,16 @@ class TCPClient(component):
                 "control"         : "NOT USED"
               }
    Outboxes = { "outbox"         :  "data received from the socket",
-                "signal"         :  "",
+                "signal"         :  "socket errors",
                 "_selectorSignal" : "communicating with a selectorComponent",
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
-   def __init__(self,host,port,chargen=0,delay=0):
+   def __init__(self,host,port,delay=0):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPClient, self).__init__()
       self.host = host
       self.port = port
-      self.chargen=chargen
       self.delay=delay
 
    def main(self):
