@@ -32,6 +32,7 @@ calculating interactions between particles as performed, for example, by the
 Particle and ParticleSystem classes.
 
 
+
 Example Usage
 -------------
 
@@ -52,6 +53,8 @@ is 5 units::
 Only 'a' is within 10 units of (0,0)::
     >>> index.withinRadius((0,0), 10.0) == [(a,5.0)]
     True
+
+The returned tuples are of the form: (entity, distance-squared)
 
 Neither point is within 1 unit of (0,0)::
     >>> index.withinRadius((0,0), 1.0)
@@ -94,7 +97,7 @@ a given cell are stored in a list in that dictionary entry.
 It can then rapidly search for cells overlapping the area we want to search and
 return those entities that fall within that area.
 
-The size of the cells is specified during initialising. Choose a size roughly
+The size of the cells is specified during initialisation. Choose a size roughly
 equal to the radius you'll most often be searching over. Too small a value will
 case SpatialIndexer to spend too long enumerating through cells. To big a cell
 size and far more entities will be searched that necessary.
