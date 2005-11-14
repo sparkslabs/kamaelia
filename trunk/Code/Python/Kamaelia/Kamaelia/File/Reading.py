@@ -304,7 +304,9 @@ class PromptedFileReader(component):
     def __init__(self, filename, readmode="bytes"):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PromptedFileReader, self).__init__()
-    
+
+        self.filename = filename
+        
         if readmode == "bytes":
             self.read = self.readNBytes
         elif readmode == "lines":
@@ -342,7 +344,7 @@ class PromptedFileReader(component):
     
     def main(self):
         """Main loop"""
-        self.file = open(filename, "rb",0)
+        self.file = open(self.filename, "rb",0)
         
         done = False
         while not done:
