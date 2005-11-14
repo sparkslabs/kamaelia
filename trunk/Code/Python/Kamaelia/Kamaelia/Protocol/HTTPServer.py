@@ -20,6 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
+To delete and move into /Sketches/
+
+This was an abortive attempt by Joseph to implement a simple HTTP server.
+This became a classic case of "DoingTooMuch".
+
 Simple HTTP server
 
 API Needs:
