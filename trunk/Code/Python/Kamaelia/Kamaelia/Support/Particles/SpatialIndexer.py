@@ -18,24 +18,116 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=================================
+Fast spatial indexing of entities
+=================================
 
+A SpatialIndexer object is an index of entities that provides fast lookups of
+entities whose coordinates are within a specified radius of a specified point.
+You can have as many, or few, spatial dimensions as you like.
+
+This is particularly useful for computationally intensive tasks such as
+calculating interactions between particles as performed, for example, by the
+Particle and ParticleSystem classes.
+
+
+Example Usage
+-------------
+
+Creating and index and registering two entities with it at (1,2) and (12,34).
+We also tell the SpatialIndexer that the 'usual' radius we'll be searching over
+is 5 units::
+    >>> class Entity:
+    ...   def __init__(self, coords):
+    ...     self.coords = coords
+    ...   def getLoc(self):
+    ...     return self.coords
+    ...
+    >>> index = SpatialIndexer(proxDist=5.0)
+    >>> a = Entity((1.0, 2.0))
+    >>> b = Entity((12.0, 34.0))
+    >>> index.add(a,b)
+    
+Only 'a' is within 10 units of (0,0)::
+    >>> index.withinRadius((0,0), 10.0) == [(a,5.0)]
+    True
+
+Neither point is within 1 unit of (0,0)::
+    >>> index.withinRadius((0,0), 1.0)
+    []
+
+Both 'a' and 'b' are within 50 units of (0,0)::
+    >>> index.withinRadius((0,0), 50.0) == [(a,5.0), (b,1300)]
+    True
+
+We can ask the same, but request that 'a' be excluded::
+    >>> filter = lambda particle : particle != a
+    >>> index.withinRadius((0,0), 50.0, filter) == [(b,1300)]
+    True
+
+If we remove 'a' then only 'b' will be found::
+    >>> index.remove(a)
+    >>> index.withinRadius((0,0), 50.0) == [(b, 1300.0)]
+    True
+
+If we change the position of b we must *notify* the SpatialIndexer::
+    >>> index.withinRadius((0,0), 10.0) == []
+    True
+    >>> b.coords=(5.0,6.0)
+    >>> index.withinRadius((0,0), 10.0) == [(b, 61.0)]
+    False
+    >>> index.updateLoc(b)
+    >>> index.withinRadius((0,0), 10.0) == [(b, 61.0)]
+    True
+
+
+
+How does it work?
+-----------------
+
+SpatialIndexer stores entities in an associative data structure, indexed by
+their spatial location. Simply put, it breaks space into a grid of cells. The
+coordinates of that cell index into a dictionary. All particles that fall within
+a given cell are stored in a list in that dictionary entry.
+
+It can then rapidly search for cells overlapping the area we want to search and
+return those entities that fall within that area.
+
+The size of the cells is specified during initialising. Choose a size roughly
+equal to the radius you'll most often be searching over. Too small a value will
+case SpatialIndexer to spend too long enumerating through cells. To big a cell
+size and far more entities will be searched that necessary.
+
+Entities must provide a getLoc() method that returns a tuple of the coordinates
+of that entity.
+
+Use the add(...) and remove(...) methods to register and deregister entities
+from the spatial index.
+
+If you change the coordinates of an entity, the SpatialIndexer must be notified
+by calling its updateLoc(...) method.
+"""
+
+
+# optimisation to speed up access to these functions:
 from operator import mul as _mul
 from operator import sub as _sub
 
+
 class SpatialIndexer(object):
-   """Allows fast spatial lookups of entities -
-      quickly find all entities within a given radius of a set of coordinates.
-      
-      Optimised by specifying the most commonly used proximity distance.
-      This affects the speed of lookups and the size of the internal data structure.
-      
-      Entities must provide a getLoc() method that returns the coordinates as a tuple.
-      
-      To first register entities or if they change coordinates, something must call
-      updateLoc(<entities>). If entities are removed, something must call remove(<entities>)
-      """
+   """\
+   SpatialIndexer(proxDist) -> new SpatialIndexer object
+
+   Creates an indexing object, capable of quickly finding entities within a
+   given radius of a given point.
+
+   Optimise by setting proxDist to the radius you'll most commonly use when
+   wanting to find entities.
+   """
       
    def __init__(self, proxDist = 1.0):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       if proxDist <= 0.0:
          raise ValueError
       
@@ -46,10 +138,11 @@ class SpatialIndexer(object):
       
       
    def _coord2cell(self, *coords):
+      """Convert coordinate tuple into cell address tuple)"""
       return tuple([int(coord // self.cellSize) for coord in coords])
       
    def updateAll(self):
-      """Update all entities"""
+      """Notify the indexer that the positions of all entities may have changed."""
       self.updateLoc(*self.entities.keys())
       
       
@@ -60,10 +153,6 @@ class SpatialIndexer(object):
             oldCell = self.entities[entity]
          except KeyError:
             oldCell = None
-#         if self.entities.has_key(entity):
-#            oldCell = self.entities[entity]
-#         else:
-#            oldCell = None
          
          newCell = self._coord2cell(*entity.getLoc())
          
@@ -75,10 +164,6 @@ class SpatialIndexer(object):
                 self.cells[newCell].append(entity)
             except KeyError:
                 self.cells[newCell] = [entity]
-#            if not self.cells.has_key(newCell):
-#               self.cells[newCell] = [entity]
-#            else:
-#               self.cells[newCell].append(entity)
                
             self.entities[entity] = newCell
             
@@ -93,18 +178,16 @@ class SpatialIndexer(object):
       
                         
    def withinRadius(self, centre, radius, filter=(lambda particle:True)):
-      """Returns a list of zero or more (particle, distSquared) tuples,
-         representing those particles within radius distance of the
-         specified centre coords.
+      """\
+      withinRadius(centre,radius[,filter]) -> list of (entity,distSquared)
 
-         distance-squared from the centre coords is returned too to negate
-         any need you may have to calculate it again yourself.
+      Returns a list of zero or more (entity,distSquared) tuples, respresenting
+      those within the specified circle (centre and radius).
 
-         You can specify a filter function that takes a candidate particle
-         as an argument and should return True if it is to be included
-         (if it is within the radius, of course). This is to allow efficient
-         pre-filtering of the particles before the distance test is done.
+      The list can be pre-filtered by an optional filter function:
+           filter(particle) -> True if the particle can be included in the list
       """
+      # optimisation to speed up access to these functions:
       __sub, __mul = _sub, _mul
       
       lbound = [ int((coord-radius) // self.cellSize) for coord in centre ]
@@ -119,21 +202,15 @@ class SpatialIndexer(object):
       while inc == 0:
       
         # go through all entities in this cell
-#        if self.cells.has_key(tuple(cell)):
         try:
             for entity in self.cells[tuple(cell)]:
                 if filter(entity):
                     # measure the distance from the coord
-#                    distsquared = 0.0
                     entcoord = entity.getLoc()
                     
                     sep = map(__sub, centre, entcoord)
                     distsquared = sum(map(__mul, sep,sep))
                     
-#                    for j in range(0, len(centre)):
-#                        sep = (centre[j] - entcoord[j])
-#                        distsquared += sep*sep
-                        
                     # if within range, then add to the list of nodes to return
                     if distsquared <= rsquared:
                         inRange.append( (entity, distsquared) )
