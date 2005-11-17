@@ -25,6 +25,12 @@
 # Turned out to be remarkably resilient so far, so migrating into the main codebase.
 # Previous location/name: /Sketches/tk/TkInterComponents.py
 
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+# XXX TODO - various improvements (Michael Sparks)
+#
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 import Tkinter
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
