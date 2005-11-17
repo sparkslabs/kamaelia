@@ -42,7 +42,7 @@ if __name__=="__main__":
             super(CircleDragHandler, self).__init__(event, app)
         
         def detect(self, pos, button):
-            if (pos[0] - self.circle.x)**2 + (pos[1] - self.circle.y)*2 < (self.circle.radius**2):
+            if (pos[0] - self.circle.x)**2 + (pos[1] - self.circle.y)**2 < (self.circle.radius**2):
                 self.tvx = self.circle.vx
                 self.tvy = self.circle.vy
                 self.circle.vx = 0
@@ -68,7 +68,7 @@ if __name__=="__main__":
         def __init__( self, app, position, velocity, radius):
             """Initialise, registering dragging event handler and setting initial position and velocity"""
             self.app = app
-            self.app.addHandler(MOUSEBUTTONDOWN, lambda event : CircleDragHandler(event, self.app, self))
+            self.app.addHandler(MOUSEBUTTONDOWN, lambda event : CircleDragHandler.handle(event, self.app, self))
 
             (self.x,  self.y)  = position
             (self.vx, self.vy) = velocity

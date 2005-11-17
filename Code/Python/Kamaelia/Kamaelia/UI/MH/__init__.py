@@ -18,9 +18,17 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===============================================
+A simple pygame application framework component
+===============================================
 
-# import Axon as _Axon
-# component = _Axon.Component.component
+A component and supporting classes providing a simple framwork for a pygame
+application within a component.
+
+Supporting classes provide facilities including mouse dragging operation
+handling.
+"""
 
 
 from PyGameApp import PyGameApp
