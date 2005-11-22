@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,7 +19,66 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+====================
+Pygame image display
+====================
+
+Component for displaying an image on a pygame display. Uses the PygameDisplay
+service component.
+
+The image can be changed at any time.
+
+
+
+Example Usage
+-------------
+
+Display that rotates rapidly through a set of images::
+    imagefiles = [ "imagefile1", "imagefile2", ... ]
+    
+    class ChangeImage(Axon.Component.component):
+        def __init__(self, images):
+            super(ChangeImage,self).__init__()
+            self.images = images
+            
+        def main(self):
+            while 1:
+                for image in self.images:
+                    self.send( image, "outbox")
+                    print "boing",image
+                    for i in range(0,100):
+                        yield 1
+    
+    image = Image(image=None, bgcolour=(0,192,0))
+    ic    = ChangeImage(imagefiles)
+    
+    pipeline(ic, image).run()
+
+
+
+How does it work?
+-----------------
+
+This component requests a display surface from the PygameDisplay service
+component and renders the specified image to it.
+
+The image, and other properties can be changed later by sending messages to its
+"inbox", "bgcolour" and "alphacontrol" inboxes.
+
+Note that the size of display area is fixed after initialisation. If an initial
+size, or image is specified then the size is set to that, otherwise a default
+value is used.
+
+Change the image at any time by sending a new filename to the "inbox" inbox.
+If the image is larger than the 'size', then it will appear cropped. If it is
+smaller, then the Image component's 'background colour' will show through behind
+it. The image is always rendered aligned to the top left corner.
+
+If this component receives a shutdownMicroprocess or producerFinished message on
+its "control" inbox, then this will be forwarded out of its "signal" outbox and
+the component will then terminate.
+"""
 
 import pygame
 import Axon
@@ -27,18 +86,30 @@ from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
-   """Simple 'Image display widget' for PygameDisplay"""
+   """\
+   Image([image][,position][,bgcolour][,size][,displayExtra][,maxpect]) -> new Image component
+
+   Pygame image display component. Image, and other properties can be changed at runtime.
+
+   Keyword arguments:
+   - image         -- Filename of image (default=None) 
+   - position      -- (x,y) pixels position of top left corner (default=(0,0))
+   - bgcolour      -- (r,g,b) background colour (behind the image if size>image size)
+   - size          -- (width,height) pixels size of the area to render the iamge in (default=image size or (240,192) if no image specified)
+   - displayExtra  -- dictionary of any additional args to pass in request to PygameDisplay service
+   - maxpect       -- (xscale,yscale) scaling to apply to image (default=no scaling)
+   """
    
-   Inboxes = { "inbox"    : "Specify (new) filename",
-               "control"  : "",
+   Inboxes = { "inbox"    : "Filename of (new) image",
+               "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
                "callback" : "Receive callbacks from PygameDisplay",
                "bgcolour" : "Set the background colour",
                "events"   : "Place where we recieve events from the outside world",
-               "alphacontrol" : "The alpha transparency of the image is controlled here. It expects a value 0..255",
+               "alphacontrol" : "Alpha (transparency) of the image (value 0..255)",
              }
    Outboxes = {
-               "outbox" : "unused",
-               "signal" : "unused",
+               "outbox" : "NOT USED",
+               "signal" : "Shutdown signalling: shutdownMicroprocess or producerFinished",
                "display_signal" : "Outbox used for sending signals of various kinds to the display service"
              }
     
@@ -48,13 +119,7 @@ class Image(Axon.Component.component):
                       size = None, 
                       displayExtra = None,
                       maxpect = 0):
-      """Initialisation.
-         image = filename of file containing image
-         position = (x,y) or None for default
-         bgcolour = (r,g,b) pygame colour specification (defaults to grey)
-         size  = None (defaults to image size, or (240,192) if no image specified)
-                 or (width, height) tuple
-      """
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Image, self).__init__()
       self.display = None
       
@@ -67,7 +132,9 @@ class Image(Axon.Component.component):
       
       if self.size is None:
          self.size = (240,192)
-         
+
+      # build the initial request to send to PygameDisplay to obtain a surface
+      # but store it away until main() main loop is activated.
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
                            "events" : (self, "events"),
@@ -80,6 +147,7 @@ class Image(Axon.Component.component):
     
         
    def waitBox(self,boxname):
+      """Generator. yield's 1 until data is ready on the named inbox."""
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
@@ -87,6 +155,8 @@ class Image(Axon.Component.component):
 
             
    def main(self):
+      """Main loop."""
+      
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
       
@@ -94,7 +164,7 @@ class Image(Axon.Component.component):
       self.send(self.disprequest, "display_signal")
 
 
-    
+      # main loop
       done = False
       change = False    
       alpha = 255
@@ -107,6 +177,7 @@ class Image(Axon.Component.component):
             print "we do get here..."
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+               self.send(cmsg,"signal")
                done = True
          
          # if we're given a new surface, use that instead
@@ -141,6 +212,13 @@ class Image(Axon.Component.component):
       print "NOT HERE"
         
    def fetchImage(self, newImage):
+      """\
+      Load image from specified filename.
+
+      self.size is set to image dimensions if self.size is None.
+
+      Image is scaled by self.maxpect if self.maxpect evaluates to True.
+      """
       if newImage is None:
          self.image = None
     
@@ -154,6 +232,7 @@ class Image(Axon.Component.component):
         
         
    def blitToSurface(self):
+       """Blits the background colour and image file to the surface"""
        try:
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
@@ -183,7 +262,6 @@ if __name__ == "__main__":
                yield 1
             self.send( testImageFile0, "outimage")
 
-   from Kamaelia.Util.PipelineComponent import pipeline                  
                   
    for i in range(0,6):
        image = Image(image=testImageFile0).activate()
