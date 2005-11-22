@@ -141,7 +141,7 @@ class DragHandler(object):
         Class method.
         """
         newHandler = cls(*arg, **argD)
-        centre = newHandler.detect(self.event.pos, self.event.button)
+        centre = newHandler.detect(newHandler.event.pos, newHandler.event.button)
         if centre:
             newHandler._start(centre)
             return newHandler
