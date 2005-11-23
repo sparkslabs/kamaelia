@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,7 +19,102 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+====================
+Pygame Video Overlay
+====================
+
+Displays uncompressed video data on a pygame 'overlay' using the PygameDisplay
+service.
+
+
+
+Example Usage
+-------------
+::
+    imagesize = (352, 288)        # "CIF" size video
+    fps = 15                      # framerate of video
+    
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+             RawYUVFramer(imagesize),
+             MessageRateLimit(messages_per_second=fps, buffer=fps*2)
+             VideoOverlay()
+            ).activate()
+
+RawYUVFramer is needed to frame raw YUV data into individual video frames.
+
+
+
+How does it work?
+-----------------
+
+The component waits to receive uncompressed video frames from its "inbox" inbox.
+
+The frames must be encoded as dictionary objects in the format described below.
+
+When the first frame is received, the component notes the size and pixel format
+of the video data and requests an appropriate 'overlay' surface from the
+PygameDisplay service component, to which video can be rendered.
+
+NOTE: Currently the only supported pixelformat is "YUV420_planar".
+
+NOTE: A fudge factor is currently applied to the video size (see below)
+
+Included in the request is a reference to an outbox through which the component
+will send the yuv video data for future frames of video. For video overlays,
+the video data must be sent direct to the PygameDisplay component rather than
+be rendered onto an intermediate surface.
+
+Also included in the request is the data for the first frame of video.
+
+When subsequent frames of video are received the yuv data is sent to the
+"yuvdata" outbox, which by now is linked to the PygameDisplay component.
+
+If the frame of video is of a different pixel format or size then VideoOverlay
+will re-request a new overlay.
+
+NOTE: If this happens, the component does NOT dispose of the old surface.
+This behaviour should therefore be avoided at present - repeated changes of
+video size/pixel format will result in multiple overlays accumulating in the
+pygame display.
+
+
+Fudge factor
+^^^^^^^^^^^^
+The size of overlay requested by the VideoOverlay component is adjusted by a
+fudge factor.
+
+This is a workaround for problems with  Xorg/fbdev based displays on linux. If
+the overlay is precisely the right size and shape for the data, it can't be
+displayed right. The value must be even, and preferably small. Odd values result
+in the picture being sheared/slanted.
+
+This problem rears itself when the following version numbers are aligned:
+- SDL : 1.2.8
+- pygame : Anything up to/including 1.7.1prerelease
+- xorg : 6.8.2
+- Linux (for fbdev) : 2.6.11.4
+
+The fudge factor does not appear to adversely affect behaviour on other
+system configurations.
+
+
+
+=========================
+UNCOMPRESSED FRAME FORMAT
+=========================
+
+Uncompresed video frames must be encoded as dictionaries. VidoeOverlay requires
+the following entries::
+    {
+      "yuv" : (y_data, u_data, v_data)  # a tuple of strings
+      "size" : (width, height)          # in pixels
+      "pixformat" :  "YUV420_planar"    # format of raw video data
+    }
+
+
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -31,8 +126,9 @@ import pygame
 pygame_pixformat_map = { "YUV420_planar" : pygame.IYUV_OVERLAY }
 
 
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# SMELL : Periodically check if this is still needed or not.
+# XXX SMELL : Periodically check if this is still needed or not.
 #
 # OVERLAY_FUDGE_OFFSET_FACTOR  is the result of experimentally
 # trying to get SDL_Overlay/pygame.Overlay to work with Xorg/fbdev
@@ -47,28 +143,48 @@ pygame_pixformat_map = { "YUV420_planar" : pygame.IYUV_OVERLAY }
 #    xorg : 6.8.2
 #    Linux (for fbdev) : 2.6.11.4
 #
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 OVERLAY_FUDGE_OFFSET_FACTOR = 2
 
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+# XXX VOMIT : does not get rid of an old overlay if a new one is requested
+#             (due to a change in video size/pixel format)
+#             resulting in overlays accumulating in PygameDisplay
+#
+#             Either the request for a new overlay must be suppressed, or the
+#             old overlay should be destroyed. The latter will require support
+#             for deallocating surfaces/overlays to be added to PygameDisplay
+#             component
+#
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
 class VideoOverlay(component):
-    """Sets up a video overlay using pygame, and feeds yuv video data to it.
+    """\
+    VideoOverlay() -> new VideoOverlay component
 
-       Video overlay is created when the first frame of data is received, using
-       the parameters within the frame.
-
-       NB: Currently, the only supported pixel format is "YUV420_planar"
+    Displays a pygame video overlay using the PygameDisplay service component.
+    The overlay is sized and configured by the first frame of
+    (uncompressed) video data is receives.
+    
+    NB: Currently, the only supported pixel format is "YUV420_planar"
     """
     
-    Inboxes = {"inbox":"uncompressed video frames",
-               "control":""
-              }
-    Outboxes = {"outbox":"unused",
-                "signal":"",
-                "displayctrl":"pygame display service",
-                "yuvdata":"yuv data sent to overlay display service"
+    Inboxes =  { "inbox"   : "Receives uncompressed video frames",
+                 "control" : "Shutdown signalling"
+               }
+    Outboxes = { "outbox"      : "NOT USED",
+                 "signal"      : "Shutdown signalling",
+                 "displayctrl" : "Sending requests to the PygameDisplay service",
+                 "yuvdata"     : "Sending yuv video data to overlay display service"
                }
 
 
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(VideoOverlay,self).__init__()
         self.size = None
         self.pixformat = None
@@ -77,12 +193,14 @@ class VideoOverlay(component):
         
 
     def waitBox(self,boxname):
+        """Generator. yields 1 until data ready on the named inbox."""
         waiting = True
         while waiting:
             if self.dataReady(boxname): return
             else: yield 1
 
     def formatChanged(self, frame):
+        """Returns True if frame size or pixel format is new/different for this frame."""
         return frame['size'] != self.size or frame['pixformat'] != self.pixformat
             
     def newOverlay(self, frame):
@@ -108,6 +226,7 @@ class VideoOverlay(component):
 
             
     def main(self):
+        """Main loop."""
 
         done = False
         

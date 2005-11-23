@@ -19,3 +19,13 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
+"""\
+=========================
+Pygame related components
+=========================
+
+Components for displaying text/graphics/video using pygame.
+
+Most utilise the PygameDisplay service component.
+"""
