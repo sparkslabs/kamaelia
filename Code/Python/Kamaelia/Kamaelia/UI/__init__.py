@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # Needed to allow import
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
@@ -20,3 +22,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""\
+==========================
+GUI Integration Components
+==========================
+
+Components providing integration with basic GUI libraries, such as pygame and
+Tk.
+"""
