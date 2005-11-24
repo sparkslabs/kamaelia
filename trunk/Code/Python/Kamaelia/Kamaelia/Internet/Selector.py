@@ -102,7 +102,12 @@ class selectorComponent(AdaptiveCommsComponent):
    requiredOutboxes=["signal"]      # required outboxes on target component
    
    def setSelectorService(selector, tracker = None):
-        """Sets the given selector as the service for the selected tracker or the default one."""
+        """\
+        Sets the given selector as the service for the selected tracker or the
+        default one.
+
+        (static method)
+        """
         if not tracker:
             tracker = cat.coordinatingassistanttracker.getcat()
         tracker.registerService("selector", selector, "notify")
