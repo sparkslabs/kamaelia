@@ -30,6 +30,43 @@ class Tester(component):
 					done = True
 					self.send(msg, "signal")
 
+class GenericTester(component):
+	"""
+	Goes in the end of a pipeline, and tests things for you.
+	
+	What it tests, is whatever you want it to test :)
+	
+	The constructor takes as many parameters as you want tests.
+	Each param may be a function, or a list of functions. If the former, it's run on every 
+	data item that this component recieves in it's inbox. If the latter, list[i] will be run 
+	on the ith data element to be recieved. If you don't supply enough tests in your list, 
+	they'll loop. 
+	
+	The functions you supply should take one parameter. That param will be the data that was 
+	received, which you want to test.
+	"""
+	def __init__(self, *tests):
+		super(GenericTester, self).__init__()
+		self.testnum = 0
+		self.tests = tests
+	
+	def main(self):
+		done = False
+		while not done:
+			yield 1
+			if self.dataReady("inbox"):
+				data = self.recv("inbox")
+				for test in self.tests:
+					if type(test) == type(list):
+						test = test[self.testnum%len(test)]
+						self.testnum+=1
+					test(data)
+			if self.dataReady("control"):
+				msg = self.recv("control")
+				if isinstance(msg, producerFinished):
+					done = True
+					self.send(msg, "signal")
+
 class filePointer(component):
 	def __init__(self):
 		super(filePointer, self).__init__()
@@ -51,6 +88,12 @@ class LocalFileServer_Tests(unittest.TestCase):
 			).activate()
 		
 		scheduler.run.runThreads()
+		
+	def test_Generic(self):
+		pipeline(filePointer(),
+			LocalFileServer(),
+			GenericTester(lambda x : self.assertEqual(x, "line one\nline two \n"))
+			).activate()
 
 if __name__=="__main__":
 	unittest.main()
