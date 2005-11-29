@@ -19,7 +19,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
+"""\
 Simple Server Chassis.
 
 Provides a framework for creating generic protocol handlers to deal with
@@ -109,7 +109,7 @@ class simpleServerProtocol(_Axon.Component.component):
 
 class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
-    SimpleServer(protocol,[port]) -> new Simple protocol server component
+    SimpleServer(protocol[,port]) -> new Simple protocol server component
 
     A simple single port, multiple connection server, that instantiates a
     protocol handler component to handle each connection.

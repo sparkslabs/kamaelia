@@ -20,7 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-"""
+"""\
 Pre-fabrication function chassis.
 
 This will be a collection of functions that link up components standardised
