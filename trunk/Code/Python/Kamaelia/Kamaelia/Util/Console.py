@@ -20,10 +20,54 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
-Console Echoer Component. Optionally passes the data it recieves through to
-it's outbox - making it useful for inline (or end of line) debugging.
+====================
+Console Input/Output
+====================
 
+The ConsoleEchoer component outputs whatever it receives to the console.
+
+The ConsoleReader component outputs whatever is typed at the console, a line at
+a time.
+
+
+
+Example Usage
+-------------
+Whatever it typed is echoed back, a line at a time::
+    pipeline( ConsoleReader(),
+              ConsoleEchoer()
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+ConsoleReader is a threaded component. It provides a 'prompt' at which you can
+type. Your input is taken, a line a a time, and output to its "outbox" outbox,
+with the specified end-of-line character(s) suffixed onto it.
+
+The ConsoleReader component ignores any input on its "inbox" and "control"
+inboxes. It does not output anything from its "signal" outbox.
+
+The ConsoleReader component does not terminate.
+
+The ConsoleEchoer component receives data on its "inbox" inbox. Anything it
+receives this way is displayed on standard output. All items are passed through
+the str() builtin function to convert them to strings suitable for display.
+
+However, if the 'use_repr' argument is set to True during initialization, then
+repr() will be used instead of str().
+
+If the 'forwarder' argument is set to True during initialisation, then whatever
+is received is not only displayed, but also set on to the "outbox" outbox
+(unchanged).
+
+If a producerFinished or shutdownMicroprocess message is received on the
+ConsoleEchoer component's "control" inbox, then it is sent on to the "signal"
+outbox and the component then terminates.
 """
+
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import sys as _sys
@@ -31,23 +75,60 @@ import sys as _sys
 from Axon.ThreadedComponent import threadedcomponent
 
 class ConsoleReader(threadedcomponent):
+   """\
+   ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
+
+   Component that provides a console for typing in stuff. Each line is output
+   from the "outbox" outbox one at a time.
+   
+   Keyword arguments:
+   - prompt  -- Command prompt (default=">>> ")
+   - eol     -- End of line character(s) to put on end of every line outputted (default="\n")
+   """
+   
+   Inboxes  = { "inbox"   : "NOT USED",
+                "control" : "NOT USED",
+              }
+   Outboxes = { "outbox" : "Lines that were typed at the console",
+                "signal" : "NOT USED",
+              }
+   
    def __init__(self, prompt=">>> ",eol="\n"):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConsoleReader, self).__init__()
       self.prompt = prompt
       self.eol = eol
 
    def run(self):
+      """Main thread loop."""
       while 1:
          line = raw_input(self.prompt)
          line = line + self.eol
          self.outqueues["outbox"].put(line)
 
-class consoleEchoer(component):
-   Inboxes=["inbox","control"]
-   Outboxes=["outbox","signal"]
+
+
+class ConsoleEchoer(component):
+   """\
+   ConsoleEchoer([forwarder][,use_repr]) -> new ConsoleEchoer component.
+
+   A component that outputs anything it is sent to standard output (the
+   console).
+
+   Keyword arguments:
+   - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
+   - use_repr   -- use repr() instead of str() if True (default=False)
+   """
+   Inboxes  = { "inbox"   : "Stuff that will be echoed to standard output",
+                "control" : "Shutdown signalling",
+              }
+   Outboxes = { "outbox" : "Stuff forwarded from 'inbox' inbox (if enabled)",
+                "signal" : "Shutdown signalling",
+              }
 
    def __init__(self, forwarder=False, use_repr=False):
-      super(consoleEchoer, self).__init__()# !!!! Must happen, if this method exists
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+      super(ConsoleEchoer, self).__init__()
       self.forwarder=forwarder
       if use_repr:
           self.serialise = repr
@@ -55,6 +136,7 @@ class consoleEchoer(component):
           self.serialise = str
 
    def mainBody(self):
+      """Main loop body."""
       if self.dataReady("inbox"):
          data = self.recv("inbox")
          _sys.stdout.write(self.serialise(data))
@@ -66,11 +148,9 @@ class consoleEchoer(component):
       if self.dataReady("control"):
          data = self.recv("control")
          if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
+            self.send(data,"signal")
             return 0
       return 3
 
 if __name__ =="__main__":
    print "This module has no system test"
-#   myComponent("A",3,1)
-#   myComponent("B",2).activate()
-#   scheduler.run.runThreads()
