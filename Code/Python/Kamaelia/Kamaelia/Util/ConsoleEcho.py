@@ -19,44 +19,12 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+Legacy stub for consoleEchoer component.
+
+The component now resides in Kamaelia.Util.Console
+... please use this in preference
 """
-Console Echoer Component. Optionally passes the data it recieves through to
-it's outbox - making it useful for inline (or end of line) debugging.
 
-"""
-from Axon.Component import component, scheduler
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-import sys as _sys
+from Kamaelia.Util.Console import ConsoleEchoer as consoleEchoer
 
-class consoleEchoer(component):
-   Inboxes=["inbox","control"]
-   Outboxes=["outbox","signal"]
-
-   def __init__(self, forwarder=False, use_repr=False):
-      super(consoleEchoer, self).__init__()# !!!! Must happen, if this method exists
-      self.forwarder=forwarder
-      if use_repr:
-          self.serialise = repr
-      else:
-          self.serialise = str
-
-   def mainBody(self):
-      if self.dataReady("inbox"):
-         data = self.recv("inbox")
-         _sys.stdout.write(self.serialise(data))
-         _sys.stdout.flush()
-         if self.forwarder:
-            self.send(data, "outbox")
-            return 1
-         return 2
-      if self.dataReady("control"):
-         data = self.recv("control")
-         if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
-            return 0
-      return 3
-
-if __name__ =="__main__":
-   print "This module has no system test"
-#   myComponent("A",3,1)
-#   myComponent("B",2).activate()
-#   scheduler.run.runThreads()
