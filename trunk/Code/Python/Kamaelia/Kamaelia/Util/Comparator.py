@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,25 +19,95 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==========================
+Comparing two data sources
+==========================
+
+The comparator component tests two incoming streams to see if the items they
+contain match (pass an equality test).
+
+
+
+Example Usage
+-------------
+Compares contents of two files and prints "MISMATCH!" whenever one is found::
+    class DetectFalse(component):
+        def main(self):
+            while 1:
+                yield 1
+                if self.dataReady("inbox"):
+                    if not self.recv("inbox"):
+                        print "MISMATCH!"
+
+    Graphline( file1   = RateControlledFileReader(filename="file 1", ...),
+               file2   = RateControlledFileReader(filename="file 2", ...),
+               compare = comparator(),
+               fdetect = DetectFalse(),
+               output  = consoleEchoer(),
+               linkages = {
+                   ("file1","outbox") : ("compare","inA"),
+                   ("file2","outbox") : ("compare","inB"),
+                   ("compare", "outbox") : ("fdetect", "inbox"),
+                   ("fdetect", "outbox") : ("output", "inbox"),
+               },
+             ).run()
+
+
+
+How does it work?
+-----------------
+
+The component simply waits until there is data ready on both its "inA" and "inB"
+inboxes, then takes an item from each and compares them. The result of the
+comparison is sent to the "outbox" outbox.
+
+If data is available at neither, or only one, of the two inboxes, then the
+component will wait indefinitely until data is available on both.
+
+If a producerFinished or shutdownMicroprocess message is received on the
+"control" inbox, then a producerFinished message is sent out of the "signal"
+outbox and the component terminates.
+
+The comparison is done by the combine() method. This method returns the result
+of a simple equality test of the two arguments.
+
+You could always subclass this component and reimplement the combine() method to
+perform different functions (for example, an 'adder').
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class comparator(component):
-    """This class was originally written to assist in testing by making it easy
-    to compare an expected data stream with that from the tested system.
-    This is the current equality test between the two inputs.  I have however
-    realised that this can be generalised by making an overidable compare
-    function to do the real work.  Then I realised that it is in fact a general
-    system for combining two inputs into a single output!"""
-    Inboxes = ["inA", "inB", "control"]
+    """\
+    comparator() -> new comparator component.
+
+    Compares items received on "inA" inbox with items received on "inB" inbox.
+    For each pair, outputs True if items compare equal, otherwise False.
+    """
+                        
+    Inboxes = { "inbox"   : "NOT USED",
+                "control" : "NOT USED",
+                "inA"     : "Source 'A' of items to compare",
+                "inB"     : "Source 'B' of items to compare",
+              }
+    Outboxes = { "outbox" : "Result of comparison",
+                 "signal" : "NOT USED",
+               }
+    
     
     def combine(self, valA, valB):
-        """Overide this function to change the type of comparison from equality testing."""
+        """\
+        Returns result of (valA == valB)
+        
+        Reimplement this method to change the type of comparison from equality testing.
+        """
         return valA == valB
     
     def mainBody(self):
-        """Checks for equality on both inA and inB and outputs True or False."""
+        """Main loop body."""
         if self.dataReady("inA") and self.dataReady("inB"):
             self.send(self.combine(self.recv("inA"),self.recv("inB")))
         if self.dataReady("control"):
