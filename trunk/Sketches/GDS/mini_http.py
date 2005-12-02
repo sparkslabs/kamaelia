@@ -5,6 +5,7 @@ from Axon.Component import component, scheduler, linkage
 from Kamaelia.Util.PipelineComponent import pipeline
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.KamaeliaIPC import socketShutdown
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
 class LocalFileServer(component):
     """
@@ -35,3 +36,27 @@ class LocalFileServer(component):
             f.close()
         
         return 1
+        
+class FirstHttpTry(object):
+    """
+    Listens to port 80 for a request for a file. Sends that file right back out at them.
+    """
+    
+    def __init__(self):
+        super(FirstHttpTry, self).__init__()
+
+    def localFileServerFactory(self):
+        return LocalFileServer()
+
+    def main(self):
+        #Create something to listen for a connection
+        #Create something to give you files
+        #Bolt them together
+        #Go!
+        server = SimpleServer( protocol = self.localFileServerFactory, port = 8042)
+        server.activate()
+        scheduler.run.runThreads()
+
+if __name__=="__main__":
+    gds = FirstHttpTry()
+    gds.main()
