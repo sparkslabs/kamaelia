@@ -31,9 +31,9 @@ class LocalFileServer(component):
         
         if self.dataReady("inbox"):
             path = self.recv("inbox")
-            if path.strip() == "BYE": 
-                return 0 # GDSGDS This is the bit that isn't working yet :):)
-            print "<<<", path, ">>>"
+            if path.strip() == "BYE":
+                self.send(producerFinished(self), "signal")
+                return 0
             try:
                 f = open(path.strip(), "r")
                 self.send(f.read(), "outbox")
