@@ -24,7 +24,7 @@
 Wiring up components in a topology
 ==================================
 
-The Graphline component wires up a set of components and encapsulate them as a
+The Graphline component wires up a set of components and encapsulates them as a
 single component. They are wired up to each other using the 'graph' of linkages
 that you specify.
 
@@ -56,7 +56,9 @@ then encapsulating th ewhole as a single component, with its own inboxes and
 outboxes.
 
 The components you specify are registered as children of the Graphline
-component. The linkages you specify are created between them upon activation.
+component. When you activate the component, all the child components are
+activated, and the linkages you specified are created between them.
+
 When specifying linkages, the component 'name' is the string version of the
 argument name you used to refer to the component. In the example above, the
 components are therefore referred to as "RC" and "RFA".
