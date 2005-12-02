@@ -24,9 +24,9 @@
 Wiring up components in a topology
 ==================================
 
-The Graphline component is a wire up a set of components and encapsulate them as
-a single component. They are wired up to each other using the 'graph' of
-linkages that you specify.
+The Graphline component wires up a set of components and encapsulate them as a
+single component. They are wired up to each other using the 'graph' of linkages
+that you specify.
 
 
 
