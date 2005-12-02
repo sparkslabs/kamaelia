@@ -19,6 +19,94 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==================================
+Wiring up components in a topology
+==================================
+
+The Graphline component is a wire up a set of components and encapsulate them as
+a single component. They are wired up to each other using the 'graph' of
+linkages that you specify.
+
+
+
+Example Usage
+-------------
+Joining a PromtedFileReader and a rate control component to make a file reader
+that reads at a given rate::
+   return Graphline(RC  = ByteRate_RequestControl(**rateargs),
+                    RFA = PromptedFileReader(filename, readmode),
+                    linkages = { ("RC",  "outbox")  : ("RFA", "inbox"),
+                                ("RFA", "outbox")  : ("self", "outbox"),
+                                ("RFA", "signal")  : ("RC",  "control"),
+                                ("RC",  "signal")  : ("self", "signal"),
+                                ("self", "control") : ("RFA", "control")
+                                }
+
+The references to 'self' create linkages that passes through a named inbox on
+the graphline to a named inbox of one of the child components. Similarly a
+child's outbox is pass-through to a named outbox on the graphline.
+
+
+
+How does it work?
+-----------------
+A Graphline component gives you a way of wiring up a system of components and
+then encapsulating th ewhole as a single component, with its own inboxes and
+outboxes.
+
+The components you specify are registered as children of the Graphline
+component. The linkages you specify are created between them upon activation.
+When specifying linkages, the component 'name' is the string version of the
+argument name you used to refer to the component. In the example above, the
+components are therefore referred to as "RC" and "RFA".
+
+If the name you specify is not one of the components you specify, then it is
+assumed you must be referring to the Graphline component itself. In the above
+example, "self" is used to make this clear. This gives you a way of passing data
+in and out of the system of components you have specified.
+
+In these cases, it is assumed you wish to create a pass-through linkage - you
+want the Graphline component to forward the named inbox to a child's inbox, or
+to forward a child's outbox to a named outbox of the Graphline. For example::
+
+    Graphline( child = MyComponent(...),
+               linkages = { ...
+                            ("self", "foo") : ("child", "bar"),
+                            ... }
+             )
+
+... is interpreted as meaning you want to forward the "foo" inbox of the
+Graphline to the "bar" inbox of the component referred to as "child".
+Similarly::
+
+    Graphline( child = MyComponent(...),
+               linkages = { ...
+                            ("child", "fwibble") : ("self", "plig"),
+                            ... }
+             )
+
+...is interpreted as wishing to forward the "fwibble" outbox of the component
+referred to as "child" to the "plig" outbox of the Graphline component.
+
+Any inbox or outbox you name on the Graphline component is created if it does
+not already exist.
+
+The Graphline component will always have inboxes "inbox" and "control" and
+outboxes "outbox" and "signal", even if you do not specify any linkages to them.
+
+During runtime, the Graphline component monitors the child components. It will
+terminate if, and only if, *all* the child components have also terminated.
+
+NOTE that if your child components create additional components themselves, the
+Graphline component will not know about them. It only monitors the components it
+was originally told about.
+
+Graphline does not intercept any of its inboxes or outboxes. It ignores whatever
+traffic flows through them. If you have specified linkages from them to
+components inside the graphline, then the data automatically flows to/from them
+as you specified.
+"""
 
 # component that creates and encapsulates a pipeline of components, connecting
 # their outbox to inbox, and signal to control to form the pipeline chain.
@@ -30,10 +118,22 @@ component = _Axon.Component.component
 
 
 class Graphline(component):
+   """\
+   Graphline(linkages,**components) -> new Graphline component
+
+   Encapsulates the specified set of components and wires them up with the
+   specified linkages.
+
+   Keyword arguments:
+   - linkages    -- dictionary mapping ("componentname","boxname") to ("componentname","boxname")
+   - components  -- dictionary mapping names to component instances (default is nothing)
+   """
+   
    Inboxes = {"inbox":"", "control":""}
    Outboxes = {"outbox":"", "signal":""}
     
    def __init__(self, linkages = None, **components):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       if linkages is None:
          raise ValueError("linkages must be set")
 
@@ -70,7 +170,7 @@ class Graphline(component):
                      self.Outboxes[toBox] = ""
       
    def main(self):
-      # NEW CODE
+      """Main loop."""
       components = []
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
