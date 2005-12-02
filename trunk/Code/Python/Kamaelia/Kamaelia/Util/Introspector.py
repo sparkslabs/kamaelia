@@ -19,35 +19,117 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===============================================
+Detecting the topology of a running Axon system
+===============================================
 
-# introspector component
+The Introspector component introspects the current local topology of an Axon
+system - that is what components there are and how they are wired up.
+
+It continually outputs any changes that occur to the topology.
+
+
+
+Example Usage
+-------------
+Introspect and display whats going on inside the system::
+    MyComplexSystem().activate()
+    
+    pipeline( Introspector(),
+              AxonVisualiserServer(noServer=True),
+            )
+
+
+
+How does it work?
+-----------------
+
+Once activated, this component introspects the current local topology of an Axon
+system.
+
+Local? This component examines its scheduler to find components and postmen.
+It then examines them to determine their inboxes and outboxes and the linkages
+between them. In effect, it determines the current topology of the system.
+    
+If this component is not active, then it will see no scheduler and will report
+nothing.
+
+What is output is how the topology changes. Immediately after activation, the
+topology is assumed to be empty, so the first set of changes describes adding
+nodes and linkages to the topology to build up the current state of it.
+
+Subsequent output just describes the changes - adding or deleting linkages and
+nodes as appropriate.
+
+Nodes in the topology represent components and postboxes. A linkage between
+a component node and a postbox node expresses the fact that that postbox belongs
+to that component. A linkage between two postboxes represents a linkage in the
+Axon system, from one component to another.
+
+This topology change data is output as string containing one or more lines. It
+is output through the "outbox" outbox. Each line may be one of the following::
+
+* "DEL ALL\n"
+  - the first thing sent immediately after activation - to ensure that
+    the receiver of this data understand that we are starting from nothing
+
+* "ADD NODE <id> <name> randompos component\n"
+  "ADD NODE <id> <name> randompos inbox\n"
+  "ADD NODE <id> <name> randompos outbox\n"
+  - an instruction to add a node to the topology, representing a component,
+    inbox or outbox. <id> is a unique identifier. <name> is a 'friendly'
+    textual label for the node.
+
+* "DEL NODE <id>"
+  - an instruction to delete a node, specified by its unique id
+    
+* "ADD LINK <id1> <id2>"
+  - an instruction to add a link between the two identified nodes. The link is
+    deemed to be directional, from <id1> to <id2>
+
+* "DEL LINK <id1> <id2>"
+  - an instruction to delete any link between the two identified nodes. Again,
+    the directionality is from <id1> to <id2>.
+
+the <id> and <name> fields may be encapsulated in double quote marks ("). This
+will definitely be so if they contain space characters.
+
+If there are no topology changes then nothing is output.
+
+This component ignores anything arriving at its "inbox" inbox.
+
+If a shutdownMicroprocess message is received on the "control" inbox, it is sent
+on to the "signal" outbox and the component will terminate.
+"""
+
 
 import Axon
 
 class Introspector(Axon.Component.component):
-    """This component introspects the current local topology of an axon system.
-    
-    Local? This component examines its scheduler to find components and postmen.
-    It then examines them to determine their inboxes and outboxes and the linkages
-    between them.
-    
-    If this component is not active, then it will see no scheduler and will report nothing.
-    
-    The output is a description of the a graph topology, where components and postboxes
-    are the nodes, and their relationships/linkages form the links between them. As the
-    shape of the graph changes, this component relays only the changes.
-    
-    The output format is a stream of strings, designed to be fed to an AxonVisualiserServer
-    component.
+    """\
+    Introspector() -> new Introspector component.
+
+    Outputs topology (change) data describing what components there are, and
+    how they are wired inside the running Axon system.
     """
 
+    Inboxes  = { "inbox"   : "NOT USED",
+                 "control" : "Shutdown signalling",
+               }
+    Outboxes = { "outbox" : "Topology (change) data describing the Axon system",
+                 "signal" : "Shutdown signalling",
+               }
+    
     # passthrough==0 -> outbox > inbox
     # passthrough==1 -> inbox > inbox
     # passthrough==2 -> outbox > outbox
     srcBoxType = { 0:"o", 1:"i", 2:"o" }
     dstBoxType = { 0:"i", 1:"i", 2:"o" }
-        
+
+    
     def main(self):
+        """Main loop."""
         # reset the receiving 'axon visualiser'
         self.send("DEL ALL\n", "outbox")
         yield 1
@@ -59,6 +141,7 @@ class Introspector(Axon.Component.component):
             if self.dataReady("control"):
                 data = self.recv("control")
                 if isinstance(data, Axon.Ipc.shutdownMicroprocess):
+                    self.send(data, "signal")
                     return
         
             if isinstance(self.scheduler, Axon.Scheduler.scheduler):
@@ -137,7 +220,15 @@ class Introspector(Axon.Component.component):
             yield 1
 
     def introspect(self):
-        """returns the current set of components, postboxes and interpostbox linkages"""
+        """\
+        introspect() -> components, postboxes, linkages
+
+        Returns the current set of components, postboxes and interpostbox linkages.
+
+        - components  -- a dictionary, containing components as keys
+        - postboxes   -- a list of (component.id, type, "boxname") tuples, where type="i" (inbox) or "o" (outbox)
+        - linkages    -- a dictionary containing (postbox,postbox) tuples as keys, where postbox is a tuple from the postboxes list
+        """
         
         # fetch components currently active with the scheduler
         # (note that this is not necessarily all components - as they may have only just been 
