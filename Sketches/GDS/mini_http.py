@@ -31,9 +31,15 @@ class LocalFileServer(component):
         
         if self.dataReady("inbox"):
             path = self.recv("inbox")
-            f = open(path, "r")
-            self.send(f.read(), "outbox")
-            f.close()
+            if path.strip() == "BYE": 
+                return 0 # GDSGDS This is the bit that isn't working yet :):)
+            print "<<<", path, ">>>"
+            try:
+                f = open(path.strip(), "r")
+                self.send(f.read(), "outbox")
+                f.close()
+            except IOError, ex:
+                self.send("404 - can't find that file :P\n")
         
         return 1
         
