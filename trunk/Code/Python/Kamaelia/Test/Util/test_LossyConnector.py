@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -37,8 +37,8 @@ class lossyConnector_test1(unittest.TestCase):
         self.failUnless(testedclass())
     
     def test_smoketest2(self):
-        """__init__ - Checks the created component has the correct inboxes and outboxes ("inbox", "control", "outbox")."""
-        self.failUnless(testInterface(testedclass(),(["inbox","control"],["outbox"])))
+        """__init__ - Checks the created component has the correct inboxes and outboxes ("inbox", "control", "outbox","signal")."""
+        self.failUnless(testInterface(testedclass(),(["inbox","control"],["outbox","signal"])))
     
 class lossyConnector_test2(unittest.TestCase):
     def deliver(self):
