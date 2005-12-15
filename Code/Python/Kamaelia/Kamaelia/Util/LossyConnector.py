@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,15 +19,65 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+====================================
+Lossy connections between components
+====================================
+
+A component that passes on any data it receives, but will throw it away if the
+next component's inbox is unable to accept new items.
+
+
+
+Example Usage
+-------------
+Using a lossy connector to drop excess data::
+    src = fastProducer().activate()
+    lsy = lossyConnector().activate()
+    dst = slowConsumer().activate()
+
+    src.link( (src,"outbox"), (lsy,"inbox") )
+    src.link( (lsy,"outbox"), (dst,"inbox"), pipewidth=1 )
+
+The outbox of the lossy connector is joined to a linkage that can buffer a
+maximum of one item. Once full, the lossy connector causes items to be dropped.
+
+    
+
+How does it work?
+-----------------
+
+This component receives data on its "inbox" inbox and immediately sends it on
+out of its "oubox" outbox.
+
+If the act of sending the data causes a noSpaceInBox exception, then it is
+caught, and the data that it was trying to send is simply discarded.
+
+I a producerFinished or shutdownMicroprocess message is received on the
+component's "control" inbox, then the message is forwarded on out of its
+"signal" outbox and the component then immediately terminates.
+"""
 
 from Axon.Component import component
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class lossyConnector(component):
-    Inboxes=["inbox","control"]
-    Outboxes=["outbox"]
+    """\
+    lossyConnector() -> new lossyConnector component
+
+    Component that forwards data from inbox to outbox, but discards data if
+    destination is full.
+    """
+    Inboxes  = { "inbox"   : "Data to be passed on",
+                 "control" : "Shutdown signalling",
+               }
+    Outboxes = { "outbox" : "Data received on 'inbox' inbox",
+                 "signal" : "Shutdown signalling",
+               }
+               
     def mainBody(self):
+        """Main loop body."""
         while self.dataReady("inbox"):
             try:
                 self.send(self.recv())
@@ -36,5 +86,6 @@ class lossyConnector(component):
         if self.dataReady("control"):
             mes = self.recv("control")
             if isinstance(mes, producerFinished) or isinstance(mes, shutdownMicroprocess):
+                self.send(mes,"signal")
                 return 0
         return 1
