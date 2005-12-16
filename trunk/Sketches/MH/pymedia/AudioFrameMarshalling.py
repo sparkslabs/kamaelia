@@ -28,7 +28,7 @@ class Bunch:
 class AudioFrameMarshalling:
     fmt="PymediaAudioFrame %(bitrate)s %(channels)s %(sample_rate)s %(sample_length)s X%(data)s"
 
-    def __str__(frame):
+    def marshall(frame):
         out = AudioFrameMarshalling.fmt % { "bitrate":frame.bitrate,
                            "channels":frame.channels,
                            "data":frame.data,
@@ -36,11 +36,11 @@ class AudioFrameMarshalling:
                            "sample_rate":frame.sample_rate,
                          }
         return out
-    __str__ = staticmethod(__str__)
+    marshall = staticmethod(marshall)
 
 
 
-    def fromString(frame):
+    def demarshall(frame):
         id, bitrate, channels, sample_rate, sample_length, data = frame.split(" ", 5)
 
         if id == AudioFrameMarshalling.fmt.split(" ",1)[0]:
@@ -52,7 +52,7 @@ class AudioFrameMarshalling:
             frame.data = data[1:]
             return frame
 
-    fromString = staticmethod(fromString)
+    demarshall = staticmethod(demarshall)
 
 
 
