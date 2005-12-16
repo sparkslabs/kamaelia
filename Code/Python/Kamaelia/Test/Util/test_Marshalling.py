@@ -27,13 +27,13 @@ from Marshalling import Marshaller, DeMarshaller
 
 class SerialiseInt:
 
-    def __str__(int):
+    def marshall(int):
         return str(int)
-    __str__ = staticmethod(__str__)
+    marshall = staticmethod(marshall)
 
-    def fromString(string):
+    def demarshall(string):
         return int(string)
-    fromString = staticmethod(fromString)
+    demarshall = staticmethod(demarshall)
 
 
 
