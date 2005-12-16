@@ -20,6 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
+Basic Marshalling
+
 Basic Marshalling Component. - UNTESTED
 
 The Basic Marshalling Component is given a simple class. It then expects to
@@ -47,32 +49,52 @@ Since this is a bidirectional component we have the following boxes:
    * marshalled = an outbox which spits out marshalled strings
 """
 
-from Axon.Component import component, scheduler
+from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
-class BasicMarshallComponent(component):
-   Inboxes =["control", "demarshall", "marshall"] 
-   Outboxes=["signal", "demarshalled", "marshalled"]
-   def __init__(self,klass):
-      super(BasicMarshallComponent, self).__init__() # Accept default in/outboxes
-      self.klass = klass
+def BasicMarshallComponent(klass):
+    return Graphline(marsh=Marshaller(klass),
+                     demarsh=DeMarshaller(klass),
+                     linkages = {
+                       ("self", "marshall") : ("marsh","inbox"),
+                       ("marsh", "outbox") : ("self","marshalled"),
 
-   def main(self):
-      while 1:
-         self.pause()
-         if self.dataReady("control"):
-            data = self.recv("control")
-            if isinstance(data, Axon.Ipc.producerFinished):  # Not ideal, should be Axon.Ipc.Shutdown
-               self.send(Axon.Ipc.producerFinished(), "signal")
-               return
-         if self.dataReady("marshall"):
-            data = self.recv("marshall")
-            self.send(str(data),"marshalled")
-         if self.dataReady("demarshall"):
-            data = self.recv("demarshall")
-            self.send(self.klass.fromString(data),"demarshalled")
+                       ("self", "demarshall") : ("demarsh","inbox"),
+                       ("demarsh", "outbox") : ("self","outbox"),
 
-         yield 1
+                       ("self","control") : ("marsh","control"),
+                       ("marsh","signal") : ("demarsh","control"),
+                       ("demarsh","signal") : ("self","signal"),
+                     }
+                    )
 
+
+#from Axon.Component import component, scheduler
+#
+#class BasicMarshallComponent(component):
+#   Inboxes =["control", "demarshall", "marshall"] 
+#   Outboxes=["signal", "demarshalled", "marshalled"]
+#   def __init__(self,klass):
+#      super(BasicMarshallComponent, self).__init__() # Accept default in/outboxes
+#      self.klass = klass
+#
+#   def main(self):
+#      while 1:
+#         self.pause()
+#         if self.dataReady("control"):
+#            data = self.recv("control")
+#            if isinstance(data, Axon.Ipc.producerFinished):  # Not ideal, should be Axon.Ipc.Shutdown
+#               self.send(Axon.Ipc.producerFinished(), "signal")
+#               return
+#         if self.dataReady("marshall"):
+#            data = self.recv("marshall")
+#            self.send(str(data),"marshalled")
+#         if self.dataReady("demarshall"):
+#            data = self.recv("demarshall")
+#            self.send(self.klass.fromString(data),"demarshalled")
+#
+#         yield 1
+#
 if __name__ == '__main__':
    print "no test harness (NASTY)"
    print "Sample Test Harness could probably make us of MimeDict as an example"
