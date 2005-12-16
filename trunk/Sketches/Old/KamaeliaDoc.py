@@ -11,6 +11,7 @@ from docutils import core
 #    Kamaelia.File.Reading.RateControlledReusableFileReader
 #    Kamaelia.File.Reading.FixedRateControlledReusableFileReader
 #    "Kamaelia.Util.TestResultComponent" : ["TestResultComponent"],
+#    "Kamaelia.Util.MarshallComponent" : ["BasicMarshallComponent"],
 COMPONENTS = {
     "Kamaelia.Chassis.Carousel" : ["Carousel"],
     "Kamaelia.Chassis.ConnectedServer" : ["SimpleServer"],
@@ -38,7 +39,6 @@ COMPONENTS = {
     "Kamaelia.Util.Graphline" : ["Graphline"],
     "Kamaelia.Util.Introspector"    : ["Introspector"],
     "Kamaelia.Util.LossyConnector" : ["lossyConnector"],
-    "Kamaelia.Util.MarshallComponent" : ["BasicMarshallComponent"],
     "Kamaelia.Util.Marshalling" : ["Marshaller","DeMarshaller"],
     "Kamaelia.Util.NullSinkComponent" : ["nullSinkComponent"],
     "Kamaelia.Util.PipelineComponent" : ["pipeline"],
