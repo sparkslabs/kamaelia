@@ -24,8 +24,8 @@ Basic Marshalling Components
 
 The Marshalling/DeMarshalling Component is given a simple class. It then expects
 to be passed objects of that class, and then performs the following actions:
-   * __str__ on an object
-   * fromString on an object
+   * marshall on an object
+   * demarshall on an object
 
 The idea is that you would place this between your logic and a network
 socket, which simply serialises and deserialises objects for transmission
@@ -46,7 +46,7 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class Marshaller(component):
     """Marshalls (serialises) data presented on the inbox.
-       Use this component by providing an object with a __str__ method
+       Use this component by providing an object with a marshall method
        that will convert (serialise) the data to a string
     """
     Inboxes  = { "inbox"   : "data to be marshalled",
@@ -58,7 +58,7 @@ class Marshaller(component):
 
     def __init__(self, klass):
         """Initialisation.
-           klass is an object with method klass.__str__( <item to be marshalled> )
+           klass is an object with method klass.marshall( <item to be marshalled> )
         """
         super(Marshaller, self).__init__()
         self.klass = klass
@@ -72,7 +72,7 @@ class Marshaller(component):
 
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                self.send( self.klass.__str__(data), "outbox")
+                self.send( self.klass.marshall(data), "outbox")
 
             while self.dataReady("control"):
                 msg = self.recv("control")
@@ -85,7 +85,7 @@ class Marshaller(component):
                 
 class DeMarshaller(component):
     """DeMarshalls (serialises) data presented on the inbox.
-       Use this component by providing an object with a fromString method
+       Use this component by providing an object with a demarshall method
        that will convert (deserialise) the data from a string to its original form
     """
     Inboxes  = { "inbox"   : "data to be demarshalled",
@@ -97,7 +97,7 @@ class DeMarshaller(component):
 
     def __init__(self, klass):
         """Initialisation.
-           klass is an object with method klass.fromString( <item to be demarshalled> )
+           klass is an object with method klass.demarshall( <item to be demarshalled> )
         """
         super(DeMarshaller, self).__init__()
         self.klass = klass
@@ -111,7 +111,7 @@ class DeMarshaller(component):
 
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                self.send( self.klass.fromString(data), "outbox")
+                self.send( self.klass.demarshall(data), "outbox")
 
             while self.dataReady("control"):
                 msg = self.recv("control")
