@@ -19,34 +19,39 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
-Basic Marshalling
+"""\
+======================================
+Legacy stub for BasicMarshallComponent
+======================================
 
-Basic Marshalling Component. - UNTESTED
+The functionality of this component has been superceeded by the Marshaller and
+DeMarshaller components in Kamaelia.Util.Marshalling. Please use these in
+preference.
 
-The Basic Marshalling Component is given a simple class. It then expects to
-be passed objects of that class, and then performs the following actions:
-   * __str__ on an object
-   * fromString on an object
+This component contains both marshalling and demarshalling facilities. It is
+a thin wrapper combining a Marshalling and DeMarshalling component.
 
-The idea is that you would place this between your logic and a network
-socket, which simply serialises and deserialises objects for transmission
-over the wire. The initial data format this is designed to work with is the
-MimeDict object.
 
-For simplicity, this component expects to be given an entire object to
-marshall/demarshall. This requires the user to deal with framing of objects.
-It is expected that there will be a more complex marshaller that is capable
-of taking (say) a generator or component as an argument for the fromString
-static method.
 
-Since this is a bidirectional component we have the following boxes:
-   * control - on which we may receive a shutdown message
-   * signal - one which we will send shutdown messages
-   * demarshall - an inbox to which you send strings for demarshalling
-   * marshall - an inbox to which you send objects for marshalling
-   * demarshalled - an outbox which spits out demarshalled objects
-   * marshalled = an outbox which spits out marshalled strings
+Example Usage
+-------------
+
+None. Please use Kamaelia.Util.Marshalling in preference.
+
+
+
+How does it work?
+-----------------
+
+Behaviour is consistent with that of Kamaelia.Util.Marshalling, except that the
+"inbox" inbox and "outbox" outbox are not used.
+
+Marshall data by sending it to the "marshall" inbox. The marshalled data is
+sent to the "marshalled" outbox.
+
+Demarshall data by sending it to the "demarshall" inbox. The marshalled data is
+sent to the "demarshalled" outbox.
+
 """
 
 from Kamaelia.Util.Graphline import Graphline
@@ -60,7 +65,7 @@ def BasicMarshallComponent(klass):
                        ("marsh", "outbox") : ("self","marshalled"),
 
                        ("self", "demarshall") : ("demarsh","inbox"),
-                       ("demarsh", "outbox") : ("self","outbox"),
+                       ("demarsh", "outbox") : ("self","demarshalled"),
 
                        ("self","control") : ("marsh","control"),
                        ("marsh","signal") : ("demarsh","control"),
