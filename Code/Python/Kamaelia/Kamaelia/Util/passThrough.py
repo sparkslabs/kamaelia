@@ -25,16 +25,28 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
 class passThrough(component):
-   Inboxes=["inbox","control"]
-   Outboxes=["outbox", "signal"]
+   """\
+   """
+   Inboxes= {
+      "inbox" : "",
+      "control" : "",
+   }
+   Outboxes = {
+      "outbox" : "", 
+      "signal" : "",
+   }
 
-   Connections={"inbox":"outbox","control":"signal"}
+   Connections={ "inbox":"outbox","control":"signal" }
    
    def __init__(self, shutdownOn = [producerFinished,shutdownMicroprocess]):
+      """\
+      """
       self.__super.__init__()  # !!!! Must happen, if this method exists
       self.shutdownOn = shutdownOn
 
    def mainBody(self):
+      """\
+      """
       forwarded = 1
       
       for (inbox,outbox) in self.Connections.items():
@@ -43,8 +55,6 @@ class passThrough(component):
              forwarded += 1
              data = self.recv(inbox)
              self.send(data, outbox)
-#             print "passing "+str(data)+" from "+inbox+" to "+outbox
-             
              if inbox == "control":
                 for ipc in self.shutdownOn:
                     if isinstance(data, ipc):
