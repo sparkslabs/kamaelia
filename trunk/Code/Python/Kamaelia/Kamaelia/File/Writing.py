@@ -33,6 +33,8 @@ Example Usage
 
 Copying a file::
 
+    from Kamaelia.File.Writing import SimpleFileWriter
+
     pipeline(RateControlledFileReader("sourcefile",rate=1000000),
              SimpleFileWriter("destinationfile")
             ).activate()
@@ -79,6 +81,7 @@ class SimpleFileWriter(component):
     
     def __init__(self, filename):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        self.filename = filename
         super(SimpleFileWriter, self).__init__()
         
     def writeData(self, data):
@@ -88,7 +91,7 @@ class SimpleFileWriter(component):
         
     def main(self):
         """Main loop"""
-        self.file = open(filename, "wb",0)
+        self.file = open(self.filename, "wb",0)
         done = False
         while not done:
             yield 1
