@@ -111,7 +111,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
           
 
     def initialiseComponent(self):
-        self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
+        self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event: ParticleDragger.handle(event,self))
         self.addHandler(pygame.KEYDOWN, self.keyDownHandler)
         self.addHandler(pygame.KEYUP,   self.keyUpHandler)
         
