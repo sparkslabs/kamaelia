@@ -25,7 +25,68 @@ from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
 import pygame
 from pygame.locals import *
 
-def abbreviate(string): # SMELL: Exists in two files and is *used* in both.
+"""\
+====================================================
+"Postbox" particle for Axon/Kamaelia visualisation
+====================================================
+
+This is an implementation of a rendering particle for "Postbox" particles in
+topology visualisation of Axon/Kamaelia systems, representing inboxes/outboxes.
+
+
+
+Example Usage
+-------------
+See Kamaelia.Visualisation.Axon.AxonLaws or
+Kamaelia.Visualisation.Axon.AxonVisualiserServer
+
+
+
+How does it work?
+-----------------
+This object subclasses Kamaelia.Physics.Simple.Particle and adds methods to
+support rendering. Specifically, rendering to represent an inbox or outbox in 
+an Axon/Kamaelia system.
+
+At initialisation, provide a unique ID, a starting (x,y) position tuple, a name
+and whether it is an inbox or outbox. The name is abbreviated and displayed as
+the particle. 
+
+If the particle becomes selected, then it will render its full name at the top
+of the display surface.
+
+At initialisation the label is rendered at several different 45 degree angles.
+When rendering, the appropriate one is chosen depending on the directions of
+bonds (linkages) this particle is involved in.
+
+It also renders bonds *from* this particle *to* another. Their colour depends
+on whether they represent ordinary or passthrough linkages. This is determined
+by looking at whether both postbox particles involved are of the same type.
+
+It is assumed that any bonds going *from* this particle *to* another go to
+another postbox particle (not a component particle). If this is not the case
+then behaviour is undefined.
+
+Rendering is performed by a generator, returned when the render() method is
+called. Its behaviour is that needed for the framework for multi-pass rendering
+that is used by TopologyViewerComponent.
+
+The generator yields the number of the rendering pass it wishes to be next on
+next. Each time it is subsequently called, it performs the rendering required
+for that pass. It then yields the number of the next required pass or completes
+if there is no more rendering required.
+
+An setOffset() method is also implemented to allow the particles coordinates
+to be offset. This therefore makes it possible to scroll the particles around
+the display surface.
+
+See TopologyViewerComponent for more details.
+
+"""
+
+
+
+def abbreviate(string):
     """Abbreviates strings to capitals, word starts and numerics and underscores"""
     out = ""
     prev = ""
@@ -68,22 +129,51 @@ angleMappings = { (True,  True,  False) : 0,
                   (False, True,  True ) : 270,
                   (False, True,  False) : 315 }
             
+            
 class PPostbox(BaseParticle):
-    labelangles =  { 0:2, 45:3, 90:0, 135:1, 180:2, 225:3, 270:0, 315:1 } # angles to which label tile
+    """\
+    PPostbox -> new PPostbox object.
     
+    Particle representing an Axon/Kamaelia inbox/outbox for topology
+    visualisation.
+    
+    Keyword arguments:
+    - position  -- (x,y) tuple of particle coordinates
+    - name      -- Name for the inbox/outbox being represented
+    - boxtype   -- "inbox" or "outbox"
+    """
+    
+    # mapping of angles to labels
+    labelangles =  { 0:2, 45:3, 90:0, 135:1, 180:2, 225:3, 270:0, 315:1 }
+    
+    # different colours for linkages depending on whether they are passthrough
+    # (inbox->inbox, outbox->outbox) or ordinary (inbox<->outbox)
     colours = { ("inbox",  "outbox"):(0,160,0),
                 ("outbox", "inbox" ):(0,160,0),
                 ("inbox",  "inbox" ):(224,128,0),
                 ("outbox", "outbox"):(224,128,0)  }
 
     def Inbox(ID, position, name):
+        """\
+        Inbox(ID,position,name) -> new PPostbox object with boxtype "inbox".
+        
+        Static method.
+        """
         return PPostbox(ID=ID, position=position, name=name, boxtype="inbox")
+        
     def Outbox(ID, position, name):
+        """\
+        Outbox(ID,position,name) -> new PPostbox object with boxtype "outbox".
+        
+        Static method.
+        """
         return PPostbox(ID=ID, position=position, name=name, boxtype="outbox")
+        
     Inbox  = staticmethod(Inbox)
     Outbox = staticmethod(Outbox)
                 
     def __init__(self, ID, position, name, boxtype):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PPostbox,self).__init__(position=position, ID = ID )
         self.name   = name
         self.ptype  = "postbox"
@@ -96,6 +186,17 @@ class PPostbox(BaseParticle):
         pygame.font.init()        
         
     def buildLabels(self):
+        """\
+        Pre-renders text labels to surfaces for different 45 degree
+        angles.
+        
+        On exit:
+        self.label is a list of surfaces containing rendered labels
+        self.slabel is the same but coloured for when the particle is selected
+        self.labelxo is a list of x-offsets for each label's centre.
+        self.labelyo is a list of y-offsets fo reach label's centre.
+        self.desclabel is the description label displayed when selected
+        """
         from pygame.transform import rotozoom, rotate
         
         font = pygame.font.Font(None, 14)
@@ -126,6 +227,14 @@ class PPostbox(BaseParticle):
                     
             
     def render(self, surface):
+        """\
+        Multi-pass rendering generator.
+
+        Renders this particle in multiple passes to the specified pygame surface -
+        yielding the number of the next pass to be called on between each. Completes
+        once it is fully rendered.
+        """
+   
         direction = (0,0) # default direction for the text label
         
         yield 1
@@ -178,11 +287,18 @@ class PPostbox(BaseParticle):
 
                                  
     def setOffset( self, (x,y) ):
+        """\
+        Set the offset of the top left corner of the rendering area.
+
+        If this particle is at (px,py) it will be rendered at (px-x,py-y).
+        """
         self.left = x
         self.top  = y
                      
     def select( self ):
+        """Tell this particle it is selected."""
         self.selected = True
 
     def deselect( self ):
+        """Tell this particle it is deselected."""
         self.selected = False
