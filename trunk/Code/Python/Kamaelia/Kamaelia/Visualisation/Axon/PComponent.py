@@ -115,7 +115,7 @@ class PComponent(BaseParticle):
         
         self.radius = _COMPONENT_RADIUS
         
-        description = "Component "+self.shortname+" : "+self.name,
+        description = "Component "+self.shortname+" : "+self.name
         self.desclabel = font.render( description, True, (0,0,0), (255,255,255))
         
     def render(self, surface):
