@@ -28,16 +28,15 @@ class SimplePeer(Axon.Component.component):
                 yield 1
 
             try:
-                data, addr = sock.recvfrom(1024)
+                message = sock.recvfrom(1024)
             except socket.error, e:
                 pass
             else:
-                message = (addr, data) 
-                self.send(message,"outbox")
+                self.send(message,"outbox") # format ( data, addr )
 
             yield 1
 
-# ---------------------------- # SimplePeer
+# ---------------------------- # TargetedPeer
 class TargettedPeer(Axon.Component.component):
     Inboxes = {
         "inbox" : "Data recieved here is sent to the reciever addr/port",
@@ -73,18 +72,58 @@ class TargettedPeer(Axon.Component.component):
                 data = self.recv("inbox")
                 sock.sendto(data, (self.receiver_addr, self.receiver_port) );
                 yield 1
+
             #
             # Simple Transform behaviour
             #
             try:
-                data, addr = sock.recvfrom(1024) # SMELL: UM look below (message!)
+                message = sock.recvfrom(1024)
             except socket.error, e:
                 pass
             else:
-                message = (addr, data)           # SMELL: UM look above (data, addr)
-                self.send(message,"outbox")
+                self.send(message,"outbox") # format ( data, addr )
             yield 1
 
+
+# ---------------------------- # PostboxPeer
+class PostboxPeer(Axon.Component.component):
+    """ A postbox peer recieves messages formed of 3 parts:
+            (addr, port, data)
+        The postbox peer then takes care of delivery of these UDP messages to the recipient.
+    """
+    Inboxes = {
+        "inbox" : "Data recieved here is sent to the reciever addr/port",
+        "control" : "Not listened to", # SMELL: This is actually a bug!
+    }
+    Outboxes = {
+        "outbox" : "Data received on the socket is passed out here, form: ((addr, port), data)",
+        "signal" : "No data sent to", # SMELL: This is actually a bug!
+    }
+    def __init__(self, localaddr="0.0.0.0", localport=0):
+        super(PostboxPeer, self).__init__()
+        self.localaddr = localaddr
+        self.localport = localport
+
+    def main(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.bind((self.localaddr,self.localport))
+        sock.setblocking(0)
+
+        while 1:
+            if self.dataReady("inbox"):
+                receiver_addr, receiver_port, data = self.recv("inbox")
+                sock.sendto(data, (receiver_addr, receiver_port) );
+                yield 1
+            #
+            # Simple Transform behaviour
+            #
+            try:
+                message = sock.recvfrom(1024)
+            except socket.error, e:
+                pass
+            else:
+                self.send(message,"outbox") # format ( data, addr )
+            yield 1
 
 if __name__=="__main__":
     class ConfigChargen(Axon.Component.component):
@@ -134,7 +173,6 @@ if __name__=="__main__":
         ).run()
 
     def TargettedPeer_tests():
-        """Not finished"""
         from Axon.Scheduler import scheduler
         from Kamaelia.Util.Console import ConsoleEchoer
         from Kamaelia.Util.PipelineComponent import pipeline
@@ -177,8 +215,51 @@ if __name__=="__main__":
             }
         ).run()
 
+
+    def PostboxPeer_tests():
+        from Axon.Scheduler import scheduler
+        from Kamaelia.Util.Console import ConsoleEchoer
+        from Kamaelia.Util.PipelineComponent import pipeline
+        from Kamaelia.Util.Chargen import Chargen
+        from Kamaelia.Util.Graphline import Graphline
+        import random
+
+        server_addrs = [ 
+                         ("127.0.0.1", 1601),
+                         ("127.0.0.2", 1602),
+                         ("127.0.0.3", 1603),
+                         ("127.0.0.4", 1604),
+                       ]
+
+        for server_addr, server_port in server_addrs:
+            pipeline(
+                SimplePeer(localaddr=server_addr, localport=server_port), # Simple Servers
+                LineSepFilter("SERVER:"+server_addr+" :: "),
+                ConsoleEchoer()
+            ).activate()
+
+        class PostboxPeerSource(Axon.Component.component):
+            def __init__(self, targets):
+                super(PostboxPeerSource, self).__init__()
+                self.targets = targets
+            def main(self):
+                while 1:
+                    yield 1
+                    target_addr, target_port = server_addrs[random.randint(0,3)]
+                    data_to_send = "HELLO ! TO " + target_addr
+
+                    message = ( target_addr, target_port, data_to_send )
+
+                    self.send( message, "outbox")
+
+        pipeline(
+            PostboxPeerSource(server_addrs),
+            PostboxPeer(localaddr="127.0.0.1"),
+        ).run()
+
     print "At present, UDP.py only has manually verified test suites."
     print "This does need recifying, but at present, this is what we have!"
 
 #    SimplePeer_tests()
-    TargettedPeer_tests()
+#    TargettedPeer_tests()
+    PostboxPeer_tests()
