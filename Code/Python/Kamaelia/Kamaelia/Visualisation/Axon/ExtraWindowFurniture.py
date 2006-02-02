@@ -20,13 +20,6 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import Kamaelia.Visualisation
-from Kamaelia.Visualisation.PhysicsGraph import TopologyViewerServer, BaseParticle
-from Kamaelia.Physics.Simple import SimpleLaws, MultipleLaws
-
-import pygame
-from pygame.locals import *
-
 """\
 ==========================
 Kamaelia Cat logo renderer
@@ -67,6 +60,10 @@ the display surface.
 
 See TopologyViewerComponent for more details.
 """
+
+import pygame
+from pygame.locals import *
+
 
 class ExtraWindowFurniture(object):
     """\
