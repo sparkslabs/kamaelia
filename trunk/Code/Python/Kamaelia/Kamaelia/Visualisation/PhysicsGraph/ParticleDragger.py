@@ -20,25 +20,63 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# Simple topography viewer server - takes textual commands from a single socket
-# and renders the appropriate graph
+"""\
+================================
+Drag handler for Topology Viewer
+================================
+
+A subclass of Kamaelia.UI.MH.DragHandler that implements "click and hold"
+dragging of particles for the TopologyViewerComponent.
+
+
+
+Example Usage
+-------------
+See source for TopologyViewerComponent.
+
+
+
+How does it work?
+-----------------
+This is an implementation of Kamaelia.UI.MH.DragHandler. See that for more
+details.
+
+The detect() method uses the withinRadius method of the physics attribute of the
+'app' to determine which (if any) particle the mouse is hovering over when the
+drag is started. If there is no particle, then the drag does not begin.
+
+At the start of the drag, the particle is 'frozen' to prevent motion due to the
+physics model of the topology viewer. This is achieved by calling the freeze()
+and unfreeze() methods of the particle. The particle is also 'selected'.
+
+During the drag the particle's coordinates are updated and the physics model is
+notified of the change.
+"""
+
 
 from Kamaelia.UI.MH import DragHandler
 
 class ParticleDragger(DragHandler):
-    """Works with the TopologyViewerComponent to provide particle selecting
-    and dragging functionality"""
+    """\
+    ParticleDragger(event,app) -> new ParticleDragger object.
+    
+    Implements mouse dragging of particles in a topology viewer. Bind the
+    handle(...) class method to the MOUSEBUTTONDOWN pygame event to use it (via
+    a lambda function or equivalent)
+                    
+    Keyword Arguments:
+    - event  -- pygame event object cuasing this
+    - app    -- PyGameApp component this is happening in
+    """
 
     def detect(self, pos, button):
+        """detect( (x,y), button) -> (x,y) of particle or False if mouse (x,y) not over a particle"""
+        
         # find particles under the mouse pos
         pos = int(pos[0] + self.app.left), int(pos[1] + self.app.top)
         inRange = self.app.physics.withinRadius( pos, self.app.biggestRadius )
         inRange = filter(lambda (p, rsquared) : p.radius*p.radius >= rsquared, inRange)
         
-#        # deselect any particle already selected
-#        if self.app.selectedParticle != None:
-#            self.app.selectedParticle.deselect()
-            
         if len(inRange) > 0:
             # of those in range, find one whose centre is nearest to the mouse pos
             best = -1
@@ -51,25 +89,28 @@ class ParticleDragger(DragHandler):
              
             # select this particle
             self.app.selectParticle(self.particle)
-#            if self.app.selectedParticle != self.particle:
-#                self.app.send( ("SELECT","NODE", self.particle.ID), "outbox")
-#            self.app.selectedParticle = self.particle
-#            self.particle.select()
 
             # return the drag start coordinates             
             return self.particle.getLoc()
         else:
             self.app.selectParticle(None)
-#            if self.app.selectedParticle != None:
-#                self.app.send( ("SELECT", None), "outbox")
-#            self.app.selectedParticle = None
             return False
 
     def drag(self,newx,newy):
+        """\
+        Handler for the duration of the dragging operation.
+        
+        Updates the particle position as it is dragged.
+        """
         self.particle.pos = (newx,newy)
         self.app.physics.updateLoc(self.particle)
 
     def release(self,newx, newy):
+        """\
+        Handler for the end of the dragging operation
+        
+        Updates the particle position before releasing it.
+        """
         self.drag(newx, newy)
         self.particle.unFreeze()                
 

@@ -20,8 +20,42 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# Simple topography viewer server - takes textual commands from a single socket
-# and renders the appropriate graph
+    """Generic Topology Viewer Component
+    
+       Displays a topology in a pygame application. It can be interacted
+       with by dragging nodes with the mouse.
+    
+       Receives command tuples on its inbox. See handleCommunication()
+       for command syntax.
+
+       Output from outbox
+       ("ERROR", errorstring) - diagnostic and error messages
+       ("TOPOLOGY", topology) - current topology, in response to ("GET","ALL")
+       
+       
+       See keyDownHandler() for keyboard controls.
+        Commands accepted are:
+          [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type> ]
+               Add a node
+               nodeFactory( (x,y) ) should return a particle
+               posSpec is a string describing initial x,y (see _generateXY)
+      
+          [ "DEL", "NODE", <id> ]
+               Remove a node (also removes all links to and from it)
+        
+          [ "ADD", "LINK", <id from>, <id to> ]
+               Add a link, directional from fromID to toID
+           
+          [ "DEL", "LINK", <id from>, <id to> ]
+               Remove a link, directional from fromID to toID
+               
+          [ "DEL", "ALL" ]
+               Clears all nodes and links
+
+          [ "GET", "ALL" ]
+               Outputs the current topology as a list of commands, just like
+               those used to build it. The list begins with a 'DEL ALL'.
+    """
 
 import random
 import time
@@ -38,22 +72,20 @@ from ParticleDragger import ParticleDragger
 from RenderingParticle import RenderingParticle
                   
 class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
-    """Generic Topology Viewer Component
     
-       Displays a topology in a pygame application. It can be interacted
-       with by dragging nodes with the mouse.
+    Inboxes = { "inbox"          : "Topology (change) data describing an Axon system",
+                "control"        : "Shutdown signalling",
+                "alphacontrol"   : "Alpha (transparency) of the image (value 0..255)",
+                "events"         : "Place where we recieve events from the outside world",
+                "displaycontrol" : "Replies from PygameDisplay service",
+              }
+              
+    Outboxes = { "signal"        : "NOT USED",
+                 "outbox"        : "NOT USED",
+                 "displaysignal" : "Requests to PygameDisplay service",
+               }
+                                                     
     
-       Receives command tuples on its inbox. See handleCommunication()
-       for command syntax.
-
-       Output from outbox
-       ("ERROR", errorstring) - diagnostic and error messages
-       ("TOPOLOGY", topology) - current topology, in response to ("GET","ALL")
-       
-       
-       See keyDownHandler() for keyboard controls.
-    """
-    Inboxes = ["inbox", "control", "alphacontrol", "events", "displaycontrol"]
     def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
                        caption            = "Topology Viewer", 
@@ -66,6 +98,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                        showGrid           = True,
                        transparency       = None,
                        position           = None):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
 
         super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
@@ -111,6 +144,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
           
 
     def initialiseComponent(self):
+        """Initialises."""
         self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event: ParticleDragger.handle(event,self))
         self.addHandler(pygame.KEYDOWN, self.keyDownHandler)
         self.addHandler(pygame.KEYUP,   self.keyUpHandler)
@@ -126,16 +160,11 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
 
         
     def mainLoop(self):
-        """Main loop.
-           1) Processing incoming commands.
-           2) Runs the physics simulation
-           3) Draws the white graph paper
-           4) Draws particles and any extra 'furniture'
-           
-           If lots of commands are coming in, physics and redrawing is postponed until commands stop or
-           a timeout (1 second) expires - thereby speeding up the processing of changes to the topology
+        """\
+        Main loop.
+        
+        Proceses commands from "inbox" inbox, runs physics simulation, then renders display
         """
-    
         # process incoming messages
         if self.dataReady("inbox"):
             message = self.recv("inbox")
@@ -176,6 +205,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         return 1
         
     def render(self):        
+        """Render elements to self.screen"""
         # rendering is done in multiple passes
         # renderPasses is a dictionary of pass-number -> list of 'render' generators
         # each render generator yields the next pass number on which it wishes to be called
@@ -193,10 +223,6 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                         renderPasses[n].append(r)
                     except KeyError:
                         renderPasses[n] = [r]
-#                    if not renderPasses.has_key(n):
-#                        renderPasses[n] = [r]
-#                    else:
-#                        renderPasses[n].append(r)
                 except StopIteration:
                     pass
         
@@ -211,19 +237,16 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                         renderPasses[n].append(r)
                     except KeyError:
                         renderPasses[n] = [r]
-#                    if not renderPasses.has_key(n):
-#                        renderPasses[n] = [r]
-#                    else:
-#                        renderPasses[n].append(r)
                 except StopIteration:
                     pass
                     
         
 
     def keyDownHandler(self, event):
-        """Handle keyboard presses:
+        """Handle keypresses:
            ESCAPE, Q : quits
            F         : toggles fullscreen mode
+           arrows    : scroll the view
         """
         if event.key==pygame.K_ESCAPE or event.key==pygame.K_q:
             self.quit()
@@ -252,30 +275,16 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
             
     
     def doCommand(self, msg):
-        """Command processor
-        
-        Commands accepted are:
-          [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type> ]
-               Add a node
-               nodeFactory( (x,y) ) should return a particle
-               posSpec is a string describing initial x,y (see _generateXY)
-      
-          [ "DEL", "NODE", <id> ]
-               Remove a node (also removes all links to and from it)
-        
-          [ "ADD", "LINK", <id from>, <id to> ]
-               Add a link, directional from fromID to toID
-           
-          [ "DEL", "LINK", <id from>, <id to> ]
-               Remove a link, directional from fromID to toID
-               
-          [ "DEL", "ALL" ]
-               Clears all nodes and links
-
-          [ "GET", "ALL" ]
-               Outputs the current topology as a list of commands, just like
-               those used to build it. The list begins with a 'DEL ALL'.
+        """\
+        Proceses a topology command tuple:
+            [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type> ] 
+            [ "DEL", "NODE", <id> ]
+            [ "ADD", "LINK", <id from>, <id to> ]
+            [ "DEL", "LINK", <id from>, <id to> ]
+            [ "DEL", "ALL" ]
+            [ "GET", "ALL" ]
         """
+        
         try:            
             if len(msg) >= 2:
                 cmd = msg[0].upper(), msg[1].upper()
@@ -325,8 +334,12 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                                                     
                 
     def _generateXY(self, posSpec):
-        """Takes a string specifying a position specification and returns
-           a tuple (x,y). Raises ValueError if the specification is wrong"""
+        """\
+        generateXY(posSpec) -> (x,y) or raises ValueError
+        
+        posSpec == "randompos" or "auto" -> random (x,y) within the surface (specified border distance in from the edege)
+        posSpec == "(XXX,YYY)" -> specified x,y (positive or negative integers)
+        """
         posSpec = posSpec.lower()
         if posSpec == "randompos" or posSpec == "auto" :
             x = self.left + random.randrange(self.border,self.screensize[0]-self.border,1)
@@ -345,7 +358,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
 
         
     def addParticle(self, *particles):
-        """Adds particles to the system"""
+        """Add particles to the system"""
         for p in particles:
             if p.radius > self.biggestRadius:
                 self.biggestRadius = p.radius
@@ -353,8 +366,10 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.physics.add( *particles )
         
     def removeParticle(self, *ids):
-        """Removes particles from the system by ID.
-           Also breaks bonds to/from that particle.
+        """\
+        Remove particle(s) specified by their ids.
+
+        Also breaks any bonds to/from that particle.
         """
         for id in ids:
             self.physics.particleDict[id].breakAllBonds()
@@ -371,7 +386,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
 
     def getTopology(self):
-        """Returns the current topology, as a list of commands to build it"""
+        """getTopology() -> list of command tuples that would build the current topology"""
         topology = []
         
         # first, enumerate the particles
@@ -392,16 +407,19 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         
     
     def quit(self, event=None):
+        """Cause termination."""
         super(TopologyViewerComponent,self).quit(event)
-        raise "QUITTING"
+        raise "QUITTING"           ### XXX VOMIT : need better shutdown than this!
         
     def scroll( self, (dx, dy) ):
+        """Scroll the contents being displayed on the surface by (dx,dy) left and up."""
         self.left += dx
         self.top += dy
         for e in self.graphicalFurniture + self.physics.particles:
             e.setOffset( (self.left, self.top) )
 
     def selectParticle(self, particle):
+        """Select the specified particle."""
         if self.selected != particle:
             
             if self.selected != None:
