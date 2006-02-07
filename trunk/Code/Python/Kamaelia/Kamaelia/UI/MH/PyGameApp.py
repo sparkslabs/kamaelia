@@ -95,6 +95,13 @@ class PyGameApp(_Axon.Component.component):
     an internal pygame event dispatch mechanism.
 
     Subclass to implement your own pygame "app".
+    
+    Keyword arguments:
+    - screensize    -- (width,height) of the display area (default = (800,600))
+    - caption       -- Caption for the pygame window (default = "Topology Viewer")
+    - fullscreen    -- True to start up in fullscreen mode (default = False)
+    - transparency  -- None, or (r,g,b) colour to make transparent
+    - position      -- None, or (left,top) position for surface within pygame window
     """
     
     Inboxes  = { "inbox"          : "NOT USED",
