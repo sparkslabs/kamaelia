@@ -20,42 +20,232 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-    """Generic Topology Viewer Component
-    
-       Displays a topology in a pygame application. It can be interacted
-       with by dragging nodes with the mouse.
-    
-       Receives command tuples on its inbox. See handleCommunication()
-       for command syntax.
+"""\
+=======================
+Generic Topology Viewer
+=======================
 
-       Output from outbox
-       ("ERROR", errorstring) - diagnostic and error messages
-       ("TOPOLOGY", topology) - current topology, in response to ("GET","ALL")
-       
-       
-       See keyDownHandler() for keyboard controls.
-        Commands accepted are:
-          [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type> ]
-               Add a node
-               nodeFactory( (x,y) ) should return a particle
-               posSpec is a string describing initial x,y (see _generateXY)
+Pygame based display of graph topologies. A simple physics model assists with
+visual layout. Rendering and physics laws can be customised for specific
+applications.
+
+
+
+Example Usage
+-------------
+A simple console driven topology viewer::
+    pipeline( ConsoleReader(),
+              lines_to_tokenlists(),
+              TopologyViewerComponent(),
+            ).run()
+
+Then at runtime try typing these commands to change the topology in real time::
+    >>> DEL ALL
+    >>> ADD NODE 1 "1st node" randompos -
+    >>> ADD NODE 2 "2nd node" randompos -
+    >>> ADD NODE 3 "3rd node" randompos -
+    >>> ADD LINK 1 2
+    >>> ADD LINK 3 2
+    >>> DEL LINK 1 2
+    >>> DEL NODE 1
+
+    
+   
+
+User Interface
+--------------
+
+TopologyViewerComponent manifests as a pygame display surface. As it is sent
+topology information nodes and links between them will appear.
+
+You can click a node with the mouse to select it. Depending on the application,
+this may display additional data or, if integrated into another app,  have some
+other effect.
+
+Click and drag with the left mouse button to move nodes around. Note that a
+simple physics model or repulsion and attraction forces is always active. This
+causes nodes to move around to help make it visually clearer, however you may
+still need to drag nodes about to tidy it up.
+
+The surface on which the nodes appear is notionally infinite. Scroll around
+using the arrow keys.
+
+Press the 'f' key to toggle between windowed and fullscreen modes.
+
+
+
+
+How does it work?
+-----------------
+
+TopologyViewerComponent is a specialisation of the Kamaeila.UI.MH.PyGameApp
+component. See documentation for that component to understand how it obtains
+and handles events for a pygame display surface.
+
+A topology (graph) of nodes and links between them is rendered to the surface.
+
+You can specify an initial topology by providing a list of instantiated
+particles and another list of pairs of those particles to show how they are 
+linked.
+
+TopologyViewerComponent reponds to commands arriving at its "inbox" inbox
+instructing it on how to change the topology. A command is a list/tuple.
+
+Commands recognised are:
+
+    [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
+        Add a node, using:
+        - id            -- a unique ID used to refer to the particle in other topology commands
+        - name          -- string name label for the particle
+        - posSpec       -- string describing initial x,y (see _generateXY)
+        - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
       
-          [ "DEL", "NODE", <id> ]
-               Remove a node (also removes all links to and from it)
+    [ "DEL", "NODE", <id> ]
+        Remove a node (also removes all links to and from it)
         
-          [ "ADD", "LINK", <id from>, <id to> ]
-               Add a link, directional from fromID to toID
+    [ "ADD", "LINK", <id from>, <id to> ]
+        Add a link, directional from fromID to toID
            
-          [ "DEL", "LINK", <id from>, <id to> ]
-               Remove a link, directional from fromID to toID
+    [ "DEL", "LINK", <id from>, <id to> ]
+        Remove a link, directional from fromID to toID
                
-          [ "DEL", "ALL" ]
-               Clears all nodes and links
+    [ "DEL", "ALL" ]
+        Clears all nodes and links
 
-          [ "GET", "ALL" ]
-               Outputs the current topology as a list of commands, just like
-               those used to build it. The list begins with a 'DEL ALL'.
-    """
+    [ "GET", "ALL" ]
+        Outputs the current topology as a list of commands, just like
+        those used to build it. The list begins with a 'DEL ALL'.
+
+Commands are processed immediately, in the order in which they arrive. You
+therefore cannot refer to a node or linkage that has not yet been created, or
+that has already been destroyed.
+
+If a stream of commands arrives in quick succession, rendering and physics will
+be temporarily stopped, so commands can be processed more quickly. This is
+necessary because when there is a large number of particles, physics and
+rendering starts to take a long time, and will therefore bottleneck the
+handling of commands.
+
+However, there is a 1 second timeout, so at least one update of the visual
+output is guaranteed per second.
+
+TopologyViewerComponent sends any output to its "outbox" outbox in the same
+list/tuple format as used for commands sent to its "inbox" inbox. The following
+may be output:
+
+    [ "SELECT", "NODE", <id> ]
+        Notification that a given node has been selected
+        
+    [ "ERROR", <error string> ]
+        Notification of errors - eg. unrecognised commands arriving at the
+        "inbox" inbox
+        
+    [ "TOPOLOGY", <topology command list> ]
+        List of commands needed to build the topology, as it currently stands.
+        The list will start with a ("DEL","ALL") command.
+        This is sent in response to receiving a ("GET","ALL") command.
+
+If a shutdownMicroprocess or producerFinished message is received on this
+component's "control" inbox this it will pass it on out of its "signal" outbox
+and immediately terminate.
+
+NOTE: Termination is currently rather cludgy - it raises an exception which
+will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
+ as it will be changed to provide cleaner termination at some point.
+
+
+Customising the topology viewer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can customise:
+- the 'types' of particles (nodes)
+- visual appearance of particles (nodes) and the links between them;
+- the physics laws used to assist with layout
+- extra visual furniture to be rendered
+
+For example, see Kamaelia.Visualisation.Axon.AxonVisualiserServer. This
+component uses two types of particle - to represent components and
+inboxes/outboxes. Each has a different visual appearance, and the laws acting
+between them differ depending on which particle types are involved in the
+interaction.
+
+Use the particleTypes argument of the initialiser to specify classes that
+should be instantiated to render each type of particle (nodes). particleTypes 
+should be a dictionary mapping names for particle types to the respective 
+classes, for example::
+    { "major" : BigParticle,  "minor"  : SmallParticle  }
+
+See below for information on how to write your own particle classes.
+
+Layout of the nodes on the surface is assisted by a physics model, provided
+by an instance of the Kamaelia.Physics.Simple.ParticleSystem class.
+
+Customise the laws used for each particle type by providing a
+Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
+
+
+Writing your own particle class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+should inherit from Kamaelia.Physics.Simple.Particle and implement the following
+methods (for rendering purposes):
+
+    setOffset( (left,top) )
+        Notification that the surface has been scrolled by the user. Particles 
+        should adjust the coordinates at which they render. For example, a
+        particle at (x, y) should be rendered at (x-left, y-top). You can
+        assume, until setOffset(...) is called, that (left,top) is (0,0).
+    
+    select()
+        Called to inform the particle that it is selected (has been clicked on)
+    
+    deselect()
+        Called to inform the particle that is has been deselected.
+    
+    render(surface) -> generator
+        Called to get a generator for multi-pass rendering of the particle (see
+        below)
+    
+The coordinates of the particle are updated automatically both due to mouse 
+dragging and due to the physics model. See Kamaelia.Physics.Simple.Particle for
+more information.
+
+The render(...) method should return a generator that will render the particle
+itself and its links/bonds to other particles.
+
+Rendering by the TopologyViewerComponent is multi-pass. This is done so that
+irrespective of the order in which particles are chosen to be rendered,
+things that need to be rendered before (underneath) other things can be done
+consistently.
+
+The generator should yield the number of the rendering pass it wishes to be
+next called on. Each time it is subsequently called, it should perform the
+rendering required for that pass. It then yields the number of the next required
+pass or completes if there is no more rendering required. Passes go in
+ascending numerical order.
+
+For example, Kamaelia.Visualisation.PhysicsGraph.RenderingParticle renders in
+two passes::
+    def render(self, surface):
+        yield 1
+        # render lines for bonds *from* this particle *to* others
+        yield 2
+        # render a blob and the name label for the particle
+
+...in this case it ensures that the blobs for the particles always appear
+on top of the lines representing the bonds between them.
+
+Note that rendering passes must be coded in ascending order, but the numbering
+can otherwise be arbitrary: The first pass can be any value you like; subsequent
+passes can also be any value, provided it is higher.
+
+When writing rendering code for particle(s), make sure they all agree on who
+should render what. It is inefficient if all bonds are being rendered twice.
+For example, RenderingParticle only renders links *from* that particle *to*
+another, but not in another direction.
+
+"""
+
 
 import random
 import time
@@ -72,6 +262,27 @@ from ParticleDragger import ParticleDragger
 from RenderingParticle import RenderingParticle
                   
 class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
+    """\
+    TopologyViewerComponent(...) -> new TopologyViewerComponent component.
+    
+    A component that takes incoming topology (change) data and displays it live
+    using pygame. A simple physics model assists with visual layout. Particle
+    types, appearance and physics interactions can be customised.
+    
+    Keyword arguments (in order):
+    - screensize          -- (width,height) of the display area (default = (800,600))
+    - fullscreen          -- True to start up in fullscreen mode (default = False)
+    - caption             -- Caption for the pygame window (default = "Topology Viewer")
+    - particleTypes       -- dict("type" -> klass) mapping types of particle to classes used to render them (default = {"-":RenderingParticle})
+    - initialTopology     -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology  (default=([],[]))
+    - laws                -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100))
+    - simCyclesPerRedraw  -- number of physics sim cycles to run between each redraw (default=1)
+    - border              -- Minimum distance from edge of display area that new particles appear (default=100)
+    - extraDrawing        -- Optional extra object to be rendered (default=None)
+    - showGrid            -- False, or True to show gridlines (default=True)
+    - transparency        -- None, or (r,g,b) colour to make transparent
+    - position            -- None, or (left,top) position for surface within pygame window
+    """
     
     Inboxes = { "inbox"          : "Topology (change) data describing an Axon system",
                 "control"        : "Shutdown signalling",
@@ -81,7 +292,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
               }
               
     Outboxes = { "signal"        : "NOT USED",
-                 "outbox"        : "NOT USED",
+                 "outbox"        : "Notification and topology output",
                  "displaysignal" : "Requests to PygameDisplay service",
                }
                                                      
@@ -145,7 +356,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
 
     def initialiseComponent(self):
         """Initialises."""
-        self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event: ParticleDragger.handle(event,self))
+        self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event,self=self: ParticleDragger.handle(event,self))
         self.addHandler(pygame.KEYDOWN, self.keyDownHandler)
         self.addHandler(pygame.KEYUP,   self.keyUpHandler)
         
