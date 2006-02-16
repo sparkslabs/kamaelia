@@ -29,7 +29,7 @@ from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 import sys ; sys.path.append("../../../../../Sketches/Layout")
 from Kamaelia.Util.Introspector import *
@@ -47,7 +47,7 @@ class SimpleStreamingSystem(_Axon.Component.component):
 
       server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
                            port=clientServerTestPort)
-      client=TCPClient("127.0.0.1",clientServerTestPort, chargen=1)
+      client=TCPClient("127.0.0.1",clientServerTestPort)
       decoder = VorbisDecode()
       player = AOAudioPlaybackAdaptor()
 

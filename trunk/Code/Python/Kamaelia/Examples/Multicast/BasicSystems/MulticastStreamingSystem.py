@@ -12,7 +12,7 @@ from Kamaelia.Util.Chargen import Chargen
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
 from Kamaelia.Util.PipelineComponent import pipeline
 
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 class detuple(component):
    def __init__(self, index):
