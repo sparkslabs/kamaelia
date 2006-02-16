@@ -42,7 +42,7 @@ server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),
                     port=clientServerTestPort).activate()
 
 pipeline(
-   TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
+   TCPClient("127.0.0.1",clientServerTestPort),
    VorbisDecode(),
    AOAudioPlaybackAdaptor() 
 ).run()

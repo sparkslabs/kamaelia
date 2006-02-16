@@ -35,7 +35,7 @@ import random
 clientServerTestPort=random.randint(1500,1599)
 
 _SimpleServer(protocol=_FortuneCookieProtocol, port=clientServerTestPort).activate()
-pipeline(_TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
+pipeline(_TCPClient("127.0.0.1",clientServerTestPort),
           _consoleEchoer()
         ).activate()
 
