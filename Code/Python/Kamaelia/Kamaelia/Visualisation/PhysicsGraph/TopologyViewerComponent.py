@@ -116,6 +116,10 @@ Commands recognised are:
         Outputs the current topology as a list of commands, just like
         those used to build it. The list begins with a 'DEL ALL'.
 
+    [ "UPDATE_NAME", "NODE", <id>, <new name> ]
+        If the node does not already exist, this does NOT cause it to be created.
+
+
 Commands are processed immediately, in the order in which they arrive. You
 therefore cannot refer to a node or linkage that has not yet been created, or
 that has already been destroyed.
@@ -534,6 +538,10 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                     topology = [("DEL","ALL")]
                     topology.extend(self.getTopology())
                     self.send( ("TOPOLOGY", topology), "outbox" )
+                elif cmd == ("UPDATE_NAME", "NODE") and len(msg) == 4:
+                    node_id = msg[2]
+                    new_name = msg[3]
+                    self.updateParticleLabel(node_id, new_name)
                 else:
                     raise "Command Error"
             else:
@@ -543,7 +551,18 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
             errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
             self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
                                                     
-                
+    def updateParticleLabel(self, node_id, new_name):
+        """\
+        updateParticleLabel(node_id, new_name) -> updates the given nodes name & visual label if it exists
+        
+        node_id - an id for an already existing node
+        new_name - a string (may include spaces) defining the new node name
+        """
+        for p in self.physics.particles:
+            if p.ID == node_id:
+                p.set_label(new_name)
+                return
+
     def _generateXY(self, posSpec):
         """\
         generateXY(posSpec) -> (x,y) or raises ValueError

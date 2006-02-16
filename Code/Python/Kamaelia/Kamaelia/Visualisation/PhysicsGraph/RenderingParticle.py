@@ -93,16 +93,23 @@ class RenderingParticle(BaseParticle):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(RenderingParticle,self).__init__(position=position, ID = ID )
         self.radius = 20
-        self.labelText = name
+        self.labelText = None
+        self.label = None
+        pygame.font.init()
+        self.font = pygame.font.Font(None, 24)
+
+        self.set_label(name)
         self.name = name
         
-        pygame.font.init()
-        font = pygame.font.Font(None, 24)
-        self.label = font.render(self.labelText, False, (0,0,0))
         self.left = 0
         self.top  = 0
         self.selected = False
 
+    def set_label(self, labelText):
+        self.labelText = labelText
+        self.label = self.font.render(self.labelText, False, (0,0,0))
+        self.name = labelText
+    
        
     def render(self, surface):
         """\
