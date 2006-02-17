@@ -95,7 +95,7 @@ Commands recognised are:
 
     [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
         Add a node, using:
-        - id            -- a unique ID used to refer to the particle in other topology commands
+        - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
         - name          -- string name label for the particle
         - posSpec       -- string describing initial x,y (see _generateXY)
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
@@ -138,7 +138,10 @@ list/tuple format as used for commands sent to its "inbox" inbox. The following
 may be output:
 
     [ "SELECT", "NODE", <id> ]
-        Notification that a given node has been selected
+        Notification that a given node has been selected.
+    
+    [ "SELECT", "NODE", None ]
+       Notificaion that *no node* is now selected. 
         
     [ "ERROR", <error string> ]
         Notification of errors - eg. unrecognised commands arriving at the
@@ -249,7 +252,6 @@ For example, RenderingParticle only renders links *from* that particle *to*
 another, but not in another direction.
 
 """
-
 
 import random
 import time
