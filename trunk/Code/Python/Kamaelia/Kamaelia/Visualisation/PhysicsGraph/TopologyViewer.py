@@ -546,7 +546,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                     node_id = msg[2]
                     new_name = msg[3]
                     self.updateParticleLabel(node_id, new_name)
-                elif cmd == ("GET_NAME", "NODE") an len(msg) == 3:
+                elif cmd == ("GET_NAME", "NODE") and len(msg) == 3:
                     node_id = msg[2]
                     name = self.getParticleLabel(node_id)
                     self.send( ("UPDATE_NAME", "NODE", node_id, name), "outbox" )
@@ -571,7 +571,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                 p.set_label(new_name)
                 return
 
-    def getParticleLabel(self, node_id)
+    def getParticleLabel(self, node_id):
         """\
         getParticleLabel(node_id) -> particle's name
         
