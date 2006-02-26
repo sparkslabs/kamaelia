@@ -119,6 +119,8 @@ Commands recognised are:
     [ "UPDATE_NAME", "NODE", <id>, <new name> ]
         If the node does not already exist, this does NOT cause it to be created.
 
+    [ "GET_NAME", "NODE", <id> ]
+        Returns UPDATE_NAME NODE message for the specified node
 
 Commands are processed immediately, in the order in which they arrive. You
 therefore cannot refer to a node or linkage that has not yet been created, or
@@ -544,6 +546,10 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                     node_id = msg[2]
                     new_name = msg[3]
                     self.updateParticleLabel(node_id, new_name)
+                elif cmd == ("GET_NAME", "NODE") an len(msg) == 3:
+                    node_id = msg[2]
+                    name = self.getParticleLabel(node_id)
+                    self.send( ("UPDATE_NAME", "NODE", node_id, name), "outbox" )
                 else:
                     raise "Command Error"
             else:
@@ -564,6 +570,16 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
             if p.ID == node_id:
                 p.set_label(new_name)
                 return
+
+    def getParticleLabel(self, node_id)
+        """\
+        getParticleLabel(node_id) -> particle's name
+        
+        Returns the name/label of the specified particle.
+        """
+        for p in self.physics.particles:
+            if p.ID == node_id:
+                return p.name
 
     def _generateXY(self, posSpec):
         """\
