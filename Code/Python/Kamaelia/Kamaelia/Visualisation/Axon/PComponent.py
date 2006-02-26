@@ -100,21 +100,24 @@ class PComponent(BaseParticle):
     def __init__(self, ID, position, name):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PComponent,self).__init__(position=position, ID = ID )
-        self.name = name
+        self.set_label(name)
         self.ptype = "component"
         self.shortname = abbreviate(name)
         self.left = 0
         self.top = 0
         self.selected = False
         
+        self.radius = _COMPONENT_RADIUS
+        
+        
+    def set_label(self, newname):
+        self.name = newname
+        self.shortname = abbreviate(newname)
         pygame.font.init()
         font = pygame.font.Font(None, 20)
         self.slabel   = font.render(self.shortname, True, (0,0,0))
         self.slabelxo = - self.slabel.get_width()/2
         self.slabelyo = - self.slabel.get_height()/2
-        
-        self.radius = _COMPONENT_RADIUS
-        
         description = "Component "+self.shortname+" : "+self.name
         self.desclabel = font.render( description, True, (0,0,0), (255,255,255))
         
