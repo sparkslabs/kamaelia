@@ -2,31 +2,28 @@
 <h1>Kamaelia.Util.Comparator.comparator</h1>
 <h2>class comparator(Axon.Component.component)</h2>
 
-<dl class="docutils">
-<dt>This class was originally written to assist in testing by making it easy</dt>
-<dd>to compare an expected data stream with that from the tested system.
-This is the current equality test between the two inputs.  I have however
-realised that this can be generalised by making an overidable compare
-function to do the real work.  Then I realised that it is in fact a general
-system for combining two inputs into a single output!</dd>
-</dl>
+<p>comparator() -&gt; new comparator component.</p>
+<p>Compares items received on &quot;inA&quot; inbox with items received on &quot;inB&quot; inbox.
+For each pair, outputs True if items compare equal, otherwise False.</p>
 <h4>Inboxes</h4>
-<ul><li>   inA : Code uses old style inbox/outbox description - no metadata available
-<li>   inB : Code uses old style inbox/outbox description - no metadata available
-<li>   control : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   control : NOT USED
+<li>   inbox : NOT USED
+<li>   inB : Source 'B' of items to compare
+<li>   inA : Source 'A' of items to compare
 </ul>
 <h4>Outboxes</h4>
-<ul><li>   outbox : Default data out outbox, used in a pipeline much like stdout
-<li>   signal : The default signal based outbox - kinda like stderr, but more for sending singal type signals
+<ul><li>   outbox : Result of comparison
+<li>   signal : NOT USED
 </ul>
 <h2>Methods defined here</h2>
 
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
 <h3>combine(self, valA, valB)</h3>
-<p>Overide this function to change the type of comparison from equality testing.</p>
+<p>Returns result of (valA == valB)</p>
+<p>Reimplement this method to change the type of comparison from equality testing.</p>
 <h3>mainBody(self)</h3>
-<p>Checks for equality on both inA and inB and outputs True or False.</p>
+<p>Main loop body.</p>
 <HR>
 <h2> Feedback </h2>
 <P>Got a problem with the documentation? Something unclear, could

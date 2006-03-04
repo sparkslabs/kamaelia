@@ -2,27 +2,19 @@
 <h1>Kamaelia.Util.Splitter.Plug</h1>
 <h2>class Plug(Axon.Component.component)</h2>
 
-<p>A 'plug' for getting another component to 'plug-into' a splitter.</p>
-<blockquote>
-<p>A splitter is any component with a 'configuration' inbox that will accept
-addSink and removeSink messages.</p>
-<p>This component provides encapsulation for that which you wish to plug in.</p>
-<dl class="docutils">
-<dt>Usage:</dt>
-<dd><p class="first">mysplitter = PlugSplitter(...)
-plug = Plug(mysplitter, Destination)</p>
-<p class="last">mysplitter.activate()
-plug.activate()</p>
-</dd>
-</dl>
-</blockquote>
+<p>Plug(splitter,component) -&gt; new Plug component.</p>
+<p>A component that 'plugs' the specified component into the specified
+splitter as a destination for data.</p>
+<p>Keyword arguments:
+- splitter   -- splitter component to plug into (any component that accepts addsink(...) and removesink(...) messages on a 'configuration' inbox
+- component  -- component to receive data from the splitter</p>
 <h4>Inboxes</h4>
-<ul><li>   control : 
-<li>   inbox : 
+<ul><li>   control : Incoming control data for child component, and shutdown signalling
+<li>   inbox : Incoming data for child component
 </ul>
 <h4>Outboxes</h4>
-<ul><li>   outbox : 
-<li>   signal : 
+<ul><li>   outbox : Outgoing data from child component
+<li>   signal : Outgoing control data from child component, and shutdown signalling
 <li>   splitter_config : Used to communicate with the target splitter
 </ul>
 <h2>Methods defined here</h2>
@@ -30,18 +22,12 @@ plug.activate()</p>
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
 <h3>__init__(self, splitter, component)</h3>
-<dl class="docutils">
-<dt>Initialisation.</dt>
-<dd>splitter = the splitter you want to plug 'component' into
-component = the component to be plugged into 'splitter'</dd>
-</dl>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
 <h3>childrenDone(self)</h3>
-<dl class="docutils">
-<dt>Unplugs any children that have terminated, and returns true if there are no</dt>
-<dd>running child components left (ie. their microproceses have finished)</dd>
-</dl>
+<p>Unplugs any children that have terminated, and returns true if there are no
+running child components left (ie. their microproceses have finished)</p>
 <h3>main(self)</h3>
-
+<p>Main loop.</p>
 <HR>
 <h2> Feedback </h2>
 <P>Got a problem with the documentation? Something unclear, could
