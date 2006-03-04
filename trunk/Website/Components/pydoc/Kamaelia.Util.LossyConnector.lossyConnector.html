@@ -2,20 +2,23 @@
 <h1>Kamaelia.Util.LossyConnector.lossyConnector</h1>
 <h2>class lossyConnector(Axon.Component.component)</h2>
 
-
+<p>lossyConnector() -&gt; new lossyConnector component</p>
+<p>Component that forwards data from inbox to outbox, but discards data if
+destination is full.</p>
 <h4>Inboxes</h4>
-<ul><li>   inbox : Code uses old style inbox/outbox description - no metadata available
-<li>   control : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   control : Shutdown signalling
+<li>   inbox : Data to be passed on
 </ul>
 <h4>Outboxes</h4>
-<ul><li>   outbox : Code uses old style inbox/outbox description - no metadata available
+<ul><li>   outbox : Data received on 'inbox' inbox
+<li>   signal : Shutdown signalling
 </ul>
 <h2>Methods defined here</h2>
 
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
 <h3>mainBody(self)</h3>
-
+<p>Main loop body.</p>
 <HR>
 <h2> Feedback </h2>
 <P>Got a problem with the documentation? Something unclear, could

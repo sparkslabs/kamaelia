@@ -2,7 +2,12 @@
 <h1>Kamaelia.Util.Graphline.Graphline</h1>
 <h2>class Graphline(Axon.Component.component)</h2>
 
-
+<p>Graphline(linkages,**components) -&gt; new Graphline component</p>
+<p>Encapsulates the specified set of components and wires them up with the
+specified linkages.</p>
+<p>Keyword arguments:
+- linkages    -- dictionary mapping (&quot;componentname&quot;,&quot;boxname&quot;) to (&quot;componentname&quot;,&quot;boxname&quot;)
+- components  -- dictionary mapping names to component instances (default is nothing)</p>
 <h4>Inboxes</h4>
 <ul><li>   control : 
 <li>   inbox : 
@@ -16,7 +21,7 @@
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
 <h3>__init__(self, linkages)</h3>
-
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
 <h3>addExternalPostboxes(self)</h3>
 <p>Adds to self.Inboxes and self.Outboxes any postboxes mentioned in self.layout that don't yet exist</p>
 <h3>childrenDone(self)</h3>
@@ -25,7 +30,7 @@ bottom=1] ] ]
 <dd>running child components left (ie. their microproceses have finished)</dd>
 </dl>
 <h3>main(self)</h3>
-
+<p>Main loop.</p>
 <HR>
 <h2> Feedback </h2>
 <P>Got a problem with the documentation? Something unclear, could
