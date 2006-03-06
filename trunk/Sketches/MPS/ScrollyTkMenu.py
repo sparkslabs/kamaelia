@@ -73,6 +73,8 @@ class ScrollyMenu(Frame):
 
 root = Tk()
 x = ScrollyMenu(root, ["one", "two", "three", "four"]*20)
-x.pack()
+x.pack(side=LEFT)
+y = ScrollyMenu(root, ["one", "two", "three", "four"]*20)
+y.pack(side=LEFT)
 
 mainloop()
