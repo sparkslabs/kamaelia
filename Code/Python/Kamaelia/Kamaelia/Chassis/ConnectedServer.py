@@ -215,6 +215,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
                 self.handleClosedCSA(data)
 
+__kamaelia_components__ = ( SimpleServer, )
 
                 
 if __name__ == '__main__':

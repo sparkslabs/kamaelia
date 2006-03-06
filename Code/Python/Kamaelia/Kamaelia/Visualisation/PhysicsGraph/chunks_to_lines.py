@@ -34,7 +34,7 @@ Example usage
 -------------
 A system that connects to a server and receives fragmented text data, but then
 displays it a whole line at a time::
-    pipeline( TCPClient(host=..., port=...),
+	    pipeline( TCPClient(host=..., port=...),
               chunks_to_lines(),
               consoleEcho()
             ).run()
@@ -104,3 +104,5 @@ class chunks_to_lines(component):
           self.send(msg,"signal")
           return True
       return False
+
+__kamaelia_components__  = ( chunks_to_lines, )

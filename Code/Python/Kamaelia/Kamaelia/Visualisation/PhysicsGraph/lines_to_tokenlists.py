@@ -157,4 +157,6 @@ class lines_to_tokenlists(component):
                 self.send(msg,"signal")
                 return True
         return False
+
+__kamaelia_components__  = ( lines_to_tokenlists, )
                                                                      

@@ -8,7 +8,17 @@ import socket
 import Axon
 
 # ---------------------------- # SimplePeer
-class SimplePeer(Axon.Component.component):
+class BasicPeer(Axon.Component.component):
+    def receive_packet(self, sock):
+            try:
+                message = sock.recvfrom(1024)
+            except socket.error, e:
+                pass
+            else:
+                self.send(message,"outbox") # format ( data, addr )
+ 
+
+class SimplePeer(BasicPeer):
     def __init__(self, localaddr="0.0.0.0", localport=0, receiver_addr="0.0.0.0", receiver_port=0):
         super(SimplePeer, self).__init__()
         self.localaddr = localaddr
@@ -22,22 +32,20 @@ class SimplePeer(Axon.Component.component):
         sock.setblocking(0)
 
         while 1:
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 data = self.recv()
-                sock.sendto(data, (self.receiver_addr, self.receiver_port) );
+                for x in xrange(1000):
+                    sent = sock.sendto(data*4000, (self.receiver_addr, self.receiver_port) )
+                    if sent < len(data*4000):
+                        print "ARRRGH"
+                        raise "Woo!"
                 yield 1
 
-            try:
-                message = sock.recvfrom(1024)
-            except socket.error, e:
-                pass
-            else:
-                self.send(message,"outbox") # format ( data, addr )
-
+            self.receive_packet(sock)
             yield 1
 
 # ---------------------------- # TargetedPeer
-class TargettedPeer(Axon.Component.component):
+class TargettedPeer(BasicPeer):
     Inboxes = {
         "inbox" : "Data recieved here is sent to the reciever addr/port",
         "target" : "Data receieved here changes the receiver addr/port data is tuple form: (addr, port)",
@@ -73,20 +81,12 @@ class TargettedPeer(Axon.Component.component):
                 sock.sendto(data, (self.receiver_addr, self.receiver_port) );
                 yield 1
 
-            #
-            # Simple Transform behaviour
-            #
-            try:
-                message = sock.recvfrom(1024)
-            except socket.error, e:
-                pass
-            else:
-                self.send(message,"outbox") # format ( data, addr )
+            self.receive_packet(sock)
             yield 1
 
 
 # ---------------------------- # PostboxPeer
-class PostboxPeer(Axon.Component.component):
+class PostboxPeer(BasicPeer):
     """ A postbox peer recieves messages formed of 3 parts:
             (addr, port, data)
         The postbox peer then takes care of delivery of these UDP messages to the recipient.
@@ -114,18 +114,19 @@ class PostboxPeer(Axon.Component.component):
                 receiver_addr, receiver_port, data = self.recv("inbox")
                 sock.sendto(data, (receiver_addr, receiver_port) );
                 yield 1
-            #
-            # Simple Transform behaviour
-            #
-            try:
-                message = sock.recvfrom(1024)
-            except socket.error, e:
-                pass
-            else:
-                self.send(message,"outbox") # format ( data, addr )
+            self.receive_packet(sock)
             yield 1
 
+__kamaelia_components__  = ( BasicPeer, SimplePeer, TargettedPeer, PostboxPeer, )
+
 if __name__=="__main__":
+    class DevNull(Axon.Component.component):
+        def main(self):
+            while 1:
+                while self.dataReady():
+                    self.recv()
+                yield 1
+
     class ConfigChargen(Axon.Component.component):
        # This should probably be rolled back into Chargen.
        #  Since this is generally useful and a backwards compatible change.
@@ -169,7 +170,8 @@ if __name__=="__main__":
 
         pipeline(
             SimplePeer(localaddr=server_addr, localport=server_port),
-            ConsoleEchoer()
+            DevNull(),
+#            ConsoleEchoer()
         ).run()
 
     def TargettedPeer_tests():
@@ -260,6 +262,6 @@ if __name__=="__main__":
     print "At present, UDP.py only has manually verified test suites."
     print "This does need recifying, but at present, this is what we have!"
 
-#    SimplePeer_tests()
+    SimplePeer_tests()
 #    TargettedPeer_tests()
-    PostboxPeer_tests()
+#    PostboxPeer_tests()

@@ -481,6 +481,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          self.updateDisplay(display)
          yield 1
 
+__kamaelia_components__  = ( PygameDisplay, )
 
 if __name__ == "__main__":
    component = Axon.Component.component

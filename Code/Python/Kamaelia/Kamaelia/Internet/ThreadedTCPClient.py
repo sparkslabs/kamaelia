@@ -201,6 +201,9 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       self.threadtoaxonqueue.put("ThreadStopped")
       #Unhandled exception exit.  Reports via the signal outqueue as it can't print errors here.
 
+__kamaelia_components__  = ( ThreadedTCPClient, )
+
+
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer

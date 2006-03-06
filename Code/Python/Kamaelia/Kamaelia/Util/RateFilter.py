@@ -555,3 +555,5 @@ class OnDemandLimit(component):
                 except IndexError:
                     pass
             yield 1
+
+__kamaelia_components__  = ( MessageRateLimit, ByteRate_RequestControl, VariableByteRate_RequestControl, OnDemandLimit, )

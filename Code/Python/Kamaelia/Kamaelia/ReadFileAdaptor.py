@@ -196,6 +196,9 @@ class ReadFileAdaptor(component):
          self.send(sig, "signal")
          return 0 # Finish looping, we've stopped reading
 
+__kamaelia_components__  = ( ReadFileAdaptor, )
+
+
 if __name__ == '__main__':
    """Debugging/Testing code. Each test/bit is commented out since we're
    'manually' testing. Bit rate 320, chunkrate 40 is 40 chars per sec, each

@@ -214,6 +214,9 @@ class Multiclick(Axon.Component.component):
            self.display.blit( self.image, self.imagePosition )
        except:
            pass
+
+__kamaelia_components__  = ( Multiclick, )
+
                   
 if __name__ == "__main__":
    pass

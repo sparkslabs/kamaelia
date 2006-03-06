@@ -101,6 +101,9 @@ def tests():
    harness.activate()
    scheduler.run.runThreads(slowmo=0)
 
+__kamaelia_components__  = ( Chargen, )
+
+
 if __name__=="__main__":
 
     tests()

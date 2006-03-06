@@ -262,6 +262,9 @@ class Introspector(Axon.Component.component):
         
         return cdict, postboxes, linkages
 
+__kamaelia_components__  = ( Introspector, )
+
+
 if __name__ == '__main__':
 
    i = Introspector()

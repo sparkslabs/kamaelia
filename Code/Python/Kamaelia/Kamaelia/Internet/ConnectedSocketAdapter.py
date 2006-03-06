@@ -233,3 +233,5 @@ class ConnectedSocketAdapter(component):
          if crashAndBurn["uncheckedSocketShutdown"]:
             raise ex
          return 0
+
+__kamaelia_components__  = ( ConnectedSocketAdapter, )

@@ -106,3 +106,5 @@ class fanout(component):
                self.send(data, "signal")
                return
          yield 1
+
+__kamaelia_components__  = ( fanout, )

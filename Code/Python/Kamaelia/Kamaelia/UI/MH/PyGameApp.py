@@ -241,3 +241,5 @@ class PyGameApp(_Axon.Component.component):
     def quit(self, event = None):
         """Call this method/event handler to finish"""
         self.quitting = True
+
+__kamaelia_components__  = ( PyGameApp, )

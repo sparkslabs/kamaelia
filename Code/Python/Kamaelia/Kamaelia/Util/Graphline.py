@@ -215,6 +215,7 @@ class Graphline(component):
 
        return 0==len(self.childComponents())
 
+__kamaelia_components__  = ( Graphline, )
 
 
 if __name__=="__main__":

@@ -323,6 +323,9 @@ def getSelectorService(tracker=None):
       service = (selector,"notify")
       return service, selector
 
+__kamaelia_components__  = ( selectorComponent, )
+
+
 
 if __name__ =="__main__":
    #_tests()

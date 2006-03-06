@@ -98,3 +98,4 @@ class testResultComponent(component):
                 raise StopSystemException("StopSystem request raised from TestResultComponent")
         return 1
     
+__kamaelia_components__  = ( testResultComponent, )

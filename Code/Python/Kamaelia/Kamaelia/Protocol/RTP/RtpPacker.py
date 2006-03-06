@@ -45,6 +45,9 @@ class RtpPacker(component):
       "closeDownComponent"
       pass
 
+__kamaelia_components__  = ( RtpPacker, )
+
+
 if __name__ =="__main__":
    # myComponent("A",3,1)
    # myComponent("B",2).activate()

@@ -161,3 +161,5 @@ class SpriteScheduler(component):
          self.allsprites.draw(self.display_surface)
          pygame.display.flip()
          yield 1
+
+__kamaelia_components__  = ( SpriteScheduler, )

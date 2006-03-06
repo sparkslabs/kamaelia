@@ -133,6 +133,7 @@ class Reorder(component):
                     self.send(newlist[temp], "outbox")
                     newlist.remove(newlist[temp])
 
+__kamaelia_components__  = ( Duplicate, Throwaway, Reorder)
 
 if __name__ == "__main__":
     import time

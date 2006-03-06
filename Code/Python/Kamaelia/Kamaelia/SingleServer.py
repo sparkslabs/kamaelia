@@ -108,6 +108,9 @@ class SingleServer(_Axon.Component.component):
       self.addChildren(newCSA)
       return _Axon.Ipc.newComponent(newCSA)
 
+__kamaelia_components__  = ( SingleServer, echo )
+
+
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
 

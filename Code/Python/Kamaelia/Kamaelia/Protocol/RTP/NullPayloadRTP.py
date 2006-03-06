@@ -239,6 +239,9 @@ class NullPayloadPreFramer(component):
       "No closedown/shutdown code"
       pass
 
+__kamaelia_components__  = ( NullPayloadPreFramer, )
+
+
 if __name__ =="__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor

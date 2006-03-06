@@ -292,3 +292,5 @@ class DiracEncoder(component):
                 self.pause()
 
             yield 1
+
+__kamaelia_components__ = ( DiracDecoder, DiracEncoder )

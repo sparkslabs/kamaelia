@@ -582,3 +582,5 @@ class Plug(Axon.Component.component):
                 self.removeChild(child)   # deregisters linkages for us
 
         return 0==len(self.childComponents())
+
+__kamaelia_components__  = ( Splitter, PlugSplitter, Plug, )

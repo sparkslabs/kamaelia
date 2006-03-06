@@ -129,6 +129,9 @@ def tests():
    harness.activate()
    scheduler.run.runThreads(slowmo=0.1)
 
+__kamaelia_components__  = ( Multicast_receiver, )
+
+
 if __name__=="__main__":
 
     tests()

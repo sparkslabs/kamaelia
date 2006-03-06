@@ -79,6 +79,8 @@ class ToStringComponent(component):
          self.send(str(theData), "outbox")
       return 1
 
+__kamaelia_components__  = ( ToStringComponent, )
+
 
 if __name__ =="__main__":
    myComponent("A",3,1)

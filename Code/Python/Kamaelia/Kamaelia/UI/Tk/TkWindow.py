@@ -223,6 +223,7 @@ class tkInvisibleWindow(TkWindow):
         super(tkInvisibleWindow,self).setupWindow()
         self.window.withdraw()
 
+__kamaelia_components__  = ( TkWindow, tkInvisibleWindow, )
 
 if __name__ == "__main__":
     from Axon.Scheduler import scheduler

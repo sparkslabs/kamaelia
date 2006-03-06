@@ -89,3 +89,5 @@ class lossyConnector(component):
                 self.send(mes,"signal")
                 return 0
         return 1
+
+__kamaelia_components__  = ( lossyConnector, )

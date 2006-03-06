@@ -407,3 +407,5 @@ class DataDeChunker(Axon.Component.component):
                     pass
                 buffer = ""
             yield 1
+
+__kamaelia_components__  = ( Framer, DeFramer, DataChunker, DataDeChunker)

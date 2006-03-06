@@ -116,4 +116,6 @@ class comparator(component):
                 self.send(producerFinished(), "signal")
                 return 0
         return 1
+
+__kamaelia_components__  = ( comparator, )
             

@@ -153,6 +153,8 @@ class VorbisDecode(component):
                self.send(sig, "signal")
                producerDone = True # Necessary given next?
                decoding = False
+
+__kamaelia_components__  = ( AOAudioPlaybackAdaptor, VorbisDecode, )
    
 
 if __name__ =="__main__":

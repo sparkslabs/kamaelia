@@ -96,3 +96,4 @@ class AxonVisualiserServer(_TopologyViewerServer):
                                                    extraDrawing = ExtraWindowFurniture(),
                                                    **dictArgs
                                                  )
+__kamaelia_components__  = ( AxonVisualiserServer, )
