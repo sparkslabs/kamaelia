@@ -283,4 +283,5 @@ class continuousOne(send_one_component):
                pass # Simply being sent this message unpauses us
          yield 1
 
+__kamaelia_components__  = ( bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne, )
 

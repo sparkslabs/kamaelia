@@ -123,3 +123,5 @@ class FilterComponent(component):
         if outmes is None:
             break
         self.send(outmes)
+
+__kamaelia_components__  = ( FilterComponent, )

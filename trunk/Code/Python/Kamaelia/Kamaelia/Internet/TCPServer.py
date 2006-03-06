@@ -217,5 +217,8 @@ class TCPServer(_component):
       self.handleNewConnection() # Data ready means that we have a connection waiting.
       return status("ready")
 
+__kamaelia_components__  = ( TCPServer, )
+
+
 if __name__ == '__main__':
    print "Simple integration test moved out to InternetHandlingTests.py"

@@ -152,5 +152,7 @@ class ConsoleEchoer(component):
             return 0
       return 3
 
+__kamaelia_components__  = ( ConsoleReader, ConsoleEchoer, )
+
 if __name__ =="__main__":
    print "This module has no system test"

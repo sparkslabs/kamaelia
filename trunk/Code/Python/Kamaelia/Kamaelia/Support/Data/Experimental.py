@@ -73,6 +73,10 @@ def onDemandGraphFileParser_Prefab(filename):
         }
     )
 
+__kamaelia_components__ = ( GraphSlideXMLComponent, )
+__kamaelia_prefab__ = ( onDemandGraphFileParser_Prefab, )
+
+
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.ConsoleEcho import consoleEchoer

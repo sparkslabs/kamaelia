@@ -327,6 +327,8 @@ class Ticker(Axon.Component.component):
                   self.display.set_alpha(alpha)   # put alpha back to what it was
        yield 1
 
+__kamaelia_components__  = ( Ticker, )
+
 
 if __name__ == "__main__":
    from Kamaelia.Util.PipelineComponent import pipeline

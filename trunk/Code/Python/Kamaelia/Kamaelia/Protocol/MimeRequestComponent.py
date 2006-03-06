@@ -183,6 +183,9 @@ class MimeRequestComponent(component):
       assert self.debugger.note("MimeRequestComponent.mainBody",5, self.mimeRequest)
       self.send(self.mimeRequest, "outbox")
 
+__kamaelia_components__  = ( MimeRequestComponent, )
+
+
 if __name__ =="__main__":
    class TestHarness(component):
 

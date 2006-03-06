@@ -172,4 +172,5 @@ class KeyEvent(Axon.Component.component):
                       self.send(("UP", event.key), "allkeys")
          yield 1
             
-      
+__kamaelia_components__  = ( KeyEvent, )
+

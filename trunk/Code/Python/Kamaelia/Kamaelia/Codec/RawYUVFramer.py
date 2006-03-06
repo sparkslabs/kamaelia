@@ -148,3 +148,5 @@ class RawYUVFramer(component):
 
             if filled:
                 self.flushFrame()
+
+__kamaelia_components__ = ( RawYUVFramer, )

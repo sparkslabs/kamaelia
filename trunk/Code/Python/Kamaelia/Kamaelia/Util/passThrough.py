@@ -62,6 +62,8 @@ class passThrough(component):
                 
       return forwarded
 
+__kamaelia_components__  = ( passThrough, )
+
       
 if __name__=="__main__":
     from Axon.Component import scheduler

@@ -214,6 +214,9 @@ class Button(Axon.Component.component):
            self.display.blit( self.image, self.imagePosition )
        except:
            pass
+
+__kamaelia_components__  = ( Button, )
+
                   
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer

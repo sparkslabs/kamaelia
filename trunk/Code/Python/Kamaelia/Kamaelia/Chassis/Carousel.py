@@ -216,5 +216,7 @@ class Carousel(component):
         return False
 
 
+__kamaelia_components__ = ( Carousel, )
+
 if __name__ == "__main__":
     pass

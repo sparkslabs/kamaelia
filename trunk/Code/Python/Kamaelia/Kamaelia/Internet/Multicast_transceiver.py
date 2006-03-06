@@ -150,6 +150,9 @@ def tests():
    print "This module is acceptance tested as part of a system."
    print "Please see the test/test_MulticastTransceiverSystem.py script instead"
 
+__kamaelia_components__  = ( Multicast_transceiver, )
+
+
 if __name__=="__main__":
 
     tests()

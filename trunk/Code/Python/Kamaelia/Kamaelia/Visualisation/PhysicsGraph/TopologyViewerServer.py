@@ -120,5 +120,4 @@ class TopologyViewerServer(pipeline):
 
         super(TopologyViewerServer, self).__init__(*pipe)
          
-
-
+__kamaelia_prefab__ = ( TopologyViewerServer, )

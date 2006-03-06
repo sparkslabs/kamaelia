@@ -117,3 +117,5 @@ def JoinChooserToCarousel(chooser, carousel):  # CHASSIS
                          ("CAROUSEL", "signal")      : ("self", "signal")
                      }
     )
+
+__kamaelia_prefab__ = ( JoinChooserToCarousel, )

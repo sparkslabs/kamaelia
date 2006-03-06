@@ -250,8 +250,7 @@ class VideoOverlay(component):
                 
             yield 1
 
-
-
+__kamaelia_components__  = ( VideoOverlay, )
 
             
         

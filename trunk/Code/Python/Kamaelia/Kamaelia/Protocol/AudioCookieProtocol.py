@@ -120,6 +120,8 @@ class AudioCookieProtocol(component):
       """Main body - sits and waits, as ReadFileAdapter is getting on with the work for us"""
       return 1
 
+__kamaelia_components__  = ( AudioCookieProtocol, )
+
 
    
 if __name__ == '__main__':

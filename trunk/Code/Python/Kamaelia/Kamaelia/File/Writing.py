@@ -124,6 +124,7 @@ class SimpleFileWriter(component):
         """Closes the file handle"""
         self.file.close()
 
+__kamaelia_components__  = ( SimpleFileWriter, )
       
 if 0:
     print "Temporarily disabled tests since they rely on code in /Sketches"

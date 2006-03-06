@@ -191,3 +191,5 @@ class BasicSprite(pygame.sprite.Sprite, component):
       """Set paused flag, and signal "pause" """
       self.paused = True
       self.send("togglepause", "signal")
+
+__kamaelia_components__  = ( BasicSprite, )

@@ -95,6 +95,9 @@ class EchoProtocol(component):
                return 0
        return 1
 
+__kamaelia_components__  = ( EchoProtocol, )
+
+
 if __name__ == '__main__':
    from Kamaelia.SimpleServerComponent import SimpleServer
 

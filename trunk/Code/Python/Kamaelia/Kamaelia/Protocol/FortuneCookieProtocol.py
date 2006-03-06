@@ -116,6 +116,7 @@ class FortuneCookieProtocol(component):
       assert self.debugger.note("FortuneCookieProtocol.main", 10, self.name, "Main Loop")
       return 1
 
+__kamaelia_components__  = ( FortuneCookieProtocol, )
 
    
 if __name__ == '__main__':

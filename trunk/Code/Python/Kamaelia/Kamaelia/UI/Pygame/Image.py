@@ -239,6 +239,8 @@ class Image(Axon.Component.component):
        except:
            pass
         
+__kamaelia_components__  = ( Image, )
+
              
 if __name__ == "__main__":
    

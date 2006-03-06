@@ -75,6 +75,9 @@ class HelloServer(component):
 		self.handleInbox()
 		return 1
 
+__kamaelia_components__  = ( HelloServer, )
+
+
 if __name__ == '__main__':
 
    SimpleServer(protocol=HelloServer, port=5222).activate()

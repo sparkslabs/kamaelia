@@ -320,4 +320,6 @@ class ForwardIteratingChooser(Axon.Component.component):
          return True
       except StopIteration:
          return False
+
+__kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
       

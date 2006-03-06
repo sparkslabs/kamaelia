@@ -139,8 +139,7 @@ class pipeline(component):
        return 0==len(self.childComponents())
 
 
-
-
+__kamaelia_components__  = ( pipeline, )
                   
 if __name__=="__main__":
     from Axon.Component import scheduler

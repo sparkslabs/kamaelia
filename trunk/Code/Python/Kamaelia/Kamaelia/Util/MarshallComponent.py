@@ -73,6 +73,7 @@ def BasicMarshallComponent(klass):
                      }
                     )
 
+__kamaelia_prefab__ = ( BasicMarshallComponent, )
 
 #from Axon.Component import component, scheduler
 #

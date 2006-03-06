@@ -269,6 +269,9 @@ def _tests():
    for i in clientGen:
       print i
 
+__kamaelia_components__  = ( TCPClient, )
+
+
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.SimpleServerComponent import SimpleServer

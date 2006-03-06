@@ -679,4 +679,6 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                 self.selected.select()
                 nodeid = self.selected.ID
             self.send( ("SELECT","NODE", nodeid), "outbox" )
+
+__kamaelia_components__  = ( TopologyViewerComponent, )
         
