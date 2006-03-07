@@ -131,6 +131,9 @@ from AxonExceptions import noSpaceInBox
 from Linkage import linkage
 from Ipc import *
 
+
+from Box import nullbox, realbox
+
 # Component - a microprocess with a bunch of input/output queues.
 #
 # It's only communication with the outside world should be through these
@@ -195,14 +198,18 @@ class component(microprocess):
       super(component, self).__init__()
       self.inboxes = dict()
       self.outboxes = dict()
-      # Create the FIFOs associated with the inboxes/outboxes. (dict(string->list))
-      [ self.inboxes.__setitem__(boxname, list()) for boxname in self.Inboxes ]
-      [ self.outboxes.__setitem__(boxname, list()) for boxname in self.Outboxes ]
+### NEW
+      # Create null (empty, no storage) boxes for inboxes/outboxes
+      for boxname in self.Inboxes:
+          self.inboxes[boxname] = nullbox()
+      for boxname in self.Outboxes:
+          self.outboxes[boxname] = nullbox()
+### \NEW
 
       self.children = []
 
       self.postoffice = postman("component :" + self.name)
-      self.postoffice.activate()
+#      self.postoffice.activate()
       self.synchronised = {}
 
    def _synchronisedBox(self, boxtype="sink",boxdirection="outbox",boxname="outbox", maxdepth=1):
@@ -344,9 +351,8 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      result = self.inboxes[boxname][0]
-      del self.inboxes[boxname][0]
-      return result
+      ### NEW
+      return self.inboxes[boxname].pop(0)
 
    def send(self,message, boxname="outbox",force=False):
       """'C.send(message, "boxname")' -
@@ -498,7 +504,24 @@ class component(microprocess):
    def _closeDownMicroprocess(self):
       return shutdownMicroprocess(self.postoffice)
 
-if __name__ == '__main__':
+#
+# NEW
+#
+   def instantiate(self, inbox):
+       if self.inboxes[inbox].__class__ == nullbox:
+          self.inboxes[inbox] = realbox()
+       return self.inboxes[inbox]
+
+   def mergeOutbox(self, outbox, box):
+       if self.outboxes[outbox].__class__ == nullbox:
+           self.outboxes[outbox] = box
+       else:
+           # This was linked somewhere else. Since the data has already been
+           # delivered (at point of send), the logic is identical here.
+           # But being explicit about it!
+           self.outboxes[outbox] = box
+
+if 0: # if __name__ == '__main__':
    def producersConsumersSystemTest():
       class Producer(component):
          Inboxes=[]

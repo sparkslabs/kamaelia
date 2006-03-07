@@ -47,6 +47,7 @@ from Axon import AxonObject
 from util import removeAll
 from idGen import strId, numId,Debug
 from debug import debug
+from Box import proxybox
 
 class linkage(AxonObject):
    """Linkage - Since components can only talk to local interfaces, this defines the linkages
@@ -74,6 +75,24 @@ class linkage(AxonObject):
       self.sink = sink
       self.sourcebox = sourcebox
       self.sinkbox = sinkbox
+      
+      # MS's new logic
+      # unfortunately its broken:
+      #    suppose you already have an src-inbox --> dst-inbox passthrough
+      #    now create a src-outbox --> src-inbox link ...
+      #    currently, this will break the original passthrough link because
+      #    of how the box 'instantiation' occurs
+      
+      if passthrough == 0: # Normal case
+          box = sink.instantiate(sinkbox)
+          source.outboxes[sourcebox] = proxybox(box.append, box.__len__)
+      if passthrough == 1: # Passthrough in
+          box = source.inboxes[sourcebox]
+          sink.inboxes[sinkbox] = box
+          source.inboxes[sourcebox] = proxybox(*(box.box_interface()))
+      if passthrough == 2: # Passthrough out
+          source.outboxes[sourcebox] = proxybox(*(sink.outboxes[sinkbox].box_interface()))
+
       self.showtransit = 0
       self.passthrough = passthrough
       self.pipewidth=pipewidth
@@ -86,8 +105,8 @@ class linkage(AxonObject):
          self.setSynchronous()
       else:
          self.synchronous=False
-      if not (postoffice ==None):
-         postoffice.registerlinkage(self)
+      if not (postoffice ==None):              ###########
+         postoffice.registerlinkage(self)      ########### leaving this in for the moment
       assert Debug("linkage.linkage",1,self)
 
    def setSynchronous(self, pipewidth = None):
