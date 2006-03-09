@@ -144,7 +144,7 @@ class BuilderControlsGUI(TkWindow):
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])
 
-        self.choosebutton = ScrollingMenu(self.window, items,
+        self.choosebutton = ScrollingMenu(self.addframe, items,
                                           command = menuCallback)
         self.choosebutton.grid(row=0, column=0, columnspan=2, sticky=Tkinter.N)
 
