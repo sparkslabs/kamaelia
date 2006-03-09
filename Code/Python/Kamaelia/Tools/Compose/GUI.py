@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 
 from Kamaelia.UI.Tk.TkWindow import TkWindow
+from Kamaelia.Support.Tk.Scrolling import ScrollingMenu
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import Tkinter
@@ -128,12 +129,23 @@ class BuilderControlsGUI(TkWindow):
         super(BuilderControlsGUI, self).__init__()
 
     def setupWindow(self):
+        items = []
+        lookup = {} # This is a bit of a nasty hack really ... :-) XXX VOMIT
         self.window.title("Pipeline Builder")
 
         self.addframe = Tkinter.Frame(self.window, borderwidth=2, relief=Tkinter.GROOVE)
         self.addframe.grid(row=0, column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S, padx=4, pady=4)
         
-        self.choosebutton = Tkinter.Button(self.addframe, text="<<no component>>", command=self.click_chooseComponent )
+        def menuCallback(index, text):
+            self.click_menuChoice(lookup[text])
+
+        print self.classes[0]
+        for theclass in self.classes:
+            lookup[ theclass['module']+"."+theclass['class'] ] = theclass
+            items.append(theclass['module']+"."+theclass['class'])
+
+        self.choosebutton = ScrollingMenu(self.window, items,
+                                          command = menuCallback)
         self.choosebutton.grid(row=0, column=0, columnspan=2, sticky=Tkinter.N)
 
         self.argPanel = None
@@ -222,13 +234,7 @@ class BuilderControlsGUI(TkWindow):
 
 
     def click_chooseComponent(self):
-        self.menu = Tkinter.Menu(self.window, tearoff=0)
-        for theclass in self.classes:
-            self.menu.add_command( label=theclass['module']+"."+theclass['class'],
-                                   command=lambda it=theclass: self.click_menuChoice(it)
-                                 )
-        self.menu.post(self.choosebutton.winfo_rootx(),
-                       self.choosebutton.winfo_rooty() + self.choosebutton.winfo_height())
+        pass
 
     def click_menuChoice(self, theclass):
         if self.argPanel != None:
@@ -238,7 +244,6 @@ class BuilderControlsGUI(TkWindow):
         self.argPanel.update_idletasks()
         self.argCanvas.itemconfigure(self.argCanvasWID, window=self.argPanel)
         self.argCanvas['scrollregion'] = self.argCanvas.bbox("all")
-        self.choosebutton['text'] = theclass['module']+"."+theclass['class']
 
 
             
