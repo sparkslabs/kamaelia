@@ -47,6 +47,8 @@ setup(name = "Kamaelia",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.PhysicsGraph",
                   "Kamaelia.Codec",
+                  "Kamaelia.Support",
+                  "Kamaelia.Support.Tk",
                   "Kamaelia.Sketch", # Empty on RELEASE branch
                   ""],
       scripts = ['Tools/KamaeliaPresent.py'],
