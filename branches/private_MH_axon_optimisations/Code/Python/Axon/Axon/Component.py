@@ -509,7 +509,7 @@ class component(microprocess):
 #
    def instantiate(self, inbox):
        if self.inboxes[inbox].__class__ == nullbox:
-          self.inboxes[inbox] = realbox()
+          self.inboxes[inbox] = realbox(self)
        return self.inboxes[inbox]
 
    def mergeOutbox(self, outbox, box):

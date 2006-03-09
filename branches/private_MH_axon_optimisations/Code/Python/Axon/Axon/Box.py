@@ -10,6 +10,12 @@ class nullbox(object):
         return self.append, self.__len__
 
 class realbox(list):
+    def __init__(self, owner):
+        super(realbox,self).__init__()
+        self.owner = owner
+    def append(self,object):
+        self.owner._unpause()
+        return super(realbox,self).append(object)
     def box_interface(self):
         return self.append, self.__len__
 
