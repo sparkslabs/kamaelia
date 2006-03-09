@@ -23,21 +23,12 @@
 # simple kamaelia pipeline builder GUI
 # run this program
 
-COMPONENTS = {
-    "Kamaelia.Util.Introspector"    : ["Introspector"],
-    "Kamaelia.Internet.TCPClient"   : ["TCPClient"],
-    "Kamaelia.SingleServer"         : ["SingleServer"],
-    "Kamaelia.ReadFileAdaptor"      : ["ReadFileAdaptor"],
-    "Kamaelia.Util.ConsoleEcho"     : ["consoleEchoer"],
-    "Kamaelia.Util.Chooser"         : ["Chooser"],
-    "Kamaelia.Internet.Multicast_sender" : ["Multicast_sender"],
-    "Kamaelia.Internet.Multicast_receiver" : ["Multicast_receiver"],
-    "Kamaelia.Internet.Simulate.BrokenNetwork" : ["Duplicate","Throwaway","Reorder"],
-    "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ],
-    "Kamaelia.Codec.Dirac" : [ "DiracDecoder" ],
-    "Kamaelia.Util.RateFilter" : [ "MessageRateLimit" ],
-    "Kamaelia.UI.Pygame.VideoOverlay" : [ "VideoOverlay"],
-    }
+import Kamaelia.Data.Repository
+
+C = Kamaelia.Data.Repository.GetAllKamaeliaComponents()
+COMPONENTS = {}
+for key in C.keys():
+    COMPONENTS[".".join(key)] = C[key]
 
 import inspect
     
