@@ -49,22 +49,23 @@ class ScrollingList:
 class ScrollingMenu(Frame):
     def __init__(self, parent,
                        items,
-                       callback = _defaultCallback,
+                       command = _defaultCallback,
                        width=0, 
                        minwidth = 10,
                        maxwidth=1000):
         Frame.__init__ ( self, parent, relief=RAISED, borderwidth=2 )
-        self.callback = callback
+        self.callback = command
         self.SelectedItem = 0
         self.SelectedItemText = items[0]
         if width is 0:
-            w = 0
+            width = 0
             for item in items:
-                w = max(len(item), w)
-            if width <minwidth:
+                width = max(len(item), width)
+            if width < minwidth:
                 width = minwidth
             if width > maxwidth:
                 width = maxwidth
+
         self.button = Button(self, text=self.SelectedItemText, width=width)
         self.button.pack(side=LEFT)
         self.LB_Container = Toplevel()
