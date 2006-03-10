@@ -26,5 +26,4 @@
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
 
-# DEFAULT $CVSROOT/CVSROOT/syncmail --subject-prefix=[KAMAELIA-CVS] --reply-to=kamaelia-list@lists.sourceforge.net --fromhost=kamaelia.sourceforge.net -u %{sVv} kamaelia-commits@lists.sourceforge.net
-DEFAULT $CVSROOT/CVSROOT/syncmail -u %{sVv} kamaelia-commits@lists.sourceforge.net
+DEFAULT $CVSROOT/CVSROOT/syncmail --subject-prefix=[KAMAELIA-CVS] --reply-to=kamaelia-list@lists.sourceforge.net -u %{sVv} kamaelia-commits@lists.sourceforge.net
