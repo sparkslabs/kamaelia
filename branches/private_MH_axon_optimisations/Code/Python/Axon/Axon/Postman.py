@@ -153,6 +153,7 @@ class postman(microprocess):
             if self.linkages[num] is thelinkage:
                if self.debugger.areDebugging("postman.deregisterlinkage", 5):
                   self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", thelinkage)
+               self.linkages[num].unlink()
                del self.linkages[num]
       while (i < num):
          if ((self.linkages[i].source is thecomponent) or
@@ -160,6 +161,7 @@ class postman(microprocess):
             num = num -1 # We remove an item from the list, so num shrinks by 1
             if self.debugger.areDebugging("postman.deregisterlinkage", 5):
                self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", self.linkages[i])
+               self.linkages[num].unlink()
             del self.linkages[i]
          else:
             i = i +1

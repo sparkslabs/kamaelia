@@ -47,7 +47,7 @@ from Axon import AxonObject
 from util import removeAll
 from idGen import strId, numId,Debug
 from debug import debug
-from Box import proxybox
+from Box import proxybox, realbox, nullbox
 
 class linkage(AxonObject):
    """Linkage - Since components can only talk to local interfaces, this defines the linkages
@@ -78,20 +78,22 @@ class linkage(AxonObject):
       
       # MS's new logic
       # unfortunately its broken:
-      #    suppose you already have an src-inbox --> dst-inbox passthrough
+      #  * suppose you already have an src-inbox --> dst-inbox passthrough
       #    now create a src-outbox --> src-inbox link ...
       #    currently, this will break the original passthrough link because
       #    of how the box 'instantiation' occurs
+      #  * also if a.outbox --> b.outbox exists, then b.outbox --> c.inbox is
+      #    created, a.outbox will no longer point at the right thing
       
       if passthrough == 0: # Normal case
           box = sink.instantiate(sinkbox)
-          source.outboxes[sourcebox] = proxybox(box.append, box.__len__)
+          source.outboxes[sourcebox] = proxybox(box)
       if passthrough == 1: # Passthrough in
           box = source.inboxes[sourcebox]
           sink.inboxes[sinkbox] = box
-          source.inboxes[sourcebox] = proxybox(*(box.box_interface()))
+          source.inboxes[sourcebox] = proxybox(box)
       if passthrough == 2: # Passthrough out
-          source.outboxes[sourcebox] = proxybox(*(sink.outboxes[sinkbox].box_interface()))
+          source.outboxes[sourcebox] = proxybox(sink.outboxes[sinkbox])
 
       self.showtransit = 0
       self.passthrough = passthrough
@@ -108,6 +110,17 @@ class linkage(AxonObject):
       if not (postoffice ==None):              ###########
          postoffice.registerlinkage(self)      ########### leaving this in for the moment
       assert Debug("linkage.linkage",1,self)
+      
+   def unlink(self):
+       # now linkages exist also as the direct references between inboxes/outboxes,
+       # we need to rejig them when a linkage is deleted
+       if self.passthrough == 1:  # Passthrough in
+           newbox = realbox(self.source)
+           self.sink.inboxes[self.sinkbox].retarget(newbox)
+           self.source.inboxes[self.sourcebox] = newbox
+       else:
+           raise
+           pass # deal with this later
 
    def setSynchronous(self, pipewidth = None):
       self.synchronous=True

@@ -22,6 +22,7 @@
 
 from Component import component
 import idGen
+from Box import nullbox
 
 class AdaptiveCommsComponent(component):
    #
@@ -59,7 +60,7 @@ class AdaptiveCommsComponent(component):
    def addInbox(self,*args):
       "Adds a custom inbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the inbox added."
       name = self._newInboxName(*args)
-      self.inboxes[name]=[]
+      self.inboxes[name]=nullbox()
       return name
 
    def deleteInbox(self,name):
@@ -69,7 +70,7 @@ class AdaptiveCommsComponent(component):
    def addOutbox(self,*args):
       "Adds a custom outbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the outbox added."
       name = self._newOutboxName(*args)
-      self.outboxes[name]=[]
+      self.outboxes[name]=nullbox()
       return name
 
    def deleteOutbox(self,name):
