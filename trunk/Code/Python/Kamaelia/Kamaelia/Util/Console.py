@@ -77,13 +77,14 @@ from Axon.ThreadedComponent import threadedcomponent
 class ConsoleReader(threadedcomponent):
    """\
    ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
-
+   
    Component that provides a console for typing in stuff. Each line is output
    from the "outbox" outbox one at a time.
    
    Keyword arguments:
    - prompt  -- Command prompt (default=">>> ")
-   - eol     -- End of line character(s) to put on end of every line outputted (default="\n")
+   - eol     -- End of line character(s) to put on end of every line outputted (default is newline")
+   
    """
    
    Inboxes  = { "inbox"   : "NOT USED",
