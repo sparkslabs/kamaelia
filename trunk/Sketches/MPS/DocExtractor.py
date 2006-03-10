@@ -9,6 +9,7 @@ from docutils import core
 import Kamaelia.Data.Repository
 
 C = Kamaelia.Data.Repository.GetAllKamaeliaComponents()
+CN = Kamaelia.Data.Repository.GetAllKamaeliaComponentsNested()
 COMPONENTS = {}
 for key in C.keys():
     COMPONENTS[".".join(key)] = C[key]
@@ -182,24 +183,58 @@ class docFormatter(object):
     def postamble(self): return self.renderer.stop()
 
 formatter = docFormatter(htmlRender)
-#formatter = docFormatter(plainRender)
 
 debug = False
 if debug:
   COMPONENTS = {
     "Kamaelia.ReadFileAdaptor" : ("ReadFileAdaptor",)
 }
-for MODULE in COMPONENTS:
-    module = __import__(MODULE, [], [], COMPONENTS[MODULE])
-    for COMPONENT in COMPONENTS[MODULE]:
-        print
-        print "Processing: "+MODULE+"."+COMPONENT+" ..."
-        print "*" * len("Processing: "+MODULE+"."+COMPONENT+" ...")
-        F = open(docdir+"/"+MODULE+"."+COMPONENT+".html","w")
-        X = getattr(module, COMPONENT)
-        F.write(formatter.preamble())
-        F.write("<h1>"+ MODULE+"."+COMPONENT+"</h1>\n")
-        F.write(formatter.formatComponent(X))
-        F.write(formatter.postamble())
-        F.close()
+def generateDocumentationFiles():
+    for MODULE in COMPONENTS:
+        module = __import__(MODULE, [], [], COMPONENTS[MODULE])
+        for COMPONENT in COMPONENTS[MODULE]:
+            print
+            print "Processing: "+MODULE+"."+COMPONENT+" ..."
+            print "*" * len("Processing: "+MODULE+"."+COMPONENT+" ...")
+            F = open(docdir+"/"+MODULE+"."+COMPONENT+".html","w")
+            X = getattr(module, COMPONENT)
+            F.write(formatter.preamble())
+            F.write("<h1>"+ MODULE+"."+COMPONENT+"</h1>\n")
+            F.write(formatter.formatComponent(X))
+            F.write(formatter.postamble())
+            F.close()
 
+KamaeliaDocs = CN["Kamaelia"]
+
+def formatFile(File,KamaeliaDocs):
+    if len(KamaeliaDocs[File]) != 1 or File == "Experimental":
+        return File + "("+ ",".join(KamaeliaDocs[File]) + ")"
+    else:
+        return KamaeliaDocs[File][0]
+
+def showSection(KamaeliaDocs,indent=""):
+    sections = []
+    thissection = []
+    for K in KamaeliaDocs.keys():
+        try:
+            KamaeliaDocs[K].keys()
+            sections.append(K)
+        except AttributeError:
+            thissection.append(K)
+
+    sections.sort()
+    for section in sections:
+        print indent+"SECTION", section
+        showSection(KamaeliaDocs[section],indent+"   ")
+        print indent + "ENDSECTION"
+
+    if thissection != []:
+        if sections != []:
+           print indent+"Other components :"
+
+        print indent+"   ",
+        for File in thissection:
+            print formatFile(File,KamaeliaDocs),
+        print
+
+showSection(KamaeliaDocs)
