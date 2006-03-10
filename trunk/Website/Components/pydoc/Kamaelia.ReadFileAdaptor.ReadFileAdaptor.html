@@ -2,57 +2,51 @@
 <h1>Kamaelia.ReadFileAdaptor.ReadFileAdaptor</h1>
 <h2>class ReadFileAdaptor(Axon.Component.component)</h2>
 
-<dl class="docutils">
-<dt>An instance of this class is a read file adaptor component. It's</dt>
-<dd><p class="first">constructor arguments are all optional. If no arguments are provided,
+<p>An instance of this class is a read file adaptor component. It's
+constructor arguments are all optional. If no arguments are provided,
 then the default is to read from stdin, one line at a time, as fast as
 possible. Note that this will cause the outbox to fill at the same rate
 as stdin can provide data. (Be wary of memory constraints this will
 cause!)</p>
 <dl class="docutils">
 <dt>Arguments &amp; meaning:</dt>
-<dd><ul class="first simple">
-<li>filename=&quot;filename&quot; - the name of the file to read. If you want stdin,</li>
-</ul>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 10)</p>
-Bullet list ends without a blank line; unexpected unindent.</div>
-<p>do not provide a filename! If you want the output from a command,
-also leave this blank...
-* command=&quot;command&quot; - the name of the command you want the
-output from. Leave the filename blank if you use this!
-* readmode - possible values:</p>
-<div class="system-message">
-<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 15)</p>
-Unexpected indentation.</div>
-<blockquote>
-&quot;bitrate&quot; - read at a specified bitrate.</blockquote>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">&lt;string&gt;</tt>, line 16)</p>
-Block quote ends without a blank line; unexpected unindent.</div>
-<p class="last">&quot;line&quot; - read on a line by line basis
-&quot;block&quot; - read the file on a block by block basis.
-* If bitrate mode is set, you should set bitrate= to your
+<dd><ul class="first last">
+<li><p class="first">filename=&quot;filename&quot; - the name of the file to read. If you want stdin,
+do not provide a filename! If you want the output from a command,
+also leave this blank...</p>
+</li>
+<li><p class="first">command=&quot;command&quot; - the name of the command you want the
+output from. Leave the filename blank if you use this!</p>
+</li>
+<li><dl class="first docutils">
+<dt>readmode - possible values:</dt>
+<dd><p class="first last">&quot;bitrate&quot; - read at a specified bitrate.
+&quot;line&quot; - read on a line by line basis
+&quot;block&quot; - read the file on a block by block basis.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">If bitrate mode is set, you should set bitrate= to your
 desired bitrate (unless you want 64Kbit/s), and chunkrate=
 to your desired chunkrate (unless you want 24 fps). You are
-expected to be able to handle the bit rate you request!
-* If block mode is set then you should set readsize (size of the
+expected to be able to handle the bit rate you request!</p>
+</li>
+<li><p class="first">If block mode is set then you should set readsize (size of the
 block in bytes), and steptime (how often you want bytes). If
 steptime is set to zero, you will read blocks at the speed the
 source device can provide them. (be wary of memory constraints)</p>
+</li>
+</ul>
 </dd>
 </dl>
 <p>After setting the ReadFileAdaptor in motion, you can then hook it into
-your linkages like any other component, and it's interfaces are:</p>
-<div class="system-message">
-<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 29)</p>
-Unexpected indentation.</div>
-<blockquote class="last">
-<ul class="simple">
+your linkages like any other component.</p>
+<dl class="docutils">
+<dt>Its interfaces are:</dt>
+<dd><ul class="first last simple">
 <li>inboxes=[&quot;inbox&quot;] - not actually read at present</li>
 <li>outboxes=[&quot;outbox&quot;]) - When data is read, it is made available here.</li>
 </ul>
-</blockquote>
 </dd>
 </dl>
 <h4>Inboxes</h4>
@@ -67,7 +61,15 @@ Unexpected indentation.</div>
 
 [[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
 bottom=1] ] ]
-<h3>__init__(self, filename, command, readmode, readsize, steptime, bitrate, chunkrate, debug)</h3>
+<h3>__init__(self,
+ filename,
+ command,
+ readmode,
+ readsize,
+ steptime,
+ bitrate,
+ chunkrate,
+ debug)</h3>
 <p>Standard constructor, see class docs for details</p>
 <h3>closeDownComponent(self)</h3>
 <dl class="docutils">
