@@ -122,5 +122,18 @@ class LinkageChainingTests(unittest.TestCase):
         a.link( (b,"outbox"), (c,"inbox") )
         self.verifyChain((a,"outbox"), (b,"outbox"), (c,"inbox"))
 
+    def test_InboxPassthrougthDeletion(self):
+        """Outbox->Inbox->Inbox chain, then 2nd link (passthrough) is deleted"""
+        a,b,c = self.initComponents(3)
+        a.link( (a,"outbox"),  (b,"inbox") )
+        link = a.link( (b,"inbox"), (c,"inbox"), passthrough=1 )
+        self.verifyChain((a,"outbox"), (b,"inbox"), (c,"inbox"))
+        
+        a.postoffice.deregisterlinkage(thelinkage=link)
+        self.verifyChain((a,"outbox"), (b,"inbox"))
+        
+
+    
+    
 if __name__=='__main__':
    unittest.main()
