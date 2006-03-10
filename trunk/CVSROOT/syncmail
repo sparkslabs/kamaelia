@@ -5,7 +5,8 @@
 # See the accompanying LICENSE file for details.
 
 # NOTE: SourceForge currently runs Python 2.2.3, so we need to remain
-# compatible with the Python 2.2 line.
+# compatible with at least that version.  Python 2.2.2 or newer is
+# currently required.
 
 """Complicated notification for CVS checkins.
 
@@ -338,7 +339,10 @@ def load_change_info(prefix=None):
         f.close()
     for entry in mapping.values():
         if not hasattr(entry, "new_revision"):
-            print 'confused about file', entry.name, '-- ignoring'
+            # We're running as part of a commit from a local
+            # filesystem access to the repository, so we're looking at
+            # a working copy.  There may be lots of files we are
+            # supposed to ignore.
             del mapping[entry.name]
     return mapping
 
