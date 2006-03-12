@@ -1,0 +1,11 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p>Example 1: Building a Simple TCP Based Server that allows multiple connections at once and sends a fortune cookie to the client. Includes simple TCP based client that displays the fortune cookie. <span style="font-weight:600">Components used:  </span><a href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.SimpleServer.html">SimpleServer</a>, <a href="/Components/pydoc/Kamaelia.Protocol.FortuneCookieProtocol.FortuneCookieProtocol.html">FortuneCookieProtocol</a>, <a href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>, <a href="/Components/pydoc/Kamaelia.Internet.TCPClient.TCPClient.html">TCPClient</a>, <a href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html">ConsoleEchoer</a></p>
+<p></p>
+<ul type="disc"><div>[[pre]<span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Kamaelia.Protocol.FortuneCookieProtocol <span style="font-weight:600">import</span> FortuneCookieProtocol<br /><span style="font-weight:600">from</span> Kamaelia.SimpleServerComponent <span style="font-weight:600">import</span> SimpleServer<br /><span style="font-weight:600">from</span> Kamaelia.Internet.TCPClient <span style="font-weight:600">import</span> TCPClient<br /><span style="font-weight:600">from</span> Kamaelia.Util.Console <span style="font-weight:600">import</span> ConsoleEchoer<br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><span style="font-weight:600">import</span> random<br /><br />clientServerTestPort=random.randint(1500,1599)<br /><br />SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()<br /><br />pipeline(TCPClient(&quot;127.0.0.1&quot;,clientServerTestPort),<br />         ConsoleEchoer()<br />        ).run()<br />]</div>
+<div><span style="font-weight:600">Source:</span> Examples/example1/FortuneCookie_ServerClient.py</div></ul>
+<p></p>
+<p></p>
+<p></p>
+</body></html>
