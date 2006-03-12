@@ -1,10 +1,25 @@
 #!/usr/bin/python
 #
+# This program generates Kamaelia's documentation directly from the
+# source. I am currently running this as follows:
+#
+# ./DocExtractor.py
+# cp index.html ../../Website/Components/.
+# cd tmp
+# cp * ../../../Website/Components/pydoc/.
+#
+# This is then checked into the repository as follows:
+#
+# cd ../../../Website/Components/pydoc
+# cvs add *html # produces warnings about double adds
+# cd ..
+# cvs ci
 #
 
 import textwrap
 import inspect
 import pprint
+import time
 from docutils import core
 import Kamaelia.Data.Repository
 
@@ -54,13 +69,6 @@ class htmlRender(object):
         if level == 3: return "<h3>" + label + "</h3>\n"
         if level == 4: return "<h4>" + label + "</h4>\n"
         if level == 5: return "<h5>" + label + "</h5>\n"
-
-#    def preformat(self, somestring):
-#        lines = somestring.split("\n")
-#        L = []
-#        for l in lines:
-#            L.append("    "+l+"\n")
-#        return "<pre>\n"+"".join(L)+"\n</pre>\n"
 
     def preformat(self, somestring):
         lines = somestring.split("\n")
@@ -154,8 +162,6 @@ class docFormatter(object):
 
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
-#        print argspec
-#        return "(" + ", ".join(argspec[0]) + ")"
 
     def formatMethodDocStrings(self,X):
         r = ""
@@ -204,17 +210,42 @@ def generateDocumentationFiles():
             F.write(formatter.postamble())
             F.close()
 
-KamaeliaDocs = CN["Kamaelia"]
 
-def formatFile(File,KamaeliaDocs):
+def formatFile(SectionStack,File,KamaeliaDocs):
+    filepath = "/Components/pydoc/"+".".join(SectionStack+[File])
     if len(KamaeliaDocs[File]) != 1 or File == "Experimental":
-        return File + "("+ ",".join(KamaeliaDocs[File]) + ")"
+        components = [ x for x in KamaeliaDocs[File] ]
+        components.sort()
+        components = [ "<a href='" +filepath+"." +x+".html'>"+x+"</a>" for x in components ]
+        return File + "("+ ", ".join(components) + ")"
     else:
-        return KamaeliaDocs[File][0]
+        return "<a href='" +filepath+"." +KamaeliaDocs[File][0]+".html'>"+KamaeliaDocs[File][0]+"</a>"
 
-def showSection(KamaeliaDocs,indent=""):
+
+def sectionStart(Filehandle, indent, section):
+    if indent == "":
+        Filehandle.write("""\
+<div class="topsection">
+  <div class="sectionheader"> %s </div>
+  <div class="sectioncontent">
+""" % (section,) )
+    else:
+        Filehandle.write( """\
+<div class="subsection">
+  <div class="sectionheader"> %s </div>
+  <div class="sectioncontent">
+""" % (section,))
+
+
+def sectionEnd(Filehandle, indent):
+    Filehandle.write(indent+"</div></div>\n")
+
+def showSection(Filehandle, SectionStack, KamaeliaDocs,indent=""):
+    global count
     sections = []
     thissection = []
+#    if indent == "":
+#        Filehandle.write('<table border="0">\n<tr><td>\n')
     for K in KamaeliaDocs.keys():
         try:
             KamaeliaDocs[K].keys()
@@ -222,19 +253,75 @@ def showSection(KamaeliaDocs,indent=""):
         except AttributeError:
             thissection.append(K)
 
+
+    if indent != "":
+        if thissection != []:
+            if indent == "":
+                Filehandle.write('<div class="none">&nbsp;</div>\n<p>Other Components:\n<ul>\n')
+    
+            Filehandle.write( indent+"   ")
+            thissection.sort()
+            for File in thissection:
+                Filehandle.write( formatFile(SectionStack,File,KamaeliaDocs)+" ")
+            Filehandle.write("\n")
+            if indent == "":
+                Filehandle.write( '</ul>\n')
+
     sections.sort()
     for section in sections:
-        print indent+"SECTION", section
-        showSection(KamaeliaDocs[section],indent+"   ")
-        print indent + "ENDSECTION"
+        sectionStart(Filehandle, indent, section)
+        showSection(Filehandle, SectionStack+[section],KamaeliaDocs[section],indent+"   ")
+        sectionEnd(Filehandle, indent)
 
-    if thissection != []:
-        if sections != []:
-           print indent+"Other components :"
+    if indent == "":
+        if thissection != []:
+            if indent == "":
+                Filehandle.write( '<div class="none">&nbsp;</div>\n<p>Other Components:\n<ul>\n')
+    
+            Filehandle.write( indent+"   ")
+            thissection.sort()
+            for File in thissection:
+                Filehandle.write( formatFile(SectionStack,File,KamaeliaDocs)+" ")
+            Filehandle.write("\n")
+            if indent == "":
+                Filehandle.write( '</ul>\n')
 
-        print indent+"   ",
-        for File in thissection:
-            print formatFile(File,KamaeliaDocs),
-        print
 
-showSection(KamaeliaDocs)
+def generateIndexFile():
+    F = open("index.html","w")
+    KamaeliaDocs = CN["Kamaelia"]
+    F.write("""\
+<html>
+<style>
+.topsection {
+              width: 50%;
+              float: left;
+              padding-top: 0.3em;
+            }
+.subsection { }
+.sectionheader {
+                 font-weight: bold;
+               }
+.sectioncontent { font-size: 0.9em;
+                  margin-left: 2em;
+                }
+.verticaldivider { float: bottom;
+                   width: 100%;
+                 }
+.none { width: 100%;
+        clear: both;
+</style>
+
+<body>
+"""+ """<P>Last Generated: %s
+""" % (time.asctime(),))
+
+    showSection(F,["Kamaelia"],KamaeliaDocs)
+
+    F.write("""\
+</body>
+</html>
+""")
+
+generateDocumentationFiles()
+generateIndexFile()
