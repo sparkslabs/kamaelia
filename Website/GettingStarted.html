@@ -1,0 +1,257 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-style:italic;font-weight:600">This document is a work in practice!</span></p>
+<p>Setting up the development environment.</p>
+<p>This is recognised as being currently too complicated, but this document serves as to document how to get started initially.</p>
+<p>In the following I'm assuming you're using any modern generic</p>
+<p>linux, and have the ability to run programs as root (either by</p>
+<p>being root, or via sudo).</p>
+<p></p>
+<p dir="ltr">Installing from tar balls (ie last release ~ October)</p>
+<p>=====================================================</p>
+<p></p>
+<p>You need the following files for a minimal install:</p>
+<p>   Axon-1.1.2.tar.gz</p>
+<p>   Kamaelia-0.3.0.tar.gz</p>
+<p></p>
+<p>Once you have these:</p>
+<p></p>
+<p>   tar zxvf Axon-1.1.2.tar.gz</p>
+<p>   cd Axon-1.1.2</p>
+<p>   # If you're logged in as root, do this:</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # If you have sudo access instead, do this:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>   # Change back to where the tar balls are:</p>
+<p>   cd ..</p>
+<p></p>
+<p></p>
+<p></p>
+<p>   tar zxvf Kamaelia-0.3.0.tar.gz</p>
+<p>   cd Kamaelia-0.3.0</p>
+<p>   # If you're logged in as root, do this:</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # If you have sudo access instead, do this:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>This will then allow you to play with the system, however a</p>
+<p>number of the examples, and demos use a variety of media and</p>
+<p>libraries. The following will describe what you need for</p>
+<p>each of the more interesting/useful dependencies.</p>
+<p></p>
+<p>Installing from CVS (preferred)</p>
+<p>===============================</p>
+<p></p>
+<p>mkdir Kamaelia</p>
+<p>cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/kamaelia login</p>
+<p># You'll be prompted for a password with the above, and since it doesn't</p>
+<p># have one, press return.</p>
+<p>cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/kamaelia co -P .</p>
+<p>cd Kamaelia</p>
+<p></p>
+<p>KAMAELIAROOT=`pwd`</p>
+<p>cd Code/Python/Axon</p>
+<p>sudo python setup.py install</p>
+<p></p>
+<p>cd $KAMAELIAROOT</p>
+<p>cd Code/Python/Kamaelia</p>
+<p>sudo python setup.py install</p>
+<p></p>
+<p>Installing optional dependencies</p>
+<p>================================</p>
+<p></p>
+<p>PYGAME</p>
+<p>------</p>
+<p>If you're using a modern install of Linux, there's a high</p>
+<p>chance that pygame is installed. This provides some relatively</p>
+<p>low level/simple tools for driving the display - providing</p>
+<p>tools like sprites, canvases, etc - and is used by a number</p>
+<p>of the tools we use.</p>
+<p></p>
+<p>If it's not installed it's worth checking to see if it's included</p>
+<p>in your distribution. I know it's available in SuSE, Redhat/Fedora,</p>
+<p>Mandrake, and a bunch of others.</p>
+<p></p>
+<p>In case it isn't you can download it from here:</p>
+<p>   http://www.pygame.org/download.shtml</p>
+<p></p>
+<p>Installation manually is done as follows:</p>
+<p></p>
+<p>   tar zxvf pygame-1.7.1release.tar.gz</p>
+<p>   cd pygame-1.7.1release</p>
+<p></p>
+<p>   # if you have root access:</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # otherwise if you have sudo access:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>PYAO</p>
+<p>----</p>
+<p>If you want to use the vorbis examples, then you need something to</p>
+<p>output the audio. PyAO wraps libao which is an audio output library.</p>
+<p>This is generally included in most linux distributions and if it's</p>
+<p>not installed can be quickly/simply installed.</p>
+<p></p>
+<p>PYAO itself though is not commonly included, and as a result needs</p>
+<p>to be grabbed and installed if you want to use the components that</p>
+<p>wrap pyao.</p>
+<p></p>
+<p>This can be downloaded from here:</p>
+<p>   http://www.andrewchatham.com/pyogg/</p>
+<p></p>
+<p>Specifically:</p>
+<p>   http://www.andrewchatham.com/pyogg/download/pyao-0.82.tar.gz</p>
+<p></p>
+<p>Install as follows:</p>
+<p>   tar zxvf pyao-0.82.tar.gz</p>
+<p>   cd pyao-0.82</p>
+<p>   python config_unix.py</p>
+<p></p>
+<p>   # then if you have root access:</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # otherwise if you have sudo access:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>PYREX</p>
+<p>-----</p>
+<p>For many of the libraries we wrap, we use a tool called Pyrex. This</p>
+<p>provides a python-like language that interfaces directly with C whilst</p>
+<p>simplifying making C functionality available at a high level. (I also</p>
+<p>think it's a really cool little tool/language for what it does, but</p>
+<p>that's a different matter :-)</p>
+<p></p>
+<p>Pyrex's homepage is here:</p>
+<p>   http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/</p>
+<p></p>
+<p>The version we use is the latest one, which can be downloaded here:</p>
+<p>   http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/Pyrex-0.9.3.1.tar.gz</p>
+<p></p>
+<p>Installation:</p>
+<p>   tar zxvf Pyrex-0.9.3.1.tar.gz</p>
+<p>   cd Pyrex-0.9.3.1</p>
+<p>   # The if you have root access:</p>
+<p>   python setup.py install</p>
+<p>   # otherwise if you have sudo access:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p></p>
+<p>VORBISSIMPLE</p>
+<p>------------</p>
+<p>Similarly in order to use the vorbis examples, you need to install</p>
+<p>libogg and libvorbis. I don't know a linux distribution that doesn't</p>
+<p>include these. In order to wrap vorbis, we needed to build a simple</p>
+<p>C wrapper library, and some python bindings for this.</p>
+<p></p>
+<p>If you're installing from CVS, you can do this to install the simple</p>
+<p>C wrapper library:</p>
+<p></p>
+<p>   cd $KAMAELIAROOT</p>
+<p>   cd Sketches/Vorbis/vorbissimple/libvorbissimple/</p>
+<p>   ./configure</p>
+<p>   make</p>
+<p>   # as root:</p>
+<p>   make install</p>
+<p>   ldconfig</p>
+<p>   # or if you only have sudo:</p>
+<p>   sudo make install</p>
+<p>   sudo /sbin/ldconfig</p>
+<p></p>
+<p>Then to install the python bindings</p>
+<p>   cd ..</p>
+<p>   cd python</p>
+<p>   # then as root, if you have root access:</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # Otherwise if you only sudo access instead:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>If you're installing from tarballs, rather than CVS, then you need the</p>
+<p>following tar balls:</p>
+<p>   vorbissimple-0.0.1.tar.gz</p>
+<p></p>
+<p>Which you install as follows:</p>
+<p>   tar zxvf vorbissimple-0.0.1.tar.gz</p>
+<p>   cd vorbissimple-0.0.1</p>
+<p>   # There's installation information in this directory, but the</p>
+<p>   # quick version is:</p>
+<p>   cd libvorbissimple</p>
+<p>   ./configure</p>
+<p>   make</p>
+<p>   make install   (or sudo make install if you have sudo access)</p>
+<p>   /sbin/ldconfig (or sudo /sbin/ldconfig if you have sudo access)</p>
+<p></p>
+<p></p>
+<p>DIRAC</p>
+<p>-----</p>
+<p>If you're interested in playing with the Dirac components for video</p>
+<p>playback (or even encoding :-), then you need to install Dirac, and</p>
+<p>our bindings for dirac.</p>
+<p></p>
+<p>For this you need to install dirac first. This can be got from the</p>
+<p>Dirac downloads, and installed in the same way as others. From</p>
+<p>   http://sourceforge.net/project/showfiles.php?group_id=102564</p>
+<p>grab:</p>
+<p>   dirac-0.5.4.tar.gz</p>
+<p></p>
+<p>To install:</p>
+<p>   tar zxvf dirac-0.5.4.tar.gz</p>
+<p>   cd dirac-0.5.4</p>
+<p>   ./configure</p>
+<p>   make </p>
+<p>   # **Takes a while**</p>
+<p>   # Then as root, if you have root access:</p>
+<p>   make install</p>
+<p>   ldconfig</p>
+<p>   # if you have sudo access instead of root:</p>
+<p>   sudo make install</p>
+<p>   sudo /sbin/ldconfig</p>
+<p></p>
+<p>To install the python bindings for dirac that we use for the</p>
+<p>Dirac components...</p>
+<p></p>
+<p>Installation from CVS is again simplest in my opinion:</p>
+<p>   cd $KAMAELIAROOT</p>
+<p>   cd Code/Python/Bindings/Dirac</p>
+<p>   # As root:</p>
+<p>   python setup.py install</p>
+<p>   # or for sudo</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>Installation from the tar ball - grab from the kamaelia downloads page:</p>
+<p>   Dirac-0.0.1.tar.gz</p>
+<p></p>
+<p>   tar zxvf Dirac-0.0.1.tar.gz</p>
+<p>   cd Dirac-0.0.1</p>
+<p>   # Then as root:</p>
+<p>   python setup.py install</p>
+<p>   # Or if you have sudo access instead:</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>DVB (Freeview dumping)</p>
+<p></p>
+<p>Finally if you really want to play with the DVB components forming</p>
+<p>in /Sketches/MPS/DVB/Components, then you might want the python-dvb</p>
+<p>bindings which are in the download:</p>
+<p></p>
+<p>   python-dvb3-0.0.4.tar.gz</p>
+<p></p>
+<p>Installation is pretty much the same as the rest:</p>
+<p>   tar zxvf python-dvb3-0.0.4.tar.gz</p>
+<p>   cd python-dvb3-0.0.4u</p>
+<p>   # Then as root</p>
+<p>   python setup.py install</p>
+<p></p>
+<p>   # Or using sudo</p>
+<p>   sudo python setup.py install</p>
+<p></p>
+<p>If you're using Linux and want to play with these, the the freecom DVB-T</p>
+<p>USB stick works very nicely.</p>
+<p>     ------------</p>
+<p></p>
+<p>OK, that should be everything.</p>
+<p></p>
+</body></html>
