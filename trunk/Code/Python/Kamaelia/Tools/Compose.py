@@ -113,5 +113,9 @@ if __name__ == "__main__":
                           )
         ).activate()
     
-    
-    scheduler.run.runThreads()
+    try:
+        scheduler.run.runThreads()
+    except:
+        pass
+
+
