@@ -137,7 +137,7 @@ class Painter(PygameApp):
                   self.requestDisplay(DISPLAYREQUEST=True,
                                       callback = (self,"displaycontrol"),
                                       events = (self, "events"),
-                                      size = (800, 600),
+                                      size = (1024, 768),
                                       position = (0,0)
                             )
               )
@@ -203,7 +203,7 @@ class Painter(PygameApp):
 class SimpleBrush(object):
     def __init__(self):
         self.colour = [ None, (240,32,32), (32,240,32), (255, 255, 255) ]
-        self.size = 25
+        self.size = 5
     def render(self, surface, colour_index, position):
         pygame.draw.circle(surface, self.colour[colour_index], position, self.size)
     def setsize(self, size):
