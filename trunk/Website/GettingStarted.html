@@ -1,20 +1,40 @@
 <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
 <p><span style="font-style:italic;font-weight:600">This document is a work in practice!</span></p>
-<p>Setting up the development environment.</p>
+<p>Setting up a development environment.</p>
 <p>This is recognised as being currently too complicated, but this document serves as to document how to get started initially.</p>
 <p>In the following I'm assuming you're using any modern generic</p>
 <p>linux, and have the ability to run programs as root (either by</p>
 <p>being root, or via sudo).</p>
-<p></p>
-<p dir="ltr">Installing from tar balls (ie last release ~ October)</p>
-<p>=====================================================</p>
-<p></p>
-<p>You need the following files for a minimal install:</p>
-<p>   Axon-1.1.2.tar.gz</p>
-<p>   Kamaelia-0.3.0.tar.gz</p>
+<p>These instructions make the assumption you are using a modern linux installation.</p>
+<p dir="ltr"><span style="font-weight:600">Installation of the base system from Releases</span></p>
+<p dir="ltr">Download the following files:</p>
+<ul type="disc"><li><a href="http://prdownloads.sourceforge.net/kamaelia/Axon-1.1.2.tar.gz?download">Axon-1.1.2.tar.gz</a> - this provides the core of all components, and handles communication between components.</li>
+<li><a href="http://prdownloads.sourceforge.net/kamaelia/Kamaelia-0.3.0.tar.gz?download">Kamaelia-0.3.0.tar.gz</a> - this is the large collection of compoents. Some have dependencies on other modules, many do not.</li></ul>
+<p>We note that some Kamaelia components (and admittedly many of the examples), rely on a number of python modules which you may want to install. </p>
+<p>These are as follows:</p>
+<ul type="disc"><li dir="ltr"><a href="http://www.pygame.org/ftp/pygame-1.7.1release.tar.gz">pygame</a> : http://www.pygame.org/download.shtml  - http://www.pygame.org/ftp/pygame-1.7.1release.tar.gz</li></ul>
+<p>Generally useful: (needed for building bindings used by vorbis, dirac and digital TV components)</p>
+<ul type="disc"><li><a href="http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/Pyrex-0.9.3.1.tar.gz">pyrex</a> : http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/Pyrex-0.9.3.1.tar.gz</li></ul>
+<p>Needed for playing back Ogg Vorbis audio:</p>
+<ul type="disc"><li><a href="http://www.andrewchatham.com/pyogg/download/pyao-0.82.tar.gz">pyao</a> : http://www.andrewchatham.com/pyogg/download/pyao-0.82.tar.gz</li>
+<li><a href="http://prdownloads.sourceforge.net/kamaelia/vorbissimple-0.0.1.tar.gz?download">vorbissimple</a> : http://prdownloads.sourceforge.net/kamaelia/vorbissimple-0.0.1.tar.gz?download</li>
+<li>If your linux system doesn't supply packages for ogg vorbis, then you will need to install the following files from http://www.xiph.org/downloads/ :</li>
+<ul type="disc"><li><a href="http://downloads.xiph.org/releases/ogg/libogg-1.1.3.tar.gz">libogg</a> - http://downloads.xiph.org/releases/ogg/libogg-1.1.3.tar.gz</li>
+<li><a href="http://downloads.xiph.org/releases/vorbis/libvorbis-1.1.2.tar.gz">libvorbis</a> - http://downloads.xiph.org/releases/vorbis/libvorbis-1.1.2.tar.gz</li>
+<li><a href="http://downloads.xiph.org/releases/ao/libao-0.8.6.tar.gz">libao</a> - http://downloads.xiph.org/releases/ao/libao-0.8.6.tar.gz</li></ul></ul>
+<p>Needed for playing back and encoding video using BBC R&amp;D's Dirac video codec:</p>
+<ul type="disc"><li><a href="http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download">dirac</a> - http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download</li>
+<li><a href="http://prdownloads.sourceforge.net/kamaelia/Dirac-0.0.1.tar.gz?download">Python bindings for dirac</a>- http://prdownloads.sourceforge.net/kamaelia/Dirac-0.0.1.tar.gz?download</li></ul>
+<p>Needed for timeshifting programmes off Digital TV: (DVB-T)</p>
+<ul type="disc"><li dir="ltr"><a href="http://prdownloads.sourceforge.net/kamaelia/python-dvb3-0.0.4.tar.gz?download">Python bindings for linux DVB3</a> : http://prdownloads.sourceforge.net/kamaelia/python-dvb3-0.0.4.tar.gz?download</li></ul>
+<p>Summary:</p>
+<ul type="disc"><li>Core Downloads: <a href="http://prdownloads.sourceforge.net/kamaelia/Axon-1.1.2.tar.gz?download">Axon</a>, <a href="http://prdownloads.sourceforge.net/kamaelia/Kamaelia-0.3.0.tar.gz?download">Kamaelia</a></li>
+<li>Optional C libraries: <a href="http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download">dirac</a>, <a href="http://downloads.xiph.org/releases/ogg/libogg-1.1.3.tar.gz">libogg</a>, <a href="http://downloads.xiph.org/releases/vorbis/libvorbis-1.1.2.tar.gz">libvorbis</a>, <a href="http://downloads.xiph.org/releases/ao/libao-0.8.6.tar.gz">libao</a></li>
+<li>Needed for all python bindings: <a href="http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/Pyrex-0.9.3.1.tar.gz">pyrex</a></li>
+<li>Optional python bindings: <a href="http://www.andrewchatham.com/pyogg/download/pyao-0.82.tar.gz">pyao</a>, <a href="http://prdownloads.sourceforge.net/kamaelia/vorbissimple-0.0.1.tar.gz?download">vorbissimple</a>, <a href="http://prdownloads.sourceforge.net/kamaelia/Dirac-0.0.1.tar.gz?download">dirac</a>, <a href="http://prdownloads.sourceforge.net/kamaelia/python-dvb3-0.0.4.tar.gz?download">DVB3</a></li>
+<li>All the aboves as one bundle:</li></ul>
 <p></p>
 <p>Once you have these:</p>
-<p></p>
 <p>   tar zxvf Axon-1.1.2.tar.gz</p>
 <p>   cd Axon-1.1.2</p>
 <p>   # If you're logged in as root, do this:</p>
@@ -253,5 +273,5 @@
 <p>     ------------</p>
 <p></p>
 <p>OK, that should be everything.</p>
-<p></p>
+<li type="disc" dir="ltr"></li>
 </body></html>
