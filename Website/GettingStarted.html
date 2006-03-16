@@ -1,17 +1,18 @@
 <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
 <p><span style="font-size:24pt;font-weight:600">Getting Started</span></p>
 <p align="right"><span style="font-size:18pt">How to set up your environment for Kamaelia</span></p>
-<p>Assumption:</p>
-<ul type="disc"><li>You are using a modern linux distribution (eg SuSE 10.0) and have a reasonably complete installation including python development tools and C development tools, and applications for playing music and perhaps video. (not that strange a set of assumptions)</li>
-<li>That you have root access on the system. My personal preferance on a system is to use sudo, so the instructions below use that. If you have root access but not sudo, simply perform the instructions below as root, removing the word &quot;sudo&quot; from the commands you type.</li></ul>
-<p>Recognition:</p>
-<ul type="disc"><li>This page is a bit on the long side - assistance in shortening this welcome. This should be complete though!</li></ul>
-<p>Key steps:</p>
-<ol><li>Download the files you need</li>
-<li>Install the core packages (Axon &amp; Kamaelia)</li>
-<li>Depending on the audio/video capabilities you're interested in, install some C libraries, if necessary. (if any)</li>
-<li>Again depending on the audio/video capabilities you're interested in, install the python bindings for these libraries</li>
-<li>Start playing with the examples</li></ol>
+<p>[[boxright]<span style="font-weight:600">Feedback sought!</span></p>
+<ul type="disc"><div>This page is a bit on the long side, and whilst it should be complete, assistance in shortening this welcome.</div></ul>
+<p>]Assumption:</p>
+<ul type="disc"><li>You are using a modern linux distribution with development tools for C and python installed, along with some common libraries for music &amp; perhaps video.</li>
+<li>That you have root access on the system, and use sudo. If you don't use sudo mentally skip that below.</li></ul>
+<p><span style="font-size:14pt;font-weight:600">Quickstart Instructions</span></p>
+<ol><li><a href="http://prdownloads.sourceforge.net/kamaelia/KamaeliaMegaBundle-1.0.1.tar.gz?download"><span style="font-weight:600">Download</span></a> the files you need (you might need less than this link gives you)</li>
+<li><span style="font-weight:600">Install</span> the core packages (Axon &amp; Kamaelia)</li>
+<ul type="disc"><div>2.1 Depending on the audio/video capabilities you're interested in, install some C libraries, if necessary. (if any)</div>
+<div>2.2 Again depending on the audio/video capabilities you're interested in, install the python bindings for these libraries</div></ul>
+<li><span style="font-weight:400">Start playing</span><span style="font-weight:600"> </span>with the examples, which are also in the <a href="/Cookbook.html">cookbook</a>.</li></ol>
+<p><span style="font-size:14pt;font-weight:600">Detailed Instructions</span></p>
 <p><span style="font-size:14pt;font-weight:600">1. Download the files you need</span></p>
 <p>Either a bundle with everything in:</p>
 <ul type="disc"><div>If you already have libogg, libvorsbis, libao installed (as is likely with a modern linux distribution):</div>
@@ -42,7 +43,7 @@
 <p><span style="font-style:italic">Install....</span></p>
 <ul type="disc"><div>cd Kamaelia-0.3.0</div>
 <div>sudo python setup.py install</div></ul>
-<p><span style="font-size:14pt;font-weight:600">3. Install Optional C libraries</span></p>
+<p><span style="font-size:14pt;font-weight:600">2.1 Install Optional C libraries</span></p>
 <p dir="ltr">You might notice a pattern with all of these ... :-) If you want dirac support, you only need to install Dirac. If you want vorbis support, you need to have libogg, libvorbis and libao installed. With a modern linux distribution these are probably already included. If they're not, they're simple to build - see below. You might want to skip to the next section before deciding whether to install these. Personally though, I'd recommend installing them because these are what we're currently developing with.</p>
 <p dir="ltr"><span style="font-weight:600">Installing Dirac</span></p>
 <p dir="ltr"><span style="font-style:italic">Unpack....</span></p>
@@ -78,7 +79,7 @@
 <p><span style="font-style:italic">Install....</span></p>
 <ul type="disc"><div>sudo make install</div></ul>
 <p>Homepage for libao:  http://www.xiph.org/</p>
-<p><span style="font-size:14pt;font-weight:600">4. Installing Optional Python Bindings</span></p>
+<p><span style="font-size:14pt;font-weight:600">2.2 Installing Optional Python Bindings</span></p>
 <p>Note that for some of these you will need to have installed the appropriate C libraries described in 3.</p>
 <p><span style="font-weight:600">Installing pygame </span>(If you don't have pygame already installed!)</p>
 <p><span style="font-style:italic">Unpack....</span></p>
@@ -127,8 +128,8 @@
 <p><span style="font-style:italic">Install....</span></p>
 <ul type="disc"><div>cd python-dvb3-0.0.4<br />sudo python setup.py install</div></ul>
 <p>These bindings have only been tested against a freecom DVB-T USB stick, but should work with other DVB cards quite happily.</p>
-<p><span style="font-size:14pt;font-weight:600">5. Play with the examples!</span></p>
-<p>At this point, you've got everything installed. Depending on whether you installed various bindings, you will be able to play with different examples. These are all in the cookbok as well.</p>
+<p><span style="font-size:14pt;font-weight:600">3. Play with the examples!</span></p>
+<p>At this point, you've got everything installed. Depending on whether you installed various bindings, you will be able to play with different examples. <a href="/Cookbook.html">These are all in the cookbook as well.</a></p>
 <p>Have fun!</p>
 <p>[[hr] ]</p>
 <p>Michael, March 2005</p>
