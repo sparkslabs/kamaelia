@@ -22,41 +22,26 @@
 
 # first test of Physics module
 
+from VisibleParticle import VisibleParticle
+# from ParticleDragger import ParticleDragger
+from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
+
 import Kamaelia.Physics as Physics
 import Kamaelia.UI.MH
-
 import pygame
+from random import randrange
+
+# ?
 from pygame.locals import *
 
-from random import randrange
 import random
 
 from Axon.Component import component
-# class component(object): pass
-
-class VisibleParticle(Physics.Simple.Particle):
-    """Version of Physics.Particle with added rendering functions,
-    and a list of particles it is bonded to."""
-
-    def __init__(self, position, pname, radius):
-        super(VisibleParticle,self).__init__(position=position, ID=pname )
-        self.radius = radius
-        
-        font = pygame.font.Font(None, 24)
-        self.label = font.render(self.ID, False, (0,0,0))
-        
-    def renderBonds(self, surface):
-        """Renders lines representing the bonds going from this particle"""
-        for p in self.bondedTo:
-            pygame.draw.line(surface, (128,128,255), [int(i) for i in self.pos],  [int(i) for i in p.pos])
-        
-    def renderSelf(self, surface):
-        """Renders a circle with the particle name in it"""
-        pygame.draw.circle(surface, (255,128,128), (int(self.pos[0]), int(self.pos[1])), self.radius)
-        surface.blit(self.label, (int(self.pos[0]) - self.label.get_width()/2, int(self.pos[1]) - self.label.get_height()/2))
-
 
 class ParticleDragger(Kamaelia.UI.MH.DragHandler):
+    pass
+
+class __ParticleDragger(Kamaelia.UI.MH.DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, self.app.particleRadius )
          if len(inRange) > 0:
@@ -136,7 +121,7 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
             p.renderSelf(self.screen)
             
         self.physics.run(1)
-        self.extra()
+#        self.extra()
         return 1
 
     def drawGrid(self):
@@ -149,34 +134,3 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
             pygame.draw.line(self.screen, (200,200,200), 
                              (i,0), 
                              (i,self.screen.get_height()) )
-
-
-
-if __name__=="__main__":
-    N,L = 4,2
-
-    nodes = []
-    for i in xrange(N):
-       nodes.append((str(i), "randompos", "circle", 20))
-
-    linkDict = {}
-    while len(linkDict.keys()) <L:
-       start = random.randrange(0,len(nodes))
-       end = start
-       while end == start:
-          end = random.randrange(0,len(nodes))
-       linkDict[ nodes[start][0],nodes[end][0] ] = None
-    links = linkDict.keys()
-
-    app = PhysApp1( (640, 480), False, nodes, links)
-    X = N+1
-    for i in app.main():
-       if randrange(0,100)<5:
-          app.makeParticle(str(X), "randompos", "circle", 20)
-          X += 1
-       if randrange(0,100)<25:
-          start = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
-          end = start
-          while end == start:
-             end = app.physics.particleDict.keys()[random.randrange(0,len(app.physics.particleDict.keys()))]
-          app.makeBond(app.physics.particleDict[start].ID, app.physics.particleDict[end].ID)

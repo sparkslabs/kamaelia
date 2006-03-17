@@ -64,7 +64,8 @@ cat_appear_wav = pygame.mixer.Sound(cat_appear_wav_file)
 pygame.init()
 # --------------------------------------------------------------------------
 
-def makeAndInitialiseBackground(banner_location, screensize, screen_surface,back_colour):
+def makeAndInitialiseBackground(banner_location, screensize, 
+                                screen_surface, back_colour):
     #
     # Load images for background
     #
@@ -104,7 +105,11 @@ def randomFromRangeExcludingZero(min,max):
 
 def make_cat(cat_location, screensize, border ):
     # Get the cat again!
-    files = [ x for x in os.listdir("pictures") if x not in ("README","CVS") ]
+    files = list()
+    for x in os.listdir("pictures"):
+        if x not in ("README","CVS"):
+            files.append(x)
+
     image_location = files[random.randint(0,len(files)-1)]
 
     cat_surface = pygame.image.load("pictures/"+image_location)
@@ -113,7 +118,8 @@ def make_cat(cat_location, screensize, border ):
 
     rotation_speed = randomFromRangeExcludingZero(-2,2)  
     scale_speed = float(randomFromRangeExcludingZero(-1,1))
-    position = [random.randint(border,screensize[0]-border),random.randint(border,screensize[1]-border)]
+    position = list( (random.randint(border,screensize[0]-border),
+                     random.randint(border,screensize[1]-border)))
 
     newCat = BasicSprite(image=cat)
 
@@ -182,19 +188,18 @@ class MyGamesEvents(EventHandler):
                spriteToZap.shutdown()
                where.allsprites.remove(spriteToZap)
     def keydown(self, unicode, key, mod, where):
-#        print "KEY", key
         if key == 112: # "P"
-#            print "PAUSE ALL MOVEMENT"
+            # PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
                 sprite.pause()
         if key == 113: # "Q"
             raise "QUIT"
         if key == 117: # "U"
-#            print "UNPAUSE ALL MOVEMENT"
+            # UNPAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
                 sprite.unpause()
         if key == 116: # "T"
-#            print "Toggle PAUSE ALL MOVEMENT"
+            # Toggle PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
                 sprite.togglePause()
 
@@ -209,5 +214,3 @@ try:
 except:
     pass
 
-print
-print

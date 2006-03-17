@@ -23,16 +23,15 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Axon as _Axon
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Introspector import Introspector
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
-
-import sys ; sys.path.append("../../../../../Sketches/Layout")
-from Kamaelia.Util.Introspector import *
+clientServerTestPort = 1501
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
@@ -40,37 +39,19 @@ def AdHocFileProtocolHandler(filename):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
 
-class SimpleStreamingSystem(_Axon.Component.component):
-   def main(self):
-      import random
-      clientServerTestPort=1501
+# Start the server
+SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
+             port=clientServerTestPort).activate()
 
-      server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
-                           port=clientServerTestPort)
-      client=TCPClient("127.0.0.1",clientServerTestPort)
-      decoder = VorbisDecode()
-      player = AOAudioPlaybackAdaptor()
+# Start the client
+pipeline(
+      TCPClient("127.0.0.1",clientServerTestPort),
+      VorbisDecode(),
+      AOAudioPlaybackAdaptor(),
+).activate()
 
-      self.link((client,"outbox"), (decoder,"inbox"))
-      self.link((client,"signal"), (decoder,"control"))
-      self.link((decoder,"outbox"), (player,"inbox"))
-      self.link((decoder,"signal"), (player, "control") )
-
-      introspector = Introspector()
-      iclient = TCPClient("127.0.0.1", 1500)
-      self.link((introspector,"outbox"), (iclient,"inbox"))
-      
-      self.addChildren(server, decoder, player, client)
-      self.addChildren(introspector, iclient)
-      yield _Axon.Ipc.newComponent(*(self.children))
-
-      while 1:
-         self.pause()
-         yield 1
-
-if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
-   t = SimpleStreamingSystem()
-   t.activate()
-   scheduler.run.runThreads(slowmo=0)
-
+# Start the introspector and connect to a local visualiser
+pipeline(
+    Introspector(),
+    TCPClient("127.0.0.1", 1500),
+).run()

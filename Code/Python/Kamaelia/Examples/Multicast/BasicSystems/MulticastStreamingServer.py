@@ -4,7 +4,6 @@
 # components.
 #
 
-import socket
 import Axon
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
