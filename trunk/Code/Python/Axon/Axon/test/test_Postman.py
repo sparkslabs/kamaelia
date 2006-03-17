@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -26,10 +26,9 @@
 # Test the module loads
 import unittest
 import re
-import sys ; sys.path.append("..")
-from Component import component
-from Linkage import linkage
-from Postman import *
+from Axon.Component import component
+from Axon.Linkage import linkage
+from Axon.Postman import *
 
 class MockLinkage:
    def __init__(self, source="blah", sink="bling"):

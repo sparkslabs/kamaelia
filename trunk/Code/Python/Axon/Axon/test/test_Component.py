@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -26,9 +26,8 @@
 # Test the module loads
 import unittest
 import re
-import sys ; sys.path.append(".") ; sys.path.append("..")
-from Component import *
-import Linkage
+from Axon.Component import *
+import Axon.Linkage as Linkage
 #from Scheduler 
 class TComponent(component):
     def __init__(self):
