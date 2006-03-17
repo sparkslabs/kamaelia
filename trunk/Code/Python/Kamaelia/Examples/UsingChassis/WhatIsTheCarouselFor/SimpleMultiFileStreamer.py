@@ -26,7 +26,6 @@
 # use Kamaelia/Examples/example2/Simple[r]StreamingClient.py to receive
 #
 
-import Axon as _Axon
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Chassis.Prefab import JoinChooserToCarousel
 from Kamaelia.File.Reading import FixedRateControlledReusableFileReader
@@ -57,16 +56,14 @@ def MultiFileReaderProtocol(filenames, bitrate, chunksizebytes):
 
 
 if __name__ == '__main__':
-   from Axon.Scheduler import scheduler
 
    filereader = MultiFileReaderProtocol( FILES_TO_STREAM, BITRATE, CHUNKSIZEBYTES)
 
-   server     = SimpleServer( protocol = filereader, port = SERVERPORT ).activate()
 
    if 0:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
         pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()
    
-   scheduler.run.runThreads(slowmo=0)
+   server     = SimpleServer( protocol = filereader, port = SERVERPORT ).run()
 

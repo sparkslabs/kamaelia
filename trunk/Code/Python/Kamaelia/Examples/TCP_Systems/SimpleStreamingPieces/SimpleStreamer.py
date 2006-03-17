@@ -23,7 +23,6 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Axon as _Axon
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.SimpleServerComponent import SimpleServer
 

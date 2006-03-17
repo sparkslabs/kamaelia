@@ -4,7 +4,6 @@
 # components.
 #
 
-import socket
 import Axon
 
 class detuple(Axon.Component.component):
