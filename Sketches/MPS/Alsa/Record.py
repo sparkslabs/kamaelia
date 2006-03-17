@@ -13,10 +13,9 @@ class AlsaRecorder(Axon.Component.component):
         inp.setperiodsize(160)
         loops = 1000000
         t = time.time()
-        while loops > 0:
+        while 1:
             yield 1
             if time.time() - t > 0.001:
-                loops -= 1
                 # Read data from device
                 l,data = inp.read()
                 if l:
