@@ -4,8 +4,8 @@
    cd Axon-RELEASE/
    rm -f AUTHORS COPYING DEADJOE
    rm -rf dist
-   rm -rf Docs
-   mkdir Docs
+#   rm -rf Docs
+#   mkdir Docs
 
    # Ensure version numbers are up-to-date
    cvs update -r RELEASE -d .
@@ -24,9 +24,9 @@
    cp ../../../AUTHORS .
    cp ../../../COPYING .
 
-   cp -R ../Kamaelia/Docs/Axon/ Docs/
-   cp ../Kamaelia/Docs/Axon.html Docs/Axon.html
-   cp ../Kamaelia/Docs/cat.gif Docs/cat.gif
+#   cp -R ../Kamaelia/Docs/Axon/ Docs/
+#   cp ../Kamaelia/Docs/Axon.html Docs/Axon.html
+#   cp ../Kamaelia/Docs/cat.gif Docs/cat.gif
 
    python setup.py sdist
    cp dist/* ../Releases
