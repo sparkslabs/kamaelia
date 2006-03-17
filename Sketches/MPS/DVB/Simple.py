@@ -1,5 +1,9 @@
 #!/usr/bin/python
 #
+# DVB Transport stream should pick out entire DVB services and send those to
+# named outboxes. (Send DVB Services to a Kamaelia Service...(!))
+#
+
 
 import os
 import dvb3.frontend
@@ -46,14 +50,22 @@ class DVB_Channel_Tuner(component):
                pass
             yield 1
 
-
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
 
+    channels_london =  {
+           "MORE4+1" : (   538, #MHz
+                         [ 701, 702 ] # PID (programme ID) for video and PID for audio
+                       )
+    }
+    services = {
+           "NEWS24": (754, [640, 641]),
+           "MORE4+1": (810, [701,702]),
+           "TMF": (810, [201,202])
+    }
     pipeline(
-       DVB_Channel_Tuner(538,       # MHz
-                         [701, 702] # PID (programme ID) for video and PID for audio
-                        ),
-       SimpleFileWriter("channel.data")
+       DVB_Channel_Tuner(*(channels_london["MORE4+1"])),
+       SimpleFileWriter("channelx.data")
     ).run()
+
