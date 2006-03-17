@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -25,11 +25,10 @@
 
 # Test the module loads
 import unittest
-import sys ; sys.path.append("..")
-from Linkage import *
-import Component
-from Postman import postman
-from AxonExceptions import ArgumentsClash, noSpaceInBox
+from Axon.Linkage import *
+import Axon.Component as Component
+from Axon.Postman import postman
+from Axon.AxonExceptions import ArgumentsClash, noSpaceInBox
 import gc as _gc
 import re
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -25,10 +25,9 @@
 
 # Test the module loads
 import unittest
-import sys ; sys.path.append("..")
-from util import *
-from Component import  component
-from AxonExceptions import AxonException, normalShutdown
+from Axon.util import *
+from Axon.Component import component
+from Axon.AxonExceptions import AxonException, normalShutdown
 
 class util_Test(unittest.TestCase):
    def test_logError(self):
