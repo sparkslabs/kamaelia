@@ -87,9 +87,11 @@ class TargettedPeer(BasicPeer):
 
 # ---------------------------- # PostboxPeer
 class PostboxPeer(BasicPeer):
-    """ A postbox peer recieves messages formed of 3 parts:
-            (addr, port, data)
-        The postbox peer then takes care of delivery of these UDP messages to the recipient.
+    """\
+    A postbox peer recieves messages formed of 3 parts:
+        (addr, port, data)
+
+    The postbox peer then takes care of delivery of these UDP messages to the recipient.
     """
     Inboxes = {
         "inbox" : "Data recieved here is sent to the reciever addr/port",
