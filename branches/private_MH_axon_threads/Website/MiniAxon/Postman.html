@@ -1,0 +1,60 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:8pt;font-family:Verdana">
+<p><span style="font-size:11pt;font-weight:600">5<a name="Postman"></a> Postman - A Microprocess that performs deliveries!</span></p>
+<p dir="ltr">Given we have outboxes and inboxes, it makes sense to have something that can handle deliveries between the two. For the purpose of this exercise, we'll create a microprocess that can look at a single outbox for a single component, take any messages deposited there and pass them the an inbox of another component. In terms of the component implementation so far we can use <span style="font-family:Courier;font-weight:600">dataReady</span> to check for availability of messages, <span style="font-family:Courier;font-weight:600">recv</span> to collect the message from the outbox, and <span style="font-family:Courier;font-weight:600">send</span> to deliver the message to the recipient inbox.</p>
+<p dir="ltr"><span style="font-weight:600">Exercise: </span> Write a class called <span style="font-family:Courier;font-weight:600">postman</span> that subclasses <span style="font-family:Courier">microprocess</span> with the following...</p>
+<p dir="ltr">Attributes:</p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">self.source</span> - this should refer to the source component (expected type is to be a component)</li>
+<li dir="ltr"><span style="font-family:Courier">self.sourcebox</span> - this should refer to the name of the source component's outbox to check. eg &quot;outbox&quot;</li>
+<li dir="ltr"><span style="font-family:Courier">self.sink</span> -  - this should refer to the destination (sink) component (expected type is to be a component)</li>
+<li dir="ltr"><span style="font-family:Courier">self.sinkbox</span> - this should refer to the name of the sink component's inbox to check. eg &quot;inbox&quot;</li></ul>
+<p dir="ltr">Behaviour: (methods)</p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">__init__(self, source, sourcebox, sink, sinkbox)</span><br />This should perform the following initialisation:</li>
+<ul type="disc"><li dir="ltr">Call the super class initialiser (<span style="font-weight:600">Hint:</span> keyword &quot;super&quot; in python docs, and pydoc)</li>
+<li dir="ltr">set the attributes listed above :-)</li></ul></ul>
+<p dir="ltr"></p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">main(self)</span><br />This implements the behaviour described above:</li>
+<ul type="disc"><li dir="ltr">In a loop</li>
+<ul type="disc"><li dir="ltr">yield control back periodically (eg <span style="font-family:Courier">yield 1</span> is sufficient)</li>
+<li dir="ltr">Check to see if <span style="font-family:Courier">data</span> is <span style="font-family:Courier">Ready</span> on the <span style="font-family:Courier">source</span> component's <span style="font-family:Courier">sourcebox</span>.</li>
+<li dir="ltr">If there is <span style="font-family:Courier">recv</span> the data from that box, and <span style="font-family:Courier">send</span> it to the <span style="font-family:Courier">sink</span> component's <span style="font-family:Courier">sinkbox</span>.</li></ul></ul></ul>
+<p dir="ltr">[[tabs]<br />[pat1=MiniAxon/BlankAnswer.html]<br />[pat1_name=Answer Hidden]<br />[pat2=MiniAxon/PostmanAnswer.html]<br />[pat2_name=Show Answer]<br />[_tabstem=pat] ]</p>
+<p dir="ltr"><span style="font-weight:600">Discussion:</span></p>
+<p dir="ltr">Given this, we can now start building interesting systems. We have mechanisms for enabling concurrency in a single process (microprocess &amp; scheduler), a mechanism for adding communications (postboxes) to a microprocess (component) and a mechanism for enabling deliveries between components. Whilst we (the Kamaelia team) can see from an optimised version that the postman can actually be optimised out of the system, this simple mini-axon shows the core elements of Kamaelia quite nearly in a microcosm.</p>
+<p>One full version of this mini-axon can be found here: <a href="http://kamaelia.sourceforge.net/MiniAxonFull.html">Mini Axon Full</a>, which should now be clear what it's doing how and why.</p>
+<p dir="ltr">A simple example we can now create is a trivial system with one component creating some data and sending it to another one for display.</p>
+<ul type="disc">
+[[pre]class Producer(component):
+    def __init__(self, message):
+        super(Producer,self).__init__()
+        self.message = message
+    def main(self):
+        while 1:
+            yield 1
+            self.send(self.message, &quot;outbox&quot;)
+            
+class Consumer(component):
+    def main(self):
+        count = 0
+        while 1:
+            yield 1
+            count += 1 # This is to show our data is changing :-)
+            if self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                print data, count
+                
+p = Producer(&quot;Hello World&quot;)
+c = Consumer()
+postie = postman(p, &quot;outbox&quot;, c, &quot;inbox&quot;)
+
+myscheduler = scheduler()
+myscheduler.activateMicroprocess(p)
+myscheduler.activateMicroprocess(c)
+myscheduler.activateMicroprocess(postie)
+
+for _ in myscheduler.main():
+    pass
+]</ul>
+<p dir="ltr">Running the above system then results in the following output:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]Hello World 2<br />Hello World 3<br />...<br />Hello World 97<br />Hello World 98]</span></div></ul>
+<p dir="ltr"></p>
+</body></html>
