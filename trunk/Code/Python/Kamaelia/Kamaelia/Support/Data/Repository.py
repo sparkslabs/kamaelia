@@ -78,12 +78,13 @@ def SearchComponentsNested(baseDirectory, result):
             if meta:
                 result[Entry] = meta
         elif os.path.isdir(FullEntry):
-            try:
-                newresult = result[Entry]
-            except KeyError:
-                newresult = {}
-                result[Entry] = newresult
-            subtree = SearchComponentsNested(FullEntry, newresult)
+            if "Kamaelia/Support" != FullEntry[-16:]:
+                try:
+                    newresult = result[Entry]
+                except KeyError:
+                    newresult = {}
+                    result[Entry] = newresult
+                subtree = SearchComponentsNested(FullEntry, newresult)
     return result
 
 def GetAllKamaeliaComponentsNested():
