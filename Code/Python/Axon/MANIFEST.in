@@ -3,6 +3,9 @@ include COPYING
 include AUTHORS
 include CHANGELOG
 include Docs/*/*
-include Docs/*
+include Docs/Axon
+include Docs/Axon.html
+include Docs/cat.gif
 include Examples/*
 include Examples/*/*
+exclude *CVS*
