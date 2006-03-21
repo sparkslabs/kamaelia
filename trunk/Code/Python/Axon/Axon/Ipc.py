@@ -57,6 +57,10 @@ class notify(ipc):
       self.object = payload
       self.caller = caller
 
+class shutdown(ipc):
+   """Message used to indicate that the component recieving it should shutdown"""
+   pass
+
 class status(ipc):
    """General Status message"""
    def __init__(self, status):
@@ -71,7 +75,7 @@ class wouldblock(ipc):
       self.caller = caller
 
 class producerFinished(ipc):
-   """Message to indicate that the producer has completed its work and will produce no more output."""
+   """Message to indicate that the producer has completed its work and will produce no more output. The receiver may wish to shutdown"""
    def __init__(self,caller=None,message=None):
       self.caller = caller
       self.message = message
