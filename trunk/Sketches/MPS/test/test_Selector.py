@@ -72,6 +72,7 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
+        for i in xrange(100): S.next()
         S._deliver(newReader(S,( "dummyservice", "LOOKINGFORTHIS")),"notify")
         for i in xrange(100): S.next()
         func, args = MOCKSELECTORMODULE.log[0]
@@ -88,6 +89,7 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
+        for i in xrange(100): S.next()
         dummyservice = (Axon.Component.component(), "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         for i in xrange(100): S.next()
@@ -98,6 +100,30 @@ class Readables_Selector(unittest.TestCase):
         self.assertEqual([], args[2], "Exception set should be empty")
         self.assertEqual(0, args[3], "The select should be non-blocking")
 
+    def test_SendingMultipleReadersResultsInAllSelected(self):
+        "main - Sending multiple newReader messages results in all being select()ed"
+
+        MOCKSELECTORMODULE = MockSelect()
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(100): S.next()
+        dummyservice = (Axon.Component.component(), "inbox")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHISTOO") ),"notify")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORANDTHIS") ),"notify")
+        for i in xrange(100): 
+            S.next()
+        lastfunc, lastargs = None, None
+        i = 0
+        func, args = MOCKSELECTORMODULE.log[i]
+        while not( (lastfunc, lastargs) == (func, args)): # Search for quiescent state
+            i = i + 1
+            lastfunc, lastargs = func, args
+            func, args = MOCKSELECTORMODULE.log[i]
+
+        self.assertEqual("select", func, "select was called in the main loop")
+        self.assertEqual(["LOOKINGFORTHIS","LOOKINGFORTHISTOO","LOOKINGFORANDTHIS"], args[0])#, "The selectable was added to the list of readables")
 
 
 if __name__=="__main__":
