@@ -6,6 +6,7 @@ import sys; sys.path.append("../")
 from Selector import Selector
 
 import Axon
+from Axon.Ipc import shutdown
 
 class SmokeTests_Selector(unittest.TestCase):
     def test_SmokeTest(self):
@@ -29,6 +30,24 @@ class SmokeTests_Selector(unittest.TestCase):
         S.activate()
         V = S.next()
         self.assert_(S._isRunnable() is not True)
+
+    def test_shutdownMessageCausesShutdown(self):
+        """main - If the component recieves a shutdown() message, the component shuts down"""
+        S = Selector()
+        S.activate()
+
+        S._deliver(shutdown(),"control")
+
+        componentExit = False
+        for i in xrange(2000):
+            try:
+                S.next()
+            except StopIteration:
+                componentExit = True
+                break
+        if not componentExit:
+            self.fail("When sent a shutdown message, the component should shutdown")
+
 
 if __name__=="__main__":
     unittest.main()
