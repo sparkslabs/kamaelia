@@ -12,6 +12,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
          "notify" : "Used to be notified about things to select"
     }
     def main(self):
+        readers = []
+        self.pause()
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
                 message = self.recv("control")
@@ -20,7 +22,9 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
             if self.dataReady("notify"):
                 message = self.recv("notify")
                 replyService, selectablereader = message.object
-                select.select([selectablereader ], [],[],0)
-            self.pause()
+                readers.append(selectablereader)
+
+            if len(readers) > 0:
+                select.select(readers, [],[],0)
             yield 1
 
