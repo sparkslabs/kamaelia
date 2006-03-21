@@ -19,8 +19,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                    return
             if self.dataReady("notify"):
                 message = self.recv("notify")
-                reader = message.object
-                select.select([reader], [],[],0)
+                replyService, selectablereader = message.object
+                select.select([selectablereader ], [],[],0)
             self.pause()
             yield 1
 
