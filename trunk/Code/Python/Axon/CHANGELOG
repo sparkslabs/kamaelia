@@ -20,6 +20,11 @@
       in a long while)
     * Code cleanup
 
+    Axon.Ipc
+    * Added the shutdown message. This can be used to request that an Axon
+      component should simply shutdown. This does not force the component
+      to shutdown, merely requests it.
+
      
 1.1.1 -> 1.1.2
      Instated use of ctypes to use posix.sched_yield during the main loop.
