@@ -52,11 +52,17 @@ class SmokeTests_Selector(unittest.TestCase):
 
 class MockSelect:
    """This is needed because we need to test that select is being used correctly"""
-   def __init__(self):
+   def __init__(self, mode="SMOKE"):
        self.log = [] 
+       self.mode = mode
    # We're using this simply as a namespace.
    def select(self,*args):
        self.log.append(("select", args))
+       readers,writers, excepts, timeout = args
+#       if self.mode == "READTEST":
+#           readers,writers, excepts, timeout = args
+       return readers,writers, excepts
+
 
 class Readables_Selector(unittest.TestCase):
     def test_SelectIsMockable(self):
@@ -73,7 +79,8 @@ class Readables_Selector(unittest.TestCase):
         S = Selector()
         S.activate()
         for i in xrange(100): S.next()
-        S._deliver(newReader(S,( "dummyservice", "LOOKINGFORTHIS")),"notify")
+        dummyservice = (Axon.Component.component(), "inbox")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS")),"notify")
         for i in xrange(100): S.next()
         func, args = MOCKSELECTORMODULE.log[0]
         self.assertEqual("select", func, "select was called in the main loop")
@@ -125,6 +132,27 @@ class Readables_Selector(unittest.TestCase):
         self.assertEqual("select", func, "select was called in the main loop")
         self.assertEqual(["LOOKINGFORTHIS","LOOKINGFORTHISTOO","LOOKINGFORANDTHIS"], args[0])#, "The selectable was added to the list of readables")
 
+    def test_ActivityOnReaderResultsInMessageOnReadersService(self):
+        "main - Activity on the selectable results in a message appearing in the service provided to the selector"
+
+        MOCKSELECTORMODULE = MockSelect(mode="READTEST")
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(100): S.next()
+        D = Axon.Component.component() 
+        dummyservice = (D, "inbox")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
+
+        for i in xrange(100):
+            S.next();
+            try:
+               S.postoffice.next()
+            except:
+               pass
+        self.assert_(not ( D.inboxes["inbox"] == [] ) )
+        selectable = D.recv("inbox")
+        self.assertEqual(selectable,"LOOKINGFORTHIS")#, "The value returned should be the selectable we originally asked for")
 
 if __name__=="__main__":
     unittest.main()

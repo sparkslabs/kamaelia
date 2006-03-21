@@ -13,6 +13,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
     }
     def main(self):
         readers = []
+        NOT = True
         self.pause()
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
@@ -23,8 +24,12 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                 message = self.recv("notify")
                 replyService, selectablereader = message.object
                 readers.append(selectablereader)
+                if NOT:
+                   self.link((self,"outbox"), replyService)
+                   NOT = False
 
             if len(readers) > 0:
-                select.select(readers, [],[],0)
+                r, w, e = select.select(readers, [],[],0)
+                self.send(r[0], "outbox")
             yield 1
 
