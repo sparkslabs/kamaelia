@@ -4,5 +4,6 @@
 import Axon
 
 class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
-    pass
-
+    def main(self):
+        while 1: # SmokeTests_Selector.test_RunsForever
+            yield 1
