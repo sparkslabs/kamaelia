@@ -72,15 +72,33 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        S._deliver(newReader(S,"LOOKINGFORTHIS"),"notify")
-        for i in xrange(100):
-            S.next()
+        S._deliver(newReader(S,( "dummyservice", "LOOKINGFORTHIS")),"notify")
+        for i in xrange(100): S.next()
         func, args = MOCKSELECTORMODULE.log[0]
         self.assertEqual("select", func, "select was called in the main loop")
         self.assertEqual(["LOOKINGFORTHIS"], args[0], "The selectable was added to the list of readables")
         self.assertEqual([], args[1], "Writable set should be empty")
         self.assertEqual([], args[2], "Exception set should be empty")
         self.assertEqual(0, args[3], "The select should be non-blocking")
+
+    def test_WeSendTheSelectorAServiceAndSelectableOnlySelectsTheSelectable(self):
+        "main - When we send the newReader message, it also includes a service upon which the selector can talk back to us. The selector only selects on the selectable part of the newReader message"
+
+        MOCKSELECTORMODULE = MockSelect()
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        dummyservice = (Axon.Component.component(), "inbox")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
+        for i in xrange(100): S.next()
+        func, args = MOCKSELECTORMODULE.log[0]
+        self.assertEqual("select", func, "select was called in the main loop")
+        self.assertEqual(["LOOKINGFORTHIS"], args[0])#, "The selectable was added to the list of readables")
+        self.assertEqual([], args[1], "Writable set should be empty")
+        self.assertEqual([], args[2], "Exception set should be empty")
+        self.assertEqual(0, args[3], "The select should be non-blocking")
+
+
 
 if __name__=="__main__":
     unittest.main()
