@@ -7,7 +7,7 @@ from Axon.Ipc import status
 import Axon.CoordinatingAssistantTracker as cat
 from Kamaelia.KamaeliaIPC import shutdownCSA
 
-class selectorComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes = {
    }
    Outboxes = {
