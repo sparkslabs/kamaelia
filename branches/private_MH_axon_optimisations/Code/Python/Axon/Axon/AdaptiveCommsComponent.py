@@ -22,7 +22,7 @@
 
 from Component import component
 import idGen
-from Box import nullbox
+from Box import makeInbox, makeOutbox
 
 class AdaptiveCommsComponent(component):
    #
@@ -60,21 +60,25 @@ class AdaptiveCommsComponent(component):
    def addInbox(self,*args):
       "Adds a custom inbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the inbox added."
       name = self._newInboxName(*args)
-      self.inboxes[name]=nullbox()
+      self.inboxes[name]=makeInbox(self._unpause)
       return name
 
    def deleteInbox(self,name):
       "Deletes the named inbox"
+      ### XXX DOESNT DEAL WITH SITUATION OF LINKAGES TO/FROM THIS BOX EXIST
+      ### might have been created by another component, in which case won't be registered with local postoffice
       del self.inboxes[name]
 
    def addOutbox(self,*args):
       "Adds a custom outbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the outbox added."
       name = self._newOutboxName(*args)
-      self.outboxes[name]=nullbox()
+      self.outboxes[name]=makeOutbox()
       return name
 
    def deleteOutbox(self,name):
       "Deletes the named outbox"
+      ### XXX DOESNT DEAL WITH SITUATION OF LINKAGES TO/FROM THIS BOX EXIST
+      ### might have been created by another component, in which case won't be registered with local postoffice
       del self.outboxes[name]
    #
    # Private Methods

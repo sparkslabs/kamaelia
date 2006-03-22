@@ -41,8 +41,9 @@ from idGen import strId, numId
 from debug import debug
 from Microprocess import microprocess
 from AxonExceptions import AxonException
+from Linkage import linkage
 
-class postman(microprocess):
+class postman(object):
    """The Postman microprocess handles message delivery along linkages
    between inboxes and outboxes, usually contained in components.
    There is one postman per component.
@@ -80,7 +81,7 @@ class postman(microprocess):
          self.debugname =""
       self.linkages = list()
       self.things = dict()
-      self.reversethings = dict()
+#      self.reversethings = dict()
 
    def __str__(self):
       "Provides a string representation of a postman, designed for debugging"
@@ -90,81 +91,144 @@ class postman(microprocess):
       result = result + microprocess.__str__(self) + " }}"
       return result
 
-   def register(self, name, component):
-      """Registers a _named_ component with the postman.
-      These are stored in forward & reverse lookup tables.
-      """
-      if self.debugger.areDebugging("postman.register", 5):
-         self.debugger.debugmessage("postman.register", self.name,name,component)
-      self.things[name] = component
-      self.reversethings[id(component)] = name
+   def link(self, source, sink, passthrough=0):
+       thelink = linkage(source,sink,passthrough)
+       self.linkages.append(thelink)
+       thelink.src.retarget(thelink.dst)
+       return thelink
 
-   def registerlinkage(self, thelinkage):
-      """Registers a linkage with the postman. It's likely this is
-      actually more useful, looking back on this design, since we
-      only deliver things along linkages. (no defaults)
-      """
-      if self.debugger.areDebugging("postman.registerlinkage", 5):
-         self.debugger.debugmessage("postman.registerlinkage", self.name, thelinkage)
-      self.linkages.append(thelinkage)
+   def unlink(self, thecomponent=None, thelinkage=None):
+        """\
+        Destroys the specified linkage, or linkages for the specified component.
+        
+        Note, it only destroys linkages registered in this postoffice.
+        """
+        if thelinkage:
+            try:
+                self.linkages.remove(thelinkage)
+            except ValueError:
+                pass
+            else:
+                thelinkage.src.retarget()    # target at nothing
+        if thecomponent:
+            i=0
+            num =len(self.linkages)
+            while i<num:
+                linkage = self.linkages[i]
+                if linkage.source == thecomponent or linkage.sink == thecomponent:
+                    num=num-1
+                    self.unlink(thelinkage=linkage)
+                else:
+                    i=i+1
+                    
+        
+#         if (not thelinkage) and (not thecomponent):
+#             raise AxonException("Attempt to deregister linkage with both args null")
+#         if (thelinkage and thecomponent):
+#             raise AxonException("Attempt to deregister linkage with both args not null" + `thelinkage` + " " + `thecomponent`)
+#         num = len(self.linkages) # Number of linkages.
+#         i = 0
+#         if (thelinkage):
+#             while num > 0:
+#                 num = num - 1
+#                 if self.linkages[num] is thelinkage:
+#                     if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+#                         self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", thelinkage)
+#                     self.linkages[num].unlink()
+#                     del self.linkages[num]
+#         while (i < num):
+#             if ((self.linkages[i].source is thecomponent) or
+#                 (self.linkages[i].sink is thecomponent)):
+#                 num = num -1 # We remove an item from the list, so num shrinks by 1
+#                 if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+#                     self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", self.linkages[i])
+#                 self.linkages[num].unlink()
+#                 del self.linkages[i]
+#             else:
+#                 i = i +1
+       
+
+#    def register(self, name, component):
+#       """Registers a _named_ component with the postman.
+#       These are stored in forward & reverse lookup tables.
+#       """
+#       if self.debugger.areDebugging("postman.register", 5):
+#          self.debugger.debugmessage("postman.register", self.name,name,component)
+#       self.things[name] = component
+#       self.reversethings[id(component)] = name
+
+#    def registerlinkage(self, thelinkage):
+#       """Registers a linkage with the postman. It's likely this is
+#       actually more useful, looking back on this design, since we
+#       only deliver things along linkages. (no defaults)
+#       """
+#       if self.debugger.areDebugging("postman.registerlinkage", 5):
+#          self.debugger.debugmessage("postman.registerlinkage", self.name, thelinkage)
+#       self.linkages.append(thelinkage)
 
    def deregister(self, name=None, component=None):
-      """This deregisters a component from this postman, deleting
-      the reference to the component object. If the reference isn't
-      deleted, the reference count of the object will never reach
-      zero and never be garbage collected.
-
-      Attempts to partially deal with broken usage. (Which makes this longer
-      than it might need to be otherwise.)
-      """
-      # Most common case by far. (Only one done by Component) - Other cases use this by tail recursion
-      if component and (not name):
-         if self.reversethings[id(component)]:
-            del self.things[self.reversethings[id(component)]]
-         del self.reversethings[id(component)]
-         return self.deregisterlinkage(thecomponent=component)
-      if name and (not component):
-         if self.things[name]:
-            return self.deregister(component=self.things[name]) # Simpify to common case and call recursively.
-      if name and component:
-         if self.things[name] == component: # If name matches the component
-            return self.deregister(component=component) # Simpify to common case and call recursively.
-         else:
-            raise AxonException("Attempt to deregister name" + name + "component " + `component` + "at same time but don't match!")
-      #if (not name) and (not component):
-      raise AxonException("Attempted to deregister null name & null component")
+      if name and not component:
+          if self.things[name]:
+              component = self.things[name]
+      return self.unlink(thecomponent=component)
+       
+#       """This deregisters a component from this postman, deleting
+#       the reference to the component object. If the reference isn't
+#       deleted, the reference count of the object will never reach
+#       zero and never be garbage collected.
+# 
+#       Attempts to partially deal with broken usage. (Which makes this longer
+#       than it might need to be otherwise.)
+#       """
+#       # Most common case by far. (Only one done by Component) - Other cases use this by tail recursion
+#       if component and (not name):
+#          if self.reversethings[id(component)]:
+#             del self.things[self.reversethings[id(component)]]
+#          del self.reversethings[id(component)]
+#          return self.deregisterlinkage(thecomponent=component)
+#       if name and (not component):
+#          if self.things[name]:
+#             return self.deregister(component=self.things[name]) # Simpify to common case and call recursively.
+#       if name and component:
+#          if self.things[name] == component: # If name matches the component
+#             return self.deregister(component=component) # Simpify to common case and call recursively.
+#          else:
+#             raise AxonException("Attempt to deregister name" + name + "component " + `component` + "at same time but don't match!")
+#       #if (not name) and (not component):
+#       raise AxonException("Attempted to deregister null name & null component")
 
    def deregisterlinkage(self, thecomponent=None,thelinkage=None):
-      """De registers a linkage, based on a provided component. Does not yet
-      de-register based on a user supplied linkage.
-      Simply loops through the linkages, looking for the component being
-      de-registered, and de-registers (deletes) any linkages with that component
-      referenced inside.
-      """
-      if (not thelinkage) and (not thecomponent):
-         raise AxonException("Attempt to deregister linkage with both args null")
-      if (thelinkage and thecomponent):
-         raise AxonException("Attempt to deregister linkage with both args not null" + `thelinkage` + " " + `thecomponent`)
-      num = len(self.linkages) # Number of linkages.
-      i = 0
-      if (thelinkage):
-         while num > 0:
-            num = num - 1
-            if self.linkages[num] is thelinkage:
-               if self.debugger.areDebugging("postman.deregisterlinkage", 5):
-                  self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", thelinkage)
-               self.linkages[num].unlink()
-               del self.linkages[num]
-      while (i < num):
-         if ((self.linkages[i].source is thecomponent) or
-             (self.linkages[i].sink is thecomponent)):
-            num = num -1 # We remove an item from the list, so num shrinks by 1
-            if self.debugger.areDebugging("postman.deregisterlinkage", 5):
-               self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", self.linkages[i])
-               self.linkages[num].unlink()
-            del self.linkages[i]
-         else:
-            i = i +1
+       return self.unlink(thecomponent,thelinkage)
+#       """De registers a linkage, based on a provided component. Does not yet
+#       de-register based on a user supplied linkage.
+#       Simply loops through the linkages, looking for the component being
+#       de-registered, and de-registers (deletes) any linkages with that component
+#       referenced inside.
+#       """
+#       if (not thelinkage) and (not thecomponent):
+#          raise AxonException("Attempt to deregister linkage with both args null")
+#       if (thelinkage and thecomponent):
+#          raise AxonException("Attempt to deregister linkage with both args not null" + `thelinkage` + " " + `thecomponent`)
+#       num = len(self.linkages) # Number of linkages.
+#       i = 0
+#       if (thelinkage):
+#          while num > 0:
+#             num = num - 1
+#             if self.linkages[num] is thelinkage:
+#                if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+#                   self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", thelinkage)
+#                self.linkages[num].unlink()
+#                del self.linkages[num]
+#       while (i < num):
+#          if ((self.linkages[i].source is thecomponent) or
+#              (self.linkages[i].sink is thecomponent)):
+#             num = num -1 # We remove an item from the list, so num shrinks by 1
+#             if self.debugger.areDebugging("postman.deregisterlinkage", 5):
+#                self.debugger.debugmessage("postman.deregisterlinkage", "Flushing linkage", self.linkages[i])
+#                self.linkages[num].unlink()
+#             del self.linkages[i]
+#          else:
+#             i = i +1
 
 # Removed because it is a debugging function that if needed should be implemented elsewhere or should return the objects in a structure rather than a formatted string.
    def showqueuelengths(self):
@@ -184,41 +248,41 @@ class postman(microprocess):
          result = result + "]\n"
       return result
 
-   def domessagedelivery(self):
-      """Performs the actual message delivery activity.
-      Loops through the *linkages*, scanning their sources, collects messages
-      for delivery to the sinkwbox of the recipient.
-      """
-      if self.debugger.areDebugging("postman.domessagedelivery", 5):
-         self.debugger.debugmessage("postman.domessagedelivery", 5,self.name,self.showqueuelengths())
-
-      if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
-         self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, self.linkages)
-
-      for link in self.linkages:
-         if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
-            self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, "So Far")
-         if self.debugger.areDebugging("postman.domessagedelivery", 7):
-            self.debugger.debugmessage("postman.domessagedelivery", "DELIVERY", link.sinkbox,link.sink.name)
-         if self.debugger.areDebugging("postman.domessagedelivery", 10):
-            self.debugger.debugmessage("postman.domessagedelivery", self.name +" taking message from ", link.source.name, "outbox", link.sourcebox, " delivering to ", link.sink.name, " inbox ", link.sinkbox)
-         if link.dataToMove():
-             if link.showtransit:
-                 if self.debugger.areDebugging("postman.specificTransits", 1):
-                    self.debugger.debugmessage("postman.specificTransits", self.name + " "+ str(link))
-             link.moveData()
+#    def domessagedelivery(self):
+#       """Performs the actual message delivery activity.
+#       Loops through the *linkages*, scanning their sources, collects messages
+#       for delivery to the sinkwbox of the recipient.
+#       """
+#       if self.debugger.areDebugging("postman.domessagedelivery", 5):
+#          self.debugger.debugmessage("postman.domessagedelivery", 5,self.name,self.showqueuelengths())
+# 
+#       if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
+#          self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, self.linkages)
+# 
+#       for link in self.linkages:
+#          if self.debugger.areDebugging("postman.domessagedelivery.linkages", 5):
+#             self.debugger.debugmessage("postman.domessagedelivery.linkages", self.name, "So Far")
+#          if self.debugger.areDebugging("postman.domessagedelivery", 7):
+#             self.debugger.debugmessage("postman.domessagedelivery", "DELIVERY", link.sinkbox,link.sink.name)
+#          if self.debugger.areDebugging("postman.domessagedelivery", 10):
+#             self.debugger.debugmessage("postman.domessagedelivery", self.name +" taking message from ", link.source.name, "outbox", link.sourcebox, " delivering to ", link.sink.name, " inbox ", link.sinkbox)
+#          if link.dataToMove():
+#              if link.showtransit:
+#                  if self.debugger.areDebugging("postman.specificTransits", 1):
+#                     self.debugger.debugmessage("postman.specificTransits", self.name + " "+ str(link))
+#              link.moveData()
 
    def islinkageregistered(self, linkage):
       """Returns a true value if the linkage given is registered with the postman."""
       return self.linkages.count(linkage)
 
-   def main(self):
-      yield "initialised"
-      while 1:
-         self.domessagedelivery()
-         if self.debugger.areDebugging("postman.main", 10):
-            self.debugger.debugmessage("postman.main", self.name)
-         yield 1
+#    def main(self):
+#       yield "initialised"
+#       while 1:
+#          self.domessagedelivery()
+#          if self.debugger.areDebugging("postman.main", 10):
+#             self.debugger.debugmessage("postman.main", self.name)
+#          yield 1
 
 
 if __name__ == '__main__':

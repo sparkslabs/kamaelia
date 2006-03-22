@@ -132,7 +132,7 @@ from Linkage import linkage
 from Ipc import *
 
 
-from Box import nullbox, realbox
+from Box import makeInbox,makeOutbox
 
 # Component - a microprocess with a bunch of input/output queues.
 #
@@ -198,13 +198,13 @@ class component(microprocess):
       super(component, self).__init__()
       self.inboxes = dict()
       self.outboxes = dict()
-### NEW
-      # Create null (empty, no storage) boxes for inboxes/outboxes
+
+      # Create boxes for inboxes/outboxes
       for boxname in self.Inboxes:
-          self.inboxes[boxname] = nullbox()
+          self.inboxes[boxname] = makeInbox(notify=self._unpause)
       for boxname in self.Outboxes:
-          self.outboxes[boxname] = nullbox()
-### \NEW
+          self.outboxes[boxname] = makeOutbox()
+
 
       self.children = []
 
@@ -270,7 +270,7 @@ class component(microprocess):
       You will want to call this function if you create child components of your
       component.
       """
-      self.postoffice.register(child.name,child)
+#      self.postoffice.register(child.name,child)
       self.children.append(child)
 
    def addChildren(self,*children):
@@ -294,7 +294,8 @@ class component(microprocess):
       your component.
       """
       removeAll(self.children, child)
-      self.postoffice.deregister(component=child)
+#      self.postoffice.deregister(component=child)
+      self.postoffice.deregisterlinkage(thecomponent=child)
 
    def childComponents(self):
       """'C.childComponents()' -
@@ -334,9 +335,17 @@ class component(microprocess):
 
       passthrough and pipewidth are defined as in the linkage class
       """
-      source_comp,sourcebox = source
-      sink_comp,sinkbox = sink
-      return linkage(source_comp, sink_comp, sourcebox, sinkbox,self.postoffice,passthrough=passthrough,pipewidth=pipewidth,synchronous=synchronous)
+#      source_comp,sourcebox = source
+#      sink_comp,sinkbox = sink
+#      return linkage(source_comp, sink_comp, sourcebox, sinkbox,self.postoffice,passthrough=passthrough,pipewidth=pipewidth,synchronous=synchronous)
+      # NOTE: support for synchronous and pipewidth now missing
+
+      return self.postoffice.link(source, sink, passthrough)
+
+
+   def unlink(self, thecomponent=None, thelinkage=None):
+       return self.postoffice.unlink(thecomponent,thelinkage)
+
 
    def recv(self,boxname="inbox"):
       """'C.recv("boxname")' -
@@ -378,99 +387,99 @@ class component(microprocess):
          pass
       self.outboxes[boxname].append(message)
 
-   def _collect(self, boxname="outbox"):
-      """**INTERNAL** 'C._collect("boxname")' -
-      returns the first piece of data in the requested outbox.
-
-      Used by a postman to collect messages to the outside world from
-      a particular outbox of this component.
-
-      **You are unlikely to want to call this method directly.** You are unlikely to
-      want to override this.
-      """
-      result = self.outboxes[boxname][0]
-      del self.outboxes[boxname][0]
-      self._unpause()
-      return result
-
-
-   def _safeCollect(self, boxname="outbox"):
-      """C.safeCollect("boxname")' - returns the first piece of data in the requested outbox.
-
-      Used by ../NewInternetConnection.py currently - in _test_ code. Not normally called by clients
-      """
-      try:
-         return self._collect(boxname)
-      except IndexError:
-         pass
-
-   def _collectInbox(self, boxname="inbox"):
-      """**INTERNAL** 'C._collect("boxname")' -
-      returns the first piece of data in the requested inbox.
-
-      XXXX Used for passthrough deliveries
-
-      Used by a postman to collect messages to be passed through
-      a particular inbox of this component.
-
-      **You are unlikely to want to call this method directly.** You are unlikely to
-      want to override this.
-      """
-      result = self.inboxes[boxname][0]
-      del self.inboxes[boxname][0]
-      return result
-
-   def _deliver(self,message,boxname="inbox",force=False):
-      """**INTERNAL** 'C._deliver(message, "boxname")' -
-      appends message to the requested inbox.
-
-      Used by a postman to deliver messages from the outside world to
-      a particular inbox of this component.  Raises noSpaceInbox if the box is
-      synchronised and full unless force is true when it carrys on and overfills.
-
-      **You are unlikely to want to call this method directly.** You are unlikely to
-      want to override this method.
-      """
-      try:
-         (boxtype,maxdepth) =self.synchronised["inbox"][boxname]
-         if len(self.inboxes[boxname]) >= maxdepth and not force:
-            raise noSpaceInBox
-      except KeyError:
-         pass
-      self.inboxes[boxname].append(message)
-      self._unpause()
-
-   def _passThroughDeliverOut(self,message,boxname="outbox",force=False):
-      """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
-      appends message to the requested outbox.
-
-      Used by a postman to deliver messages from a subcomponent outbox to
-      a component's outbox - ie a pass through linkage.  Raises noSpaceInbox if
-      the box is synchronised and full unless force is true when it carrys on and
-      overfills.
-
-      **You are unlikely to want to call this method directly.** You are unlikely to
-      want to override this method.
-      """
-      # Delegate to send method. (Reason for having this function rather than just
-      # name is to have the documentation!
-      self.send(message, boxname, force)
-
-   def _passThroughDeliverIn(self,message,boxname="inbox",force=False):
-      """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
-      appends message to the requested outbox.
-
-      Used by a postman to deliver messages from a supercomponent inbox to
-      a subcomponent's inbox - ie a pass through linkage.  Raises noSpaceInbox if
-      the box is synchronised and full unless force is true when it carrys on and
-      overfills.
-
-      **You are unlikely to want to call this method directly.** You are unlikely to
-      want to override this method.
-      """
-      # Delegate to _deliver method. (Reason for having this function rather than just
-      # name is to have the documentation!
-      self._deliver(message, boxname,force)
+#    def _collect(self, boxname="outbox"):
+#       """**INTERNAL** 'C._collect("boxname")' -
+#       returns the first piece of data in the requested outbox.
+# 
+#       Used by a postman to collect messages to the outside world from
+#       a particular outbox of this component.
+# 
+#       **You are unlikely to want to call this method directly.** You are unlikely to
+#       want to override this.
+#       """
+#       result = self.outboxes[boxname][0]
+#       del self.outboxes[boxname][0]
+#       self._unpause()
+#       return result
+# 
+# 
+#    def _safeCollect(self, boxname="outbox"):
+#       """C.safeCollect("boxname")' - returns the first piece of data in the requested outbox.
+# 
+#       Used by ../NewInternetConnection.py currently - in _test_ code. Not normally called by clients
+#       """
+#       try:
+#          return self._collect(boxname)
+#       except IndexError:
+#          pass
+# 
+#    def _collectInbox(self, boxname="inbox"):
+#       """**INTERNAL** 'C._collect("boxname")' -
+#       returns the first piece of data in the requested inbox.
+# 
+#       XXXX Used for passthrough deliveries
+# 
+#       Used by a postman to collect messages to be passed through
+#       a particular inbox of this component.
+# 
+#       **You are unlikely to want to call this method directly.** You are unlikely to
+#       want to override this.
+#       """
+#       result = self.inboxes[boxname][0]
+#       del self.inboxes[boxname][0]
+#       return result
+# 
+#    def _deliver(self,message,boxname="inbox",force=False):
+#       """**INTERNAL** 'C._deliver(message, "boxname")' -
+#       appends message to the requested inbox.
+# 
+#       Used by a postman to deliver messages from the outside world to
+#       a particular inbox of this component.  Raises noSpaceInbox if the box is
+#       synchronised and full unless force is true when it carrys on and overfills.
+# 
+#       **You are unlikely to want to call this method directly.** You are unlikely to
+#       want to override this method.
+#       """
+#       try:
+#          (boxtype,maxdepth) =self.synchronised["inbox"][boxname]
+#          if len(self.inboxes[boxname]) >= maxdepth and not force:
+#             raise noSpaceInBox
+#       except KeyError:
+#          pass
+#       self.inboxes[boxname].append(message)
+#       self._unpause()
+# 
+#    def _passThroughDeliverOut(self,message,boxname="outbox",force=False):
+#       """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
+#       appends message to the requested outbox.
+# 
+#       Used by a postman to deliver messages from a subcomponent outbox to
+#       a component's outbox - ie a pass through linkage.  Raises noSpaceInbox if
+#       the box is synchronised and full unless force is true when it carrys on and
+#       overfills.
+# 
+#       **You are unlikely to want to call this method directly.** You are unlikely to
+#       want to override this method.
+#       """
+#       # Delegate to send method. (Reason for having this function rather than just
+#       # name is to have the documentation!
+#       self.send(message, boxname, force)
+# 
+#    def _passThroughDeliverIn(self,message,boxname="inbox",force=False):
+#       """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
+#       appends message to the requested outbox.
+# 
+#       Used by a postman to deliver messages from a supercomponent inbox to
+#       a subcomponent's inbox - ie a pass through linkage.  Raises noSpaceInbox if
+#       the box is synchronised and full unless force is true when it carrys on and
+#       overfills.
+# 
+#       **You are unlikely to want to call this method directly.** You are unlikely to
+#       want to override this method.
+#       """
+#       # Delegate to _deliver method. (Reason for having this function rather than just
+#       # name is to have the documentation!
+#       self._deliver(message, boxname,force)
 
    def main(self):
       """'C.main()' **You normally will not want to override or call this method**
@@ -504,22 +513,6 @@ class component(microprocess):
    def _closeDownMicroprocess(self):
       return shutdownMicroprocess(self.postoffice)
 
-#
-# NEW
-#
-   def instantiate(self, inbox):
-       if self.inboxes[inbox].__class__ == nullbox:
-          self.inboxes[inbox] = realbox(self)
-       return self.inboxes[inbox]
-
-   def mergeOutbox(self, outbox, box):
-       if self.outboxes[outbox].__class__ == nullbox:
-           self.outboxes[outbox] = box
-       else:
-           # This was linked somewhere else. Since the data has already been
-           # delivered (at point of send), the logic is identical here.
-           # But being explicit about it!
-           self.outboxes[outbox] = box
 
 if 0: # if __name__ == '__main__':
    def producersConsumersSystemTest():

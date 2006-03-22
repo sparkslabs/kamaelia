@@ -1,43 +1,62 @@
 #!/usr/bin/env python
 
 
-class nullbox(object):
+class nullsink(object):
     def __init__(self):
-        super(nullbox,self).__init__()
-        self.sources = []
+        super(nullsink,self).__init__()
     def append(self, data):
         pass
     def __len__(self):
         return 0
-    def retarget(self, target):
-        pass
+#    def addsource(self, postbox):
+#        pass
+#    def removesource(self, postbox):
+#        pass        
+    
+    
+class realsink(list):
+    pass
+#    def addsource(self, postbox):
+#        pass
+#    def removesource(self, postbox):
+#        pass        
 
-class realbox(list):
-    def __init__(self, owner):
-        super(realbox,self).__init__()
-        self.owner = owner
-        self.sources = []
-    def append(self,object):
-        self.owner._unpause()
-        return super(realbox,self).append(object)
-    def retarget(self, target):
-        for box in self.sources:
-            box.retarget(target)
 
-class proxybox(object):
-    def __init__(self, target):
-        super(proxybox,self).__init__()
-        self.target = target
-        self.target.sources.append(self)
-        self.sources = []
-    def append(self, data):
-        return self.target.append(data)
-    def __len__(self):
-        return len(self.target)
-    def retarget(self, target):
-        self.target.sources.remove(self)
-        self.target = target
-        self.target.sources.append(self)
-        for box in self.sources:
-            box.retarget(target)
+class postbox(object):
+    def __init__(self, storage, notify=None):
+        super(postbox,self).__init__()
+        self.storage = storage
+        self.sink = self.storage
+        self.notify = notify
+#        self.sources = []
+#        self.addsource = self.sources.append
+#        self.removesource = self.sources.remove
         
+    def append(self, data):
+        if self.notify:
+            self.notify()
+        return self.sink.append(data)
+    
+    def __len__(self):
+        return len(self.sink)
+
+    def pop(self,index):
+        return self.sink.pop(index)
+     
+    def retarget(self, newtarget=None):
+#         self.sink.removesource(self)
+        if newtarget==None:
+            self.sink = self.storage
+        else:
+            self.sink = newtarget
+#            while len(self.storage):
+#                self.sink.append( self.storage.pop(0) )
+#         self.sink.addsource(self)
+
+
+
+def makeInbox(notify):
+    return postbox(storage=realsink(), notify=notify)
+
+def makeOutbox():
+    return postbox(storage=nullsink())

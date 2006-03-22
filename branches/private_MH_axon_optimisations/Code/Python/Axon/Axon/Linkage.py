@@ -47,142 +47,167 @@ from Axon import AxonObject
 from util import removeAll
 from idGen import strId, numId,Debug
 from debug import debug
-from Box import proxybox, realbox, nullbox
+
 
 class linkage(AxonObject):
-   """Linkage - Since components can only talk to local interfaces, this defines the linkages
-   between inputs and outputs of a component.
-   At present no argument is really optional.
-   """
-   def __init__(self, source, sink, sourcebox="outbox", sinkbox="inbox",
-                postoffice=None, passthrough=0, pipewidth=0,
-                synchronous=None):
-      # passthrough==0 -> outbox > inbox
-      # passthrough==1 -> inbox > inbox
-      # passthrough==2 -> outbox > outbox
-      # There is potential for a value 3 that passes through data that a component no longer has a need to process.  This is not implemented yet!
+    def __init__(self, source, sink, passthrough=0):
+        super(linkage,self).__init__()
+        (sourcecomp,sourcebox) = source
+        (sinkcomp,sinkbox) = sink
+        self.source = sourcecomp
+        self.sink   = sinkcomp
+        self.sourcebox = sourcebox
+        self.sinkbox   = sinkbox
+        self.passthrough = passthrough
+        
+        if passthrough==0:
+            self.src = sourcecomp.outboxes[sourcebox]
+            self.dst = sinkcomp.inboxes[sinkbox]
+        elif passthrough==1:
+            self.src = sourcecomp.inboxes[sourcebox]
+            self.dst = sinkcomp.inboxes[sinkbox]
+        elif passthrough==2:
+            self.src = sourcecomp.outboxes[sourcebox]
+            self.dst = sinkcomp.outboxes[sinkbox]
+        else:
+            raise "passthrough value wrong"
 
-      """ This needs to tag the source/sink boxes as synchronous, to get component to go "BANG" if
-      writing to a blocked
-      """
-      if not sourcebox in source.outboxes:
-         if not (passthrough ==  1): # If passthrough in, the source will be an _inbox_
-            raise AxonException("No such outbox: " + sourcebox+":"+str(source))
-      if not sinkbox in sink.inboxes:
-         if not (passthrough ==  2): # If passthrough in, the sink will be an _outbox_
-            raise AxonException("No such inbox: " + sinkbox+" Component: "+str(sink))
-      self.source = source
-      self.sink = sink
-      self.sourcebox = sourcebox
-      self.sinkbox = sinkbox
-      
-      # MS's new logic
-      # unfortunately its broken:
-      #  * suppose you already have an src-inbox --> dst-inbox passthrough
-      #    now create a src-outbox --> src-inbox link ...
-      #    currently, this will break the original passthrough link because
-      #    of how the box 'instantiation' occurs
-      #  * also if a.outbox --> b.outbox exists, then b.outbox --> c.inbox is
-      #    created, a.outbox will no longer point at the right thing
-      
-      if passthrough == 0: # Normal case
-          box = sink.instantiate(sinkbox)
-          source.outboxes[sourcebox] = proxybox(box)
-      if passthrough == 1: # Passthrough in
-          box = source.inboxes[sourcebox]
-          sink.inboxes[sinkbox] = box
-          source.inboxes[sourcebox] = proxybox(box)
-      if passthrough == 2: # Passthrough out
-          source.outboxes[sourcebox] = proxybox(sink.outboxes[sinkbox])
 
-      self.showtransit = 0
-      self.passthrough = passthrough
-      self.pipewidth=pipewidth
-      if pipewidth:
-         if not synchronous and synchronous is not None:
-            raise ArgumentsClash("When creating a linage if pipewidth is set then synchronous must not be false!!!",pipewidth,synchronous)
-         self.setSynchronous()
-      elif synchronous:
-         self.pipewidth = 1
-         self.setSynchronous()
-      else:
-         self.synchronous=False
-      if not (postoffice ==None):              ###########
-         postoffice.registerlinkage(self)      ########### leaving this in for the moment
-      assert Debug("linkage.linkage",1,self)
-      
-   def unlink(self):
-       # now linkages exist also as the direct references between inboxes/outboxes,
-       # we need to rejig them when a linkage is deleted
-       if self.passthrough == 1:  # Passthrough in
-           newbox = realbox(self.source)
-           self.sink.inboxes[self.sinkbox].retarget(newbox)
-           self.source.inboxes[self.sourcebox] = newbox
-       else:
-           raise
-           pass # deal with this later
 
-   def setSynchronous(self, pipewidth = None):
-      self.synchronous=True
-      if pipewidth is not None:
-         self.pipewidth=pipewidth
-      if not self.pipewidth:
-         self.pipewidth=1
-      assert self.pipewidth > 0
-      if self.passthrough ==0:
-         self.source._synchronisedBox("source","outbox",self.sourcebox, self.pipewidth)
-         self.sink._synchronisedBox("sink","inbox",self.sinkbox, self.pipewidth)
-      if self.passthrough ==1:
-         self.source._synchronisedBox("source","inbox",self.sourcebox, self.pipewidth)
-         self.sink._synchronisedBox("sink","inbox",self.sinkbox, self.pipewidth)
-      if self.passthrough ==2:
-         self.source._synchronisedBox("source","outbox",self.sourcebox, self.pipewidth)
-         self.sink._synchronisedBox("sink","outbox",self.sinkbox, self.pipewidth)     
-      
-   def sourcePair(self):
-      return self.source, self.sourcebox
-
-   def sinkPair(self):
-      return self.sink, self.sinkbox
-
-   def __str__(self):
-      return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"
-
-   def dataToMove(self):
-      if self.passthrough == 1:
-         return len(self.source.inboxes[self.sourcebox]) > 0
-      else:
-         return len(self.source.outboxes[self.sourcebox]) > 0
-
-   def moveDataWithCheck(self):
-      if self.dataToMove():
-         self.moveData()
-
-   def moveData(self, force = False):
-      if self.synchronous and not force: # Check the sink has space to recieve the data
-         if self.passthrough != 2: # Delivering to an inbox
-            if len(self.sink.inboxes[self.sinkbox]) >= self.pipewidth:
-               return # Do not perform delivery
-         elif len(self.sink.outboxes[self.sinkbox]) >= self.pipewidth:
-               return # Do not perform delivery
-      if self.showtransit:
-         print "SOURCE:", self.source.name, self.sourcebox
-         print "SINK:", self.sink.name, self.sinkbox
-      if self.passthrough==0:
-         message = self.source._collect(self.sourcebox)
-         self.sink._deliver(message,self.sinkbox,force)
-         return
-      if self.passthrough==1: # Passthrough In
-         message = self.source._collectInbox(self.sourcebox)
-         self.sink._passThroughDeliverIn(message,self.sinkbox,force)
-         return
-      if self.passthrough==2: # Passthrough Out
-         message = self.source._collect(self.sourcebox)
-         self.sink._passThroughDeliverOut(message,self.sinkbox,force)
-         return
-   
-   def setShowTransit(self, showtransit):
-      self.showtransit=showtransit
+#class linkage(AxonObject):
+#    """Linkage - Since components can only talk to local interfaces, this defines the linkages
+#    between inputs and outputs of a component.
+#    At present no argument is really optional.
+#    """
+#    def __init__(self, source, sink, sourcebox="outbox", sinkbox="inbox",
+#                 postoffice=None, passthrough=0, pipewidth=0,
+#                 synchronous=None):
+#       # passthrough==0 -> outbox > inbox
+#       # passthrough==1 -> inbox > inbox
+#       # passthrough==2 -> outbox > outbox
+#       # There is potential for a value 3 that passes through data that a component no longer has a need to process.  This is not implemented yet!
+# 
+#       """ This needs to tag the source/sink boxes as synchronous, to get component to go "BANG" if
+#       writing to a blocked
+#       """
+#       if not sourcebox in source.outboxes:
+#          if not (passthrough ==  1): # If passthrough in, the source will be an _inbox_
+#             raise AxonException("No such outbox: " + sourcebox+":"+str(source))
+#       if not sinkbox in sink.inboxes:
+#          if not (passthrough ==  2): # If passthrough in, the sink will be an _outbox_
+#             raise AxonException("No such inbox: " + sinkbox+" Component: "+str(sink))
+#       self.source = source
+#       self.sink = sink
+#       self.sourcebox = sourcebox
+#       self.sinkbox = sinkbox
+#       
+#       # MS's new logic
+#       # unfortunately its broken:
+#       #  * suppose you already have an src-inbox --> dst-inbox passthrough
+#       #    now create a src-outbox --> src-inbox link ...
+#       #    currently, this will break the original passthrough link because
+#       #    of how the box 'instantiation' occurs
+#       #  * also if a.outbox --> b.outbox exists, then b.outbox --> c.inbox is
+#       #    created, a.outbox will no longer point at the right thing
+#       
+#       if passthrough == 0: # Normal case
+#           box = sink.instantiate(sinkbox)
+#           source.outboxes[sourcebox] = proxybox(box)
+#       if passthrough == 1: # Passthrough in
+#           box = source.inboxes[sourcebox]
+#           sink.inboxes[sinkbox] = box
+#           source.inboxes[sourcebox] = proxybox(box)
+#       if passthrough == 2: # Passthrough out
+#           source.outboxes[sourcebox] = proxybox(sink.outboxes[sinkbox])
+# 
+#       self.showtransit = 0
+#       self.passthrough = passthrough
+#       self.pipewidth=pipewidth
+#       if pipewidth:
+#          if not synchronous and synchronous is not None:
+#             raise ArgumentsClash("When creating a linage if pipewidth is set then synchronous must not be false!!!",pipewidth,synchronous)
+#          self.setSynchronous()
+#       elif synchronous:
+#          self.pipewidth = 1
+#          self.setSynchronous()
+#       else:
+#          self.synchronous=False
+#       if not (postoffice ==None):              ###########
+#          postoffice.registerlinkage(self)      ########### leaving this in for the moment
+#       assert Debug("linkage.linkage",1,self)
+#       
+#    def unlink(self):
+#        # now linkages exist also as the direct references between inboxes/outboxes,
+#        # we need to rejig them when a linkage is deleted
+#        if self.passthrough == 1:  # Passthrough in
+#            newbox = realbox(self.source)
+#            self.sink.inboxes[self.sinkbox].retarget(newbox)
+#            self.source.inboxes[self.sourcebox] = newbox
+#        else:
+#            raise
+#            pass # deal with this later
+# 
+#    def setSynchronous(self, pipewidth = None):
+#       self.synchronous=True
+#       if pipewidth is not None:
+#          self.pipewidth=pipewidth
+#       if not self.pipewidth:
+#          self.pipewidth=1
+#       assert self.pipewidth > 0
+#       if self.passthrough ==0:
+#          self.source._synchronisedBox("source","outbox",self.sourcebox, self.pipewidth)
+#          self.sink._synchronisedBox("sink","inbox",self.sinkbox, self.pipewidth)
+#       if self.passthrough ==1:
+#          self.source._synchronisedBox("source","inbox",self.sourcebox, self.pipewidth)
+#          self.sink._synchronisedBox("sink","inbox",self.sinkbox, self.pipewidth)
+#       if self.passthrough ==2:
+#          self.source._synchronisedBox("source","outbox",self.sourcebox, self.pipewidth)
+#          self.sink._synchronisedBox("sink","outbox",self.sinkbox, self.pipewidth)     
+#       
+#    def sourcePair(self):
+#       return self.source, self.sourcebox
+# 
+#    def sinkPair(self):
+#       return self.sink, self.sinkbox
+# 
+#    def __str__(self):
+#       return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"
+# 
+#    def dataToMove(self):
+#       if self.passthrough == 1:
+#          return len(self.source.inboxes[self.sourcebox]) > 0
+#       else:
+#          return len(self.source.outboxes[self.sourcebox]) > 0
+# 
+#    def moveDataWithCheck(self):
+#       if self.dataToMove():
+#          self.moveData()
+# 
+#    def moveData(self, force = False):
+#       if self.synchronous and not force: # Check the sink has space to recieve the data
+#          if self.passthrough != 2: # Delivering to an inbox
+#             if len(self.sink.inboxes[self.sinkbox]) >= self.pipewidth:
+#                return # Do not perform delivery
+#          elif len(self.sink.outboxes[self.sinkbox]) >= self.pipewidth:
+#                return # Do not perform delivery
+#       if self.showtransit:
+#          print "SOURCE:", self.source.name, self.sourcebox
+#          print "SINK:", self.sink.name, self.sinkbox
+#       if self.passthrough==0:
+#          message = self.source._collect(self.sourcebox)
+#          self.sink._deliver(message,self.sinkbox,force)
+#          return
+#       if self.passthrough==1: # Passthrough In
+#          message = self.source._collectInbox(self.sourcebox)
+#          self.sink._passThroughDeliverIn(message,self.sinkbox,force)
+#          return
+#       if self.passthrough==2: # Passthrough Out
+#          message = self.source._collect(self.sourcebox)
+#          self.sink._passThroughDeliverOut(message,self.sinkbox,force)
+#          return
+#    
+#    def setShowTransit(self, showtransit):
+#       self.showtransit=showtransit
 
 if __name__ == '__main__':
    print "This code current has no test code"
