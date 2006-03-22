@@ -6,6 +6,8 @@ from Axon.Ipc import shutdown
 import select
 from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 
+READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
+
 class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     Inboxes = {
          "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
@@ -26,8 +28,34 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
         meta[selectable] = replyService, outbox, L
         selectables.append(selectable)
 
+    def handleNotify(self, meta, readers,writers, exceptionals):
+        if self.dataReady("notify"):
+            message = self.recv("notify")
+            if isinstance(message, newReader):
+                replyService, selectable = message.object
+                self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+
+            if isinstance(message, newWriter):
+                replyService, selectable = message.object
+                self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
+
+            if isinstance(message, newExceptional):
+                replyService, selectable = message.object
+                self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
+
+            if isinstance(message, removeReader):
+                selectable = message.object
+                self.removeLinks(selectable, meta[READERS], readers)
+
+            if isinstance(message, removeWriter):
+                selectable = message.object
+                self.removeLinks(selectable, meta[WRITERS], writers)
+
+            if isinstance(message, removeExceptional):
+                selectable = message.object
+                self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
+
     def main(self):
-        READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
         readers,writers, exceptionals = [],[], []
         meta = [ {}, {}, {} ]
         self.pause()
@@ -37,32 +65,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                 if isinstance(message,shutdown):
                    return
 
-            if self.dataReady("notify"):
-                message = self.recv("notify")
-                if isinstance(message, newReader):
-                    replyService, selectable = message.object
-                    self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
-
-                if isinstance(message, newWriter):
-                    replyService, selectable = message.object
-                    self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
-
-                if isinstance(message, newExceptional):
-                    replyService, selectable = message.object
-                    self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
-
-                if isinstance(message, removeReader):
-                    selectable = message.object
-                    self.removeLinks(selectable, meta[READERS], readers)
-
-                if isinstance(message, removeWriter):
-                    selectable = message.object
-                    self.removeLinks(selectable, meta[WRITERS], writers)
-
-                if isinstance(message, removeExceptional):
-                    selectable = message.object
-                    self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
-
+            self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 read_write_except = select.select(readers, writers,exceptionals,0)
                 for i in xrange(3):
