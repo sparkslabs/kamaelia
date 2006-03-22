@@ -7,7 +7,7 @@ import select
 from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
-
+FAILHARD = False
 class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     Inboxes = {
          "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
@@ -16,7 +16,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
     }
     def removeLinks(self, selectable, meta, selectables):
         replyService, outbox, Linkage = meta[selectable]
-        self.postoffice.deregisterlinkage(Linkage)
+        self.postoffice.deregisterlinkage(thelinkage=Linkage)
         selectables.remove(selectable)
         self.deleteOutbox(outbox)
         del meta[selectable]
@@ -67,7 +67,13 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
 
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
-                read_write_except = select.select(readers, writers,exceptionals,0)
+                try:
+                    read_write_except = select.select(readers, writers,exceptionals,0)
+                except ValueError, e:
+                    print dir(e), e.args
+                    if FAILHARD:
+                        raise e
+
                 for i in xrange(3):
                     for selectable in read_write_except[i]:
                         try:
@@ -76,5 +82,6 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                             replyService, outbox, linkage = None, None, None
                         except KeyError:
                             readers = [ x for x in readers if x != selectable ]
-
+            elif not self.anyReady():
+                self.pause()
             yield 1
