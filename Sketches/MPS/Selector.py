@@ -4,6 +4,7 @@
 import Axon
 from Axon.Ipc import shutdown
 import select
+from Kamaelia.KamaeliaIPC import newReader, removeReader
 
 class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     Inboxes = {
@@ -22,17 +23,29 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                    return
             if self.dataReady("notify"):
                 message = self.recv("notify")
-                replyService, selectablereader = message.object
+                if isinstance(message, newReader):
+                    replyService, selectablereader = message.object
+                    outbox = self.addOutbox("readerNotify")
+                    L = self.link((self, outbox), replyService)
+                    readerMeta[selectablereader] = replyService, outbox, L
+                    readers.append(selectablereader)
 
-                outbox = self.addOutbox("readerNotify")
-                self.link((self, outbox), replyService)
-
-                readerMeta[selectablereader] = replyService, outbox
-                readers.append(selectablereader)
+                if isinstance(message, removeReader):
+                    selectablereader = message.object
+                    replyService, outbox, Linkage = readerMeta[selectablereader]
+                    self.postoffice.deregisterlinkage(Linkage)
+                    readers = [ x for x in readers if x != selectablereader ]
+                    self.deleteOutbox(outbox)
+                    del readerMeta[selectablereader]
+                    Linkage = None
 
             if len(readers) > 0:
                 r, w, e = select.select(readers, [],[],0)
                 for readable in r:
-                   replyService, outbox = readerMeta[readable]
-                   self.send(readable, outbox)
+                    try:
+                        replyService, outbox, linkage = readerMeta[readable]
+                        self.send(readable, outbox)
+                        replyService, outbox, linkage = None, None, None
+                    except KeyError:
+                        readers = [ x for x in readers if x != selectablereader ]
             yield 1
