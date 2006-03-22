@@ -27,17 +27,20 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
         L = self.link((self, outbox), replyService)
         meta[selectable] = replyService, outbox, L
         selectables.append(selectable)
+        return L
 
     def handleNotify(self, meta, readers,writers, exceptionals):
         if self.dataReady("notify"):
             message = self.recv("notify")
             if isinstance(message, newReader):
                 replyService, selectable = message.object
-                self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+                L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+                L.showtransit = 0
 
             if isinstance(message, newWriter):
                 replyService, selectable = message.object
-                self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
+                L = self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
+                L.showtransit = 0
 
             if isinstance(message, newExceptional):
                 replyService, selectable = message.object
@@ -81,7 +84,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                             self.send(selectable, outbox)
                             replyService, outbox, linkage = None, None, None
                         except KeyError:
-                            readers = [ x for x in readers if x != selectable ]
+                            print "Error!"
+                            pass
             elif not self.anyReady():
                 self.pause()
             yield 1
