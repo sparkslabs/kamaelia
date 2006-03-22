@@ -12,63 +12,60 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
          "inbox" : "Not used at present",
          "notify" : "Used to be notified about things to select"
     }
+    def removeLinks(self, selectable, meta, selectables):
+        replyService, outbox, Linkage = meta[selectable]
+        self.postoffice.deregisterlinkage(Linkage)
+        selectables.remove(selectable)
+        self.deleteOutbox(outbox)
+        del meta[selectable]
+        Linkage = None
+
+    def addLinks(self, replyService, selectable, meta, selectables, boxBase):
+        outbox = self.addOutbox(boxBase)
+        L = self.link((self, outbox), replyService)
+        meta[selectable] = replyService, outbox, L
+        selectables.append(selectable)
+
     def main(self):
+        READERS = 0
+        WRITERS = 1
+        EXCEPTIONALS = 2
         readers,writers = [],[]
-        readerMeta,writerMeta = {}, {}
+        meta = [ {}, {}, {} ]
         self.pause()
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
                 message = self.recv("control")
                 if isinstance(message,shutdown):
                    return
+
             if self.dataReady("notify"):
                 message = self.recv("notify")
                 if isinstance(message, newReader):
-                    replyService, selectablereader = message.object
-                    outbox = self.addOutbox("readerNotify")
-                    L = self.link((self, outbox), replyService)
-                    readerMeta[selectablereader] = replyService, outbox, L
-                    readers.append(selectablereader)
+                    replyService, selectable = message.object
+                    self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
 
                 if isinstance(message, newWriter):
-                    replyService, selectablewriter = message.object
-                    outbox = self.addOutbox("writerNotify")
-                    L = self.link((self, outbox), replyService)
-                    writerMeta[selectablewriter] = replyService, outbox, L
-                    writers.append(selectablewriter )
+                    replyService, selectable = message.object
+                    self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
 
                 if isinstance(message, removeReader):
                     selectablereader = message.object
-                    replyService, outbox, Linkage = readerMeta[selectablereader]
-                    self.postoffice.deregisterlinkage(Linkage)
-                    readers = [ x for x in readers if x != selectablereader ]
-                    self.deleteOutbox(outbox)
-                    del readerMeta[selectablereader]
-                    Linkage = None
+                    self.removeLinks(selectablereader, meta[READERS], readers)
 
                 if isinstance(message, removeWriter):
                     selectablewriter = message.object
-                    replyService, outbox, Linkage = writerMeta[selectablewriter]
-                    self.postoffice.deregisterlinkage(Linkage)
-                    writers = [ x for x in writers if x != selectablewriter ]
-                    self.deleteOutbox(outbox)
-                    del writerMeta[selectablewriter]
-                    Linkage = None
+                    self.removeLinks(selectablewriter, meta[WRITERS], writers)
 
             if len(readers) + len(writers) > 0:
-                r, w, e = select.select(readers, [],[],0)
-                for readable in r:
-                    try:
-                        replyService, outbox, linkage = readerMeta[readable]
-                        self.send(readable, outbox)
-                        replyService, outbox, linkage = None, None, None
-                    except KeyError:
-                        readers = [ x for x in readers if x != selectablereader ]
-                for writeable in w:
-                    try:
-                        replyService, outbox, linkage = writerMeta[writeable]
-                        self.send(writeable, outbox)
-                        replyService, outbox, linkage = None, None, None
-                    except KeyError:
-                        writers = [ x for x in writers if x != writeable ]
+                read_write_except = select.select(readers, writers,[],0)
+                for i in xrange(2):
+                    for selectable in read_write_except[i]:
+                        try:
+                            replyService, outbox, linkage = meta[i][selectable]
+                            self.send(selectable, outbox)
+                            replyService, outbox, linkage = None, None, None
+                        except KeyError:
+                            readers = [ x for x in readers if x != selectable ]
+
             yield 1
