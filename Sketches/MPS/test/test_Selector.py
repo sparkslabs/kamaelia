@@ -8,7 +8,7 @@ from Selector import Selector
 
 import Axon
 from Axon.Ipc import shutdown
-from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter
+from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 
 class SmokeTests_Selector(unittest.TestCase):
     def test_SmokeTest(self):
@@ -217,7 +217,7 @@ class Readables_Selector(unittest.TestCase):
 
 
 
-    def test_ActivityOnAnyReaderResultsInMessageOnThatWritersService(self):
+    def test_ActivityOnAnyWriterResultsInMessageOnThatWritersService(self):
         "main - Activity on a selectable results in a message appearing in the service provided to the selector for that selectable"
 
         MOCKSELECTORMODULE = MockSelect(results=[ ([],["LOOKINGFORTHIS"],[]), 
@@ -251,7 +251,7 @@ class Readables_Selector(unittest.TestCase):
         self.assertEqual(selectable,"ANDTHENFORTHIS")#, "The value returned should be the selectable we originally asked for")
 
     def test_RemoveWriter_ResultsInWriterNoLongerBeingSelectedOrWiredIn(self):
-        "main - Sending a remove reader message unwires/links a component, and also removes it's selectable from the readers list"
+        "main - Sending a remove writer message unwires/links a component, and also removes it's selectable from the writers list"
         MOCKSELECTORMODULE = MockSelect()
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
@@ -261,6 +261,60 @@ class Readables_Selector(unittest.TestCase):
         dummyservice = (D, "inbox")
         S._deliver(newWriter(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         S._deliver(removeWriter(S,"LOOKINGFORTHIS"),"notify")
+
+        for i in xrange(100):
+            S.next();
+            try:
+               S.postoffice.next()
+            except:
+               pass
+        print 
+        self.assert_( D.inboxes["inbox"] == [] )
+
+    def test_ActivityOnAnyExceptionalResultsInMessageOnThatExceptionalsService(self):
+        "main - Activity on a selectable results in a message appearing in the service provided to the selector for that selectable"
+
+        MOCKSELECTORMODULE = MockSelect(results=[ ([],[],["LOOKINGFORTHIS"]), 
+                                                  ([],[],["THENFORTHIS"]), 
+                                                  ([],[],["ANDTHENFORTHIS"]) ])
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(5): S.next()
+        D = Axon.Component.component()
+        E = Axon.Component.component()
+        F = Axon.Component.component()
+        dummyservice1 = (D, "inbox")
+        S._deliver(newExceptional(S,( dummyservice1, "LOOKINGFORTHIS") ),"notify")
+        dummyservice2 = (E, "inbox")
+        S._deliver(newExceptional(S,( dummyservice2, "THENFORTHIS") ),"notify")
+        dummyservice3 = (F, "inbox")
+        S._deliver(newExceptional(S,( dummyservice3, "ANDTHENFORTHIS") ),"notify")
+
+        for i in xrange(5):
+            S.next();
+            try:
+               S.postoffice.next()
+            except:
+               pass
+        selectable = D.recv("inbox")
+        self.assertEqual(selectable,"LOOKINGFORTHIS")#, "The value returned should be the selectable we originally asked for")
+        selectable = E.recv("inbox")
+        self.assertEqual(selectable,"THENFORTHIS")#, "The value returned should be the selectable we originally asked for")
+        selectable = F.recv("inbox")
+        self.assertEqual(selectable,"ANDTHENFORTHIS")#, "The value returned should be the selectable we originally asked for")
+
+    def test_RemoveExceptional_ResultsInExceptionalNoLongerBeingSelectedOrWiredIn(self):
+        "main - Sending a remove exceptional message unwires/links a component, and also removes it's selectable from the exceptionals list"
+        MOCKSELECTORMODULE = MockSelect()
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(100): S.next()
+        D = Axon.Component.component() 
+        dummyservice = (D, "inbox")
+        S._deliver(newExceptional(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
+        S._deliver(removeExceptional(S,"LOOKINGFORTHIS"),"notify")
 
         for i in xrange(100):
             S.next();

@@ -4,7 +4,7 @@
 import Axon
 from Axon.Ipc import shutdown
 import select
-from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter
+from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 
 class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     Inboxes = {
@@ -27,10 +27,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
         selectables.append(selectable)
 
     def main(self):
-        READERS = 0
-        WRITERS = 1
-        EXCEPTIONALS = 2
-        readers,writers = [],[]
+        READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
+        readers,writers, exceptionals = [],[], []
         meta = [ {}, {}, {} ]
         self.pause()
         while 1: # SmokeTests_Selector.test_RunsForever
@@ -49,17 +47,25 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                     replyService, selectable = message.object
                     self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
 
+                if isinstance(message, newExceptional):
+                    replyService, selectable = message.object
+                    self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
+
                 if isinstance(message, removeReader):
-                    selectablereader = message.object
-                    self.removeLinks(selectablereader, meta[READERS], readers)
+                    selectable = message.object
+                    self.removeLinks(selectable, meta[READERS], readers)
 
                 if isinstance(message, removeWriter):
-                    selectablewriter = message.object
-                    self.removeLinks(selectablewriter, meta[WRITERS], writers)
+                    selectable = message.object
+                    self.removeLinks(selectable, meta[WRITERS], writers)
 
-            if len(readers) + len(writers) > 0:
-                read_write_except = select.select(readers, writers,[],0)
-                for i in xrange(2):
+                if isinstance(message, removeExceptional):
+                    selectable = message.object
+                    self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
+
+            if len(readers) + len(writers) + len(exceptionals) > 0:
+                read_write_except = select.select(readers, writers,exceptionals,0)
+                for i in xrange(3):
                     for selectable in read_write_except[i]:
                         try:
                             replyService, outbox, linkage = meta[i][selectable]
