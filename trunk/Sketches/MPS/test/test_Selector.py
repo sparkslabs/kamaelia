@@ -52,16 +52,25 @@ class SmokeTests_Selector(unittest.TestCase):
 
 class MockSelect:
    """This is needed because we need to test that select is being used correctly"""
-   def __init__(self, mode="SMOKE"):
+   def __init__(self, results=None):
        self.log = [] 
-       self.mode = mode
+       self.results = results
    # We're using this simply as a namespace.
    def select(self,*args):
        self.log.append(("select", args))
        readers,writers, excepts, timeout = args
-#       if self.mode == "READTEST":
-#           readers,writers, excepts, timeout = args
-       return readers,writers, excepts
+       if self.results is not None:
+           try:
+               result = self.results[0]
+               print result, len(self.results)
+               del self.results[0]
+               return result
+           except IndexError:
+               return [],[],[]
+       else:
+           return readers,writers, excepts
+   def addResults(self, results):
+       self.results.extend(results)
 
 
 class Readables_Selector(unittest.TestCase):
@@ -135,7 +144,7 @@ class Readables_Selector(unittest.TestCase):
     def test_ActivityOnReaderResultsInMessageOnReadersService(self):
         "main - Activity on the selectable results in a message appearing in the service provided to the selector"
 
-        MOCKSELECTORMODULE = MockSelect(mode="READTEST")
+        MOCKSELECTORMODULE = MockSelect()
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
@@ -153,6 +162,39 @@ class Readables_Selector(unittest.TestCase):
         self.assert_(not ( D.inboxes["inbox"] == [] ) )
         selectable = D.recv("inbox")
         self.assertEqual(selectable,"LOOKINGFORTHIS")#, "The value returned should be the selectable we originally asked for")
+
+    def test_ActivityOnAnyReaderResultsInMessageOnThatReadersService(self):
+        "main - Activity on a selectable results in a message appearing in the service provided to the selector for that selectable"
+
+        MOCKSELECTORMODULE = MockSelect(results=[ (["LOOKINGFORTHIS"],[],[]), 
+                                                  (["THENFORTHIS"],[],[]), 
+                                                  (["ANDTHENFORTHIS"],[],[]) ])
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(100): S.next()
+        D = Axon.Component.component()
+        E = Axon.Component.component()
+        F = Axon.Component.component()
+        dummyservice1 = (D, "inbox")
+        S._deliver(newReader(S,( dummyservice1, "LOOKINGFORTHIS") ),"notify")
+        dummyservice2 = (E, "inbox")
+        S._deliver(newReader(S,( dummyservice2, "THENFORTHIS") ),"notify")
+        dummyservice3 = (F, "inbox")
+        S._deliver(newReader(S,( dummyservice3, "ANDTHENFORTHIS") ),"notify")
+
+        for i in xrange(100):
+            S.next();
+            try:
+               S.postoffice.next()
+            except:
+               pass
+        selectable = D.recv("inbox")
+        self.assertEqual(selectable,"LOOKINGFORTHIS")#, "The value returned should be the selectable we originally asked for")
+        selectable = E.recv("inbox")
+        self.assertEqual(selectable,"THENFORTHIS")#, "The value returned should be the selectable we originally asked for")
+        selectable = F.recv("inbox")
+        self.assertEqual(selectable,"ANDTHENFORTHIS")#, "The value returned should be the selectable we originally asked for")
 
 if __name__=="__main__":
     unittest.main()
