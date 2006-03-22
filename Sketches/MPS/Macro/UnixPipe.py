@@ -32,8 +32,13 @@ import Axon
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 
-import Kamaelia.Internet.Selector as Selector
+#import Kamaelia.Internet.Selector as Selector
 import Kamaelia.KamaeliaIPC as _ki
+from Axon.Ipc import shutdown
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+
+from Selector import Selector
 
 import subprocess
 import fcntl
@@ -41,7 +46,7 @@ import os
 
 def Chargen():
    import time
-   t = time.time()
+   ts = t = time.time()
    while time.time() - t <1:
       yield "hello\n"
 
@@ -56,17 +61,35 @@ def run_command(command, datasource):
 class ChargenComponent(Axon.Component.component):
     def main(self):
         import time
-        t = time.time()
+        ts = t = time.time()
+        b = 0
         while time.time() - t <0.1:
            yield 1
            self.send("hello\n", "outbox")
+           b += len("hello\n")
+           if time.time() - ts >3:
+               break
         self.send(Axon.Ipc.producerFinished(), "signal")
+        print "total sent", b
 
 def makeNonBlocking(fd):
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NDELAY)
 
 class X(Axon.Component.component):
+    Inboxes = {
+            "inbox" : "We receive data here to send to the sub process",
+            "control" : "We receive shutdown messages here",
+            "stdinready" : "We're notified here when we can write to the sub-process",
+            "stderrready" : "We're notified here when we can read errors from the sub-process",
+            "stdoutready" : "We're notified here when we can read from the sub-process",
+    }
+    Outboxes = {
+        "signal" : "not used",
+        "outbox" : "data from the sub command is output here",
+        "selector" : "We send messages to the selector here, requesting it tell us when file handles can be read from/written to",
+        "selectorsignal" : "To send control messages to the selector",
+    }
     def __init__(self,command):
         super(X, self).__init__()
         self.command = command
@@ -84,76 +107,77 @@ class X(Axon.Component.component):
         makeNonBlocking( p.stdout.fileno() )
         makeNonBlocking( p.stderr.fileno() )
         return p
-    
 
     def main(self):
-#        selectorService, newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
-#        
-#        if newSelector:
-#            self.addChildren(newSelector)
-#        self.link((self, "_selectorSignal"),selectorService)
-#             
-        x = self.openSubprocess()
-#        self.send(_ki.newWriter(self, (self,x.stdin,"WriteReady")), "_selectorSignal")
-#        yield Axon.Ipc.newComponent(newSelector)
-#
+        writeBuffer = []
+        shutdownMessage = False
 
-        shutdown = False
-        exit_status = x.poll()
+        S = Selector()
+        S.activate()
+        yield 1
+        self.link((self, "selector"), (S, "notify"))
+        self.link((self, "selectorsignal"), (S, "control"))
+
+        x = self.openSubprocess()
+        self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
+        self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
+        self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
+
+        exit_status = x.poll()       # while x.poll() is None
         while exit_status is None:
             if self.dataReady("inbox"):
                 d = self.recv("inbox")
-                count = os.write(x.stdin.fileno(), d)
-                if count != len(d):
-                    raise "Yay, we broke it"
-            try:
-                Y = os.read(x.stdout.fileno(),10)
-                if len(Y)>0:
-                    self.send(Y, "outbox")
-            except OSError, e:
-                pass
-            
+                writeBuffer.append(d)
+
+            if self.dataReady("stdinready"):
+                self.recv("stdinready")
+                while len(writeBuffer) >0:
+                    d = writeBuffer.pop(0)
+                    count = os.write(x.stdin.fileno(), d)
+                    if count != len(d):
+                        raise "Yay, we broke it"
+
+            if self.dataReady("stdoutready"):
+                self.recv("stdoutready")
+                try:
+                    Y = os.read(x.stdout.fileno(),10)
+                    if len(Y)>0:
+                        self.send(Y, "outbox")
+                except OSError, e:
+                    pass
+
             if self.dataReady("control"):
-                 shutdown = self.recv("control")
+                 shutdownMessage = self.recv("control")
+                 self.send(removeWriter(self,(x.stdin)), "selector")
+                 yield 1
                  x.stdin.close()
             exit_status = x.poll()
             yield 1
 
-        more_data = True
+        more_data = True # idiom for do...while
         while more_data:
-            try:
-                Y = os.read(x.stdout.fileno(),10)
-                if len(Y)>0:
-                    self.send(Y, "outbox")
-                else:
+            if self.dataReady("stdoutready"):
+                self.recv("stdoutready")
+                try:
+                    Y = os.read(x.stdout.fileno(),10)
+                    if len(Y)>0:
+                        self.send(Y, "outbox")
+                    else:
+                        more_data = False
+                except OSError, e:
                     more_data = False
-            except OSError, e:
-                more_data = False
+            yield 1
 
-        self.send(shutdown, "signal")
+        self.send(removeReader(self,(x.stderr)), "selector")
+        self.send(removeReader(self,(x.stdout)), "selector")
+        if not shutdownMessage:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+        else:
+            self.send(shutdownMessage, "signal")
+        self.send(shutdown(), "selectorsignal")
 
 pipeline(
    ChargenComponent(),
    X("wc"),
    ConsoleEchoer(forwarder=True)
 ).run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
