@@ -8,7 +8,7 @@ from Selector import Selector
 
 import Axon
 from Axon.Ipc import shutdown
-from Kamaelia.KamaeliaIPC import newReader
+from Kamaelia.KamaeliaIPC import newReader, removeReader
 
 class SmokeTests_Selector(unittest.TestCase):
     def test_SmokeTest(self):
@@ -195,6 +195,27 @@ class Readables_Selector(unittest.TestCase):
         self.assertEqual(selectable,"THENFORTHIS")#, "The value returned should be the selectable we originally asked for")
         selectable = F.recv("inbox")
         self.assertEqual(selectable,"ANDTHENFORTHIS")#, "The value returned should be the selectable we originally asked for")
+
+    def test_RemoveReader_ResultsInReaderNoLongerBeingSelectedOrWiredIn(self):
+        "main - Sending a remove reader message unwires/links a component, and also removes it's selectable from the readers list"
+        MOCKSELECTORMODULE = MockSelect()
+        SELECTORMODULE.select = MOCKSELECTORMODULE
+        S = Selector()
+        S.activate()
+        for i in xrange(100): S.next()
+        D = Axon.Component.component() 
+        dummyservice = (D, "inbox")
+        S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
+        S._deliver(removeReader(S,"LOOKINGFORTHIS"),"notify")
+
+        for i in xrange(100):
+            S.next();
+            try:
+               S.postoffice.next()
+            except:
+               pass
+        self.assert_( D.inboxes["inbox"] == [] )
+
 
 if __name__=="__main__":
     unittest.main()
