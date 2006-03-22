@@ -5,6 +5,7 @@ import Axon
 from Axon.Ipc import shutdown
 import select
 from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
+import Axon.CoordinatingAssistantTracker as cat
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
@@ -89,3 +90,40 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
             elif not self.anyReady():
                 self.pause()
             yield 1
+
+    def setSelectorServices(selector, tracker = None):
+        """\
+        Sets the given selector as the service for the selected tracker or the
+        default one.
+
+        (static method)
+        """
+        if not tracker:
+            tracker = cat.coordinatingassistanttracker.getcat()
+        tracker.registerService("selector", selector, "notify")
+        tracker.registerService("selectorshutdown", selector, "control")
+    setSelectorServices = staticmethod(setSelectorServices)
+
+    def getSelectorServices(tracker=None): # STATIC METHOD
+      """\
+      Returns any live selector registered with the specified (or default) tracker,
+      or creates one for the system to use.
+
+      (static method)
+      """
+      if tracker is None:
+         tracker = cat.coordinatingassistanttracker.getcat()
+      try:
+         service = tracker.retrieveService("selector")
+         shutdownservice = tracker.retrieveService("selectorshutdown")
+         return service, shutdownservice, None
+      except KeyError:
+         selector = Selector()
+         Selector.setSelectorServices(selector, tracker)
+         service=(selector,"notify")
+         shutdownservice=(selector,"control")
+         return service, shutdownservice, selector
+    getSelectorServices = staticmethod(getSelectorServices)
+
+
+__kamaelia_components__  = ( Selector, )
