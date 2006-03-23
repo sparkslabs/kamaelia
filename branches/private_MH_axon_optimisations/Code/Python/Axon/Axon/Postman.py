@@ -94,7 +94,7 @@ class postman(object):
    def link(self, source, sink, passthrough=0):
        thelink = linkage(source,sink,passthrough)
        self.linkages.append(thelink)
-       thelink.src.retarget(thelink.dst)
+       thelink.dst.addsource(thelink.src)
        return thelink
 
    def unlink(self, thecomponent=None, thelinkage=None):
@@ -109,7 +109,7 @@ class postman(object):
             except ValueError:
                 pass
             else:
-                thelinkage.src.retarget()    # target at nothing
+                thelinkage.dst.removesource(thelinkage.src)
         if thecomponent:
             i=0
             num =len(self.linkages)
