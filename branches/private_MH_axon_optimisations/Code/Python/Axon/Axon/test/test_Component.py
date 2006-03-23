@@ -111,9 +111,9 @@ class Component_Test(unittest.TestCase):
       self.failUnless(testcomponent.Outboxes.count("outbox")==1,"There should be one 'outbox' in the Outboxes structure.")
       self.failUnless(testcomponent.Outboxes.count("signal")==1,"There should be one 'signal' in the Outboxes structure.")
       for x in testcomponent.Inboxes:
-        self.failUnless(testcomponent.inboxes[x]==[],"Unexpected inbox data structure for "+x+".")
+        self.failUnless(len(testcomponent.inboxes[x])==0,"Unexpected inbox data structure for "+x+".")
       for x in testcomponent.Outboxes:
-        self.failUnless(testcomponent.outboxes[x]==[],"Unexpected outbox data structure for "+x+".")
+        self.failUnless(len(testcomponent.outboxes[x])==0,"Unexpected outbox data structure for "+x+".")
       self.failUnless(testcomponent.children==[], "The children component should be an empty list.")
       self.failUnless(testcomponent.synchronised.items()==[],"Synchronised box list is empty.")
       self.failUnless(testcomponent.postoffice.next()=="initialised","Post office not properly inialised.")
