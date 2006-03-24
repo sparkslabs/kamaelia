@@ -33,9 +33,11 @@ class Sandbox(Axon.Component.component):
         yield 1
         while 1:
             yield 1
+            self.childrenDone()   # clean up any children we've lost!
+            
             while self.dataReady("inbox"):
                 cmd = self.recv("inbox")
-#                print cmd
+
                 if cmd[0] == "ADD":
                     self.makeComponent(spec=cmd[2],uid=cmd[1])
 
@@ -56,8 +58,6 @@ class Sandbox(Axon.Component.component):
                 elif cmd[0] == "GO":
                     yield self.go()
                     
-            self.childrenDone()
-            
     
     def makeComponent(self, spec, uid=None):
         """\
@@ -91,17 +91,23 @@ class Sandbox(Axon.Component.component):
         if src[1] == "i" and dst[1] == "o":
             src, dst = dst, src
             
-        if src[1] == "o" and dst[1] == "i":
-            sid, _, sbox = src
-            did, _, dbox = dst
-            components = self.childComponents()[:]
-            components.append(self)
+        sid, sboxtype, sbox = src
+        did, dboxtype, dbox = dst
+        if sboxtype == "o" and dboxtype == "i":
+            passthrough = 0
+        elif sboxtype == "i" and dboxtype == "i":
+            passthrough = 1
+        elif sboxtype == "o" and dboxtype == "o":
+            passthrough = 2
         else:
-            raise "Can't handle passthroughs yet!"
+            raise "Unrecognised box types!"
         
+        components = self.childComponents()[:]
+        components.append(self)
         source = [c for c in components if c.id == sid]
         dest   = [c for c in components if c.id == did]
-        self.link( (source[0], sbox), (dest[0], dbox) )
+        self.link( (source[0], sbox), (dest[0], dbox), passthrough=passthrough )
+
         
     def go(self):
         return Ipc.newComponent(*[c for c in self.childComponents()])
