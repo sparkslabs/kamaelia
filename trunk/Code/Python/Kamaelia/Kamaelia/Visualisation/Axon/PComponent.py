@@ -143,6 +143,7 @@ class PComponent(BaseParticle):
         if self.selected:
             colour = (160,160,255)
         pygame.draw.circle(surface, colour, (x,y), self.radius)
+        yield 3
         surface.blit(self.slabel, ( x+self.slabelxo, y+self.slabelyo ) )
         if self.selected:
             yield 10
