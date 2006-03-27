@@ -77,14 +77,13 @@ from Axon.ThreadedComponent import threadedcomponent
 class ConsoleReader(threadedcomponent):
    """\
    ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
-   
+
    Component that provides a console for typing in stuff. Each line is output
    from the "outbox" outbox one at a time.
    
    Keyword arguments:
    - prompt  -- Command prompt (default=">>> ")
-   - eol     -- End of line character(s) to put on end of every line outputted (default is newline")
-   
+   - eol     -- End of line character(s) to put on end of every line outputted (default is newline)
    """
    
    Inboxes  = { "inbox"   : "NOT USED",
@@ -136,23 +135,26 @@ class ConsoleEchoer(component):
       else:
           self.serialise = str
 
-   def mainBody(self):
+   def main(self):
       """Main loop body."""
-      if self.dataReady("inbox"):
-         data = self.recv("inbox")
-         _sys.stdout.write(self.serialise(data))
-         _sys.stdout.flush()
-         if self.forwarder:
-            self.send(data, "outbox")
-            return 1
-         return 2
-      if self.dataReady("control"):
-         data = self.recv("control")
-         if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
-            self.send(data,"signal")
-            return 0
-      return 3
-
+      while not self.shutdown():
+          while self.dataReady("inbox"):
+              data = self.recv("inbox")
+              _sys.stdout.write(self.serialise(data))
+              _sys.stdout.flush()
+              if self.forwarder:
+                  self.send(data, "outbox")
+          self.pause()
+          yield 1
+          
+   def shutdown(self):
+       while self.dataReady("control"):
+           data = self.recv("control")
+           if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
+               self.send(data,"signal")
+               return True
+       return 0
+            
 __kamaelia_components__  = ( ConsoleReader, ConsoleEchoer, )
 
 if __name__ =="__main__":
