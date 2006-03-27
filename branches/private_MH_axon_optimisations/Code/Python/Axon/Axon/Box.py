@@ -8,6 +8,8 @@ class nullsink(object):
         pass
     def __len__(self):
         return 0
+    def pop(self,index):
+        raise IndexError("nullsink: You can't pop from an empty piece of storage!")
     
     
 class realsink(list):
@@ -24,17 +26,11 @@ class postbox(object):
         super(postbox,self).__init__()
         self.storage = storage
         self.sources = []
-        self.sink = self.storage
-        
-    def append(self, data):
-        return self.sink.append(data)
+        self.retarget()
     
     def __len__(self):
-        return len(self.sink)
+        return self.__len__()
 
-    def pop(self,index):
-        return self.sink.pop(index)
-     
     def addsource(self,newsource):
         self.sources.append(newsource)       # XXX assuming not already linked from that source
         newsource.retarget(self.sink)
@@ -48,6 +44,13 @@ class postbox(object):
             self.sink = self.storage
         else:
             self.sink = newtarget
+            # if i'm storing stuff, pass it on
+            while len(self.storage):
+                self.sink.append(self.storage.pop(0))
+        # make calling these methods go direct to the sink
+        self.append  = self.sink.append
+        self.pop     = self.sink.pop
+        self.__len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
             source.retarget(newtarget=self.sink)
@@ -57,5 +60,8 @@ class postbox(object):
 def makeInbox(notify):
     return postbox(storage=realsink(notify=notify))
 
+
+thenullsink = nullsink()
+
 def makeOutbox():
-    return postbox(storage=nullsink())
+    return postbox(storage=thenullsink)
