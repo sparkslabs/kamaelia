@@ -197,7 +197,7 @@ class Readables_Selector(unittest.TestCase):
 
     def test_RemoveReader_ResultsInReaderNoLongerBeingSelectedOrWiredIn(self):
         "main - Sending a remove reader message unwires/links a component, and also removes it's selectable from the readers list"
-        MOCKSELECTORMODULE = MockSelect()
+        MOCKSELECTORMODULE = MockSelect(results=[ ([], [], [] )])
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
@@ -252,7 +252,7 @@ class Readables_Selector(unittest.TestCase):
 
     def test_RemoveWriter_ResultsInWriterNoLongerBeingSelectedOrWiredIn(self):
         "main - Sending a remove writer message unwires/links a component, and also removes it's selectable from the writers list"
-        MOCKSELECTORMODULE = MockSelect()
+        MOCKSELECTORMODULE = MockSelect(results=[ ([], [], [] )])
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
@@ -306,7 +306,7 @@ class Readables_Selector(unittest.TestCase):
 
     def test_RemoveExceptional_ResultsInExceptionalNoLongerBeingSelectedOrWiredIn(self):
         "main - Sending a remove exceptional message unwires/links a component, and also removes it's selectable from the exceptionals list"
-        MOCKSELECTORMODULE = MockSelect()
+        MOCKSELECTORMODULE = MockSelect(results=[ ([], [], [] )])
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
@@ -322,7 +322,6 @@ class Readables_Selector(unittest.TestCase):
                S.postoffice.next()
             except:
                pass
-        print 
         self.assert_( D.inboxes["inbox"] == [] )
 
 if __name__=="__main__":
