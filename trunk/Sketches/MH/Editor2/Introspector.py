@@ -247,9 +247,17 @@ class Introspector(Axon.Component.component):
         components = self.targets[:]
         for c in components:
             components.extend(c.childComponents())
+
+        def namelabel(component):
+            if component._microprocess__thread != None:
+                if component._isRunnable():
+                    return "*"+p.name
+                else:
+                    return "+"+p.name
+            else:
+                return p.name
         
-        components = dict([ (p,(p.id,p.name)) for p in components])
-        
+        components = dict([ (p,(p.id,namelabel(p))) for p in components])
         
         # go through all postmen and find all linkages
         linkages = {}
@@ -273,8 +281,8 @@ class Introspector(Axon.Component.component):
         
         # strip the direct reference to component objects from the dictionary, leaving
         # just a mapping from 'id' to 'name'
-        cdict = dict([ components[c] for c in components.iterkeys() ])
-        
+        cdict = dict([ components[c] for c in components.iterkeys()])
+
         return cdict, postboxes, linkages
         
     def esc(self, s):
