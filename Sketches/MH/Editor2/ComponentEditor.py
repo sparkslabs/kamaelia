@@ -78,7 +78,9 @@ class ComponentEditor(TkWindow):
         
         
     def main(self):
+        self.nodeEditable=False
         self.click_menuChoice(self.classes[0])
+        selectedId = None
 
         while not self.isDestroyed():
 
@@ -90,10 +92,14 @@ class ComponentEditor(TkWindow):
                         self.send( ("GET_NAME", "NODE", data[2]), "topocontrol")      # find out about the selected node
                         
                 if (data[0], data[1]) == ("UPDATE_NAME", "NODE"):
-                    self.componentSelected(data[3])   # (ignore the ID)
+                    if self.componentSelected(data[3]):   # (ignore the ID)
+                        selectedId = data[2]
+                    else:
+                        selectedId = None
                     
                 if (data[0], data[1]) == ("GET_NAME", "NODE"):
-                    self.send( ("UPDATE_NAME", "NODE", data[2], self.getInstantiation()), "outbox")
+                    if selectedId == data[2]:
+                        self.send( ("UPDATE_NAME", "NODE", data[2], self.getInstantiation()), "outbox")
                                         
             while self.dataReady("control"):
                 msg = self.recv("control")
@@ -110,14 +116,15 @@ class ComponentEditor(TkWindow):
 
         
     def componentSelected(self, spec):
-        match = re.match("^([^:]*):([^(]*)\((.*)\)$", spec)
+        match = re.match(r"^([*+]?)([^:]*)\:([^(]+)\((.*)\)$", spec)
         if match:
-            (modulename, classname, arguments) = match.groups()
+            (_, modulename, classname, arguments) = match.groups()
             for theclass in self.classes:
                 if theclass['module'] == modulename and theclass['class'] == classname:
                     self.click_menuChoice(theclass, arguments=arguments)
-                    break
-
+                    return True   # node was successfully parsed, so is editable
+        return False
+        
 
     def click_chooseComponent(self):
         self.menu = Tkinter.Menu(self.window, tearoff=0)

@@ -69,25 +69,50 @@ classes = [ { "module"   : "Axon.Component",
             },
           ]
              
-
+import time, pygame
 
 class PComponent2(PComponent):
     def __init__(self, ID, position, name):
-        textualname = self.parsename(name)
-        super(PComponent2, self).__init__(ID=ID, position=position, name=textualname)
+        (textualname, self.isrunning, self.ispaused) = self.parsename(name)
+        super(PComponent2, self).__init__(ID=ID, position=position, name=name)
+        (textualname, self.isrunning, self.ispaused) = self.parsename(name)
         self.name = name
+        self.cycle = 0.0
+        self.prevtime = time.time()
+        self.arcradius = int(self.radius*0.7)
+        self.arcradius2 = int(self.radius*1.4)
+        self.arcwidth = int(self.radius*0.1)
 
     def parsename(self, name):
-        match = re.match("^(?:[^:]*?:)??([^(]+)", name)
-        return match.group(0)
+        match = re.match(r"^([*+]?)(?:[^.:(]*[.:])*([^.:(]+)", name)
+        return match.group(2), match.group(1) == "*", match.group(1) == "+"
         
 
     def set_label(self, newname):
-        print "new label :",newname
-        textualname = self.parsename(newname)
+        (textualname, self.isrunning, self.ispaused) = self.parsename(newname)
         super(PComponent2,self).set_label(textualname)
         self.name = newname
-        print "set"
+
+    def render(self, surface):
+        oldrenderer = PComponent.render(self, surface)
+        yield oldrenderer.next()  # returns 1
+        yield oldrenderer.next()  # returns 2
+        yield oldrenderer.next()  # returns 3
+        if self.isrunning or self.ispaused:
+            x = int(self.pos[0] - self.left)
+            y = int(self.pos[1] - self.top )
+            timenow = 4*time.time()
+            if not self.ispaused:
+                self.cycle -= (timenow-self.prevtime)
+            self.prevtime = timenow
+            startangle = self.cycle
+            stopangle = startangle + 1.0
+            for i in range(0,4):
+                pygame.draw.arc(surface, (255,255,255), pygame.Rect(x-self.arcradius, y-self.arcradius, self.arcradius2, self.arcradius2), startangle, stopangle, self.arcwidth)
+                startangle = startangle + 1.57
+                stopangle  = stopangle  + 1.57
+        yield 4
+        yield oldrenderer.next()                                                    
 
 particleTypes = { "component" : PComponent2,
                     "inbox"     : PPostbox.Inbox,
@@ -107,7 +132,6 @@ Graphline(
     TVC = TVC,
     INTROSPECTOR = pipeline(Introspector(SANDBOX), chunks_to_lines(), lines_to_tokenlists()),
     SANDBOX = SANDBOX,
-#    REMAPPER = NameRemapper(),
     NEW = Button(caption="New Component", msg="NEXT", position=(72,32)),
     CHANGE = Button(caption="Change Component", msg="NEXT", position=(182,32)),
     DEL = Button(caption="Delete Component", msg="NEXT", position=(292,32)),
@@ -116,21 +140,18 @@ Graphline(
     EDITOR_LOGIC = EditorLogic(),
     CED = ComponentEditor(classes),
     linkages = {
-        ("INTROSPECTOR", "outbox") :  ("TVC", "inbox"),
-        ("CONSOLEINPUT", "outbox") : ("SANDBOX", "inbox"),
-#        ("SANDBOX", "outbox") : ("REMAPPER", "mappings"),
-        
-        ("TVC", "outbox") : ("EDITOR_LOGIC", "inbox"),
-        ("EDITOR_LOGIC", "commands") : ("SANDBOX", "inbox"),
-        ("NEW", "outbox"): ("EDITOR_LOGIC", "newnode"),
-        ("CHANGE", "outbox"): ("EDITOR_LOGIC", "changenode"),
-        ("DEL", "outbox") : ("EDITOR_LOGIC", "delnode"),
-        ("LINK", "outbox") : ("EDITOR_LOGIC", "linknode"),
-        ("GO", "outbox") : ("EDITOR_LOGIC", "go"),
-        
-        ("EDITOR_LOGIC", "outbox") : ("CED", "inbox"),
-        ("EDITOR_LOGIC", "componentedit") : ("CED", "inbox"),
-        ("CED", "outbox") : ("SANDBOX", "inbox"),
-        ("CED", "topocontrol") : ("TVC", "inbox"),
+       ("CONSOLEINPUT", "outbox") : ("SANDBOX", "inbox"),
+       ("LINK", "outbox") : ("EDITOR_LOGIC", "linknode"),
+       ("CHANGE", "outbox"): ("EDITOR_LOGIC", "changenode"),
+       ("EDITOR_LOGIC", "componentedit") : ("CED", "inbox"),
+       ("DEL", "outbox") : ("EDITOR_LOGIC", "delnode"),
+       ("INTROSPECTOR", "outbox") :  ("TVC", "inbox"),
+       ("EDITOR_LOGIC", "outbox") : ("CED", "inbox"),
+       ("CED", "topocontrol") : ("TVC", "inbox"),
+       ("TVC", "outbox") : ("EDITOR_LOGIC", "inbox"),
+       ("CED", "outbox") : ("SANDBOX", "inbox"),
+       ("EDITOR_LOGIC", "commands") : ("SANDBOX", "inbox"),
+       ("GO", "outbox") : ("EDITOR_LOGIC", "go"),
+       ("NEW", "outbox"): ("EDITOR_LOGIC", "newnode"),      
     }
 ).run()

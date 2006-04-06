@@ -46,8 +46,8 @@ class Sandbox(Axon.Component.component):
                 
                 elif cmd[0] == "UPDATE_NAME":
                     if cmd[1] == "NODE":
-                        self.destroyComponent(uid=cmd[2])
-                        self.makeComponent(spec=cmd[3],uid=cmd[2])
+                        if self.destroyComponent(uid=cmd[2]):
+                            self.makeComponent(spec=cmd[3],uid=cmd[2])
                 
                 elif cmd[0] == "LINK":
                     self.makeLink( cmd[1], cmd[2] )
@@ -82,6 +82,8 @@ class Sandbox(Axon.Component.component):
             if str(c.id) == uid:
                 c.stop()
                 self.removeChild(c)
+                return True
+        return False
         
         
     def makeLink(self, src, dst):
