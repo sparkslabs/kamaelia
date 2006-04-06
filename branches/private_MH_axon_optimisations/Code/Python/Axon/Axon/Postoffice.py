@@ -58,14 +58,12 @@ class postoffice(object):
       else:
          self.debugname =""
       self.linkages = list()
-      self.things = dict()
 
 
    def __str__(self):
       "Provides a string representation of a postoffice, designed for debugging"
       result = "{{ POSTOFFICE: " + self.debugname
       result = result + "links " + self.linkages.__str__() + "; "
-      result = result + "things " + self.things.__str__() + "; "
       result = result + microprocess.__str__(self) + " }}"
       return result
 
@@ -73,12 +71,6 @@ class postoffice(object):
        thelink = linkage(source,sink,passthrough)
        self.linkages.append(thelink)
        thelink.dst.addsource(thelink.src)
-       
-       sourcecomp, _ = source
-       sinkcomp, _   = sink
-       self.things[sourcecomp.name] = sourcecomp
-       self.things[sinkcomp.name]   = sinkcomp
-       
        return thelink
 
    def unlink(self, thecomponent=None, thelinkage=None):
@@ -104,15 +96,7 @@ class postoffice(object):
                     self.unlink(thelinkage=linkage)
                 else:
                     i=i+1
-                    
-        
 
-   def deregister(self, name=None, component=None):
-      if name and not component:
-          if self.things[name]:
-              component = self.things[name]
-      return self.unlink(thecomponent=component)
-       
 
    def deregisterlinkage(self, thecomponent=None,thelinkage=None):
        """Stub for legacy"""
