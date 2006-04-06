@@ -21,7 +21,6 @@ from Kamaelia.UI.Pygame.Button import Button
 
 from Introspector import Introspector
 from Sandbox import Sandbox
-from NameRemapper import NameRemapper
 from EditorLogic import EditorLogic
 from ComponentEditor import ComponentEditor
 
