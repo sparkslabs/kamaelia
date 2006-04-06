@@ -209,7 +209,6 @@ class component(microprocess):
       self.children = []
 
       self.postoffice = postman("component :" + self.name)
-#      self.postoffice.activate()
       self.synchronised = {}
 
    def _synchronisedBox(self, boxtype="sink",boxdirection="outbox",boxname="outbox", maxdepth=1):
@@ -387,99 +386,6 @@ class component(microprocess):
          pass
       self.outboxes[boxname].append(message)
 
-#    def _collect(self, boxname="outbox"):
-#       """**INTERNAL** 'C._collect("boxname")' -
-#       returns the first piece of data in the requested outbox.
-# 
-#       Used by a postman to collect messages to the outside world from
-#       a particular outbox of this component.
-# 
-#       **You are unlikely to want to call this method directly.** You are unlikely to
-#       want to override this.
-#       """
-#       result = self.outboxes[boxname][0]
-#       del self.outboxes[boxname][0]
-#       self._unpause()
-#       return result
-# 
-# 
-#    def _safeCollect(self, boxname="outbox"):
-#       """C.safeCollect("boxname")' - returns the first piece of data in the requested outbox.
-# 
-#       Used by ../NewInternetConnection.py currently - in _test_ code. Not normally called by clients
-#       """
-#       try:
-#          return self._collect(boxname)
-#       except IndexError:
-#          pass
-# 
-#    def _collectInbox(self, boxname="inbox"):
-#       """**INTERNAL** 'C._collect("boxname")' -
-#       returns the first piece of data in the requested inbox.
-# 
-#       XXXX Used for passthrough deliveries
-# 
-#       Used by a postman to collect messages to be passed through
-#       a particular inbox of this component.
-# 
-#       **You are unlikely to want to call this method directly.** You are unlikely to
-#       want to override this.
-#       """
-#       result = self.inboxes[boxname][0]
-#       del self.inboxes[boxname][0]
-#       return result
-# 
-#    def _deliver(self,message,boxname="inbox",force=False):
-#       """**INTERNAL** 'C._deliver(message, "boxname")' -
-#       appends message to the requested inbox.
-# 
-#       Used by a postman to deliver messages from the outside world to
-#       a particular inbox of this component.  Raises noSpaceInbox if the box is
-#       synchronised and full unless force is true when it carrys on and overfills.
-# 
-#       **You are unlikely to want to call this method directly.** You are unlikely to
-#       want to override this method.
-#       """
-#       try:
-#          (boxtype,maxdepth) =self.synchronised["inbox"][boxname]
-#          if len(self.inboxes[boxname]) >= maxdepth and not force:
-#             raise noSpaceInBox
-#       except KeyError:
-#          pass
-#       self.inboxes[boxname].append(message)
-#       self._unpause()
-# 
-#    def _passThroughDeliverOut(self,message,boxname="outbox",force=False):
-#       """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
-#       appends message to the requested outbox.
-# 
-#       Used by a postman to deliver messages from a subcomponent outbox to
-#       a component's outbox - ie a pass through linkage.  Raises noSpaceInbox if
-#       the box is synchronised and full unless force is true when it carrys on and
-#       overfills.
-# 
-#       **You are unlikely to want to call this method directly.** You are unlikely to
-#       want to override this method.
-#       """
-#       # Delegate to send method. (Reason for having this function rather than just
-#       # name is to have the documentation!
-#       self.send(message, boxname, force)
-# 
-#    def _passThroughDeliverIn(self,message,boxname="inbox",force=False):
-#       """**INTERNAL** 'C.passThroughDeliver(message, "boxname")' -
-#       appends message to the requested outbox.
-# 
-#       Used by a postman to deliver messages from a supercomponent inbox to
-#       a subcomponent's inbox - ie a pass through linkage.  Raises noSpaceInbox if
-#       the box is synchronised and full unless force is true when it carrys on and
-#       overfills.
-# 
-#       **You are unlikely to want to call this method directly.** You are unlikely to
-#       want to override this method.
-#       """
-#       # Delegate to _deliver method. (Reason for having this function rather than just
-#       # name is to have the documentation!
-#       self._deliver(message, boxname,force)
 
    def main(self):
       """'C.main()' **You normally will not want to override or call this method**
