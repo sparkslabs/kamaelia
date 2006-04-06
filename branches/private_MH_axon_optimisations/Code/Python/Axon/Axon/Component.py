@@ -209,42 +209,7 @@ class component(microprocess):
       self.children = []
 
       self.postoffice = postman("component :" + self.name)
-      self.synchronised = {}
 
-   def _synchronisedBox(self, boxtype="sink",boxdirection="outbox",boxname="outbox", maxdepth=1):
-      """C.synchronisedBox(boxtype="source/sink" boxdirection="inbox/outbox" boxname="name" maxdepth=queuesize
-
-      Declares a box as synchronised. Generally inboxes will be declared synchronised
-      which means data cannot be delivered into them immediately. An important point
-      is that this makes an box at the other end of a linkage also synchronised. This
-      means if you're sending to a synchronised outbox, or an outbox that has been made
-      synchronous as a result then you must use synchronisedSend to send data. (Things
-      go bang otherwise)
-      """
-      try:
-         self.synchronised[boxdirection][boxname]=(boxtype,maxdepth)
-      except KeyError:
-         self.synchronised[boxdirection] = {}
-         self.synchronised[boxdirection][boxname]=(boxtype,maxdepth)
-
-   def synchronisedSend(self, thingsToSend,outbox="outbox"):
-      """C.synchronisedSend(list, of, things,to, send) -> generator for sending the
-      objects when space is available. Expected to be used as:
-         for i in self.synchronisedSend(thingsToSend):
-            yield 1
-      Largely has to be done that way due to not being able to wrap yield.
-      See test/SynchronousLinks_SystemTest.py for an example
-      """
-      while 1:
-         try:
-            j = thingsToSend[0]
-            self.send(j,outbox)
-         except noSpaceInBox:
-            yield -1
-         else:
-            del thingsToSend[0]
-            if not thingsToSend: break
-            yield j
 
    def __str__(self):
       """Provides a useful string representation of the component.
@@ -325,7 +290,7 @@ class component(microprocess):
       return len(self.inboxes[boxname])
 
 
-   def link(self, source,sink,passthrough=0,pipewidth=0,synchronous=None):
+   def link(self, source,sink,passthrough=0):
       """'C.link(source,sink)' -
       create linkage between a source and sink.
 
@@ -334,9 +299,6 @@ class component(microprocess):
 
       passthrough and pipewidth are defined as in the linkage class
       """
-#      source_comp,sourcebox = source
-#      sink_comp,sinkbox = sink
-#      return linkage(source_comp, sink_comp, sourcebox, sinkbox,self.postoffice,passthrough=passthrough,pipewidth=pipewidth,synchronous=synchronous)
       # NOTE: support for synchronous and pipewidth now missing
 
       return self.postoffice.link(source, sink, passthrough)
