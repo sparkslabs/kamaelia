@@ -125,7 +125,7 @@ from util import removeAll
 from idGen import strId, numId
 from debug import debug
 from Microprocess import microprocess
-from Postman import postman
+from Postoffice import postoffice
 from Scheduler import scheduler
 from AxonExceptions import noSpaceInBox
 from Linkage import linkage
@@ -208,7 +208,7 @@ class component(microprocess):
 
       self.children = []
 
-      self.postoffice = postman("component :" + self.name)
+      self.postoffice = postoffice("component :" + self.name)
 
 
    def __str__(self):
@@ -324,28 +324,17 @@ class component(microprocess):
       ### NEW
       return self.inboxes[boxname].pop(0)
 
-   def send(self,message, boxname="outbox",force=False):
+   def send(self,message, boxname="outbox"):
       """'C.send(message, "boxname")' -
       appends message to the requested outbox.
 
       Used by a component to send a message to the outside world.
       All comms goes via a named box/output queue
 
-      You will want to call this method to send messages. They are NOT sent
-      immediately. They are placed in your outbox called 'boxname', and are
-      periodically collected & delivered by the postman.
+      You will want to call this method to send messages.
       
-      If the outbox is synchronised then noSpaceInBox will be raised if the box
-      is full unless force is True which should only be used with great care.
-
       You are unlikely to want to override this method.
       """
-      try:
-         (boxtype,maxdepth) =self.synchronised["outbox"][boxname]
-         if len(self.outboxes[boxname]) >= maxdepth and not force:
-            raise noSpaceInBox
-      except KeyError:
-         pass
       self.outboxes[boxname].append(message)
 
 
