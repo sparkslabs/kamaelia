@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -27,10 +28,15 @@ Components only have input & output boxes. For data to get from a producer
 of one component, the source component, must be linked to the input of
 another component, the sink component.
 
-These need to be registered with a postman (see below) who takes messages
-from the outputs and delivers them to the appropriate destination. This is NOT
-the usual technique for software messaging. Normally you create messages,
-addressed to something specific, and then the message handler delivers them.
+All components have a postoffice object, this performs the creation and
+destruction of linkages. Ask it for a linkage between inboxes and outboxes and
+a linkage object is returned as a handle describing the linkage. When a message
+is sent to an outbox, it is immediately delivered along linkage(s) to the
+destination inbox.
+
+This is NOT the usual technique for software messaging. Normally you create
+messages, addressed to something specific, and then the message handler delivers
+them.
 
 However the method of communication used here is the norm for _hardware_ systems,
 and generally results in very pluggable components - the aim of this system,
@@ -50,7 +56,19 @@ from debug import debug
 
 
 class linkage(AxonObject):
+    """\
+    linkage(source, sink[, passthrough]) -> new linkage object
+    
+    An object describing a link from a source component's inbox/outbox to a
+    sink component's inbox/outbox.
+    
+    Keyword arguments:
+    - source       -- (component, "boxname") tuple
+    - sink         -- (component, "boxname") tuple
+    - passthrough  -- 0=link is from inbox to outbox; 1=from inbox to inbox; 2=from outbox to outbox (default=0)
+    """
     def __init__(self, source, sink, passthrough=0):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super(linkage,self).__init__()
         (sourcecomp,sourcebox) = source
         (sinkcomp,sinkbox) = sink
@@ -59,18 +77,6 @@ class linkage(AxonObject):
         self.sourcebox = sourcebox
         self.sinkbox   = sinkbox
         self.passthrough = passthrough
-        
-        if passthrough==0:
-            self.src = sourcecomp.outboxes[sourcebox]
-            self.dst = sinkcomp.inboxes[sinkbox]
-        elif passthrough==1:
-            self.src = sourcecomp.inboxes[sourcebox]
-            self.dst = sinkcomp.inboxes[sinkbox]
-        elif passthrough==2:
-            self.src = sourcecomp.outboxes[sourcebox]
-            self.dst = sinkcomp.outboxes[sinkbox]
-        else:
-            raise "passthrough value wrong"
 
 
     def sourcePair(self):
@@ -78,6 +84,18 @@ class linkage(AxonObject):
  
     def sinkPair(self):
         return self.sink, self.sinkbox
+    
+    def getSourcebox(self):
+        if self.passthrough==1:
+            return self.source.inboxes[self.sourcebox]
+        else:
+            return self.source.outboxes[self.sourcebox]
+        
+    def getSinkbox(self):
+        if self.passthrough==2:
+            return self.sink.outboxes[self.sinkbox]
+        else:
+            return self.sink.inboxes[self.sinkbox]
  
     def __str__(self):
         return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"

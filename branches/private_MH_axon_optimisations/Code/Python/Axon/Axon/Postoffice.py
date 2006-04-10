@@ -70,7 +70,7 @@ class postoffice(object):
    def link(self, source, sink, passthrough=0):
        thelink = linkage(source,sink,passthrough)
        self.linkages.append(thelink)
-       thelink.dst.addsource(thelink.src)
+       thelink.getSinkbox().addsource( thelink.getSourcebox() )
        return thelink
 
    def unlink(self, thecomponent=None, thelinkage=None):
@@ -85,7 +85,7 @@ class postoffice(object):
             except ValueError:
                 pass
             else:
-                thelinkage.dst.removesource(thelinkage.src)
+                thelinkage.getSinkbox().removesource( thelinkage.getSourcebox() )
         if thecomponent:
             i=0
             num =len(self.linkages)
