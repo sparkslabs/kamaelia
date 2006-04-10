@@ -368,7 +368,7 @@ class component(microprocess):
       """Stub method. **This method is designed to be overridden.** """
       return 1
    def _closeDownMicroprocess(self):
-      return shutdownMicroprocess(self.postoffice)
+      return None
 
 
 if 0: # if __name__ == '__main__':
