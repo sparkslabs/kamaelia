@@ -271,6 +271,12 @@ class microprocess(Axon.AxonObject):
          self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
       self.__runnable = 0
+      self.__thread = None
+      # replace the thread with something that'll raise Stop iteration to
+      # whatever scheduler tries to call it
+      def terminategenerator():
+          raise StopIteration
+      self.next = terminategenerator
 
    def pause(self):
       """'M.pause()' - Pauses the microprocess.
