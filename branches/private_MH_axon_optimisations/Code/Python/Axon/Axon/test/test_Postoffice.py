@@ -33,13 +33,22 @@ import sys ; sys.path.append(".") ; sys.path.append("..")
 from Component import component
 from Scheduler import scheduler
 
+class postoffice_Test(unittest.TestCase):
+    """Tests for postoffice object"""
+    pass
+
+
+
 class BusyWaitComponent(component):
     def main(self):
         while 1:
             yield 1
 
-class LinkageChainingTests(unittest.TestCase):
-    """Data will be correctly delivered along chains of linkages"""
+class linkagechaining_Test(unittest.TestCase):
+    """\
+    Data will be correctly delivered along chains of linkages irrespective of
+    the order in which the chain is constructed.
+    """
     
     def verifyChain(self, *chain):
         """Verify delivery along a chain"""
