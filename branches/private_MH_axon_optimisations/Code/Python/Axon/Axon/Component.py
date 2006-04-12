@@ -258,8 +258,7 @@ class component(microprocess):
       your component.
       """
       removeAll(self.children, child)
-#      self.postoffice.deregister(component=child)
-      self.postoffice.deregisterlinkage(thecomponent=child)
+      self.postoffice.unlink(thecomponent=child)
 
    def childComponents(self):
       """'C.childComponents()' -
