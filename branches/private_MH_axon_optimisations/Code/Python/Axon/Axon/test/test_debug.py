@@ -26,7 +26,6 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-from classfile import *
 
 class classWeAreTesting_Test(unittest.TestCase):
    def test_SmokeTest_NoArguments(self):
