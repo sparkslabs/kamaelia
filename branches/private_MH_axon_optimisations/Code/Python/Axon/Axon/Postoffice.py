@@ -68,7 +68,9 @@ class postoffice(object):
       return result
 
    def link(self, source, sink, passthrough=0):
-       thelink = linkage(source,sink,passthrough)
+       (sourcecomp, sourcebox) = source
+       (sinkcomp, sinkbox) = sink
+       thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,passthrough)
        self.linkages.append(thelink)
        thelink.getSinkbox().addsource( thelink.getSourcebox() )
        return thelink

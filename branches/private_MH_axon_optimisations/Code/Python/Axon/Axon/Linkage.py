@@ -63,17 +63,17 @@ class linkage(AxonObject):
     sink component's inbox/outbox.
     
     Keyword arguments:
-    - source       -- (component, "boxname") tuple
-    - sink         -- (component, "boxname") tuple
+    - source       -- source component
+    - sink         -- sink component
+    - sourcebox    -- source component's source box name (default="outbox")
+    - sinkbox      -- sink component's sink box name (default="inbox")
     - passthrough  -- 0=link is from inbox to outbox; 1=from inbox to inbox; 2=from outbox to outbox (default=0)
     """
-    def __init__(self, source, sink, passthrough=0):
+    def __init__(self, source, sink, sourcebox="outbox", sinkbox="inbox", passthrough=0):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super(linkage,self).__init__()
-        (sourcecomp,sourcebox) = source
-        (sinkcomp,sinkbox) = sink
-        self.source = sourcecomp
-        self.sink   = sinkcomp
+        self.source = source
+        self.sink   = sink
         self.sourcebox = sourcebox
         self.sinkbox   = sinkbox
         self.passthrough = passthrough
