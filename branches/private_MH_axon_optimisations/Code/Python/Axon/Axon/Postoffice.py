@@ -63,8 +63,7 @@ class postoffice(object):
    def __str__(self):
       "Provides a string representation of a postoffice, designed for debugging"
       result = "{{ POSTOFFICE: " + self.debugname
-      result = result + "links " + self.linkages.__str__() + "; "
-      result = result + microprocess.__str__(self) + " }}"
+      result = result + "links " + self.linkages.__str__() + " }}"
       return result
 
    def link(self, source, sink, passthrough=0):
