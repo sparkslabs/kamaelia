@@ -20,11 +20,12 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-# linkage tests
+# postoffice tests - testing for correct establishment and registering/
+# deregistering of linkages by the postoffice
 #
-# test creation of various chains of linkages checking data makes it through
-# including rejigging of chains
-
+# also test creation of various chains of linkages checking data makes it
+# through, irrespective of the ordering and sequence of events leading up to
+# the creation of the chain
 
 
 # Test the module loads
@@ -32,12 +33,224 @@ import unittest
 import sys ; sys.path.append(".") ; sys.path.append("..")
 from Component import component
 from Scheduler import scheduler
+from Postoffice import postoffice
+
+
+class Dummybox(list):
+    def __init__(self,*argl,**argd):
+        super(Dummybox,self).__init__(*argl,**argd)
+        self.sourcesadded = []
+        self.sourcesremoved = []
+    def addsource(self, source):
+        self.sourcesadded.append(source)
+    def removesource(self, source):
+        self.sourcesremoved.append(source)
+
+class DummyComponent(object):
+    def __init__(self):
+        super(DummyComponent,self).__init__()
+        self.inboxes = {"inbox":Dummybox(), "control":Dummybox()}
+        self.outboxes = {"outbox":Dummybox(), "signal":Dummybox()}
 
 class postoffice_Test(unittest.TestCase):
     """Tests for postoffice object"""
-    pass
+    
+    def test___init__SmokeTest_NoArguments(self):
+        p = postoffice()
+        self.assert_(p.debugname=="", "defaults to have no debugname")
+        self.assert_(len(p.linkages)==0, "initializes with no linkages registered")
 
+    def test___init__SmokeTest_DebugnameArgument(self):
+        testname="[fwibble]"
+        p = postoffice(debugname=testname)
+        self.assert_(testname in p.debugname, "can specify a debugname")
+        
+    def strtest(self, postoffice):
+        teststr = "{{ POSTOFFICE: " + postoffice.debugname + "links "+ str(postoffice.linkages) +" }}"
+        return (teststr == str(postoffice))
+    
+    def test__str__checksStringFormatStrict(self):
+        '__str__ - Checks the formatted string is of the correct format.'
+        p = postoffice()
+        self.failUnless(self.strtest(p))
+        p2 = postoffice(debugname="flurble")
+        self.failUnless(self.strtest(p2))
 
+    def test_linkestablishes(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        p.link( (c1,"outbox"), (c2,"inbox") )
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [c1.outboxes['outbox']])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+        
+    def test_linkestablishes_inboxinboxpassthrough(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        p.link( (c1,"inbox"), (c2,"inbox"), passthrough=1 )
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [c1.inboxes['inbox']])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+
+    def test_linkestablishes_outboxoutboxpassthrough(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        p.link( (c1,"outbox"), (c2,"outbox"), passthrough=2 )
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [c1.outboxes['outbox']])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+
+    def test_linkregistered(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        l1 = p.link( (c1,"outbox"), (c2,"inbox") )
+        self.assert_(l1 in p.linkages, "postoffice registers with itself any linkages you ask it to make")
+        l2 = p.link( (c1,"signal"), (c2,"control") )
+        self.assert_(l1 in p.linkages and l2 in p.linkages)
+
+    def test_linkderegisters(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        l1 = p.link( (c1,"outbox"), (c2,"inbox") )
+        l2 = p.link( (c1,"signal"), (c2,"control") )
+        p.unlink(thelinkage=l1)
+        self.assert_(l1 not in p.linkages and l2 in p.linkages, "linkage deregisters when you unlink specifying a linkage")
+        
+    def test_componentlinksderegisters(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        c3 = DummyComponent()
+        l1 = p.link( (c1,"outbox"), (c2,"inbox") )
+        l2 = p.link( (c1,"signal"), (c2,"control") )
+        l3 = p.link( (c2,"outbox"), (c3,"inbox") )
+        l4 = p.link( (c2,"signal"), (c3,"control") )
+        p.unlink(thecomponent=c1)
+        self.assert_(l1 not in p.linkages and 
+                     l2 not in p.linkages and
+                     l3 in p.linkages and
+                     l4 in p.linkages,
+                     "linkages deregister when you unlink specifying a component")
+        
+    def test_linkdisengages(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        l1 = p.link( (c1,"outbox"), (c2,"inbox") )
+        p.unlink(thelinkage=l1)
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [c1.outboxes['outbox']])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [c1.outboxes['outbox']])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+        
+    def test_linkdisengages_inboxinboxpassthrough(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        l1 = p.link( (c1,"inbox"), (c2,"inbox"), passthrough=1 )
+        p.unlink(thelinkage=l1)
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [c1.inboxes['inbox']])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [c1.inboxes['inbox']])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+        
+    def test_linkdisengages_outboxoutboxpassthrough(self):
+        p = postoffice()
+        c1 = DummyComponent()
+        c2 = DummyComponent()
+        l1 = p.link( (c1,"outbox"), (c2,"outbox"), passthrough=2 )
+        p.unlink(thelinkage=l1)
+        self.assert_(c2.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c2.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c2.inboxes['control'].sourcesadded == [])
+        self.assert_(c2.inboxes['control'].sourcesremoved == [])
+        self.assert_(c2.outboxes['outbox'].sourcesadded == [c1.outboxes['outbox']])
+        self.assert_(c2.outboxes['outbox'].sourcesremoved == [c1.outboxes['outbox']])
+        self.assert_(c2.outboxes['signal'].sourcesadded == [])
+        self.assert_(c2.outboxes['signal'].sourcesremoved == [])
+        
+        self.assert_(c1.inboxes['inbox'].sourcesadded == [])
+        self.assert_(c1.inboxes['inbox'].sourcesremoved == [])
+        self.assert_(c1.inboxes['control'].sourcesadded == [])
+        self.assert_(c1.inboxes['control'].sourcesremoved == [])
+        self.assert_(c1.outboxes['outbox'].sourcesadded == [])
+        self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
+        self.assert_(c1.outboxes['signal'].sourcesadded == [])
+        self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+        
 
 class BusyWaitComponent(component):
     def main(self):
