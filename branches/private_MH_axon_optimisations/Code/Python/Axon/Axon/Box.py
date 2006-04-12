@@ -56,7 +56,7 @@ class postbox(object):
         super(postbox,self).__init__()
         self.storage = storage
         self.sources = []
-        self.retarget()
+        self._retarget()
     
     def __len__(self):
         return self.__len__()
@@ -67,7 +67,7 @@ class postbox(object):
         'retarget' at this postbox.
         """
         self.sources.append(newsource)       # XXX assuming not already linked from that source
-        newsource.retarget(self.sink)
+        newsource._retarget(self.sink)
         
     def removesource(self,oldsource):
         """\
@@ -75,9 +75,9 @@ class postbox(object):
         to 'retarget' at None (nothing).
         """
         self.sources.remove(oldsource)
-        oldsource.retarget(newtarget=None)
+        oldsource._retarget(newtarget=None)
         
-    def retarget(self, newtarget=None):
+    def _retarget(self, newtarget=None):
         """\
         retarget([newtarget]) aims requests at to this postbox at a different
         target.
@@ -98,7 +98,7 @@ class postbox(object):
         self.__len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
-            source.retarget(newtarget=self.sink)
+            source._retarget(newtarget=self.sink)
 
 
 
