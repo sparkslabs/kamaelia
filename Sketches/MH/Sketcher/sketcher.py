@@ -279,7 +279,7 @@ if __name__=="__main__":
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
     components = { 'SKETCHER':makeSketcher() }
-    linkages   = {}
+    linkages   = { ('self','inbox'):('SKETCHER','inbox') } # dummy linkage
     for o,a in optlist:
         
         if o in ("-f","--file"):
