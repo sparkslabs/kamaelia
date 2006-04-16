@@ -178,8 +178,11 @@ class Painter(component):
                 message = self.recv("inbox")
                 for data in message:
                     if data.type == pygame.MOUSEBUTTONDOWN:
-                        oldpos = data.pos
-                        dragging = True
+                        if data.button==1:
+                            oldpos = data.pos
+                            dragging = True
+                        elif data.button==3:
+                            pygame.display.toggle_fullscreen()
                     elif data.type == pygame.MOUSEMOTION and dragging:
                         self.cmd(mode, oldpos, data.pos, r, g, b)
                         oldpos = data.pos
