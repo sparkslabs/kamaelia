@@ -143,9 +143,7 @@ class Canvas(component):
             imagestring = pygame.image.tostring(self.surface,"RGB")
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,w,h,"RGB"]], "outbox" )
-            print cmd
         elif cmd=="SETIMG":
-            print cmd
             w,h = int(args[1]), int(args[2])
             recvsurface = pygame.image.fromstring(args[0], (w,h), args[3])
             self.surface.blit(recvsurface, (0,0))
@@ -280,11 +278,11 @@ class TwoWaySplitter(component):
             yield 1
 
 
-def makeSketcher():
-    return Graphline( CANVAS  = Canvas( position=(0,32),size=(512,768) ),
+def makeSketcher(left=0,top=0,width=1024,height=768):
+    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
                       PAINTER = Painter(),
-                      PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
-                      ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
+                      PALETTE = buildPalette( cols=colours, topleft=(left+64,top), size=32 ),
+                      ERASER  = Button(caption="Eraser", size=(64,32), position=(left,top)),
                       SPLIT   = TwoWaySplitter(),
                 
                       linkages = {
@@ -302,7 +300,7 @@ def makeSketcher():
 
 def makeLoadSaveControl(filename):
     return Graphline( LOADER = OneShot( msg=[["LOAD",filename],["GETIMG"]] ),
-                      SAVER  = Button( caption="Save '"+filename+"'", position=(512,0), msg=[["SAVE",filename]] ),
+                      SAVER  = Button( caption="Save '"+filename+"'", position=(512-96,2), msg=[["SAVE",filename]] ),
                       linkages = {
                          ("LOADER","outbox") : ("self","outbox"),
                          ("SAVER","outbox")  : ("self","outbox"),
@@ -317,11 +315,12 @@ if __name__=="__main__":
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    components = { 'SKETCHER':makeSketcher(),
-                   'CANVAS2':Canvas(position=(512,32),size=(512,768)),
+    components = { 'SKETCHER':makeSketcher(width=512),
+                   'CANVAS2':makeSketcher(width=512,left=512),
                  }
     linkages = { ('self','inbox'):('SKETCHER','inbox'), # dummy linkage
                  ('SKETCHER','outbox'):('CANVAS2','inbox'),
+                 ('CANVAS2','outbox'):('SKETCHER','inbox'),
                }
     for o,a in optlist:
         
