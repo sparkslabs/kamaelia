@@ -128,6 +128,17 @@ class Canvas(component):
         elif cmd=="CIRCLE":
             (r,g,b,x,y,radius) = [int(v) for v in args[0:6]]
             pygame.draw.circle(self.surface, (r,g,b), (x,y), radius, 0)
+        elif cmd=="LOAD":
+            filename = args[0]
+            try:
+                loadedimage = pygame.image.load(filename)
+            except:
+                pass
+            else:
+                self.surface.blit(loadedimage, (0,0))
+        elif cmd=="SAVE":
+            filename = args[0]
+            pygame.image.save(self.surface, filename)
 
 class Painter(component):
     """\
@@ -224,17 +235,58 @@ colours = [ (0,0,0), (192,0,0), (192,96,0), (160,160,0), (0,192,0),
           ]
 
 
-Graphline( CANVAS  = Canvas( position=(0,32),size=(1024,768) ),
-           PAINTER = Painter(),
-           PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
-           ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
-           
-           linkages = {
-               ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
-               ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
-               ("PALETTE", "outbox")    : ("PAINTER", "colour"),
-               ("ERASER", "outbox")     : ("PAINTER", "erase"),
-           },
-         ).run()
+class OneShot(component):
+    def __init__(self, msg=None):
+        super(OneShot, self).__init__()
+        self.msg = msg
+    def main(self):
+        self.send(self.msg,"outbox")
+        yield 1
 
 
+
+def makeSketcher(file=None):
+    extracomponents = {}
+    extralinkages = {}
+    
+    if file:
+        # add file loading stimulus and file saving button
+        filename = file
+        extracomponents['LOADER'] = OneShot( msg=[["LOAD",filename]] )
+        extracomponents['SAVER'] = Button( caption="Save '"+filename+"'", position=(512,0), msg=[["SAVE",filename]] )
+        extralinkages[("LOADER","outbox")] = ("CANVAS","inbox")
+        extralinkages[("SAVER","outbox")] = ("CANVAS","inbox")
+
+    return Graphline( CANVAS  = Canvas( position=(0,32),size=(1024,768) ),
+                      PAINTER = Painter(),
+                      PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
+                      ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
+                
+                      linkages = dict({
+                          ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
+                          ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
+                          ("PALETTE", "outbox")    : ("PAINTER", "colour"),
+                          ("ERASER", "outbox")     : ("PAINTER", "erase"),
+                          },
+                          **extralinkages),
+                          
+                      **extracomponents
+                    )
+
+
+if __name__=="__main__":
+    import sys, getopt
+    
+    shortargs = ""
+    longargs  = [ "file=" ]
+            
+    optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
+    
+    makeargs = {}
+    for o,a in optlist:
+        
+        if o in ("-f","--file"):
+            makeargs['file'] = a
+    
+    makeSketcher(**makeargs).run()
+    
