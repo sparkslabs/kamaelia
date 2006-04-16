@@ -104,11 +104,12 @@ class Canvas(component):
         while not self.finished():
             
             while self.dataReady("inbox"):
-                msg = self.recv("inbox")
-                cmd = msg[0]
-                args = msg[1:]
-                # parse commands here
-                self.handleCommand(cmd, *args)
+                msgs = self.recv("inbox")
+                for msg in msgs:
+                    cmd = msg[0]
+                    args = msg[1:]
+                    # parse commands here
+                    self.handleCommand(cmd, *args)
                 
             # pass on events received from pygame display
             while self.dataReady("eventsIn"):
@@ -144,6 +145,7 @@ class Painter(component):
     
     def __init__(self):
         super(Painter,self).__init__()
+        self.sendbuffer = []
      
     
     def finished(self):
@@ -190,16 +192,19 @@ class Painter(component):
                         self.cmd(mode, oldpos, data.pos, r, g, b)
                         oldpos = data.pos
                         dragging = False
-        
+            self.flushbuffer()
             self.pause()
             yield 1
 
     def cmd(self, mode, oldpos, newpos, r, g, b):
         if mode=="LINE":
-            self.send( ["LINE", str(r),str(g),str(b), str(oldpos[0]), str(oldpos[1]), str(newpos[0]), str(newpos[1])], "outbox")
+            self.sendbuffer.append( ["LINE", str(r),str(g),str(b), str(oldpos[0]), str(oldpos[1]), str(newpos[0]), str(newpos[1])] )
         elif mode=="ERASE":
-            self.send( ["CIRCLE", "255","255","255", str(newpos[0]), str(newpos[1]), "8"], "outbox")
+            self.sendbuffer.append( ["CIRCLE", "255","255","255", str(newpos[0]), str(newpos[1]), "8"])
 
+    def flushbuffer(self):
+        self.send(self.sendbuffer[:], "outbox")
+        self.sendbuffer = []
 
 def buildPalette(cols, topleft=(0,0), size=32):
     buttons = {}
