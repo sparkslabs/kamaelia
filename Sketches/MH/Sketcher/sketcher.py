@@ -124,6 +124,9 @@ class Canvas(component):
         elif cmd=="LINE":
             (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
             pygame.draw.line(self.surface, (r,g,b), (sx,sy), (ex,ey))
+        elif cmd=="CIRCLE":
+            (r,g,b,x,y,radius) = [int(v) for v in args[0:6]]
+            pygame.draw.circle(self.surface, (r,g,b), (x,y), radius, 0)
 
 class Painter(component):
     """\
@@ -133,6 +136,7 @@ class Painter(component):
     Inboxes =  { "inbox"   : "For receiving PygameDisplay events",
                  "control" : "",
                  "colour"  : "select drawing, using colour",
+                 "erase"   : "select eraser",
                }
     Outboxes = { "outbox" : "outputs drawing instructions",
                  "signal" : "",
@@ -164,7 +168,12 @@ class Painter(component):
         
             while self.dataReady("colour"):
                 r,g,b = self.recv("colour")
+                mode = "LINE"
                 
+            while self.dataReady("erase"):
+                self.recv("erase")
+                mode = "ERASE"
+        
             while self.dataReady("inbox"):
                 message = self.recv("inbox")
                 for data in message:
@@ -185,6 +194,8 @@ class Painter(component):
     def cmd(self, mode, oldpos, newpos, r, g, b):
         if mode=="LINE":
             self.send( ["LINE", str(r),str(g),str(b), str(oldpos[0]), str(oldpos[1]), str(newpos[0]), str(newpos[1])], "outbox")
+        elif mode=="ERASE":
+            self.send( ["CIRCLE", "255","255","255", str(newpos[0]), str(newpos[1]), "8"], "outbox")
 
 
 def buildPalette(cols, topleft=(0,0), size=32):
@@ -205,14 +216,16 @@ colours = [ (0,0,0), (192,0,0), (192,96,0), (160,160,0), (0,192,0),
           ]
 
 
-Graphline( CANVAS  = Canvas( position=(0,0),size=(1024,768) ),
+Graphline( CANVAS  = Canvas( position=(0,32),size=(1024,768) ),
            PAINTER = Painter(),
-           PALETTE = buildPalette( cols=colours, topleft=(0,0), size=32 ),
+           PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
+           ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
            
            linkages = {
                ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
                ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
                ("PALETTE", "outbox")    : ("PAINTER", "colour"),
+               ("ERASER", "outbox")     : ("PAINTER", "erase"),
            },
          ).run()
 
