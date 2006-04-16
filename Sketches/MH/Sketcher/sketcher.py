@@ -139,6 +139,16 @@ class Canvas(component):
         elif cmd=="SAVE":
             filename = args[0]
             pygame.image.save(self.surface, filename)
+        elif cmd=="GETIMG":
+            imagestring = pygame.image.tostring(self.surface,"RGB")
+            w,h = self.surface.get_size()
+            self.send( [["SETIMG",imagestring,w,h,"RGB"]], "outbox" )
+            print cmd
+        elif cmd=="SETIMG":
+            print cmd
+            w,h = int(args[1]), int(args[2])
+            recvsurface = pygame.image.fromstring(args[0], (w,h), args[3])
+            self.surface.blit(recvsurface, (0,0))
 
 class Painter(component):
     """\
@@ -286,11 +296,12 @@ def makeSketcher():
                           
                           ("self", "inbox")        : ("CANVAS", "inbox"),
                           ("SPLIT", "outbox2")     : ("self", "outbox"),
+                          ("CANVAS", "outbox")     : ("self", "outbox"),
                           },
                     )
 
 def makeLoadSaveControl(filename):
-    return Graphline( LOADER = OneShot( msg=[["LOAD",filename]] ),
+    return Graphline( LOADER = OneShot( msg=[["LOAD",filename],["GETIMG"]] ),
                       SAVER  = Button( caption="Save '"+filename+"'", position=(512,0), msg=[["SAVE",filename]] ),
                       linkages = {
                          ("LOADER","outbox") : ("self","outbox"),
