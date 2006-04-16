@@ -244,20 +244,48 @@ class OneShot(component):
         yield 1
 
 
+class TwoWaySplitter(component):
+    Outboxes = { "outbox"  : "",
+                 "outbox2" : "",
+                 "signal"  : "",
+                 "signal2" : "",
+               }
+               
+    def main(self):
+        done=False
+        while not done:
+            
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                self.send(data, "outbox")
+                self.send(data, "outbox2")
+                
+            while self.dataReady("control"):
+                data = self.recv("control")
+                self.send(data, "signal")
+                self.send(data, "signal2")
+                if isinstance(data, (producerFinished, shutdownMicroprocess)):
+                    done=True
+                    
+            yield 1
+
 
 def makeSketcher():
-    return Graphline( CANVAS  = Canvas( position=(0,32),size=(1024,768) ),
+    return Graphline( CANVAS  = Canvas( position=(0,32),size=(512,768) ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
                       ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
+                      SPLIT   = TwoWaySplitter(),
                 
                       linkages = {
                           ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
-                          ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
                           ("PALETTE", "outbox")    : ("PAINTER", "colour"),
                           ("ERASER", "outbox")     : ("PAINTER", "erase"),
+                          ("PAINTER", "outbox")    : ("SPLIT", "inbox"),
+                          ("SPLIT", "outbox")      : ("CANVAS", "inbox"),
                           
                           ("self", "inbox")        : ("CANVAS", "inbox"),
+                          ("SPLIT", "outbox2")     : ("self", "outbox"),
                           },
                     )
 
@@ -278,8 +306,12 @@ if __name__=="__main__":
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    components = { 'SKETCHER':makeSketcher() }
-    linkages   = { ('self','inbox'):('SKETCHER','inbox') } # dummy linkage
+    components = { 'SKETCHER':makeSketcher(),
+                   'CANVAS2':Canvas(position=(512,32),size=(512,768)),
+                 }
+    linkages = { ('self','inbox'):('SKETCHER','inbox'), # dummy linkage
+                 ('SKETCHER','outbox'):('CANVAS2','inbox'),
+               }
     for o,a in optlist:
         
         if o in ("-f","--file"):
