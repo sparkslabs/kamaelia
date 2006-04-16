@@ -192,6 +192,7 @@ def buildPalette(cols, topleft=(0,0), size=32):
     links = {}
     pos = topleft
     i=0
+    # Interesting/neat trick MPS
     for col in cols:
         buttons[str(i)] = Button(caption="", position=pos, size=(size,size), bgcolour=col, msg=col)
         links[ (str(i),"outbox") ] = ("self","outbox")
