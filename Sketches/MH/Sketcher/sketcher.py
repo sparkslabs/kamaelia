@@ -26,7 +26,7 @@ from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 from Kamaelia.Util.Graphline import Graphline
-
+from Kamaelia.UI.Pygame.Button import Button
 
 
 class Canvas(component):
@@ -132,6 +132,7 @@ class Painter(component):
     
     Inboxes =  { "inbox"   : "For receiving PygameDisplay events",
                  "control" : "",
+                 "colour"  : "select drawing, using colour",
                }
     Outboxes = { "outbox" : "outputs drawing instructions",
                  "signal" : "",
@@ -161,6 +162,9 @@ class Painter(component):
         
         while not self.finished():
         
+            while self.dataReady("colour"):
+                r,g,b = self.recv("colour")
+                
             while self.dataReady("inbox"):
                 message = self.recv("inbox")
                 for data in message:
@@ -183,12 +187,31 @@ class Painter(component):
             self.send( ["LINE", str(r),str(g),str(b), str(oldpos[0]), str(oldpos[1]), str(newpos[0]), str(newpos[1])], "outbox")
 
 
+def buildPalette(cols, topleft=(0,0), size=32):
+    buttons = {}
+    links = {}
+    pos = topleft
+    i=0
+    for col in cols:
+        buttons[str(i)] = Button(caption="", position=pos, size=(size,size), bgcolour=col, msg=col)
+        links[ (str(i),"outbox") ] = ("self","outbox")
+        pos = (pos[0] + size, pos[1])
+        i=i+1
+    return Graphline( linkages = links,  **buttons )
+
+colours = [ (0,0,0), (192,0,0), (192,96,0), (160,160,0), (0,192,0),
+            (0,160,160), (0,0,255), (192,0,192), (96,96,96), (192,192,192),
+          ]
+
+
 Graphline( CANVAS  = Canvas( position=(0,0),size=(1024,768) ),
            PAINTER = Painter(),
+           PALETTE = buildPalette( cols=colours, topleft=(0,0), size=32 ),
            
            linkages = {
                ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
                ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
+               ("PALETTE", "outbox")    : ("PAINTER", "colour"),
            },
          ).run()
 
