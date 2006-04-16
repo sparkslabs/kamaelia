@@ -245,34 +245,30 @@ class OneShot(component):
 
 
 
-def makeSketcher(file=None):
-    extracomponents = {}
-    extralinkages = {}
-    
-    if file:
-        # add file loading stimulus and file saving button
-        filename = file
-        extracomponents['LOADER'] = OneShot( msg=[["LOAD",filename]] )
-        extracomponents['SAVER'] = Button( caption="Save '"+filename+"'", position=(512,0), msg=[["SAVE",filename]] )
-        extralinkages[("LOADER","outbox")] = ("CANVAS","inbox")
-        extralinkages[("SAVER","outbox")] = ("CANVAS","inbox")
-
+def makeSketcher():
     return Graphline( CANVAS  = Canvas( position=(0,32),size=(1024,768) ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, topleft=(64,0), size=32 ),
                       ERASER  = Button(caption="Eraser", size=(64,32), position=(0,0)),
                 
-                      linkages = dict({
+                      linkages = {
                           ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
                           ("PAINTER", "outbox")    : ("CANVAS", "inbox"),
                           ("PALETTE", "outbox")    : ("PAINTER", "colour"),
                           ("ERASER", "outbox")     : ("PAINTER", "erase"),
-                          },
-                          **extralinkages),
                           
-                      **extracomponents
+                          ("self", "inbox")        : ("CANVAS", "inbox"),
+                          },
                     )
 
+def makeLoadSaveControl(filename):
+    return Graphline( LOADER = OneShot( msg=[["LOAD",filename]] ),
+                      SAVER  = Button( caption="Save '"+filename+"'", position=(512,0), msg=[["SAVE",filename]] ),
+                      linkages = {
+                         ("LOADER","outbox") : ("self","outbox"),
+                         ("SAVER","outbox")  : ("self","outbox"),
+                      },
+                    )
 
 if __name__=="__main__":
     import sys, getopt
@@ -282,11 +278,13 @@ if __name__=="__main__":
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    makeargs = {}
+    components = { 'SKETCHER':makeSketcher() }
+    linkages   = {}
     for o,a in optlist:
         
         if o in ("-f","--file"):
-            makeargs['file'] = a
+            components['LSR'] = makeLoadSaveControl(a)
+            linkages[('LSR','outbox')] = ('SKETCHER','inbox')
     
-    makeSketcher(**makeargs).run()
+    Graphline(linkages=linkages,**components).run()
     
