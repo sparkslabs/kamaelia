@@ -65,6 +65,9 @@ had been clicked
 
 - the button can have a transparent background
 
+- you can specify a size as width,height. If specified, the margin size is
+  ignored and the text label will be centred within the button
+
 If a producerFinished or shutdownMicroprocess message is received on its
 "control" inbox. It is passed on out of its "signal" outbox and the component
 terminates.
@@ -95,6 +98,7 @@ class Button(Axon.Component.component):
    - msg          -- sent when clicked (default=("CLICK",self.id))
    - key          -- if not None, pygame keycode to trigger click (default=None)
    - transparent  -- draw background transparent if True (default=False)
+   - size         -- None or (w,h) in pixels (default=None)
    """
    
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
@@ -107,7 +111,7 @@ class Button(Axon.Component.component):
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
                 key = None,
-                transparent = False):
+                transparent = False, size=None):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Button,self).__init__()
       
@@ -119,6 +123,8 @@ class Button(Axon.Component.component):
       
       if caption is None:
          caption = "Button "+str(self.id)
+      
+      self.size = size
       
       pygame.font.init()      
       self.buildCaption(caption)
@@ -146,8 +152,11 @@ class Button(Axon.Component.component):
       self.image = font.render(text,True, self.foregroundColour, )
       
       (w,h) = self.image.get_size()
-      self.size = (w + 2*self.margin, h + 2*self.margin)
-      self.imagePosition = (self.margin, self.margin)
+      if not self.size:
+          self.size = (w + 2*self.margin, h + 2*self.margin)
+          self.imagePosition = (self.margin, self.margin)
+      else:
+          self.imagePosition = ( (self.size[0]-w)/2, (self.size[1]-h)/2 )
       
        
    def waitBox(self,boxname):
