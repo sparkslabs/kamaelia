@@ -316,20 +316,37 @@ if __name__=="__main__":
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    components = { 'SKETCHER':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384),publishTo("WHITEBOARD")),
-                   'CANVAS2':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512),publishTo("WHITEBOARD")),
-                   'CANVAS3':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512,top=384),publishTo("WHITEBOARD")),
-                   'BACKPLANE':Backplane("WHITEBOARD")
+    
+    components = { 'SKETCHER':makeSketcher(width=512,height=384),
                  }
-    linkages = { ('self','inbox'):('SKETCHER','inbox'), # dummy linkage
-                 ('CANVAS2','outbox'):('self','dummy'), # dummy linkage
-                 ('CANVAS3','outbox'):('self','dummy'), # dummy linkage
+    linkages = { ('self','inbox'):('SKETCHER','inbox'),
+                 ('SKETCHER','outbox'):('self','outbox'),
                }
+               
     for o,a in optlist:
         
         if o in ("-f","--file"):
             components['LSR'] = makeLoadSaveControl(a)
             linkages[('LSR','outbox')] = ('SKETCHER','inbox')
     
-    Graphline(linkages=linkages,**components).run()
+    mainsketcher = Graphline( linkages = linkages, **components )
     
+    # primary whiteboard
+    pipeline( subscribeTo("WHITEBOARD"),
+              mainsketcher,
+              publishTo("WHITEBOARD")
+            ).activate()
+    
+    # secondary whiteboard
+    pipeline( subscribeTo("WHITEBOARD"),
+              makeSketcher(width=512,height=384,left=512),
+              publishTo("WHITEBOARD")
+            ).activate()
+              
+    # tertiary whiteboard
+    pipeline( subscribeTo("WHITEBOARD"),
+              makeSketcher(width=512,height=384,left=512,top=384),
+              publishTo("WHITEBOARD")
+            ).activate()
+    
+    Backplane("WHITEBOARD").run()
