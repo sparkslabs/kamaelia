@@ -29,6 +29,7 @@ from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.PipelineComponent import pipeline
 from Backplane import Backplane, publishTo, subscribeTo
+from TagFiltering import TagAndFilterWrapper
 
 class Canvas(component):
     """\
@@ -333,19 +334,19 @@ if __name__=="__main__":
     
     # primary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              mainsketcher,
+              TagAndFilterWrapper(mainsketcher),
               publishTo("WHITEBOARD")
             ).activate()
     
     # secondary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              makeSketcher(width=512,height=384,left=512),
+              TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512)),
               publishTo("WHITEBOARD")
             ).activate()
               
     # tertiary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              makeSketcher(width=512,height=384,left=512,top=384),
+              TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512,top=384)),
               publishTo("WHITEBOARD")
             ).activate()
     
