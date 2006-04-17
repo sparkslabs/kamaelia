@@ -22,18 +22,19 @@
 #
 # MPS's experimental backplane code
 import Axon
+from Axon.Ipc import newComponent
 from Kamaelia.Util.Splitter import PlugSplitter as Splitter
 from Kamaelia.Util.Splitter import Plug
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
-
+from Kamaelia.Util.passThrough import passThrough
 
 class Backplane(Axon.Component.component):
     def __init__(self, name):
         super(Backplane,self).__init__()
         assert name == str(name)
         self.name = name
-        self.splitter = Splitter().activate()
+        self.splitter = Splitter()
 
         splitter = self.splitter
         cat = CAT.getcat()
@@ -51,6 +52,8 @@ class Backplane(Axon.Component.component):
 
             raise e
     def main(self):
+        yield newComponent(self.splitter)
+        self.splitter = None
         while 1:
             self.pause()
             yield 1
@@ -76,9 +79,11 @@ class subscribeTo(Axon.Component.component):
     def main(self):
         cat = CAT.getcat()
         splitter,configbox = cat.retrieveService("Backplane_O_"+self.source)
-        Plug(splitter, self).activate()
+        p = passThrough()
+        plug = Plug(splitter, p)
+        self.link( (p,"outbox"), (self,"outbox"), passthrough=2)
+        self.addChildren(plug)
+        yield newComponent(plug)
         while 1:
-            while self.dataReady("inbox"):
-                d = self.recv("inbox")
-                self.send(d, "outbox")
+            self.pause()
             yield 1            
