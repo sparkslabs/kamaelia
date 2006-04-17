@@ -51,7 +51,7 @@ class passThrough(component):
       
       for (inbox,outbox) in self.Connections.items():
       
-         if self.dataReady(inbox):
+         while self.dataReady(inbox):
              forwarded += 1
              data = self.recv(inbox)
              self.send(data, outbox)
