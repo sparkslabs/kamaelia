@@ -29,7 +29,7 @@ from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.PipelineComponent import pipeline
 from Backplane import Backplane, publishTo, subscribeTo
-from TagFiltering import TagAndFilterWrapper
+from TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
 from tokenisation import tokenlists_to_lines, lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 
@@ -337,29 +337,22 @@ if __name__=="__main__":
     
     # primary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              chunks_to_lines(),
-              lines_to_tokenlists(),
               TagAndFilterWrapper(mainsketcher),
-              tokenlists_to_lines(),
               publishTo("WHITEBOARD")
             ).activate()
     
+    
     # secondary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              chunks_to_lines(),
-              lines_to_tokenlists(),
               TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512)),
-              tokenlists_to_lines(),
               publishTo("WHITEBOARD")
             ).activate()
               
     # tertiary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
-              chunks_to_lines(),
-              lines_to_tokenlists(),
               TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512,top=384)),
-              tokenlists_to_lines(),
               publishTo("WHITEBOARD")
             ).activate()
+            
     
     Backplane("WHITEBOARD").run()
