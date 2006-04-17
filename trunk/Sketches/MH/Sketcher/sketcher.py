@@ -354,5 +354,37 @@ if __name__=="__main__":
               publishTo("WHITEBOARD")
             ).activate()
             
+    # server
+    # plugs into backplane for any new connections
+    # does the same tagging and filtering, and conversion tokenlists <-> lines
+    from Kamaelia.Chassis.ConnectedServer import SimpleServer
+    
+    def protocol():
+        return pipeline( chunks_to_lines(),
+                         lines_to_tokenlists(),
+                         FilterAndTagWrapper( pipeline( publishTo("WHITEBOARD"),
+                                                        # well, should be to separate pipelines, this is lazier!
+                                                        subscribeTo("WHITEBOARD"),
+                                                      )
+                                            ),
+                         tokenlists_to_lines(),
+                       )
+    
+    SimpleServer(protocol=protocol, port=1500).activate()
+    
+    # quaternary whiteboard
+    from Kamaelia.Internet.TCPClient import TCPClient
+    
+    Graphline( NET    = TCPClient("127.0.0.1",port=1500, delay=0.0),
+               SKETCH = pipeline( chunks_to_lines(), 
+                                  lines_to_tokenlists(), 
+                                  makeSketcher(width=512,height=384,top=384),
+                                  tokenlists_to_lines(),
+                                ),
+               linkages = { ("NET","outbox")    : ("SKETCH","inbox"),
+                            ("SKETCH","outbox") : ("NET","inbox"),
+                          }
+             ).activate()
+
     
     Backplane("WHITEBOARD").run()
