@@ -144,7 +144,7 @@ class Canvas(component):
         elif cmd=="GETIMG":
             imagestring = pygame.image.tostring(self.surface,"RGB")
             w,h = self.surface.get_size()
-            self.send( [["SETIMG",imagestring,w,h,"RGB"]], "outbox" )
+            self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
         elif cmd=="SETIMG":
             w,h = int(args[1]), int(args[2])
             recvsurface = pygame.image.fromstring(args[0], (w,h), args[3])
@@ -224,8 +224,9 @@ class Painter(component):
             self.sendbuffer.append( ["CIRCLE", "255","255","255", str(newpos[0]), str(newpos[1]), "8"])
 
     def flushbuffer(self):
-        self.send(self.sendbuffer[:], "outbox")
-        self.sendbuffer = []
+        if len(self.sendbuffer):
+            self.send(self.sendbuffer[:], "outbox")
+            self.sendbuffer = []
 
 def buildPalette(cols, topleft=(0,0), size=32):
     buttons = {}
