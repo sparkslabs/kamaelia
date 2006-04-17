@@ -319,7 +319,7 @@ if __name__=="__main__":
     components = { 'SKETCHER':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384),publishTo("WHITEBOARD")),
                    'CANVAS2':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512),publishTo("WHITEBOARD")),
                    'CANVAS3':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512,top=384),publishTo("WHITEBOARD")),
-                   'BACKPLANE':Backplane("BP")
+                   'BACKPLANE':Backplane("WHITEBOARD")
                  }
     linkages = { ('self','inbox'):('SKETCHER','inbox'), # dummy linkage
                  ('CANVAS2','outbox'):('self','dummy'), # dummy linkage
