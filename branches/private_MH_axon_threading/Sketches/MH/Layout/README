@@ -1,0 +1,3 @@
+Some experiments for automating layout of a visualisation of an
+Axon based system - components, and possibly linkages are represented
+using a particle based system, with forces between particles.
