@@ -341,7 +341,6 @@ if __name__=="__main__":
               lines_to_tokenlists(),
               TagAndFilterWrapper(mainsketcher),
               tokenlists_to_lines(),
-              lines_to_tokenlists(),
               publishTo("WHITEBOARD")
             ).activate()
     
@@ -349,7 +348,6 @@ if __name__=="__main__":
     pipeline( subscribeTo("WHITEBOARD"),
               chunks_to_lines(),
               lines_to_tokenlists(),
-              ConsoleEchoer(forwarder=True),
               TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512)),
               tokenlists_to_lines(),
               publishTo("WHITEBOARD")
