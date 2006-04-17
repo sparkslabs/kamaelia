@@ -27,7 +27,8 @@ from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.UI.Pygame.Button import Button
-
+from Kamaelia.Util.PipelineComponent import pipeline
+from Backplane import Backplane, publishTo, subscribeTo
 
 class Canvas(component):
     """\
@@ -315,12 +316,14 @@ if __name__=="__main__":
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    components = { 'SKETCHER':makeSketcher(width=512),
-                   'CANVAS2':makeSketcher(width=512,left=512),
+    components = { 'SKETCHER':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384),publishTo("WHITEBOARD")),
+                   'CANVAS2':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512),publishTo("WHITEBOARD")),
+                   'CANVAS3':pipeline(subscribeTo("WHITEBOARD"),makeSketcher(width=512,height=384,left=512,top=384),publishTo("WHITEBOARD")),
+                   'BACKPLANE':Backplane("BP")
                  }
     linkages = { ('self','inbox'):('SKETCHER','inbox'), # dummy linkage
-                 ('SKETCHER','outbox'):('CANVAS2','inbox'),
-                 ('CANVAS2','outbox'):('SKETCHER','inbox'),
+                 ('CANVAS2','outbox'):('self','dummy'), # dummy linkage
+                 ('CANVAS3','outbox'):('self','dummy'), # dummy linkage
                }
     for o,a in optlist:
         
