@@ -32,6 +32,7 @@ from Backplane import Backplane, publishTo, subscribeTo
 from TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
 from tokenisation import tokenlists_to_lines, lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
+import zlib
 
 class Canvas(component):
     """\
@@ -148,11 +149,13 @@ class Canvas(component):
             pygame.image.save(self.surface, filename)
         elif cmd=="GETIMG":
             imagestring = pygame.image.tostring(self.surface,"RGB")
+            imagestring = zlib.compress(imagestring)
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
         elif cmd=="SETIMG":
             w,h = int(args[1]), int(args[2])
-            recvsurface = pygame.image.fromstring(args[0], (w,h), args[3])
+            imagestring = zlib.decompress(args[0])
+            recvsurface = pygame.image.fromstring(imagestring, (w,h), args[3])
             self.surface.blit(recvsurface, (0,0))
         elif cmd=="WRITE":
             x,y,size,r,g,b = [int(a) for a in args[0:6]]
