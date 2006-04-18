@@ -81,16 +81,17 @@ class chunks_to_lines(component):
       gotLine = False
       line = ""
       while not self.shutdown(): 
-         pos = line.find("\n")
-         while pos > -1:
-            self.send(line[:pos], "outbox")
-            line = line[pos+1:] 
-            pos = line.find("\n")
          
          while self.dataReady("inbox"):
             chunk = self.recv("inbox")
             chunk = chunk.replace("\r", "")
             line = line + chunk
+         
+         pos = line.find("\n")
+         while pos > -1:
+            self.send(line[:pos], "outbox")
+            line = line[pos+1:] 
+            pos = line.find("\n")
          
          self.pause()
          yield 1
