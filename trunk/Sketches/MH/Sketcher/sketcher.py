@@ -33,6 +33,8 @@ from TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
 from tokenisation import tokenlists_to_lines, lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 import zlib
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
+from Kamaelia.Util.Console import ConsoleReader
 
 class Canvas(component):
     """\
@@ -295,6 +297,20 @@ class TwoWaySplitter(component):
             yield 1
 
 
+def parseCommands():
+    from Kamaelia.Util.Marshalling import Marshaller
+    
+    class CommandParser:
+        def marshall(data):
+            output = [data]
+            if data[0] == "LOAD":
+                output.append(["GETIMG"])    # to propogate loaded image to other connected canvases
+            return output
+        marshall = staticmethod(marshall)
+        
+    return Marshaller(CommandParser)
+                    
+
 def makeSketcher(left=0,top=0,width=1024,height=768):
     return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
                       PAINTER = Painter(),
@@ -315,49 +331,37 @@ def makeSketcher(left=0,top=0,width=1024,height=768):
                           },
                     )
 
-def makeLoadSaveControl(filename):
-    return Graphline( LOADER = OneShot( msg=[["LOAD",filename],["GETIMG"]] ),
-                      SAVER  = Button( caption="Save '"+filename+"'", position=(512-96,2), msg=[["SAVE",filename]] ),
-                      linkages = {
-                         ("LOADER","outbox") : ("self","outbox"),
-                         ("SAVER","outbox")  : ("self","outbox"),
-                      },
-                    )
 
 if __name__=="__main__":
     import sys, getopt, re
     
     shortargs = ""
-    longargs  = [ "file=", "serveport=", "connectto=" ]
+    longargs  = [ "serveport=", "connectto=" ]
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
-    
-    components = { 'SKETCHER':makeSketcher(width=512,height=384),
-                 }
-    linkages = { ('self','inbox'):('SKETCHER','inbox'),
-                 ('SKETCHER','outbox'):('self','outbox'),
-               }
     rhost, rport = None, None
     serveport = None
                
     for o,a in optlist:
         
-        if o in ("-f","--file"):
-            components['LSR'] = makeLoadSaveControl(a)
-            linkages[('LSR','outbox')] = ('SKETCHER','inbox')
-            
-        elif o in ("-s","--serveport"):
+        if o in ("-s","--serveport"):
             serveport = int(a)
-            print serveport
             
         elif o in ("-c","--connectto"):
             rhost,rport = re.match(r"^([^:]+):([0-9]+)$", a).groups()
             rport = int(rport)
-            print rhost,rport
 
     
-    mainsketcher = Graphline( linkages = linkages, **components )
+    mainsketcher = \
+        Graphline( SKETCHER = makeSketcher(width=1024,height=768),
+                   CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
+                   
+                   linkages = { ('self','inbox'):('SKETCHER','inbox'),
+                                ('SKETCHER','outbox'):('self','outbox'),
+                                ('CONSOLE','outbox'):('SKETCHER','inbox'),
+                              }
+                 )
     
     # primary whiteboard
     pipeline( subscribeTo("WHITEBOARD"),
