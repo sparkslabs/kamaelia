@@ -125,7 +125,10 @@ class Canvas(component):
             
     def handleCommand(self, cmd, *args):
         if cmd=="CLEAR":
-            self.surface.fill( (255,255,255) )
+            if len(args) == 3:
+                self.surface.fill( [int(a) for a in args[0:3]] )
+            else:
+                self.surface.fill( (255,255,255) )
         elif cmd=="LINE":
             (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
             pygame.draw.line(self.surface, (r,g,b), (sx,sy), (ex,ey))
@@ -151,6 +154,12 @@ class Canvas(component):
             w,h = int(args[1]), int(args[2])
             recvsurface = pygame.image.fromstring(args[0], (w,h), args[3])
             self.surface.blit(recvsurface, (0,0))
+        elif cmd=="WRITE":
+            x,y,size,r,g,b = [int(a) for a in args[0:6]]
+            text = args[6]
+            font = pygame.font.Font(None,size)
+            textimg = font.render(text, False, (r,g,b))
+            self.surface.blit(textimg, (x,y))
 
 class Painter(component):
     """\
@@ -381,14 +390,26 @@ if __name__=="__main__":
         # plug a TCPClient into the backplae
         from Kamaelia.Internet.TCPClient import TCPClient
         
+        loadingmsg = "Fetching sketch from server..."
+        
         pipeline( subscribeTo("WHITEBOARD"),
                   TagAndFilterWrapper(
-                      pipeline(
-                          tokenlists_to_lines(),
-                          TCPClient(host=rhost,port=rport),
-                          chunks_to_lines(),
-                          lines_to_tokenlists(),
-                          )
+                      Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
+                                 PIPE = pipeline(
+                                            tokenlists_to_lines(),
+                                            TCPClient(host=rhost,port=rport),
+                                            chunks_to_lines(),
+                                            lines_to_tokenlists(),
+                                        ),
+                                 BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
+                                 linkages = { ("self","inbox") : ("PIPE","inbox"),
+                                              ("self","control") : ("PIPE","control"),
+                                              ("PIPE","outbox") : ("self","outbox"),
+                                              ("PIPE","signal") : ("self","signal"),
+                                              ("GETIMG","outbox") : ("PIPE","inbox"),
+                                              ("BLACKOUT","outbox") : ("self","outbox"),
+                                            },
+                               )
                       ),
                   publishTo("WHITEBOARD"),
                 ).activate()
