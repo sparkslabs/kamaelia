@@ -72,7 +72,12 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 try:
-                    read_write_except = select.select(readers, writers,exceptionals,0)
+#                    if len(writers)>0:
+#                        print;print;print;print;print ",,,,",writers[0].getsockname(),",,,,"
+#                        print;print;print;print;
+#                    else:
+#                        print "Bugger"
+                    read_write_except = select.select(readers, writers, exceptionals,0)
                 except ValueError, e:
                     print dir(e), e.args
                     if FAILHARD:
