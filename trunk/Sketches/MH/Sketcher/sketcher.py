@@ -313,10 +313,10 @@ def makeLoadSaveControl(filename):
                     )
 
 if __name__=="__main__":
-    import sys, getopt
+    import sys, getopt, re
     
     shortargs = ""
-    longargs  = [ "file=" ]
+    longargs  = [ "file=", "serveport=", "connectto=" ]
             
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
     
@@ -326,12 +326,24 @@ if __name__=="__main__":
     linkages = { ('self','inbox'):('SKETCHER','inbox'),
                  ('SKETCHER','outbox'):('self','outbox'),
                }
+    rhost, rport = None, None
+    serveport = None
                
     for o,a in optlist:
         
         if o in ("-f","--file"):
             components['LSR'] = makeLoadSaveControl(a)
             linkages[('LSR','outbox')] = ('SKETCHER','inbox')
+            
+        elif o in ("-s","--serveport"):
+            serveport = int(a)
+            print serveport
+            
+        elif o in ("-c","--connectto"):
+            rhost,rport = re.match(r"^([^:]+):([0-9]+)$", a).groups()
+            rport = int(rport)
+            print rhost,rport
+
     
     mainsketcher = Graphline( linkages = linkages, **components )
     
@@ -341,50 +353,46 @@ if __name__=="__main__":
               publishTo("WHITEBOARD")
             ).activate()
     
-    
-    # secondary whiteboard
-    pipeline( subscribeTo("WHITEBOARD"),
-              TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512)),
-              publishTo("WHITEBOARD")
-            ).activate()
-              
-    # tertiary whiteboard
-    pipeline( subscribeTo("WHITEBOARD"),
-              TagAndFilterWrapper(makeSketcher(width=512,height=384,left=512,top=384)),
-              publishTo("WHITEBOARD")
-            ).activate()
-            
-    # server
-    # plugs into backplane for any new connections
-    # does the same tagging and filtering, and conversion tokenlists <-> lines
-    from Kamaelia.Chassis.ConnectedServer import SimpleServer
-    
-    def protocol():
-        return pipeline( chunks_to_lines(),
-                         lines_to_tokenlists(),
-                         FilterAndTagWrapper( pipeline( publishTo("WHITEBOARD"),
-                                                        # well, should be to separate pipelines, this is lazier!
-                                                        subscribeTo("WHITEBOARD"),
-                                                      )
-                                            ),
-                         tokenlists_to_lines(),
-                       )
-    
-    SimpleServer(protocol=protocol, port=1500).activate()
-    
-    # quaternary whiteboard
-    from Kamaelia.Internet.TCPClient import TCPClient
-    
-    Graphline( NET    = TCPClient("127.0.0.1",port=1500, delay=0.0),
-               SKETCH = pipeline( chunks_to_lines(), 
-                                  lines_to_tokenlists(), 
-                                  makeSketcher(width=512,height=384,top=384),
-                                  tokenlists_to_lines(),
-                                ),
-               linkages = { ("NET","outbox")    : ("SKETCH","inbox"),
-                            ("SKETCH","outbox") : ("NET","inbox"),
-                          }
-             ).activate()
+    # setup a server, if requested
+    if serveport:
+        # server
+        # any requests for connections get plugged into the backplane
+        # does the same tagging and filtering, and conversion tokenlists <-> lines
+        from Kamaelia.Chassis.ConnectedServer import SimpleServer
+        from Kamaelia.Util.Console import ConsoleEchoer
+        
+        def clientconnector():
+            return pipeline(
+                chunks_to_lines(),
+                lines_to_tokenlists(),
+                FilterAndTagWrapper(
+                    pipeline( publishTo("WHITEBOARD"),
+                                # well, should be to separate pipelines, this is lazier!
+                                subscribeTo("WHITEBOARD"),
+                            )
+                    ),
+                tokenlists_to_lines(),
+                )
+        
+        SimpleServer(protocol=clientconnector, port=serveport).activate()
+
+    # connect to remote host & port, if requested
+    if rhost and rport:
+        # plug a TCPClient into the backplae
+        from Kamaelia.Internet.TCPClient import TCPClient
+        
+        pipeline( subscribeTo("WHITEBOARD"),
+                  TagAndFilterWrapper(
+                      pipeline(
+                          tokenlists_to_lines(),
+                          TCPClient(host=rhost,port=rport),
+                          chunks_to_lines(),
+                          lines_to_tokenlists(),
+                          )
+                      ),
+                  publishTo("WHITEBOARD"),
+                ).activate()
+        
 
     
     Backplane("WHITEBOARD").run()
