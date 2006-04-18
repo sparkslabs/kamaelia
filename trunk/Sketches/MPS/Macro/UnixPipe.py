@@ -112,11 +112,12 @@ class X(Axon.Component.component):
         writeBuffer = []
         shutdownMessage = False
 
-        S = Selector()
-        S.activate()
+        selectorService, selectorShutdownService, S = Selector.getSelectorServices(self.tracker)
+        if S:
+           S.activate()
         yield 1
-        self.link((self, "selector"), (S, "notify"))
-        self.link((self, "selectorsignal"), (S, "control"))
+        self.link((self, "selector"), (selectorService))
+        self.link((self, "selectorsignal"), (selectorShutdownService))
 
         x = self.openSubprocess()
         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
@@ -176,8 +177,10 @@ class X(Axon.Component.component):
             self.send(shutdownMessage, "signal")
         self.send(shutdown(), "selectorsignal")
 
-pipeline(
-   ChargenComponent(),
-   X("wc"),
-   ConsoleEchoer(forwarder=True)
-).run()
+
+if __name__=="__main__":
+    pipeline(
+       ChargenComponent(),
+       X("wc"),
+       ConsoleEchoer(forwarder=True)
+    ).run()
