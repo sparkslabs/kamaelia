@@ -127,6 +127,7 @@ class Canvas(component):
             
             
     def handleCommand(self, cmd, *args):
+        cmd = cmd.upper()
         if cmd=="CLEAR":
             if len(args) == 3:
                 self.surface.fill( [int(a) for a in args[0:3]] )
@@ -303,7 +304,7 @@ def parseCommands():
     class CommandParser:
         def marshall(data):
             output = [data]
-            if data[0] == "LOAD":
+            if data[0].upper() == "LOAD":
                 output.append(["GETIMG"])    # to propogate loaded image to other connected canvases
             return output
         marshall = staticmethod(marshall)
