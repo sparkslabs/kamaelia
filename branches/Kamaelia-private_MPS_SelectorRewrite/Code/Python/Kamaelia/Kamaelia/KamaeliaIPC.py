@@ -76,6 +76,34 @@ class newReader(notify):
    """Helper class to notify of new CSAs as they are created.  newCSA.object
    will return the CSA."""
    def __init__(self, caller, CSA):
-      super(newWriter, self).__init__(caller, CSA)
+      super(newReader, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class newExceptional(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(newExceptional, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeReader(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeReader, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeWriter(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeWriter, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeExceptional(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeExceptional, self).__init__(caller, CSA)
       self.hasOOB = False
 
