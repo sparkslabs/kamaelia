@@ -69,6 +69,7 @@ class SingleServer(_Axon.Component.component):
          if self.dataReady("_oobinfo"):
             data = self.recv("_oobinfo")
             if isinstance(data,_ki.newCSA):
+#               print "NEW CSA!"
                yield self.handleNewCSA(data)
             if isinstance(data,_ki.shutdownCSA):# socketShutdown):
                # Socket shutdown and died.
@@ -81,7 +82,6 @@ class SingleServer(_Axon.Component.component):
                    self.CSA = None
                self.removeChild(theCSA)
                yield 1
-#               return
          yield 1
 
    def handleNewCSA(self, data):
@@ -91,9 +91,7 @@ class SingleServer(_Axon.Component.component):
 
          # Wire in the CSA to the outside connectivity points
          self.link((self.CSA,"outbox"),(self,"outbox"), passthrough=2)
-         self.link((self,"inbox"),(self.CSA,"DataSend"), passthrough=1)
-
-#         self.link((self.CSA,"signal"),(self,"_oobinfo"))
+         self.link((self,"inbox"),(self.CSA,"inbox"), passthrough=1)
          self.link((self,"_CSA_signal"), (self.CSA, "control"))
 
       else:
