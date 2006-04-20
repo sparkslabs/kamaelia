@@ -162,6 +162,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         data -- data.object is the ConnectedSocketAdapter component for the connection
         """
         CSA = data.object
+        print "NEW CSA", CSA
         pHandler = self.protocolClass()
     
         pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
@@ -173,9 +174,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.addChildren(CSA,pHandler)
     
         self.link((CSA,"outbox"),(pHandler,"inbox"))
-        self.link((pHandler,"outbox"),(CSA,"DataSend"))
-    
-    #      self.link((CSA,"signal"),(self,"_oobinfo"))
+        self.link((pHandler,"outbox"),(CSA,"inbox"))
         self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
     
         if "signal" in pHandler.Outboxes:
