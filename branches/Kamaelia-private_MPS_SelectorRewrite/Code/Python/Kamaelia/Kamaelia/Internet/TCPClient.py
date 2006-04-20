@@ -59,7 +59,7 @@ selectorComponent.getSelectorService(...) to look it up with the local
 Coordinating Assistant Tracker (CAT).
 
 TCPClient wires itself to the "FactoryFeedback" outbox of the CSA. It also wires
-its "inbox" inbox to pass data straight through to the CSA's "DataSend" inbox,
+its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox,
 and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
 
 Socket errors (after the connection has been successfully established) may be
@@ -77,15 +77,19 @@ import errno
 
 import Axon
 from Axon.util import Finality
-from Axon.Component import component
+# from Axon.Component import component
+# import Axon.CoordinatingAssistantTracker as cat
+
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
-import Axon.CoordinatingAssistantTracker as cat
 
-import Selector
+from Kamaelia.Internet.Selector import Selector
 
-class TCPClient(component):
+class TCPClient(Axon.Component.component):
    """\
    TCPClient(host,port[,delay]) -> component with a TCP connection to a server.
 
@@ -102,7 +106,9 @@ class TCPClient(component):
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
-                "_selectorSignal" : "communicating with a selectorComponent",
+                "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+                "_selectorShutdownSignal" : "For registering newly created ConnectedSocketAdapter components with a selector service",
+
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
@@ -135,16 +141,24 @@ class TCPClient(component):
       """
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
       self.addChildren(CSA)
-      selectorService , newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
+#      selectorService , newSelector = Selector.Selector.getSelectorServices(self.tracker)
+      selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
 
+#      self.link((self, "_selectorSignal"),selectorService)
       self.link((self, "_selectorSignal"),selectorService)
+      self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
+ 
       self.link((CSA, "FactoryFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
-      self.link((self, "inbox"), (CSA, "DataSend"), passthrough=1)
+      self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
 
-      self.send(newCSA(self, (CSA,sock)), "_selectorSignal")
+      self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
+      self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
+#      \
+#print "Here"
+
       return self.childComponents()
 
    def waitCSAClose(self):

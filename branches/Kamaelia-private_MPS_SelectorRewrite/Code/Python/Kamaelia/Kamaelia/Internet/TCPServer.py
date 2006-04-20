@@ -82,7 +82,135 @@ This component does not terminate.
 """
 
 
-import socket, errno, random, Axon, Selector
+
+# class TCPServer(_component):
+#    """\
+#    TCPServer(listenport) -> TCPServer component listening on the specified port.
+# 
+#    Creates a TCPServer component that accepts all connection requests on the
+#    specified port.
+#    """
+#    
+#    Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
+#                 "_csa_feedback" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
+#               }
+#    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
+#                 "signal"                : "NOT USED",
+#                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+#               }
+# 
+#    def __init__(self,listenport):
+#       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+#       super(TCPServer, self).__init__()
+#       self.listenport = listenport
+#       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
+# 
+#    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
+#       """\
+#       Returns (socket,port) - a bound TCP listener socket and the port number it is listening on.
+# 
+#       If suppliedPort is not specified, then a random port is chosen between
+#       minrange and maxrange inclusive.
+# 
+#       maxlisten is the max number of pending requests the server will allow (queue up).
+#       """
+#       if HOST is None: HOST=''
+#       if suppliedport is None:
+#          PORT=random.randint(minrange,maxrange) # Built in support for testing
+#       else:
+#          PORT=suppliedport
+# 
+#       s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#       s.setblocking(0)
+#       assert self.debugger.note("PrimaryListenSocket.makeTCPServerPort", 5, "HOST,PORT",":",HOST,":",PORT,":")
+#       s.bind((HOST,PORT))
+#       s.listen(maxlisten)
+#       return s,PORT
+# 
+#    def createConnectedSocket(self, sock):
+#       """\
+#       Accepts the connection request on the specified socket and returns a
+#       ConnectedSocketAdapter component for it.
+#       """
+#       tries = 0
+#       maxretries = 10
+#       gotsock=False
+#       newsock, addr = sock.accept()  # <===== THIS IS THE PROBLEM
+#       gotsock = True
+#       newsock.setblocking(0)
+#       CSA = ConnectedSocketAdapter(newsock)
+#       return CSA
+# 
+#    def closeSocket(self, shutdownMessage):
+#       """\
+#       Respond to a socketShutdown message by closing the socket.
+# 
+#       Sends a shutdownCSA(self, (theCSA, sock)) message to the selectorComponent.
+#       Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
+#       """
+#       theComponent,sock = shutdownMessage.caller, shutdownMessage.message
+#       sock.close()
+#       # tell the selector about it shutting down
+#       self.send(_ki.shutdownCSA(self, (theComponent, theComponent.socket)), "_selectorSignal")
+#       # tell protocol handlers
+#       self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
+#       # Delete the child component
+#       self.removeChild(theComponent)
+# 
+#    def checkForClosedSockets(self):
+#       """Check "_csa_feedback" inbox for socketShutdown messages, and close sockets in response."""
+#       if self.dataReady("_csa_feedback"):
+#          data = self.recv("_csa_feedback")
+#          if isinstance( data, _ki.socketShutdown):
+#             self.closeSocket(data)
+# 
+#    def initialiseComponent(self):
+#       """\
+#       Obtains a selector service and wires up to it, registering self to be notified
+#       of incoming connection requests on a socket bound to the port its supposed to
+#       be listening to.
+#       """
+#       selectorService, newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
+#       if newSelector:
+#          self.addChildren(newSelector)
+#       self.link((self, "_selectorSignal"),selectorService)
+#       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
+#       self.send(_ki.newServer(self, (self,self.listener)), "_selectorSignal")
+#       return Axon.Ipc.newComponent(*(self.children))
+# 
+#    def handleNewConnection(self):
+#       """\
+#       Handle notifications from the selector service of new connection requests.
+# 
+#       Accepts and sets up new connections, wiring them up and passing them on via
+#       the "protocolHandlerSignal" outbox.
+#       """
+#       if self.dataReady("DataReady"):
+#          data = self.recv("DataReady")
+#          # If we recieve information on data ready, for a server it means we have a new connection
+#          # to handle
+#          try:
+#             CSA = self.createConnectedSocket(self.listener)
+#          except socket.error, e:
+#             (errorno,errmsg) = e
+#             if errorno != errno.EAGAIN:
+#                if errorno != errno.EWOULDBLOCK:
+#                   raise e
+#          else:
+#             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
+#             self.addChildren(CSA)
+#             self.link((CSA, "FactoryFeedback"),(self,"_csa_feedback"))
+#             self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "_selectorSignal")
+#             return CSA
+# 
+#    def mainBody(self):
+#       """Main loop"""
+#       self.pause()
+#       self.checkForClosedSockets()
+#       self.handleNewConnection() # Data ready means that we have a connection waiting.
+#       return status("ready")
+
+import socket, errno, random, Axon
 import Kamaelia.KamaeliaIPC as _ki
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
@@ -90,6 +218,11 @@ _component = Axon.Component.component
 status = Axon.Ipc.status
 wouldblock = Axon.Ipc.wouldblock
 import time
+from Kamaelia.Internet.Selector import Selector
+
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+
 
 class TCPServer(_component):
    """\
@@ -101,10 +234,12 @@ class TCPServer(_component):
    
    Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
                 "_csa_feedback" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
+                "newconnection" : "We expected to recieve a message here when a new connection is ready",
               }
    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
                 "signal"                : "NOT USED",
                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+                "_selectorShutdownSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
               }
 
    def __init__(self,listenport):
@@ -147,7 +282,7 @@ class TCPServer(_component):
       gotsock = True
       newsock.setblocking(0)
       CSA = ConnectedSocketAdapter(newsock)
-      return CSA
+      return newsock, CSA
 
    def closeSocket(self, shutdownMessage):
       """\
@@ -160,6 +295,13 @@ class TCPServer(_component):
       sock.close()
       # tell the selector about it shutting down
       self.send(_ki.shutdownCSA(self, (theComponent, theComponent.socket)), "_selectorSignal")
+      
+      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
+      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")            
+# self.send(removeWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
+# self.send(removeReader(self,(x.stderr)), "selector")
+
+      
       # tell protocol handlers
       self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
       # Delete the child component
@@ -172,19 +314,6 @@ class TCPServer(_component):
          if isinstance( data, _ki.socketShutdown):
             self.closeSocket(data)
 
-   def initialiseComponent(self):
-      """\
-      Obtains a selector service and wires up to it, registering self to be notified
-      of incoming connection requests on a socket bound to the port its supposed to
-      be listening to.
-      """
-      selectorService, newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
-      if newSelector:
-         self.addChildren(newSelector)
-      self.link((self, "_selectorSignal"),selectorService)
-      self.send(_ki.newServer(self, (self,self.listener)), "_selectorSignal")
-      return Axon.Ipc.newComponent(*(self.children))
-
    def handleNewConnection(self):
       """\
       Handle notifications from the selector service of new connection requests.
@@ -192,33 +321,46 @@ class TCPServer(_component):
       Accepts and sets up new connections, wiring them up and passing them on via
       the "protocolHandlerSignal" outbox.
       """
-      if self.dataReady("DataReady"):
-         data = self.recv("DataReady")
+      if self.dataReady("newconnection"):
+         data = self.recv("newconnection")
          # If we recieve information on data ready, for a server it means we have a new connection
          # to handle
+#         print "Here?"
          try:
-            CSA = self.createConnectedSocket(self.listener)
+            newsock, CSA = self.createConnectedSocket(self.listener)
+#            print "Here..."
          except socket.error, e:
+#            print "Here!",e
             (errorno,errmsg) = e
             if errorno != errno.EAGAIN:
                if errorno != errno.EWOULDBLOCK:
                   raise e
          else:
-            self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
-            self.addChildren(CSA)
-            self.link((CSA, "FactoryFeedback"),(self,"_csa_feedback"))
-            self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "_selectorSignal")
-            return CSA
+             pass
+             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
+             self.send(newReader(CSA, ((CSA, "ReadReady"), newsock)), "_selectorSignal")            
+             self.send(newWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
+             self.addChildren(CSA)
+             self.link((CSA, "FactoryFeedback"),(self,"_csa_feedback"))
+             self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "_selectorSignal")
+             return CSA
 
-   def mainBody(self):
-      """Main loop"""
-      self.pause()
-      self.checkForClosedSockets()
-      self.handleNewConnection() # Data ready means that we have a connection waiting.
-      return status("ready")
+   def main(self):
+       selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
+       if newSelector:
+           newSelector.activate()
+       self.link((self, "_selectorSignal"),selectorService)
+       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
+       self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
+       yield 1
+       while 1:
+#           self.pause()
+           self.checkForClosedSockets()
+           self.handleNewConnection() # Data ready means that we have a connection waiting.
+           yield status("ready")
+
 
 __kamaelia_components__  = ( TCPServer, )
-
 
 if __name__ == '__main__':
    print "Simple integration test moved out to InternetHandlingTests.py"
