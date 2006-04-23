@@ -219,9 +219,6 @@ class component(microprocess):
       result = "Component " + self.name + " [ inboxes : " + self.inboxes.__str__() + " outboxes : " + self.outboxes.__str__()
       return result
 
-   def _activityCreator(self):
-      return True
-
    def __addChild(self, child):
       """'C.__addChild(component)' -
       Register component as a child.
@@ -331,7 +328,7 @@ class component(microprocess):
       All comms goes via a named box/output queue
 
       You will want to call this method to send messages.
-      
+
       You are unlikely to want to override this method.
       """
       self.outboxes[boxname].append(message)

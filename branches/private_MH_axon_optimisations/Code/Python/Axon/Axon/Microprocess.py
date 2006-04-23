@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -121,9 +121,9 @@ from debug import debug
 # scheduled by the scheduler/microthread systems. Essentially a
 # microprocess provides a minimal runtime context for the
 # scheduling & thread handling system.
-# 
+#
 # An example minimal microprocess is::
-# 
+#
 #   class bibble(microprocess):
 #      def __init__(self, num):
 #         self.num = num
@@ -133,21 +133,21 @@ from debug import debug
 #         while 1:
 #            print "we loop forever", num
 #            yield 1
-# 
+#
 # Which can have (say) 4 instantiations activated by the following::
 #
 #    bibble(1).activate()
 #    bibble(2).activate()
 #    bibble(3).activate()
 #    bibble(4).activate()
-# 
+#
 # If the scheduler isn't running, it'd need running too::
-# 
+#
 #    scheduler.run.runThreads()
 #
 # Again, most of this is hidden from you if you are implementing a
 # component.
-# 
+#
 # All methods though are available to components, and hence it's worth
 # noting the pause & stop methods, and their purpose/usage.
 #
@@ -202,7 +202,7 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
-   def __init__(self, thread = None, closeDownValue = 0, ac = False):
+   def __init__(self, thread = None, closeDownValue = 0):
       """Microprocess constructor.
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
@@ -213,12 +213,11 @@ class microprocess(Axon.AxonObject):
          self.__thread = thread
       else:
          self.__thread = None # Explicit better than implicit
-         
+
       self.closeDownValue = closeDownValue
-         
+
       self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
-      self.ac = ac
 
       # If the client has defined a debugger in their class we don't want to override it.
       # However if they haven't, we provide them with one
@@ -245,10 +244,6 @@ class microprocess(Axon.AxonObject):
       be put. Internally this calls self.thread.next() to pass the
       timeslice down to the actual generator."""
       return self.__thread.next()
-
-   def _activityCreator(self):
-      return self.ac
-#      return False
 
    def _isStopped(self):
       """'M._isStopped()' - test, boolean result indicating if the microprocess is halted."""
