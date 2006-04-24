@@ -30,7 +30,6 @@
 
 from Component import component
 from Microprocess import microprocess
-from Scheduler import scheduler
 import threading
 
 class threadedcomponent(component):
@@ -40,26 +39,14 @@ class threadedcomponent(component):
     
     def __init__(self):
         super(threadedcomponent,self).__init__()
-        self._thethread = threading.Thread(target=self._launchthread)
-        self._localmprocess = microprocess(thread=self._localmain())
-        self._threadscheduler = scheduler()
-        
-    def activate(self, Scheduler=None, Tracker=None):
-        # activate mprocess placeholder, representing the thread
-        # might also be the one that moves data through inbox/outbox queues
-        self._localmprocess.activate(Scheduler, Tracker)
-        
-        # activate the actual component mprocess inside the thread's scheduler
-        return super(threadedcomponent,self).activate(self._threadscheduler, Tracker)
+        self._thethread = threading.Thread(target=self.main)
+        self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
     
     def _localmain(self):
         """Placeholder microprocess, representing the thread, in the 'main' scheduler"""
         self._thethread.start()
         while self._thethread.isAlive():
             yield 1
-            
-    def _launchthread(self):
-        self._threadscheduler.runThreads()
             
     # write your own main function body
 
@@ -76,7 +63,6 @@ if __name__ == "__main__":
                 t=t+1.0
                 sys.stdout.write("Threaded: "+str(i)+"\n")
                 sys.stdout.flush()
-                yield 1
                 
     class NotThread(component):
         def main(self):

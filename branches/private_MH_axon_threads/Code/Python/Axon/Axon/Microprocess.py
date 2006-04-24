@@ -299,7 +299,7 @@ class microprocess(Axon.AxonObject):
       yield 1
       return
 
-   def _microprocessGenerator(self,someobject):
+   def _microprocessGenerator(self,someobject, main="main"):
       """This contains the mainloop for a microprocess, returning a
       generator object. Creates the thread of control by calling the
       class's main method, then in a loop repeatedly calls the resulting
@@ -308,7 +308,8 @@ class microprocess(Axon.AxonObject):
       back to its caller.
       """
       # someobject.setthread = (self) # XXXX Check -- Appears no to be used!
-      pc = someobject.main() # Call the object, get a generator function
+      pc = someobject.__getattribute__(main)()
+#      pc = someobject.main() # Call the object, get a generator function
       while(1):
          # Continually try to run the code, and then release control
          if someobject._isRunnable() :
