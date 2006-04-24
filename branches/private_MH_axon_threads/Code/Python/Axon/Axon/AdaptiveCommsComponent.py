@@ -24,12 +24,12 @@ from Component import component
 import idGen
 from Box import makeInbox, makeOutbox
 
-class AdaptiveCommsComponent(component):
+class _AdaptiveCommsable(object):
    #
    # Public Methods
    #
    def __init__(self):
-      super(AdaptiveCommsComponent, self).__init__()
+      super(_AdaptiveCommsable, self).__init__()
       self._resourceStore = {}
       self._resourceLookup = {}
 
@@ -95,6 +95,12 @@ class AdaptiveCommsComponent(component):
          name =name+str(idGen.idGen().next())
       return name
 
+class AdaptiveCommsComponent(component, _AdaptiveCommsable):
+   def __init__(self):
+      component.__init__(self)
+      _AdaptiveCommsable.__init__(self)
+          
+
 if __name__=="__main__":
-   print "Tests are separated into test/test_AdaptiveCommsComponent.py"
+   print "Tests are separated into test/test_AdaptiveCommsableComponent.py"
 

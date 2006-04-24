@@ -89,6 +89,35 @@ class threadedcomponent(component):
     
 
 
+from AdaptiveCommsComponent import _AdaptiveCommsable as _NonThreadedableAdaptiveCommsable
+
+class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
+   def addInbox(self,*args):
+       name = super(_AdaptiveCommsable,self).addInbox(*args)
+       self._inbox_queues[name] = Queue.Queue()
+       return name
+
+   def deleteInbox(self,name):
+       super(_AdaptiveCommsable,self).deleteInbox(name)
+       del self._inbox_queues[name]
+
+   def addOutbox(self,*args):
+       name = super(_AdaptiveCommsable,self).addOutbox(*args)
+       self._outbox_queues[name] = Queue.Queue()
+       return name
+
+   def deleteOutbox(self,name):
+       super(_AdaptiveCommsable,self).deleteOutbox(name)
+       del self._outbox_queues[name]
+
+
+class ThreadedAdaptiveCommsComponent(threadedcomponent, _AdaptiveCommsable):
+   def __init__(self):
+      threadedcomponent.__init__(self)
+      _AdaptiveCommsable.__init__(self)
+
+
+
 if __name__ == "__main__":
     import time, sys
     
@@ -122,6 +151,37 @@ if __name__ == "__main__":
                     count=count-1
             self.send("DONE","signal")
 
+    class AAThread(ThreadedAdaptiveCommsComponent):
+        def main(self):
+            outs = {}
+            
+            t = time.time()
+            for i in range(10):
+                while time.time() < t:
+                    pass
+                t=t+1.0
+                while self.dataReady("inbox"):
+                    dst = self.recv("inbox")
+                    newname = self.addOutbox("sink")
+                    linkage = self.link( (self, newname), dst )
+                    outs[newname] = linkage
+                
+                for o in outs.keys():
+                    self.send("AAThread "+o+": "+str(i)+"\n", o)
+                    
+            for o in outs.keys():
+                self.unlink( outs[o] )
+                self.deleteOutbox(o)
+    
+    class OneShot(component):
+        def __init__(self,msg):
+            super(OneShot,self).__init__()
+            self.msg = msg
+            
+        def main(self):
+            self.send( self.msg )
+            yield 1
+    
     class Container(component):
         def main(self):
             t = TheThread().activate()
@@ -131,6 +191,11 @@ if __name__ == "__main__":
             self.link( (n,"outbox"), (out,"inbox") )
             
             self.link( (out,"signal"), (self,"control") )
+            
+            o = OneShot( msg=(out,"inbox") ).activate()
+            a = AAThread().activate()
+            self.link( (o,"outbox"), (a,"inbox") )
+            
             while not self.dataReady("control"):
                 self.pause()
                 yield 1
