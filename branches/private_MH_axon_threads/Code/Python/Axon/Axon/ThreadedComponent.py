@@ -31,6 +31,7 @@
 from Component import component
 from Microprocess import microprocess
 import threading
+import Queue
 
 class threadedcomponent(component):
     """\
@@ -41,14 +42,46 @@ class threadedcomponent(component):
         super(threadedcomponent,self).__init__()
         self._thethread = threading.Thread(target=self.main)
         self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
+        
+        self._inbox_queues = {}
+        for name in self.inboxes:
+            self._inbox_queues[name] = Queue.Queue()
+            
+        self._outbox_queues = {}
+        for name in self.outboxes:
+            self._outbox_queues[name] = Queue.Queue()
     
     def _localmain(self):
         """Placeholder microprocess, representing the thread, in the 'main' scheduler"""
         self._thethread.start()
         while self._thethread.isAlive():
+            for boxname in self.inboxes:
+                while component.dataReady(self, boxname):
+                    msg = component.recv(self, boxname)
+                    self._inbox_queues[boxname].put_nowait(msg)
+                    
+            for boxname in self.outboxes:
+                while self._outbox_queues[boxname].qsize():
+                    msg = self._outbox_queues[boxname].get_nowait()
+                    component.send(self, msg, boxname)
             yield 1
             
     # write your own main function body
+
+    def dataReady(self, boxname="inbox"):
+        return self._inbox_queues[boxname].qsize()
+    
+    # anyready doesn't need rewrite
+    
+    def recv(self, boxname="inbox"):
+        return self._inbox_queues[boxname].get_nowait()
+    
+    def send(self, message, boxname="outbox"):
+        self._outbox_queues[boxname].put_nowait(message)
+    
+    def pause(self):
+        # overriding this, can be more clever later if we want
+        return
 
 
 if __name__ == "__main__":
@@ -61,8 +94,7 @@ if __name__ == "__main__":
                 while time.time() < t:
                     pass
                 t=t+1.0
-                sys.stdout.write("Threaded: "+str(i)+"\n")
-                sys.stdout.flush()
+                self.send("Threaded: "+str(i)+"\n")
                 
     class NotThread(component):
         def main(self):
@@ -71,8 +103,26 @@ if __name__ == "__main__":
                 while time.time() < t:
                     yield 1
                 t=t+0.5
-                sys.stdout.write("Normal: "+str(i)+"\n")
-                sys.stdout.flush()
+                self.send("Normal: "+str(i)+"\n")
                     
-    TheThread().activate()
-    NotThread().run()
+    class Outputter(component):
+        def main(self):
+            while 1:
+                yield 1
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    sys.stdout.write(str(data))
+                    sys.stdout.flush()
+
+    
+    class Container(component):
+        def main(self):
+            t = TheThread().activate()
+            n = NotThread().activate()
+            out = Outputter().activate()
+            self.link( (t,"outbox"), (out,"inbox") )
+            self.link( (n,"outbox"), (out,"inbox") )
+            while 1:
+                yield 1
+                
+    c = Container().run()
