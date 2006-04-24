@@ -50,11 +50,14 @@ class threadedcomponent(component):
         self._outbox_queues = {}
         for name in self.outboxes:
             self._outbox_queues[name] = Queue.Queue()
-    
+            
     def _localmain(self):
         """Placeholder microprocess, representing the thread, in the 'main' scheduler"""
         self._thethread.start()
-        while self._thethread.isAlive():
+        running = True
+        while running:
+            running = self._thethread.isAlive()
+            
             for boxname in self.inboxes:
                 while component.dataReady(self, boxname):
                     msg = component.recv(self, boxname)
@@ -64,7 +67,7 @@ class threadedcomponent(component):
                 while self._outbox_queues[boxname].qsize():
                     msg = self._outbox_queues[boxname].get_nowait()
                     component.send(self, msg, boxname)
-            
+                    
             yield 1
             
     # write your own main function body
@@ -83,6 +86,7 @@ class threadedcomponent(component):
     def pause(self):
         # overriding this, can be more clever later if we want
         return
+    
 
 
 if __name__ == "__main__":
@@ -118,7 +122,6 @@ if __name__ == "__main__":
                     count=count-1
             self.send("DONE","signal")
 
-    
     class Container(component):
         def main(self):
             t = TheThread().activate()
