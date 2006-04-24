@@ -64,6 +64,7 @@ class threadedcomponent(component):
                 while self._outbox_queues[boxname].qsize():
                     msg = self._outbox_queues[boxname].get_nowait()
                     component.send(self, msg, boxname)
+            
             yield 1
             
     # write your own main function body
@@ -90,7 +91,7 @@ if __name__ == "__main__":
     class TheThread(threadedcomponent):
         def main(self):
             t = time.time()
-            for i in range(1,10):
+            for i in range(10):
                 while time.time() < t:
                     pass
                 t=t+1.0
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     class NotThread(component):
         def main(self):
             t = time.time()
-            for i in range(1,20):
+            for i in range(20):
                 while time.time() < t:
                     yield 1
                 t=t+0.5
@@ -107,12 +108,15 @@ if __name__ == "__main__":
                     
     class Outputter(component):
         def main(self):
-            while 1:
+            count=30
+            while count:
                 yield 1
                 if self.dataReady("inbox"):
                     data = self.recv("inbox")
                     sys.stdout.write(str(data))
                     sys.stdout.flush()
+                    count=count-1
+            self.send("DONE","signal")
 
     
     class Container(component):
@@ -122,7 +126,10 @@ if __name__ == "__main__":
             out = Outputter().activate()
             self.link( (t,"outbox"), (out,"inbox") )
             self.link( (n,"outbox"), (out,"inbox") )
-            while 1:
+            
+            self.link( (out,"signal"), (self,"control") )
+            while not self.dataReady("control"):
+                self.pause()
                 yield 1
                 
     c = Container().run()
