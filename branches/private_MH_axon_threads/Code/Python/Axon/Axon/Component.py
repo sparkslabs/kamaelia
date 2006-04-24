@@ -219,9 +219,6 @@ class component(microprocess):
       result = "Component " + self.name + " [ inboxes : " + self.inboxes.__str__() + " outboxes : " + self.outboxes.__str__()
       return result
 
-   def _activityCreator(self):
-      return True
-
    def __addChild(self, child):
       """'C.__addChild(component)' -
       Register component as a child.
