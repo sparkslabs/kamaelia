@@ -193,10 +193,6 @@ class MicroProcess_Test(str_Test):
       mp = self.init_test()
       self.failUnless(0 == mp._closeDownMicroprocess())
 
-   def test__activityCreator(self):
-      "_activityCreator should return False as the basic microprocess does not inititate any usefule work."
-      mp = self.init_test()
-      self.failIf(mp._activityCreator())
 
 if __name__=='__main__':
    unittest.main()

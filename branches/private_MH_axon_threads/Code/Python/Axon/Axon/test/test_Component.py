@@ -125,13 +125,6 @@ class Component_Test(unittest.TestCase):
       relaxedtest = "(C|c)(omponent|OMPONENT).*" + t.name
       self.failUnless(re.search(relaxedtest,str(t)), "Relaxed match failed.  Vital information missing (That it is a component and its name).")
        
-   def test__activityCreator(self):
-      "_activityCreator - Always returns true.  Components are microprocesses instantiated by users typically - thus they are creators of activity, not slaves to it. Internal function."
-      t=component()
-      self.failUnless(t._activityCreator()==True,"_activityCreator should always be True.")
-      t=TComponent()
-      self.failUnless(t._activityCreator()==True,"_activityCreator should always be True")
-      
    def test___addChild(self):
       "__addChild - Registers the component as a child of the component. Internal function. ttbw"
       pass
