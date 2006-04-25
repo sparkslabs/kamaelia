@@ -67,7 +67,8 @@ class threadedcomponent(component):
                     self._inbox_queues[boxname].put_nowait(msg)
                     
             for boxname in self.outboxes:
-                while self._outbox_queues[boxname].qsize():
+                # for loop to snapshot of queue length to guarantee we stop!
+                for i in xrange(0, self._outbox_queues[boxname].qsize() ):
                     msg = self._outbox_queues[boxname].get_nowait()
                     component.send(self, msg, boxname)
                     
@@ -148,7 +149,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
        del self._outbox_queues[name]
 
 
-class ThreadedAdaptiveCommsComponent(threadedcomponent, _AdaptiveCommsable):
+class threadedadaptivecommscomponent(threadedcomponent, _AdaptiveCommsable):
    def __init__(self):
       threadedcomponent.__init__(self)
       _AdaptiveCommsable.__init__(self)
@@ -188,7 +189,7 @@ if __name__ == "__main__":
                     count=count-1
             self.send("DONE","signal")
 
-    class AAThread(ThreadedAdaptiveCommsComponent):
+    class AAThread(threadedadaptivecommscomponent):
         def main(self):
             outs = {}
             
