@@ -33,6 +33,9 @@ from Microprocess import microprocess
 import threading
 import Queue
 
+def _makeThreadBox():
+    return list()
+
 class threadedcomponent(component):
     """\
     Revised threading component
@@ -43,13 +46,15 @@ class threadedcomponent(component):
         self._thethread = threading.Thread(target=self.main)
         self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
         
-        self._inbox_queues = {}
+        self._thread_inboxes = {}
         for name in self.inboxes:
-            self._inbox_queues[name] = Queue.Queue()
+            self._thread_inboxes[name] = _makeThreadBox()
+        self._inbox_queue = Queue.Queue()
             
-        self._outbox_queues = {}
+        self._thread_outboxes = {}
         for name in self.outboxes:
-            self._outbox_queues[name] = Queue.Queue()
+            self._thread_outboxes[name] = _makeThreadBox()
+        self._outbox_queue = Queue.Queue()
             
         self._cmd = Queue.Queue()
         self._cmd_reply = Queue.Queue()
@@ -64,33 +69,43 @@ class threadedcomponent(component):
             for boxname in self.inboxes:
                 while component.dataReady(self, boxname):
                     msg = component.recv(self, boxname)
-                    self._inbox_queues[boxname].put_nowait(msg)
+                    self._inbox_queue.put_nowait( (boxname, msg) )
                     
             for boxname in self.outboxes:
                 # for loop to snapshot of queue length to guarantee we stop!
-                for i in xrange(0, self._outbox_queues[boxname].qsize() ):
-                    msg = self._outbox_queues[boxname].get_nowait()
+                for i in xrange(0, self._outbox_queue.qsize() ):
+                    (boxname, msg) = self._outbox_queue.get_nowait()
                     component.send(self, msg, boxname)
-                    
+            
             if self._cmd.qsize():
                 cmd, argL, argD = self._cmd.get()
                 result = cmd(*argL,**argD)
                 self._cmd_reply.put_nowait(result)
             
-            yield 1
             
+            yield 1
+    
+    def _process_queues(self):
+        # process data arriving at the thread end of the queues
+        
+        # deliver messages into local inboxes
+        for i in xrange(0, self._inbox_queue.qsize()) :
+            (boxname, msg) = self._inbox_queue.get_nowait()
+            self._thread_inboxes[boxname].append(msg)
+    
     # write your own main function body
 
     def dataReady(self, boxname="inbox"):
-        return self._inbox_queues[boxname].qsize()
+        self._process_queues()
+        return len(self._thread_inboxes[boxname])
     
     # anyready doesn't need rewrite
     
     def recv(self, boxname="inbox"):
-        return self._inbox_queues[boxname].get_nowait()
+        return self._thread_inboxes[boxname].pop(0)
     
     def send(self, message, boxname="outbox"):
-        self._outbox_queues[boxname].put_nowait(message)
+        self._outbox_queue.put_nowait( (boxname, message) )
     
     def pause(self):
         # overriding this, can be more clever later if we want
@@ -117,7 +132,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
 
    def _unsafe_addInbox(self,*args):
        name = super(_AdaptiveCommsable,self).addInbox(*args)
-       self._inbox_queues[name] = Queue.Queue()
+       self._thread_inboxes[name] = _makeThreadBox()
        return name
 
    def deleteInbox(self,name):
@@ -127,7 +142,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
    
    def _unsafe_deleteInbox(self,name):
        super(_AdaptiveCommsable,self).deleteInbox(name)
-       del self._inbox_queues[name]
+       del self._thread_inboxes[name]
 
    def addOutbox(self,*args):
        cmd = (self._unsafe_addOutbox, args, {} )
@@ -136,7 +151,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
    
    def _unsafe_addOutbox(self,*args):
        name = super(_AdaptiveCommsable,self).addOutbox(*args)
-       self._outbox_queues[name] = Queue.Queue()
+       self._thread_outboxes[name] = _makeThreadBox()
        return name
 
    def deleteOutbox(self,name):
@@ -146,7 +161,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
    
    def _unsafe_deleteOutbox(self,name):
        super(_AdaptiveCommsable,self).deleteOutbox(name)
-       del self._outbox_queues[name]
+       del self._thread_outboxes[name]
 
 
 class threadedadaptivecommscomponent(threadedcomponent, _AdaptiveCommsable):
