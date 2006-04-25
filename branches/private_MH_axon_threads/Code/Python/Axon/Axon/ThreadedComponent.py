@@ -51,6 +51,9 @@ class threadedcomponent(component):
         for name in self.outboxes:
             self._outbox_queues[name] = Queue.Queue()
             
+        self._cmd = Queue.Queue()
+        self._cmd_reply = Queue.Queue()
+    
     def _localmain(self):
         """Placeholder microprocess, representing the thread, in the 'main' scheduler"""
         self._thethread.start()
@@ -68,6 +71,11 @@ class threadedcomponent(component):
                     msg = self._outbox_queues[boxname].get_nowait()
                     component.send(self, msg, boxname)
                     
+            if self._cmd.qsize():
+                cmd, argL, argD = self._cmd.get()
+                result = cmd(*argL,**argD)
+                self._cmd_reply.put_nowait(result)
+            
             yield 1
             
     # write your own main function body
@@ -87,26 +95,55 @@ class threadedcomponent(component):
         # overriding this, can be more clever later if we want
         return
     
+    def link(self, source,sink,passthrough=0):
+        cmd = (component.link, [self,source,sink,passthrough], {} )
+        self._cmd.put_nowait(cmd)
+        return self._cmd_reply.get()
+        
+    def unlink(self, thecomponent=None, thelinkage=None):
+        cmd = (component.unlink, [self,thecomponent,thelinkage], {} )
+        self._cmd.put_nowait(cmd)
+        return self._cmd_reply.get()
 
 
 from AdaptiveCommsComponent import _AdaptiveCommsable as _NonThreadedableAdaptiveCommsable
 
 class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
    def addInbox(self,*args):
+       cmd = (self._unsafe_addInbox, args, {} )
+       self._cmd.put_nowait(cmd)
+       return self._cmd_reply.get()
+
+   def _unsafe_addInbox(self,*args):
        name = super(_AdaptiveCommsable,self).addInbox(*args)
        self._inbox_queues[name] = Queue.Queue()
        return name
 
    def deleteInbox(self,name):
+       cmd = (self._unsafe_deleteInbox, [name], {} )
+       self._cmd.put_nowait(cmd)
+       return self._cmd_reply.get()
+   
+   def _unsafe_deleteInbox(self,name):
        super(_AdaptiveCommsable,self).deleteInbox(name)
        del self._inbox_queues[name]
 
    def addOutbox(self,*args):
+       cmd = (self._unsafe_addOutbox, args, {} )
+       self._cmd.put_nowait(cmd)
+       return self._cmd_reply.get()
+   
+   def _unsafe_addOutbox(self,*args):
        name = super(_AdaptiveCommsable,self).addOutbox(*args)
        self._outbox_queues[name] = Queue.Queue()
        return name
 
    def deleteOutbox(self,name):
+       cmd = (self._unsafe_deleteOutbox, [name], {} )
+       self._cmd.put_nowait(cmd)
+       return self._cmd_reply.get()
+   
+   def _unsafe_deleteOutbox(self,name):
        super(_AdaptiveCommsable,self).deleteOutbox(name)
        del self._outbox_queues[name]
 
@@ -141,7 +178,7 @@ if __name__ == "__main__":
                     
     class Outputter(component):
         def main(self):
-            count=30
+            count=40
             while count:
                 yield 1
                 if self.dataReady("inbox"):
