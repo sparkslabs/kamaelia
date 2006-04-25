@@ -65,24 +65,33 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
         if not self.anyReady():
              self.pause()
         last = 0
+        numberOfFailedSelectsDueToBadFileDescriptor = 0
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
                 message = self.recv("control")
                 if isinstance(message,shutdown):
                    return
-
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,0)
+                    numberOfFailedSelectsDueToBadFileDescriptor  = 0
                 except ValueError, e:
-                    print dir(e), e.args
+###                    print dir(e), e.args
                     if FAILHARD:
                         raise e
                 except socket.error, e:
-                    print "FLOOGLE", e, dir(e), e.args
-                    print self.inboxes, self.outboxes
-                    raise e
+###                    print "FLOOGLE", e, dir(e), e.args
+###                    print self.inboxes, self.outboxes
+                    if e[0] == 9:
+                        numberOfFailedSelectsDueToBadFileDescriptor +=1
+###                        print "Hmm", numberOfFailedSelectsDueToBadFileDescriptor
+                        if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
+                            # For the moment, we simply raise an exception.
+                            # We could brute force our way through the list of descriptors
+                            # to find the broken ones, and remove
+                            raise e
+                        yield 1
 
                 for i in xrange(3):
                     for selectable in read_write_except[i]:
@@ -90,8 +99,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                             replyService, outbox, linkage = meta[i][selectable]
                             self.send(selectable, outbox)
                             replyService, outbox, linkage = None, None, None
-                        except KeyError:
-                            print "Error!"
+                        except KeyError, k:
+###                            print "Error!", k
                             pass
             elif not self.anyReady():
                 self.pause()

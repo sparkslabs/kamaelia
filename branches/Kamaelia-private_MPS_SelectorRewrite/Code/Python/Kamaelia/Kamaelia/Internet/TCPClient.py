@@ -58,7 +58,7 @@ selectorComponent is obtained by calling
 selectorComponent.getSelectorService(...) to look it up with the local
 Coordinating Assistant Tracker (CAT).
 
-TCPClient wires itself to the "FactoryFeedback" outbox of the CSA. It also wires
+TCPClient wires itself to the "CreatorFeedback" outbox of the CSA. It also wires
 its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox,
 and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
 
@@ -66,7 +66,7 @@ Socket errors (after the connection has been successfully established) may be
 sent to the "signal" outbox.
 
 This component will terminate if the CSA sends a socketShutdown message to its
-"FactoryFeedback" outbox.
+"CreatorFeedback" outbox.
 
 Messages sent to the "control" inbox are ignored - users of this component
 cannot ask it to close the connection.
@@ -77,8 +77,6 @@ import errno
 
 import Axon
 from Axon.util import Finality
-# from Axon.Component import component
-# import Axon.CoordinatingAssistantTracker as cat
 
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
@@ -141,16 +139,14 @@ class TCPClient(Axon.Component.component):
       """
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
       self.addChildren(CSA)
-#      selectorService , newSelector = Selector.Selector.getSelectorServices(self.tracker)
       selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
 
-#      self.link((self, "_selectorSignal"),selectorService)
       self.link((self, "_selectorSignal"),selectorService)
       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
  
-      self.link((CSA, "FactoryFeedback"),(self,"_socketFeedback"))
+      self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
 
@@ -262,7 +258,7 @@ def _tests():
 
    # Put some linkages in place for testing
    outboxLink=linkage(CSA,client,"outbox","outbox",passthrough=2)
-   feedbackLink=linkage(CSA,client,"FactoryFeedback","_socketFeedback")
+   feedbackLink=linkage(CSA,client,"CreatorFeedback","_socketFeedback")
 
    CSA.initialiseComponent()
    CSA.mainBody()

@@ -68,10 +68,10 @@ This component will terminate (and close its socket) if it receives a
 producerFinished message on its "control" inbox.
 
 When this component terminates, it sends a socketShutdown(socket) message out of
-its "FactoryFeedback" outbox and a shutdownCSA((selfCSA,self.socket)) message
+its "CreatorFeedback" outbox and a shutdownCSA((selfCSA,self.socket)) message
 out of its "signal" outbox.
 
-The message sent to "FactoryFeedback" is to notify the original creator that
+The message sent to "CreatorFeedback" is to notify the original creator that
 the socket is now closed and that this component should be unwired.
 
 The message sent to the "signal" outbox serves to notify any other component
@@ -87,6 +87,7 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
 from Kamaelia.KamaeliaExceptions import *
 import traceback
 import pprint
@@ -119,6 +120,7 @@ def _saferecv(sock, size=1024):
    try:
       data = sock.recv(size)
       if not data: # This implies the connection has barfed.
+###         print "DO WE GET HERE?"
          raise connectionDiedReceiving(sock,size)
    except socket.error, socket.msg:
       (errorno, errmsg) = socket.msg.args
@@ -145,7 +147,7 @@ class ConnectedSocketAdapter(component):
                 "Initialise" : "NOT USED",
               }
    Outboxes = { "outbox"          : "Data received from the socket",
-                "FactoryFeedback" : "Signals socketShutdown (this socket has closed)",
+                "CreatorFeedback" : "Expected to be connected to some form of signal input on the CSA's creator. Signals socketShutdown (this socket has closed)",
                 "signal"          : "Signals shutdownCSA (this CSA is shutting down)",
               }
 
@@ -211,11 +213,11 @@ class ConnectedSocketAdapter(component):
           if isinstance(data, producerFinished):
               #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
               raise connectionServerShutdown()
-   
+
    def passOnShutdown(self):
-        self.send(socketShutdown(self,self.socket), "FactoryFeedback")
+        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
         self.send(shutdownCSA(self, (self,self.socket)), "signal")
-   
+
    def main(self):
        while 1:
           if not self.anyReady():
@@ -237,7 +239,7 @@ class ConnectedSocketAdapter(component):
                  raise ex
              break
        self.passOnShutdown()
-       print "SHUTTING DOWN", self
+###       print "SHUTTING DOWN", self
 
 __kamaelia_components__  = ( ConnectedSocketAdapter, )
 

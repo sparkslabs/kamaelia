@@ -162,7 +162,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         data -- data.object is the ConnectedSocketAdapter component for the connection
         """
         CSA = data.object
-        print "NEW CSA", CSA
+###        print "NEW CSA", CSA
         pHandler = self.protocolClass()
     
         pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
