@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+!/usr/bin/env python2.3
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -82,6 +82,7 @@ from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
 
 from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
 
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
@@ -116,6 +117,8 @@ class TCPClient(Axon.Component.component):
       self.host = host
       self.port = port
       self.delay=delay
+      self.CSA = None
+      self.sock = None
 
    def main(self):
       """Main loop."""
@@ -128,7 +131,14 @@ class TCPClient(Axon.Component.component):
 
       for v in self.runClient():
          yield v
-      # SMELL - we may need to send a shutdown message
+      
+      if (self.sock is not None) and (self.CSA is not None):
+         self.send(removeReader(self.CSA, self.sock), "_selectorSignal")            
+         self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
+         # SMELL - These next two can be removed in when the box optimisations are merged.
+         yield 1 # Give the postman a chance to take these messages and pass them on...
+         yield 1 # Give the postman a chance to take these messages and pass them on...
+      
 
    def setupCSA(self, sock):
       """\
@@ -152,8 +162,7 @@ class TCPClient(Axon.Component.component):
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
       self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
-#      \
-#print "Here"
+      self.CSA = CSA # We need this for shutdown later
 
       return self.childComponents()
 
@@ -205,6 +214,7 @@ class TCPClient(Axon.Component.component):
       # nothing else specific.
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
+         self.sock = sock # We need this for shutdown later
          try:
             sock.setblocking(0); yield 0.6
             try:
