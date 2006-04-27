@@ -37,14 +37,16 @@ import Component
 from AxonExceptions import noSpaceInBox
 from Ipc import newComponent
 
-class threadedcomponent(Component.component,threading.Thread):
+class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
       a component by running them inside a thread in the component.
    """
 
    def __init__(self,queuelengths=10):
       Component.component.__init__(self)
-      threading.Thread.__init__(self)
+      
+      self._thethread = threading.Thread(target=self.main)
+      self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
 
       self.queuelengths = queuelengths
       self.inqueues = dict()
@@ -59,9 +61,9 @@ class threadedcomponent(Component.component,threading.Thread):
       self.threadtoaxonqueue = Queue.Queue()
       self.axontothreadqueue = Queue.Queue()
 
-      self.setDaemon(True) # means the thread is stopped if the main thread stops.
+      self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
    
-   def run(self):
+   def main(self):
       """STUB - Override this to do the work that will block.  Access the in and out
          queues that pass on to the in and out boxes.  You should read from all
          inqueues
@@ -79,10 +81,10 @@ class threadedcomponent(Component.component,threading.Thread):
                break
          time.sleep(1)
       
-   def main(self):
+   def _localmain(self):
       """Do not overide this unless you reimplement the pass through of the boxes to the threads.
       """
-      self.start()
+      self._thethread.start()
       residualdata = False
       while 1:
          time.sleep(0)
@@ -160,7 +162,7 @@ if __name__ == '__main__':
      tc.outboxes['outbox'] = Box.makeInbox(lambda:None)
 #     tc.activate()
      print len(tc.outboxes["outbox"])
-     axonthread = tc.main()
+     axonthread = tc._localmain()
      axonthread.next()
      printoutbox(tc)
      axonthread.next()
