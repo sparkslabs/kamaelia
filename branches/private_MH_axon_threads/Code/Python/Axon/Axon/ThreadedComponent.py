@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 #      TODO: Thread shutdown
 #      TODO: How to allow the thread to start new components?
@@ -28,229 +28,181 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Component import component
-from Microprocess import microprocess
+from __future__ import generators
+
 import threading
 import Queue
+import time
+import Component
+from AxonExceptions import noSpaceInBox
+from Ipc import newComponent
 
-def _makeThreadBox():
-    return list()
+class threadedcomponent(Component.component,threading.Thread):
+   """This component is intended to allow blocking calls to be made from within
+      a component by running them inside a thread in the component.
+   """
 
-class threadedcomponent(component):
-    """\
-    Revised threading component
-    """
-    
-    def __init__(self):
-        super(threadedcomponent,self).__init__()
-        self._thethread = threading.Thread(target=self.main)
-        self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
-        
-        self._thread_inboxes = {}
-        for name in self.inboxes:
-            self._thread_inboxes[name] = _makeThreadBox()
-        self._inbox_queue = Queue.Queue()
-            
-        self._thread_outboxes = {}
-        for name in self.outboxes:
-            self._thread_outboxes[name] = _makeThreadBox()
-        self._outbox_queue = Queue.Queue()
-            
-        self._cmd = Queue.Queue()
-        self._cmd_reply = Queue.Queue()
-    
-    def _localmain(self):
-        """Placeholder microprocess, representing the thread, in the 'main' scheduler"""
-        self._thethread.start()
-        running = True
-        while running:
-            running = self._thethread.isAlive()
-            
-            for boxname in self.inboxes:
-                while component.dataReady(self, boxname):
-                    msg = component.recv(self, boxname)
-                    self._inbox_queue.put_nowait( (boxname, msg) )
-                    
-            for boxname in self.outboxes:
-                # for loop to snapshot of queue length to guarantee we stop!
-                for i in xrange(0, self._outbox_queue.qsize() ):
-                    (boxname, msg) = self._outbox_queue.get_nowait()
-                    component.send(self, msg, boxname)
-            
-            if self._cmd.qsize():
-                cmd, argL, argD = self._cmd.get()
-                result = cmd(*argL,**argD)
-                self._cmd_reply.put_nowait(result)
-            
-            
-            yield 1
-    
-    def _process_queues(self):
-        # process data arriving at the thread end of the queues
-        
-        # deliver messages into local inboxes
-        for i in xrange(0, self._inbox_queue.qsize()) :
-            (boxname, msg) = self._inbox_queue.get_nowait()
-            self._thread_inboxes[boxname].append(msg)
-    
-    # write your own main function body
+   def __init__(self,queuelengths=10):
+      self.__super.__init__()
+      threading.Thread.__init__(self)
 
-    def dataReady(self, boxname="inbox"):
-        self._process_queues()
-        return len(self._thread_inboxes[boxname])
-    
-    # anyready doesn't need rewrite
-    
-    def recv(self, boxname="inbox"):
-        return self._thread_inboxes[boxname].pop(0)
-    
-    def send(self, message, boxname="outbox"):
-        self._outbox_queue.put_nowait( (boxname, message) )
-    
-    def pause(self):
-        # overriding this, can be more clever later if we want
-        return
-    
-    def link(self, source,sink,passthrough=0):
-        cmd = (component.link, [self,source,sink,passthrough], {} )
-        self._cmd.put_nowait(cmd)
-        return self._cmd_reply.get()
-        
-    def unlink(self, thecomponent=None, thelinkage=None):
-        cmd = (component.unlink, [self,thecomponent,thelinkage], {} )
-        self._cmd.put_nowait(cmd)
-        return self._cmd_reply.get()
+      self.queuelengths = queuelengths
+      self.inqueues = dict()
+      self.outqueues = dict()
+      for box in self.inboxes.iterkeys():
+         self.inqueues[box] = Queue.Queue(self.queuelengths)
+      for box in self.outboxes.iterkeys():
+         self.outqueues[box] = Queue.Queue(self.queuelengths)
 
+      self.outbuffer = dict()
 
-from AdaptiveCommsComponent import _AdaptiveCommsable as _NonThreadedableAdaptiveCommsable
+      self.threadtoaxonqueue = Queue.Queue()
+      self.axontothreadqueue = Queue.Queue()
 
-class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
-   def addInbox(self,*args):
-       cmd = (self._unsafe_addInbox, args, {} )
-       self._cmd.put_nowait(cmd)
-       return self._cmd_reply.get()
-
-   def _unsafe_addInbox(self,*args):
-       name = super(_AdaptiveCommsable,self).addInbox(*args)
-       self._thread_inboxes[name] = _makeThreadBox()
-       return name
-
-   def deleteInbox(self,name):
-       cmd = (self._unsafe_deleteInbox, [name], {} )
-       self._cmd.put_nowait(cmd)
-       return self._cmd_reply.get()
+      self.setDaemon(True) # means the thread is stopped if the main thread stops.
    
-   def _unsafe_deleteInbox(self,name):
-       super(_AdaptiveCommsable,self).deleteInbox(name)
-       del self._thread_inboxes[name]
+   def run(self):
+      """STUB - Override this to do the work that will block.  Access the in and out
+         queues that pass on to the in and out boxes.  You should read from all
+         inqueues
+      """
+      while 1:
+         for box in self.inqueues.iterkeys():
+            self.outqueues["outbox"].put("ba")
+            while not self.inqueues[box].empty():
+                   self.outqueues["outbox"].put("dada:" + self.inqueues[box].get())
+         self.outqueues["outbox"].put("doing")
+         if not self.axontothreadqueue.empty():
+            mesg = self.axontothreadqueue.get()
+            if mesg == "StopThread":
+               self.threadtoaxonqueue.put("ThreadStopped")
+               break
+         time.sleep(1)
+      
+   def main(self):
+      """Do not overide this unless you reimplement the pass through of the boxes to the threads.
+      """
+      self.start()
+      residualdata = False
+      while 1:
+         time.sleep(0)
+         for box in self.outboxes:
+            if self.outbuffer.has_key(box):
+               try:
+                  self.send(self.outbuffer[box], box)
+               except noSpaceInBox:
+                  continue # Skip to next box, since outbox full
+               del self.outbuffer[box]
 
-   def addOutbox(self,*args):
-       cmd = (self._unsafe_addOutbox, args, {} )
-       self._cmd.put_nowait(cmd)
-       return self._cmd_reply.get()
+            while(not self.outqueues[box].empty()):
+               sending = self.outqueues[box].get()
+               try:
+                  self.send(sending,box)
+               except noSpaceInBox:
+                  self.outbuffer[box] = sending
+                  break
+
+         if residualdata:
+            residualdata = False
+            for box in self.outboxes:
+               # This checks that there is no pending data that hasn't been put in an outbox
+               # before allowing the component to die.
+               if self.outbuffer.has_key(box) or not self.outqueues[box].empty():
+                  residualdata = True
+                  break
+            if residualdata:
+               continue # There is no point checking for communications from dead thread or
+               # adding any more data to the thread.
+            else:
+               return # The thread has finished, all data has been sent and the component
+                          # can be removed from the run queue.
+         if not self.threadtoaxonqueue.empty():
+         # Check for messages from internal thread.  It could loop through them but that 
+         # would change the meaning of the continue statement from skipping the inbox
+         #reading.
+            m = self.threadtoaxonqueue.get()
+            if isinstance(m, newComponent):
+            # If new components have been created and need to be added to the run queue
+            # It might be best that more of the work of adding children is done here to avoid
+            # race conditions.
+               yield m # yield for the scheduler to add to list of running components.
+            elif m == "ThreadStopped":
+            # See if thread has finished in which case the component should finish up and die
+            # as soon as all the output from the thread is passed on and no longer pending
+               residualdata = True # Assume there is data left to send and send it as soon as possible
+               yield 1
+               continue # This means we do not pass in more data destined for the dead thread
    
-   def _unsafe_addOutbox(self,*args):
-       name = super(_AdaptiveCommsable,self).addOutbox(*args)
-       self._thread_outboxes[name] = _makeThreadBox()
-       return name
+         for box in self.inboxes:
+            if(self.dataReady(box)):
+               if(not self.inqueues[box].full()): # LBYL, but no race hazard
+                  self.inqueues[box].put(self.recv(box))
 
-   def deleteOutbox(self,name):
-       cmd = (self._unsafe_deleteOutbox, [name], {} )
-       self._cmd.put_nowait(cmd)
-       return self._cmd_reply.get()
-   
-   def _unsafe_deleteOutbox(self,name):
-       super(_AdaptiveCommsable,self).deleteOutbox(name)
-       del self._thread_outboxes[name]
+         yield 1
 
-
-class threadedadaptivecommscomponent(threadedcomponent, _AdaptiveCommsable):
-   def __init__(self):
-      threadedcomponent.__init__(self)
-      _AdaptiveCommsable.__init__(self)
+if __name__ == '__main__':
+     def printoutbox(tc):
+       tmp = ""
+       while len(tc.outboxes["outbox"]) > 0 :
+         #print tc._collect("outbox")
+         tmp = tmp + tc._collect("outbox")
+       print tmp
 
 
+#   from Scheduler import scheduler
+#   try:
+     print "starting"
+     tc = threadedcomponent()
+#     tc.activate()
+     print len(tc.outboxes["outbox"])
+     axonthread = tc.main()
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     time.sleep(5)
+     tc._deliver("hello","inbox")
+     axonthread.next()
+     printoutbox(tc) 
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     time.sleep(2)
+     tc._deliver("world","inbox")
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     time.sleep(3)
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     tc._deliver("foo","inbox")
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     time.sleep(2)
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+     axonthread.next()
+     printoutbox(tc)
+#      scheduler.run.runThreads(slowmo=0)
+#   except Exception, e:
+#     print e
+#     print "done"
 
-if __name__ == "__main__":
-    import time, sys
-    
-    class TheThread(threadedcomponent):
-        def main(self):
-            t = time.time()
-            for i in range(10):
-                while time.time() < t:
-                    pass
-                t=t+1.0
-                self.send("Threaded: "+str(i)+"\n")
-                
-    class NotThread(component):
-        def main(self):
-            t = time.time()
-            for i in range(20):
-                while time.time() < t:
-                    yield 1
-                t=t+0.5
-                self.send("Normal: "+str(i)+"\n")
-                    
-    class Outputter(component):
-        def main(self):
-            count=40
-            while count:
-                yield 1
-                if self.dataReady("inbox"):
-                    data = self.recv("inbox")
-                    sys.stdout.write(str(data))
-                    sys.stdout.flush()
-                    count=count-1
-            self.send("DONE","signal")
-
-    class AAThread(threadedadaptivecommscomponent):
-        def main(self):
-            outs = {}
-            
-            t = time.time()
-            for i in range(10):
-                while time.time() < t:
-                    pass
-                t=t+1.0
-                while self.dataReady("inbox"):
-                    dst = self.recv("inbox")
-                    newname = self.addOutbox("sink")
-                    linkage = self.link( (self, newname), dst )
-                    outs[newname] = linkage
-                
-                for o in outs.keys():
-                    self.send("AAThread "+o+": "+str(i)+"\n", o)
-                    
-            for o in outs.keys():
-                self.unlink( outs[o] )
-                self.deleteOutbox(o)
-    
-    class OneShot(component):
-        def __init__(self,msg):
-            super(OneShot,self).__init__()
-            self.msg = msg
-            
-        def main(self):
-            self.send( self.msg )
-            yield 1
-    
-    class Container(component):
-        def main(self):
-            t = TheThread().activate()
-            n = NotThread().activate()
-            out = Outputter().activate()
-            self.link( (t,"outbox"), (out,"inbox") )
-            self.link( (n,"outbox"), (out,"inbox") )
-            
-            self.link( (out,"signal"), (self,"control") )
-            
-            o = OneShot( msg=(out,"inbox") ).activate()
-            a = AAThread().activate()
-            self.link( (o,"outbox"), (a,"inbox") )
-            
-            while not self.dataReady("control"):
-                self.pause()
-                yield 1
-                
-    c = Container().run()
