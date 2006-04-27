@@ -20,11 +20,13 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import Kamaelia.UI.MH.DragHandler
+import UI
 
 # from pygame.locals import *
 
-class ParticleDragger(Kamaelia.UI.MH.DragHandler):
+
+
+class ParticleDragger(UI.MH.DragHandler):
      def detect(self, pos, button):
          inRange = self.app.physics.withinRadius( pos, app.particleRadius )
          if len(inRange) > 0:
