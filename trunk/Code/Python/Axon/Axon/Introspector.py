@@ -235,18 +235,23 @@ class Introspector(Axon.Component.component):
         #  activated, in which case they may not register yet)
         components = dict([ (p,(p.id,p.name)) for p in self.scheduler.threads if isinstance(p, Axon.Component.component) ])
         
-        # go through all postmen and find all linkages
+        # go through all components' postoffices and find all linkages
         linkages = {}
-        for postman in [ p for p in self.scheduler.threads if isinstance(p, Axon.Postman.postman) ]:
-            for link in postman.linkages:
+        components_to_scan = components.keys()  # list
+        for postoffice in [ c.postoffice for c in components_to_scan ]:
+            for link in postoffice.linkages:
                 src = (link.source.id, Introspector.srcBoxType[link.passthrough], link.sourcebox)
                 dst = (link.sink.id  , Introspector.dstBoxType[link.passthrough], link.sinkbox)
                 linkages[(src,dst)] = 1
                 # some components may not have been detected from the scheduler
                 # but maybe linked to, so we need to detect them now
+                # 1) append to the list we're scanning now
+                # 2) add to the dictionary of components we're building
                 if not components.has_key(link.source):
+                    components_to_scan.append(link.source)
                     components[link.source] = (link.source.id, link.source.name)
                 if not components.has_key(link.sink):
+                    components_to_scan.append(link.sink)
                     components[link.sink] = (link.sink.id, link.sink.name)
                            
         # now we have a comprehensive list of all components (not just those the scheduler
