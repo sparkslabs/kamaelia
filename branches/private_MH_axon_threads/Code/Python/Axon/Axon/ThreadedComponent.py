@@ -78,6 +78,8 @@ class threadedcomponent(Component.component):
    def _localmain(self):
        """Do not overide this unless you reimplement the pass through of the boxes to the threads.
        """
+
+       # start the thread
        self._thethread.start()
        running = True
        while running:
@@ -87,14 +89,14 @@ class threadedcomponent(Component.component):
           # (must make sure we flush ALL messages from each queue)
           
           for box in self.inboxes:
-              while self.dataReady(box):
-                  msg = self.recv(box)
+              while self._nonthread_dataReady(box):
+                  msg = self._nonthread_recv(box)
                   self.inqueues[box].put(msg)
                   
           for box in self.outboxes:
               while not self.outqueues[box].empty():
                   msg = self.outqueues[box].get()
-                  self.send(msg, box)
+                  self._nonthread_send(msg, box)
                   
           while not self.threadtoaxonqueue.empty():
               msg = self.threadtoaxonqueue.get()
@@ -105,6 +107,19 @@ class threadedcomponent(Component.component):
                   yield msg # yield for the scheduler to add to list of running components.
 
           yield 1
+
+   _nonthread_dataReady = Component.component.dataReady
+   _nonthread_recv      = Component.component.recv
+   _nonthread_send      = Component.component.send
+
+   def dataReady(self,boxname="inbox"):
+       return self.inqueues[boxname].qsize()
+
+   def recv(self,boxname="inbox"):
+       return self.inqueues[boxname].get()
+
+   def send(self,message, boxname="outbox"):
+       self.outqueues[boxname].put(message)
 
 if __name__ == "__main__":
     import time, sys
