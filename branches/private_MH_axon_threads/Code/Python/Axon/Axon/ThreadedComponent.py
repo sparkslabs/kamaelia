@@ -106,74 +106,63 @@ class threadedcomponent(Component.component):
 
           yield 1
 
-if __name__ == '__main__':
-     def printoutbox(tc):
-       tmp = ""
-       while len(tc.outboxes["outbox"]) > 0 :
-         #print tc._collect("outbox")
-         tmp = tmp + tc.outboxes['outbox'].pop(0)
-       print tmp
+if __name__ == "__main__":
+    import time, sys
+    
+    class TheThread(threadedcomponent):
+        def main(self):
+            self.send("ADD SRC")
+            t = time.time()
+            for i in range(10):
+                while time.time() < t:
+                    pass
+                t=t+1.0
+                self.send("Threaded: "+str(i))
+            self.send("DEL SRC")
+                
+    class NotThread(Component.component):
+        def main(self):
+            self.send("ADD SRC")
+            t = time.time()
+            for i in range(20):
+                while time.time() < t:
+                    yield 1
+                t=t+0.5
+                self.send("Normal: "+str(i))
+            self.send("DEL SRC")
+                    
+    class Outputter(Component.component):
+        def main(self):
+            refcount = 0
+            done=False
+            while not done:
+                yield 1
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    if data=="ADD SRC":
+                        refcount = refcount+1
+                    elif data=="DEL SRC":
+                        refcount = refcount-1
+                        if refcount == 0:
+                            done=True
+                    sys.stdout.write(str(data)+"\n")
+                    sys.stdout.flush()
+            self.send("DONE","outbox")
 
-     def sendinbox(tc,msg):
-         tc.inboxes["inbox"].append(msg)
-
-#   from Scheduler import scheduler
-#   try:
-     print "starting"
-     tc = threadedcomponent()
-     # outboxes have no storage, so we'll temporarily swap them for ones that do
-     import Box
-     tc.outboxes['outbox'] = Box.makeInbox(lambda:None)
-#     tc.activate()
-     print len(tc.outboxes["outbox"])
-     axonthread = tc._localmain()
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     time.sleep(5)
-     sendinbox(tc,"hello")
-     axonthread.next()
-     printoutbox(tc) 
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     time.sleep(2)
-     sendinbox(tc,"world")
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     time.sleep(3)
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     sendinbox(tc,"foo")
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     time.sleep(2)
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-     axonthread.next()
-     printoutbox(tc)
-#      scheduler.run.runThreads(slowmo=0)
-#   except Exception, e:
-#     print e
-#     print "done"
-
+    
+    class Container(Component.component):
+        def main(self):
+            t = TheThread().activate()
+            n = NotThread().activate()
+            out = Outputter().activate()
+            self.link( (t,"outbox"), (out,"inbox") )
+            self.link( (n,"outbox"), (out,"inbox") )
+            
+            self.link( (out,"outbox"), (self,"inbox") )
+            
+            # wait until outputter sends us a signal its finished
+            while not self.dataReady("inbox"):
+                self.pause()
+                yield 1
+                
+    c = Container().run()
