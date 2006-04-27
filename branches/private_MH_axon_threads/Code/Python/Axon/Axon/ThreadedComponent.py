@@ -43,7 +43,7 @@ class threadedcomponent(Component.component,threading.Thread):
    """
 
    def __init__(self,queuelengths=10):
-      self.__super.__init__()
+      Component.component.__init__(self)
       threading.Thread.__init__(self)
 
       self.queuelengths = queuelengths
@@ -145,14 +145,19 @@ if __name__ == '__main__':
        tmp = ""
        while len(tc.outboxes["outbox"]) > 0 :
          #print tc._collect("outbox")
-         tmp = tmp + tc._collect("outbox")
+         tmp = tmp + tc.outboxes['outbox'].pop(0)
        print tmp
 
+     def sendinbox(tc,msg):
+         tc.inboxes["inbox"].append(msg)
 
 #   from Scheduler import scheduler
 #   try:
      print "starting"
      tc = threadedcomponent()
+     # outboxes have no storage, so we'll temporarily swap them for ones that do
+     import Box
+     tc.outboxes['outbox'] = Box.makeInbox(lambda:None)
 #     tc.activate()
      print len(tc.outboxes["outbox"])
      axonthread = tc.main()
@@ -163,7 +168,7 @@ if __name__ == '__main__':
      axonthread.next()
      printoutbox(tc)
      time.sleep(5)
-     tc._deliver("hello","inbox")
+     sendinbox(tc,"hello")
      axonthread.next()
      printoutbox(tc) 
      axonthread.next()
@@ -171,7 +176,7 @@ if __name__ == '__main__':
      axonthread.next()
      printoutbox(tc)
      time.sleep(2)
-     tc._deliver("world","inbox")
+     sendinbox(tc,"world")
      axonthread.next()
      printoutbox(tc)
      axonthread.next()
@@ -186,7 +191,7 @@ if __name__ == '__main__':
      printoutbox(tc)
      axonthread.next()
      printoutbox(tc)
-     tc._deliver("foo","inbox")
+     sendinbox(tc,"foo")
      axonthread.next()
      printoutbox(tc)
      axonthread.next()
