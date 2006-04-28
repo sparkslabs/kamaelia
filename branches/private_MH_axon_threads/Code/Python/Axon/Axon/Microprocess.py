@@ -299,7 +299,7 @@ class microprocess(Axon.AxonObject):
       yield 1
       return
 
-   def _microprocessGenerator(self,someobject, main="main"):
+   def _microprocessGenerator(self,someobject, mainmethod="main"):
       """This contains the mainloop for a microprocess, returning a
       generator object. Creates the thread of control by calling the
       class's main method, then in a loop repeatedly calls the resulting
@@ -308,7 +308,7 @@ class microprocess(Axon.AxonObject):
       back to its caller.
       """
       # someobject.setthread = (self) # XXXX Check -- Appears no to be used!
-      pc = someobject.__getattribute__(main)()
+      pc = someobject.__getattribute__(mainmethod)()
 #      pc = someobject.main() # Call the object, get a generator function
       while(1):
          # Continually try to run the code, and then release control
@@ -326,7 +326,7 @@ class microprocess(Axon.AxonObject):
                # Microprocess simply paused
                yield "Paused"
 
-   def activate(self, Scheduler=None, Tracker=None):
+   def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
       """calls the _microprocessGenerator function to create a generator
       object, places this into the thread attribute of the microprocess
       and appends the component to the scheduler's run queue."""
@@ -334,7 +334,7 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.activate", 1):
          self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
       if not self.__thread:
-         self.__thread = self._microprocessGenerator(self)
+         self.__thread = self._microprocessGenerator(self,mainmethod)
 
       #
       # Whilst a basic microprocess does not "need" a local scheduler,

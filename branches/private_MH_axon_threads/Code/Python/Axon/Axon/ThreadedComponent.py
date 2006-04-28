@@ -45,9 +45,7 @@ class threadedcomponent(Component.component):
    def __init__(self):
       super(threadedcomponent,self).__init__()
       
-      self._thethread = threading.Thread(target=self.main)
       self._threadrunning = False
-      self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
 
       self.inqueues = dict()
       self.outqueues = dict()
@@ -56,12 +54,16 @@ class threadedcomponent(Component.component):
       for box in self.outboxes.iterkeys():
          self.outqueues[box] = Queue.Queue()
 
-      self.outbuffer = dict()
-
       self.threadtoaxonqueue = Queue.Queue()
       self.axontothreadqueue = Queue.Queue()
 
-      self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
+
+   def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
+       self._thethread = threading.Thread(target=self.__getattribute__(mainmethod))
+       self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
+   
+       return super(threadedcomponent,self).activate(Scheduler,Tracker,"_localmain")
+   
    
    def main(self):
       """'C.main()' **You normally will not want to override or call this method**
@@ -89,6 +91,10 @@ class threadedcomponent(Component.component):
       """Stub method. **This method is designed to be overridden.** """
       return 1
 
+   def pause(self):
+       # override this for now; but could do something again once flow control inversion
+       # is done and we want to block for events
+       return
 
    def _localmain(self):
        """Do not overide this unless you reimplement the pass through of the boxes to the threads.
