@@ -114,13 +114,13 @@ class threadedcomponent(Component.component):
                   
           while not self.threadtoaxonqueue.empty():
               msg = self.threadtoaxonqueue.get()
-              if isinstance(msg, newComponent):
-                  # If new components have been created and need to be added to the run queue
-                  # It might be best that more of the work of adding children is done here to avoid
-                  # race conditions.
-                  yield msg # yield for the scheduler to add to list of running components.
+              self._handlemessagefromthread(msg)
 
           yield 1
+
+   def _handlemessagefromthread(msg):
+       """STUB - for handling messages from the thread"""
+       pass
 
    _nonthread_dataReady = Component.component.dataReady
    _nonthread_recv      = Component.component.recv
@@ -136,33 +136,31 @@ class threadedcomponent(Component.component):
        self.outqueues[boxname].put(message)
 
 
-from AdaptiveCommsComponent import _AdaptiveCommsable as _NonThreadedableAdaptiveCommsable
-
-class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
-   def addInbox(self,*args):
-       name = super(_AdaptiveCommsable,self).addInbox(*args)
-       self.inqueues[name] = Queue.Queue()
-       return name
-
-   def deleteInbox(self,name):
-       super(_AdaptiveCommsable,self).deleteInbox(name)
-       del self.inqueues[name]
-
-   def addOutbox(self,*args):
-       name = super(_AdaptiveCommsable,self).addOutbox(*args)
-       self.outqueues[name] = Queue.Queue()
-       return name
-
-   def deleteOutbox(self,name):
-       super(_AdaptiveCommsable,self).deleteOutbox(name)
-       del self.outqueues[name]
+from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 
 
-
-class threadedadaptivecommscomponent(threadedcomponent, _AdaptiveCommsable):
+class threadedadaptivecommscomponent(threadedcomponent, _AC):
     def __init__(self):
         threadedcomponent.__init__(self)
-        _AdaptiveCommsable.__init__(self)
+        _AC.__init__(self)
+
+    def addInbox(self,*args):
+        name = super(threadedadaptivecommscomponent,self).addInbox(*args)
+        self.inqueues[name] = Queue.Queue()
+        return name
+    
+    def deleteInbox(self,name):
+        super(threadedadaptivecommscomponent,self).deleteInbox(name)
+        del self.inqueues[name]
+    
+    def addOutbox(self,*args):
+        name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
+        self.outqueues[name] = Queue.Queue()
+        return name
+    
+    def deleteOutbox(self,name):
+        super(threadedadaptivecommscomponent,self).deleteOutbox(name)
+        del self.outqueues[name]
 
 
 if __name__ == "__main__":
