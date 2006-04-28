@@ -46,6 +46,7 @@ class threadedcomponent(Component.component):
       super(threadedcomponent,self).__init__()
       
       self._thethread = threading.Thread(target=self.main)
+      self._threadrunning = False
       self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
 
       self.inqueues = dict()
@@ -96,6 +97,7 @@ class threadedcomponent(Component.component):
        # start the thread
        self._thethread.start()
        running = True
+       self._threadrunning = True
        while running:
           # decide if we need to stop...
           running = self._thethread.isAlive()
@@ -117,10 +119,13 @@ class threadedcomponent(Component.component):
               self._handlemessagefromthread(msg)
 
           yield 1
+       self._threadrunning = False
 
-   def _handlemessagefromthread(msg):
+   def _handlemessagefromthread(self,msg):
        """STUB - for handling messages from the thread"""
-       pass
+       (cmd, argL, argD) = msg
+       result = cmd(*argL,**argD)
+       self.axontothreadqueue.put(result)
 
    _nonthread_dataReady = Component.component.dataReady
    _nonthread_recv      = Component.component.recv
@@ -154,11 +159,33 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
         del self.inqueues[name]
     
     def addOutbox(self,*args):
+        if self._threadrunning:
+            # call must be synchronous (wait for reply) because there is a reply
+            # and because next instruction in thread might assume this outbox
+            # exists
+            cmd = (self._unsafe_addOutbox, args, {} )
+            self.threadtoaxonqueue.put( cmd )
+            return self.axontothreadqueue.get()
+        else:
+            return self._unsafe_addOutbox(*args)
+        
+    def _unsafe_addOutbox(self,*args):
         name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
         self.outqueues[name] = Queue.Queue()
         return name
     
     def deleteOutbox(self,name):
+        if self._threadrunning:
+            # call must be synchronous (wait for reply) because there is a reply
+            # and because next instruction in thread might assume this outbox
+            # is destroyed.
+            cmd = (self._unsafe_deleteOutbox, [name], {} )
+            self.threadtoaxonqueue.put( cmd )
+            return self.axontothreadqueue.get()
+        else:
+            self._unsafe_deleteOutbox(self,name)
+        
+    def _unsafe_deleteOutbox(self,name):
         super(threadedadaptivecommscomponent,self).deleteOutbox(name)
         del self.outqueues[name]
 
