@@ -37,6 +37,7 @@ import test_Linkage
 import test_Microprocess
 import test_Postoffice
 import test_Scheduler
+import test_ThreadedComponent
 import test___str__
 import test_util
 
@@ -57,6 +58,8 @@ def suite():
    suite.addTest(unittest.makeSuite(test_Microprocess.MicroProcess_Test))
    suite.addTest(unittest.makeSuite(test_Postoffice.postoffice_Test))
    suite.addTest(unittest.makeSuite(test_Postoffice.linkagechaining_Test))
+   suite.addTest(unittest.makeSuite(test_ThreadedComponent.threadedcomponent_Test))
+   suite.addTest(unittest.makeSuite(test_ThreadedComponent.adaptivecomponent_Test))
    suite.addTest(unittest.makeSuite(test___str__.str_Test))
    suite.addTest(unittest.makeSuite(test_util.util_Test))
    return suite
