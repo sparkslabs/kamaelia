@@ -303,7 +303,7 @@ class director(AdaptiveCommsComponent):
             yield 1
 
             for box in outboxes.keys():
-                self.postoffice.deregisterlinkage(thelinkage = linkages[box])
+                self.unlink(thelinkage = linkages[box])
                 self.deleteOutbox(outboxes[box])
 
             del self.actors[actorName]

@@ -212,7 +212,7 @@ class selectorComponent(AdaptiveCommsComponent):
       (feedbackInboxName, signalOutboxName, theComponentL) = self.lookupBoxes[theSocket]
       assert(theComponent == theComponentL)
       del self.lookupBoxes[theSocket]
-      self.postoffice.deregisterlinkage(thecomponent=theComponent)
+      self.unlink(thecomponent=theComponent)
       self.deleteInbox(feedbackInboxName)
       self.deleteOutbox(signalOutboxName)
       
