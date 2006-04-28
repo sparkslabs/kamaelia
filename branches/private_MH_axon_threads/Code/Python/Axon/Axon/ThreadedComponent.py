@@ -160,41 +160,41 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
         _AC.__init__(self)
 
     def addInbox(self,*args):
-        name = super(threadedadaptivecommscomponent,self).addInbox(*args)
-        self.inqueues[name] = Queue.Queue()
-        return name
+        return self._do_threadsafe(self._unsafe_addInbox, args, {})
     
     def deleteInbox(self,name):
-        super(threadedadaptivecommscomponent,self).deleteInbox(name)
-        del self.inqueues[name]
+        return self._do_threadsafe(self._unsafe_deleteInbox, [name], {})
     
     def addOutbox(self,*args):
+        return self._do_threadsafe(self._unsafe_addOutbox, args, {})
+    
+    def deleteOutbox(self,name):
+        return self._do_threadsafe(self._unsafe_deleteOutbox, [name], {})
+        
+    def _do_threadsafe(self, cmd, argL, argD):
         if self._threadrunning:
             # call must be synchronous (wait for reply) because there is a reply
             # and because next instruction in thread might assume this outbox
             # exists
-            cmd = (self._unsafe_addOutbox, args, {} )
-            self.threadtoaxonqueue.put( cmd )
+            self.threadtoaxonqueue.put( (cmd, argL, argD ) )
             return self.axontothreadqueue.get()
         else:
-            return self._unsafe_addOutbox(*args)
+            return cmd(*argL,**argD)
         
+    def _unsafe_addInbox(self,*args):
+        name = super(threadedadaptivecommscomponent,self).addInbox(*args)
+        self.inqueues[name] = Queue.Queue()
+        return name
+    
+    def _unsafe_deleteInbox(self,name):
+        super(threadedadaptivecommscomponent,self).deleteInbox(name)
+        del self.inqueues[name]
+    
     def _unsafe_addOutbox(self,*args):
         name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
         self.outqueues[name] = Queue.Queue()
         return name
     
-    def deleteOutbox(self,name):
-        if self._threadrunning:
-            # call must be synchronous (wait for reply) because there is a reply
-            # and because next instruction in thread might assume this outbox
-            # is destroyed.
-            cmd = (self._unsafe_deleteOutbox, [name], {} )
-            self.threadtoaxonqueue.put( cmd )
-            return self.axontothreadqueue.get()
-        else:
-            self._unsafe_deleteOutbox(self,name)
-        
     def _unsafe_deleteOutbox(self,name):
         super(threadedadaptivecommscomponent,self).deleteOutbox(name)
         del self.outqueues[name]
