@@ -43,7 +43,7 @@ class threadedcomponent(Component.component):
    """
 
    def __init__(self):
-      Component.component.__init__(self)
+      super(threadedcomponent,self).__init__()
       
       self._thethread = threading.Thread(target=self.main)
       self._microprocess__thread = self._microprocessGenerator(self,"_localmain")
@@ -63,18 +63,32 @@ class threadedcomponent(Component.component):
       self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
    
    def main(self):
-      """STUB - Override this to do the work that will block.  Access the in and out
-         queues that pass on to the in and out boxes.  You should read from all
-         inqueues
+      """'C.main()' **You normally will not want to override or call this method**
+      This is the function that gets called by microprocess. If you override
+      this do so with care. If you don't do it properly, your initialiseComponent,
+      mainBody & closeDownComponent parts will not be called. Ideally you
+      should not NEED to override this method. You also should not call this
+      method directly since activate does this for you in order to create a
+      microthread of control.
+
       """
-      while 1:
-         for box in self.inqueues.iterkeys():
-            self.outqueues["outbox"].put("ba")
-            while not self.inqueues[box].empty():
-                   self.outqueues["outbox"].put("dada:" + self.inqueues[box].get())
-         self.outqueues["outbox"].put("doing")
-         time.sleep(1)
-      
+      self.initialiseComponent()
+      result=1
+      while (result):
+         result = self.mainBody()
+      self.closeDownComponent()
+
+   def initialiseComponent(self):
+      """Stub method. **This method is designed to be overridden.** """
+      return 1
+   def mainBody(self):
+      """Stub method. **This method is designed to be overridden.** """
+      return None
+   def closeDownComponent(self):
+      """Stub method. **This method is designed to be overridden.** """
+      return 1
+
+
    def _localmain(self):
        """Do not overide this unless you reimplement the pass through of the boxes to the threads.
        """
@@ -121,29 +135,39 @@ class threadedcomponent(Component.component):
    def send(self,message, boxname="outbox"):
        self.outqueues[boxname].put(message)
 
+
 if __name__ == "__main__":
     import time, sys
     
     class TheThread(threadedcomponent):
         def main(self):
             self.send("ADD SRC")
-            t = time.time()
             for i in range(10):
-                while time.time() < t:
-                    pass
-                t=t+1.0
+                time.sleep(1.0)
                 self.send("Threaded: "+str(i))
             self.send("DEL SRC")
                 
+    class FSMThread(threadedcomponent):
+        def initialiseComponent(self):
+            self.count=10
+            self.send("ADD SRC")
+        def mainBody(self):
+            time.sleep(1.0)
+            self.send("FSMThread: "+str(self.count))
+            self.count=self.count-1
+            return self.count
+        def closeDownComponent(self):
+            self.send("DEL SRC")
+            
     class NotThread(Component.component):
         def main(self):
             self.send("ADD SRC")
-            t = time.time()
             for i in range(20):
+                t=time.time()+0.5
                 while time.time() < t:
                     yield 1
-                t=t+0.5
                 self.send("Normal: "+str(i))
+                yield 1
             self.send("DEL SRC")
                     
     class Outputter(Component.component):
@@ -169,9 +193,11 @@ if __name__ == "__main__":
         def main(self):
             t = TheThread().activate()
             n = NotThread().activate()
+            f = FSMThread().activate()
             out = Outputter().activate()
             self.link( (t,"outbox"), (out,"inbox") )
             self.link( (n,"outbox"), (out,"inbox") )
+            self.link( (f,"outbox"), (out,"inbox") )
             
             self.link( (out,"outbox"), (self,"inbox") )
             
