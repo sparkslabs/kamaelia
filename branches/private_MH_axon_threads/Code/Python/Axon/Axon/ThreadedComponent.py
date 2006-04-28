@@ -153,7 +153,7 @@ class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
        self.outqueues[name] = Queue.Queue()
        return name
 
-   def _unsafe_deleteOutbox(self,name):
+   def deleteOutbox(self,name):
        super(_AdaptiveCommsable,self).deleteOutbox(name)
        del self.outqueues[name]
 
