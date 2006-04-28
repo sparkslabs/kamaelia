@@ -104,6 +104,16 @@ class threadedcomponent(Component.component):
           # ...but we'll still flush queue's through:
           # (must make sure we flush ALL messages from each queue)
           
+          # decide how many requests from the thread that we'll handle
+          # before flushing queues
+          # If we don't consider: a thread puts item in an outqueue then issues
+          # a command to delete that queue. It does this *after* we've checked 
+          # outqueues, but *before* we process threadtoaxonqueue. That item
+          # in the outqueue would be lost.
+          # This way we guarantee flushing any queue activity done by the thread
+          # before the command
+          msgcount = self.threadtoaxonqueue.qsize()
+          
           for box in self.inboxes:
               while self._nonthread_dataReady(box):
                   msg = self._nonthread_recv(box)
@@ -114,7 +124,7 @@ class threadedcomponent(Component.component):
                   msg = self.outqueues[box].get()
                   self._nonthread_send(msg, box)
                   
-          while not self.threadtoaxonqueue.empty():
+          for i in range(0,msgcount):
               msg = self.threadtoaxonqueue.get()
               self._handlemessagefromthread(msg)
 
