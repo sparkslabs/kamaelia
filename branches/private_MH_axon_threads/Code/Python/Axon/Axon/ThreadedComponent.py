@@ -150,6 +150,24 @@ class threadedcomponent(Component.component):
    def send(self,message, boxname="outbox"):
        self.outqueues[boxname].put(message)
 
+   def link(self, source,sink,passthrough=0):
+        cmd = super(threadedcomponent,self).link
+        return self._do_threadsafe( cmd, (source,sink,passthrough), {} )
+
+   def unlink(self, thecomponent=None, thelinkage=None):
+        cmd = super(threadedcomponent,self).unlink
+        return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
+
+   def _do_threadsafe(self, cmd, argL, argD):
+        if self._threadrunning:
+            # call must be synchronous (wait for reply) because there is a reply
+            # and because next instruction in thread might assume this outbox
+            # exists
+            self.threadtoaxonqueue.put( (cmd, argL, argD ) )
+            return self.axontothreadqueue.get()
+        else:
+            return cmd(*argL,**argD)
+        
 
 from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 
@@ -170,16 +188,6 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
     
     def deleteOutbox(self,name):
         return self._do_threadsafe(self._unsafe_deleteOutbox, [name], {})
-        
-    def _do_threadsafe(self, cmd, argL, argD):
-        if self._threadrunning:
-            # call must be synchronous (wait for reply) because there is a reply
-            # and because next instruction in thread might assume this outbox
-            # exists
-            self.threadtoaxonqueue.put( (cmd, argL, argD ) )
-            return self.axontothreadqueue.get()
-        else:
-            return cmd(*argL,**argD)
         
     def _unsafe_addInbox(self,*args):
         name = super(threadedadaptivecommscomponent,self).addInbox(*args)
