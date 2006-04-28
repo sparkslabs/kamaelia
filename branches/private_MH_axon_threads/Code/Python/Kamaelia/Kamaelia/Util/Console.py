@@ -99,12 +99,12 @@ class ConsoleReader(threadedcomponent):
       self.prompt = prompt
       self.eol = eol
 
-   def run(self):
+   def main(self):
       """Main thread loop."""
       while 1:
          line = raw_input(self.prompt)
          line = line + self.eol
-         self.outqueues["outbox"].put(line)
+         self.send(line, "outbox")
 
 
 
