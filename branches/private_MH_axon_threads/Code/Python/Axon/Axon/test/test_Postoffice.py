@@ -351,7 +351,7 @@ class linkagechaining_Test(unittest.TestCase):
         link = a.link( (b,"inbox"), (c,"inbox"), passthrough=1 )
         self.verifyChain((a,"outbox"), (b,"inbox"), (c,"inbox"))
         
-        a.postoffice.deregisterlinkage(thelinkage=link)
+        a.postoffice.unlink(thelinkage=link)
         self.verifyChain((a,"outbox"), (b,"inbox"))
         
 
