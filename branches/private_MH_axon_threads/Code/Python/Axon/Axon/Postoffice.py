@@ -100,8 +100,7 @@ class postoffice(object):
 
 
    def deregisterlinkage(self, thecomponent=None,thelinkage=None):
-       """Stub for legacy"""
-       return self.unlink(thecomponent,thelinkage)
+       raise DeprecationWarning("Use Postoffice.unlink() method instead. Or if writing components, use component.unlink() in preference")
 
 
 
