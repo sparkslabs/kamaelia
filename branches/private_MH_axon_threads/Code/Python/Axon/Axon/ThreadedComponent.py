@@ -136,6 +136,35 @@ class threadedcomponent(Component.component):
        self.outqueues[boxname].put(message)
 
 
+from AdaptiveCommsComponent import _AdaptiveCommsable as _NonThreadedableAdaptiveCommsable
+
+class _AdaptiveCommsable(_NonThreadedableAdaptiveCommsable):
+   def addInbox(self,*args):
+       name = super(_AdaptiveCommsable,self).addInbox(*args)
+       self.inqueues[name] = Queue.Queue()
+       return name
+
+   def deleteInbox(self,name):
+       super(_AdaptiveCommsable,self).deleteInbox(name)
+       del self.inqueues[name]
+
+   def addOutbox(self,*args):
+       name = super(_AdaptiveCommsable,self).addOutbox(*args)
+       self.outqueues[name] = Queue.Queue()
+       return name
+
+   def _unsafe_deleteOutbox(self,name):
+       super(_AdaptiveCommsable,self).deleteOutbox(name)
+       del self.outqueues[name]
+
+
+
+class threadedadaptivecommscomponent(threadedcomponent, _AdaptiveCommsable):
+    def __init__(self):
+        threadedcomponent.__init__(self)
+        _AdaptiveCommsable.__init__(self)
+
+
 if __name__ == "__main__":
     import time, sys
     
@@ -170,6 +199,48 @@ if __name__ == "__main__":
                 yield 1
             self.send("DEL SRC")
                     
+    class AAThread(threadedadaptivecommscomponent):
+        def add(self,dst):
+            newname = self.addOutbox("sink")
+            linkage = self.link( (self, newname), dst )
+            self.destinations[newname] = (dst, linkage)
+            self.send("ADD SRC", newname)
+            
+        def rem(self,dst):
+            box,linkage = [(box,linkage) for (box,(d,linkage)) in self.destinations.items() if d==dst][0]
+            del self.destinations[box]
+            self.send("DEL SRC", box)
+            self.unlink(linkage)
+            self.deleteOutbox(box)
+            
+        def main(self):
+            self.destinations = {}
+            
+            for i in range(10):
+                time.sleep(1.0)
+                while self.dataReady("inbox"):
+                    cmd,dst = self.recv("inbox")
+                    if cmd=="ADD":
+                        self.add(dst)
+                    elif cmd=="DEL":
+                        self.rem(dst)
+                
+                for box in self.destinations:
+                    self.send("AAThread "+box+": "+str(i)+"\n", box)
+                    
+            for dst, _ in self.destinations.values():
+                self.rem(dst)
+    
+    class OneShot(threadedcomponent):
+        def __init__(self,msg,delay=0):
+            super(OneShot,self).__init__()
+            self.msg = msg
+            self.delay = delay
+            
+        def main(self):
+            time.sleep(self.delay)
+            self.send( self.msg )
+    
     class Outputter(Component.component):
         def main(self):
             refcount = 0
@@ -200,6 +271,12 @@ if __name__ == "__main__":
             self.link( (f,"outbox"), (out,"inbox") )
             
             self.link( (out,"outbox"), (self,"inbox") )
+            
+            a = AAThread().activate()
+            start = OneShot(msg=("ADD",(out,"inbox")),delay=0.5).activate() # first received is a '0'
+            stop = OneShot(msg=("DEL",(out,"inbox")),delay=5.5).activate() # last received is a '4'
+            self.link( (start,"outbox"), (a,"inbox") )
+            self.link( (stop,"outbox"), (a,"inbox") )
             
             # wait until outputter sends us a signal its finished
             while not self.dataReady("inbox"):
