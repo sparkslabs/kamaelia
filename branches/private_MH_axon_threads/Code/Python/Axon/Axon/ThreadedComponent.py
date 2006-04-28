@@ -1,13 +1,5 @@
 #!/usr/bin/env python
 #
-#      TODO: Thread shutdown
-#      TODO: How to allow the thread to start new components?
-#            (ie we only yield 1, not a newComponent or any value from the
-#            thread.)
-#      TODO: Number of minor issues fixed - thread shutdown is an issue though!
-#            Added simple trace statements into the code.
-#
-#
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -27,15 +19,18 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+#
+# XXX  TODO: Thread shutdown - no true support for killing threads in python
+#            (if ever). stop() method therefore doesn't stop the thread. Only
+#            stops the one that handles its posbox deliveries etc.
+#
 
 from __future__ import generators
 
+import Component
+from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 import threading
 import Queue
-import time
-import Component
-from AxonExceptions import noSpaceInBox
-from Ipc import newComponent
 
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
@@ -175,8 +170,6 @@ class threadedcomponent(Component.component):
             return cmd(*argL,**argD)
         
 
-from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
-
 
 class threadedadaptivecommscomponent(threadedcomponent, _AC):
     def __init__(self):
@@ -212,6 +205,7 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
     def _unsafe_deleteOutbox(self,name):
         super(threadedadaptivecommscomponent,self).deleteOutbox(name)
         del self.outqueues[name]
+
 
 
 if __name__ == "__main__":
