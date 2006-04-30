@@ -59,7 +59,7 @@ def suite():
    suite.addTest(unittest.makeSuite(test_Postoffice.postoffice_Test))
    suite.addTest(unittest.makeSuite(test_Postoffice.linkagechaining_Test))
    suite.addTest(unittest.makeSuite(test_ThreadedComponent.threadedcomponent_Test))
-   suite.addTest(unittest.makeSuite(test_ThreadedComponent.adaptivecomponent_Test))
+   suite.addTest(unittest.makeSuite(test_ThreadedComponent.threadedadaptivecommscomponent_Test))
    suite.addTest(unittest.makeSuite(test___str__.str_Test))
    suite.addTest(unittest.makeSuite(test_util.util_Test))
    return suite
