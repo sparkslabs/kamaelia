@@ -25,6 +25,30 @@ import unittest
 import sys ; sys.path.append(".") ; sys.path.append("..")
 
 from ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
+import thread,Queue
+import time
+from Component import component
+from Scheduler import scheduler
+
+class OneShotTo(component):
+    def __init__(self,dst,msg):
+        super(OneShotTo,self).__init__()
+        self.link( (self,"outbox"), dst)
+        self.msg=msg
+    def main(self):
+        self.send(self.msg)
+        yield 1
+        
+class RecvFrom(component):
+    def __init__(self,src):
+        super(RecvFrom,self).__init__()
+        self.link( src, (self,"inbox") )
+        self.rec = []
+    def main(self):
+        while 1:
+            yield 1
+            if self.dataReady("inbox"):
+                self.rec.append(self.recv("inbox"))
 
 class threadedcomponent_Test(unittest.TestCase):
     
@@ -40,8 +64,85 @@ class threadedcomponent_Test(unittest.TestCase):
         self.assert_("outbox" in c.outboxes.keys(), "by default, has 'outbox' outbox")
         self.assert_("signal" in c.outboxes.keys(), "by default, has 'signal' outbox")
     
+    def test_smoketest_args(self):
+        """__init__ - accepts no arguments, raises TypeError is any supplied."""
+        self.failUnlessRaises(TypeError, threadedcomponent, 5)
+        
+    def test_localprocessterminates(self):
+        """_localmain() microprocess also terminates when the thread terminates"""
+        class Test(threadedcomponent):
+            def main(self):
+                pass
+                
+        sched=scheduler()
+        t=Test().activate(Scheduler=sched)
+        n=10
+        for s in sched.main():
+            time.sleep(0.05)
+            n=n-1
+            self.assert_(n>0, "Thread (and scheduler) should have stopped by now")
     
+    def test_threadisseparate(self):
+        """main() -runs in a separate thread of execution"""
+        class Test(threadedcomponent):
+            def __init__(self):
+                super(Test,self).__init__()
+                self.threadid = Queue.Queue()
+            def main(self):
+                self.threadid.put( thread.get_ident() )
+                
+        sched=scheduler()
+        t=Test().activate(Scheduler=sched)
+        t.next()            # get the thread started
+        self.assert_(t.threadid.get() != thread.get_ident(), "main() returns a different value for thread.get_ident()")
     
+    def test_flow_in(self):
+        """main() - can receive data sent to the component's inbox(es) using the standard dataReady() and recv() methods."""
+        class ThreadedReceiver(threadedcomponent):
+            def __init__(self):
+                super(ThreadedReceiver,self).__init__()
+                self.rec = []
+            def main(self):
+                while 1:
+                    if self.dataReady("inbox"):
+                        self.rec.append(self.recv("inbox"))
+                        
+        sched=scheduler()
+        r = ThreadedReceiver().activate(Scheduler=sched)
+        msg = "hello!"
+        o=OneShotTo( (r,"inbox"), msg).activate(Scheduler=sched)
+        r.next()
+        o.next()
+        r.next()
+        time.sleep(0.1)
+        r.next()
+        self.assert_(r.rec==[msg])
+        
+    def test_flow_out(self):
+        """main() - can send data to the component's outbox(es) using the standard send() method."""
+        class ThreadedSender(threadedcomponent):
+            def __init__(self,msg):
+                super(ThreadedSender,self).__init__()
+                self.msg=msg
+            def main(self):
+                self.send(self.msg)
+                
+        msg="hello there!"
+        sched = scheduler()
+        t = ThreadedSender(msg).activate(Scheduler=sched)
+        r = RecvFrom( (t,"outbox") ).activate(Scheduler=sched)
+        for i in range(10):
+            time.sleep(0.1)
+            try:
+                t.next()
+            except StopIteration:
+                pass
+            try:
+                r.next()
+            except StopIteration:
+                pass
+        self.assert_(r.rec == [msg])
+        
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
     def test_smoketest_init(self):
@@ -55,6 +156,10 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         self.assert_(len(c.outboxes.keys()) == 2, "by default, has 2 outboxes")
         self.assert_("outbox" in c.outboxes.keys(), "by default, has 'outbox' outbox")
         self.assert_("signal" in c.outboxes.keys(), "by default, has 'signal' outbox")
+    
+    def test_smoketest_args(self):
+        """__init__ - accepts no arguments, raises TypeError is any supplied."""
+        self.failUnlessRaises(TypeError, threadedcomponent, 5)
     
 if __name__ == "__main__":
     unittest.main()
