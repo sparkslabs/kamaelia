@@ -31,7 +31,7 @@ import Component
 from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 import threading
 import Queue
-from Axon.idGen import numId
+from idGen import numId
 
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
