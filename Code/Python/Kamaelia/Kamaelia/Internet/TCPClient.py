@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -58,15 +58,15 @@ selectorComponent is obtained by calling
 selectorComponent.getSelectorService(...) to look it up with the local
 Coordinating Assistant Tracker (CAT).
 
-TCPClient wires itself to the "FactoryFeedback" outbox of the CSA. It also wires
-its "inbox" inbox to pass data straight through to the CSA's "DataSend" inbox,
+TCPClient wires itself to the "CreatorFeedback" outbox of the CSA. It also wires
+its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox,
 and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
 
 Socket errors (after the connection has been successfully established) may be
 sent to the "signal" outbox.
 
 This component will terminate if the CSA sends a socketShutdown message to its
-"FactoryFeedback" outbox.
+"CreatorFeedback" outbox.
 
 Messages sent to the "control" inbox are ignored - users of this component
 cannot ask it to close the connection.
@@ -77,15 +77,18 @@ import errno
 
 import Axon
 from Axon.util import Finality
-from Axon.Component import component
+
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
-import Axon.CoordinatingAssistantTracker as cat
 
-import Selector
+from Kamaelia.Internet.Selector import Selector
 
-class TCPClient(component):
+class TCPClient(Axon.Component.component):
    """\
    TCPClient(host,port[,delay]) -> component with a TCP connection to a server.
 
@@ -102,7 +105,9 @@ class TCPClient(component):
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
-                "_selectorSignal" : "communicating with a selectorComponent",
+                "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+                "_selectorShutdownSignal" : "For registering newly created ConnectedSocketAdapter components with a selector service",
+
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
@@ -112,6 +117,8 @@ class TCPClient(component):
       self.host = host
       self.port = port
       self.delay=delay
+      self.CSA = None
+      self.sock = None
 
    def main(self):
       """Main loop."""
@@ -124,7 +131,14 @@ class TCPClient(component):
 
       for v in self.runClient():
          yield v
-      # SMELL - we may need to send a shutdown message
+      
+      if (self.sock is not None) and (self.CSA is not None):
+         self.send(removeReader(self.CSA, self.sock), "_selectorSignal")            
+         self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
+         # SMELL - These next two can be removed in when the box optimisations are merged.
+         yield 1 # Give the postman a chance to take these messages and pass them on...
+         yield 1 # Give the postman a chance to take these messages and pass them on...
+      
 
    def setupCSA(self, sock):
       """\
@@ -135,16 +149,21 @@ class TCPClient(component):
       """
       CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
       self.addChildren(CSA)
-      selectorService , newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
+      selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
 
       self.link((self, "_selectorSignal"),selectorService)
-      self.link((CSA, "FactoryFeedback"),(self,"_socketFeedback"))
+      self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
+ 
+      self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
-      self.link((self, "inbox"), (CSA, "DataSend"), passthrough=1)
+      self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
 
-      self.send(newCSA(self, (CSA,sock)), "_selectorSignal")
+      self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
+      self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
+      self.CSA = CSA # We need this for shutdown later
+
       return self.childComponents()
 
    def waitCSAClose(self):
@@ -195,6 +214,7 @@ class TCPClient(component):
       # nothing else specific.
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
+         self.sock = sock # We need this for shutdown later
          try:
             sock.setblocking(0); yield 0.6
             try:
@@ -248,7 +268,7 @@ def _tests():
 
    # Put some linkages in place for testing
    outboxLink=linkage(CSA,client,"outbox","outbox",passthrough=2)
-   feedbackLink=linkage(CSA,client,"FactoryFeedback","_socketFeedback")
+   feedbackLink=linkage(CSA,client,"CreatorFeedback","_socketFeedback")
 
    CSA.initialiseComponent()
    CSA.mainBody()
