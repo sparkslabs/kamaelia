@@ -107,7 +107,6 @@ class TCPServer(Axon.Component.component):
    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
                 "signal"                : "NOT USED",
                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
-                "_selectorShutdownSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
               }
 
    def __init__(self,listenport):
@@ -156,30 +155,16 @@ class TCPServer(Axon.Component.component):
       """\
       Respond to a socketShutdown message by closing the socket.
 
-      Sends a shutdownCSA(self, (theCSA, sock)) message to the selectorComponent.
+      Sends a removeReader and removeWriter message to the selectorComponent.
       Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
       """
       theComponent,sock = shutdownMessage.caller, shutdownMessage.message
       sock.close()
       
       # tell the selector about it shutting down
-#      self.send(_ki.shutdownCSA(self, (theComponent, theComponent.socket)), "_selectorSignal")
       
       self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
       self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
-#      print "SENT"
-#      # self.send(removeReader(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
-#      # self.send(removeWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
-#      self.send(removeReader(self,sock ), "_selectorSignal")
-#      self.send(removeWriter(self,sock ), "_selectorSignal")
-
-# self.send(_ki.shutdownCSA(self, (theComponent, theComponent.socket)), "_selectorSignal")
-# self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
-# _ki.socketShutdown
-# _ki.newCSA
-# self.send(_ki.newCSA(CSA, (CSA,CSA.socket)), "_selectorSignal")
-#             self.send(newReader(CSA, ((CSA, "ReadReady"), newsock)), "_selectorSignal")            
-#             self.send(newWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
 
       # tell protocol handlers
       self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
@@ -228,7 +213,6 @@ class TCPServer(Axon.Component.component):
        if newSelector:
            newSelector.activate()
        self.link((self, "_selectorSignal"),selectorService)
-       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
