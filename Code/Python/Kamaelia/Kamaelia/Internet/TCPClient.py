@@ -105,8 +105,7 @@ class TCPClient(Axon.Component.component):
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
-                "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
-                "_selectorShutdownSignal" : "For registering newly created ConnectedSocketAdapter components with a selector service",
+                "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
 
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -135,9 +134,6 @@ class TCPClient(Axon.Component.component):
       if (self.sock is not None) and (self.CSA is not None):
          self.send(removeReader(self.CSA, self.sock), "_selectorSignal")            
          self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
-         # SMELL - These next two can be removed in when the box optimisations are merged.
-         yield 1 # Give the postman a chance to take these messages and pass them on...
-         yield 1 # Give the postman a chance to take these messages and pass them on...
       
 
    def setupCSA(self, sock):
@@ -154,7 +150,6 @@ class TCPClient(Axon.Component.component):
          self.addChildren(newSelector)
 
       self.link((self, "_selectorSignal"),selectorService)
-      self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
@@ -243,51 +238,6 @@ class TCPClient(Axon.Component.component):
           self.send(e, "signal")
         # "TCPC: Exitting run client"
 
-def _tests():
-   from Axon.Linkage import linkage
-
-   print "This test suite requires access to an active network server"
-   client=TCPClient("127.0.0.1",1500)
-   clientGen = client.main()
-   r = clientGen.next() # assert r == 0.3 (Socket Created)
-   assert r==0.3, "Socket Created"
-   r = clientGen.next() # assert r == 0.6 (Socket set non-blocking)
-   assert r==0.6, "Socket set non-blocking"
-   r = clientGen.next() # assert r == 1   (Socket connecting)
-   assert r==1, "Socket connecting"
-   print "1", r
-   m=clientGen.next()
-   try:
-      assert isinstance(m, newComponent), "We connected and have been returned a new component to activate"
-   except AssertionError:
-      print "Connection to remote server Failed", m
-      raise
-
-   print "cgn", m
-   CSA=m.components()[0]
-
-   # Put some linkages in place for testing
-   outboxLink=linkage(CSA,client,"outbox","outbox",passthrough=2)
-   feedbackLink=linkage(CSA,client,"CreatorFeedback","_socketFeedback")
-
-   CSA.initialiseComponent()
-   CSA.mainBody()
-   CSA._deliver(status("data ready"),"DataReady")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   CSA._deliver(socketShutdown(1),"control")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   outboxLink.moveDataWithCheck()  # Move output from the CSA to output of the client
-   feedbackLink.moveDataWithCheck()  # Move output from the CSA to input of client
-   print CSA,"\n",client
-   client._safeCollect("_selectorSignal")
-   print client._safeCollect("outbox")
-   print CSA,"\n",client
-   for i in clientGen:
-      print i
 
 __kamaelia_components__  = ( TCPClient, )
 
@@ -297,7 +247,8 @@ if __name__ =="__main__":
    from Kamaelia.SimpleServerComponent import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer
-   # _tests()
+   from Axon.Component import component
+
 
    class testHarness(component): # Spike component to test interoperability with TCPServer
       def __init__(self):

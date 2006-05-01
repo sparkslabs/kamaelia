@@ -144,7 +144,6 @@ class ConnectedSocketAdapter(component):
                 "control"    : "Shutdown on producerFinished message (incoming & outgoing data is flushed first)",
                 "ReadReady"  : "Notify this CSA that there is incoming data ready on the socket",
                 "SendReady" : "Notify this CSA that the socket is ready to send",
-                "Initialise" : "NOT USED",
               }
    Outboxes = { "outbox"          : "Data received from the socket",
                 "CreatorFeedback" : "Expected to be connected to some form of signal input on the CSA's creator. Signals socketShutdown (this socket has closed)",
