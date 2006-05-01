@@ -16,7 +16,7 @@
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">self.boxes[boxname][-1] == value</span></div></ul>
 <div dir="ltr"></div>
 <div dir="ltr">ie the last value in the list associated with the boxname is the value we sent to that outbox. More explicitly, if the value of self.boxes was this beforehand:</div>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox : [],<br />                &quot;outbox&quot; : [&quot;hello&quot;, &quot;world&quot;] }]</span></div></ul>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox&quot; : [],<br />                &quot;outbox&quot; : [&quot;hello&quot;, &quot;world&quot;] }]</span></div></ul>
 <div dir="ltr"></div>
 <div dir="ltr">And the following call had been made:</div>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier;font-weight:600">[[pre]</span><span style="font-family:Courier">self.send(&quot;outbox&quot;, &quot;gameover&quot;)]</span></div></ul>
@@ -27,7 +27,7 @@
 <li><span style="font-family:Courier">recv(self, boxname)</span></li>
 <ul type="disc"><li dir="ltr">This is the logical opposite of sending. Rather than appending a value at the end of the send queue, we take the first value in the queue.</li>
 <li dir="ltr">Behaviourally, given a starting value of self.boxes:</li>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }]</span></div></ul>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox&quot; : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }]</span></div></ul>
 <div dir="ltr">Then I would expect the following behaviour code....</div>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]print &quot;GRABBING DATA&quot;, self.recv(&quot;inbox&quot;)<br />print &quot;GRABBING DATA&quot;, self.recv(&quot;inbox&quot;)<br />print &quot;GRABBING DATA&quot;, self.recv(&quot;inbox&quot;)<br />print &quot;GRABBING DATA&quot;, self.recv(&quot;inbox&quot;)]</span></div>
 <div dir="ltr"></div></ul>
@@ -35,11 +35,11 @@
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]GRABBING DATA hello<br />GRABBING DATA world<br />GRABBING DATA gameover<br />GRABBING DATA<br />Traceback (most recent call last):<br />  File &quot;&lt;stdin&gt;&quot;, line 1, in ?<br />  File &quot;&lt;stdin&gt;&quot;, line 7, in main<br />  File &quot;&lt;stdin&gt;&quot;, line 8, in recv<br />IndexError: list index out of range]</span></div></ul>
 <div dir="ltr"></div>
 <div dir="ltr">The value of self.boxes should also change as follows after each call:</div>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;], # At start<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox : [&quot;world&quot;, &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox : [ &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox : [],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br /> *** BANG*** (For the moment, we don't care what exception gets thrown)]</span></div></ul></ul>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox&quot; : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;], # At start<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox&quot; : [&quot;world&quot;, &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox&quot; : [ &quot;gameover&quot;],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br />self.boxes == { &quot;inbox&quot; : [],<br />                &quot;outbox&quot; : [] }<br />self.recv(&quot;inbox&quot;)<br /> *** BANG*** (For the moment, we don't care what exception gets thrown)]</span></div></ul></ul>
 <div dir="ltr"></div>
 <li><span style="font-family:Courier">dataReady(self, boxname)</span></li>
 <ul type="disc"><li>This should return the length of the list associated with the boxname.  <br /><br />For example,  given:</li>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;],<br />                &quot;control&quot; : [&quot;world&quot;, &quot;gameover&quot;],<br />                &quot;feedback&quot; : [],<br />                &quot;outbox&quot; : [] }]</span></div></ul>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]self.boxes == { &quot;inbox&quot; : [&quot;hello&quot;, &quot;world&quot;, &quot;gameover&quot;],<br />                &quot;control&quot; : [&quot;world&quot;, &quot;gameover&quot;],<br />                &quot;feedback&quot; : [],<br />                &quot;outbox&quot; : [] }]</span></div></ul>
 <div></div>
 <div>The following behaviour is expected:</div>
 <ul type="disc"><div dir="ltr"><span style="font-family:Courier;font-weight:600">print</span><span style="font-family:Courier"> self.dataReady(&quot;inbox&quot;)</span><br />    -&gt; displays 3<br /><br /><span style="font-family:Courier;font-weight:600">print</span><span style="font-family:Courier"> self.dataReady(&quot;control&quot;)</span><br />    -&gt; displays 2<br /><br /><span style="font-family:Courier;font-weight:600">print</span><span style="font-family:Courier"> self.dataReady(&quot;feedback&quot;)</span><br />    -&gt; displays 0<br /><br /><span style="font-family:Courier;font-weight:600">print</span><span style="font-family:Courier"> self.dataReady(&quot;somerandomname&quot;)</span><br />    -&gt; causes a <span style="font-family:Courier">KeyError: somerandomname</span> exception to be thrown</div></ul></ul></ul>
