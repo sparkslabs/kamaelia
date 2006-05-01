@@ -25,7 +25,7 @@ import unittest
 import sys ; sys.path.append(".") ; sys.path.append("..")
 
 from ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
-import thread,Queue
+import thread,Queue,threading
 import time
 from Component import component
 from Scheduler import scheduler
@@ -143,6 +143,50 @@ class threadedcomponent_Test(unittest.TestCase):
                 pass
         self.assert_(r.rec == [msg])
         
+    def test_linksafe(self):
+        class ThreadedLinker(threadedcomponent):
+            def main(self):
+                for i in range(10):
+                    linkage = self.link( (self,"outbox"),(self,"inbox") )
+                    self.unlink(linkage)
+        
+        sched=scheduler()
+        t=ThreadedLinker().activate(Scheduler=sched)
+        oldlink = t.postoffice.link
+        
+        safetycheck = threading.RLock()          # re-entrancy permitting mutex
+        failures = Queue.Queue()
+        
+        def link_mock(*argL,**argD):      # wrapper for postoffice.link() method
+            if not safetycheck.acquire(False):  # returns False if should block (meaning its not thread safe!)
+                failures.put(1)
+                return False
+            else:
+                result = oldlink(*argL,**argD)
+                time.sleep(0.05)
+                safetycheck.release()
+                return result
+            
+        t.postoffice.link = link_mock
+        
+        done=False
+        for i in range(10):
+            try:
+                t.next()
+            except StopIteration:
+                done=True
+            linkage = t.link( (t,"signal"),(t,"control") )
+            t.unlink(linkage)
+        
+        while not done:
+            try:
+                t.next()
+            except StopIteration:
+                done=True
+            
+        if failures.qsize():
+            self.fail("threadedcomponent,postoffice.link() should not be entered by more than one thread at once.")
+
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
     def test_smoketest_init(self):

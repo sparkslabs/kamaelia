@@ -31,6 +31,7 @@ import Component
 from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 import threading
 import Queue
+from Axon.idGen import numId
 
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
@@ -54,7 +55,9 @@ class threadedcomponent(Component.component):
 
 
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
-       self._thethread = threading.Thread(target=self.__getattribute__(mainmethod))
+       self._threadId = numId()
+       self._localThreadId = threading.currentThread().getName()
+       self._thethread = threading.Thread(name=self._threadId, target=self.__getattribute__(mainmethod))
        self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
    
        return super(threadedcomponent,self).activate(Scheduler,Tracker,"_localmain")
@@ -160,7 +163,7 @@ class threadedcomponent(Component.component):
         return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
 
    def _do_threadsafe(self, cmd, argL, argD):
-        if self._threadrunning:
+        if self._threadrunning and threading.currentThread().getName() != self._localThreadId:
             # call must be synchronous (wait for reply) because there is a reply
             # and because next instruction in thread might assume this outbox
             # exists
