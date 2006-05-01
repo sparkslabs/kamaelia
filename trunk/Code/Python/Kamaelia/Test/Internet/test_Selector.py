@@ -158,7 +158,7 @@ class Readables_Selector(unittest.TestCase):
                S.postoffice.next()
             except:
                pass
-        self.assert_(not ( D.inboxes["inbox"] == [] ) )
+        self.assert_(not ( len(D.inboxes["inbox"]) == 0 ) )
         selectable = D.recv("inbox")
         self.assertEqual(selectable,"LOOKINGFORTHIS")#, "The value returned should be the selectable we originally asked for")
 
@@ -213,7 +213,7 @@ class Readables_Selector(unittest.TestCase):
                S.postoffice.next()
             except:
                pass
-        self.assert_( D.inboxes["inbox"] == [] )
+        self.assert_( len(D.inboxes["inbox"]) == 0 )
 
 
 
@@ -269,7 +269,7 @@ class Readables_Selector(unittest.TestCase):
             except:
                pass
         print 
-        self.assert_( D.inboxes["inbox"] == [] )
+        self.assert_( len(D.inboxes["inbox"]) == 0 )
 
     def test_ActivityOnAnyExceptionalResultsInMessageOnThatExceptionalsService(self):
         "main - Activity on a selectable results in a message appearing in the service provided to the selector for that selectable"
@@ -322,7 +322,7 @@ class Readables_Selector(unittest.TestCase):
                S.postoffice.next()
             except:
                pass
-        self.assert_( D.inboxes["inbox"] == [] )
+        self.assert_( len(D.inboxes["inbox"]) == 0 )
 
 if __name__=="__main__":
     unittest.main()
