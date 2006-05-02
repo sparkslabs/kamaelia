@@ -26,7 +26,7 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Graphline import Graphline
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-
+    
 class channel(object):
    """\
       This is an ugly hack - the send here is one helluvahack. 
@@ -168,21 +168,42 @@ class SimpleIRCClient(_Axon.Component.component):
 
       host = self.host
 
-      client = TCPClient(host,port)
-      clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
+#      client = TCPClient(host,port)
+#      clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
 
-      self.link((client,"outbox"), (clientProtocol,"inbox"))
-      self.link((clientProtocol,"outbox"), (client,"inbox"))
 
-      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
-      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
-      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
-      
-      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
-      self.link((clientProtocol, "signal"), (client, "control"))
-      self.link((client, "signal"), (self, "signal"), passthrough=2)
+      subsystem = Graphline(
+          SELF   = self,
+          CLIENT = TCPClient(host,port),
+          PROTO  = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel),
+          linkages = {
+              ("CLIENT" , "") : ("CLIENT", ""),
+              ("CLIENT" , "") : ("PROTO" , ""),
+              ("PROTO"  , "") : ("CLIENT", ""),
+              ("PROTO"  , "") : ("PROTO" , ""),
+              ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
+              ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
+              ("PROTO"  , "heard")  : ("SELF", "outbox"),
+              ("SELF"  , "inbox") : ("PROTO" , "talk"),
+              ("SELF"  , "topic") : ("PROTO" , "topic"),
+              ("SELF"  , "control") : ("PROTO" , "control"),
+              ("PROTO"  , "signal") : ("CLIENT", "control"),
+              ("CLIENT" , "signal") : ("SELF" , "signal"),
+          }
+      )
 
-      self.addChildren(clientProtocol, client)
+#      self.link((client,"outbox"), (clientProtocol,"inbox"))
+#      self.link((clientProtocol,"outbox"), (client,"inbox"))
+#
+#      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
+#      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
+#      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
+#      
+#      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
+#      self.link((clientProtocol, "signal"), (client, "control"))
+#      self.link((client, "signal"), (self, "signal"), passthrough=2)
+#
+      self.addChildren(subsystem)
       yield _Axon.Ipc.newComponent(*(self.children))
       while 1:
          self.pause()
