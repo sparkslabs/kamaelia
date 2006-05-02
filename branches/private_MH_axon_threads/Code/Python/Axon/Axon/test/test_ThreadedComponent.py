@@ -208,6 +208,7 @@ class threadedcomponent_Test(unittest.TestCase):
                 errmsg=errmsg+" should not be entered by more than one thread at once."
                 self.fail(errmsg)
 
+
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
     def test_smoketest_init(self):
@@ -225,6 +226,100 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
     def test_smoketest_args(self):
         """__init__ - accepts no arguments, raises TypeError is any supplied."""
         self.failUnlessRaises(TypeError, threadedcomponent, 5)
+    
+    def test_addInbox(self):
+        """addInbox - adds a new inbox with the specified name. Component can then receive from that inbox."""
+        class T(threadedadaptivecommscomponent):
+            def __init__(self):
+                super(T,self).__init__()
+                self.toTestCase = Queue.Queue()
+                self.fromTestCase = Queue.Queue()
+            def main(self):
+                try:
+                    boxname=self.addInbox("newbox")
+                    self.toTestCase.put( (False,boxname) )
+                    self.fromTestCase.get()
+                    if not self.dataReady(boxname):
+                        self.toTestCase.put( (True,"Data should have been ready at the new inbox") )
+                        return
+                    self.toTestCase.put( (False,self.recv(boxname)) )
+                except Exception, e:
+                    self.toTestCase.put( (True, str(e.__clas__.__name__) + str(e.args)) )
+                    return
+        sched=scheduler()
+        t=T().activate(Scheduler=sched)
+        
+        timeout=10
+        t.next()
+        while t.toTestCase.empty():
+            t.next()
+            timeout=timeout-1
+            time.sleep(0.05)
+            self.assert_(timeout,"timed out")
+        (err,msg) = t.toTestCase.get()
+        self.assert_(not err, "Error in thread:"+str(msg))
+        
+        boxname=msg
+        t._deliver("hello",boxname)
+        try: 
+            t.next()
+            t.next()
+        except StopIteration: pass
+        t.fromTestCase.put(1)
+        
+        (err,msg) = t.toTestCase.get()
+        self.assert_(not err, "Error in thread:"+str(msg))
+        self.assert_(msg=="hello", "Data send through inbox corrupted, received:"+str(msg))
+    
+    def test_addOutbox(self):
+        """addOutbox - adds a new outbox with the specified name. Component can then send to that inbox."""
+        class T(threadedadaptivecommscomponent):
+            def __init__(self,dst):
+                super(T,self).__init__()
+                self.toTestCase = Queue.Queue()
+                self.fromTestCase = Queue.Queue()
+                self.dst = dst
+            def main(self):
+                try:
+                    boxname=self.addOutbox("newbox")
+                    self.link( (self,boxname), self.dst )
+                    msg = self.fromTestCase.get()
+                    
+                    self.send(msg,boxname)
+                    self.toTestCase.put( (False, msg) )
+                except Exception, e:
+                    self.toTestCase.put( (True, str(e.__clas__.__name__) + str(e.args)) )
+                    return
+                
+        class Recv(component):
+           def __init__(self):
+               super(Recv,self).__init__()
+               self.rec = []
+           def main(self):
+               while 1:
+                   yield 1
+                   if self.dataReady("inbox"):
+                       self.rec.append(self.recv("inbox"))
+        
+        sched=scheduler()
+        r=Recv().activate(Scheduler=sched)
+        t=T( (r,"inbox") ).activate(Scheduler=sched)
+        
+        t.fromTestCase.put("hello")
+        while not t.toTestCase.qsize():
+            t.next()
+        t.next()
+        (err,msg) = t.toTestCase.get()
+        self.assert_(not err, "Error in thread:"+str(msg))
+        
+        try: 
+            t.next()
+        except StopIteration: pass
+        try: 
+            r.next()
+            r.next()
+        except StopIteration: pass
+        self.assert_(r.rec == ["hello"], "Data send through outbox corrupted; r.rec = "+str(r.rec))
     
 if __name__ == "__main__":
     unittest.main()
