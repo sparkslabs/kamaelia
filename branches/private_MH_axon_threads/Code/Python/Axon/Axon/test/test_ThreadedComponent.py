@@ -144,6 +144,7 @@ class threadedcomponent_Test(unittest.TestCase):
         self.assert_(r.rec == [msg])
         
     def test_linksafe(self):
+        """link() unlink() -  thread safe when called. The postoffice link() and unlink() methods are not expected to be capable of re-entrant use."""
         class ThreadedLinker(threadedcomponent):
             def main(self):
                 for i in range(10):
@@ -152,17 +153,28 @@ class threadedcomponent_Test(unittest.TestCase):
         
         sched=scheduler()
         t=ThreadedLinker().activate(Scheduler=sched)
-        oldlink = t.postoffice.link
+        oldlink   = t.postoffice.link
+        oldunlink = t.postoffice.unlink
         
         safetycheck = threading.RLock()          # re-entrancy permitting mutex
         failures = Queue.Queue()
         
         def link_mock(*argL,**argD):      # wrapper for postoffice.link() method
             if not safetycheck.acquire(False):  # returns False if should block (meaning its not thread safe!)
-                failures.put(1)
+                failures.put(".link()")
                 return False
             else:
                 result = oldlink(*argL,**argD)
+                time.sleep(0.05)
+                safetycheck.release()
+                return result
+            
+        def unlink_mock(*argL,**argD):
+            if not safetycheck.acquire(False):  # returns False if should block (meaning its not thread safe!)
+                failures.put(".unlink()")
+                return False
+            else:
+                result = oldunlink(*argL,**argD)
                 time.sleep(0.05)
                 safetycheck.release()
                 return result
@@ -185,7 +197,16 @@ class threadedcomponent_Test(unittest.TestCase):
                 done=True
             
         if failures.qsize():
-            self.fail("threadedcomponent,postoffice.link() should not be entered by more than one thread at once.")
+            failed = {}
+            while failures.qsize():
+                failed[failures.get()] = 1
+                conj=""
+                errmsg="threadedcomponent,postoffice"
+                for method in failed.keys():
+                    errmsg=errmsg+conj+method
+                    conj=" and "
+                errmsg=errmsg+" should not be entered by more than one thread at once."
+                self.fail(errmsg)
 
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
