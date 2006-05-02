@@ -366,6 +366,9 @@ class component(microprocess):
    def _closeDownMicroprocess(self):
       return None
 
+   def _deliver(self, message, boxname="inbox"):
+       """For tests and debugging ONLY - delivers message to an inbox."""
+       self.inboxes[boxname].append(message)
 
 if 0: # if __name__ == '__main__':
    def producersConsumersSystemTest():
