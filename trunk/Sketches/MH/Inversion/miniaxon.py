@@ -104,10 +104,11 @@ class threadedcomponent(component):
         return self.queues[inboxname].qsize()
     
     def _localmain(self):
-        self._thread = threading.Thread(target=self.main)
+        self._thread = threading.Thread(target=self._threadrun)
         self._thread.setDaemon(True)
         self._thread.start()
-        while self._thread.isAlive():
+        self._threadalive=True
+        while self._threadalive and self._thread.isAlive():
             yield "BLOCK"
             for boxname in self.queues:
                 if self.isInbox[boxname]:
@@ -117,6 +118,11 @@ class threadedcomponent(component):
                     while not self.queues[boxname].empty():
                         component.send(self, self.queues[boxname].get(), boxname)
 
+    def _threadrun(self):
+        self.main()
+        self._threadAlive=False
+        self.scheduler.notify()
+        
 ##  events!!!
 # --------------------------------------------------
 
@@ -136,7 +142,8 @@ class Output(component):
                 msg=self.recv("inbox")
                 print str(msg)
                 done = msg=="DONE"
-            yield "PAUSE"
+            if not done:
+                yield "PAUSE"
 
 sched=scheduler()
 p=Producer().activate(sched)
