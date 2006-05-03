@@ -57,7 +57,7 @@ class ConsoleReader(threadedcomponent):
       while 1:
          line = raw_input(self.prompt)
          line = line + "\n"
-         self.outqueues["outbox"].put(line)
+         self.send(line, "outbox")
 
 class Backplane(Axon.Component.component):
     def __init__(self, name):

@@ -23,7 +23,7 @@ class ConsoleReader(threadedcomponent):
       while 1:
          line = raw_input("DJ1-> ")
          line = line + "\n"
-         self.outqueues["outbox"].put(line)
+         self.send(line, "outbox")
 
 class message_source(Axon.Component.component):
     def main(self):
