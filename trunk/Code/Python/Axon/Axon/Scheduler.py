@@ -53,18 +53,6 @@ def _sort(somelist):
    return a
 
 
-def activateMicroprocesses(result):
-     "activatedMicroprocesses = self.activateMicroprocesses(result)"
-     # The class sent us a newComponent message, which
-     # can contain several components.
-     activatedMicroprocesses = 0
-     for C in result.components():   # For each one
-        t = C.activate()      # Activate it - adds itself to the runset
-        if t._activityCreator():
-           activatedMicroprocesses +=1
-     return activatedMicroprocesses
-
-
 class scheduler(microprocess):
    """Scheduler - runs microthreads of control."""
    run = None
@@ -83,8 +71,8 @@ class scheduler(microprocess):
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 
       self.time = time.time()
-      self.threads = list()     # Don't use [] to avoid Python wierdness
-      self.newthreads = list()
+      self.threads = []     # [] is equivalent to list() here - the wierdness described in earlier revisions is an ancient mistunderstanding of how python arguments work(!)
+      self.newthreads = []
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -118,15 +106,14 @@ class scheduler(microprocess):
       complete. (Think of it as a "hello world" of soft-real time scheduling)"""
 
       yield 1
-      running = len(self.newthreads) > 0 
-      while(running):           # Threads gets re-assigned so this can reduce to []
+      
+      while len(self.newthreads) > 0:
          now = time.time()
          if (now - self.time) > slowmo or slowmo == 0:
              self.threads=self.newthreads     # Make the new runset the run set
-             self.newthreads = []             # We go through all the threads,
+             self.newthreads = []         # We go through all the threads,
                                               # if they don't exit they get put here.
              self.time = now   # Update last run time - only really useful if slowmo != 0
-             activeMicroprocesses = 0
              for mprocess in self.threads:
                 sched_yield()
                 if mprocess:
@@ -135,13 +122,11 @@ class scheduler(microprocess):
                       result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
 
                       if (isinstance(result, newComponent)):
-                         activeMicroprocesses += activateMicroprocesses(result)
-
-                      if mprocess._activityCreator():
-                         activeMicroprocesses +=1
+                          for c in result.components():
+                              c.activate()
 
                       if isinstance(result, WaitComplete):
-                         newMprocess = microprocess(result.args[0], reactivate(mprocess),True)
+                         newMprocess = microprocess(result.args[0], reactivate(mprocess))
                          newMprocess.activate()
                          mprocess = None
                       if mprocess:
@@ -150,7 +135,6 @@ class scheduler(microprocess):
                       mprocess.stop() # set the stop flag on the microprocess, so anyone observing can see
                       knockon = mprocess._closeDownMicroprocess()
                       self.handleMicroprocessShutdownKnockon(knockon)
-                running = activeMicroprocesses > 0
 
    def runThreads(self,slowmo=0):
       for i in self.main(slowmo): pass
@@ -164,8 +148,6 @@ if __name__ == '__main__':
       def main(self):
          while 1:
             yield 1
-      def _activityCreator(self):
-         return True
    a=foo()
    a.activate()
    print a
