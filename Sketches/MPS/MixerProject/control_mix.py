@@ -28,7 +28,7 @@ class ConsoleReader(threadedcomponent):
       while 1:
          line = raw_input(self.prompt)
          line = line + "\n"
-         self.outqueues["outbox"].put(line)
+         self.send(line, "outbox")
 
 def dumping_client():
     return pipeline(
