@@ -27,7 +27,7 @@ class scheduler(microprocess):
         self.wakeups.put(thread)
         
     def main(self):
-        taskset = []        # all microprocesses, whether paused or not
+        taskset = {}        # all microprocesses, whether paused or not
         newqueue = []       # currently running (non paused) microprocesses
         running = True
         while running:
@@ -39,21 +39,20 @@ class scheduler(microprocess):
                 try:
                     result = current.next()
                     if result =="PAUSE":
-                        pass
+                        taskset[current] = 0
                     else:
                         newqueue.append(current)
                 except StopIteration:
-                    taskset.remove(current)
+                    del taskset[current]
                     
             blocked = len(taskset) and not len(newqueue)
             
             # process 'wakeup' events coming from thread(s)
             while self.wakeups.qsize() or blocked:
                 thread = self.wakeups.get()
-                if thread not in newqueue:
-                    newqueue.append(thread)
-                if thread not in taskset:
-                    taskset.append(thread)
+                if taskset.get(thread, 0) == 0:
+                    newqueue.insert(0,thread)
+                taskset[thread] = 1
                 blocked = False
             
             running = len(taskset)   # or len(newqueue)
