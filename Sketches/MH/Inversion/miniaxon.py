@@ -107,8 +107,8 @@ class threadedcomponent(component):
     def _localmain(self):
         self._thread = threading.Thread(target=self._threadrun)
         self._thread.setDaemon(True)
-        self._thread.start()
         self._threadalive=True
+        self._thread.start()
         while self._threadalive and self._thread.isAlive():
             yield 1
             for boxname in self.queues:
