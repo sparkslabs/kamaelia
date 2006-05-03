@@ -1,5 +1,33 @@
-1.1.2 -> 1.1.3
-     Bug fix to make Wait* work cleaner
+1.1.2 -> 1.5.0
+    Major subsystem changes aimed at performance enhancements
+
+    MESSAGE PASSING AND DELIVERY OPTIMISATION CHANGES
+ 
+    * Boxes are now discrete objects. This change has occured to enable the
+      use of direct (effectively "zero copy" delivery).
+
+    * This has meant the postman has been deleted - components no longer
+      have a postman associated with them. This also dramatically frees
+      up CPU cycles for components rather than the communications system.
+
+    * To replace the structural tracking, a "postoffice" class has been
+      created instead. This, however, is passive rather than active.
+
+    * Because the death of a component no longer also means the death of a
+      postman, microprocess has been simplified to remove the concept of
+      activity creator. This removes the knock on complexity in both the
+      scheduler and inside Component.
+
+    * Despite these changes components running on top of Axon (ie existing
+      Kamaelia components) operate largely unchanged. (A few that assumed
+      the existance of a postman etc have changed)
+
+    THREADING SUPPORT
+
+    * The threaded component has had its API fixed to match the rest of
+      Axon (with the obvious exception of removing the yields).
+
+    Bug fix to make Wait* work cleaner
 
     Axon.Component.Component
     * Default documentation for Component class in/out- boxes added
