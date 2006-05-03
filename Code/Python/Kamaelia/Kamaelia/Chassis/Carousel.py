@@ -200,7 +200,7 @@ class Carousel(component):
         """
         for child in self.childComponents():
             self.send( shutdownMicroprocess(self), "_signal" )
-            self.postoffice.deregisterlinkage(thecomponent=child)
+            self.unlink(thecomponent=child)
             self.removeChild(child)
 
 

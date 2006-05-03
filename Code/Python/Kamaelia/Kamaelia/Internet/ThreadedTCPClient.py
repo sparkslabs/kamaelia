@@ -113,10 +113,10 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       self.chargen=chargen
       self.sendmessage = initialsendmessage
 
-   def run(self):
+   def main(self):
      """Main (thread) loop"""
      try:
-      self.outqueues["signal"].put("Thread running",True)
+      self.send("Thread running","signal")
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#; yield 0.3
       except socket.error, e:
@@ -125,34 +125,34 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
          # This matches the behaviour of the main TCP client but it might be better passing as
          # an Axon.Ipc.errorInformation carrying the exception otherwise what is the IPC class
          # for?
-         self.outqueues["signal"].put(e)
+         self.send(e,"signal")
          # I am assuming that by using queues there are no race conditions between this operations.
-         self.outqueues["signal"].put(socketShutdown())
+         self.send(socketShutdown(),"signal")
          return
-      self.outqueues["signal"].put("socket object created")
+      self.send("socket object created","signal")
       try:
          sock.connect((self.host, self.port))
       except socket.error, e:
-         self.outqueues["signal"].put(e)
+         self.send(e,"signal")
          try:
             result = sock.close()
          except:
             pass
-         self.outqueues["signal"].put(socketShutdown())
+         self.send(socketShutdown(),"signal")
          return
-      self.outqueues["signal"].put("socket connected")
+      self.send("socket connected","signal")
       
       producerFinished = 0
       if self.sendmessage != None:
         try:
             sock.send(self.sendmessage)
         except socket.error, e:
-            self.outqueues["signal"].put(e)
+            self.send(e,"signal")
             try:
                 result = sock.close()
             except:
                 pass
-            self.outqueues["signal"].put(socketShutdown())
+            self.send(socketShutdown(), "signal")
             return
       # This loop will handle sending, control and signal communications
       # including with the recv thread.  Apart from the sending all the calls
@@ -164,19 +164,20 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
                data = sock.recv(1024)
                if not data: # This implies the connection has barfed.
                   break
-               self.outqueues["outbox"].put(data)
+               self.send(data)
 #             except socket.timeout, to:
 #               pass # common case Try again next loop.
             except socket.error, err:
-               self.outqueues["signal"].put(err,True)
+               self.send(err,"signal")
                break # The task is finished now.
          
             try:
-               msg = self.inqueues["control"].get(False)
-               if isinstance(msg, Axon.Ipc.producerFinished):
-                  break
-                  # Want to give opportunity for inbox messages to get into the
-                  # inbox queue before shutting down the sending system.
+               if self.dataReady("control"):
+                    msg = self.recv("control")
+                    if isinstance(msg, Axon.Ipc.producerFinished):
+                        break
+                        # Want to give opportunity for inbox messages to get into the
+                        # inbox queue before shutting down the sending system.
             except Empty, e:
                pass # Normal case.
       
@@ -190,15 +191,13 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       try:
          sock.close()
       except socket.error, e:
-         self.outqueues["signal"].put(e)
-      self.outqueues["signal"].put(socketShutdown())
-      self.threadtoaxonqueue.put("ThreadStopped")
+         self.send(e,"signal")
+      self.send(socketShutdown(),"signal")
       #Normal exit
      except Exception, e:
-      self.outqueues["signal"].put("Unexpected exception")
-      self.outqueues["signal"].put(e)
-      self.outqueues["signal"].put(socketShutdown())
-      self.threadtoaxonqueue.put("ThreadStopped")
+      self.send("Unexpected exception","signal")
+      self.send(e,"signal")
+      self.send(socketShutdown(),"signal")
       #Unhandled exception exit.  Reports via the signal outqueue as it can't print errors here.
 
 __kamaelia_components__  = ( ThreadedTCPClient, )
@@ -206,8 +205,10 @@ __kamaelia_components__  = ( ThreadedTCPClient, )
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.ConsoleEcho import  consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from Axon.Ipc import newComponent
+   from Kamaelia.Chassis.ConnectedServer import SimpleServer
+   from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
    import Axon
    # _tests()
 
@@ -215,15 +216,15 @@ if __name__ =="__main__":
       def __init__(self):
          self.__super.__init__() # I wonder if this can get forced to be called automagically?
          self.serverport = 4444
-#         self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
+         self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
          self.client = None
-         self.display = consoleEchoer()
-         self.displayerr = consoleEchoer()
+         self.display = ConsoleEchoer()
+         self.displayerr = ConsoleEchoer()
 
       def initialiseComponent(self):
-         self.client = ThreadedTCPClient("132.185.133.18",self.serverport)
+         self.client = ThreadedTCPClient("127.0.0.1",self.serverport)
          self.addChildren(self.client,self.display,self.displayerr)
-#         self.addChildren(self.server, self.display)
+         self.addChildren(self.server, self.display)
          self.link((self.client,"outbox"), (self.display,"inbox") )
          self.link((self.client,"signal"), (self.displayerr,"inbox") )
          self.link((self, "outbox"),(self.client, "inbox"))

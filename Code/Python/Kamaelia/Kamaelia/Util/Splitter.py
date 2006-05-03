@@ -341,7 +341,7 @@ class Splitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """
       sink = self.outlist[(oldsink.sink,oldsink.sinkbox)]
       del self.outlist[(oldsink.sink,oldsink.sinkbox)]
-      self.postoffice.deregisterlinkage(thelinkage=sink[1])
+      self.unlink(thelinkage=sink[1])
       self.deleteOutbox(sink[0])
       try:
         self.delayedboxlist.remove(sink[0])
@@ -499,7 +499,7 @@ class PlugSplitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             dst = (sink,sinkinbox)
             try:
                 boxname, linkage = self.outboxsinks[dst]
-                self.postoffice.deregisterlinkage(thelinkage = linkage)
+                self.unlink(thelinkage = linkage)
                 self.deleteOutbox(boxname)
                 del self.outboxsinks[dst]
             except KeyError:
@@ -509,7 +509,7 @@ class PlugSplitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             dst = (sink, sinkcontrol)
             try:
                 boxname, linkage = self.signalsinks[dst]
-                self.postoffice.deregisterlinkage(thelinkage = linkage)
+                self.unlink(thelinkage = linkage)
                 self.deleteOutbox(boxname)
                 del self.signalsinks[dst]
             except KeyError:
@@ -569,7 +569,7 @@ class Plug(Axon.Component.component):
         # unplug from the splitter
         self.send( removesink( self, "inbox", "control" ), "splitter_config")
         yield 1  # allow the msg to be sent
-        self.postoffice.deregisterlinkage(thelinkage = self.pluglinkage)
+        self.unlink(thelinkage = self.pluglinkage)
 
 
     def childrenDone(self):
