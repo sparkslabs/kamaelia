@@ -9,9 +9,13 @@ class microprocess(object):
         super(microprocess, self).__init__()
     def main(self):
         yield 1
-    def activate(self,scheduler):
-        scheduler.activateMicroprocess(self)
+    def activate(self, scheduler,mainmethod="main"):
+        self._mprocess = self.__getattribute__(mainmethod)()
+        self.scheduler = scheduler
+        self.scheduler.addThread(self)
         return self
+    def next(self):
+        return self._mprocess.next()
 
 
 class scheduler(microprocess):
@@ -35,7 +39,7 @@ class scheduler(microprocess):
                     if result is not -1:
                         activityCount +=1 
                         self.newqueue.append(current)
-                        if result=="BLOCK" or "PAUSE":
+                        if result=="BLOCK" or current.paused:
                             waitingCount += 1
                 except StopIteration:
                     pass
@@ -43,10 +47,9 @@ class scheduler(microprocess):
                 print "waiting"
                 self.event.wait()
                 self.event.clear()
-    def activateMicroprocess(self, someprocess, mainmethod="main"):
-        microthread = someprocess.__getattribute__(mainmethod)()
-        self.newqueue.append(microthread)
-
+    def addThread(self, thread):
+        self.newqueue.append(thread)
+        
 class box(list):
     def __init__(self, notify):
         self.notify=notify
@@ -80,7 +83,7 @@ class component(microprocess):
         scomp.boxes[sbox] = box(self.notify)
     def notify(self):
         self.paused=False
-    def pause(slf):
+    def pause(self):
         self.paused=True
 
 class threadedcomponent(component):
@@ -92,9 +95,7 @@ class threadedcomponent(component):
         for box in self.boxes:
             self.queues[box] = Queue.Queue()
     def activate(self,scheduler):
-        scheduler.activateMicroprocess(self, "_localmain")
-        self.scheduler = scheduler
-        return self
+        return component.activate(self, scheduler, "_localmain")
     def send(self, value, outboxname):
         self.queues[outboxname].put(value)
         self.scheduler.notify()
@@ -143,7 +144,8 @@ class Output(component):
                 print str(msg)
                 done = msg=="DONE"
             if not done:
-                yield "PAUSE"
+                self.pause()
+                yield 1
 
 sched=scheduler()
 p=Producer().activate(sched)
