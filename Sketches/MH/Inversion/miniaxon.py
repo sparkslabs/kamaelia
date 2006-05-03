@@ -110,7 +110,7 @@ class threadedcomponent(component):
         self._thread.start()
         self._threadalive=True
         while self._threadalive and self._thread.isAlive():
-            yield "BLOCK"
+            yield 1
             for boxname in self.queues:
                 if self.isInbox[boxname]:
                     while component.dataReady(self,boxname):
@@ -118,6 +118,7 @@ class threadedcomponent(component):
                 else:
                     while not self.queues[boxname].empty():
                         component.send(self, self.queues[boxname].get(), boxname)
+            self.pause()
 
     def _threadrun(self):
         self.main()
