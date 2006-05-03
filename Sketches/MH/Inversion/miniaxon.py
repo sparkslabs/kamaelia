@@ -19,27 +19,47 @@ class scheduler(microprocess):
         super(scheduler, self).__init__()
         self.active = []
         self.newqueue = []
+        self.event = threading.Event()
+    def notify(self):
+        self.event.set()
     def main(self): 
         while len(self.newqueue):
             self.active = self.newqueue
             self.newqueue = []
+            activityCount = 0
+            waitingCount = 0
             for current in self.active:
                 yield 1
                 try:
                     result = current.next()
                     if result is not -1:
+                        activityCount +=1 
                         self.newqueue.append(current)
+                        if result=="BLOCK" or "PAUSE":
+                            waitingCount += 1
                 except StopIteration:
                     pass
+            if activityCount > 0 and waitingCount == activityCount:
+                print "waiting"
+                self.event.wait()
+                self.event.clear()
     def activateMicroprocess(self, someprocess, mainmethod="main"):
         microthread = someprocess.__getattribute__(mainmethod)()
         self.newqueue.append(microthread)
 
+class box(list):
+    def __init__(self, notify):
+        self.notify=notify
+        super(box,self).__init__()
+    def append(self, value):
+        super(box,self).append(value)
+        self.notify()
 
 class component(microprocess):
     def __init__(self):
         super(component, self).__init__()
-        self.boxes = { "inbox" : [], "outbox": [] }
+        self.boxes = { "inbox" : box(self.notify), "outbox": box(self.notify) }
+        self.paused=False
     def send(self, value, outboxname):
         self.boxes[outboxname].append(value)
     def recv(self, inboxname):
@@ -57,7 +77,11 @@ class component(microprocess):
         return (src, dst)
     def unlink( linkage ):
         ((scomp,sbox),(dcomp,dbox)) = linkage
-        scomp.boxes[sbox] = []
+        scomp.boxes[sbox] = box(self.notify)
+    def notify(self):
+        self.paused=False
+    def pause(slf):
+        self.paused=True
 
 class threadedcomponent(component):
     """Very basic threaded component, with poor thread safety"""
@@ -69,9 +93,11 @@ class threadedcomponent(component):
             self.queues[box] = Queue.Queue()
     def activate(self,scheduler):
         scheduler.activateMicroprocess(self, "_localmain")
+        self.scheduler = scheduler
         return self
     def send(self, value, outboxname):
         self.queues[outboxname].put(value)
+        self.scheduler.notify()
     def recv(self, inboxname):
         return self.queues[inboxname].get()
     def dataReady(self, inboxname):
@@ -82,7 +108,7 @@ class threadedcomponent(component):
         self._thread.setDaemon(True)
         self._thread.start()
         while self._thread.isAlive():
-            yield 1
+            yield "BLOCK"
             for boxname in self.queues:
                 if self.isInbox[boxname]:
                     while component.dataReady(self,boxname):
@@ -98,7 +124,7 @@ class Producer(threadedcomponent):
     def main(self):
         for i in range(10):
 #            yield 1
-            time.sleep(0.1)
+            time.sleep(0.2)
             self.send(i,"outbox")
         self.send("DONE","outbox")
 
@@ -106,11 +132,11 @@ class Output(component):
     def main(self):
         done=False
         while not done:
-            yield 1
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 msg=self.recv("inbox")
                 print str(msg)
                 done = msg=="DONE"
+            yield "PAUSE"
 
 sched=scheduler()
 p=Producer().activate(sched)
