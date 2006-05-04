@@ -137,28 +137,41 @@ class threadedcomponent(component):
 # --------------------------------------------------
 
 class Producer(threadedcomponent):
+    def __init__(self, sleeptime=0.2):
+        super(Producer,self).__init__()
+        self.sleeptime=sleeptime
     def main(self):
         for i in range(10):
-            time.sleep(0.2)
+            time.sleep(self.sleeptime)
             self.send(i,"outbox")
         self.send("DONE","outbox")
 
 class Output(component):
+    def __init__(self,name):
+        super(Output,self).__init__()
+        self.name=name
     def main(self):
         done=False
         while not done:
             while self.dataReady("inbox"):
                 msg=self.recv("inbox")
-                print str(msg)
+                print self.name+" "+str(msg)
                 done = done or (msg == "DONE")
             if not done:
                 yield "PAUSE"
+                print self.name+" reawoken..."
 
 sched=scheduler()
 p=Producer().activate(sched)
-o=Output().activate(sched)
+o=Output("A").activate(sched)
 
 p.link( (p,"outbox"),(o,"inbox") )
+
+# shouldn't affect first outputter
+p2=Producer(0.4).activate(sched)
+o2=Output("                B").activate(sched)
+
+p.link( (p2,"outbox"),(o2,"inbox") )
 
 for _ in sched.main():
     pass
