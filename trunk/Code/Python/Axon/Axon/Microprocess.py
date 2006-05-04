@@ -202,7 +202,7 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
-   def __init__(self, thread = None, closeDownValue = 0, ac = False):
+   def __init__(self, thread = None, closeDownValue = 0):
       """Microprocess constructor.
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
@@ -218,7 +218,6 @@ class microprocess(Axon.AxonObject):
          
       self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
-      self.ac = ac
 
       # If the client has defined a debugger in their class we don't want to override it.
       # However if they haven't, we provide them with one
@@ -245,10 +244,6 @@ class microprocess(Axon.AxonObject):
       be put. Internally this calls self.thread.next() to pass the
       timeslice down to the actual generator."""
       return self.__thread.next()
-
-   def _activityCreator(self):
-      return self.ac
-#      return False
 
    def _isStopped(self):
       """'M._isStopped()' - test, boolean result indicating if the microprocess is halted."""
@@ -304,7 +299,7 @@ class microprocess(Axon.AxonObject):
       yield 1
       return
 
-   def _microprocessGenerator(self,someobject):
+   def _microprocessGenerator(self,someobject, mainmethod="main"):
       """This contains the mainloop for a microprocess, returning a
       generator object. Creates the thread of control by calling the
       class's main method, then in a loop repeatedly calls the resulting
@@ -313,7 +308,8 @@ class microprocess(Axon.AxonObject):
       back to its caller.
       """
       # someobject.setthread = (self) # XXXX Check -- Appears no to be used!
-      pc = someobject.main() # Call the object, get a generator function
+      pc = someobject.__getattribute__(mainmethod)()
+#      pc = someobject.main() # Call the object, get a generator function
       while(1):
          # Continually try to run the code, and then release control
          if someobject._isRunnable() :
@@ -330,7 +326,7 @@ class microprocess(Axon.AxonObject):
                # Microprocess simply paused
                yield "Paused"
 
-   def activate(self, Scheduler=None, Tracker=None):
+   def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
       """calls the _microprocessGenerator function to create a generator
       object, places this into the thread attribute of the microprocess
       and appends the component to the scheduler's run queue."""
@@ -338,7 +334,7 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.activate", 1):
          self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
       if not self.__thread:
-         self.__thread = self._microprocessGenerator(self)
+         self.__thread = self._microprocessGenerator(self,mainmethod)
 
       #
       # Whilst a basic microprocess does not "need" a local scheduler,
