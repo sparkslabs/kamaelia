@@ -1,0 +1,68 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">Microprocess.py</span></p>
+<p>Version: Axon 1.0</p>
+<p></p>
+<p><span style="font-weight:600">TODO: </span>Test suite needs changing to emit API docs (which is why testdocs below look odd)</p>
+<p></p>
+<p>A microprocess is a class supporting parallel execution, provided by forming a wrapper around a generator. It also provides a place for context to be stored about the generator. In terms of runtime a microprocess can be viewed to have 2 different life cycles - that which an external user sees, and that which the microprocess sees.</p>
+<p>In terms of runtime life cycle viewed externally, a microprocess is created, activated, and then has its next method repeatedly called until a false value is returned, at which point the microprocess is deleted. In terms of a more traditional approach the next call approximates to a timeslice being allocated to a process/thread.</p>
+<p>The runtime life cycle from the view of the microprocess stems from the fact that a generator wraps a thread of control, by effectively treating the program counter like a static variable. The following describes this runtime from the microprocess's point of view.</p>
+<p>First the '__init__' function is called during initialisation at object creation time. This results in a non-active, non-running microprocess. Activation has been deliberately separated from creation and initialisation. At some point in the future, the microprocess's activate method is called, activating the object. When the object is activated, an  internal call to a '_microprocessGenerator' occurs. This function in fact results in the return object being a generator, which can then have its next method called repeatedly. This generator is  then stored as an attribute of the microprocess class.</p>
+<p>The following describe the flow of control the generator takes when the generator is provided with a flow of control/time slice via it's next method. Initially, it creates a local generator object - 'pc' - by calling the object's main method. (This allows the client of the microprocess class to provide their own generator if they wish.) This is necessary due to the fact that any function containing a 'yield' keyword is a  generator - the 'yield' keyword cannot be abstracted away. Next, inside a loop, the microprocess checks to see if it is runnable. If the microprocess is runnable, the local generator object 'pc' has it's next method called - effectively providing a time slice to the user of the microprocess class. Any result provided by the timeslice is then yielded (returned) to the client of the generator. After this, if the microprocess has its stopped flag set, the microprocess generator simply yields a null value, followed by stopping.</p>
+<p>This all boils down to checking to see if the microprocess is not stopped and runnable prior to running the body of a generator formed from the main method of the class. The intent here is that users will inherit from the microprocess class, and then reimplement the main method, which periodically yields control. If the user/inheriting class does not implement a main method, then the system provides a stub that simply returns.</p>
+<p>Essentially the microprocess provides a context for scheduling generators, and treating them similar to processes/threads.</p>
+<p>Clients are not expected to use the microprocess class itself directly - they are expected to subclass the microprocess class. Subclasses do need however to call the microprocess constructor. A minimal client class could look like this:</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">class</span><span style="font-family:Courier 10 Pitch"> automaton(microprocess):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> __init__(self):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">self.Microprocess() # Call superclass constructor</span></div></ul>
+<div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> main:</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">while</span><span style="font-family:Courier 10 Pitch"> 1:</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> 1<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;Hello Again&quot;</span></div></ul></ul></ul></ul>
+<p></p>
+<p>This microprocess would then be run by a wrapper as follows:</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">import microprocess, scheduler</span></div>
+<div><span style="font-family:Courier 10 Pitch">s = scheduler.scheduler()<br />a = automaton()<br />a.activate()<br />s._addThread(a)<br />s.runThreads()</span></div></ul>
+<p></p>
+<p>The component class does this, and adds further facilities for inter-microprocess communication. Likewise, the postman class subclasses microprocess so that it can be scheduled in parallel with other tasks.</p>
+<p>As noted previously, every microprocess object has access to a debugger, which is accessed via the local attribute self.debugger, which we shall return to later. Likewise every microprocess object contains a reference to a scheduler.</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p><span style="font-weight:600">__init__(self)</span></p>
+<ul type="disc"><li>Microprocess constructor. Subclasses must call this using the idiom self.__super.__init__()</li></ul>
+<p></p>
+<p><span style="font-weight:600">__str__(self)</span></p>
+<ul type="disc"><li>Standard function for rendering the object as a string.</li></ul>
+<p></p>
+<p><span style="font-weight:600">activate(self, Scheduler=None, Tracker=None)</span></p>
+<ul type="disc"><li>calls the _microprocessGenerator function to create a generator object, places this into the thread attribute of the microprocess and appends the component to the scheduler's run queue.</li></ul>
+<p></p>
+<p><span style="font-weight:600">main(self)</span></p>
+<ul type="disc"><li>'M.main()' - stub function. Client classes are expected to override this. If you miss this off a class that directly subclass's microprocess, your program will run, but it will not do what you want!</li></ul>
+<p></p>
+<p><span style="font-weight:600">next(self)</span></p>
+<ul type="disc"><li>M.next() - This is to provide a microprocess object with the ability to be dropped in largely wherever a generator object can be put. Internally this calls self.thread.next() to pass the timeslice down to the actual generator.</li></ul>
+<p></p>
+<p><span style="font-weight:600">pause(self)</span></p>
+<ul type="disc"><li>'M.pause()' - Pauses the microprocess.S ets the runnable flag to false - thus pausing the microprocess.</li></ul>
+<p><span style="font-weight:600">stop(self)</span></p>
+<ul type="disc"><li>'M.stop()' -</li>
+<li>Halts the microprocess, no way to &quot;unstop&quot;</li></ul>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p>__init__ - Called with no arguments.  Creates multiple microprocess objects with no arguments and checks they do not have matching ids.</p>
+<p>Tests that after being stopped a microprocess returns true to _isStopped and false to _isRunnable.</p>
+<p>test___str__ (__main__.MicroProcess_Test)</p>
+<p>_activityCreator should return False as the basic microprocess does not inititate any usefule work.</p>
+<p>Stub _closeDownMicroprocess should always return 0</p>
+<p>Tests the setting of the scheduler class to be used for a subclass of microprocess is actually reflected at activation</p>
+<p>Tests the activation method operates as expected with a chosen scheduler</p>
+<p>Tests that an overridden main is run correctly by repeatedly calling next() and that termination occurs at the proper time with the proper StopIteration exception.</p>
+<p>Tests that after being pause a microprocess returns false to _isRunnable.  Also tests _isRunnable and _unpause.</p>
+<p>Tests setting scheduler class and that the default scheduler is Scheduler.scheduler</p>
+<p>test___str__ (test___str__.str_Test)</p>
+<p></p>
+<p></p>
+<p></p>
+<p>Michael, December 2004</p>
+<p></p>
+</body></html>
