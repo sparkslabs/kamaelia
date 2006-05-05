@@ -558,12 +558,12 @@ class Plug(Axon.Component.component):
         self.send( addsink( self, "inbox", "control" ), "splitter_config")
 
         # activate the child
-        yield Ipc.newComponent( *(self.childComponents()) )
+        for child in self.childComponents():
+            child.activate()
 
         # wait until all child component has terminated
         while not self.childrenDone():
-            # can't self.pause() as child may not immediately terminate after
-            # sending/receiving final piece of data
+            self.pause()
             yield 1
 
         # unplug from the splitter
