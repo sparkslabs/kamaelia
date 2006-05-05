@@ -48,7 +48,7 @@ class scheduler(microprocess):
         self.changesLock.notify()
         self.changesLock.release()
         
-    def main(self):
+    def main(self,canblock=False):
         nextrunqueue = []
         running = True
         while running:
@@ -69,7 +69,7 @@ class scheduler(microprocess):
                     del self.taskset[mprocess]
                     
             
-            blocked = len(self.taskset)>0 and len(nextrunqueue)==0
+            blocked = canblock and len(self.taskset)>0 and len(nextrunqueue)==0
             if blocked:
                 print "----------- scheduler blocked, waiting for wakeup event -----------"
             
@@ -217,5 +217,5 @@ o2=Output("                                                         O2").activat
 
 p.link( (p2,"outbox"),(o2,"inbox") )
 
-for _ in sched.main():
+for _ in sched.main(canblock=True):
     pass
