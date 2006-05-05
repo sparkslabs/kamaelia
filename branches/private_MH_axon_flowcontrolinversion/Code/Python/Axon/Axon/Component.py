@@ -365,9 +365,7 @@ class component(microprocess):
       """Stub method. **This method is designed to be overridden.** """
       return 1
    def _closeDownMicroprocess(self):
-      print self.name,"closing down"
       for callback in self._callOnCloseDown:
-          print "closing down..."
           callback()
       return None
 
