@@ -207,6 +207,7 @@ class component(microprocess):
 
 
       self.children = []
+      self._callOnCloseDown = []
 
       self.postoffice = postoffice("component :" + self.name)
 
@@ -219,19 +220,18 @@ class component(microprocess):
       result = "Component " + self.name + " [ inboxes : " + self.inboxes.__str__() + " outboxes : " + self.outboxes.__str__()
       return result
 
-   def __addChild(self, child):
+   def __addChild(self, child, ):
       """'C.__addChild(component)' -
       Register component as a child.
 
       This takes a child component, and adds it to the children list of this
-      component. This has a number of effects internally, and includes
-      registering the component as capable of recieving and sending messages.
+      component. It also registers to be woken up by the child if it terminates.
       It doesn't give the child a thread of control however!
 
       You will want to call this function if you create child components of your
       component.
       """
-#      self.postoffice.register(child.name,child)
+      child._callOnCloseDown.append(self._unpause)
       self.children.append(child)
 
    def addChildren(self,*children):
@@ -247,20 +247,21 @@ class component(microprocess):
       """'C.removeChild(component)' -
       Deregister component as a child.
 
-      Removes the child component, and deregisters it as capable of recieving
-      messages. You probably want to do this when you enter a closedown state
+      Removes the child component, and deregisters it from notifying us when it
+      terminates. You probably want to do this when you enter a closedown state
       of some kind for either your component, or the child component.
 
       You will want to call this function when shutting down child components of
       your component.
       """
       removeAll(self.children, child)
+      removeAll(child._callOnCloseDown, self._unpause)
       self.postoffice.unlink(thecomponent=child)
 
    def childComponents(self):
       """'C.childComponents()' -
       Simple accessor method, returns list of child components"""
-      return self.children
+      return self.children[:]
 
    def anyReady(self):
        """'C.anyReady()' -
@@ -364,6 +365,10 @@ class component(microprocess):
       """Stub method. **This method is designed to be overridden.** """
       return 1
    def _closeDownMicroprocess(self):
+      print self.name,"closing down"
+      for callback in self._callOnCloseDown:
+          print "closing down..."
+          callback()
       return None
 
    def _deliver(self, message, boxname="inbox"):
