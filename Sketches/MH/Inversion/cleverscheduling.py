@@ -23,6 +23,9 @@ class microprocess(object):
     def paused(self):
         return self.scheduler.isThreadPaused(self)
 
+_ACTIVE = object()             # status value for active running threads
+_SLEEPING = object()           # status value for sleeping threads
+_GOINGTOSLEEP = object()       # status value for threads that should be put to sleep (but might still be in runqueue)
 
 class scheduler(microprocess):
     def __init__(self):
@@ -32,6 +35,7 @@ class scheduler(microprocess):
         self.taskset = {}        # all microprocesses, whether paused or not
     
     def wakeThread(self,thread):
+        print thread.name,"waking"
         self.wakeups.put(thread)
         
     def sleepThread(self,thread):
@@ -39,47 +43,56 @@ class scheduler(microprocess):
         self.sleeps.put(thread)
         
     def main(self):
-        newqueue = []       # currently running (non paused) microprocesses
+        nextrunqueue = []
         running = True
         while running:
             
-            active = newqueue
-            newqueue = []
-            for current in active:
+            runqueue = nextrunqueue
+            nextrunqueue = []
+            for mprocess in runqueue:
+                
                 yield 1
                 try:
-                    if self.taskset[current] == 1:   # might have been put to sleep
-                        result = current.next()
-                        newqueue.append(current)
+                    if self.taskset[mprocess] == _ACTIVE:
+                        result = mprocess.next()
+                        nextrunqueue.append(mprocess)
+                    else:
+                        # mprocess might be 'going to sleep', needs to be marked as 'sleeping'
+                        self.taskset[mprocess] = _SLEEPING
                 except StopIteration:
-                    del self.taskset[current]
+                    del self.taskset[mprocess]
                     
-            blocked = len(self.taskset) and not len(newqueue)
+            # process requests to put microprocesses to sleep
+            # do this before processing wakeups (if race condition, better to leave mprocess awake)
+            while not self.sleeps.empty():
+                mprocess = self.sleeps.get()
+                if self.taskset[mprocess] == _ACTIVE:
+                    self.taskset[mprocess] = _GOINGTOSLEEP
+                    # mark mprocess as going to sleep
+                    # let the next cycle through the runqueue remove it for us
             
-            # first process 'sleep' events
-            # do before wakeups, in case 've  clash - better to leave the thread awake!
-            tosleep = {}
-            while self.sleeps.qsize():
-                thread = self.sleeps.get()
-                self.taskset[thread] = 0
-                # inefficient to 'remove' from newqueue here, defer until we're going through it next cycle
-                tosleep[thread] = 1
-                
-            # process 'wakeup' events coming from thread(s)
-            while self.wakeups.qsize() or blocked:
-                thread = self.wakeups.get()
-                if thread not in tosleep and self.taskset.get(thread, 0) == 0:
-                    newqueue.insert(0,thread)
-                self.taskset[thread] = 1
+            blocked = len(self.taskset)>0 and len(nextrunqueue)==0
+            if blocked:
+                print "----------- scheduler blocked, waiting for wakeup event -----------"
+            # process requests to wake up microprocesses
+            while blocked or not self.wakeups.empty():
+                mprocess = self.wakeups.get()
+                currentstate = self.taskset.get(mprocess,_SLEEPING)
+                if currentstate == _SLEEPING:       # ... and != _GOINGTOSLEEP
+                    nextrunqueue.append(mprocess)
+                self.taskset[mprocess] = _ACTIVE
                 blocked = False
-            
-            running = len(self.taskset)   # or len(newqueue)
                 
+            running = len(self.taskset)
+        
     def addThread(self, thread):
         self.wakeThread(thread)
         
     def isThreadPaused(self,thread):
-        return self.taskset[thread] != 0
+        return self.taskset[thread] != _ACTIVE
+    
+    def getCurrentMicroprocesses(self):
+        return self.taskset.keys()
         
 class box(list):
     def __init__(self, notify):
@@ -164,7 +177,7 @@ class Producer(threadedcomponent):
     def main(self):
         for i in range(10):
             time.sleep(self.sleeptime)
-            print self.name,"sends",i
+            print self.name,"thread sends",i
             self.send(i,"outbox")
         self.send("DONE","outbox")
 
@@ -185,14 +198,14 @@ class Output(component):
                 print self.name+" reawoken..."
 
 sched=scheduler()
-p=Producer("                X").activate(sched)
-o=Output("A").activate(sched)
+p=Producer("P1").activate(sched)
+o=Output("                   O1").activate(sched)
 
 p.link( (p,"outbox"),(o,"inbox") )
 
 # shouldn't affect first outputter
-p2=Producer("                                 Y",0.4).activate(sched)
-o2=Output("                B").activate(sched)
+p2=Producer("                                    P2",0.4).activate(sched)
+o2=Output("                                                         O2").activate(sched)
 
 p.link( (p2,"outbox"),(o2,"inbox") )
 
