@@ -16,18 +16,28 @@ class microprocess(object):
         return self
     def next(self):
         return self._mprocess.next()
+    def pause(self):
+        self.scheduler.sleepThread(self)
+    def unpause(self):
+        self.scheduler.wakeThread(self)
+    def paused(self):
+        return self.scheduler.isThreadPaused(self)
 
 
 class scheduler(microprocess):
     def __init__(self):
         super(scheduler, self).__init__()
         self.wakeups = Queue.Queue()
+        self.taskset = {}        # all microprocesses, whether paused or not
     
     def wakeThread(self,thread):
         self.wakeups.put(thread)
         
+    def sleepThread(self,thread):
+        if thread in self.taskset:
+            self.taskset[thread] = 0
+        
     def main(self):
-        taskset = {}        # all microprocesses, whether paused or not
         newqueue = []       # currently running (non paused) microprocesses
         running = True
         while running:
@@ -38,24 +48,22 @@ class scheduler(microprocess):
                 yield 1
                 try:
                     result = current.next()
-                    if result =="PAUSE":
-                        taskset[current] = 0
-                    else:
+                    if self.taskset[current] != 0:
                         newqueue.append(current)
                 except StopIteration:
-                    del taskset[current]
+                    del self.taskset[current]
                     
-            blocked = len(taskset) and not len(newqueue)
+            blocked = len(self.taskset) and not len(newqueue)
             
             # process 'wakeup' events coming from thread(s)
             while self.wakeups.qsize() or blocked:
                 thread = self.wakeups.get()
-                if taskset.get(thread, 0) == 0:
+                if self.taskset.get(thread, 0) == 0:
                     newqueue.insert(0,thread)
-                taskset[thread] = 1
+                self.taskset[thread] = 1
                 blocked = False
             
-            running = len(taskset)   # or len(newqueue)
+            running = len(self.taskset)   # or len(newqueue)
                 
     def addThread(self, thread):
         self.wakeThread(thread)
@@ -90,8 +98,6 @@ class component(microprocess):
     def unlink( linkage ):
         ((scomp,sbox),(dcomp,dbox)) = linkage
         scomp.boxes[sbox] = box(self.unpause)
-    def unpause(self):
-        self.scheduler.wakeThread(self)
 
 class threadedcomponent(component):
     """Very basic threaded component, with poor thread safety"""
@@ -127,7 +133,8 @@ class threadedcomponent(component):
                     while not self.queues[boxname].empty():
                         component.send(self, self.queues[boxname].get(), boxname)
             if running:
-                yield "PAUSE"
+                self.pause()
+            yield 1
 
     def _threadrun(self):
         self.main()
@@ -158,7 +165,8 @@ class Output(component):
                 print self.name+" "+str(msg)
                 done = done or (msg == "DONE")
             if not done:
-                yield "PAUSE"
+                self.pause()
+                yield 1
                 print self.name+" reawoken..."
 
 sched=scheduler()
