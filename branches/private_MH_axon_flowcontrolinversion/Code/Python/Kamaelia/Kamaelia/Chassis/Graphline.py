@@ -193,17 +193,18 @@ class Graphline(component):
 
       self.addChildren(*components)
 
-      yield _Axon.Ipc.newComponent(*(self.children))
+      for child in self.children:
+          child.activate()
 
       # run until all child components have terminated
       # at which point this component can implode
 
-      # could just look for the first and last component terminating (children with linkages to graphline)
-      # BUT the creator of this pipeline might assume that the graphline terminating means ALL
-      # children have finished.
+      # becuase they are children, if they terminate, we'll be woken up
       while not self.childrenDone():
-          # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
+          self.pause()
           yield 1
+
+
 
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
