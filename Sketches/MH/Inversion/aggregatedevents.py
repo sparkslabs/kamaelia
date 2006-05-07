@@ -4,9 +4,20 @@ import Queue
 import threading
 import time
 
+class NullScheduler(object):
+    def __init__(self):
+        super(NullScheduler,self).__init__()
+    def sleepThread(self,thread):
+        pass
+    def wakeThread(self,thread):
+        pass
+
+nullscheduler = NullScheduler()
+
 class microprocess(object):
     def __init__(self):
         super(microprocess, self).__init__()
+        self.scheduler = nullscheduler
     def main(self):
         yield 1
     def activate(self, scheduler,mainmethod="main"):
@@ -35,14 +46,12 @@ class scheduler(microprocess):
         self.changes = {}
     
     def wakeThread(self,thread):
-#        print thread.name,"waking"
         self.changesLock.acquire()
         self.changes[thread] = _ACTIVE     # mark to be woken up
         self.changesLock.notify()
         self.changesLock.release()
         
     def sleepThread(self,thread):
-#        print thread.name,"blocking"
         self.changesLock.acquire()
         self.changes[thread] = _GOINGTOSLEEP    # mark as 'put to sleep'
         self.changesLock.notify()
@@ -69,20 +78,15 @@ class scheduler(microprocess):
                     del self.taskset[mprocess]
                     
             
-            blocked = canblock and len(self.taskset)>0 and len(nextrunqueue)==0
+            blocked = len(self.taskset)>0 and len(nextrunqueue)==0
             if blocked:
                 print "----------- scheduler blocked, waiting for wakeup event -----------"
             
             # fetch latest batch of microprocess wakeup/sleep requests
             # if we're blocked and there are no requests yet, wait for some
-            self.changesLock.acquire()
-            while blocked and 0==len(self.changes):
-                self.changesLock.wait()
-            changes = self.changes.items()
-            self.changes = {}
-            self.changesLock.release()
+            changes = self.fetchChanges(waitforchanges = canblock and blocked)
             
-            # process the requests
+            # process the requests, updating self.taskset and nextrunqueue
             for (mprocess,newstate) in changes:
                 if newstate == _ACTIVE and self.taskset.get(mprocess,_SLEEPING) == _SLEEPING:
                     print mprocess.name,"waking"
@@ -92,6 +96,19 @@ class scheduler(microprocess):
                     print mprocess.name,"blocking"
             
             running = len(self.taskset)
+        
+    def fetchChanges(self,waitforchanges=False):
+        self.changesLock.acquire()
+        while waitforchanges and 0==len(self.changes):
+            self.changesLock.wait()
+        changes = self.changes.items()
+        self.changes = {}
+        self.changesLock.release()
+        return changes
+        
+    def runThreads(self):
+        for i in self.main(canblock=True):
+            pass
         
     def addThread(self, thread):
         self.wakeThread(thread)
@@ -217,5 +234,4 @@ o2=Output("                                                         O2").activat
 
 p.link( (p2,"outbox"),(o2,"inbox") )
 
-for _ in sched.main(canblock=True):
-    pass
+sched.runThreads()
