@@ -46,13 +46,8 @@ class IRCBot(component):
 			  }
 	Outboxes = { "outbox" : "messages to send over TCP",
 				 "signal" : "UNUSED",
-				 "heard"   : "private/channel messages received by the bot",
+				 "heard"   : "events e.g. private messages received",
 			   }
-	
-	#FindResponses = (
-	#	("no module named dirac_parser", "Try installing http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download" ),
-	#)
-	#DirectResponses = { "goodnight" : "goodnight!", "good night" : "goodnight!", "night" : "goodnight!", "nite" : "goodnight!" }
 
 	ERR_NOSUCHNICK           = 401
 	ERR_NOSUCHSERVER         = 402	
@@ -109,10 +104,7 @@ class IRCBot(component):
 			
 			if self.dataReady("command"):
 				command = self.recv("command")
-				if command[0] == "JOIN": # join a channel
-					self.send("JOIN %s\r\n" % command[1], "outbox")
-				elif command[0] == "PRIVMSG": # send a message to an individual or a channel
-					self.send("PRIVMSG %s :%s\r\n" % (command[1], command[2]), "outbox")
+				self.send(command, "outbox")
 
 			if self.dataReady("inbox"):
 				readbuffer += self.recv("inbox")
@@ -134,77 +126,17 @@ class IRCBot(component):
 						# should alter this to consider if no second part given
 						msgsend = "PONG %s\r\n" % splitline[1]
 						self.send(msgsend, "outbox")
+
 					elif splitline[0] == "PRIVMSG":
 						msg = string.join(splitline[2:], " ")[1:]
-						
-						messageforme = False
-
-						
-						if msg[0:len(self.nick)].lower() == self.nick.lower():
-							msg = string.lstrip(msg[len(self.nick):])
-							messageforme = True
-
-						if msg[0:11].lower() == "logging off":
-							if not self.logging:
-								self.say(splitline[1], "Logging was already off")
-							else:
-								self.say(splitline[1], "Logging is off")
-								self.changeNick("[kambot-deaf]")
-								msg = ( "LOGGINGOFF", linesender, "" )
-								self.writeHeard(msg)
-								self.logging = False
-						elif msg[0:10].lower() == "logging on":
-							if self.logging:
-								self.say(splitline[1], "Logging was already on")
-							else:
-								self.say(splitline[1], "Logging is on")
-								self.changeNick("[kambot-logging]")
-								msg = ( "LOGGINGON", linesender, "" )
-								self.writeHeard(msg)
-								self.logging = False
-						else:
-							if msg.lower().find("no module named dirac_parser") != -1:
-								self.say(splitline[1], "http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download")		
-							elif messageforme:
-								self.say(splitline[1], msg + "?")
-
-							if msg[0:5].lower() != "[off]" and self.logging:
-								msg = ( "PRIVMSG", linesender, msg )
-								self.writeHeard(msg)
+						msg = ( "PRIVMSG", linesender, splitline[1], msg )
+						self.send(msg, "heard")
 
 					elif splitline[0] == "PART":
 						msg = ( "PART", linesender, splitline[1] )
-						self.writeHeard(msg)
+						self.send(msg, "heard")
 
-if __name__=="__main__":
-	from Kamaelia.Internet.TCPClient import TCPClient
-	from Kamaelia.Util.Console import ConsoleReader
-	from Kamaelia.Util.PipelineComponent import pipeline
-	from Axon.Scheduler import scheduler
-	from Lagger import Lagger
-	import Axon
-	from Kamaelia.File.Writing import SimpleFileWriter
+					elif splitline[0] == "JOIN":
+						msg = ( "JOIN", linesender, splitline[1] )
+						self.send(msg, "heard")
 
-	class TestHarness(component):
-		def __init__(self):
-			super(TestHarness, self).__init__()
-
-		def main(self):
-			self.lagger = Lagger()
-			self.bot = IRCBot("[kambot-logging]","","#kamaelia","kamaeliabot")
-			self.client = TCPClient("irc.freenode.net", 6667, 1)
-			self.writer = SimpleFileWriter("latest.txt")
-
-			self.link((self.bot, "heard"), (self.writer, "inbox"))
-			self.link((self.bot, "outbox"), (self.client, "inbox"))
-			self.link((self.client, "outbox"), (self.bot, "inbox"))
-			self.addChildren(self.lagger, self.bot, self.client, self.writer)
-			yield Axon.Ipc.newComponent(*(self.children))
-			while 1:
-				self.pause()
-				yield 1
-
-	t = TestHarness()
-	t.activate()
-	scheduler.run.runThreads(slowmo=0)
-	
