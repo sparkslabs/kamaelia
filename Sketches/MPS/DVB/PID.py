@@ -18,7 +18,7 @@ import Axon.AdaptiveCommsComponent
 def tune_DVBT(fe, frequency):
     # Build the tuning parameters (DVB-T)
     params = dvb3.frontend.OFDMParameters()
-    params.frequency = self.freq * 1000 * 1000
+    params.frequency = frequency * 1000 * 1000
 
     # Start the tuning
     fe.set_frontend(params)
@@ -29,9 +29,9 @@ def notLocked(fe):
     If it is, exit with a StopIteration. (allows use in a for
     loop)
     """
-    return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) != 0:
+    return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) != 0
 
-def addPIDS(pids)
+def addPIDS(pids):
     """\
     Adds the given PID to the transport stream that will be available
     in "/dev/dvb/adapter0/dvr0"
@@ -106,8 +106,8 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     and ES packets.
     """
     Inboxes = {
-        "inbox" : "This is where we expect to recieve a transport stream"
-        "control" : "We will receive shutdown messages here"
+        "inbox" : "This is where we expect to recieve a transport stream",
+        "control" : "We will receive shutdown messages here",
     }
     def __init__(self, pidmap):
         super(DVB_Demuxer, self).__init__()
@@ -135,7 +135,7 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                   if i>0:
                       # if found remove all bytes preceeding that point in the buffers
                       # And try again
-                      buffer = [i: ]
+                      buffer = buffer[i:]
                       continue
                   # packet is the first 188 bytes in the buffer now
                   packet, buffer = data[:DVB_PACKET_SIZE], data[DVB_PACKET_SIZE:]
@@ -231,8 +231,9 @@ if __name__ == "__main__":
            "MORE4+1": (810, [701,702]),
            "TMF": (810, [201,202])
     }
-    pipeline(
-       DVB_Channel_Tuner(*(services["MORE4+1"])),
-       SimpleFileWriter("channelx.data")
-    ).run()
-
+    if 0:
+        pipeline(
+           DVB_Multiplex(754, [640, 641, 620, 621, 622, 610, 611, 612, 600, 601, 602, 12]),
+           SimpleFileWriter("multiplex_new.data")
+        ).run()
+    if 1:
