@@ -186,6 +186,16 @@ from debug import debug
 import Axon
 import CoordinatingAssistantTracker as cat
 
+class _NullScheduler(object):
+    def wakeThread(self,mprocess):
+        pass
+    def pauseThread(self,mprocess):
+        pass
+    def isThreadPaused(self,mprocess):
+        return False
+
+_nullscheduler = _NullScheduler()
+
 class microprocess(Axon.AxonObject):
    schedulerClass = None
    trackerClass = None
@@ -207,7 +217,6 @@ class microprocess(Axon.AxonObject):
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
       self.id,self.name = tupleId(self)
-      self.__runnable =1
       self.__stopped = 0
       if thread is not None:
          self.__thread = thread
@@ -216,7 +225,7 @@ class microprocess(Axon.AxonObject):
          
       self.closeDownValue = closeDownValue
          
-      self.scheduler = None
+      self.scheduler = _nullscheduler
       self.tracker=cat.coordinatingassistanttracker.getcat()
 
       # If the client has defined a debugger in their class we don't want to override it.
@@ -234,7 +243,7 @@ class microprocess(Axon.AxonObject):
       result = result + self.name + " :"
       result = result + self.id.__str__() + " :"
       result = result + self.init.__str__() + " :"
-      result = result + self.__runnable.__str__() + " :"
+#      result = result + self.__runnable.__str__() + " :"
       result = result + self.__stopped.__str__() + " :"
       return result
 
@@ -256,8 +265,8 @@ class microprocess(Axon.AxonObject):
       boolean result indicating if the microprocess is paused.
       """
       if self.debugger.areDebugging("microprocess._isRunnable", 10):
-         self.debugger.debugmessage("microprocess._isRunnable", "self.runnable",self.__runnable)
-      return self.__runnable == 1
+         self.debugger.debugmessage("microprocess._isRunnable", "self.scheduler.isMProcessPaused(self)", self.scheduler.isMProcessPaused(self))
+      return not self.scheduler.isThreadPaused(self)
 
    def stop(self):
       """'M.stop()' -
@@ -265,28 +274,32 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.stop", 1):
          self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
-      self.__runnable = 0
 
    def pause(self):
-      """'M.pause()' - Pauses the microprocess.
-      sets the runnable flag to false - thus pausing the microprocess."""
-      if self.debugger.areDebugging("microprocess.pause", 1):
-         self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
-      self.__runnable = 0
+       """'M.pause()' - Pauses the microprocess.
+       sets the runnable flag to false - thus pausing the microprocess."""
+       if self.debugger.areDebugging("microprocess.pause", 1):
+           self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
+       self.scheduler.pauseThread(self)
+
+   def unpause(self):
+       """M.unpause() - Un-pauses the microprocess.
+
+       This can only be performed by an external microprocess. This is provided
+       since it is conceivable that a more complex scheduler than the one at
+       present may wish to manipulate this sort of flag.  Does nothing if
+       microprocess has been stopped.
+       """
+       if self.debugger.areDebugging("microprocess.unpause", 1):
+           self.debugger.debugmessage("microprocess.unpause", "Microprocess UNPAUSED", self.id,self.name,self)
+       self.scheduler.wakeThread(self)
 
    def _unpause(self):
-      """'M._unpause()' - Un-pauses the microprocess, sets the runnable flag to true.
-
-      Unpauses the microprocess by setting the runnable flag to true.
-      This can only be performed by an external microprocess. This is provided
-      since it is conceivable that a more complex scheduler than the one at
-      present may wish to manipulate this sort of flag.  Does nothing if
-      microprocess has been stopped.
-      ."""
-      if self.debugger.areDebugging("microprocess._unpause", 1):
-         self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
-      if not self._isStopped():
-         self.__runnable = 1
+       if self.debugger.areDebugging("microprocess._unpause", 1):
+           self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
+       noisydeprecationwarning = "Use self.unpause() rather than self._unpause(). self._unpause() will be deprecated."
+       print noisydeprecationwarning
+       return self.unpause()
 
    def main(self):
       """'M.main()' - stub function. Client classes are expected to override this.
@@ -309,22 +322,15 @@ class microprocess(Axon.AxonObject):
       """
       # someobject.setthread = (self) # XXXX Check -- Appears no to be used!
       pc = someobject.__getattribute__(mainmethod)()
-#      pc = someobject.main() # Call the object, get a generator function
       while(1):
-         # Continually try to run the code, and then release control
-         if someobject._isRunnable() :
-            # If the object is runnable, we run the objectscheduler=
-            v = pc.next()
-            yield v           # Yield control back - making us into a generator function
-         else:
-            # Microprocess is not running, has it stopped completely?
-            if someobject._isStopped():
-               # Microprocess has stopped
-               yield None
-               return
-            else:
-               # Microprocess simply paused
-               yield "Paused"
+          # Continually try to run the code, and then release control
+          if someobject._isStopped():
+              # Microprocess has stopped
+              yield None
+              return
+          else:
+              v = pc.next()
+              yield v           # Yield control back - making us into a generator function
 
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
       """calls the _microprocessGenerator function to create a generator
