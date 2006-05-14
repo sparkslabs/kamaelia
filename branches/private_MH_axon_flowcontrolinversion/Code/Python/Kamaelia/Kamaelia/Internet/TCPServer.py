@@ -173,12 +173,13 @@ class TCPServer(Axon.Component.component):
 
    def anyClosedSockets(self):
       """Check "_feedbackFromCSA" inbox for socketShutdown messages, and close sockets in response."""
-      if self.dataReady("_feedbackFromCSA"):
+      closedSomeSockets=False
+      while self.dataReady("_feedbackFromCSA"):
          data = self.recv("_feedbackFromCSA")
          if isinstance( data, _ki.socketShutdown):
             self.closeSocket(data)
-         return True
-      return False
+         closedSomeSockets=True
+      return closedSomeSockets
 
    def handleNewConnection(self):
       """\
@@ -187,7 +188,7 @@ class TCPServer(Axon.Component.component):
       Accepts and sets up new connections, wiring them up and passing them on via
       the "protocolHandlerSignal" outbox.
       """
-      if self.dataReady("newconnection"):
+      while self.dataReady("newconnection"):
          data = self.recv("newconnection")
          # If we recieve information on data ready, for a server it means we have a new connection
          # to handle
@@ -206,7 +207,7 @@ class TCPServer(Axon.Component.component):
              self.send(newWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
              self.addChildren(CSA)
              self.link((CSA, "CreatorFeedback"),(self,"_feedbackFromCSA"))
-             return CSA
+#             return CSA
 
    def main(self):
        selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
@@ -216,7 +217,7 @@ class TCPServer(Axon.Component.component):
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
-#           self.pause()
+           self.pause()
            if self.anyClosedSockets():
                for i in xrange(10):
                   yield 1
