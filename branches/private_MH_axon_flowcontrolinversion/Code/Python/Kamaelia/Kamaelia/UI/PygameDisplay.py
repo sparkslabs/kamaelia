@@ -63,11 +63,13 @@ be to:
 - listen or stop listening to events (you must have already requested a surface)
 - move an existing surface
 - create a video overlay
+- notify of ne to redraw
 
 The requests are described in more detail below.
 
 Once your component has been given the requested surface, it is free to render
-onto it whenever it wishes.
+onto it whenever it wishes. It should then immediately send a "REDRAW" request
+to notify PygameDisplay that the window needs redrawing.
 
 NOTE that you must set the alpha value of the surface before rendering and
 restore its previous value before yielding. This is because PygameDisplay uses
@@ -76,6 +78,9 @@ the alpha value to control the transparency with which it renders the surface.
 Overlays work differently: instead of being given something to render to, you
 must provide, in your initial request, an outbox to which you will send raw
 yuv (video) data, whenever you want to change the image on the overlay.
+
+PygameDisplay instantiates a private, threaded component to listen for pygame
+events. These are then forwarded onto PygameDisplay.
 
 PygameDisplay's main loop continuously renders the surfaces and video overlays
 onto the display, and dispatches any pygame events to listeners. The rendering
@@ -190,6 +195,16 @@ If you have supplied a "positionservice", then sending (x,y) pairs to the
 outbox you specified will update the position of the overlay.
 
 There is currently no mechanism to destroy an overlay.
+
+Redraw requests
+^^^^^^^^^^^^^^^
+
+To notify PygameDisplay that it needs to redraw the display, send a dictionary
+containing the following keys to the "notify" inbox::
+    {
+        "REDRAW" : True,             # this is a redraw request
+        "surface" : surface          # surface that has been changed
+    }
 """
 
 import pygame
