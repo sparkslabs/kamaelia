@@ -171,7 +171,7 @@ class threadedcomponent(Component.component):
    def unlink(self, thecomponent=None, thelinkage=None):
         cmd = super(threadedcomponent,self).unlink
         return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
-
+   
    def _do_threadsafe(self, cmd, argL, argD):
         if self._threadrunning and threading.currentThread().getName() != self._localThreadId:
             # call must be synchronous (wait for reply) because there is a reply
