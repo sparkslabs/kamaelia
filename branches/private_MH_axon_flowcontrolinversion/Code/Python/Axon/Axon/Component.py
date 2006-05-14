@@ -201,7 +201,7 @@ class component(microprocess):
 
       # Create boxes for inboxes/outboxes
       for boxname in self.Inboxes:
-          self.inboxes[boxname] = makeInbox(notify=self._unpause)
+          self.inboxes[boxname] = makeInbox(notify=self.unpause)
       for boxname in self.Outboxes:
           self.outboxes[boxname] = makeOutbox()
 
@@ -231,7 +231,7 @@ class component(microprocess):
       You will want to call this function if you create child components of your
       component.
       """
-      child._callOnCloseDown.append(self._unpause)
+      child._callOnCloseDown.append(self.unpause)
       self.children.append(child)
 
    def addChildren(self,*children):
@@ -255,7 +255,7 @@ class component(microprocess):
       your component.
       """
       removeAll(self.children, child)
-      removeAll(child._callOnCloseDown, self._unpause)
+      removeAll(child._callOnCloseDown, self.unpause)
       self.postoffice.unlink(thecomponent=child)
 
    def childComponents(self):
