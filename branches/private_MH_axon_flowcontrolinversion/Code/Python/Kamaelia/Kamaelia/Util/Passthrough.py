@@ -59,7 +59,8 @@ class passThrough(component):
                 for ipc in self.shutdownOn:
                     if isinstance(data, ipc):
                         return 0
-                
+                    
+      self.pause()
       return forwarded
 
 __kamaelia_components__  = ( passThrough, )
