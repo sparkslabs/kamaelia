@@ -144,8 +144,6 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """Main loop"""
         self.pause()
         result = self.checkOOBInfo()
-        if result:
-            return result
         if ((_time.time() - self.time) > 1):
             self.time = _time.time()
     
@@ -181,7 +179,8 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.link((pHandler,"signal"),(CSA, "control"))
             _Axon.Foo = CSA
     
-        return _Axon.Ipc.newComponent(CSA,pHandler)
+        CSA.activate()
+        pHandler.activate()
 
     def handleClosedCSA(self,data):
         """
@@ -206,10 +205,10 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def checkOOBInfo(self):
         """Check and handle Out Of Bounds info - notifications of new and closed sockets."""
-        if self.dataReady("_oobinfo"):
+        while self.dataReady("_oobinfo"):
             data = self.recv("_oobinfo")
             if isinstance(data,_ki.newCSA):
-                return self.handleNewCSA(data)
+                self.handleNewCSA(data)
             if isinstance(data,_ki.shutdownCSA):
                 assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
                 self.handleClosedCSA(data)
