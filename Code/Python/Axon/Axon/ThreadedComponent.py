@@ -57,10 +57,16 @@ class threadedcomponent(Component.component):
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
        self._threadId = numId()
        self._localThreadId = threading.currentThread().getName()
-       self._thethread = threading.Thread(name=self._threadId, target=self.__getattribute__(mainmethod))
+       self._threadmainmethod = self.__getattribute__(mainmethod)
+       self._thethread = threading.Thread(name=self._threadId, target=self._threadmain)
        self._thethread.setDaemon(True) # means the thread is stopped if the main thread stops.
    
        return super(threadedcomponent,self).activate(Scheduler,Tracker,"_localmain")
+   
+   def _threadmain(self):
+        self._threadmainmethod()
+        self._threadrunning = False
+        Component.component.unpause(self)
    
    
    def main(self):
@@ -132,6 +138,9 @@ class threadedcomponent(Component.component):
               msg = self.threadtoaxonqueue.get()
               self._handlemessagefromthread(msg)
 
+          if running:
+              Component.component.pause(self)
+          
           yield 1
        self._threadrunning = False
 
@@ -153,6 +162,7 @@ class threadedcomponent(Component.component):
 
    def send(self,message, boxname="outbox"):
        self.outqueues[boxname].put(message)
+       Component.component.unpause(self)
 
    def link(self, source,sink,passthrough=0):
         cmd = super(threadedcomponent,self).link
@@ -162,12 +172,19 @@ class threadedcomponent(Component.component):
         cmd = super(threadedcomponent,self).unlink
         return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
 
+   def sync(self):
+        """\
+        Call this from main() to synchronise with the main scheduler's thread.
+        """
+        return self._do_threadsafe( lambda:None, [], {} )
+   
    def _do_threadsafe(self, cmd, argL, argD):
         if self._threadrunning and threading.currentThread().getName() != self._localThreadId:
             # call must be synchronous (wait for reply) because there is a reply
             # and because next instruction in thread might assume this outbox
             # exists
             self.threadtoaxonqueue.put( (cmd, argL, argD ) )
+            Component.component.unpause(self)
             return self.axontothreadqueue.get()
         else:
             return cmd(*argL,**argD)

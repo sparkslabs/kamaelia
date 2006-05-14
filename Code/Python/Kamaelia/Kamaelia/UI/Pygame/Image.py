@@ -201,6 +201,7 @@ class Image(Axon.Component.component):
             
          if change:
             self.blitToSurface()
+            self.send({"REDRAW":True, "surface":self.display}, "display_signal")
             change = False
 
          self.pause()

@@ -63,11 +63,13 @@ be to:
 - listen or stop listening to events (you must have already requested a surface)
 - move an existing surface
 - create a video overlay
+- notify of ne to redraw
 
 The requests are described in more detail below.
 
 Once your component has been given the requested surface, it is free to render
-onto it whenever it wishes.
+onto it whenever it wishes. It should then immediately send a "REDRAW" request
+to notify PygameDisplay that the window needs redrawing.
 
 NOTE that you must set the alpha value of the surface before rendering and
 restore its previous value before yielding. This is because PygameDisplay uses
@@ -76,6 +78,9 @@ the alpha value to control the transparency with which it renders the surface.
 Overlays work differently: instead of being given something to render to, you
 must provide, in your initial request, an outbox to which you will send raw
 yuv (video) data, whenever you want to change the image on the overlay.
+
+PygameDisplay instantiates a private, threaded component to listen for pygame
+events. These are then forwarded onto PygameDisplay.
 
 PygameDisplay's main loop continuously renders the surfaces and video overlays
 onto the display, and dispatches any pygame events to listeners. The rendering
@@ -190,6 +195,16 @@ If you have supplied a "positionservice", then sending (x,y) pairs to the
 outbox you specified will update the position of the overlay.
 
 There is currently no mechanism to destroy an overlay.
+
+Redraw requests
+^^^^^^^^^^^^^^^
+
+To notify PygameDisplay that it needs to redraw the display, send a dictionary
+containing the following keys to the "notify" inbox::
+    {
+        "REDRAW" : True,             # this is a redraw request
+        "surface" : surface          # surface that has been changed
+    }
 """
 
 import pygame
@@ -199,8 +214,29 @@ _cat = Axon.CoordinatingAssistantTracker
 
 #"events" : (self, "events"),#
 
-
 class Bunch: pass
+
+from Axon.ThreadedComponent import threadedcomponent
+import time
+
+class _PygameEventSource(threadedcomponent):
+    """\
+    Event source for PygameDisplay
+    """
+    Inboxes = { "inbox" : "NOT USED",
+                "control" : "NOT USED",
+              }
+    Outboxes = { "outbox" : "Pygame event objects, bundled into lists",
+                 "signal" : "Not used",
+               }
+    def main(self):
+        while 1:
+            time.sleep(0.01)
+            eventlist = pygame.event.get()  # and get any others waiting
+            
+            if eventlist:
+                self.send(eventlist,"outbox")
+            
 
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    """\
@@ -221,6 +257,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes =  { "inbox"   : "Default inbox, not currently used",
                 "control" : "NOT USED",
                 "notify"  : "Receive requests for surfaces, overlays and events",
+                "events"  : "Receive events from source of pygame events",
               }
    Outboxes = { "outbox" : "NOT USED",
                 "signal" : "NOT USED",
@@ -283,9 +320,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          Check "notify" inbox for requests for surfaces, events and overlays and
          process them.
          """
-         if self.dataReady("notify"):
+         
+         while self.dataReady("notify"):
             message = self.recv("notify")
             if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
+               self.needsRedrawing = True
 #               print "SURFACE", message
                surface = message.message
 #               print "SURFACE", surface
@@ -310,6 +349,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                        pass
 #                   print "REMOVED OUTBOX"
             elif message.get("DISPLAYREQUEST", False):
+               self.needsRedrawing = True
                callbackservice = message["callback"]
                eventservice = message.get("events", None)
                size = message["size"]
@@ -343,6 +383,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 try:
                     surface = message.get("surface", None)
                     if surface is not None:
+                        self.needsRedrawing = True
                         c = 0
                         found = False
                         while c < len(self.surfaces) and not found:
@@ -358,6 +399,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     print "It all went horribly wrong", e   
             
             elif message.get("OVERLAYREQUEST", False):
+                self.needsRedrawing = True
                 size = message["size"]
                 pixformat = message["pixformat"]
                 position = message.get("position", (0,0))
@@ -387,6 +429,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                        "yuvservice":yuvservice,
                                        "posservice":posservice}
                                     )
+                                    
+            elif message.get("REDRAW", False):
+                self.needsRedrawing=True
+                message["surface"]
+                
                 
 # Does this *really* need to be here?
 #
@@ -403,46 +450,13 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """
       display.fill(self.background_colour)
       
-      # pre-fetch all waiting events in one go
-      events = [ event for event in pygame.event.get() ]
-
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
-         # see if this component is interested in events
-         if eventcomms is not None:
-            listener = eventcomms
-            # go through events, for each, check if the listener is interested in that time of event         
-            bundle = []
-            for event in events:
-               wanted = False
-               try:   wanted = self.events_wanted[listener][event.type]
-               except KeyError: pass
-               if wanted:
-                  # if event contains positional information, remap it
-                  # for the surface's coordiate origin
-                  if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                     e = Bunch()
-                     e.type = event.type
-                     pos = event.pos[0],event.pos[1]
-                     try:
-                         e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
-                         if event.type == pygame.MOUSEMOTION:
-                            e.rel = event.rel
-                         if event.type == pygame.MOUSEMOTION:
-                            e.buttons = event.buttons
-                         else:
-                            e.button = event.button
-                         event = e
-                     except TypeError:
-                        "XXXX GRRR"
-                        pass
-
-                  bundle.append(event)
-
-            # only send events to listener if we've actually got some
-            if bundle != []:
-               self.send(bundle, listener)
+      for theoverlay in self.overlays:
+          theoverlay['overlay'].display( theoverlay['yuv'] )
+   
+   def updateOverlays(self):
       #
       # Update overlays - We do these second, so as to avoid flicker.
       #
@@ -450,6 +464,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
           # receive new image data for display
           if theoverlay['yuvservice']:
+              self.needsRedrawing=True
               theinbox, _ = theoverlay['yuvservice']
               while self.dataReady(theinbox):
                   yuv = self.recv(theinbox)
@@ -462,23 +477,81 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
           # receive position updates
           if theoverlay['posservice']:
+              self.needsRedrawing=True
               theinbox, _ = theoverlay['posservice']
               while self.dataReady(theinbox):
                   theoverlay['position'] = self.recv(theinbox)
                   theoverlay['overlay'].set_location( (theoverlay['position'], 
                                                        (theoverlay['size'][0]/2, theoverlay['size'][1])
                                                       ))
-          theoverlay['overlay'].display( theoverlay['yuv'] )
+              
+   
+   def handleEvents(self):
+      # pre-fetch all waiting events in one go
+      while self.dataReady("events"):
+            events = self.recv("events")
+       
+            for event in events:
+                if event.type in [ pygame.VIDEORESIZE, pygame.VIDEOEXPOSE ]:
+                    self.needsRedrawing = True
+       
+            for surface, position, callbackcomms, eventcomms in self.surfaces:
+                # see if this component is interested in events
+                if eventcomms is not None:
+                    listener = eventcomms
+                    # go through events, for each, check if the listener is interested in that time of event         
+                    bundle = []
+                    for event in events:
+                        wanted = False
+                        try:   wanted = self.events_wanted[listener][event.type]
+                        except KeyError: pass
+                        if wanted:
+                            # if event contains positional information, remap it
+                            # for the surface's coordiate origin
+                            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                                e = Bunch()
+                                e.type = event.type
+                                pos = event.pos[0],event.pos[1]
+                                try:
+                                    e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                                    if event.type == pygame.MOUSEMOTION:
+                                        e.rel = event.rel
+                                    if event.type == pygame.MOUSEMOTION:
+                                        e.buttons = event.buttons
+                                    else:
+                                        e.button = event.button
+                                    event = e
+                                except TypeError:
+                                    "XXXX GRRR"
+                                    pass
+            
+                            bundle.append(event)
+        
+                    # only send events to listener if we've actually got some
+                    if bundle != []:
+                        self.send(bundle, listener)
 
    def main(self):
       """Main loop."""
       pygame.init()
       pygame.mixer.quit()
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
+      
+      eventsource = _PygameEventSource().activate()
+      self.addChildren(eventsource)
+      self.link( (eventsource,"outbox"), (self,"events") )
+      
       while 1:
-         pygame.display.update()
+         self.needsRedrawing = False
+         self.handleEvents()
          self.handleDisplayRequest()
-         self.updateDisplay(display)
+         self.updateOverlays()
+         
+         if self.needsRedrawing:
+             self.updateDisplay(display)
+             pygame.display.update()
+             
+         self.pause()
          yield 1
 
 __kamaelia_components__  = ( PygameDisplay, )
@@ -555,6 +628,7 @@ To strive, to seek, to find, and not to yield.
                             self.render_area.width+self.outline_width,
                             self.render_area.height+self.outline_width),
                           self.outline_width)
+         self.send( {"REDRAW":True, "surface":display}, "signal" )
 
          maxheight = 0
          while 1:
@@ -576,11 +650,12 @@ To strive, to seek, to find, and not to yield.
                                      (self.render_area.left, position[1], 
                                       self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
                                      0)
-                     pygame.display.update()
+                     self.send( {"REDRAW":True, "surface":display}, "signal" )
                   else:
                      position[1] += maxheight + self.line_spacing
 
                display.blit(word_render, position)
+               self.send( {"REDRAW":True, "surface":display}, "signal" )
                position[0] += wordsize[0]
                if wordsize[1] > maxheight:
                   maxheight = wordsize[1]

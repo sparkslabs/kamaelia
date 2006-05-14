@@ -60,7 +60,7 @@ class _AdaptiveCommsable(object):
    def addInbox(self,*args):
       "Adds a custom inbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the inbox added."
       name = self._newInboxName(*args)
-      self.inboxes[name]=makeInbox(self._unpause)
+      self.inboxes[name]=makeInbox(self.unpause)
       return name
 
    def deleteInbox(self,name):

@@ -175,6 +175,7 @@ class PyGameApp(_Axon.Component.component):
             self._dispatch()
             if not self.quitting:
                 self.mainLoop()
+            self.send({"REDRAW":True, "surface":self.screen}, "displaysignal")
             if not self.quitting and self.flip:
                 pygame.display.flip()
                 yield 1

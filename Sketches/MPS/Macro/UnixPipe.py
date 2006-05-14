@@ -30,7 +30,7 @@ stay that way.
 
 import Axon
 from Kamaelia.Util.PipelineComponent import pipeline
-from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 
 #import Kamaelia.Internet.Selector as Selector
 import Kamaelia.KamaeliaIPC as _ki
@@ -38,7 +38,7 @@ from Axon.Ipc import shutdown
 from Kamaelia.KamaeliaIPC import newReader, newWriter
 from Kamaelia.KamaeliaIPC import removeReader, removeWriter
 
-from Selector import Selector
+from Kamaelia.Internet.Selector import Selector
 
 import subprocess
 import fcntl
@@ -126,11 +126,11 @@ class X(Axon.Component.component):
 
         exit_status = x.poll()       # while x.poll() is None
         while exit_status is None:
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 d = self.recv("inbox")
                 writeBuffer.append(d)
 
-            if self.dataReady("stdinready"):
+            while self.dataReady("stdinready"):
                 self.recv("stdinready")
                 while len(writeBuffer) >0:
                     d = writeBuffer.pop(0)
@@ -138,8 +138,9 @@ class X(Axon.Component.component):
                     if count != len(d):
                         raise "Yay, we broke it"
 
-            if self.dataReady("stdoutready"):
+            while self.dataReady("stdoutready"):
                 self.recv("stdoutready")
+                print "outready"
                 try:
                     Y = os.read(x.stdout.fileno(),10)
                     if len(Y)>0:
@@ -147,17 +148,20 @@ class X(Axon.Component.component):
                 except OSError, e:
                     pass
 
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                  shutdownMessage = self.recv("control")
                  self.send(removeWriter(self,(x.stdin)), "selector")
                  yield 1
                  x.stdin.close()
             exit_status = x.poll()
+#            print exit_status
+            if not exit_status:
+                self.pause()
             yield 1
 
         more_data = True # idiom for do...while
         while more_data:
-            if self.dataReady("stdoutready"):
+            while self.dataReady("stdoutready"):
                 self.recv("stdoutready")
                 try:
                     Y = os.read(x.stdout.fileno(),10)
@@ -167,6 +171,7 @@ class X(Axon.Component.component):
                         more_data = False
                 except OSError, e:
                     more_data = False
+            self.pause()
             yield 1
 
         self.send(removeReader(self,(x.stderr)), "selector")
@@ -180,7 +185,8 @@ class X(Axon.Component.component):
 
 if __name__=="__main__":
     pipeline(
-       ChargenComponent(),
-       X("wc"),
+       #ChargenComponent(),
+#       ConsoleReader(),
+       X("sleep 1.0"),
        ConsoleEchoer(forwarder=True)
     ).run()

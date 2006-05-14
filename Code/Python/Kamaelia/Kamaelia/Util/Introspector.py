@@ -233,7 +233,8 @@ class Introspector(Axon.Component.component):
         # fetch components currently active with the scheduler
         # (note that this is not necessarily all components - as they may have only just been 
         #  activated, in which case they may not register yet)
-        components = dict([ (p,(p.id,p.name)) for p in self.scheduler.threads if isinstance(p, Axon.Component.component) ])
+        threads = self.scheduler.listAllThreads()
+        components = dict([ (p,(p.id,p.name)) for p in threads if isinstance(p, Axon.Component.component) ])
         
         # go through all components' postoffices and find all linkages
         linkages = {}

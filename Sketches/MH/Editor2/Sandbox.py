@@ -58,6 +58,7 @@ class Sandbox(Axon.Component.component):
                 elif cmd[0] == "GO":
                     yield self.go()
                     
+            self.pause()
     
     def makeComponent(self, spec, uid=None):
         """\

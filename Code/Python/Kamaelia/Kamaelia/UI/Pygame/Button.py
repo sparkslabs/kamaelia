@@ -195,7 +195,7 @@ class Button(Axon.Component.component):
 #         yield 1
       done = False
       while not done:
-         if self.dataReady("control"):
+         while self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
@@ -213,6 +213,7 @@ class Button(Axon.Component.component):
 ###                   print "EVENT", event.type, event.key
                    if event.key == self.key:
                       self.send( self.eventMsg, "outbox" )
+         self.pause()
          yield 1
             
       
@@ -223,6 +224,7 @@ class Button(Axon.Component.component):
            self.display.blit( self.image, self.imagePosition )
        except:
            pass
+       self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
 __kamaelia_components__  = ( Button, )
 
