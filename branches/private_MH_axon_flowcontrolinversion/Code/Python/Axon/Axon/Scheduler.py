@@ -98,6 +98,9 @@ class scheduler(microprocess):
        return self.threads.get(mprocess, _SLEEPING) == _SLEEPING
        # doesn't include _GOINGTOSLEEP (inference is the thread isn't asleep yet!)
    
+   def listAllThreads(self):
+       return self.threads.keys()
+   
    def handleMicroprocessShutdownKnockon(self, knockon):
      if isinstance(knockon, shutdownMicroprocess):
         for i in xrange(len(self.threads)):
