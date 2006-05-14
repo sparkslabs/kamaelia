@@ -9,6 +9,7 @@ import os
 import dvb3.frontend
 import dvb3.dmx
 import time
+import struct
 
 from Axon.Component import component
 DVB_PACKET_SIZE = 188
@@ -124,9 +125,12 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         buffer = ""
         while 1:
+            yield 1
             if self.dataReady("inbox"):
               buffer += self.recv("inbox")
-              while len(buffer) >= DVB_PACKET_SIZE:
+
+            while len(buffer) >= DVB_PACKET_SIZE:
+                  yield 1
                   i = buffer.find(DVB_RESYNC)
                   if i == -1: # if not found
                       "we have a dud"
@@ -138,20 +142,21 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                       buffer = buffer[i:]
                       continue
                   # packet is the first 188 bytes in the buffer now
-                  packet, buffer = data[:DVB_PACKET_SIZE], data[DVB_PACKET_SIZE:]
+                  packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
 
                   if self.errorIndicatorSet(packet): continue
                   if self.scrambledPacket(packet):   continue
 
-            pid = struct.unpack(">H", packet[1: 3])[0] & 0x1fff
+                  pid = struct.unpack(">H", packet[1: 3])[0] & 0x1fff
 
-            # Send the packet to the outbox appropriate for this PID.
-            # "Fail" silently for PIDs we don't know about and weren't
-            # asked to demultiplex
-            try:
-                self.send(packet, self.pidmap[ str(pid) ])
-            except KeyError:
-                pass
+                  # Send the packet to the outbox appropriate for this PID.
+                  # "Fail" silently for PIDs we don't know about and weren't
+                  # asked to demultiplex
+                  try:
+#                      print ".", self.pidmap, str(pid)
+                      self.send(packet, self.pidmap[ str(pid) ])
+                  except KeyError:
+                      pass
 
 #
 # XXX
@@ -220,6 +225,8 @@ class PIDHandler:
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
+    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.Graphline import Graphline
 
     channels_london =  {
            "MORE4+1" : (   538, #MHz
@@ -237,3 +244,29 @@ if __name__ == "__main__":
            SimpleFileWriter("multiplex_new.data")
         ).run()
     if 1:
+        Graphline(
+            SOURCE=ReadFileAdaptor("multiplex.data"),
+            DEMUX=DVB_Demuxer({
+                "640": "NEWS24",
+                "641": "NEWS24",
+                "600": "BBCONE",
+                "601": "BBCONE",
+                "610": "BBCTWO",
+                "611": "BBCTWO",
+                "620": "CBBC",
+                "621": "CBBC",
+            }),
+            NEWS24=SimpleFileWriter("news24.data"),
+            BBCONE=SimpleFileWriter("bbcone.data"),
+            BBCTWO=SimpleFileWriter("bbctwo.data"),
+            CBBC=SimpleFileWriter("cbbc.data"),
+            linkages={
+               ("SOURCE", "outbox"):("DEMUX","inbox"),
+               ("DEMUX", "NEWS24"): ("NEWS24", "inbox"),
+               ("DEMUX", "BBCONE"): ("BBCONE", "inbox"),
+               ("DEMUX", "BBCTWO"): ("BBCTWO", "inbox"),
+               ("DEMUX", "CBBC"): ("CBBC", "inbox"),
+            }
+        ).run()
+#            if not self.outboxes.has_key(pidmap[pid]):
+#                self.addOutbox(pidmap[pid])
