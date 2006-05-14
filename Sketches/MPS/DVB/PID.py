@@ -20,6 +20,11 @@ def tune_DVBT(fe, frequency):
     # Build the tuning parameters (DVB-T)
     params = dvb3.frontend.OFDMParameters()
     params.frequency = frequency * 1000 * 1000
+    
+    params.inversion = dvb3.frontend.INVERSION_AUTO
+    params.constellation = dvb3.frontend.QAM_16
+    params.coderate_HP = dvb3.frontend.FEC_3_4
+    params.coderate_LP = dvb3.frontend.FEC_3_4
 
     # Start the tuning
     fe.set_frontend(params)
