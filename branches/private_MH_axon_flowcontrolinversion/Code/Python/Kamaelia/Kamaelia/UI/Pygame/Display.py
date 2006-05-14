@@ -217,10 +217,7 @@ class _PygameEventSource(threadedcomponent):
     def main(self):
         while 1:
             time.sleep(0.01)
-#            event = pygame.event.wait()     # wait for an event
             eventlist = pygame.event.get()  # and get any others waiting
-            
-#            eventlist.insert(0,event)       # put the one we got first at the beginning
             
             if eventlist:
                 self.send(eventlist,"outbox")
@@ -308,9 +305,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          Check "notify" inbox for requests for surfaces, events and overlays and
          process them.
          """
-         if self.dataReady("notify"):
+         
+         while self.dataReady("notify"):
             message = self.recv("notify")
             if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
+               self.needsRedrawing = True
 #               print "SURFACE", message
                surface = message.message
 #               print "SURFACE", surface
@@ -335,6 +334,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                        pass
 #                   print "REMOVED OUTBOX"
             elif message.get("DISPLAYREQUEST", False):
+               self.needsRedrawing = True
                callbackservice = message["callback"]
                eventservice = message.get("events", None)
                size = message["size"]
@@ -368,6 +368,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 try:
                     surface = message.get("surface", None)
                     if surface is not None:
+                        self.needsRedrawing = True
                         c = 0
                         found = False
                         while c < len(self.surfaces) and not found:
@@ -383,6 +384,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     print "It all went horribly wrong", e   
             
             elif message.get("OVERLAYREQUEST", False):
+                self.needsRedrawing = True
                 size = message["size"]
                 pixformat = message["pixformat"]
                 position = message.get("position", (0,0))
@@ -412,6 +414,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                        "yuvservice":yuvservice,
                                        "posservice":posservice}
                                     )
+                                    
+            elif message.get("REDRAW", False):
+                self.needsRedrawing=True
+                message["surface"]
+                
                 
 # Does this *really* need to be here?
 #
@@ -442,6 +449,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
           # receive new image data for display
           if theoverlay['yuvservice']:
+              self.needsRedrawing=True
               theinbox, _ = theoverlay['yuvservice']
               while self.dataReady(theinbox):
                   yuv = self.recv(theinbox)
@@ -454,18 +462,23 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
           # receive position updates
           if theoverlay['posservice']:
+              self.needsRedrawing=True
               theinbox, _ = theoverlay['posservice']
               while self.dataReady(theinbox):
                   theoverlay['position'] = self.recv(theinbox)
                   theoverlay['overlay'].set_location( (theoverlay['position'], 
                                                        (theoverlay['size'][0]/2, theoverlay['size'][1])
                                                       ))
-   
+              
    
    def handleEvents(self):
       # pre-fetch all waiting events in one go
       while self.dataReady("events"):
             events = self.recv("events")
+       
+            for event in events:
+                if event.type in [ pygame.VIDEORESIZE, pygame.VIDEOEXPOSE ]:
+                    self.needsRedrawing = True
        
             for surface, position, callbackcomms, eventcomms in self.surfaces:
                 # see if this component is interested in events
@@ -514,11 +527,15 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.link( (eventsource,"outbox"), (self,"events") )
       
       while 1:
-         pygame.display.update()
+         self.needsRedrawing = False
+         self.handleEvents()
          self.handleDisplayRequest()
          self.updateOverlays()
-         self.updateDisplay(display)
-         self.handleEvents()
+         
+         if self.needsRedrawing:
+             self.updateDisplay(display)
+             pygame.display.update()
+             
          self.pause()
          yield 1
 
@@ -596,6 +613,7 @@ To strive, to seek, to find, and not to yield.
                             self.render_area.width+self.outline_width,
                             self.render_area.height+self.outline_width),
                           self.outline_width)
+         self.send( {"REDRAW":True, "surface":display}, "signal" )
 
          maxheight = 0
          while 1:
@@ -617,11 +635,12 @@ To strive, to seek, to find, and not to yield.
                                      (self.render_area.left, position[1], 
                                       self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
                                      0)
-                     pygame.display.update()
+                     self.send( {"REDRAW":True, "surface":display}, "signal" )
                   else:
                      position[1] += maxheight + self.line_spacing
 
                display.blit(word_render, position)
+               self.send( {"REDRAW":True, "surface":display}, "signal" )
                position[0] += wordsize[0]
                if wordsize[1] > maxheight:
                   maxheight = wordsize[1]
