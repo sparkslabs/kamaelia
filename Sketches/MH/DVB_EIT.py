@@ -253,6 +253,54 @@ class NowNextServiceFilter(component):
             self.pause()
             yield 1
 
+class TimeAndDatePacketParser(component):
+    """\
+    Parses "Time and Date" packets.
+    """
+    
+    Inboxes = { "inbox" : "PES packets",
+                "control" : "NOT USED",
+              }
+                    
+    Outboxes = { "outbox" : "Parsed date and time",
+                 "signal" : "NOT USED",
+               }
+                    
+    def main(self):
+        
+        
+        while 1:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                
+                msg = {}
+                
+                s = struct.unpack(">BHHBBB", data[:8])
+                
+                table_id       = s[0]
+                syntax         = s[1] & 0x8000; 
+                section_length = s[1] & 0x0fff
+                
+                data=data[:3+section_length]       # remove any padding at end of table
+                
+                if table_id != 0x70:  # only interested Date & Time packets
+                    continue
+                
+                if syntax:
+                    print "wrong syntax"
+                    continue
+                
+                date     = parseMJD(s[2])                         # Y, M, D
+                time     = unBCD(s[3]), unBCD(s[4]), unBCD(s[5])  # HH, MM, SS
+                
+                msg['date'] = date
+                msg['time'] = time
+                self.send(msg, "outbox")
+            
+            self.pause()
+            yield 1
+
+
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
@@ -262,15 +310,20 @@ if __name__ == "__main__":
 
     Graphline(
 #        SOURCE=ReadFileAdaptor("/home/matteh/eit.ts"),
-        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18]),
-        DEMUX=DVB_Demuxer({ "18": "_EIT_", }),
+        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20]),
+        DEMUX=DVB_Demuxer({ "18": "_EIT_", "20":"_DATETIME_" }),
         EIT = pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
                         NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO
                         NowNextChanges(),
                         ConsoleEchoer(),
                       ),
+        DATETIME = pipeline( PSIPacketReconstructor(),
+                             TimeAndDatePacketParser(),
+                             ConsoleEchoer(),
+                           ),
         linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
                    ("DEMUX", "_EIT_"): ("EIT", "inbox"),
+                   ("DEMUX", "_DATETIME_"): ("DATETIME", "inbox"),
                  }
         ).run()
