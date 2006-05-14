@@ -199,8 +199,32 @@ _cat = Axon.CoordinatingAssistantTracker
 
 #"events" : (self, "events"),#
 
-
 class Bunch: pass
+
+from Axon.ThreadedComponent import threadedcomponent
+import time
+
+class _PygameEventSource(threadedcomponent):
+    """\
+    Event source for PygameDisplay
+    """
+    Inboxes = { "inbox" : "NOT USED",
+                "control" : "NOT USED",
+              }
+    Outboxes = { "outbox" : "Pygame event objects, bundled into lists",
+                 "signal" : "Not used",
+               }
+    def main(self):
+        while 1:
+            time.sleep(0.01)
+#            event = pygame.event.wait()     # wait for an event
+            eventlist = pygame.event.get()  # and get any others waiting
+            
+#            eventlist.insert(0,event)       # put the one we got first at the beginning
+            
+            if eventlist:
+                self.send(eventlist,"outbox")
+            
 
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    """\
@@ -221,6 +245,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Inboxes =  { "inbox"   : "Default inbox, not currently used",
                 "control" : "NOT USED",
                 "notify"  : "Receive requests for surfaces, overlays and events",
+                "events"  : "Receive events from source of pygame events",
               }
    Outboxes = { "outbox" : "NOT USED",
                 "signal" : "NOT USED",
@@ -439,56 +464,62 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    
    def handleEvents(self):
       # pre-fetch all waiting events in one go
-      events = [ event for event in pygame.event.get() ]
-
+      while self.dataReady("events"):
+            events = self.recv("events")
        
-      for surface, position, callbackcomms, eventcomms in self.surfaces:
-         # see if this component is interested in events
-         if eventcomms is not None:
-            listener = eventcomms
-            # go through events, for each, check if the listener is interested in that time of event         
-            bundle = []
-            for event in events:
-               wanted = False
-               try:   wanted = self.events_wanted[listener][event.type]
-               except KeyError: pass
-               if wanted:
-                  # if event contains positional information, remap it
-                  # for the surface's coordiate origin
-                  if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                     e = Bunch()
-                     e.type = event.type
-                     pos = event.pos[0],event.pos[1]
-                     try:
-                         e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
-                         if event.type == pygame.MOUSEMOTION:
-                            e.rel = event.rel
-                         if event.type == pygame.MOUSEMOTION:
-                            e.buttons = event.buttons
-                         else:
-                            e.button = event.button
-                         event = e
-                     except TypeError:
-                        "XXXX GRRR"
-                        pass
-
-                  bundle.append(event)
-
-            # only send events to listener if we've actually got some
-            if bundle != []:
-               self.send(bundle, listener)
+            for surface, position, callbackcomms, eventcomms in self.surfaces:
+                # see if this component is interested in events
+                if eventcomms is not None:
+                    listener = eventcomms
+                    # go through events, for each, check if the listener is interested in that time of event         
+                    bundle = []
+                    for event in events:
+                        wanted = False
+                        try:   wanted = self.events_wanted[listener][event.type]
+                        except KeyError: pass
+                        if wanted:
+                            # if event contains positional information, remap it
+                            # for the surface's coordiate origin
+                            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                                e = Bunch()
+                                e.type = event.type
+                                pos = event.pos[0],event.pos[1]
+                                try:
+                                    e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                                    if event.type == pygame.MOUSEMOTION:
+                                        e.rel = event.rel
+                                    if event.type == pygame.MOUSEMOTION:
+                                        e.buttons = event.buttons
+                                    else:
+                                        e.button = event.button
+                                    event = e
+                                except TypeError:
+                                    "XXXX GRRR"
+                                    pass
+            
+                            bundle.append(event)
+        
+                    # only send events to listener if we've actually got some
+                    if bundle != []:
+                        self.send(bundle, listener)
 
    def main(self):
       """Main loop."""
       pygame.init()
       pygame.mixer.quit()
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
+      
+      eventsource = _PygameEventSource().activate()
+      self.addChildren(eventsource)
+      self.link( (eventsource,"outbox"), (self,"events") )
+      
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()
          self.updateOverlays()
          self.updateDisplay(display)
          self.handleEvents()
+         self.pause()
          yield 1
 
 __kamaelia_components__  = ( PygameDisplay, )
