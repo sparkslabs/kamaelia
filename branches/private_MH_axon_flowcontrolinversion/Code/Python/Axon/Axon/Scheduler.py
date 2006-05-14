@@ -66,7 +66,7 @@ class scheduler(microprocess):
       modules always have access to a standalone scheduler.
       Internal attributes:
          * time = time when this object was last active.
-         * threads = set of threads to be run, including their state - whether active or sleeping(paused
+         * threads = set of threads to be run, including their state - whether active or sleeping(paused)
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
@@ -89,16 +89,36 @@ class scheduler(microprocess):
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
+      """\
+      wakeThread(mprocess[,canActivate]) - request to wake a sleeping mprocess.
+      
+      If sleeping or already active, the specified microprocess will be ensured
+      to be active on the next cycle through the scheduler.
+      
+      If the microprocess is not running yet then it will not be woken, unless
+      canActivate = True (default is False).
+      """
       self.wakeRequests.put( (mprocess, canActivate) )
       
    def pauseThread(self, mprocess):
+       """\
+       pauseThread(mprocess) - request to put a mprocess to sleep.
+       
+       If active, or already sleeping, the specified microprocess will be put
+       to leep on the next cycle through the scheduler.
+       """
        self.pauseRequests.put( mprocess )
 
    def isThreadPaused(self, mprocess):
+       """\
+       Returns True if the specified microprocess is sleeping, or the scheduler
+       does not know about it.
+       """
        return self.threads.get(mprocess, _SLEEPING) == _SLEEPING
        # doesn't include _GOINGTOSLEEP (inference is the thread isn't asleep yet!)
    
    def listAllThreads(self):
+       """Returns a list of all microprocesses (both active and sleeping)"""
        return self.threads.keys()
    
    def handleMicroprocessShutdownKnockon(self, knockon):
@@ -111,7 +131,21 @@ class scheduler(microprocess):
          self._addThread(knockon.original)
 
    def main(self,slowmo=0,canblock=False):
+       """\
+       main([slowmo][,canblock]) - Scheduler main loop generator
        
+       Each pass through this generator does two things:
+       * one pass through all active microprocesses, giving executing them.
+       * processing of wake/sleep requests
+       
+       slowmo specifies a delay (in seconds) before the main loop is run.
+       slowmo defaults to 0.
+       
+       If canblock is True, this generator will briefly) block if there are
+       no active microprocesses, otherwise it will return immediately (default).
+       
+       This generator terminates when there are no microprocesses left to run.
+       """
        nextrunqueue = []
        running = True
        

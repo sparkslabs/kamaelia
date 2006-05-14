@@ -276,8 +276,11 @@ class microprocess(Axon.AxonObject):
       self.__stopped = 1
 
    def pause(self):
-       """'M.pause()' - Pauses the microprocess.
-       sets the runnable flag to false - thus pausing the microprocess."""
+       """M.pause() - Pauses the microprocess.
+       
+       Pauses this microprocess. Internally, the request is forwarded to this
+       microprocess's scheduler.
+       """
        if self.debugger.areDebugging("microprocess.pause", 1):
            self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
        self.scheduler.pauseThread(self)
@@ -286,15 +289,18 @@ class microprocess(Axon.AxonObject):
        """M.unpause() - Un-pauses the microprocess.
 
        This can only be performed by an external microprocess. This is provided
-       since it is conceivable that a more complex scheduler than the one at
-       present may wish to manipulate this sort of flag.  Does nothing if
-       microprocess has been stopped.
+       to allow other microprocesses to 'wake up' this one.
+
+       Does nothing if microprocess has been stopped.
+       
+       Internally, the request is forwarded to this microprocess's scheduler.
        """
        if self.debugger.areDebugging("microprocess.unpause", 1):
            self.debugger.debugmessage("microprocess.unpause", "Microprocess UNPAUSED", self.id,self.name,self)
        self.scheduler.wakeThread(self)
 
    def _unpause(self):
+       """DEPRECATED - use M.unpause() instead""" 
        if self.debugger.areDebugging("microprocess._unpause", 1):
            self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
        noisydeprecationwarning = "Use self.unpause() rather than self._unpause(). self._unpause() will be deprecated."
