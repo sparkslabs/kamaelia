@@ -26,10 +26,11 @@ from Axon.Ipc import shutdown
 import select, socket
 from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 import Axon.CoordinatingAssistantTracker as cat
+from Axon.ThreadedComponent import threadedadaptivecommscomponent
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
-class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
+class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     Inboxes = {
          "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
          "inbox" : "Not used at present",
@@ -37,7 +38,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
     }
     def removeLinks(self, selectable, meta, selectables):
         replyService, outbox, Linkage = meta[selectable]
-        self.postoffice.deregisterlinkage(thelinkage=Linkage)
+        self.unlink(thelinkage=Linkage)
         selectables.remove(selectable)
         self.deleteOutbox(outbox)
         del meta[selectable]
@@ -82,8 +83,8 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
     def main(self):
         readers,writers, exceptionals = [],[], []
         meta = [ {}, {}, {} ]
-        if not self.anyReady():
-             self.pause()
+#        if not self.anyReady():
+#             self.pause()
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
         while 1: # SmokeTests_Selector.test_RunsForever
@@ -94,7 +95,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 try:
-                    read_write_except = select.select(readers, writers, exceptionals,0)
+                    read_write_except = select.select(readers, writers, exceptionals,0.05)
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
                 except ValueError, e:
 ###                    print dir(e), e.args
@@ -111,7 +112,7 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                             # We could brute force our way through the list of descriptors
                             # to find the broken ones, and remove
                             raise e
-                        yield 1
+#                        yield 1
 
                 for i in xrange(3):
                     for selectable in read_write_except[i]:
@@ -122,9 +123,10 @@ class Selector(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests
                         except KeyError, k:
 ###                            print "Error!", k
                             pass
-            elif not self.anyReady():
-                self.pause()
-            yield 1
+                self.sync()
+#            elif not self.anyReady():
+#                self.pause()
+#            yield 1
 
     def setSelectorServices(selector, tracker = None):
         """\

@@ -171,6 +171,12 @@ class threadedcomponent(Component.component):
    def unlink(self, thecomponent=None, thelinkage=None):
         cmd = super(threadedcomponent,self).unlink
         return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
+
+   def sync(self):
+        """\
+        Call this from main() to synchronise with the main scheduler's thread.
+        """
+        return self._do_threadsafe( lambda:None, [], {} )
    
    def _do_threadsafe(self, cmd, argL, argD):
         if self._threadrunning and threading.currentThread().getName() != self._localThreadId:
