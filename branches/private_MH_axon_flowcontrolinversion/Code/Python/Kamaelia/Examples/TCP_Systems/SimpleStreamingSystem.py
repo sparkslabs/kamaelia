@@ -35,7 +35,7 @@ clientServerTestPort=1500
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
+            super(klass,self).__init__(filename, readmode="bitrate", bitrate=128000)
     return klass
 
 server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
