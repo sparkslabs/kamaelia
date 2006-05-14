@@ -403,12 +403,46 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """
       display.fill(self.background_colour)
       
-      # pre-fetch all waiting events in one go
-      events = [ event for event in pygame.event.get() ]
-
       for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
+      for theoverlay in self.overlays:
+          theoverlay['overlay'].display( theoverlay['yuv'] )
+   
+   def updateOverlays(self):
+      #
+      # Update overlays - We do these second, so as to avoid flicker.
+      #
+      for theoverlay in self.overlays:
+
+          # receive new image data for display
+          if theoverlay['yuvservice']:
+              theinbox, _ = theoverlay['yuvservice']
+              while self.dataReady(theinbox):
+                  yuv = self.recv(theinbox)
+
+                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                  if len(yuv) == 3:
+                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                  else:
+                      theoverlay['yuv'] = yuv
+
+          # receive position updates
+          if theoverlay['posservice']:
+              theinbox, _ = theoverlay['posservice']
+              while self.dataReady(theinbox):
+                  theoverlay['position'] = self.recv(theinbox)
+                  theoverlay['overlay'].set_location( (theoverlay['position'], 
+                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
+                                                      ))
+   
+   
+   def handleEvents(self):
+      # pre-fetch all waiting events in one go
+      events = [ event for event in pygame.event.get() ]
+
+       
+      for surface, position, callbackcomms, eventcomms in self.surfaces:
          # see if this component is interested in events
          if eventcomms is not None:
             listener = eventcomms
@@ -443,32 +477,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # only send events to listener if we've actually got some
             if bundle != []:
                self.send(bundle, listener)
-      #
-      # Update overlays - We do these second, so as to avoid flicker.
-      #
-      for theoverlay in self.overlays:
-
-          # receive new image data for display
-          if theoverlay['yuvservice']:
-              theinbox, _ = theoverlay['yuvservice']
-              while self.dataReady(theinbox):
-                  yuv = self.recv(theinbox)
-
-                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
-                  if len(yuv) == 3:
-                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
-                  else:
-                      theoverlay['yuv'] = yuv
-
-          # receive position updates
-          if theoverlay['posservice']:
-              theinbox, _ = theoverlay['posservice']
-              while self.dataReady(theinbox):
-                  theoverlay['position'] = self.recv(theinbox)
-                  theoverlay['overlay'].set_location( (theoverlay['position'], 
-                                                       (theoverlay['size'][0]/2, theoverlay['size'][1])
-                                                      ))
-          theoverlay['overlay'].display( theoverlay['yuv'] )
 
    def main(self):
       """Main loop."""
@@ -478,7 +486,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       while 1:
          pygame.display.update()
          self.handleDisplayRequest()
+         self.updateOverlays()
          self.updateDisplay(display)
+         self.handleEvents()
          yield 1
 
 __kamaelia_components__  = ( PygameDisplay, )
