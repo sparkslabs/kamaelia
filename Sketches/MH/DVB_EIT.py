@@ -266,7 +266,7 @@ if __name__ == "__main__":
         DEMUX=DVB_Demuxer({ "18": "_EIT_", }),
         EIT = pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
-                        NowNextServiceFilter(4228),   # BBC TWO
+                        NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO
                         NowNextChanges(),
                         ConsoleEchoer(),
                       ),
