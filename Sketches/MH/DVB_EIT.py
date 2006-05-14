@@ -76,10 +76,8 @@ class EITPacketParser(component):
                 "control" : "NOT USED",
               }
                     
-    Outboxes = { "outbox" : "NOT USED",
+    Outboxes = { "outbox" : "Parsed NOW and NEXT EIT events",
                  "signal" : "NOT USED",
-                 "now"    : "'NOW' EIT data",
-                 "next"   : "'NEXT' EIT data",
                }
                     
     def main(self):
@@ -88,6 +86,8 @@ class EITPacketParser(component):
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
+                
+                msg = {}
                 
                 # passes CRC test
 
@@ -125,14 +125,12 @@ class EITPacketParser(component):
 #                print subtable_id
 #                print section_num,last_section,seg_last_sect
                 
-#                if service_id != 4164:  # BBC ONE
-                if service_id != 4228:  # BBC TWO
-                    continue
-                
                 if crc32(data):  # fail on non-zero result
                     print "EIT packet CRC error"
-                    print repr(data)
                     continue
+                
+                msg['service'] = service_id
+                msg['transportstream'] = ts_id
                 
                 # go through events
                 pos = 14
@@ -147,13 +145,13 @@ class EITPacketParser(component):
                     descriptors_len = e[8] & 0x0fff
                     
                     if running_status in [1,2]:
-                        print "\nNEXT..."
+                        msg['when'] = "NEXT"
                     elif running_status in [3,4]:
-                        print "\nNOW..."
+                        msg['when'] = "NOW"
                     
-                    print "startdate (y,m,d):",date
-                    print "starttime (h,m,s):",time
-                    print "duration  (h,m,s):",duration
+                    msg['startdate'] = date
+                    msg['starttime'] = time
+                    msg['duration'] = duration
                     pos = pos + 12
                     descriptors_end = pos + descriptors_len
                     
@@ -169,10 +167,12 @@ class EITPacketParser(component):
                             textlen = ord(data[pos+6+namelen])
                             text = data[pos+7+namelen:pos+7+namelen+textlen]
                             
-                            print "Name:",name
-                            print "Desc:",text
+                            msg['name'] = name
+                            msg['description'] = text
                             
                         pos = pos + 2 + desc_len
+                    
+                    self.send(msg, "outbox")
                     
                 
             self.pause()
@@ -211,28 +211,66 @@ def unBCD(byte):
     return (byte>>4)*10 + (byte & 0xf)
 
 
+class NowNextChanges(component):
+    """\
+    Simple attempt to filter DVB now and next info for multiple services,
+    such that we only send output when the data changes.
+    """
+    def main(self):
+        current = {}
+        
+        while 1:
+            while self.dataReady("inbox"):
+                event = self.recv("inbox")
+                
+                # only interested in 'now' events, not 'next' events
+                if event['when'] != "NOW":
+                   continue
+                
+                uid = event['service'], event['transportstream']
+                
+                if current.get(uid,None) != event:
+                    current[uid] = event
+                    self.send(current[uid],"outbox")
+            self.pause()
+            yield 1
+                    
+
+class NowNextServiceFilter(component):
+    """\
+    Filters now/next event data for only specified services.
+    """
+    def __init__(self, *services):
+        super(NowNextServiceFilter,self).__init__()
+        self.services = services
+        
+    def main(self):
+        while 1:
+            while self.dataReady("inbox"):
+                event = self.recv("inbox")
+                if event['service'] in self.services:
+                    self.send(event,"outbox")
+            self.pause()
+            yield 1
 
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.Graphline import Graphline
+    from Kamaelia.Util.Console import ConsoleEchoer
 
-    if 0:
-        pipeline(
-           DVB_Multiplex(754, [18]),
-           SimpleFileWriter("multiplex_new.data")
-        ).run()
-    if 1:
-        Graphline(
-#            SOURCE=ReadFileAdaptor("/home/matteh/eit.ts"),
-            SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18]),
-            DEMUX=DVB_Demuxer({
-                "18": "_EIT_",
-            }),
-            EIT = pipeline( PSIPacketReconstructor(), EITPacketParser() ),
-            linkages={
-               ("SOURCE", "outbox"):("DEMUX","inbox"),
-               ("DEMUX", "_EIT_"): ("EIT", "inbox"),
-            }
+    Graphline(
+#        SOURCE=ReadFileAdaptor("/home/matteh/eit.ts"),
+        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18]),
+        DEMUX=DVB_Demuxer({ "18": "_EIT_", }),
+        EIT = pipeline( PSIPacketReconstructor(),
+                        EITPacketParser(),
+                        NowNextServiceFilter(4228),   # BBC TWO
+                        NowNextChanges(),
+                        ConsoleEchoer(),
+                      ),
+        linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
+                   ("DEMUX", "_EIT_"): ("EIT", "inbox"),
+                 }
         ).run()
