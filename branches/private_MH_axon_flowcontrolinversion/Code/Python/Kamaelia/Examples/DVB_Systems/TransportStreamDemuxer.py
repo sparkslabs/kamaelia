@@ -1,4 +1,8 @@
 #!/usr/bin/python
+#
+# This code is designed soley for the purposes of demonstrating the tools
+# for timeshifting.
+#
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
