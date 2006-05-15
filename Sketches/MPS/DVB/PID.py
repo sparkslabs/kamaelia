@@ -23,8 +23,8 @@ def tune_DVBT(fe, frequency):
     
     params.inversion = dvb3.frontend.INVERSION_AUTO
     params.constellation = dvb3.frontend.QAM_16
-    params.coderate_HP = dvb3.frontend.FEC_3_4
-    params.coderate_LP = dvb3.frontend.FEC_3_4
+    params.coderate_HP = dvb3.frontend.FEC_2_3
+    params.coderate_LP = dvb3.frontend.FEC_2_3
 
     # Start the tuning
     fe.set_frontend(params)
@@ -51,7 +51,9 @@ def addPIDS(pids):
                                    dvb3.dmx.DMX_IMMEDIATE_START)
     return demuxers
 
-class DVB_Multiplex(component):
+from Axon.ThreadedComponent import threadedcomponent
+
+class DVB_Multiplex(threadedcomponent):
     """\
     This is a DVB Multiplex Tuner.
 
@@ -82,19 +84,19 @@ class DVB_Multiplex(component):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
         fe = dvb3.frontend.Frontend(0, blocking=0)
         tune_DVBT(fe, self.freq)
-        while notLocked(fe): yield 1  # could sleep for, say, 0.1 seconds.
+        while notLocked(fe): time.sleep(0.1)  #yield 1  # could sleep for, say, 0.1 seconds.
         demuxers = addPIDS(self.pids)        
 
         # This is then a file reader, actually.
         # Should be a little more system friendly really
-        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY | os.O_NONBLOCK)
+        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
         while True:
             try:
                data = os.read(fd, 2048)
                self.send(data, "outbox")
             except OSError:
                pass
-            yield 1
+#            yield 1
             # XXX: We should add the following:
             # XXX: Handle shutdown messages
             # XXX: Pass on shutdown messages/errors
@@ -131,7 +133,7 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         buffer = ""
         while 1:
             yield 1
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
               buffer += self.recv("inbox")
 
             while len(buffer) >= DVB_PACKET_SIZE:
@@ -162,6 +164,8 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                       self.send(packet, self.pidmap[ str(pid) ])
                   except KeyError:
                       pass
+                  
+            self.pause()
 
 #
 # XXX
