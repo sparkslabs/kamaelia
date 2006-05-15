@@ -19,6 +19,7 @@ setup(
     ext_modules=[
         Extension("dvb3/frontend", ["dvb3/frontend.pyx"], include_dirs=incs),
         Extension("dvb3/dmx", ["dvb3/dmx.pyx"], include_dirs=incs),
+        Extension("dvb3/soft_dmx", ["dvb3/soft_dmx.pyx"], include_dirs=incs),
     ],
     cmdclass={"build_ext": build_ext}
 )
