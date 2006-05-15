@@ -4,6 +4,11 @@
 # for timeshifting.
 #
 
+#
+# mencoder -o current.200.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128 -vf scale=320:-2 -
+# mencoder -o current.512.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=512:abitrate=128 -vf scale=640:-2 -
+#
+
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
