@@ -20,14 +20,14 @@ class PSIPacketReconstructor(component):
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                
+
                 byte = ord(data[1])
                 start_indicator = (byte & 0x40) != 0
-                
+
                 byte = ord(data[3])
                 adaption   = (byte & 0x30) >> 4
                 contcount  = byte & 0x0f
-
+                
                 # check continuity counter is okay (otherwise ignore packet)
                 # or that its the start of a new packet and we've not started receiving yet
                 if (nextCont == None and start_indicator) or nextCont == contcount:

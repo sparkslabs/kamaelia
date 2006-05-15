@@ -32,13 +32,12 @@ import Axon
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 
-#import Kamaelia.Internet.Selector as Selector
 import Kamaelia.KamaeliaIPC as _ki
 from Axon.Ipc import shutdown
 from Kamaelia.KamaeliaIPC import newReader, newWriter
 from Kamaelia.KamaeliaIPC import removeReader, removeWriter
 
-from Selector import Selector
+from Kamaelia.Internet.Selector import Selector
 
 import subprocess
 import fcntl
@@ -76,7 +75,7 @@ def makeNonBlocking(fd):
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NDELAY)
 
-class X(Axon.Component.component):
+class Pipethrough(Axon.Component.component):
     Inboxes = {
             "inbox" : "We receive data here to send to the sub process",
             "control" : "We receive shutdown messages here",
@@ -91,7 +90,7 @@ class X(Axon.Component.component):
         "selectorsignal" : "To send control messages to the selector",
     }
     def __init__(self,command):
-        super(X, self).__init__()
+        super(Pipethrough, self).__init__()
         self.command = command
 
     def openSubprocess(self):
@@ -181,6 +180,6 @@ class X(Axon.Component.component):
 if __name__=="__main__":
     pipeline(
        ChargenComponent(),
-       X("wc"),
+       Pipethrough("wc"),
        ConsoleEchoer(forwarder=True)
     ).run()

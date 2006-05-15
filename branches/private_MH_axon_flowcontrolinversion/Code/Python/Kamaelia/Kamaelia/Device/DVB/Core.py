@@ -83,10 +83,18 @@ class DVB_Multiplex(component):
         # This is then a file reader, actually.
         # Should be a little more system friendly really
         fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY | os.O_NONBLOCK)
+        tosend = []
+        tosend_len =0
         while True:
             try:
                data = os.read(fd, 2048)
-               self.send(data, "outbox")
+               tosend.append(data) # Ensure we're sending collections of packets through Axon, not single ones
+               tosend_len += len(data)
+               if tosend_len > 2048:
+                   self.send("".join(tosend), "outbox")
+                   tosend = []
+                   tosend_len = 0
+               #self.send(data, "outbox")
             except OSError:
                pass
             yield 1
