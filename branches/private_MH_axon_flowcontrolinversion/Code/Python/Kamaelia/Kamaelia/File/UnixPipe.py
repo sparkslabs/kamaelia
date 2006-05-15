@@ -125,6 +125,7 @@ class Pipethrough(Axon.Component.component):
 
         exit_status = x.poll()       # while x.poll() is None
         while exit_status is None:
+            self.pause()
             if self.dataReady("inbox"):
                 d = self.recv("inbox")
                 writeBuffer.append(d)
@@ -156,6 +157,7 @@ class Pipethrough(Axon.Component.component):
 
         more_data = True # idiom for do...while
         while more_data:
+            self.pause()
             if self.dataReady("stdoutready"):
                 self.recv("stdoutready")
                 try:
