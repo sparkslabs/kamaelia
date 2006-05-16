@@ -122,36 +122,78 @@ class Pipethrough(Axon.Component.component):
         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
         self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
         self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
+        
+        # Assume all ready
+        stdin_ready = 1
+        stdout_ready = 1
+        stderr_ready = 1
 
         exit_status = x.poll()       # while x.poll() is None
         while exit_status is None:
-            self.pause()
-            if self.dataReady("inbox"):
+
+            if (not self.anyReady()) and not (stdin_ready + stdout_ready + stderr_ready):
+                self.pause()
+                yield 1
+                continue
+            
+            while self.dataReady("inbox"):
                 d = self.recv("inbox")
                 writeBuffer.append(d)
 
             if self.dataReady("stdinready"):
                 self.recv("stdinready")
-                while len(writeBuffer) >0:
-                    d = writeBuffer.pop(0)
-                    count = os.write(x.stdin.fileno(), d)
-                    if count != len(d):
-                        raise "Yay, we broke it"
+                stdin_ready = 1
 
             if self.dataReady("stdoutready"):
                 self.recv("stdoutready")
+                stdout_ready = 1
+
+            if self.dataReady("stderrready"):
+                self.recv("stderrready")
+                stderr_ready = 1
+
+            if stdin_ready:
+                while len(writeBuffer) >0:
+                    d = writeBuffer[0]
+                    try:
+                        count = os.write(x.stdin.fileno(), d)
+                        writeBuffer.pop(0)
+                    except OSError, e:
+                        # Stdin wasn't ready. Let's send through a newWriter request
+                        # Want to wait
+                        stdin_ready = 0
+                        self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
+                        break # Break out of this loop
+                    if count != len(d):
+                        raise "Yay, we broke it"
+
+            if stdout_ready:
                 try:
-                    Y = os.read(x.stdout.fileno(),10)
+                    Y = os.read(x.stdout.fileno(),2048)
                     if len(Y)>0:
                         self.send(Y, "outbox")
                 except OSError, e:
-                    pass
+                    # stdout wasn't ready. Let's send through a newReader request
+                    stdout_ready = 0
+                    self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
+
+            if stderr_ready:
+                try:
+                    Y = os.read(x.stderr.fileno(),2048)
+# No particular plans for stderr
+                except OSError, e:
+                    # stdout wasn't ready. Let's send through a newReader request
+                    stderr_ready = 0
+                    self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
+
+
 
             if self.dataReady("control"):
                  shutdownMessage = self.recv("control")
                  self.send(removeWriter(self,(x.stdin)), "selector")
                  yield 1
                  x.stdin.close()
+
             exit_status = x.poll()
             yield 1
 

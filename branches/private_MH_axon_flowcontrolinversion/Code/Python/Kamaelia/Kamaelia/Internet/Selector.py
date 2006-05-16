@@ -82,9 +82,10 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
     def main(self):
         readers,writers, exceptionals = [],[], []
+        selections = [readers,writers, exceptionals]
         meta = [ {}, {}, {} ]
-#        if not self.anyReady():
-#             self.pause()
+        if not self.anyReady():
+             self.pause()
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
         while 1: # SmokeTests_Selector.test_RunsForever
@@ -94,25 +95,21 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                    return
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
+#                print "IN HERE"
                 try:
-                    read_write_except = select.select(readers, writers, exceptionals,0.05)
+                    read_write_except = select.select(readers, writers, exceptionals,5) #0.05
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
                 except ValueError, e:
-###                    print dir(e), e.args
                     if FAILHARD:
                         raise e
                 except socket.error, e:
-###                    print "FLOOGLE", e, dir(e), e.args
-###                    print self.inboxes, self.outboxes
                     if e[0] == 9:
                         numberOfFailedSelectsDueToBadFileDescriptor +=1
-###                        print "Hmm", numberOfFailedSelectsDueToBadFileDescriptor
                         if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
                             # For the moment, we simply raise an exception.
                             # We could brute force our way through the list of descriptors
                             # to find the broken ones, and remove
                             raise e
-#                        yield 1
 
                 for i in xrange(3):
                     for selectable in read_write_except[i]:
@@ -120,13 +117,20 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             replyService, outbox, linkage = meta[i][selectable]
                             self.send(selectable, outbox)
                             replyService, outbox, linkage = None, None, None
+
+#                            print "i",i
+                            self.removeLinks(selectable, meta[i], selections[i])
+#                            print selections
+
                         except KeyError, k:
-###                            print "Error!", k
                             pass
                 self.sync()
-#            elif not self.anyReady():
-#                self.pause()
-#            yield 1
+            elif not self.anyReady():
+                #print "IN HERE"
+                self.pause()
+            else:
+                print "HMM"
+
 
     def setSelectorServices(selector, tracker = None):
         """\
