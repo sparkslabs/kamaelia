@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-
 import dvb3.soft_dmx
 import Axon.AdaptiveCommsComponent
-
+import time
 
 class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
@@ -27,8 +26,9 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for pid in pidmap: # This adds an outbox per pid
             # This allows for the PIDs to be split or remultiplexed
             # together.
-            if not self.outboxes.has_key(pidmap[pid]):
-                self.addOutbox(pidmap[pid])
+            for outbox in pidmap[pid]:
+                if not self.outboxes.has_key(outbox):
+                    self.addOutbox(outbox)
 
 
     def main(self):
@@ -36,14 +36,15 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         while 1:
             yield 1
             while self.dataReady("inbox"):
+                yield 1
                 demuxer.insert( self.recv("inbox") )
-
                 result = True
                 while result:
+                    yield 1
                     result = demuxer.pop()
                     if result:
                         pid,erroneous,scrambled,packet = result
-                        
+                        time.sleep(0.01)
                         if erroneous or scrambled:
                             continue
         
@@ -51,7 +52,8 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         # "Fail" silently for PIDs we don't know about and weren't
                         # asked to demultiplex
                         try:
-                            self.send(packet, self.pidmap[ str(pid) ])
+                           for outbox in self.pidmap[ str(pid) ]:
+                               self.send(packet, outbox)
                         except KeyError:
                             pass
             self.pause()
