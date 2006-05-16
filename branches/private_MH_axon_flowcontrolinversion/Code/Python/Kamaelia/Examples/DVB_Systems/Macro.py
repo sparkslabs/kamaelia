@@ -10,6 +10,7 @@ from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.File.UnixPipe import Pipethrough
 import Axon
 import struct
+import dvb3
 
 class ChannelTranscoder(Axon.Component.component):
     def main(self):
@@ -26,14 +27,29 @@ class ChannelTranscoder(Axon.Component.component):
             else:
                 self.pause()
 
+location = "london"
+
+if location == "london":
+    freq = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+else: # manchester
+    freq = 754
+    feparams = {}
+
+
 Graphline(
-    SOURCE=DVB_Multiplex(754, [600, 601,18]), # BBC ONE + EIT data
+    SOURCE=DVB_Multiplex(freq, [600, 601,18], feparams), # BBC ONE + EIT data
     DEMUX=DVB_Demuxer({
         "600": ["BBCONE"],
         "601": ["BBCONE"],
         "18": ["BBCONE"],
     }),
-    BBCONE = Pipethrough("mencoder -o current.200.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128 -vf scale=320:-2 -"),
+    BBCONE = Pipethrough("mencoder -o current.200.avi -ovc lavc -oac mp3lame -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128 -vf scale=320:-2 -"),
     linkages={
        ("SOURCE", "outbox"):("DEMUX","inbox"),
        ("DEMUX", "BBCONE"): ("BBCONE", "inbox"),
