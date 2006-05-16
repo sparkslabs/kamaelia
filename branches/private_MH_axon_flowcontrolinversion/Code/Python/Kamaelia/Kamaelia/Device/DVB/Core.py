@@ -18,10 +18,13 @@ DVB_PACKET_SIZE = 188
 DVB_RESYNC = "\x47"
 import Axon.AdaptiveCommsComponent
     
-def tune_DVBT(fe, frequency):
+def tune_DVBT(fe, frequency, feparams={}):
     # Build the tuning parameters (DVB-T)
     params = dvb3.frontend.OFDMParameters()
     params.frequency = frequency * 1000 * 1000
+    # load up any extra params specified for the frontend
+    for key in feparams:
+        params.__dict__[key] = feparams[key]
 
     # Start the tuning
     fe.set_frontend(params)
@@ -69,8 +72,9 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, pids):
+    def __init__(self, freq, pids, feparams={}):
         self.freq = freq
+	self.feparams = feparams
         self.pids = pids
         super(DVB_Multiplex, self).__init__()
         
@@ -78,7 +82,7 @@ class DVB_Multiplex(threadedcomponent):
     def main(self):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
         fe = dvb3.frontend.Frontend(0, blocking=0)
-        tune_DVBT(fe, self.freq)
+        tune_DVBT(fe, self.freq, self.feparams)
         while notLocked(fe): time.sleep(0.1) #yield 1  # could sleep for, say, 0.1 seconds.
         demuxers = addPIDS(self.pids)        
 
