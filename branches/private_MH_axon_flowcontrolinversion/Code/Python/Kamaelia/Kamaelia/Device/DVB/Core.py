@@ -90,13 +90,13 @@ class DVB_Multiplex(threadedcomponent):
         while True:
             try:
                data = os.read(fd, 2048)
-               tosend.append(data) # Ensure we're sending collections of packets through Axon, not single ones
-               tosend_len += len(data)
-               if tosend_len > 2048:
-                   self.send("".join(tosend), "outbox")
-                   tosend = []
-                   tosend_len = 0
-               #self.send(data, "outbox")
+#               tosend.append(data) # Ensure we're sending collections of packets through Axon, not single ones
+#               tosend_len += len(data)
+#               if tosend_len > 2048:
+#                   self.send("".join(tosend), "outbox")
+#                   tosend = []
+#                   tosend_len = 0
+               self.send(data, "outbox")
             except OSError:
                pass
 
@@ -135,53 +135,50 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def main(self):
         buffer = ""
+        buffers = []
         while 1:
             yield 1
-            if self.dataReady("inbox"):
-              buffer += self.recv("inbox")
-
-            while len(buffer) >= DVB_PACKET_SIZE:
-                  yield 1
-                  i = buffer.find(DVB_RESYNC)
-                  if i == -1: # if not found
-                      "we have a dud"
-                      buffer = ""
-                      continue 
-                  if i>0:
-                      # if found remove all bytes preceeding that point in the buffers
-                      # And try again
-                      buffer = buffer[i:]
-                      continue
-                  # packet is the first 188 bytes in the buffer now
-                  packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
-
-                  if self.errorIndicatorSet(packet): continue
-                  if self.scrambledPacket(packet):   continue
-
-                  pid = struct.unpack(">H", packet[1: 3])[0] & 0x1fff
-
-                  # Send the packet to the outbox appropriate for this PID.
-                  # "Fail" silently for PIDs we don't know about and weren't
-                  # asked to demultiplex
-                  try:
-#                      print ".", self.pidmap, str(pid)
-                      for outbox in self.pidmap[ str(pid) ]:
-                          self.send(packet, outbox)
-#                          print "X", outbox
-                  except KeyError:
-                      pass
-            self.pause()
-
-#
-# XXX
-#
-# This is where we may wish to think about piping the results to something like
-# mencoder, perhaps via a named pipe, since that will *probably* work. We'll have to
-# check that though :-/
-#
-# For XTech, we can see if we can coax Mencoder into taking our output direct
-# and doing something useful/interesting... (At least then we're up and running)
-#
+            if not self.dataReady("inbox"):
+               self.pause()
+               yield 1
+               continue
+            else:
+                while self.dataReady("inbox"):
+                    buffers.append(self.recv("inbox"))
+            while len(buffers)>0:
+                if len(buffer) == 0:
+                    buffer = buffers.pop(0)
+                else:
+                    buffer += buffers.pop(0)
+    
+                while len(buffer) >= DVB_PACKET_SIZE:
+                      i = buffer.find(DVB_RESYNC)
+                      if i == -1: # if not found
+                          "we have a dud"
+                          buffer = ""
+                          continue
+                      if i>0:
+                          print "X"
+                          # if found remove all bytes preceeding that point in the buffers
+                          # And try again
+                          buffer = buffer[i:]
+                          continue
+                      # packet is the first 188 bytes in the buffer now
+                      packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
+    
+                      if self.errorIndicatorSet(packet): continue
+                      if self.scrambledPacket(packet):   continue
+    
+                      pid = struct.unpack(">H", packet[1: 3])[0] & 0x1fff
+    
+                      # Send the packet to the outbox appropriate for this PID.
+                      # "Fail" silently for PIDs we don't know about and weren't
+                      # asked to demultiplex
+                      try:
+                          for outbox in self.pidmap[ str(pid) ]:
+                              self.send(packet, outbox)
+                      except KeyError:
+                          pass
 
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
@@ -206,7 +203,7 @@ if __name__ == "__main__":
         ).run()
     if 1:
         Graphline(
-            SOURCE=ReadFileAdaptor("multiplex.data"),
+            SOURCE=ReadFileAdaptor("multiplex_new.data"),
             DEMUX=DVB_Demuxer({
                 "640": ["NEWS24"],
                 "641": ["NEWS24"],
