@@ -132,7 +132,10 @@ class Carousel(component):
             yield 1  # gap important - to allow shutdown messages to propogate to the child
             
             yield self.handleNewChild()
-
+            
+            if not self.dataReady("next") and not self.dataReady("control") and not self.dataReady("_control"):
+                self.pause()
+        
         self.unplugChildren()
 
             

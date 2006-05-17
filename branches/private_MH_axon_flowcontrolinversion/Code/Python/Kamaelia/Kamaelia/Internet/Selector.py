@@ -27,6 +27,7 @@ import select, socket
 from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 import Axon.CoordinatingAssistantTracker as cat
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
+import time
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
@@ -37,12 +38,15 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
          "notify" : "Used to be notified about things to select"
     }
     def removeLinks(self, selectable, meta, selectables):
-        replyService, outbox, Linkage = meta[selectable]
-        self.unlink(thelinkage=Linkage)
-        selectables.remove(selectable)
-        self.deleteOutbox(outbox)
-        del meta[selectable]
-        Linkage = None
+        try:
+            replyService, outbox, Linkage = meta[selectable]
+            self.unlink(thelinkage=Linkage)
+            selectables.remove(selectable)
+            self.deleteOutbox(outbox)
+            del meta[selectable]
+            Linkage = None
+        except:
+            pass
 
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
         outbox = self.addOutbox(boxBase)
@@ -85,7 +89,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         selections = [readers,writers, exceptionals]
         meta = [ {}, {}, {} ]
         if not self.anyReady():
-             self.pause()
+            self.sync()        # momentary pause-ish thing
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
         while 1: # SmokeTests_Selector.test_RunsForever
@@ -127,7 +131,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 self.sync()
             elif not self.anyReady():
                 #print "IN HERE"
-                self.pause()
+                self.sync()        # momentary pause-ish thing
             else:
                 print "HMM"
 

@@ -96,7 +96,7 @@ class Pipethrough(Axon.Component.component):
     def openSubprocess(self):
         p = subprocess.Popen(self.command, 
                              shell=True, 
-                             bufsize=1024, 
+                             bufsize=32768, 
                              stdin=subprocess.PIPE, 
                              stdout=subprocess.PIPE, 
                              stderr = subprocess.PIPE, 
@@ -115,8 +115,10 @@ class Pipethrough(Axon.Component.component):
         if S:
            S.activate()
         yield 1
+        yield 1
+        yield 1
         self.link((self, "selector"), (selectorService))
-        self.link((self, "selectorsignal"), (selectorShutdownService))
+#        self.link((self, "selectorsignal"), (selectorShutdownService))
 
         x = self.openSubprocess()
         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
@@ -129,13 +131,16 @@ class Pipethrough(Axon.Component.component):
         stderr_ready = 1
 
         exit_status = x.poll()       # while x.poll() is None
+        success = 0
         while exit_status is None:
+            exit_status = x.poll()
 
             if (not self.anyReady()) and not (stdin_ready + stdout_ready + stderr_ready):
+                print "Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer)
                 self.pause()
                 yield 1
                 continue
-            
+
             while self.dataReady("inbox"):
                 d = self.recv("inbox")
                 writeBuffer.append(d)
@@ -152,20 +157,32 @@ class Pipethrough(Axon.Component.component):
                 self.recv("stderrready")
                 stderr_ready = 1
 
+            if len(writeBuffer)>10000:
+                writeBuffer=writeBuffer[-10000:]
             if stdin_ready:
                 while len(writeBuffer) >0:
-                    d = writeBuffer[0]
+#                    d = writeBuffer[0]
+                    d = writeBuffer.pop(0)
                     try:
                         count = os.write(x.stdin.fileno(), d)
-                        writeBuffer.pop(0)
+#                        writeBuffer.pop(0)
+                        success +=1
                     except OSError, e:
+                        success -=1
+                        print "Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer)
                         # Stdin wasn't ready. Let's send through a newWriter request
                         # Want to wait
                         stdin_ready = 0
+                        writeBuffer=writeBuffer[len(writeBuffer)/2:]
                         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
+                        print "OK, we're waiting....", len(self.inboxes["inbox"]), len(writeBuffer)
                         break # Break out of this loop
-                    if count != len(d):
-                        raise "Yay, we broke it"
+                    except:
+                        print "Unexpected error whilst trying to write to stdin:"
+                        print sys.exc_info()[0]
+                        break
+#                    if count != len(d):
+#                        raise "Yay, we broke it"
 
             if stdout_ready:
                 try:
@@ -173,52 +190,76 @@ class Pipethrough(Axon.Component.component):
                     if len(Y)>0:
                         self.send(Y, "outbox")
                 except OSError, e:
+#                    print "Mighty Bingle", len(self.inboxes["inbox"]), len(writeBuffer)
                     # stdout wasn't ready. Let's send through a newReader request
                     stdout_ready = 0
                     self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
+                except:
+                    print "Unexpected error whilst trying to read stdout:"
+                    print sys.exc_info()[0]
+                    pass
 
             if stderr_ready:
                 try:
                     Y = os.read(x.stderr.fileno(),2048)
 # No particular plans for stderr
                 except OSError, e:
+                    print "Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer)
                     # stdout wasn't ready. Let's send through a newReader request
                     stderr_ready = 0
                     self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
-
+                except:
+                    print "Unexpected error whilst trying to read stderr:"
+                    print sys.exc_info()[0]
+                    pass
 
 
             if self.dataReady("control"):
                  shutdownMessage = self.recv("control")
-                 self.send(removeWriter(self,(x.stdin)), "selector")
+#                 self.send(removeWriter(self,(x.stdin)), "selector")
                  yield 1
                  x.stdin.close()
 
-            exit_status = x.poll()
             yield 1
 
-        more_data = True # idiom for do...while
-        while more_data:
-            self.pause()
-            if self.dataReady("stdoutready"):
-                self.recv("stdoutready")
-                try:
-                    Y = os.read(x.stdout.fileno(),10)
-                    if len(Y)>0:
-                        self.send(Y, "outbox")
-                    else:
-                        more_data = False
-                except OSError, e:
-                    more_data = False
+        \
+print "UnixPipe finishing up"
+        while  self.dataReady("stdoutready"):
+            \
+print "flushing"
+            self.recv("stdoutready")
+            try:
+                Y = os.read(x.stdout.fileno(),10)
+                if len(Y)>0:
+                    self.send(Y, "outbox")
+                else:
+                    print "Mighty Floogly"
+                    continue
+            except OSError, e:
+                continue
+            except:
+                break
             yield 1
 
-        self.send(removeReader(self,(x.stderr)), "selector")
-        self.send(removeReader(self,(x.stdout)), "selector")
+# commented out because not necessary (selector automatically purges them itself)
+# besides, the 
+#        self.send(removeReader(self,(x.stderr)), "selector")
+#        self.send(removeReader(self,(x.stdout)), "selector")
+        \
+print "sending shutdown"
         if not shutdownMessage:
+            \
+print "new signal"
             self.send(Axon.Ipc.producerFinished(), "signal")
+            \
+print "...sent"
         else:
+            \
+print "old signal"
             self.send(shutdownMessage, "signal")
-        self.send(shutdown(), "selectorsignal")
+#            \
+#print "...sent"
+#        self.send(shutdown(), "selectorsignal")
 
 
 if __name__=="__main__":
