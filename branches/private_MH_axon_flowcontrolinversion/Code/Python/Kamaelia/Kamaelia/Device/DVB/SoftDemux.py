@@ -50,24 +50,19 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             while self.dataReady("inbox"):
                 demuxer.insert( self.recv("inbox") )
             
-                result = True
-                while result:
-                    
-                    result = demuxer.pop()
-                    if result:
-                        pid,erroneous,scrambled,packet = result
-                        
-                        if erroneous or scrambled:
-                            continue
-        
-                        # Send the packet to the outbox appropriate for this PID.
-                        # "Fail" silently for PIDs we don't know about and weren't
-                        # asked to demultiplex
-                        try:
-                           for outbox in self.pidmap[ str(pid) ]:
-                               self.send(packet, outbox)
-                        except KeyError:
-                            pass
+            packets = demuxer.fetch()
+            for (pid, erroneous, scrambled, packet) in packets:
+                if erroneous or scrambled:
+                    continue
+
+                # Send the packet to the outbox appropriate for this PID.
+                # "Fail" silently for PIDs we don't know about and weren't
+                # asked to demultiplex
+                try:
+                    for outbox in self.pidmap[ str(pid) ]:
+                        self.send(packet, outbox)
+                except KeyError:
+                    pass
             self.pause()
             yield 1
 
