@@ -202,17 +202,18 @@ Graphline(
     SOURCE=DVB_Multiplex(freq, pids["BBC TWO"]+pids["EIT"], feparams), # BBC ONE + EIT data
 #    SOURCE=ReadFileAdaptor("BBC_ONE_AND_EIT.ts",readmode="bitrate",bitrate=6000000,chunkrate=6000000/8/2048),
     DEMUX=DVB_Demuxer({
-#        "600": ["BBCONE","BBCONE_2"],
-#        "601": ["BBCONE","BBCONE_2"],
-        "610": ["BBCTWO","BBCTWO_2"],
-        "611": ["BBCTWO","BBCTWO_2"],
-#        "201" : ["CBEEBIES"],
-#        "401" : ["CBEEBIES"],
-        "18": ["BBCTWO","BBCTWO_2"],   # BBCONE","BBCONE_2","BBCTWO","BBCTWO_2", "CBEEBIES"
-#        "20": ["DATETIME"],
+#        600: ["BBCONE","BBCONE_2"],
+#        601: ["BBCONE","BBCONE_2"],
+        610: ["BBCTWO","BBCTWO_2"],
+        611: ["BBCTWO","BBCTWO_2"],
+#        201 : ["CBEEBIES"],
+#        401 : ["CBEEBIES"],
+        18: ["BBCTWO","BBCTWO_2"],   # BBCONE","BBCONE_2","BBCTWO","BBCTWO_2", "CBEEBIES"
+#        20: ["DATETIME"],
     }),
 #    BBCONE_LO = ChannelTranscoder(4164, **params["LO"]),
 #    BBCONE_HI = ChannelTranscoder(4164, **params["HI"]),
+#    BBCTWO_LO = ChannelTranscoder(service_ids["BBC TWO"], **params["LO"]),
     BBCTWO_HI = ChannelTranscoder(service_ids["BBC TWO"], **params["HI"]),
 #    CBEEBIES = ChannelTranscoder(service_ids["CBEEBIES"], **params["HI"]),
 
@@ -224,6 +225,7 @@ Graphline(
        ("SOURCE", "outbox"):("DEMUX","inbox"),
 #       ("DEMUX", "BBCONE"): ("BBCONE_LO", "inbox"),
 #       ("DEMUX", "BBCONE_2"): ("BBCONE_HI", "inbox"),
+#       ("DEMUX", "BBCTWO"): ("BBCTWO_LO", "inbox"),
        ("DEMUX", "BBCTWO_2"): ("BBCTWO_HI", "inbox"),
 #       ("DEMUX", "CBEEBIES"): ("CBEEBIES", "inbox"),
 #       ("DEMUX", "DATETIME"): ("DATETIME","inbox"),
