@@ -2,8 +2,7 @@
 
 # parse EIT now & next information from DVB-T streams
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex#, DVB_Demuxer
-from SoftDemux import DVB_SoftDemuxer as DVB_Demuxer
+from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Axon.Component import component
 import struct
 from Axon.Ipc import shutdownMicroprocess,producerFinished
@@ -356,8 +355,8 @@ if __name__ == "__main__":
     }
 
     Graphline(
-        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20], feparams),
-        DEMUX=DVB_Demuxer({ "18": ["_EIT_"], "20":["_DATETIME_"] }),
+        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20,600,601], feparams),
+        DEMUX=DVB_Demuxer({ 18: ["_EIT_"], 20:["_DATETIME_"] }),
         EIT = pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
                         NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO

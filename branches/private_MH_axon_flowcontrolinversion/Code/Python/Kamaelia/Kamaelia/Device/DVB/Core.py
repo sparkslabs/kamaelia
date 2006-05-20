@@ -197,7 +197,7 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                       # "Fail" silently for PIDs we don't know about and weren't
                       # asked to demultiplex
                       try:
-                          for outbox in self.pidmap[ str(pid) ]:
+                          for outbox in self.pidmap[ pid ]:
                               self.send(packet, outbox)
                       except KeyError:
                           pass
@@ -207,6 +207,13 @@ if __name__ == "__main__":
     from Kamaelia.File.Writing import SimpleFileWriter
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.Graphline import Graphline
+
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
 
     channels_london =  {
            "MORE4+1" : (   538, #MHz
@@ -218,24 +225,24 @@ if __name__ == "__main__":
            "MORE4+1": (810, [701,702]),
            "TMF": (810, [201,202])
     }
-    if 0:
+    if 1:
         pipeline(
-           DVB_Multiplex(754, [640, 641, 620, 621, 622, 610, 611, 612, 600, 601, 602, 18]),
+           DVB_Multiplex(508, [640, 641, 620, 621, 622, 610, 611, 612, 600, 601, 602, 18],feparams),
            SimpleFileWriter("multiplex_new.data")
         ).run()
-    if 1:
+    if 0:
         Graphline(
             SOURCE=ReadFileAdaptor("multiplex_new.data"),
             DEMUX=DVB_Demuxer({
-                "640": ["NEWS24"],
-                "641": ["NEWS24"],
-                "600": ["BBCONE"],
-                "601": ["BBCONE"],
-                "610": ["BBCTWO"],
-                "611": ["BBCTWO"],
-                "620": ["CBBC"],
-                "621": ["CBBC"],
-                "18":  ["NEWS24", "BBCONE", "BBCTWO", "CBBC"],
+                640: ["NEWS24"],
+                641: ["NEWS24"],
+                600: ["BBCONE"],
+                601: ["BBCONE"],
+                610: ["BBCTWO"],
+                611: ["BBCTWO"],
+                620: ["CBBC"],
+                621: ["CBBC"],
+                18:  ["NEWS24", "BBCONE", "BBCTWO", "CBBC"],
             }),
             NEWS24=SimpleFileWriter("news24.data"),
             BBCONE=SimpleFileWriter("bbcone.data"),

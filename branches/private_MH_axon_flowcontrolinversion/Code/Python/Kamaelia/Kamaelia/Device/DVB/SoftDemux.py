@@ -42,7 +42,7 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def main(self):
-        demuxer = dvb3.soft_dmx.SoftDemux(pidfilter = [int(x) for x in self.pidmap.keys()])
+        demuxer = dvb3.soft_dmx.SoftDemux(pidfilter = self.pidmap.keys())
         self.shuttingdown = False
         
         while (not self.shutdown()) or self.dataReady("inbox"):
@@ -57,7 +57,7 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
                 # Send the packet to the outbox appropriate for this PID.
                 # demuxer has been configured to only extract PIDs we're interested in
-                for outbox in self.pidmap[ str(pid) ]:
+                for outbox in self.pidmap[ pid ]:
                     self.send(packet, outbox)
             
             self.pause()
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         for _ in range(3):
             Graphline(
                 SOURCE=ReadFileAdaptor("/home/matteh/junction.ts",readmode="bitrate",bitrate=600000000000,chunkrate=600000000000/8/2048),
-                DEMUX=demuxer( { "18" : ["_EIT_"], "20" : ["_DATETIME_"] } ),
+                DEMUX=demuxer( { 18 : ["_EIT_"], 20 : ["_DATETIME_"] } ),
                 linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
                            ("SOURCE", "signal"):("DEMUX","control"),
                          }
