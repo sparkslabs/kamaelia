@@ -76,7 +76,7 @@ class DVB_Multiplex(threadedcomponent):
     """
     def __init__(self, freq, pids, feparams={}):
         self.freq = freq
-	self.feparams = feparams
+        self.feparams = feparams
         self.pids = pids
         super(DVB_Multiplex, self).__init__()
         
@@ -85,8 +85,8 @@ class DVB_Multiplex(threadedcomponent):
             msg = self.recv("control")
             self.send(msg,"signal")
             if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                self.shuttingdown=True
-        return self.shuttingdown
+                return True
+        return False
 
     def main(self):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
