@@ -27,7 +27,7 @@ cdef class SoftDemux:
 
     def insert(self, fragment):
 #        """Insert a fragment of transport stream into the demuxer.
-#           Call pop() repeatedly to fetch TS packets extracted.
+#           Call fetch() to fetch TS packets extracted.
 #        """
         fraglen = len(fragment)
 
@@ -40,14 +40,19 @@ cdef class SoftDemux:
         self.length = self.length + fraglen
 
 
-    def pop(self):
-#        """Returns (pid,error_flag,scrambled_flag,packet) or None.
-#           Call repeatedly to get packets, until None is returned.
+    def fetch(self):
+#        """Returns list containing extracted TS packets in order, or empty list
+#           if none found.
+#           Each entry is a tuple: (pid, erroneous, scrambled, packet)
 #        """
+        cdef object extracted
+        
+        extracted = []
+
         while self.length >= 188:
             if self.cfrag[0] == 0x47:
                 # we are at start of TS packet and have whole packet (length >= 188)
-                return self.extractPacket()
+                extracted.append( self.extractPacket() )
             else:
                 # not yet found start of TS packet, move onto next byte in buffers
                 self.cfrag = self.cfrag + 1
@@ -60,7 +65,9 @@ cdef class SoftDemux:
                     if self.length > 0:
                         self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
                         self.cfrag_remaining = len(self.frag_buffer[0])
-
+        
+        return extracted
+                    
 
     cdef extractPacket(self):
         cdef int remaining
