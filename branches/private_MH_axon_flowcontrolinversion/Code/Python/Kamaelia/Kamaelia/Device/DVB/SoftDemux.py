@@ -4,6 +4,8 @@ import dvb3.soft_dmx
 import Axon.AdaptiveCommsComponent
 import time
 
+from Axon.Ipc import shutdownMicroprocess,producerFinished
+
 class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
     This demuxer expects to recieve the output from a DVB_Multiplex
@@ -30,21 +32,31 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if not self.outboxes.has_key(outbox):
                     self.addOutbox(outbox)
 
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.shuttingdown=True
+        return self.shuttingdown
+
 
     def main(self):
         demuxer = dvb3.soft_dmx.SoftDemux()
-        while 1:
-            yield 1
+        self.shuttingdown = False
+        
+        while (not self.shutdown()) or self.dataReady("inbox"):
+            
             while self.dataReady("inbox"):
-                yield 1
                 demuxer.insert( self.recv("inbox") )
+            
                 result = True
                 while result:
-                    yield 1
+                    
                     result = demuxer.pop()
                     if result:
                         pid,erroneous,scrambled,packet = result
-                        time.sleep(0.01)
+                        
                         if erroneous or scrambled:
                             continue
         
@@ -57,3 +69,45 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         except KeyError:
                             pass
             self.pause()
+            yield 1
+
+
+if __name__ == "__main__":
+    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.Graphline import Graphline
+    from Core import DVB_Demuxer
+
+    import sys; sys.path.append("/home/matteh/kamaelia/head/Sketches/MH/Introspection/")
+    from Profiling import Profiler
+    import time
+    
+    from Axon.Component import component
+    class NullDemuxer(component):
+        def __init__(self, *args, **argsd):
+            super(NullDemuxer,self).__init__()
+        def main(self):
+           while not self.dataReady("control") or self.dataReady("inbox"):
+               while self.dataReady("inbox"):
+                   self.recv("inbox")
+               self.pause()
+               yield 1
+           self.recv("control")
+    
+    results = {}
+    for demuxer in [NullDemuxer, DVB_Demuxer,DVB_SoftDemuxer]:
+        print "Timing "+demuxer.__name__+" ..."
+        start = time.time()
+        for _ in range(3):
+            Graphline(
+                SOURCE=ReadFileAdaptor("/home/matteh/junction.ts",readmode="bitrate",bitrate=600000000000,chunkrate=600000000000/8/2048),
+                DEMUX=demuxer( { 18 : ["_EIT_"], 20 : ["_DATETIME_"] } ),
+                linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
+                           ("SOURCE", "signal"):("DEMUX","control"),
+                         }
+                ).run()
+        timetaken = time.time()-start
+        results[demuxer.__name__] = timetaken
+        
+    lowerbound = min(*results.values())
+    for name in results:
+        print name, results[name]-lowerbound, "out of",results[name]
