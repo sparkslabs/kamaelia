@@ -9,6 +9,7 @@
 .sectioncontent { font-size: 0.9em;
                   margin-left: 2em;
                   line-height: 1.8;
+                  text-align: left;
                 }
 .verticaldivider { float: bottom;
                    width: 100%;
@@ -16,7 +17,6 @@
 .none { width: 100%;
         clear: both;
       }
-
 
  .rbroundbox_green { background: url(/t/green.corners-top.png) repeat-x; 
                width: 50%;
@@ -39,10 +39,36 @@
  height: 23px;
  font-size: 1px;
  }
+body {
+   text-align: justify;
+}
+.boxright {
+    float: right;
+    width: 20em;
+    padding: 0.5em;
+    margin: 1em;
+
+    border: 1px solid;
+}
+.sidebar {
+    width: 10em;
+    float: left;
+    padding: 1em;
+
+}
+.bodytext {
+
+    margin: 0 5em 0em 12em;
+    float: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
 </style>
-</head><body style="font-size:10pt;font-family:URW Gothic L">
+</head><body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
 <p>[[IMG][SRC=/Kamaelia.gif][align=left]]</p>
 <p align="right"><span style="font-size:24pt;font-weight:600">Kamaelia</span><span style="font-size:24pt"> - Concurrency, Networking, Simplicity</span></p>
-<p align="right">[[INCLUDE][file=navigation.html][croptop=1][cropbottom=1]]<br />[[ENV][var=navtext][default= ]] [[HR][foo=foo]][[SIDEBAR][croptop=1][cropbottom=1][file=sidebar.html] [[ENV][var=bodytext]] [layout=ab]] <br />[[HR][foo=foo]]</p>
+[[INCLUDE][file=navigation.html][croptop=1][cropbottom=1]][[ENV][var=navtext][default= ]] [[SIDEBAR][croptop=1][cropbottom=1][file=sidebar.html] [[ENV][var=bodytext]] [layout=ab]]
+<div class="none"></div>
+<P>[[HR][foo=foo]]
 <p>[[INCLUDE][file=disclaimer.html][croptop=1][cropbottom=1]] [[INCLUDE][file=footerimages.html][croptop=1][cropbottom=1]] </p>
 </body></html>
