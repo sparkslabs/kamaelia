@@ -5,6 +5,7 @@
 from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
 from Axon.Component import component
 import struct
+from Axon.Ipc import shutdownMicroprocess,producerFinished
 
 class PSIPacketReconstructor(component):
     """\
@@ -13,11 +14,19 @@ class PSIPacketReconstructor(component):
     
     Will only handle stream from a single PID.
     """
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
     def main(self):
         buffer = ""
         nextCont = None
         # XXX assuming for the moment that this can only handle one PID at a time
-        while 1:
+        while not self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
 
@@ -77,10 +86,18 @@ class EITPacketParser(component):
                  "signal" : "NOT USED",
                }
                     
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
     def main(self):
         
         
-        while 1:
+        while not self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 
@@ -213,10 +230,18 @@ class NowNextChanges(component):
     Simple attempt to filter DVB now and next info for multiple services,
     such that we only send output when the data changes.
     """
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
     def main(self):
         current = {}
         
-        while 1:
+        while not self.shutdown():
             while self.dataReady("inbox"):
                 event = self.recv("inbox")
                 
@@ -241,8 +266,16 @@ class NowNextServiceFilter(component):
         super(NowNextServiceFilter,self).__init__()
         self.services = services
         
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
     def main(self):
-        while 1:
+        while not self.shutdown():
             while self.dataReady("inbox"):
                 event = self.recv("inbox")
                 if event['service'] in self.services:
@@ -263,10 +296,18 @@ class TimeAndDatePacketParser(component):
                  "signal" : "NOT USED",
                }
                     
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
     def main(self):
         
         
-        while 1:
+        while not self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 
@@ -305,10 +346,17 @@ if __name__ == "__main__":
     from Kamaelia.Util.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
 
+    import dvb3.frontend
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+
     Graphline(
-#        SOURCE=ReadFileAdaptor("/home/matteh/eit.ts"),
-        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20]),
-        DEMUX=DVB_Demuxer({ "18": "_EIT_", "20":"_DATETIME_" }),
+        SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20], feparams),
+        DEMUX=DVB_Demuxer({ "18": ["_EIT_"], "20":["_DATETIME_"] }),
         EIT = pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
                         NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO
