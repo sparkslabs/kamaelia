@@ -2,7 +2,8 @@
 
 # parse EIT now & next information from DVB-T streams
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
+from Kamaelia.Device.DVB.Core import DVB_Multiplex#, DVB_Demuxer
+from SoftDemux import DVB_SoftDemuxer as DVB_Demuxer
 from Axon.Component import component
 import struct
 from Axon.Ipc import shutdownMicroprocess,producerFinished

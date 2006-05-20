@@ -69,8 +69,6 @@ if __name__ == "__main__":
     from Kamaelia.Util.Graphline import Graphline
     from Core import DVB_Demuxer
 
-    import sys; sys.path.append("/home/matteh/kamaelia/head/Sketches/MH/Introspection/")
-    from Profiling import Profiler
     import time
     
     from Axon.Component import component
@@ -92,7 +90,7 @@ if __name__ == "__main__":
         for _ in range(3):
             Graphline(
                 SOURCE=ReadFileAdaptor("/home/matteh/junction.ts",readmode="bitrate",bitrate=600000000000,chunkrate=600000000000/8/2048),
-                DEMUX=demuxer( { 18 : ["_EIT_"], 20 : ["_DATETIME_"] } ),
+                DEMUX=demuxer( { "18" : ["_EIT_"], "20" : ["_DATETIME_"] } ),
                 linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
                            ("SOURCE", "signal"):("DEMUX","control"),
                          }
