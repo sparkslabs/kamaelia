@@ -42,7 +42,7 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def main(self):
-        demuxer = dvb3.soft_dmx.SoftDemux()
+        demuxer = dvb3.soft_dmx.SoftDemux(pidfilter = [int(x) for x in self.pidmap.keys()])
         self.shuttingdown = False
         
         while (not self.shutdown()) or self.dataReady("inbox"):
@@ -56,13 +56,10 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     continue
 
                 # Send the packet to the outbox appropriate for this PID.
-                # "Fail" silently for PIDs we don't know about and weren't
-                # asked to demultiplex
-                try:
-                    for outbox in self.pidmap[ str(pid) ]:
-                        self.send(packet, outbox)
-                except KeyError:
-                    pass
+                # demuxer has been configured to only extract PIDs we're interested in
+                for outbox in self.pidmap[ str(pid) ]:
+                    self.send(packet, outbox)
+            
             self.pause()
             yield 1
 
