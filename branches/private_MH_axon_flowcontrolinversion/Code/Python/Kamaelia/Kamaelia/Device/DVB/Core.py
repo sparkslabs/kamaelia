@@ -13,6 +13,7 @@ import struct
 
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
+from Axon.Ipc import shutdownMicroprocess,producerFinished
 
 DVB_PACKET_SIZE = 188
 DVB_RESYNC = "\x47"
@@ -28,6 +29,7 @@ def tune_DVBT(fe, frequency, feparams={}):
 
     # Start the tuning
     fe.set_frontend(params)
+    
 
 def notLocked(fe):
     """\
@@ -78,6 +80,13 @@ class DVB_Multiplex(threadedcomponent):
         self.pids = pids
         super(DVB_Multiplex, self).__init__()
         
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.shuttingdown=True
+        return self.shuttingdown
 
     def main(self):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
@@ -91,7 +100,7 @@ class DVB_Multiplex(threadedcomponent):
         fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
         tosend = []
         tosend_len =0
-        while True:
+        while not self.shutdown():
             try:
                data = os.read(fd, 2048)
 #               tosend.append(data) # Ensure we're sending collections of packets through Axon, not single ones
@@ -137,10 +146,19 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
     def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
 
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.shuttingdown=True
+        return self.shuttingdown
+    
     def main(self):
         buffer = ""
         buffers = []
-        while 1:
+        self.shuttingdown=False
+        while (not self.shutdown()) or self.dataReady("inbox"):
             yield 1
             if not self.dataReady("inbox"):
                self.pause()
