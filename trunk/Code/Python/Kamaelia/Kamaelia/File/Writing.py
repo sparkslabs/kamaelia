@@ -79,9 +79,10 @@ class SimpleFileWriter(component):
                  "signal" : "shutdown/finished signalling"
                }
     
-    def __init__(self, filename):
+    def __init__(self, filename, mode = "wb"):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         self.filename = filename
+        self.mode = mode
         super(SimpleFileWriter, self).__init__()
         
     def writeData(self, data):
@@ -91,7 +92,7 @@ class SimpleFileWriter(component):
         
     def main(self):
         """Main loop"""
-        self.file = open(self.filename, "wb",0)
+        self.file = open(self.filename, self.mode, 0)
         done = False
         while not done:
             yield 1
