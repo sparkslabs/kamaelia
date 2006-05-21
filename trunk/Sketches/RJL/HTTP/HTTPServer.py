@@ -20,18 +20,64 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""ryan@ryanlinux:~/kamaelia/Sketches/RJL$ python HTTPServer.py > serverlog.txt
+Traceback (most recent call last):
+  File "HTTPServer.py", line 348, in ?
+    scheduler.run.runThreads(slowmo=0)
+  File "/usr/lib/python2.4/site-packages/Axon/Scheduler.py", line 140, in runThreads
+    for i in self.main(slowmo): pass
+  File "/usr/lib/python2.4/site-packages/Axon/Scheduler.py", line 122, in main
+    result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
+  File "/usr/lib/python2.4/site-packages/Axon/Microprocess.py", line 246, in next
+    return self.__thread.next()
+  File "/usr/lib/python2.4/site-packages/Axon/Microprocess.py", line 317, in _microprocessGenerator
+    v = pc.next()
+  File "/usr/lib/python2.4/site-packages/Kamaelia/Internet/ConnectedSocketAdapter.py", line 238, in main
+    raise ex
+socket.error: (104, 'Connection reset by peer')
+
+"""
+
 from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Introspector import Introspector
+from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Axon.Ipc import producerFinished, errorInformation
 from Kamaelia.KamaeliaExceptions import BadRequest
-import string
+import string, time, website
 from Lagger import Lagger
+
+def currentTimeHTTP():
+	curtime = time.gmtime()
+	return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
 
 def removeTrailingCr(line):
 	if len(line) == 0: return line
 	if line[-1] == "\r":
 		return line[0:-1]
-		
+
+def splitUri(requestobject):
+	splituri = string.split(requestobject["raw-uri"], "://")
+	if len(splituri) > 1:
+		requestobject["uri-protocol"] = splituri[0]
+		requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "://"):]
+		splituri = string.split(requestobject["raw-uri"], "/")
+		if splituri[0] != "":
+			requestobject["uri-server"] = splituri[0]						
+			requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "/"):]
+			splituri = string.split(["uri-server"], "@")
+			if len(splituri) > 0:
+				requestobject["uri-username"] = splituri[0]
+				requestobject["uri-server"] = requestobject["uri-server"][len(splituri[0] + "@"):]
+				splituri = string.split(requestobject["uri-username"], ":")
+				if len(splituri) == 2:
+					requestobject["uri-username"] = splituri[0]
+					requestobject["uri-password"] = splituri[1]
+
+
 class HTTPParser(component):
 	Inboxes =  { "inbox"         : "Raw HTTP requests",
 	             "control"       : "UNUSED" }
@@ -45,12 +91,30 @@ class HTTPParser(component):
 		self.lines = []
 		self.readbuffer = ""
 
-	def linesFetch(self):
+	def dataFetch(self):
 		if self.dataReady("inbox"):
 			self.readbuffer += self.recv("inbox")
-			self.lines += string.split(self.readbuffer, "\n")
-			self.readbuffer = self.lines.pop() #the remainder after final \n
-		else: self.pause()
+			return 1
+		else:
+			return 0
+			
+	def shouldShutdown(self):
+		while self.dataReady("control"):
+			temp = self.recv("control")
+			if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
+				return True
+		
+		return False
+		
+	def nextLine(self):
+		lineendpos = string.find(self.readbuffer, "\n")
+		if lineendpos == -1:
+			return None
+		else:
+			line = removeTrailingCr(self.readbuffer[:lineendpos])
+			self.readbuffer = self.readbuffer[lineendpos + 1:] #the remainder after the \n
+			#print "Received line: " + line
+			return line
 		
 	def main(self):
 
@@ -60,12 +124,17 @@ class HTTPParser(component):
 			requestobject["headers"] = {}
 
 			#state 1 - awaiting initial line
-			while len(self.lines) == 0:
-				yield 1
-				self.linesFetch()
-			
-			print "Initial line found"
-			currentline = removeTrailingCr(self.lines.pop(0))
+			currentline = None
+			while currentline == None:
+				if self.shouldShutdown(): return
+				while self.dataFetch():
+					pass
+				currentline = self.nextLine()
+				if currentline == None:
+					self.pause()
+					yield 1
+				
+			#print "Initial line found"
 			splitline = string.split(currentline, " ")
 			
 			if len(splitline) < 2:
@@ -91,8 +160,10 @@ class HTTPParser(component):
 					else:
 						requestobject["protocol"] = protvers[0]
 						requestobject["version"] = protvers[1]
-		
-				#foo://toor:letmein@server.bigcompany.com/bla?this&that=other could be handled better
+					
+					splitUri(requestobject)
+					
+				#foo://toor:letmein@server.bigcompany.com:80/bla?this&that=other could be handled better
 
 				if requestobject["method"] == "PUT" or requestobject["method"] == "POST":
 					bodiedrequest = True
@@ -102,29 +173,55 @@ class HTTPParser(component):
 				if requestobject["version"] != "HTTP/0.9":
 					#state 2 - as this is a valid request, we now accept headers	
 					previousheader = ""
-					while 1:
-						yield 1
-						if len(self.lines) == 0: self.linesFetch()
-						if len(self.lines) > 0:
-							currentline = removeTrailingCr(self.lines.pop(0))
+					endofheaders = False
+					while not endofheaders:
+						if self.shouldShutdown(): return						
+						while self.dataFetch():
+							pass
+							
+						currentline = self.nextLine()
+						while currentline != None:
 							if currentline == "":
-								print "End of headers found"
-								break;
+								#print "End of headers found"
+								endofheaders = True
+								break
 							else:
 								if currentline[0] == " " or currentline[0] == "\t": #continued header
 									requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
 								else:
 									splitheader = string.split(currentline, ":")
-									print "Found header: " + splitheader[0]
-									requestobject["headers"][string.lower(splitheader[0])] = currentline[len(splitheader[0]) + 1:]
+									#print "Found header: " + splitheader[0]
+									requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
+							currentline = self.nextLine()
 							#should parse headers header
+						if not endofheaders:
+							self.pause()
+							yield 1
+				if requestobject["headers"].has_key("host"):
+					requestobject["uri-server"] = requestobject["headers"]["host"]
 				
 				if bodiedrequest:
 					#state 3 - the headers are complete - awaiting the message
-					pass
+					if not requestobject["headers"].has_key("content-length"):
+						#this is not strictly required - it breaks compatible with chunked encoding
+						#but will do for now
+						requestobject["bad"] = 411 #length required
+					else:
+						bodylength = int(requestobject["headers"]["content-length"])
+						 
+						while len(self.readbuffer) < bodylength:
+							if self.shouldShutdown(): return						
+							while self.dataFetch():
+								pass
+							if len(self.readbuffer) < bodylength:
+								self.pause()
+								yield 1
+						requestobject["body"] = self.readbuffer[:bodylength]
+						self.readbuffer = self.readbuffer[bodylength:]
+
 				#state 4 - request complete, send it on
-			print "Request sent on."
-			print requestobject
+			#print "Request sent on."
+			#print requestobject
 			self.send(requestobject, "outbox")
 
 class HTTPServer(component):
@@ -136,13 +233,14 @@ class HTTPServer(component):
 	             "mime-outbox"   : "Data from MIME handler",
 	             "mime-signal"   : "Error signals from MIME handler",
 	             "http-outbox"   : "Data from HTTP resource retriever",
-	             "control"       : "UNUSED" }
+	             "control"       : "Receive shutdown etc. signals" }
 
 
 	Outboxes = { "outbox"        : "TCP data stream - send",
 				 "mime-inbox"    : "To MIME handler",
 				 "mime-control"  : "To MIME handler",
 	             "http-inbox"    : "To HTTP resource retriever",
+	             "http-control"  : "To HTTP resource retriever's signalling inbox",
 				 "signal"        : "UNUSED" }
 
 	def __init__(self):
@@ -159,6 +257,7 @@ class HTTPServer(component):
 		self.link( (self.mimehandler,"signal"), (self, "mime-signal") )
 
 		self.link( (self, "http-inbox"), (self.httphandler, "inbox") )
+		self.link( (self, "http-control"), (self.httphandler, "control") )
 		self.link( (self.httphandler, "outbox"), (self, "http-outbox") )
 
 		#elf.link( (self.httphandler, "filereader-inbox"), (self.httphandler.filereader, "inbox") )
@@ -170,19 +269,26 @@ class HTTPServer(component):
 		#self.httphandler.filereader.activate()
 
 	def mainBody(self):
-		if self.dataReady("inbox"):
+		while self.dataReady("inbox"):
 			temp = self.recv("inbox")
 			self.send(temp, "mime-inbox")
 
-		if self.dataReady("http-outbox"):
+		while self.dataReady("control"):
+			temp = self.recv("control")
+			if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
+				self.send(temp, "mime-control")
+				self.send(temp, "http-control")
+				return 0
+		
+		while self.dataReady("http-outbox"):
 			temp = self.recv("http-outbox")
 			self.send(temp, "outbox")
 
-		if self.dataReady("mime-outbox"):
+		while self.dataReady("mime-outbox"):
 			temp = self.recv("mime-outbox")
 			self.send(temp, "http-inbox")
 
-		if self.dataReady("mime-signal"):
+		while self.dataReady("mime-signal"):
 			temp = self.recv("mime-signal")
 			if isinstance(temp, errorInformation):
 				if isinstance(temp.exception, BadRequest):
@@ -190,8 +296,10 @@ class HTTPServer(component):
 					self.send(msg, "outbox")
 				sig = producerFinished(self)
 				self.send(sig, "signal")
-				print "close signal\n"
+				#print "close signal\n"
 				return 0
+				
+		self.pause()
 		return 1
 
 	def closeDownComponent(self):
@@ -200,7 +308,7 @@ class HTTPServer(component):
 		self.mimehandler = None
 		self.httphandler = None
 
-class HTTPRequestHandler(threadedcomponent):
+class HTTPRequestHandler(component):
 	Inboxes =  { "inbox"               : "Raw HTTP requests",
 	             #"filereader-outbox"   : "File reader's outbox",
 	             "control"             : "UNUSED" }
@@ -211,33 +319,12 @@ class HTTPRequestHandler(threadedcomponent):
 	def __init__(self):
 		super(HTTPRequestHandler, self).__init__()
 		
-	def getErrorPage(self, errorcode, msg = ""):
-		if errorcode == 400:
-			return { "statuscode" : "400",
-			         "data"       : "<html>\n<title>400 Bad Request</title>\n<body style='background-color: black; color: white;'>\n<h2>400 Bad Request</h2>\n<p>" + msg + "</p></body>\n</html>\n\n",
-			         "type"       : "text/html" }
-		elif errorcode == 404:
-			return { "statuscode" : "404",
-			         "data"       : "<html>\n<title>404 Not Found</title>\n<body style='background-color: black; color: white;'>\n<h2>404 Not Found</h2>\n<p>" + msg + "</p></body>\n</html>\n\n",
-			         "type"       : "text/html" }
-		elif errorcode == 500:
-			return { "statuscode" : "500",
-			         "data"       : "<html>\n<title>500 Internal Server Error</title>\n<body style='background-color: black; color: white;'>\n<h2>500 Internal Server Error</h2>\n<p>" + msg + "</p></body>\n</html>\n\n",
-			         "type"       : "text/html" }
-		elif errorcode == 501:
-			return { "statuscode" : "501",
-			         "data"       : "<html>\n<title>501 Not Implemented</title>\n<body style='background-color: black; color: white;'>\n<h2>501 Not Implemented</h2>\n<p>" + msg + "</p></body>\n</html>\n\n",
-			         "type"       : "text/html" }
 
-	def fetchResource(self, host, uri):
-		if uri == "/poweredbykamaelia.png":
-			myfile = open("poweredbykamaelia.png", "rb", 0) # bad bad bad - blocking call!
-			mydata = myfile.read()
-			myfile.close()
-			resource = { "type" : "image/png", "statuscode" : "200", "data": mydata }
-		else:
-			resource = { "type" : "text/html", "statuscode" : "200", "data": "<html>\n<body>\n<p>You requested " + uri + ". Isn't that nice?</p>\n<img src='/poweredbykamaelia.png' style='border: 1px solid #AAAAAA;' alt='Powered by Kamaelia' /></body>\n</html>\n" }
-		return resource
+	def fetchResource(self, request):
+		for (prefix, handler) in website.URLHandlers:
+			if request["raw-uri"][:len(prefix)] == prefix:
+				resource = handler(request)
+				return resource
 		
 	def formHeaderResponse(self, resource, protocolversion):
 		if resource["statuscode"] == "200": statustext = "200 OK"
@@ -245,35 +332,52 @@ class HTTPRequestHandler(threadedcomponent):
 		if resource["statuscode"] == "404": statustext = "404 Not Found"
 		if resource["statuscode"] == "500": statustext = "500 Internal Server Error"
 		if resource["statuscode"] == "501": statustext = "501 Not Implemented"
+		if resource["statuscode"] == "411": statustext = "411 Length Required"
 
-		header = "HTTP/" + protocolversion + " " + statustext + "\nContent-type: " + resource["type"] + "\nContent-length: " + str(len(resource["data"])) + "\n\n"
+		header = "HTTP/" + protocolversion + " " + statustext + "\nServer: Kamaelia HTTP Server (RJL) 0.1\nDate: " + currentTimeHTTP() + "\nContent-type: " + resource["type"] + "\nContent-length: " + str(len(resource["data"])) + "\n\n"
 		return header
 
 	def mainBody(self):
-		if self.dataReady("inbox"):
+		while self.dataReady("inbox"):
 			request = self.recv("inbox")
-			if request["bad"]:
-				pagedata = self.getErrorPage(400, "Non-HTTP")
+			if request["bad"] == "411":
+				pagedata = website.getErrorPage(411, "Um - content-length plz!")
 				self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
+			elif request["bad"]:
+				pagedata = website.getErrorPage(400, "Your request sucked!")
+				self.send(self.formHeaderResponse(pagedata, "1.0") + pagedata["data"], "outbox")
 
-			if request["protocol"] != "HTTP":
-				pagedata = self.getErrorPage(400, "Non-HTTP")
+			elif request["protocol"] != "HTTP":
+				pagedata = website.getErrorPage(400, "Non-HTTP")
 				self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
 			else:
 				if not request["headers"].has_key("host"):
-					pagedata = self.getErrorPage(400, "could not find host header")
+					pagedata = website.getErrorPage(400, "could not find host header")
 					self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-				elif request["method"] == "GET":
-					pagedata = self.fetchResource(request["headers"]["host"], request["raw-uri"])
+				elif request["method"] == "GET" or request["method"] == "POST":
+					pagedata = self.fetchResource(request)
 					self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
 				else:
-					pagedata = self.getErrorPage(501,"The request method is not implemented")
+					pagedata = website.getErrorPage(501,"The request method is not implemented")
 					self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
+		
+		while self.dataReady("control"):
+			temp = self.recv("control")
+			if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
+				return 0
+
+		self.pause()
+		#time.sleep(0.01)
+			
 		return 1
 
 
 if __name__ == '__main__':
 	from Axon.Component import scheduler
 	SimpleServer(protocol=HTTPServer, port=8082).activate()
-	Lagger().activate()
+	pipeline(
+		Introspector(),
+		TCPClient("127.0.0.1", 1500),
+	).activate()
+	#Lagger().activate()
 	scheduler.run.runThreads(slowmo=0)
