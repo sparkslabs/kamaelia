@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -43,13 +43,7 @@ class scheduler_Test(unittest.TestCase):
       
    def test_sensiblestructure(self):
       "Conceptual issue to discuss"
-      self.fail("""Rip out the slowmo stuff from the the scheduler.
-                Option 1: instead make a component that blocks the right amount
-                of time to slow down the system.  This would leave a
-                far simpler system and make dynamic control easier.
-                Option 2: Allow the implementation of simpler ways for running the scheduler
-                Option 3: move slowmo into runThreads instead.
-                etc.""")
+      self.fail("Rip out the slowmo stuff from the the scheduler.  Instead make a component that blocks the right amount of time to slow down the system.  This would leave a far simpler system and make dynamic control easier.")
       
 
 if __name__=='__main__':

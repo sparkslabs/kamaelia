@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -27,7 +27,7 @@
 import unittest
 import Axon.Scheduler as Scheduler
 from test___str__ import str_Test
-from Axon.Microprocess import microprocess
+from Axon.Microprocess import microprocess as microprocess
 
 class MicroProcess_Test(str_Test):
    """A full set of tests for the Microprocess class."""
@@ -192,10 +192,6 @@ class MicroProcess_Test(str_Test):
       mp = self.init_test()
       self.failUnless(0 == mp._closeDownMicroprocess())
 
-   def test__activityCreator(self):
-      "_activityCreator should return False as the basic microprocess does not inititate any usefule work."
-      mp = self.init_test()
-      self.failIf(mp._activityCreator())
 
 if __name__=='__main__':
    unittest.main()
