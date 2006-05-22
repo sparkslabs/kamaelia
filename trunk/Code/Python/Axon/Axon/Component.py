@@ -283,7 +283,7 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      return len(self.inboxes[boxname])
+      return self.inboxes[boxname].local_len()
 
 
    def link(self, source,sink,passthrough=0):
