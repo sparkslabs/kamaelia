@@ -220,7 +220,7 @@ class component(microprocess):
       result = "Component " + self.name + " [ inboxes : " + self.inboxes.__str__() + " outboxes : " + self.outboxes.__str__()
       return result
 
-   def __addChild(self, child, ):
+   def __addChild(self, child):
       """'C.__addChild(component)' -
       Register component as a child.
 
@@ -284,7 +284,7 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      return len(self.inboxes[boxname])
+      return self.inboxes[boxname].local_len()
 
 
    def link(self, source,sink,passthrough=0):
