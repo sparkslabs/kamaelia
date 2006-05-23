@@ -136,7 +136,8 @@ class Pipethrough(Axon.Component.component):
             exit_status = x.poll()
 
             if (not self.anyReady()) and not (stdin_ready + stdout_ready + stderr_ready):
-                print "Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer)
+                \
+print self.name,"Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer)
                 self.pause()
                 yield 1
                 continue
@@ -161,24 +162,27 @@ class Pipethrough(Axon.Component.component):
                 writeBuffer=writeBuffer[-10000:]
             if stdin_ready:
                 while len(writeBuffer) >0:
-#                    d = writeBuffer[0]
-                    d = writeBuffer.pop(0)
+                    d = writeBuffer[0]
+#                    d = writeBuffer.pop(0)
                     try:
                         count = os.write(x.stdin.fileno(), d)
-#                        writeBuffer.pop(0)
+                        writeBuffer.pop(0)
                         success +=1
                     except OSError, e:
                         success -=1
-                        print "Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer)
+                        \
+print self.name,"Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer)
                         # Stdin wasn't ready. Let's send through a newWriter request
                         # Want to wait
                         stdin_ready = 0
                         writeBuffer=writeBuffer[len(writeBuffer)/2:]
                         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
-                        print "OK, we're waiting....", len(self.inboxes["inbox"]), len(writeBuffer)
+                        \
+print self.name,"OK, we're waiting....", len(self.inboxes["inbox"]), len(writeBuffer)
                         break # Break out of this loop
                     except:
-                        print "Unexpected error whilst trying to write to stdin:"
+                        \
+print self.name,"Unexpected error whilst trying to write to stdin:"
                         print sys.exc_info()[0]
                         break
 #                    if count != len(d):
@@ -195,21 +199,27 @@ class Pipethrough(Axon.Component.component):
                     stdout_ready = 0
                     self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
                 except:
-                    print "Unexpected error whilst trying to read stdout:"
+                    \
+print self.name,"Unexpected error whilst trying to read stdout:"
                     print sys.exc_info()[0]
                     pass
 
             if stderr_ready:
                 try:
                     Y = os.read(x.stderr.fileno(),2048)
+# TEMPORARY DIVERSION OF STDERR TO OUTBOX TOO
+                    \
+if len(Y)>0: self.send(Y,"outbox")
 # No particular plans for stderr
                 except OSError, e:
-                    print "Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer)
+                    \
+print self.name,"Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer)
                     # stdout wasn't ready. Let's send through a newReader request
                     stderr_ready = 0
                     self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
                 except:
-                    print "Unexpected error whilst trying to read stderr:"
+                    \
+print self.name,"Unexpected error whilst trying to read stderr:"
                     print sys.exc_info()[0]
                     pass
 
@@ -223,17 +233,18 @@ class Pipethrough(Axon.Component.component):
             yield 1
 
         \
-print "UnixPipe finishing up"
+print self.name,"UnixPipe finishing up"
         while  self.dataReady("stdoutready"):
             \
-print "flushing"
+print self.name,"flushing"
             self.recv("stdoutready")
             try:
                 Y = os.read(x.stdout.fileno(),10)
                 if len(Y)>0:
                     self.send(Y, "outbox")
                 else:
-                    print "Mighty Floogly"
+                    \
+print self.name,"Mighty Floogly"
                     continue
             except OSError, e:
                 continue
@@ -246,16 +257,16 @@ print "flushing"
 #        self.send(removeReader(self,(x.stderr)), "selector")
 #        self.send(removeReader(self,(x.stdout)), "selector")
         \
-print "sending shutdown"
+print self.name,"sending shutdown"
         if not shutdownMessage:
             \
-print "new signal"
+print self.name,"new signal"
             self.send(Axon.Ipc.producerFinished(), "signal")
             \
-print "...sent"
+print self.name,"...sent"
         else:
             \
-print "old signal"
+print self.name,"old signal"
             self.send(shutdownMessage, "signal")
 #            \
 #print "...sent"
