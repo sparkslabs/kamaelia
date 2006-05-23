@@ -57,7 +57,8 @@ class postbox(object):
         self.storage = storage
         self.sources = []
         self._retarget()
-    
+        self.local_len = storage.__len__    
+        
     def __len__(self):
         return self.__len__()
 
