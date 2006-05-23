@@ -32,6 +32,7 @@ from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 import threading
 import Queue
 from idGen import numId
+import sys
 
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
@@ -64,7 +65,13 @@ class threadedcomponent(Component.component):
        return super(threadedcomponent,self).activate(Scheduler,Tracker,"_localmain")
    
    def _threadmain(self):
-        self._threadmainmethod()
+        try:
+            self._threadmainmethod()
+        except:
+            exception = sys.exc_info()
+            def throwexception(exception):
+                raise exception[0], exception[1], exception[2]
+            self._do_threadsafe( throwexception, [exception], {} )
         self._threadrunning = False
         Component.component.unpause(self)
    
