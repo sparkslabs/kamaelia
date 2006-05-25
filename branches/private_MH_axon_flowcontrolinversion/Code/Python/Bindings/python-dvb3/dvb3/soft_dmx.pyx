@@ -48,6 +48,8 @@ cdef class SoftDemux:
 #        """Insert a fragment of transport stream into the demuxer.
 #           Call fetch() to fetch TS packets extracted.
 #        """
+        cdef long int fraglen
+        
         fraglen = len(fragment)
 
         self.frag_buffer.append(fragment)
@@ -82,6 +84,7 @@ cdef class SoftDemux:
             if self.cfrag[0] == 0x47:
                 # we are at start of TS packet and have whole packet (length >= 188)
                 
+                # we'll *provisionally* accept the packet
                 accepting = -1
                 
                 # see if we can easily detect the PID early
