@@ -8,7 +8,17 @@ from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
+import dvb3
+
+freq = 505.833330 # 529.833330   # 505.833330
+feparams = {
+    "inversion" : dvb3.frontend.INVERSION_AUTO,
+    "constellation" : dvb3.frontend.QAM_16,
+    "coderate_HP" : dvb3.frontend.FEC_3_4,
+    "coderate_LP" : dvb3.frontend.FEC_3_4,
+}
+
 pipeline(
-   DVB_Multiplex(754, [640, 641, 620, 621, 622, 610, 611, 612, 600, 601, 602, 18]), # BBC Multiplex
+   DVB_Multiplex(freq, [0x2000],feparams), # BBC Multiplex 1, whole transport stream
    SimpleFileWriter("BBC_MUX_1.ts"),
 ).run()
