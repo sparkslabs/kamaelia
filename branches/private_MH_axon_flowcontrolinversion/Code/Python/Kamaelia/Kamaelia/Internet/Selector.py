@@ -28,6 +28,7 @@ from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWrite
 import Axon.CoordinatingAssistantTracker as cat
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 import time
+#import sys,traceback
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
@@ -38,6 +39,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
          "notify" : "Used to be notified about things to select"
     }
     def removeLinks(self, selectable, meta, selectables):
+#        \
+#print "removeLinks",selectable,meta,selectables
         try:
             replyService, outbox, Linkage = meta[selectable]
             self.unlink(thelinkage=Linkage)
@@ -45,15 +48,25 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             self.deleteOutbox(outbox)
             del meta[selectable]
             Linkage = None
+#            print "removed",selectable,"from meta:",meta
+#            print "removed",selectable,"from selectables:",selectables
         except:
+#            print "removeLinks error:\n", traceback.format_exc()
+#            print "contents of meta:",meta
+#            print "contents of selectables:",selectables
             pass
 
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
-        outbox = self.addOutbox(boxBase)
-        L = self.link((self, outbox), replyService)
-        meta[selectable] = replyService, outbox, L
-        selectables.append(selectable)
-        return L
+#        \
+#print "addinks",selectable,meta,selectables,boxBase
+        if selectable not in meta:
+            outbox = self.addOutbox(boxBase)
+            L = self.link((self, outbox), replyService)
+            meta[selectable] = replyService, outbox, L
+            selectables.append(selectable)
+            return L
+        else:
+            return meta[selectable][2]
 
     def handleNotify(self, meta, readers,writers, exceptionals):
         while self.dataReady("notify"):
@@ -73,14 +86,20 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
 
             if isinstance(message, removeReader):
+#                \
+#print "remove reader..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[READERS], readers)
 
             if isinstance(message, removeWriter):
+#                \
+#print "remove writer..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[WRITERS], writers)
 
             if isinstance(message, removeExceptional):
+#                \
+#print "remove exceptional..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
@@ -102,11 +121,34 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                print "IN HERE"
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,5) #0.05
+#                    print ".",
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
+                    
+                    for i in xrange(3):
+                        for selectable in read_write_except[i]:
+#                            try:
+                                replyService, outbox, linkage = meta[i][selectable]
+                                self.send(selectable, outbox)
+                                replyService, outbox, linkage = None, None, None
+    
+    #                            print "i",i
+#                                \
+#    print "auto removing..."
+                                self.removeLinks(selectable, meta[i], selections[i])
+    #                            print selections
+    
+#                            except KeyError, k:
+#                                pass
+                            
                 except ValueError, e:
+#                    print "value error",e
+#                    print "readers=",readers
+#                    print "writers=",writers
+#                    print "exceptionals=",exceptionals
                     if FAILHARD:
                         raise e
                 except socket.error, e:
+#                    print "socket error",e
                     if e[0] == 9:
                         numberOfFailedSelectsDueToBadFileDescriptor +=1
                         if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
@@ -115,19 +157,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # to find the broken ones, and remove
                             raise e
 
-                for i in xrange(3):
-                    for selectable in read_write_except[i]:
-                        try:
-                            replyService, outbox, linkage = meta[i][selectable]
-                            self.send(selectable, outbox)
-                            replyService, outbox, linkage = None, None, None
-
-#                            print "i",i
-                            self.removeLinks(selectable, meta[i], selections[i])
-#                            print selections
-
-                        except KeyError, k:
-                            pass
                 self.sync()
             elif not self.anyReady():
                 #print "IN HERE"
