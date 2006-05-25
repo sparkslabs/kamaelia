@@ -42,6 +42,7 @@ from Kamaelia.Internet.Selector import Selector
 import subprocess
 import fcntl
 import os
+import sys
 
 def Chargen():
    import time
@@ -226,7 +227,7 @@ print self.name,"Unexpected error whilst trying to read stderr:"
 
             if self.dataReady("control"):
                  shutdownMessage = self.recv("control")
-#                 self.send(removeWriter(self,(x.stdin)), "selector")
+                 self.send(removeWriter(self,(x.stdin)), "selector")
                  yield 1
                  x.stdin.close()
 
@@ -240,22 +241,22 @@ print self.name,"flushing"
             self.recv("stdoutready")
             try:
                 Y = os.read(x.stdout.fileno(),10)
-                if len(Y)>0:
+                while Y:
                     self.send(Y, "outbox")
-                else:
-                    \
+                    Y = os.read(x.stdout.fileno(),10)
+                \
 print self.name,"Mighty Floogly"
-                    continue
             except OSError, e:
                 continue
             except:
                 break
             yield 1
 
-# commented out because not necessary (selector automatically purges them itself)
-# besides, the 
-#        self.send(removeReader(self,(x.stderr)), "selector")
-#        self.send(removeReader(self,(x.stdout)), "selector")
+        # remove now closed file handles from the selector, so it doesn't stay
+        # upset
+        self.send(removeReader(self,(x.stderr)), "selector")
+        self.send(removeReader(self,(x.stdout)), "selector")
+        self.send(removeWriter(self,(x.stdin)), "selector")
         \
 print self.name,"sending shutdown"
         if not shutdownMessage:
