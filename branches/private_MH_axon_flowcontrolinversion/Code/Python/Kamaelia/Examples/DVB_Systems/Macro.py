@@ -5,6 +5,7 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
+from Kamaelia.Device.DVB.SoftDemux import DVB_SoftDemuxer as DVB_Demuxer
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.File.UnixPipe import Pipethrough
@@ -63,12 +64,17 @@ class ProgrammeTranscoder(Axon.Component.component):
         finishedEIT  = "/data/finished"+self.dir_prefix+"/"+uid+".eit"
         
         \
-print "Starting transcoding into: "+encodingfile
+print uid,"Starting transcoding into: "+encodingfile
         transcoder = Pipethrough("mencoder -o "+encodingfile+" "+self.mencoder_options)
+        \
+print uid,"Transcoder pipethough =",transcoder.name
         
         data_linkage = self.link( (self,"inbox"), (transcoder,"inbox"), passthrough=1 )
         ctrl_linkage = self.link( (self,"_stop"), (transcoder,"control"))
         done_linkage = self.link( (transcoder,"signal"), (self,"_transcodingcomplete") )
+        
+#        transcoder_logger = SimpleFileWriter(uid+".log").activate()
+#        log_linkage = self.link( (transcoder,"outbox"), (transcoder_logger,"inbox"))
         
         transcoder.activate()
         
@@ -83,41 +89,49 @@ print "Starting transcoding into: "+encodingfile
             yield 1
             
         \
-print "shutdown received"
+print uid,"shutdown received"
         while self.dataReady("control"):
             self.recv("control")                 # flush out shutdown messages
             
         # tell transcoder to stop
         \
-print "Transcoding must now stop..."
+print uid,"Transcoding must now stop..."
         self.send(producerFinished(), "_stop")
         
         \
-print "waiting for transcoder to finish"
+print uid,"waiting for transcoder to finish"
         while not self.dataReady("_transcodingcomplete"):
             self.pause()
             yield 1
         \
-print "transcoder has finished"
+print uid,"transcoder has finished"
         while self.dataReady("_transcodingcomplete"):
             self.recv("_transcodingcomplete")
         
         # move the transcoded file and eit data to final destination
         \
-print "Moving finished files"
+print uid,"Moving finished files"
         os.rename(encodingfile, finishedfile)
         os.rename(waitingEIT, finishedEIT)
 
         \
-print "Unlinking transcoder"
+print uid,"Unlinking transcoder"
         self.unlink(data_linkage)
         self.unlink(ctrl_linkage)
         self.unlink(done_linkage)
+#        self.unlink(log_linkage)
 
         \
-print "Sending done signal"
+print uid,"Sending done signal"
         self.send(producerFinished(), "signal")
-        raise "STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP!!!!"
+        
+#         # HACK HACK HACK
+#         # force this program to terminate
+#         # and clean up any extraneous EIT data
+#         cruft = [file for file in os.listdir("/data/encoding"+self.dir_prefix+"/") if file[-4:]==".eit"]
+#         for file in cruft:
+#             os.remove("/data/encoding"+self.dir_prefix+"/"+file)
+#         raise "STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP!!!!"
 
 
 def EITParsing(*service_ids):
@@ -161,20 +175,8 @@ else: # manchester
     freq = 754
     feparams = {}
 
-from Axon.ThreadedComponent import threadedcomponent
-
-class SysStatus(threadedcomponent):
-    def main(self):
-        while 1:
-            print "---",time.time()
-            for mprocess in Axon.Scheduler.scheduler.run.threads:
-                print mprocess._isRunnable(),mprocess.name
-            print "---"
-            time.sleep(10)
-
-#SysStatus().activate()
-
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Util.Console import ConsoleEchoer
 
 params={}
@@ -190,17 +192,32 @@ params["HI"] = {
 pids = { "BBC ONE" : [600,601],
          "BBC TWO" : [610,611],
          "CBEEBIES": [201,401],
+         "CBBC"    : [620,621],
          "EIT"     : [18],
        }
 
 service_ids = { "BBC ONE": 4164,
                 "BBC TWO": 4228,
                 "CBEEBIES":16960,
+                "CBBC":4671,
               }
 
+print "-----STARTING MACRO----- time =",time.time()
+
+def repeatingFile():
+    def rfa_factory(_):
+        return RateControlledFileReader("junction.ts",readmode="bytes",rate=18000000/8,chunksize=2048)
+    return Graphline(CAROUSEL=Carousel(rfa_factory, make1stRequest=True),
+                     linkages = { ("CAROUSEL","requestNext") : ("CAROUSEL","next"),
+                                  ("CAROUSEL","outbox") : ("self", "outbox"),
+                                  ("CAROUSEL","signal") : ("self", "signal"),
+                                },
+                    )
+
 Graphline(
-    SOURCE=DVB_Multiplex(freq, pids["BBC TWO"]+pids["EIT"], feparams), # BBC ONE + EIT data
-#    SOURCE=ReadFileAdaptor("BBC_ONE_AND_EIT.ts",readmode="bitrate",bitrate=6000000,chunkrate=6000000/8/2048),
+    SOURCE=DVB_Multiplex(freq, pids["BBC TWO"]+pids["EIT"], feparams), # BBC Channels + EIT data
+#    SOURCE=ReadFileAdaptor("junction.ts",readmode="bitrate",bitrate=6523000,chunkrate=6523000/8/2048),
+#    SOURCE=repeatingFile(),
     DEMUX=DVB_Demuxer({
 #        600: ["BBCONE","BBCONE_2"],
 #        601: ["BBCONE","BBCONE_2"],
@@ -208,6 +225,8 @@ Graphline(
         611: ["BBCTWO","BBCTWO_2"],
 #        201 : ["CBEEBIES"],
 #        401 : ["CBEEBIES"],
+#        620 : ["CBBC"],
+#        621 : ["CBBC"],
         18: ["BBCTWO","BBCTWO_2"],   # BBCONE","BBCONE_2","BBCTWO","BBCTWO_2", "CBEEBIES"
 #        20: ["DATETIME"],
     }),
@@ -215,6 +234,7 @@ Graphline(
 #    BBCONE_HI = ChannelTranscoder(4164, **params["HI"]),
 #    BBCTWO_LO = ChannelTranscoder(service_ids["BBC TWO"], **params["LO"]),
     BBCTWO_HI = ChannelTranscoder(service_ids["BBC TWO"], **params["HI"]),
+#    CBBC_HI = ChannelTranscoder(service_ids["CBBC"], **params["HI"]),
 #    CBEEBIES = ChannelTranscoder(service_ids["CBEEBIES"], **params["HI"]),
 
 #    DATETIME = pipeline( PSIPacketReconstructor(),
@@ -227,16 +247,9 @@ Graphline(
 #       ("DEMUX", "BBCONE_2"): ("BBCONE_HI", "inbox"),
 #       ("DEMUX", "BBCTWO"): ("BBCTWO_LO", "inbox"),
        ("DEMUX", "BBCTWO_2"): ("BBCTWO_HI", "inbox"),
+#       ("DEMUX", "CBBC"): ("CBBC_HI", "inbox"),
 #       ("DEMUX", "CBEEBIES"): ("CBEEBIES", "inbox"),
 #       ("DEMUX", "DATETIME"): ("DATETIME","inbox"),
 
     }
 ).run()
-
-
-
-#
-# mencoder -o current.200.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128 -vf scale=320:-2 -
-# mencoder -o current.512.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=512:abitrate=128 -vf scale=640:-2 -
-#
-
