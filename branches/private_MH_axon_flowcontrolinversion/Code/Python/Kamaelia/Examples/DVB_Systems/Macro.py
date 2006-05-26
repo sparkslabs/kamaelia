@@ -161,9 +161,9 @@ print "transcoder factory called with eit:\n"+str(eit)+"\n"
         }
     )
 
-location = "london"
+location = "manchester"
 
-if location == "london":
+if location == "london": # Crystal Palace
     freq = 505.833330 # 529.833330   # 505.833330
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -171,9 +171,14 @@ if location == "london":
         "coderate_HP" : dvb3.frontend.FEC_3_4,
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
-else: # manchester
-    freq = 754
-    feparams = {}
+elif location == "manchester": # WinterHill
+    freq = 754.166670
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
 
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.File.Reading import RateControlledFileReader
