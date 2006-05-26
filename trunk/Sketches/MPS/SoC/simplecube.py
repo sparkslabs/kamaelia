@@ -62,6 +62,9 @@ class rotatingCube(Axon.Component.component):
                 # Use a while loop to ensure we clear the inbox to avoid messages piling up.
                 angle = self.recv("angle")
 
+            while self.dataReady("position"):
+                position = self.recv("position")
+
             # translation and rotation
             glPushMatrix()
             glTranslate(*position)
