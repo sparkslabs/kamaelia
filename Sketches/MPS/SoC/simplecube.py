@@ -17,6 +17,16 @@ class angleIncrement(Axon.Component.component):
             angle -= 360
          yield 1
 
+class bounce3D(Axon.Component.component):
+   def main(self):
+      position = [ 0.0,0.0,-5.0 ]
+      dz = 0.01
+      while 1:
+         if abs(position[2]+10)>5: dz = -dz
+         position[2] += dz
+         self.send(position, "outbox")
+         yield 1
+
 class rotatingCube(Axon.Component.component):
     Inboxes = {
        "inbox": "not used",
@@ -118,9 +128,11 @@ class rotatingCube(Axon.Component.component):
 if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline
     Graphline(
+       TRANSLATION = bounce3D(),
        ROTATION = angleIncrement(),
        CUBE = rotatingCube(),
        linkages = {
           ("ROTATION", "outbox") : ("CUBE", "angle"),
+          ("TRANSLATION", "outbox") : ("CUBE", "position"),
        }
     ).run()
