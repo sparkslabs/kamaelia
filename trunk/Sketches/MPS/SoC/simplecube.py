@@ -18,6 +18,12 @@ class angleIncrement(Axon.Component.component):
          yield 1
 
 class rotatingCube(Axon.Component.component):
+    Inboxes = {
+       "inbox": "not used",
+       "control": "ignored",
+       "angle" : "We expect to recieve messages telling us the angle of rotation",
+       "position" : "We expect to receive messages telling us the new position",
+    }
     def main(self):
         pygame.init()
         screen = pygame.display.set_mode((300,300),OPENGL|DOUBLEBUF)
@@ -52,9 +58,9 @@ class rotatingCube(Axon.Component.component):
             # clear screen
             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-            while self.dataReady("inbox"):
+            while self.dataReady("angle"):
                 # Use a while loop to ensure we clear the inbox to avoid messages piling up.
-                angle = self.recv("inbox")
+                angle = self.recv("angle")
 
             # translation and rotation
             glPushMatrix()
@@ -107,8 +113,11 @@ class rotatingCube(Axon.Component.component):
 
 
 if __name__=='__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
-    pipeline(
-       angleIncrement(),
-       rotatingCube(),
+    from Kamaelia.Util.Graphline import Graphline
+    Graphline(
+       ROTATION = angleIncrement(),
+       CUBE = rotatingCube(),
+       linkages = {
+          ("ROTATION", "outbox") : ("CUBE", "angle"),
+       }
     ).run()
