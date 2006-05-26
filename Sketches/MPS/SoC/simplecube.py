@@ -40,6 +40,7 @@ class rotatingCube(Axon.Component.component):
         pygame.display.flip()
 
         angle=0
+        position = (0.0,0.0,-15.0)
 
         while 1:
             yield 1
@@ -57,7 +58,7 @@ class rotatingCube(Axon.Component.component):
 
             # translation and rotation
             glPushMatrix()
-            glTranslate(0.0,0.0,-15.0)
+            glTranslate(*position)
             glRotate(angle, 1.0,1.0,1.0)
 
             # draw faces 
