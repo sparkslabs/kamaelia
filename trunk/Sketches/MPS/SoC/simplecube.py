@@ -7,6 +7,16 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import Axon
 
+class angleIncrement(Axon.Component.component):
+   def main(self):
+      angle = 0
+      while 1:
+         self.send(angle, "outbox")
+         angle += 0.1
+         if angle > 360:
+            angle -= 360
+         yield 1
+
 class rotatingCube(Axon.Component.component):
     def main(self):
         pygame.init()
@@ -37,10 +47,13 @@ class rotatingCube(Axon.Component.component):
                 if event.type == QUIT:
                     return
 
+            
             # clear screen
             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-            angle+=0.1
+            while self.dataReady("inbox"):
+                # Use a while loop to ensure we clear the inbox to avoid messages piling up.
+                angle = self.recv("inbox")
 
             # translation and rotation
             glPushMatrix()
@@ -93,4 +106,8 @@ class rotatingCube(Axon.Component.component):
 
 
 if __name__=='__main__':
-    rotatingCube().run()
+    from Kamaelia.Util.PipelineComponent import pipeline
+    pipeline(
+       angleIncrement(),
+       rotatingCube(),
+    ).run()
