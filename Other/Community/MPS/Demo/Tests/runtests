@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+for i in test*py; do
+   ./$i
+done

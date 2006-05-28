@@ -1,0 +1,9 @@
+This is an example package.
+
+To build a distribution, simply type:
+   python setup.py sdist
+
+To modify aspects of the distribution (please do), modify the setup.py file.
+
+
+Michael.
