@@ -1,9 +1,43 @@
-This is an example package.
+This is the example/template package for packaging up Kamaelia based
+modules, and systems. This is designed to assist you with collaborating
+with the rest of the Kamaelia community!
 
-To build a distribution, simply type:
+Firstly, remove the following files:
+|-- Kamaelia
+|   |-- Community
+|   |   |-- MPS
+|   |   |   |-- Demo.py
+...
+|-- Tests
+|   `-- test_Kamaelia.Community.MPS.Demo.py
+
+And replace with your own tests and code. (name all tests files "test_*"
+
+Secondly, DO CHANGE the following files to match your own details/project:
+|-- AUTHORS   **
+|-- CHANGELOG   **
+|-- COPYING   **
+|-- Docs
+|   `-- README   **
+|-- Kamaelia
+|   |-- Community
+|   |   |-- MPS   ** directory name(!)
+...
+|-- MANIFEST.in
+|-- README   ** (this file!)
+|-- Tests
+|   |-- README   **
+...
+`-- setup.py   ** (description, target filename, etc...)
+
+Thirdly, to actually build a distribution, simply type:
    python setup.py sdist
 
-To modify aspects of the distribution (please do), modify the setup.py file.
+You will then be left with a distribution in "dist", which you can then
+share with everyone else. If you need any help with this process, please
+email kamaelia-list@lists.sourceforge.net !
+
+Have fun!
 
 
 Michael.
