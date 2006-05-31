@@ -161,6 +161,8 @@ class threadedcomponent(Component.component):
    _nonthread_recv      = Component.component.recv
    _nonthread_send      = Component.component.send
 
+   # def anyReady(self) - no need to wrap, since it calls dataReady()
+       
    def dataReady(self,boxname="inbox"):
        return self.inqueues[boxname].qsize()
 
@@ -178,6 +180,22 @@ class threadedcomponent(Component.component):
    def unlink(self, thecomponent=None, thelinkage=None):
         cmd = super(threadedcomponent,self).unlink
         return self._do_threadsafe( cmd, (thecomponent,thelinkage), {} )
+
+   def unlinkAll(self):
+        cmd = super(threadedcomponent,self).unlinkAll
+        return self._do_threadsafe( cmd, [], {} )
+
+   def addChildren(self,*children):
+        cmd = super(threadedcomponent,self).addChildren
+        return self._do_threadsafe( cmd, children, {} )
+   
+   def removeChild(self, child):
+        cmd = super(threadedcomponent,self).removeChild
+        return self._do_threadsafe( cmd, [child], {} )
+   
+   def childComponents(self):
+        cmd = super(threadedcomponent,self).childComponents
+        return self._do_threadsafe( cmd, [], {} )
 
    def sync(self):
         """\
