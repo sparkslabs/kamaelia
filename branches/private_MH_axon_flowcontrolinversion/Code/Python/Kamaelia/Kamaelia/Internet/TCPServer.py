@@ -148,7 +148,8 @@ class TCPServer(Axon.Component.component):
       newsock, addr = sock.accept()  # <===== THIS IS THE PROBLEM
       gotsock = True
       newsock.setblocking(0)
-      CSA = ConnectedSocketAdapter(newsock)
+###      
+      CSA = ConnectedSocketAdapter(newsock,self.selectorService)
       return newsock, CSA
 
    def closeSocket(self, shutdownMessage):
@@ -214,6 +215,7 @@ class TCPServer(Axon.Component.component):
        if newSelector:
            newSelector.activate()
        self.link((self, "_selectorSignal"),selectorService)
+       self.selectorService = selectorService
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
