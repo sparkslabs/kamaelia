@@ -27,6 +27,24 @@
     * The threaded component has had its API fixed to match the rest of
       Axon (with the obvious exception of removing the yields).
 
+    FLOW CONTROL INVERSION
+
+    * The Scheduler therefore now dynamically builds its runqueue to only
+      include unpaused (active) microprocesses.
+
+    * If there are no active microprocesses, the scheduler can now sleep.
+      Reducing CPU usage to zero, until some kind of event causes something to
+      wake up. Flow of control is therefore effectively inverted as Axon systems
+      can now be reactive.
+
+    * Pausing state is now managed by the scheduler on behalf of microprocesses
+      (they used to manage it themselves). Requests to wake and pause
+      microprocesses get routed to the Scheduler.
+
+    * The APIs for Component and Microprocess are, for the most part, unchanged.
+      Existing components will continue to work as before. If they self pause
+      they will benefit from reduced CPU usage. If all components 
+
     Bug fix to make Wait* work cleaner
 
     Axon.Component.Component
