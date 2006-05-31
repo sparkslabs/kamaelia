@@ -256,7 +256,7 @@ class component(microprocess):
       """
       removeAll(self.children, child)
       removeAll(child._callOnCloseDown, self.unpause)
-      self.postoffice.unlink(thecomponent=child)
+      self.postoffice.unlink(thecomponent=child)        # XXX probably be removed if/when we know how to handle in/out being destroyed
 
    def childComponents(self):
       """'C.childComponents()' -
@@ -304,6 +304,8 @@ class component(microprocess):
    def unlink(self, thecomponent=None, thelinkage=None):
        return self.postoffice.unlink(thecomponent,thelinkage)
 
+   def unlinkAll(self):
+       return self.postoffice.unlinkAll()
 
    def recv(self,boxname="inbox"):
       """'C.recv("boxname")' -
