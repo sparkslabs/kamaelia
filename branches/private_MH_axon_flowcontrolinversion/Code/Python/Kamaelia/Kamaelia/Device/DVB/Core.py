@@ -98,7 +98,7 @@ class DVB_Multiplex(threadedcomponent):
 
         # This is then a file reader, actually.
         # Should be a little more system friendly really
-        fd = os.open("/dev/dvb/adapter"+str(adapter)+"/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
+        fd = os.open("/dev/dvb/adapter"+str(self.adapter)+"/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
         tosend = []
         tosend_len =0
         while not self.shutdown():
