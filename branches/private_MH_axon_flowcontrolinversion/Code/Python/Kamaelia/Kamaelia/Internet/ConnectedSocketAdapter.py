@@ -88,6 +88,8 @@ from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+
 from Kamaelia.KamaeliaExceptions import *
 import traceback
 import pprint
@@ -97,37 +99,7 @@ crashAndBurn = { "uncheckedSocketShutdown" : True,
                             "receivingDataFailed" : True,
                             "sendingDataFailed" : True }
 
-def _safesend(sock, data,selffile = None):
-   """Internal only function, used for sending data, and handling EAGAIN style
-   retry scenarios gracefully"""
-   try:
-      bytes_sent = sock.send(data)
-      return bytes_sent
-   except socket.error, socket.msg:
-      (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
-         raise socket.msg        # then rethrow the error.
-      return 0                                                                        # Otherwise return 0 for failure on sending
-   except exceptions.TypeError, ex:
-      if whinge["socketSendingFailure"]:
-         print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
-      raise ex
 
-def _saferecv(sock, size=1024):
-   """Internal only function, used for recieving data, and handling EAGAIN style
-   retry scenarios gracefully"""
-   data = None;
-   try:
-      data = sock.recv(size)
-      if not data: # This implies the connection has barfed.
-###         print "DO WE GET HERE?"
-         raise connectionDiedReceiving(sock,size)
-   except socket.error, socket.msg:
-      (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
-         #"Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
-         raise socket.msg # rethrow
-   return data
 
 class ConnectedSocketAdapter(component):
    """\
@@ -148,37 +120,175 @@ class ConnectedSocketAdapter(component):
    Outboxes = { "outbox"          : "Data received from the socket",
                 "CreatorFeedback" : "Expected to be connected to some form of signal input on the CSA's creator. Signals socketShutdown (this socket has closed)",
                 "signal"          : "Signals shutdownCSA (this CSA is shutting down)",
+                "_selectorSignal" : "For communication to the selector",
               }
 
-   def __init__(self, listensocket):
+   def __init__(self, listensocket, selectorService, crashOnBadDataToSend=False, noisyErrors = True):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConnectedSocketAdapter, self).__init__()
-      self.time = time.time()
       self.socket = listensocket
       self.sendQueue = []
-      self.file = None
+      self.crashOnBadDataToSend = crashOnBadDataToSend
+      self.noisyErrors = noisyErrors
+      self.selectorService = selectorService
+   
+   def handleControl(self):
+      """Check for producerFinished message and shutdown in response"""
+      if self.dataReady("control"):
+          data = self.recv("control")
+          if isinstance(data, producerFinished):
+#              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
+              self.connectionRECVLive = False
+              self.connectionSENDLive = False
+              self.howDied = "producer finished"
    
    def handleSendRequest(self):
        """Check for data to send to the socket, add to an internal send queue buffer."""
        if self.dataReady("inbox"):
             data = self.recv("inbox")
             self.sendQueue.append(data)
+
+   def passOnShutdown(self):
+        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
+        self.send(shutdownCSA(self, (self,self.socket)), "signal")
+
+   def _safesend(self, sock, data):
+       """Internal only function, used for sending data, and handling EAGAIN style
+       retry scenarios gracefully"""
+       bytes_sent = 0
+       try:
+          bytes_sent = sock.send(data)
+          return bytes_sent
+
+       except socket.error, socket.msg:
+          (errorno, errmsg) = socket.msg.args
+          if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
+             self.connectionSENDLive = False
+             self.howDied = socket.msg
+
+       except TypeError, ex:
+
+          if self.noisyErrors:
+             print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
+          if self.crashOnBadDataToSend:
+              raise ex
+       self.sending = False
+       if self.connectionSENDLive:
+#           print "We need to ask the selector to tell us when we can send more data"
+           self.send(newWriter(self, ((self, "SendReady"), sock)), "_selectorSignal")
+       return bytes_sent
    
+   def flushSendQueue(self):
+       if len(self.sendQueue) > 0:
+           data = self.sendQueue[0]
+           bytes_sent = self._safesend(self.socket, data)
+           if bytes_sent:
+               if bytes_sent == len(data):
+                   del self.sendQueue[0]
+               else:
+                   self.sendQueue[0] = data[bytes_sent:]
+
+   def _saferecv(self, sock, size=32768):
+       """Internal only function, used for recieving data, and handling EAGAIN style
+       retry scenarios gracefully"""
+       try:
+          data = sock.recv(size)
+          if data:
+              self.failcount = 0
+              return data
+          else: # This implies the connection has closed for some reason
+#              self.failcount += 1
+#              if self.failcount >3:
+                 self.connectionRECVLive = False
+                 self.howDied = "Peer Ceased Sending", self.failcount
+
+       except socket.error, socket.msg:
+          (errorno, errmsg) = socket.msg.args
+          if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
+              # "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
+              self.connectionRECVLive = False
+              self.howDied = socket.msg
+       self.receiving = False
+       if self.connectionRECVLive:
+#           print "We need to ask the selector to tell us when we can receive more data"
+           self.send(newReader(self, ((self, "ReadReady"), sock)), "_selectorSignal")
+       return None  # Explicit rather than implicit.
+
+   def handleReceive(self):
+       successful = True
+#       print "Here!"
+       while successful and self.connectionRECVLive: ### Fixme - probably want maximum iterations here
+         socketdata = self._saferecv(self.socket, 32768) ### Receiving may die horribly         
+#         print "Where?"
+         if (socketdata):
+             self.send(socketdata, "outbox")
+             successful = True
+         else:
+             successful = False
+#       print "There!",successful
+#       if not self.connectionRECVLive:
+#           print len(self.outboxes["outbox"]), "FOO", socketdata
+#           print "self.howDied", self.howDied
+
+   def checkSocketStatus(self):
+#       if self.notprinted:
+#           print "CHECK SOCKET STATUS NEEDS TO BE WRITTEN"
+#           self.notprinted = False
+       if self.dataReady("ReadReady"):
+           self.receiving = True
+           self.recv("ReadReady")
+#           print "Got it!"
+       if self.dataReady("SendReady"):
+           self.sending = True
+           self.recv("SendReady")
+
+   def main(self):
+       self.link((self, "_selectorSignal"), self.selectorService)
+       # self.selectorService ...
+       self.sending = True
+       self.receiving = True
+       self.connectionRECVLive = True
+       self.connectionRECVLive = True
+       self.connectionSENDLive = True
+#       self.notprinted = True
+       while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
+          yield 1
+#          print "boo!", [ (x,len(self.inboxes[x])) for x in self.inboxes ]
+          self.checkSocketStatus() # To be written
+
+          self.handleSendRequest() # Check for data, in our "inbox", to send to the socket, add to an internal send queue buffer.
+          self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
+          if self.sending:
+              self.flushSendQueue()
+          if self.receiving:
+#              print "Here?"
+              self.handleReceive()
+              
+#       print "SHUTTING DOWN"
+       self.passOnShutdown()
+       # NOTE: the creator of this CSA is responsible for removing it from the selector
+
+__kamaelia_components__  = ( ConnectedSocketAdapter, )
+
+
+if 0:
+#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--
    def handleReadReady(self):
       """Check to see if the selector has notified us that that we can read data from the socket."""
       while self.dataReady("ReadReady"):
          data = self.recv("ReadReady")
          socketdata = None
          try:
-             socketdata = _saferecv(self.socket, 1024) ### Receiving may die horribly
+             socketdata = self._saferecv(self.socket, 1024) ### Receiving may die horribly
          except connectionDiedReceiving, cd:
              raise cd # rethrow
          except Exception, e: # Unexpected error that might cause crash. Do we want to really crash & burn?
+             # FIXME: These are really component options
              if crashAndBurn["receivingDataFailed"]:
                 raise e
          if (socketdata):
             self.send(socketdata, "outbox")
-
+#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--
    def handleSendReady(self):
        """Check to see if the selector has notified us that we can send data to the socket"""
        try:
@@ -189,7 +299,7 @@ class ConnectedSocketAdapter(component):
                  data = self.sendQueue[0]
                  try:
 
-                    bytes_sent = _safesend(self.socket, data, self.file) ### Sending may fail....
+                    bytes_sent = self._safesend(self.socket, data) ### Sending may fail....
 
                     if bytes_sent:
                         if bytes_sent == len(data):
@@ -197,6 +307,7 @@ class ConnectedSocketAdapter(component):
                         else:
                             self.sendQueue[0] = data[bytes_sent:]
                  except Exception, e: # If it does, and we get an exception the connection is unstable or closed
+                    # FIXME: These are really component options
                     if crashAndBurn["sendingDataFailed"]:
                        raise connectionDiedReceiving(e)
                     raise connectionClosedown(e)
@@ -204,43 +315,4 @@ class ConnectedSocketAdapter(component):
        except:
           print "TRACEBACK INSIDE CONNECTED SOCKET ADAPTOR"
           traceback.print_exc()
-
-   def handleControl(self):
-      """Check for producerFinished message and shutdown in response"""
-      if self.dataReady("control"):
-          data = self.recv("control")
-          if isinstance(data, producerFinished):
-              #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
-              raise connectionServerShutdown()
-
-   def passOnShutdown(self):
-        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
-        self.send(shutdownCSA(self, (self,self.socket)), "signal")
-
-   def main(self):
-       while 1:
-          if not self.anyReady():
-              self.pause()
-          yield 1
-          try:
-             self.handleReadReady()
-             self.handleSendRequest()
-             self.handleSendReady()
-             self.handleControl()
-             yield wouldblock(self)
-          except connectionDied, cd: # Client went away or socket error
-             break
-          except connectionServerShutdown, cd: # Client went away or socket error
-             break
-          except Exception, ex: # Some other exception
-             if crashAndBurn["uncheckedSocketShutdown"]:
-                 self.passOnShutdown()
-                 raise ex
-             break
-       self.passOnShutdown()
-###       print "SHUTTING DOWN", self
-
-__kamaelia_components__  = ( ConnectedSocketAdapter, )
-
-
-
+#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--

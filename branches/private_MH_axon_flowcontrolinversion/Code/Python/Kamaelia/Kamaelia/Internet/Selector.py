@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 #
+# FIXME: This doesn't really provide a means for people to ask for
+#        the service and release the service. The problem this
+#        causes is that the selector has no simple means of shutting
+#        down when no one is using it.
+#
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -144,12 +149,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             self.deleteOutbox(outbox)
             del meta[selectable]
             Linkage = None
-#            print "removed",selectable,"from meta:",meta
-#            print "removed",selectable,"from selectables:",selectables
         except:
-#            print "removeLinks error:\n", traceback.format_exc()
-#            print "contents of meta:",meta
-#            print "contents of selectables:",selectables
             pass
 
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
@@ -160,8 +160,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         the component that wants to be notified; adds the file descriptor to the
         set of selectables; and records the box and linkage info in meta.
         """
-#        \
-#print "addinks",selectable,meta,selectables,boxBase
         if selectable not in meta:
             outbox = self.addOutbox(boxBase)
             L = self.link((self, outbox), replyService)
@@ -178,6 +176,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         """
         while self.dataReady("notify"):
             message = self.recv("notify")
+#            \
+#print type(message)
             if isinstance(message, newReader):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
@@ -193,20 +193,14 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
 
             if isinstance(message, removeReader):
-#                \
-#print "remove reader..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[READERS], readers)
 
             if isinstance(message, removeWriter):
-#                \
-#print "remove writer..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[WRITERS], writers)
 
             if isinstance(message, removeExceptional):
-#                \
-#print "remove exceptional..."
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
@@ -226,10 +220,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                    return
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
-#                print "IN HERE"
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,5) #0.05
-#                    print ".",
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
                     
                     for i in xrange(3):
@@ -238,25 +230,15 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                                 replyService, outbox, linkage = meta[i][selectable]
                                 self.send(selectable, outbox)
                                 replyService, outbox, linkage = None, None, None
-    
-    #                            print "i",i
-#                                \
-#    print "auto removing..."
-                                self.removeLinks(selectable, meta[i], selections[i])
-    #                            print selections
-    
+                                # Note we remove the selectable until we know the reason for it being here has cleared.
+                                self.removeLinks(selectable, meta[i], selections[i]) 
 #                            except KeyError, k:
 #                                pass
                             
                 except ValueError, e:
-#                    print "value error",e
-#                    print "readers=",readers
-#                    print "writers=",writers
-#                    print "exceptionals=",exceptionals
-                    if FAILHARD:
+                    if FAILHARD: 
                         raise e
                 except socket.error, e:
-#                    print "socket error",e
                     if e[0] == 9:
                         numberOfFailedSelectsDueToBadFileDescriptor +=1
                         if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
@@ -267,7 +249,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
-                #print "IN HERE"
                 self.sync()        # momentary pause-ish thing
             else:
                 print "HMM"
