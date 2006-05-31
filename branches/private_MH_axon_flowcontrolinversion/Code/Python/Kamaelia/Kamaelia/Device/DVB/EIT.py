@@ -2,7 +2,7 @@
 
 # parse EIT now & next information from DVB-T streams
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex
+from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
 from Axon.Component import component
 import struct
 from Axon.Ipc import shutdownMicroprocess,producerFinished
@@ -12,7 +12,7 @@ class PSIPacketReconstructor(component):
     Takes DVB Transport stream packets for a given PID and reconstructs the
     PSI packets from within the stream.
     
-    Will only handle stream from a single PID.
+    Should handle multiple pid's now
     """
     def shutdown(self):
         while self.dataReady("control"):
@@ -24,8 +24,8 @@ class PSIPacketReconstructor(component):
 
     def main(self):
         buffer = ""
-        nextCont = None
-        # XXX assuming for the moment that this can only handle one PID at a time
+        continuity_counters = {}
+        
         while not self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
@@ -37,18 +37,25 @@ class PSIPacketReconstructor(component):
                 adaption   = (byte & 0x30) >> 4
                 contcount  = byte & 0x0f
                 
-                # check continuity counter is okay (otherwise ignore packet)
+                pid = struct.unpack(">H", data[1: 3])[0] & 0x1fff
+                
+                # retrieve what we think the next contcount value will be for this pid
+                nextCont = continuity_counters.get(pid,None)
+
+                # determine start of payload offset
+                if adaption == 1:
+                    payload_start = 4
+                elif adaption == 3:
+                    payload_start = 4+1+ord(data[4])    # skip past adaption data
+                else: # adaption == 0 or adaption == 2
+                    # ignore if adaption field==0 or no payload
+                    # continuity counter doesnt change eithert
+                    continue 
+                
+                # check continuity counter is okay (otherwise ignore until start
+                # of new packet)
                 # or that its the start of a new packet and we've not started receiving yet
                 if (nextCont == None and start_indicator) or nextCont == contcount:
-                    
-                    # determine start of payload offset
-                    if adaption == 1:
-                        payload_start = 4
-                    elif adaption == 3:
-                        payload_start = 4+1+ord(data[4])    # skip past adaption data
-                    else: # adaption == 0 or adaption == 2
-                        # ignore if adaption field==0 or no payload
-                        continue 
                     
                     # if start of new payload present, flush previous, now complete, packet
                     if start_indicator:
@@ -60,10 +67,10 @@ class PSIPacketReconstructor(component):
                         buffer = ""
                     
                     buffer = buffer + data[payload_start:]
-                    nextCont = (contcount + 1) & 0xf
+                    nextCont[pid] = (contcount + 1) & 0xf
                 else:
                     # reset for crash relock
-                    nextCont = None
+                    nextCont[pid] = None
                     buffer= ""
             self.pause()
             yield 1

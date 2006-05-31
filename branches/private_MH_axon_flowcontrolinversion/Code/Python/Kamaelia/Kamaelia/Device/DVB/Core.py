@@ -39,12 +39,12 @@ def notLocked(fe):
     """
     return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) != 0
 
-def addPIDS(pids):
+def addPIDS(adapter, pids):
     """\
     Adds the given PID to the transport stream that will be available
     in "/dev/dvb/adapter0/dvr0"
     """
-    demuxers = [dvb3.dmx.Demux(0, blocking = 0) for _ in pids]
+    demuxers = [dvb3.dmx.Demux(adapter, blocking = 0) for _ in pids]
     for p in xrange(len(pids)):
         demuxers[p].set_pes_filter(pids[p],
                                    dvb3.dmx.DMX_IN_FRONTEND,
@@ -94,7 +94,7 @@ class DVB_Multiplex(threadedcomponent):
         fe = dvb3.frontend.Frontend(self.adapter, blocking=0)
         tune_DVBT(fe, self.freq, self.feparams)
         while notLocked(fe): time.sleep(0.1) #yield 1  # could sleep for, say, 0.1 seconds.
-        demuxers = addPIDS(self.pids)        
+        demuxers = addPIDS(self.adapter, self.pids)        
 
         # This is then a file reader, actually.
         # Should be a little more system friendly really
