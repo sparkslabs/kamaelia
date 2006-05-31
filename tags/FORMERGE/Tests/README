@@ -1,0 +1,17 @@
+This project did not start in a test first mode unfortunately. We saw the
+light around 1/2 way through however which is why some code is clearly test
+first and the some is retrofitted. The spirit of development of the features
+in the component framework has been driven by usage however - extending it
+as needed by specific components - working on a YAGNI principle with very
+few exceptions. 
+
+On this basis we feel fairly confident that the functionality of the system
+is relatively minimal but complete, but could deserve with a ground up
+test-first treatment. For various reasons we're choosing to separate out
+the test suite from the actual implementation area.
+
+The reason for language specific directories is because we hope the
+techniques taken to be useful in languages other than python as well.
+
+
+Michael, October 2004
