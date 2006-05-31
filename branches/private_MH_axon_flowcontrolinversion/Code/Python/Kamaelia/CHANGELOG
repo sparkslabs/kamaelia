@@ -1,3 +1,16 @@
+0.5.0 
+
+   Improvements to utilise flow control and other enhancements in Axon 1.5:
+
+    * The Selector component and most pygame components have been modified to
+      behave reactively. Selector and PygameDisplay now use threaded components
+      to block on sources of events.
+
+    * Pipeline and Graphline components now pause once up and running.
+
+    * Varous threaded components have been modified to match the new API for
+      threaded components.
+
 0.3.0
 
    Added Files:
