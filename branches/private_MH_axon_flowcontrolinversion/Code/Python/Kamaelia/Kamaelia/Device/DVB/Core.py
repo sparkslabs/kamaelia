@@ -74,10 +74,11 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, pids, feparams={}):
+    def __init__(self, freq, pids, feparams={}, adapter=0):
         self.freq = freq
         self.feparams = feparams
         self.pids = pids
+        self.adapter = adapter
         super(DVB_Multiplex, self).__init__()
         
     def shutdown(self):
@@ -89,15 +90,15 @@ class DVB_Multiplex(threadedcomponent):
         return False
 
     def main(self):
-        # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
-        fe = dvb3.frontend.Frontend(0, blocking=0)
+        # Open the frontend of card self.adapter (/dev/dvb/adaptorXXX/frontend0)
+        fe = dvb3.frontend.Frontend(self.adapter, blocking=0)
         tune_DVBT(fe, self.freq, self.feparams)
         while notLocked(fe): time.sleep(0.1) #yield 1  # could sleep for, say, 0.1 seconds.
         demuxers = addPIDS(self.pids)        
 
         # This is then a file reader, actually.
         # Should be a little more system friendly really
-        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
+        fd = os.open("/dev/dvb/adapter"+str(adapter)+"/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
         tosend = []
         tosend_len =0
         while not self.shutdown():
