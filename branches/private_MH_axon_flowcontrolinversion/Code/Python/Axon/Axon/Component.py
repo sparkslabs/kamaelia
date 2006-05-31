@@ -367,6 +367,7 @@ class component(microprocess):
    def _closeDownMicroprocess(self):
       for callback in self._callOnCloseDown:
           callback()
+      self.postoffice.unlinkAll()
       return None
 
    def _deliver(self, message, boxname="inbox"):

@@ -96,6 +96,16 @@ class postoffice(object):
                     self.unlink(thelinkage=linkage)
                 else:
                     i=i+1
+                    
+   def unlinkAll(self):
+       """\
+       Destroys all linkages made with this postoffice.
+       """
+       num =len(self.linkages)
+       while num > 0:
+           linkage = self.linkages[0]
+           num=num-1
+           self.unlink(thelinkage=linkage)
 
 
    def deregisterlinkage(self, thecomponent=None,thelinkage=None):
