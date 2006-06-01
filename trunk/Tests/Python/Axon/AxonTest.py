@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -29,14 +29,12 @@ import test_AdaptiveCommsComponent
 import test_Axon
 import test_Component
 import test_CoordinatingAssistantTracker
-#import test_debugConfigFile
-#import test_debug
-#import test_idGen
 import test_Ipc
 import test_Linkage
 import test_Microprocess
-import test_Postman
+import test_Postoffice
 import test_Scheduler
+import test_ThreadedComponent
 import test___str__
 import test_util
 
@@ -47,7 +45,7 @@ class VerboseTestResults(unittest.TestResult):
 
 def suite():
    suite = unittest.TestSuite()
-   suite.addTest(unittest.makeSuite(test_Scheduler.Scheduler_Test))
+   suite.addTest(unittest.makeSuite(test_Scheduler.scheduler_Test))
    suite.addTest(unittest.makeSuite(test_AdaptiveCommsComponent.AdaptiveCommsComponent_Test))
    suite.addTest(unittest.makeSuite(test_Axon.Axon_Test))
    suite.addTest(unittest.makeSuite(test_Component.Component_Test))
@@ -55,7 +53,10 @@ def suite():
    suite.addTest(unittest.makeSuite(test_Ipc.ipc_Test))
    suite.addTest(unittest.makeSuite(test_Linkage.linkage_Test))
    suite.addTest(unittest.makeSuite(test_Microprocess.MicroProcess_Test))
-   suite.addTest(unittest.makeSuite(test_Postman.postman_Test))
+   suite.addTest(unittest.makeSuite(test_Postoffice.postoffice_Test))
+   suite.addTest(unittest.makeSuite(test_Postoffice.linkagechaining_Test))
+   suite.addTest(unittest.makeSuite(test_ThreadedComponent.threadedcomponent_Test))
+   suite.addTest(unittest.makeSuite(test_ThreadedComponent.threadedadaptivecommscomponent_Test))
    suite.addTest(unittest.makeSuite(test___str__.str_Test))
    suite.addTest(unittest.makeSuite(test_util.util_Test))
    return suite
