@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -34,8 +34,8 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
       a=AdaptiveCommsComponent.AdaptiveCommsComponent()
       self.assert_( isinstance(a,AdaptiveCommsComponent.AdaptiveCommsComponent), "Right Type")
       self.assert_( isinstance(a,Component.component), "Right Base Type")
-      self.assert_( a.inboxes=={'control': [], 'inbox': []}, "Correct Basic inboxes")
-      self.assert_( a.outboxes=={'outbox': [], 'signal': []}, "Correct Basic outboxes")
+      self.assert_( 0==len(a.inboxes['control']) and 0==len(a.inboxes['inbox']) and 2==len(a.inboxes), "Correct Basic inboxes")
+      self.assert_( 0==len(a.outboxes['signal']) and 0==len(a.outboxes['outbox']) and 2==len(a.outboxes), "Correct Basic outboxes")
 
    def test_SmokeTest_Arguments(self):
       "__init__ - Called with with arguments causes TypeError exception"
@@ -48,7 +48,7 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
       self.assertEqual("name",name,"Inbox was added with the name we requested")
       inboxNames = list(a.inboxes)
       self.assert_( name in inboxNames, "Inbox was added")
-      self.assert_( isinstance(a.inboxes[name], list), "Inbox created was a list")
+      self.assert_( len(a.inboxes[name])==0, "Inbox created is empty")
 
    def test_addInbox_existingName(self):
       "addInbox - adding an inbox with an existing name results in an inbox being created/added with a similar name - same name with a suffix"
@@ -66,7 +66,7 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
       self.assertEqual("name",name,"Inbox was added with the name we requested")
       outboxNames = list(a.outboxes)
       self.assert_( name in outboxNames, "Outbox was added")
-      self.assert_( isinstance(a.outboxes[name], list), "Outbox created was a list")
+      self.assert_( len(a.outboxes[name])==0, "Outbox created was empty")
 
    def test_addOutbox_existingName(self):
       "addOutbox - adding an outbox with an existing name results in an outbox being created/added with a similar name - same name with a suffix"
@@ -88,13 +88,13 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
          inboxNames = list(a.inboxes)
          self.assert_( name in inboxNames, "Inbox was added")
          addedNames.append(name)
-         self.assert_( isinstance(a.inboxes[name], list), "Inbox created was a list")
+         self.assert_( len(a.inboxes[name])==0, "Inbox created was empty")
       #
       for name in addedNames:
          a.deleteInbox(name)
          self.assert_( name not in a.inboxes, "Inbox was deleted")
       #
-      self.assert_( a.inboxes=={'control': [], 'inbox': []}, "Only have default inboxes left")
+      self.assert_( 0==len(a.inboxes['control']) and 0==len(a.inboxes['inbox']) and 2==len(a.inboxes), "Only have default inboxes left")
       #
    def test_OutboxModification(self):
       "-Acceptance Test - Check Addition and Deletion of Outboxes"
@@ -107,13 +107,13 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
          outboxNames = list(a.outboxes)
          self.assert_( name in outboxNames, "Outbox was added")
          addedNames.append(name)
-         self.assert_( isinstance(a.outboxes[name], list), "Outbox created was a list")
+         self.assert_( len(a.outboxes[name])==0, "Outbox created was empty")
       #
       for name in addedNames:
          a.deleteOutbox(name)
          self.assert_( name not in a.outboxes, "Outbox was deleted")
       #
-      self.assert_( a.outboxes=={'outbox': [], 'signal': []}, "Only have one outbox left")
+      self.assert_( 0==len(a.outboxes['signal']) and 0==len(a.outboxes['outbox']) and 2==len(a.outboxes), "Only have one outbox left")
 
    def test_deleteInbox_invalidInbox(self):
       "deleteInbox - KeyError exception raised if you try to delete an inbox that does not exist  - this includes the case of an already deleted Inbox"
