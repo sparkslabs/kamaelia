@@ -133,6 +133,10 @@ class Carousel(component):
             
             yield self.handleNewChild()
 
+            
+            if not self.dataReady("next") and not self.dataReady("control") and not self.dataReady("_control"):
+                self.pause()
+        
         self.unplugChildren()
 
             

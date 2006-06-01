@@ -350,7 +350,7 @@ class PromptedFileReader(component):
         while not done:
             yield 1
     
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 n = int(self.recv("inbox"))
                 try:
                     data = self.read(n)
@@ -370,7 +370,7 @@ class PromptedFileReader(component):
 
         Also passes the message on out of the "signal" outbox.
         """
-        if self.dataReady("control"):
+        while self.dataReady("control"):
             msg = self.recv("control")
             if isinstance(msg, shutdownMicroprocess):
                 self.send(msg, "signal")

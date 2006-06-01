@@ -188,6 +188,7 @@ class Ticker(Axon.Component.component):
        """Clears the ticker of any existing text."""
        self.display.fill(self.background_colour)
        self.renderBorder(self.display)
+       self.send({"REDRAW":True, "surface":self.display}, "signal")
             
    def renderBorder(self, display):
       """Draws a rectangle to form the 'border' of the ticker"""
@@ -321,6 +322,7 @@ class Ticker(Axon.Component.component):
                         position[1] += maxheight + self.line_spacing
 
                   display.blit(word_render, position)
+                  self.send({"REDRAW":True, "surface":self.display}, "signal")
                   position[0] += wordsize[0]
                   if wordsize[1] > maxheight:
                      maxheight = wordsize[1]

@@ -210,6 +210,7 @@ class Multiclick(Axon.Component.component):
    def blitToSurface(self):
        """Clears the background and renders the text label onto the button surface."""
        try:
+           self.send({"REDRAW":True, "surface":self.display}, "signal")
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
        except:
