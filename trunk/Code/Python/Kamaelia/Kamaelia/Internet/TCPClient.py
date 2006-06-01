@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 #
+# FIXME: Uses the selector service, but has no way of indicating to the
+#        selector service that its services are no longer required.
+#        This needs resolving.
+#
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -132,7 +136,7 @@ class TCPClient(Axon.Component.component):
          yield v
       
       if (self.sock is not None) and (self.CSA is not None):
-         self.send(removeReader(self.CSA, self.sock), "_selectorSignal")            
+         self.send(removeReader(self.CSA, self.sock), "_selectorSignal")
          self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
       
 
@@ -143,12 +147,12 @@ class TCPClient(Axon.Component.component):
       Creates a ConnectedSocketAdapter component for the socket, and wires up to
       it. Also sends the CSA to the "selector" service.
       """
-      CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
-      self.addChildren(CSA)
       selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
 
+      CSA = ConnectedSocketAdapter(sock, selectorService) #  self.createConnectedSocket(sock)
+      self.addChildren(CSA)
       self.link((self, "_selectorSignal"),selectorService)
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
@@ -235,7 +239,8 @@ class TCPClient(Axon.Component.component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-          self.send(e, "signal")
+         pass
+#          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
 
