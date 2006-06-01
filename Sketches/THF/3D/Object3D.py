@@ -46,13 +46,13 @@ class Object3D(Axon.Component.component):
         "display_signal": "for communication with display3d",
     }
     
-    def __init__(self):
+    def __init__(self, **argd):
         super(Object3D, self).__init__()
         # not sure about the needed data yet, just for testing
         self.angle = 0
         self.turndir = 0.3
         self.size = [2,2,2]
-        self.pos = [0,0,-15]
+        self.pos = argd.get("pos",[0,0,-15])
         self.rot = [0,0,0]
         
         # similar to Pygame component registration
@@ -139,5 +139,9 @@ class Object3D(Axon.Component.component):
 if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline
     pygame.init()
-    obj = Object3D().activate()
+    obj = Object3D(pos=[0, 0,-12]).activate()
+    obj = Object3D(pos=[0,4,-20]).activate()
+    obj = Object3D(pos=[4,0,-22]).activate()
+    obj = Object3D(pos=[0,-4,-18]).activate()
+    obj = Object3D(pos=[-4, 0,-15]).activate()
     Axon.Scheduler.scheduler.run.runThreads()  
