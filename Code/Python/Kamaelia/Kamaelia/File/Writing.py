@@ -97,7 +97,7 @@ class SimpleFileWriter(component):
         while not done:
             yield 1
             
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 self.writeData(data)
             
@@ -113,7 +113,7 @@ class SimpleFileWriter(component):
 
         Also passes the message on out of the "signal" outbox.
         """
-        if self.dataReady("control"):
+        while self.dataReady("control"):
             msg = self.recv("control")
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
                 self.send(msg, "signal")
