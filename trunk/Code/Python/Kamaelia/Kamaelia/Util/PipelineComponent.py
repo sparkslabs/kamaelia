@@ -114,16 +114,15 @@ class pipeline(component):
       self.link((self,"control"), (self.components[0],"control"), passthrough=1)
       self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
       self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
-      yield _Axon.Ipc.newComponent(*(self.children))
+      for child in self.children:
+          child.activate()
 
       # run until all child components have terminated
       # at which point this component can implode
 
-      # could just look for the first and last component terminating (the ends of the pipe)
-      # BUT the creator of this pipeline might assume that the pipeline terminating means ALL
-      # children have finished.
+      # becuase they are children, if they terminate, we'll be woken up
       while not self.childrenDone():
-          # can't self.pause() as children may not pass data in/out of this pipeline, or may not immediately terminate      
+          self.pause()
           yield 1
 
 
