@@ -34,8 +34,8 @@ Example Usage
 
 Chunkifying a console reader::
 
-	from Kamaelia.Util.PipelineComponent import pipeline
-	from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
 class ReducedConsoleReader(threadedcomponent):
    def __init__(self):
@@ -44,12 +44,16 @@ class ReducedConsoleReader(threadedcomponent):
    def run(self):
       while 1:
          self.outqueues["outbox"].put( raw_input(self.prompt) )
-	
-	pipeline( ReducedConsoleReader(),Chunkifier(20), consoleEchoer(), ).run()
+    
+    pipeline( ReducedConsoleReader(), Chunkifier(20), consoleEchoer(), ).run()
 
 
 How does it work?
 -----------------
+
+Messages received on the "inbox" are buffered until at least N bytes have
+been collected. A message containing those first N bytes is sent out "outbox"
+and those front N bytes in the buffer are removed.
 
 Any messages sent to the "control" inbox are ignored. The "signal"
 outbox is not used.
@@ -58,55 +62,58 @@ This component does not terminate.
 """
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Chunkifier(component):
-	"""\
-	Chunkifier([chunksize]) -> new Chunkifier component.
-	
-	Flow controller - collects incoming data and outputs it only as quanta of
-	a given length in bytes (chunksize).
-	
-	Keyword arguments:
-	- chunksize  -- Chunk size in bytes
-	"""
-	
-	Inboxes = { "inbox" : "Data stream to be split into chunks",
-				"control": "UNUSED" }
-	Outboxes = { "outbox" : "Each message is a chunk",
-				"signal": "UNUSED" }
+    """\
+    Chunkifier([chunksize]) -> new Chunkifier component.
+    
+    Flow controller - collects incoming data and outputs it only as quanta of
+    a given length in bytes (chunksize), unless the input stream ends (producerFinished). 
+    
+    Keyword arguments:
+    - chunksize  -- Chunk size in bytes
+    """
+    
+    Inboxes = { "inbox" : "Data stream to be split into chunks",
+                "control": "UNUSED" }
+    Outboxes = { "outbox" : "Each message is a chunk",
+                "signal": "UNUSED" }
 
-	def __init__(self, chunksize = 1048576):
-		super(Chunkifier,self).__init__()
-		self.chunksize = chunksize
+    def __init__(self, chunksize = 1048576):
+        super(Chunkifier, self).__init__()
+        self.chunksize = chunksize
 
-	def main(self):
-		buffer = ""
-		while 1:
-			yield 1
-			if self.dataReady("inbox"):
-				buffer += self.recv("inbox")
-				while len(buffer) >= self.chunksize: #send out a full chunk
-					self.send(buffer[0:self.chunksize-1], "outbox")
-					buffer = buffer[self.chunksize:]
+    def main(self):
+        buffer = ""
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                buffer += self.recv("inbox")
+                while len(buffer) >= self.chunksize: #send out a full chunk
+                    self.send(buffer[0:self.chunksize], "outbox")
+                    buffer = buffer[self.chunksize:]
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished):
+                    self.send(buffer, "outbox") #remainder of the buffer
+                    self.send(msg, "signal")
+                    return
+                elif isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    return
+            self.pause()
 
 if __name__ == '__main__':
-	from Kamaelia.Util.PipelineComponent import pipeline
-	from Kamaelia.Util.ConsoleEcho import consoleEchoer
-	from Axon.ThreadedComponent import threadedcomponent
-	from time import sleep
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Axon.ThreadedComponent import threadedcomponent
+    from time import sleep
+    from Lagger import Lagger
 
-	class Lagger(component):
-		def main(self):
-			while 1:
-				yield 1
-				sleep(0.1)
-
-	class ReducedConsoleReader(threadedcomponent):
-		def __init__(self):
-			super(ReducedConsoleReader, self).__init__()
-		
-		def run(self):
-			while 1:
-				self.outqueues["outbox"].put( raw_input("> ") )
-	
-	pipeline( Lagger(), ReducedConsoleReader(), Chunkifier(20), consoleEchoer() ).run()
+    class ReducedConsoleReader(threadedcomponent):
+        def run(self):
+            while 1:
+                self.outqueues["outbox"].put( raw_input("> ") )
+    
+    pipeline( Lagger(), ReducedConsoleReader(), Chunkifier(20), consoleEchoer() ).run()
