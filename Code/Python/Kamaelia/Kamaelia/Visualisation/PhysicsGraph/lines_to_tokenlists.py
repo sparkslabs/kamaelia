@@ -117,6 +117,7 @@ class lines_to_tokenlists(component):
                tokens = self.lineToTokens(line)
                if tokens != []:
                    self.send(tokens, "outbox")
+           self.pause()
            yield 1
     
            
