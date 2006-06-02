@@ -5,7 +5,6 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
-from Kamaelia.Device.DVB.SoftDemux import DVB_SoftDemuxer as DVB_Demuxer
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.File.UnixPipe import Pipethrough
@@ -222,13 +221,4 @@ Graphline(
     }
 ).run()
 
-
-
-
-
-
-
-
-
-
-
+# RELEASE: MH

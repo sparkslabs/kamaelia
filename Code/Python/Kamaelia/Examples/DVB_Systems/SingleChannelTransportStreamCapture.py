@@ -11,6 +11,7 @@ from Kamaelia.File.UnixPipe import Pipethrough
 
 pipeline(
    DVB_Multiplex(754, [640, 641]), # BBC NEWS 24
-   Pipethrough("mencoder -o current.200.avi -ovc lavc -oac lavc -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128 -vf scale=320:-2 -")
-   #SimpleFileWriter("BBC_NEWS_24.ts")
+   SimpleFileWriter("BBC_NEWS_24.ts")
 ).run()
+
+# RELEASE: MH
