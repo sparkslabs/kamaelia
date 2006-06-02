@@ -68,8 +68,7 @@ class Transform:
     def applyRotation(self, xyzangle):
         global pi
         t = Transform()
-        xyzangle = [x*2*pi/360 for x in xyzangle]
-#        print "angles", str(xyzangle)
+        xyzangle = [x*pi/180 for x in xyzangle]
         #rotation around x axis
         if xyzangle[0] != 0:
             t.m[5] = cos(xyzangle[0])
@@ -78,6 +77,7 @@ class Transform:
             t.m[10] = cos(xyzangle[0])
             self.m = (self*t).m
         #rotation around y axis
+        t.setIdentity()
         if xyzangle[1] != 0:
             t.m[0] = cos(xyzangle[1])
             t.m[2] = -sin(xyzangle[1])
@@ -85,6 +85,7 @@ class Transform:
             t.m[10] = cos(xyzangle[1])
             self.m = (self*t).m
         #rotation around z axis
+        t.setIdentity()
         if xyzangle[2] != 0:
             t.m[0] = cos(xyzangle[2])
             t.m[1] = sin(xyzangle[2])
@@ -94,7 +95,7 @@ class Transform:
     
     def applyTranslation(self, vector):
         t = Transform()
-        if (vector[0] != 0 and vector[1] != 0 and vector[2] != 0):
+        if (vector[0] != 0 or vector[1] != 0 or vector[2] != 0):
             t.m[12] = vector[0]
             t.m[13] = vector[1]
             t.m[14] = vector[2]
@@ -103,7 +104,7 @@ class Transform:
         
     def applyScaling(self, vector):
         t = Transform()
-        if (vector[0] != 0 and vector[1] != 0 and vector[2] != 0):
+        if (vector[0] != 0 or vector[1] != 0 or vector[2] != 0):
             t.m[0] = vector[0]
             t.m[5] = vector[1]
             t.m[10] = vector[2]
