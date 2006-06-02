@@ -3,6 +3,8 @@
 # This code is designed soley for the purposes of demonstrating the tools
 # for timeshifting.
 #
+# Note this used PID 0x2000 to specify that the whole raw transport stream
+# should be captured. NOT supported by all DVB-T tuner devices.
 
 from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Util.PipelineComponent import pipeline
@@ -22,3 +24,5 @@ pipeline(
    DVB_Multiplex(freq, [0x2000],feparams), # BBC Multiplex 1, whole transport stream
    SimpleFileWriter("BBC_MUX_1.ts"),
 ).run()
+
+# RELEASE: MH
