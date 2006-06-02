@@ -32,6 +32,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from Display3D import Display3D
+from Util3D import *
 import Axon
 
 class Object3D(Axon.Component.component):
@@ -49,11 +50,16 @@ class Object3D(Axon.Component.component):
     def __init__(self, **argd):
         super(Object3D, self).__init__()
         # not sure about the needed data yet, just for testing
-        self.angle = 0
-        self.turndir = 0.3
+        self.turndir = [0.1, 0.1, 0.1]
         self.size = [2,2,2]
         self.pos = argd.get("pos",[0,0,-15])
-        self.rot = [0,0,0]
+        self.rot = [89,89,89]
+        self.transform = Transform()
+
+        x = self.size[0]/2
+        y = self.size[1]/2
+        z = self.size[2]/2
+        self.vertices = [ [-x, y, z], [-x, y, -z], [x, y, -z], [x, y, z], [-x, -y, z], [-x, -y, -z], [x, -y, -z], [x, -y, z] ]
         
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
@@ -61,6 +67,12 @@ class Object3D(Axon.Component.component):
                                           "events" : (self, "inbox"),
                                           "size": self.size,
                                           "pos": self.pos, }
+
+    def intersectRay(origin, vector):
+        transformed = [self.transform.transformVertex(v) for v in vertices]
+        
+        return False
+        
 
     def main(self):
         displayservice = Display3D.getDisplayService()
@@ -80,18 +92,26 @@ class Object3D(Axon.Component.component):
             while self.dataReady("hit"):
                 self.turndir = -self.turndir
             
-            self.angle += self.turndir %360;
+            self.rot =  [self.rot[i]+self.turndir[i] for i in range(3)]
+            self.rot = [x%360 for x in self.rot]
+#            print str(self.rot)
+
+            # generate transformation matrix
+            self.transform.setIdentity()
+            self.transform.applyRotation(self.rot)
+            self.transform.applyTranslation(self.pos)
 
 # Later it might be a good idea to provide a set of drawing functions
 # so the component developer does not need to know about opengl
 # This way opengl could later easily be replaced by an other mechanism
 # for drawing
 # TOGRA
+            glMatrixMode(GL_MODELVIEW)
 
             # translation and rotation
             glPushMatrix()
-            glTranslate(*self.pos)
-            glRotate(self.angle, 1.0,1.0,1.0)
+
+            glLoadMatrixf(self.transform.getMatrix())
 
             # draw faces 
             glBegin(GL_QUADS)
