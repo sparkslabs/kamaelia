@@ -112,3 +112,5 @@ def makeInbox(notify):
 def makeOutbox():
     """Returns a postbox object suitable for use a an Axon outbox."""
     return postbox(storage=thenullsink)
+
+# RELEASE: MH
