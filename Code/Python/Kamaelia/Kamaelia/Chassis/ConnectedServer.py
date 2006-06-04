@@ -122,7 +122,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = { "_oobinfo" : "internal use: Out Of Bounds Info - for receiving signalling of new and closing connections" }
     Outboxes = {}
     
-    def __init__(self, protocol=None, port=1601):
+    def __init__(self, protocol=None, port=1601, socketOptions=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleServer, self).__init__()
         if not protocol:
@@ -132,10 +132,14 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.iter = 0
         self.time = _time.time()
         self.listenport = port
+        self.socketOptions = socketOptions
     
     def initialiseComponent(self):
         """Sets up socket binding to listen for incoming connections"""
-        myPLS = _ic.TCPServer(listenport=self.listenport)
+        if self.socketOptions is None:
+            myPLS = _ic.TCPServer(listenport=self.listenport)
+        else:
+            myPLS = _ic.TCPServer(listenport=self.listenport,socketOptions=self.socketOptions)
         self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
         self.addChildren(myPLS)
         return _Axon.Ipc.newComponent(myPLS)
@@ -160,7 +164,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         data -- data.object is the ConnectedSocketAdapter component for the connection
         """
         CSA = data.object
-###        print "NEW CSA", CSA
+
         pHandler = self.protocolClass()
     
         pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
@@ -177,8 +181,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
         if "signal" in pHandler.Outboxes:
             self.link((pHandler,"signal"),(CSA, "control"))
-            _Axon.Foo = CSA
-    
+
         CSA.activate()
         pHandler.activate()
 
