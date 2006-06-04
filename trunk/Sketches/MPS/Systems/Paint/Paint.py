@@ -131,7 +131,8 @@ class Painter(PygameApp):
 
     def draw(self, data):
         self.brush.render(self.display, data.button, data.pos)
-
+        self.send({"REDRAW":True, "surface":self.display}, "displaysignal")
+        
     def main(self):
         yield WaitComplete(
                   self.requestDisplay(DISPLAYREQUEST=True,
@@ -146,6 +147,7 @@ class Painter(PygameApp):
                     "surface" : self.display},
                     "displaysignal")
         self.display.fill( (255,255,255) )
+        self.send({"REDRAW":True, "surface":self.display}, "displaysignal")
         drag = False
         while 1:
             self.handleAlpha()
