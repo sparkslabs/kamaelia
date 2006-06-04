@@ -200,7 +200,7 @@ class ConnectedSocketAdapter(component):
 #              self.failcount += 1
 #              if self.failcount >3:
                  self.connectionRECVLive = False
-                 self.howDied = "Peer Ceased Sending", self.failcount
+#                 self.howDied = "Peer Ceased Sending", self.failcount
 
        except socket.error, socket.msg:
           (errorno, errmsg) = socket.msg.args
