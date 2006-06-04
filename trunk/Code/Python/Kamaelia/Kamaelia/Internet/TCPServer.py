@@ -146,6 +146,8 @@ class TCPServer(Axon.Component.component):
       maxretries = 10
       gotsock=False
       newsock, addr = sock.accept()  # <===== THIS IS THE PROBLEM
+      self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
+
       gotsock = True
       newsock.setblocking(0)
 ###      
