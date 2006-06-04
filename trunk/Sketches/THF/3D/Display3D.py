@@ -30,6 +30,8 @@ import pygame
 import Axon
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from math import tan, pi
+from Util3D import *
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -88,6 +90,15 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.objects = []
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
+        self.mpos = [0,0]
+
+        self.nearPlaneDist = 1.0
+        self.farPlaneDist = 100.0
+        self.perspectiveAngle = 45.0
+        self.aspectRatio = float(self.width)/float(self.height)
+        global pi
+        self.farPlaneHeight = self.farPlaneDist*2.0/tan(pi/2.0-self.perspectiveAngle*pi/360.0)
+        self.farPlaneWidth = self.farPlaneHeight*self.aspectRatio
 
     def handleDisplayRequest(self):
             """\
@@ -121,7 +132,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                               pass
 #                         print "REMOVED OUTBOX"
                 elif message.get("3DDISPLAYREQUEST", False):
-                    pass
+                    self.objects.append(message.get("object"))
+                    
                 elif message.get("ADDLISTENEVENT", None) is not None:
                     eventcomms = self.surface_to_eventcomms[str(id(message["object3d"]))]
                     self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
@@ -138,6 +150,22 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # pre-fetch all waiting events in one go
         events = [ event for event in pygame.event.get() ]
 
+        for event in events:
+            if event.type == pygame.QUIT:
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # project mouse click position on far plane
+                xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
+                yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
+                
+                for obj in self.objects:
+                    zhit = obj.intersectRay(Vector(0,0,0), Vector(xclick, yclick, -self.farPlaneDist).norm())
+                    if zhit >0:
+                        print "HIT! (", zhit, ")"
+                        obj.turn()
+                
+                self.mpos = event.pos
+        
         # handle input
         # TODO
         
@@ -170,7 +198,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # projection matrix
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()                                
-        gluPerspective(45.0, self.width/self.height, 0.1, 100.0)
+        gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
         # model matrix
 
         while 1:
