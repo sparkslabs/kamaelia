@@ -38,6 +38,7 @@ socket.error: (104, 'Connection reset by peer')
 
 """
 
+import array
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -282,7 +283,9 @@ class HTTPServer(component):
 		
 		while self.dataReady("http-outbox"):
 			temp = self.recv("http-outbox")
-			self.send(temp, "outbox")
+			data = array.array("B")
+			data.fromstring(unicode(temp).encode("utf8"))
+			self.send(data, "outbox")
 
 		while self.dataReady("mime-outbox"):
 			temp = self.recv("mime-outbox")

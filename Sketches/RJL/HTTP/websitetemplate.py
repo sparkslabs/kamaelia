@@ -60,7 +60,7 @@ def getIrcLogs(datestring):
         data = sourcefile.read()
         sourcefile.close()
         return formatIrcLogs(data)
-    except IOError:
+    except IOError, e:
     	return 404
 
 def readMenu(filepath):
