@@ -100,6 +100,8 @@ class Canvas(component):
               )
               
         self.surface.fill( (255,255,255) )
+        self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
+
         
         self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN, "surface" : self.surface},
                    "toDisplay" )
@@ -112,11 +114,15 @@ class Canvas(component):
             
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
+                self.redrawNeeded = False
                 for msg in msgs:
                     cmd = msg[0]
                     args = msg[1:]
                     # parse commands here
                     self.handleCommand(cmd, *args)
+                if self.redrawNeeded:
+                    self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
+                
                 
             # pass on events received from pygame display
             while self.dataReady("eventsIn"):
@@ -133,12 +139,15 @@ class Canvas(component):
                 self.surface.fill( [int(a) for a in args[0:3]] )
             else:
                 self.surface.fill( (255,255,255) )
+            self.redrawNeeded = True
         elif cmd=="LINE":
             (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
             pygame.draw.line(self.surface, (r,g,b), (sx,sy), (ex,ey))
+            self.redrawNeeded = True
         elif cmd=="CIRCLE":
             (r,g,b,x,y,radius) = [int(v) for v in args[0:6]]
             pygame.draw.circle(self.surface, (r,g,b), (x,y), radius, 0)
+            self.redrawNeeded = True
         elif cmd=="LOAD":
             filename = args[0]
             try:
@@ -147,6 +156,7 @@ class Canvas(component):
                 pass
             else:
                 self.surface.blit(loadedimage, (0,0))
+            self.redrawNeeded = True
         elif cmd=="SAVE":
             filename = args[0]
             pygame.image.save(self.surface, filename)
@@ -160,12 +170,14 @@ class Canvas(component):
             imagestring = zlib.decompress(args[0])
             recvsurface = pygame.image.fromstring(imagestring, (w,h), args[3])
             self.surface.blit(recvsurface, (0,0))
+            self.redrawNeeded = True
         elif cmd=="WRITE":
             x,y,size,r,g,b = [int(a) for a in args[0:6]]
             text = args[6]
             font = pygame.font.Font(None,size)
             textimg = font.render(text, False, (r,g,b))
             self.surface.blit(textimg, (x,y))
+            self.redrawNeeded = True
 
 class Painter(component):
     """\
@@ -295,6 +307,7 @@ class TwoWaySplitter(component):
                 if isinstance(data, (producerFinished, shutdownMicroprocess)):
                     done=True
                     
+            self.pause()
             yield 1
 
 
