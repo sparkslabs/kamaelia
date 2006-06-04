@@ -109,10 +109,11 @@ class TCPServer(Axon.Component.component):
                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
               }
 
-   def __init__(self,listenport):
+   def __init__(self,listenport, socketOptions=None):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPServer, self).__init__()
       self.listenport = listenport
+      self.socketOptions = socketOptions
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
 
    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
@@ -131,6 +132,8 @@ class TCPServer(Axon.Component.component):
          PORT=suppliedport
 
       s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      if self.socketOptions is not None:
+          s.setsockopt(*self.socketOptions)
       s.setblocking(0)
       assert self.debugger.note("PrimaryListenSocket.makeTCPServerPort", 5, "HOST,PORT",":",HOST,":",PORT,":")
       s.bind((HOST,PORT))
