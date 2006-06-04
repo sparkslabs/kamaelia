@@ -39,7 +39,6 @@ class Object3D(Axon.Component.component):
     Inboxes = {
        "inbox": "not used",
        "control": "ignored",
-       "hit" : "We expect to recieve messages telling us that the cube is clicked",
     }
     
     Outboxes = {
@@ -50,30 +49,63 @@ class Object3D(Axon.Component.component):
     def __init__(self, **argd):
         super(Object3D, self).__init__()
         # not sure about the needed data yet, just for testing
-        self.turndir = [0.1, 0.1, 0.1]
-        self.size = [2,2,2]
-        self.pos = argd.get("pos",[0,0,-15])
-        self.rot = [89,89,89]
+        self.rotspeed = Vector(0.1, 0.0, 0.0)
+        self.size = Vector(2,2,2)
+        self.pos = argd.get("pos",Vector(0,0,-15))
+        self.rot = Vector(45,45,45)
         self.transform = Transform()
 
-        x = self.size[0]/2
-        y = self.size[1]/2
-        z = self.size[2]/2
-        self.vertices = [ [-x, y, z], [-x, y, -z], [x, y, -z], [x, y, z], [-x, -y, z], [-x, -y, -z], [x, -y, -z], [x, -y, z] ]
+        # prepare vertices for intersection test
+        x = float(self.size.x/2)
+        y = float(self.size.y/2)
+        z = float(self.size.z/2)
+        self.vertices = [ Vector(x, 0.0, 0.0), Vector(0.0, y, 0.0), Vector(0.0, 0.0, z) ]
         
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
 #                                          "callback" : (self,"callback"),
-                                          "events" : (self, "inbox"),
-                                          "size": self.size,
-                                          "pos": self.pos, }
+#                                          "events" : (self, "inbox"),
+#                                          "size": self.size,
+#                                          "pos": self.pos,
+                                          "object": self }
+                                          
 
-    def intersectRay(origin, vector):
-        transformed = [self.transform.transformVertex(v) for v in vertices]
-        
-        return False
-        
+    # Ray intersection test
+    # returns the distance of the origin o to the point of intersection
+    # if no intersection occurs, 0 is returned
+    # Algorithm from "Realtime Rendering"
+    def intersectRay(self, o, d):
+        transformed = [self.transform.transformVector(v) for v in self.vertices]
+        tmin = -10000
+        tmax = 10000
+           
+        p = self.pos-o
+        halfwidths = [self.size.x/2, self.size.y/2, self.size.z/2]
+        for i in range(3):
+            a = transformed[i]-p
+            h = halfwidths[i]
+            e = a.dot(p)
+            f = a.dot(d)
+            if abs(f)>0.0001:
+                t1 = (e+h)/f
+                t2 = (e-h)/f
+                if t1 > t2:
+                    x = t1
+                    t1 = t2
+                    t2 = x
+                if t1 > tmin: tmin = t1
+                if t2 < tmax: tmax = t2
+                if tmin > tmax: return 0
+                if tmax < 0: return 0
+            elif -e-h > 0 or -e+h < 0: return 0
+        if tmin > 0: return tmin
+        else: return tmax
 
+    def turn(self):
+        # simple test action: change rotation dir
+        self.rotspeed.invert()
+        pass
+ 
     def main(self):
         displayservice = Display3D.getDisplayService()
         self.link((self,"display_signal"), displayservice)
@@ -87,17 +119,12 @@ class Object3D(Axon.Component.component):
 # There is no need for a callback yet
             
             yield 1
-
-            # simple test action: change rotation dir
-            while self.dataReady("hit"):
-                self.turndir = -self.turndir
             
-            self.rot =  [self.rot[i]+self.turndir[i] for i in range(3)]
-            self.rot = [x%360 for x in self.rot]
-#            print str(self.rot)
+            self.rot += self.rotspeed
+            self.rot %= 360
 
             # generate transformation matrix
-            self.transform.setIdentity()
+            self.transform.reset()
             self.transform.applyRotation(self.rot)
             self.transform.applyTranslation(self.pos)
 
@@ -108,9 +135,8 @@ class Object3D(Axon.Component.component):
 # TOGRA
             glMatrixMode(GL_MODELVIEW)
 
-            # translation and rotation
+            # set generated matrix
             glPushMatrix()
-
             glLoadMatrixf(self.transform.getMatrix())
 
             # draw faces 
@@ -159,9 +185,9 @@ class Object3D(Axon.Component.component):
 if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline
     pygame.init()
-    obj = Object3D(pos=[0, 0,-12]).activate()
-    obj = Object3D(pos=[0,4,-20]).activate()
-    obj = Object3D(pos=[4,0,-22]).activate()
-    obj = Object3D(pos=[0,-4,-18]).activate()
-    obj = Object3D(pos=[-4, 0,-15]).activate()
+    obj = Object3D(pos=Vector(0, 0,-12)).activate()
+    obj = Object3D(pos=Vector(0,4,-20)).activate()
+    obj = Object3D(pos=Vector(4,0,-22)).activate()
+    obj = Object3D(pos=Vector(0,-4,-18)).activate()
+    obj = Object3D(pos=Vector(-4, 0,-15)).activate()
     Axon.Scheduler.scheduler.run.runThreads()  
