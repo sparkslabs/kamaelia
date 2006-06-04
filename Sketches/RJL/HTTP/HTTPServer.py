@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -374,7 +374,8 @@ class HTTPRequestHandler(component):
 
 if __name__ == '__main__':
 	from Axon.Component import scheduler
-	SimpleServer(protocol=HTTPServer, port=8082).activate()
+	import socket
+	SimpleServer(protocol=HTTPServer, port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
 	pipeline(
 		Introspector(),
 		TCPClient("127.0.0.1", 1500),
