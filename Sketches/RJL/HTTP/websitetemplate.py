@@ -25,6 +25,7 @@ from xml.sax.handler import ContentHandler
 
 def getIrcLogs(datestring):
     def formatIrcLogs(logs):
+        logs = unicode(logs, "utf-8")
         outputtext = ""
         lines = string.split(logs, "\n")
         for line in lines:
@@ -35,23 +36,23 @@ def getIrcLogs(datestring):
                 eventtype = splitline[1]
                 eventuser = splitline[2]
                 eventdata = line[len(splitline[0]+splitline[1]+splitline[2]+splitline[3]+"----"):]
-                if eventtype == "LOGGINGOFF":
-                    outputtext += "[" + eventtime + "] Logging was disabled by " + eventuser + "\n"
-                elif eventtype == "LOGGINGON":
-                    outputtext += "[" + eventtime + "] Logging was enabled by " + eventuser + "\n"		
-                elif eventtype == "PRIVMSG":
-                    if eventdata[0:7] == "\x01ACTION":
-                        eventdata = "*" + string.lstrip(eventdata[7:-1]) + "*"
-                    if eventdata != "\x01VERSION\x01":
-                        outputtext += "[" + eventtime + "] " + eventuser + ": " + eventdata + "\n"
-                elif eventtype == "PART":
-                    outputtext += "[" + eventtime + "] " + eventuser + " left the room\n"
-                elif eventtype == "JOIN":
-                    outputtext += "[" + eventtime + "] " + eventuser + " joined the room\n"		
-                elif eventtype == "QUIT":
-                    outputtext += "[" + eventtime + "] " + eventuser + " quit - " + eventdata + "\n"
-                elif eventtype == "TOPIC":
-                    outputtext += "[" + eventtime + "] " + eventuser + " changed the topic to \"" + eventdata + "\"\n"
+                if eventtype == u"LOGGINGOFF":
+                    outputtext += u"[" + eventtime + u"] Logging was disabled by " + eventuser + u"\n"
+                elif eventtype == u"LOGGINGON":
+                    outputtext += u"[" + eventtime + u"] Logging was enabled by " + eventuser + u"\n"		
+                elif eventtype == u"PRIVMSG":
+                    if eventdata[0:7] == u"\x01ACTION":
+                        eventdata = u"*" + string.lstrip(eventdata[7:-1]) + u"*"
+                    if eventdata != u"\x01VERSION\x01":
+                        outputtext += u"[" + eventtime + u"] " + eventuser + u": " + eventdata + u"\n"
+                elif eventtype == u"PART":
+                    outputtext += u"[" + eventtime + u"] " + eventuser + u" left the room\n"
+                elif eventtype == u"JOIN":
+                    outputtext += u"[" + eventtime + u"] " + eventuser + u" joined the room\n"		
+                elif eventtype == u"QUIT":
+                    outputtext += u"[" + eventtime + u"] " + eventuser + u" quit - " + eventdata + "\n"
+                elif eventtype == u"TOPIC":
+                    outputtext += u"[" + eventtime + u"] " + eventuser + u" changed the topic to \"" + eventdata + "\"\n"
         return outputtext
 
     try:
@@ -60,12 +61,12 @@ def getIrcLogs(datestring):
         data = sourcefile.read()
         sourcefile.close()
         return formatIrcLogs(data)
-    except IOError, e:
+    except IOError:
     	return 404
 
 def readMenu(filepath):
     mymenu = []
-    class MenuHandler(ContentHandler):   
+    class MenuHandler(ContentHandler):
         def startElement(self, name, attrs):
             if name == "group":
                 self.currentGroupLinks = []
@@ -100,23 +101,23 @@ def formHeader(meta):
     else:
         title = "Ryan's Site"
     
-    output = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    output = u"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>""" + title + """</title>
+<title>""" + title + u"""</title>
 <link href="/style.css" rel="stylesheet" type="text/css" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />"""
 
     if meta.has_key("keywords"):
-        output += '<meta name="keywords" content="' +  meta["keywords"] + '" />\n'
+        output += u'<meta name="keywords" content="' +  meta["keywords"] + '" />\n'
     if meta.has_key("description"):
-        output += '<meta name="description" content="' +  meta["description"] + '" />\n'
-    output += """</head>
+        output += u'<meta name="description" content="' +  meta["description"] + '" />\n'
+    output += u"""</head>
 <body style="padding: 0; margin: 0;">"""
     return output
 
 def formMainTableHeader(meta):
-    output = """<table style="width: 99.9%; border: 0; margin: 0; position: relative; min-height: 100%;" cellpadding="0" cellspacing="0">
+    output = u"""<table style="width: 99.9%; border: 0; margin: 0; position: relative; min-height: 100%;" cellpadding="0" cellspacing="0">
 <tr style="height: 100%;">
 <td style="padding: 10px; vertical-align: top;">"""
     return output
@@ -124,7 +125,7 @@ def formMainTableHeader(meta):
 def formMainPage(meta):
     additionalfooter = ""
     if meta.has_key("additionalfooter"): additionalfooter = meta["additionalfooter"]
-    output = """<div style="text-align: center;">
+    output = u"""<div style="text-align: center;">
 <h1 style="padding: 0; margin: 0;">Ryan's Site - ronline.no-ip.info</h1>
 <p class="i" style="margin: 0;">Mathematics, Computing, Technology</p>"""
     if meta.has_key("extramenus"):
@@ -135,9 +136,9 @@ def formMainPage(meta):
     
     for menu in mymenus:
         if menu.has_key("name"):
-            output += "<h2>" + menu["name"] + "</h2>\n"
+            output += u"<h2>" + menu["name"] + "</h2>\n"
         else:
-            print "<br /><br />\n";
+            print u"<br /><br />\n";
 
         output += """<table style="border: 0; padding: 5px; width: 100%; margin-left: auto; margin-right: auto;">\n<tr>"""
         firstlink = True

@@ -50,11 +50,30 @@ def websiteKamaeliaIrcLogs(request):
     meta["extramenus"] = mymenu
 
     if arg == "":
-        data = u"<h2>#kamaelia IRC channel logs</h2>\n<p>These logs are for the #kamaelia channel on irc.freenode.net</p><ul>"
+        data = u"<h2>#kamaelia IRC channel logs</h2>\n<p>These logs are for the #kamaelia channel on irc.freenode.net</p>"
         datelist = dircache.listdir(homedirectory + "/kamaelia/irc/")
+        datedict = {}
         for date in datelist:
-            data += u"<li><a href=\"/kamaelia/irc-view/" + date + "\">" + date + "</a></li>"
-        data += u"</ul>"
+            splitdata = date.split(".")[0].split("-")
+            if len(splitdata) == 3:
+                year = int(splitdata[2])
+                month = int(splitdata[1])
+                day = int(splitdata[0])
+                if not datedict.has_key(year): datedict[year] = {}
+                if not datedict[year].has_key(month): datedict[year][month] = {}
+                datedict[int(splitdata[2])][int(splitdata[1])][int(splitdata[0])] = date
+        monthnames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
+        for year, months in datedict.items():
+            data += u"<h3>" + str(year) + u"</h3>\n"
+            for month, days in months.items():
+                data += u"<h4>" + monthnames[month-1] + u"</h4>\n"
+                data += u"<ul style=\"font-size: 120%\">"
+                for day, filename in days.items():
+                    if filename == currentDateString() + ".txt":
+                        data += u"<li><a href=\"/kamaelia/irc-view/" + unicode(filename, "utf-8") + u"\" style=\"color: #55AA22\">" + str(day) + u"</a> (today)</li>"
+                    else:
+                        data += u"<li><a href=\"/kamaelia/irc-view/" + unicode(filename, "utf-8") + u"\">" + str(day) + u"</a></li>"
+                data += u"</ul>"
     
     	data = websitetemplate.formHeader(meta) + websitetemplate.formMainTableHeader(meta) + data + websitetemplate.formMainTableFooter(meta) + websitetemplate.formFooter(meta)
            
@@ -73,8 +92,8 @@ def websiteKamaeliaIrcLogs(request):
             resource = getErrorPage(404, u"Specified log file not found.")
         else:
             data = u"<h2>#kamaelia IRC channel logs - " + arg + u"</h2><p>This page is also available in <a href=\"/kamaelia/irc/" + arg + u"\">plain text form</a></p>\n<p style='font-family: Courier, monospace; font-size: 80%;'>"
-            escapeddata = unicode(escape(logsdata).decode("utf-8"))
-            data += escapeddata.replace("\n","<br />") + u"</p>"
+            escapeddata = escape(logsdata)
+            data += escapeddata.replace(u"\n",u"<br />\n") + u"</p>"
             data = websitetemplate.formHeader(meta) + websitetemplate.formMainTableHeader(meta) + data + websitetemplate.formMainTableFooter(meta) + websitetemplate.formFooter(meta)
             resource = {
                 "type" : "text/html",
