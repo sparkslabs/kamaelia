@@ -174,7 +174,6 @@ class ConnectedSocketAdapter(component):
               raise ex
        self.sending = False
        if self.connectionSENDLive:
-#           print "We need to ask the selector to tell us when we can send more data"
            self.send(newWriter(self, ((self, "SendReady"), sock)), "_selectorSignal")
        return bytes_sent
    
@@ -197,10 +196,7 @@ class ConnectedSocketAdapter(component):
               self.failcount = 0
               return data
           else: # This implies the connection has closed for some reason
-#              self.failcount += 1
-#              if self.failcount >3:
                  self.connectionRECVLive = False
-#                 self.howDied = "Peer Ceased Sending", self.failcount
 
        except socket.error, socket.msg:
           (errorno, errmsg) = socket.msg.args
@@ -210,16 +206,13 @@ class ConnectedSocketAdapter(component):
               self.howDied = socket.msg
        self.receiving = False
        if self.connectionRECVLive:
-#           print "We need to ask the selector to tell us when we can receive more data"
            self.send(newReader(self, ((self, "ReadReady"), sock)), "_selectorSignal")
        return None  # Explicit rather than implicit.
 
    def handleReceive(self):
        successful = True
-#       print "Here!"
        while successful and self.connectionRECVLive: ### Fixme - probably want maximum iterations here
          socketdata = self._saferecv(self.socket, 32768) ### Receiving may die horribly         
-#         print "Where?"
          if (socketdata):
              self.send(socketdata, "outbox")
              successful = True
@@ -231,16 +224,20 @@ class ConnectedSocketAdapter(component):
 #           print "self.howDied", self.howDied
 
    def checkSocketStatus(self):
-#       if self.notprinted:
-#           print "CHECK SOCKET STATUS NEEDS TO BE WRITTEN"
-#           self.notprinted = False
        if self.dataReady("ReadReady"):
            self.receiving = True
            self.recv("ReadReady")
-#           print "Got it!"
+
        if self.dataReady("SendReady"):
            self.sending = True
            self.recv("SendReady")
+
+   def canDoSomething(self):
+       if self.sending and len(self.sendQueue) > 0:
+           return True
+       if self.receiving:
+           return True
+       return False
 
    def main(self):
        self.link((self, "_selectorSignal"), self.selectorService)
@@ -250,69 +247,20 @@ class ConnectedSocketAdapter(component):
        self.connectionRECVLive = True
        self.connectionRECVLive = True
        self.connectionSENDLive = True
-#       self.notprinted = True
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
-#          print "boo!", [ (x,len(self.inboxes[x])) for x in self.inboxes ]
           self.checkSocketStatus() # To be written
-
           self.handleSendRequest() # Check for data, in our "inbox", to send to the socket, add to an internal send queue buffer.
           self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
           if self.sending:
               self.flushSendQueue()
           if self.receiving:
-#              print "Here?"
               self.handleReceive()
-              
-#       print "SHUTTING DOWN"
+          if not self.canDoSomething():
+              self.pause()
+ 
+
        self.passOnShutdown()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
 
 __kamaelia_components__  = ( ConnectedSocketAdapter, )
-
-
-if 0:
-#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--
-   def handleReadReady(self):
-      """Check to see if the selector has notified us that that we can read data from the socket."""
-      while self.dataReady("ReadReady"):
-         data = self.recv("ReadReady")
-         socketdata = None
-         try:
-             socketdata = self._saferecv(self.socket, 1024) ### Receiving may die horribly
-         except connectionDiedReceiving, cd:
-             raise cd # rethrow
-         except Exception, e: # Unexpected error that might cause crash. Do we want to really crash & burn?
-             # FIXME: These are really component options
-             if crashAndBurn["receivingDataFailed"]:
-                raise e
-         if (socketdata):
-            self.send(socketdata, "outbox")
-#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--
-   def handleSendReady(self):
-       """Check to see if the selector has notified us that we can send data to the socket"""
-       try:
-          while self.dataReady("SendReady"):
-             data = self.recv("SendReady")
-
-             if len(self.sendQueue)>0:
-                 data = self.sendQueue[0]
-                 try:
-
-                    bytes_sent = self._safesend(self.socket, data) ### Sending may fail....
-
-                    if bytes_sent:
-                        if bytes_sent == len(data):
-                            del self.sendQueue[0]
-                        else:
-                            self.sendQueue[0] = data[bytes_sent:]
-                 except Exception, e: # If it does, and we get an exception the connection is unstable or closed
-                    # FIXME: These are really component options
-                    if crashAndBurn["sendingDataFailed"]:
-                       raise connectionDiedReceiving(e)
-                    raise connectionClosedown(e)
-          return 1        # Since we got here, client is still around, so return true.
-       except:
-          print "TRACEBACK INSIDE CONNECTED SOCKET ADAPTOR"
-          traceback.print_exc()
-#--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--NOT USED--
