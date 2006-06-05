@@ -430,7 +430,6 @@ class VariableByteRate_RequestControl(component):
                 self.send( chunk, "outbox" )
 
             yield 1
-#        print "RC done"
 
 
     def shutdown(self):

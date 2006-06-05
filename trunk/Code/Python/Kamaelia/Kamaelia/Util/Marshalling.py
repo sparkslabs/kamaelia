@@ -169,7 +169,6 @@ class DeMarshaller(component):
         """Main loop."""
         done = False
         while not done:
-
             yield 1
             self.pause()
 
