@@ -42,18 +42,23 @@ class Object3D(Axon.Component.component):
     }
     
     Outboxes = {
-        "outbox": "not used",
-        "display_signal": "for communication with display3d",
+        "outbox": "used for sending position information",
+        "display_signal" : "Outbox used for communicating to the display surface"
     }
     
     def __init__(self, **argd):
         super(Object3D, self).__init__()
         # not sure about the needed data yet, just for testing
-        self.rotspeed = Vector(0.1, 0.0, 0.0)
-        self.size = Vector(2,2,2)
+#       self.rotspeed = Vector(0.1, 0.0, 0.0)
+        self.size = argd.get("size", Vector(2,2,2))
         self.pos = argd.get("pos",Vector(0,0,-15))
-        self.rot = Vector(45,45,45)
+        self.rot = Vector(0.0,0.0,0.0)
         self.transform = Transform()
+        
+        self.name = argd.get("name", "nameless")
+        self.grabbed = 0
+        self.oldrot = self.rot.copy()
+        self.oldpos = self.pos.copy()
 
         # prepare vertices for intersection test
         x = float(self.size.x/2)
@@ -64,7 +69,7 @@ class Object3D(Axon.Component.component):
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
 #                                          "callback" : (self,"callback"),
-#                                          "events" : (self, "inbox"),
+                                          "events" : (self, "inbox"),
 #                                          "size": self.size,
 #                                          "pos": self.pos,
                                           "object": self }
@@ -101,11 +106,96 @@ class Object3D(Axon.Component.component):
         if tmin > 0: return tmin
         else: return tmax
 
-    def turn(self):
-        # simple test action: change rotation dir
-        self.rotspeed.invert()
-        pass
- 
+
+    def applyTransforms(self):
+        # generate transformation matrix
+        self.transform.reset()
+        self.transform.applyRotation(self.rot)
+        self.transform.applyTranslation(self.pos)
+
+
+    def draw(self):
+        glMatrixMode(GL_MODELVIEW)
+
+        # set generated matrix
+        glPushMatrix()
+        glLoadMatrixf(self.transform.getMatrix())
+
+        # draw faces 
+        glBegin(GL_QUADS)
+        glColor3f(1.0,0.0,0.0)
+        glVertex3f(1.0,1.0,1.0)
+        glVertex3f(1.0,-1.0,1.0)
+        glVertex3f(-1.0,-1.0,1.0)
+        glVertex3f(-1.0,1.0,1.0)
+
+        glColor3f(0.0,1.0,0.0)
+        glVertex3f(1.0,1.0,-1.0)
+        glVertex3f(1.0,-1.0,-1.0)
+        glVertex3f(-1.0,-1.0,-1.0)
+        glVertex3f(-1.0,1.0,-1.0)
+        
+        glColor3f(0.0,0.0,1.0)
+        glVertex3f(1.0,1.0,1.0)
+        glVertex3f(1.0,-1.0,1.0)
+        glVertex3f(1.0,-1.0,-1.0)
+        glVertex3f(1.0,1.0,-1.0)
+
+        glColor3f(1.0,0.0,1.0)
+        glVertex3f(-1.0,1.0,1.0)
+        glVertex3f(-1.0,-1.0,1.0)
+        glVertex3f(-1.0,-1.0,-1.0)
+        glVertex3f(-1.0,1.0,-1.0)
+
+        glColor3f(0.0,1.0,1.0)
+        glVertex3f(1.0,1.0,1.0)
+        glVertex3f(-1.0,1.0,1.0)
+        glVertex3f(-1.0,1.0,-1.0)
+        glVertex3f(1.0,1.0,-1.0)
+
+        glColor3f(1.0,1.0,0.0)
+        glVertex3f(1.0,-1.0,1.0)
+        glVertex3f(-1.0,-1.0,1.0)
+        glVertex3f(-1.0,-1.0,-1.0)
+        glVertex3f(1.0,-1.0,-1.0)
+        glEnd()
+
+        glPopMatrix()
+    
+    
+    def handleEvents(self):
+        while self.dataReady("inbox"):
+            for event in self.recv("inbox"):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button in [1,3] and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                        self.grabbed = event.button
+                    if event.button == 4 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                        self.pos.z -= 1
+                    if event.button == 5 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                        self.pos.z += 1
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button in [1,3]:
+                        self.grabbed = 0
+                if event.type == pygame.MOUSEMOTION:
+                    if self.grabbed == 1:
+                        self.rot.y += float(event.rel[0])
+                        self.rot.x += float(event.rel[1])
+                        self.rot %= 360
+                    if self.grabbed == 3:
+                        self.pos.x += float(event.rel[0])/10.0
+                        self.pos.y -= float(event.rel[1])/10.0
+                        
+        if self.oldpos != self.pos:
+            diff = self.pos-self.oldpos
+            self.send("%s was moved by %s units\n" % (self.name, str(diff)) , "outbox",)
+            self.oldpos = self.pos.copy()
+
+        if self.oldrot != self.rot:
+            diff = self.rot-self.oldrot
+            self.send("%s was rotated by (%d, %d) degrees\n" % (self.name, diff.x, diff.y), "outbox",)
+            self.oldrot = self.rot.copy()
+
+
     def main(self):
         displayservice = Display3D.getDisplayService()
         self.link((self,"display_signal"), displayservice)
@@ -120,74 +210,34 @@ class Object3D(Axon.Component.component):
             
             yield 1
             
-            self.rot += self.rotspeed
-            self.rot %= 360
-
-            # generate transformation matrix
-            self.transform.reset()
-            self.transform.applyRotation(self.rot)
-            self.transform.applyTranslation(self.pos)
+            self.handleEvents()
+            self.applyTransforms()
+            self.draw()
 
 # Later it might be a good idea to provide a set of drawing functions
 # so the component developer does not need to know about opengl
 # This way opengl could later easily be replaced by an other mechanism
 # for drawing
-# TOGRA
-            glMatrixMode(GL_MODELVIEW)
-
-            # set generated matrix
-            glPushMatrix()
-            glLoadMatrixf(self.transform.getMatrix())
-
-            # draw faces 
-            glBegin(GL_QUADS)
-            glColor3f(1.0,0.0,0.0)
-            glVertex3f(1.0,1.0,1.0)
-            glVertex3f(1.0,-1.0,1.0)
-            glVertex3f(-1.0,-1.0,1.0)
-            glVertex3f(-1.0,1.0,1.0)
-
-            glColor3f(0.0,1.0,0.0)
-            glVertex3f(1.0,1.0,-1.0)
-            glVertex3f(1.0,-1.0,-1.0)
-            glVertex3f(-1.0,-1.0,-1.0)
-            glVertex3f(-1.0,1.0,-1.0)
-            
-            glColor3f(0.0,0.0,1.0)
-            glVertex3f(1.0,1.0,1.0)
-            glVertex3f(1.0,-1.0,1.0)
-            glVertex3f(1.0,-1.0,-1.0)
-            glVertex3f(1.0,1.0,-1.0)
-
-            glColor3f(1.0,0.0,1.0)
-            glVertex3f(-1.0,1.0,1.0)
-            glVertex3f(-1.0,-1.0,1.0)
-            glVertex3f(-1.0,-1.0,-1.0)
-            glVertex3f(-1.0,1.0,-1.0)
-
-            glColor3f(0.0,1.0,1.0)
-            glVertex3f(1.0,1.0,1.0)
-            glVertex3f(-1.0,1.0,1.0)
-            glVertex3f(-1.0,1.0,-1.0)
-            glVertex3f(1.0,1.0,-1.0)
-
-            glColor3f(1.0,1.0,0.0)
-            glVertex3f(1.0,-1.0,1.0)
-            glVertex3f(-1.0,-1.0,1.0)
-            glVertex3f(-1.0,-1.0,-1.0)
-            glVertex3f(1.0,-1.0,-1.0)
-            glEnd()
-
-            glPopMatrix()
-            glFlush()
+# e.g. TOGRA
 
 
 if __name__=='__main__':
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Util.Graphline import Graphline
-    pygame.init()
-    obj = Object3D(pos=Vector(0, 0,-12)).activate()
-    obj = Object3D(pos=Vector(0,4,-20)).activate()
-    obj = Object3D(pos=Vector(4,0,-22)).activate()
-    obj = Object3D(pos=Vector(0,-4,-18)).activate()
-    obj = Object3D(pos=Vector(-4, 0,-15)).activate()
+    
+    Graphline(
+        CUBEC = Object3D(pos=Vector(0, 0,-12), name="Center cube"),
+        CUBET = Object3D(pos=Vector(0,4,-20), name="Top cube"),
+        CUBER = Object3D(pos=Vector(4,0,-22), name="Right cube"),
+        CUBEB = Object3D(pos=Vector(0,-4,-18), name="Bottom cube"),
+        CUBEL = Object3D(pos=Vector(-4, 0,-15), name="Left cube"),
+        ECHO = consoleEchoer(),
+        linkages = {
+            ("CUBEC", "outbox") : ("ECHO", "inbox"),
+            ("CUBET", "outbox") : ("ECHO", "inbox"),
+            ("CUBER", "outbox") : ("ECHO", "inbox"),
+            ("CUBEB", "outbox") : ("ECHO", "inbox"),
+            ("CUBEL", "outbox") : ("ECHO", "inbox"),
+        } ).run()
+        
     Axon.Scheduler.scheduler.run.runThreads()  
