@@ -69,7 +69,6 @@ class SingleServer(_Axon.Component.component):
          if self.dataReady("_oobinfo"):
             data = self.recv("_oobinfo")
             if isinstance(data,_ki.newCSA):
-#               print "NEW CSA!"
                yield self.handleNewCSA(data)
             if isinstance(data,_ki.shutdownCSA):# socketShutdown):
                # Socket shutdown and died.
