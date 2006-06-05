@@ -31,9 +31,9 @@ from math import sin, cos, pi, sqrt
 # Vector: used for handling 3D Vectors
 class Vector:
     def __init__(self, x=0.0, y=0.0, z=0.0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = float(x)
+        self.y = float(y)
+        self.z = float(z)
 
     def zero(self):
         self.x = 0.0
@@ -50,6 +50,19 @@ class Vector:
     def __str__(self):
         return str([self.x,self.y,self.z])
 
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y and self.z == other.z:
+            return True
+        return False
+
+    def __ne__(self, other):
+        if self.x == other.x and self.y == other.y and self.z == other.z:
+            return False
+        return True
+        
+    def copy(self):
+        return Vector(self.x,self.y,self.z)
+    
     def length(self):
         return sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
     
