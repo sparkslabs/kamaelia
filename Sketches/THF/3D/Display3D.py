@@ -32,16 +32,20 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from math import tan, pi
 from Util3D import *
+from Axon.ThreadedComponent import threadedcomponent
+import time
 
 _cat = Axon.CoordinatingAssistantTracker
 
 #"events" : (self, "events"),#
 
+class Bunch: pass
 
 class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes =  { "inbox"    : "Default inbox, not currently used",
                      "control" : "NOT USED",
                      "notify"  : "Receive requests for surfaces, overlays and events",
+                     "events" : "Receive pygame events",
                   }
     Outboxes = { "outbox" : "NOT USED",
                      "signal" : "NOT USED",
@@ -90,16 +94,17 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.objects = []
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
-        self.mpos = [0,0]
 
-        self.nearPlaneDist = 1.0
-        self.farPlaneDist = 100.0
-        self.perspectiveAngle = 45.0
+        self.nearPlaneDist = argd.get("near", 1.0)
+        self.farPlaneDist = argd.get("far", 100.0)
+        self.perspectiveAngle = argd.get("perspective", 45.0)
         self.aspectRatio = float(self.width)/float(self.height)
         global pi
         self.farPlaneHeight = self.farPlaneDist*2.0/tan(pi/2.0-self.perspectiveAngle*pi/360.0)
         self.farPlaneWidth = self.farPlaneHeight*self.aspectRatio
-
+        
+        pygame.init()
+        
     def handleDisplayRequest(self):
             """\
             Check "notify" inbox for requests for surfaces, events and overlays and
@@ -132,7 +137,13 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                               pass
 #                         print "REMOVED OUTBOX"
                 elif message.get("3DDISPLAYREQUEST", False):
-                    self.objects.append(message.get("object"))
+                    eventservice = message.get("events", None)
+                    eventcomms = None
+                    if eventservice is not None:
+                        eventcomms = self.addOutbox("eventsfeedback")
+                        self.link((self,eventcomms), eventservice)
+                    
+                    self.objects.append( (message.get("object"), eventcomms) )
                     
                 elif message.get("ADDLISTENEVENT", None) is not None:
                     eventcomms = self.surface_to_eventcomms[str(id(message["object3d"]))]
@@ -143,37 +154,41 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
                         
 
-    def updateDisplay(self,display):
-        """\
-            Clear the screen, handle input and draw all registered objects
-        """
+    def handleEvents(self):
         # pre-fetch all waiting events in one go
         events = [ event for event in pygame.event.get() ]
 
+        directions = {}
         for event in events:
-            if event.type == pygame.QUIT:
-                return
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                # project mouse click position on far plane
+            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                # determine intersection ray
                 xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
                 yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
-                
-                for obj in self.objects:
-                    zhit = obj.intersectRay(Vector(0,0,0), Vector(xclick, yclick, -self.farPlaneDist).norm())
-                    if zhit >0:
-                        print "HIT! (", zhit, ")"
-                        obj.turn()
-                
-                self.mpos = event.pos
-        
-        # handle input
-        # TODO
-        
-        # Draw objects
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()                                
-        #TODO
+                directions[event] = Vector(xclick, yclick, -self.farPlaneDist).norm()
 
+        for obj, eventcomms in self.objects:
+            # see if this component is interested in events
+            if eventcomms is not None:
+                # go through events, for each, check if the listener is interested in that time of event         
+                bundle = []
+                for event in events:
+                    if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                        e = Bunch()
+                        e.type = event.type
+                        e.dir = directions[event]
+                        if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
+                            e.button = event.button
+                        if event.type == pygame.MOUSEMOTION:
+                            e.rel = event.rel
+                            e.buttons = event.buttons
+    
+                        bundle.append(e)
+    
+                # only send events to listener if we've actually got some
+                if bundle != []:
+                    self.send(bundle, eventcomms)
+        
+    def updateDisplay(self):
         # Display
         glFlush()
         pygame.display.flip()
@@ -184,12 +199,11 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         """Main loop."""
         # initialize the display      
-        pygame.init()
         display = pygame.display.set_mode((self.width, self.height), self.fullscreen| pygame.DOUBLEBUF | pygame.OPENGL)
         pygame.display.set_caption(self.caption)
         pygame.mixer.quit()
 
-        # clear color
+        # set clear color
         glClearColor(0,0,0,1.0)
         # enable depth tests
         glClearDepth(1.0)
@@ -203,5 +217,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         while 1:
             self.handleDisplayRequest()
-            self.updateDisplay(display)
+            self.handleEvents()
+            self.updateDisplay()
             yield 1
