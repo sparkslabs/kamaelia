@@ -97,3 +97,5 @@ class subscribeTo(Axon.Component.component):
         while 1:
             self.pause()
             yield 1            
+
+# RELEASE: MPS
