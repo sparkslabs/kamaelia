@@ -54,6 +54,8 @@ class Backplane(Axon.Component.component):
     def main(self):
         yield newComponent(self.splitter)
         self.splitter = None
+        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
+        # FIXME: then this while loop here would be irrelevent, which would be cool.
         while 1:
             self.pause()
             yield 1
@@ -67,6 +69,10 @@ class publishTo(Axon.Component.component):
         cat = CAT.getcat()
         service = cat.retrieveService("Backplane_I_"+self.destination)
         self.link((self,"inbox"), service, passthrough=1)
+        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
+        # FIXME: then this while loop here would be irrelevent, which would be cool.
+        # FIXME: especially if we could exec in such a way that passthrough linkages
+        # FIXME: still operated as you'd expect.
         while 1:
             self.pause()
             yield 1            
@@ -84,6 +90,10 @@ class subscribeTo(Axon.Component.component):
         self.link( (p,"outbox"), (self,"outbox"), passthrough=2)
         self.addChildren(plug)
         yield newComponent(plug)
+        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
+        # FIXME: then this while loop here would be irrelevent, which would be cool.
+        # FIXME: especially if we could exec in such a way that passthrough linkages
+        # FIXME: still operated as you'd expect.
         while 1:
             self.pause()
             yield 1            
