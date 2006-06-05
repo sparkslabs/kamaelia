@@ -280,3 +280,5 @@ if __name__=="__main__":
        Pipethrough("wc"),
        ConsoleEchoer(forwarder=True)
     ).run()
+
+# RELEASE: MPS
