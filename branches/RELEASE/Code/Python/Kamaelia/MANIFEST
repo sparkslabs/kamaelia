@@ -121,6 +121,7 @@ Kamaelia/Internet/Simulate/__init__.py
 Kamaelia/Internet/test/test_BasicMulticastSystem.py
 Kamaelia/Internet/test/test_MulticastTransceiverSystem.py
 Kamaelia/Internet/test/test_TCPServerClientSystem.py
+Kamaelia/Physics/Behaviours.py
 Kamaelia/Physics/__init__.py
 Kamaelia/Physics/Simple/MultipleLaws.py
 Kamaelia/Physics/Simple/Particle.py
@@ -213,3 +214,7 @@ Tools/AxonVisualiser.py
 Tools/VisualPipeBuilder.py
 Tools/axonshell.py
 Tools/kamaelia_logo.png
+Tools/PipeBuilder/BuildViewer.py
+Tools/PipeBuilder/GUI.py
+Tools/PipeBuilder/PipeBuild.py
+Tools/PipeBuilder/PipelineWriter.py
