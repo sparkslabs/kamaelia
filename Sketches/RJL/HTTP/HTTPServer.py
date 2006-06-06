@@ -34,7 +34,6 @@ from Kamaelia.Util.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Axon.Ipc import producerFinished, errorInformation
-from Kamaelia.KamaeliaExceptions import BadRequest
 import string, time, website
 from Lagger import Lagger
 
@@ -107,10 +106,8 @@ class HTTPParser(component):
     def main(self):
 
         while 1:
-            requestobject = {}
-            requestobject["bad"] = False
-            requestobject["headers"] = {}
-
+            requestobject = { "bad": False, "headers": {}, "raw-uri": "", "version": "0.9", "method":"", "protocol":"" }
+            
             #state 1 - awaiting initial line
             currentline = None
             while currentline == None:
@@ -127,7 +124,6 @@ class HTTPParser(component):
             
             if len(splitline) < 2:
                 requestobject["bad"] = True
-                requestobject["version"] = "1.0"
                 # bad request
             else:
                 if len(splitline) < 3:
@@ -216,11 +212,16 @@ class HTTPParser(component):
                 #state 4 - request complete, send it on
             #print "Request sent on."
             #print requestobject
+            
+            if requestobject["version"] == "1.1":
+                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
+            else:
+                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
+                    
             self.send(requestobject, "outbox")
-            if requestobject["version"] < "1.1":
-                break
-            elif string.lower(requestobject["headers"].get("connection", "")) == "close":
-                break
+            if string.lower(requestobject["headers"].get("connection", "")) == "close":
+                self.send(producerFinished(), "signal") #this functionality is semi-complete
+                return
 
 class HTTPServer(component):
     """\
@@ -231,6 +232,7 @@ class HTTPServer(component):
                  "mime-outbox"   : "Data from MIME handler",
                  "mime-signal"   : "Error signals from MIME handler",
                  "http-outbox"   : "Data from HTTP resource retriever",
+                 "http-signal"   : "Error signals from the HTTP resource retriever",
                  "control"       : "Receive shutdown etc. signals" }
 
 
@@ -257,6 +259,7 @@ class HTTPServer(component):
         self.link( (self, "http-inbox"), (self.httphandler, "inbox") )
         self.link( (self, "http-control"), (self.httphandler, "control") )
         self.link( (self.httphandler, "outbox"), (self, "http-outbox") )
+        self.link( (self.httphandler, "signal"), (self, "http-signal") )
 
         #elf.link( (self.httphandler, "filereader-inbox"), (self.httphandler.filereader, "inbox") )
         #self.link( (self.httphandler.filereader,"outbox"), (self.httphandler, "filereader-outbox") )
@@ -288,14 +291,18 @@ class HTTPServer(component):
 
         while self.dataReady("mime-signal"):
             temp = self.recv("mime-signal")
-            if isinstance(temp, errorInformation):
-                if isinstance(temp.exception, BadRequest):
-                    msg = 'HTTP/1.0 400 "Bad Request"\n\n'
-                    self.send(msg, "outbox")
+            if isinstance(temp, producerFinished):
+                pass
+                #we don't need to care yet - wait 'til the request handler finishes
+        
+        while self.dataReady("http-signal"):
+            temp = self.recv("http-signal")
+            if isinstance(temp, producerFinished):
                 sig = producerFinished(self)
+                self.send(sig, "mime-control")                
                 self.send(sig, "signal")
-                #print "close signal\n"
                 return 0
+                #close the connection
                 
         self.pause()
         return 1
@@ -338,7 +345,12 @@ class HTTPRequestHandler(component):
         if (protocolversion == "0.9"):
             header = ""        
         else:
-            header = "HTTP/1.1 " + statustext + "\nServer: Kamaelia HTTP Server (RJL) 0.2\nDate: " + currentTimeHTTP() + "\nContent-type: " + resource["type"] + "\nContent-length: " + str(len(resource["data"])) + "\n\n"
+            header = "HTTP/1.1 " + statustext + "\nServer: Kamaelia HTTP Server (RJL) 0.2\nDate: " + currentTimeHTTP() + "\n"
+            if resource.has_key("charset"):
+                header += "Content-type: " + resource["type"] + "; " + resource["charset"] + "\n"
+            else:
+                header += "Content-type: " + resource["type"] + "\n"
+            header += "Content-length: " + str(len(resource["data"])) + "\n\n"
         return header
 
     def mainBody(self):
@@ -356,17 +368,20 @@ class HTTPRequestHandler(component):
                 pagedata = website.getErrorPage(400, "Non-HTTP")
                 self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
             else:
-                if request["version"] > "1.1" and not request["headers"].has_key("host"):
+                if request["version"] > "1.0" and not request["headers"].has_key("host"):
                     pagedata = website.getErrorPage(400, "could not find host header")
                     self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
                 elif request["method"] == "GET" or request["method"] == "POST":
                     pagedata = self.fetchResource(request)
                     if isinstance(pagedata["data"], unicode):
                          pagedata["data"] = self.convertUnicodeToByteStream(pagedata["data"])
+                         pagedata["charset"] = "utf-8"
+                         
                     self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
                 else:
                     pagedata = website.getErrorPage(501,"The request method is not implemented")
                     self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
+                    print "Sent 501 not implemented response"                    
                 
                 if request["version"] == "1.1":
                     connection = request["headers"].get("connection", "keep-alive")
@@ -391,9 +406,9 @@ if __name__ == '__main__':
     from Axon.Component import scheduler
     import socket
     SimpleServer(protocol=HTTPServer, port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
-    pipeline(
-        Introspector(),
-        TCPClient("127.0.0.1", 1500),
-    ).activate()
-    Lagger().activate()
+    #pipeline(
+    #    Introspector(),
+    #    TCPClient("127.0.0.1", 1500),
+    #).activate()
+    #Lagger().activate()
     scheduler.run.runThreads(slowmo=0)
