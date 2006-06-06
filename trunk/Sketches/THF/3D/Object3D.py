@@ -39,6 +39,7 @@ class Object3D(Axon.Component.component):
     Inboxes = {
        "inbox": "not used",
        "control": "ignored",
+       "3dcontrol":"receive 3d movement commands here (rel_)?[position | rotation]",
     }
     
     Outboxes = {
@@ -123,37 +124,37 @@ class Object3D(Axon.Component.component):
 
         # draw faces 
         glBegin(GL_QUADS)
-        glColor3f(1.0,0.0,0.0)
+        glColor4f(1.0,0.0,0.0,0.5)
         glVertex3f(1.0,1.0,1.0)
-        glVertex3f(1.0,-1.0,1.0)
-        glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(-1.0,1.0,1.0)
+        glVertex3f(-1.0,-1.0,1.0)
+        glVertex3f(1.0,-1.0,1.0)
 
-        glColor3f(0.0,1.0,0.0)
+        glColor4f(0.0,1.0,0.0, 0.5)
         glVertex3f(1.0,1.0,-1.0)
         glVertex3f(1.0,-1.0,-1.0)
         glVertex3f(-1.0,-1.0,-1.0)
         glVertex3f(-1.0,1.0,-1.0)
         
-        glColor3f(0.0,0.0,1.0)
+        glColor4f(0.0,0.0,1.0, 0.5)
         glVertex3f(1.0,1.0,1.0)
         glVertex3f(1.0,-1.0,1.0)
         glVertex3f(1.0,-1.0,-1.0)
         glVertex3f(1.0,1.0,-1.0)
 
-        glColor3f(1.0,0.0,1.0)
+        glColor4f(1.0,0.0,1.0, 0.5)
         glVertex3f(-1.0,1.0,1.0)
         glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,-1.0)
         glVertex3f(-1.0,1.0,-1.0)
 
-        glColor3f(0.0,1.0,1.0)
+        glColor4f(0.0,1.0,1.0, 0.5)
         glVertex3f(1.0,1.0,1.0)
         glVertex3f(-1.0,1.0,1.0)
         glVertex3f(-1.0,1.0,-1.0)
         glVertex3f(1.0,1.0,-1.0)
 
-        glColor3f(1.0,1.0,0.0)
+        glColor4f(1.0,1.0,0.0, 0.5)
         glVertex3f(1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,-1.0)
@@ -192,8 +193,21 @@ class Object3D(Axon.Component.component):
 
         if self.oldrot != self.rot:
             diff = self.rot-self.oldrot
-            self.send("%s was rotated by (%d, %d) degrees\n" % (self.name, diff.x, diff.y), "outbox",)
+            self.send("%s was rotated by (%1.2f, %1.2f) degrees\n" % (self.name, diff.x, diff.y), "outbox",)
             self.oldrot = self.rot.copy()
+
+
+    def handleMovementCommands(self):
+        while self.dataReady("3dcontrol"):
+            cmd = self.recv("3dcontrol")
+            if cmd.type == "rotation":
+                self.rot = cmd.value
+            if cmd.type == "postition":
+                self.pos = cmd.value
+            if cmd.type == "rel_rotation":
+                self.rot = (self.rot+cmd.value)%360
+            if cmd.type == "rel_position":
+                self.pos += cmd.value
 
 
     def main(self):
@@ -211,6 +225,7 @@ class Object3D(Axon.Component.component):
             yield 1
             
             self.handleEvents()
+            self.handleMovementCommands()
             self.applyTransforms()
             self.draw()
 
@@ -222,6 +237,17 @@ class Object3D(Axon.Component.component):
 
 
 if __name__=='__main__':
+    class Bunch: pass
+        
+    class CubeRotator(Axon.Component.component):
+        def main(self):
+            while 1:
+                yield 1
+                cmd = Bunch()
+                cmd.type = "rel_rotation"
+                cmd.value = Vector(0.1, 0.1, 0.0)
+                self.send(cmd, "outbox")
+    
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Util.Graphline import Graphline
     
@@ -231,6 +257,7 @@ if __name__=='__main__':
         CUBER = Object3D(pos=Vector(4,0,-22), name="Right cube"),
         CUBEB = Object3D(pos=Vector(0,-4,-18), name="Bottom cube"),
         CUBEL = Object3D(pos=Vector(-4, 0,-15), name="Left cube"),
+        ROTATOR = CubeRotator(),
         ECHO = consoleEchoer(),
         linkages = {
             ("CUBEC", "outbox") : ("ECHO", "inbox"),
@@ -238,6 +265,7 @@ if __name__=='__main__':
             ("CUBER", "outbox") : ("ECHO", "inbox"),
             ("CUBEB", "outbox") : ("ECHO", "inbox"),
             ("CUBEL", "outbox") : ("ECHO", "inbox"),
+            ("ROTATOR", "outbox") : ("CUBEC", "3dcontrol"),
         } ).run()
         
     Axon.Scheduler.scheduler.run.runThreads()  
