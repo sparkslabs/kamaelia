@@ -204,10 +204,14 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         pygame.mixer.quit()
 
         # set clear color
-        glClearColor(0,0,0,1.0)
+        glClearColor(1.0,1.0,1.0,1.0)
         # enable depth tests
         glClearDepth(1.0)
         glEnable(GL_DEPTH_TEST)
+
+        # enable translucency
+#        glEnable (GL_BLEND);
+#        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         # projection matrix
         glMatrixMode(GL_PROJECTION)                 
