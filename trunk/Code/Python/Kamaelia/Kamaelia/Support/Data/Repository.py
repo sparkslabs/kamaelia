@@ -106,3 +106,5 @@ if __name__ == "__main__":
     print "*******************************************************************"
     print
     pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
+
+# RELEASE: MPS

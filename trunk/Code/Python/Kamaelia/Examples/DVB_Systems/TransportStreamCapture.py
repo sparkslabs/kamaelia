@@ -21,8 +21,12 @@ feparams = {
 }
 
 pipeline(
+   # FIXME: Hmm. Need to check whether 0x2000 is supported by freecom DVB-T stick
+   # FIXME: If it isn't need to change this to grab the pids manually, as it used to.
+   # FIXME: Though that could be a different example...
    DVB_Multiplex(freq, [0x2000],feparams), # BBC Multiplex 1, whole transport stream
    SimpleFileWriter("BBC_MUX_1.ts"),
 ).run()
 
-# RELEASE: MH
+# RELEASE: MH, MPS
+

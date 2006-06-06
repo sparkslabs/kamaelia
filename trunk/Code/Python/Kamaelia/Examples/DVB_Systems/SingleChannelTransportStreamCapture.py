@@ -14,4 +14,4 @@ pipeline(
    SimpleFileWriter("BBC_NEWS_24.ts")
 ).run()
 
-# RELEASE: MH
+# RELEASE: MH, MPS

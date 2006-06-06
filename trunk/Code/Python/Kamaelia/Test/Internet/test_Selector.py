@@ -3,8 +3,8 @@
 import unittest
 
 import sys; sys.path.append("../")
-import Selector as SELECTORMODULE
-from Selector import Selector
+import Kamaelia.Internet.Selector as SELECTORMODULE
+from Kamaelia.Internet.Selector import Selector
 
 import Axon
 from Axon.Ipc import shutdown
