@@ -95,6 +95,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
 
+        # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
         self.farPlaneDist = argd.get("far", 100.0)
         self.perspectiveAngle = argd.get("perspective", 45.0)
@@ -103,7 +104,27 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.farPlaneHeight = self.farPlaneDist*2.0/tan(pi/2.0-self.perspectiveAngle*pi/360.0)
         self.farPlaneWidth = self.farPlaneHeight*self.aspectRatio
         
+        # initialize the display      
         pygame.init()
+        display = pygame.display.set_mode((self.width, self.height), self.fullscreen| pygame.DOUBLEBUF | pygame.OPENGL)
+        pygame.display.set_caption(self.caption)
+        pygame.mixer.quit()
+        
+        glEnable(GL_TEXTURE_2D)
+        glClearColor(1.0,1.0,1.0,0.0)
+        glClearDepth(1.0)
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LEQUAL)
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+        
+        # enable translucency
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        # projection matrix
+        glMatrixMode(GL_PROJECTION)                 
+        glLoadIdentity()                                
+        gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
         
     def handleDisplayRequest(self):
             """\
@@ -192,32 +213,25 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # Display
         glFlush()
         pygame.display.flip()
-
+        
         # clear drawing buffer
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
+        glBegin(GL_QUADS)
+        glColor3f(0.9, 0.9, 1.0)
+        glVertex3f(-self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glColor3f(0.8, 1.0, 0.8)
+        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(-self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glEnd()
+
     def main(self):
         """Main loop."""
-        # initialize the display      
-        display = pygame.display.set_mode((self.width, self.height), self.fullscreen| pygame.DOUBLEBUF | pygame.OPENGL)
-        pygame.display.set_caption(self.caption)
-        pygame.mixer.quit()
-
-        # set clear color
-        glClearColor(1.0,1.0,1.0,1.0)
-        # enable depth tests
-        glClearDepth(1.0)
-        glEnable(GL_DEPTH_TEST)
-
-        # enable translucency
-#        glEnable (GL_BLEND);
-#        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        # projection matrix
-        glMatrixMode(GL_PROJECTION)                 
-        glLoadIdentity()                                
-        gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
-        # model matrix
 
         while 1:
             self.handleDisplayRequest()
