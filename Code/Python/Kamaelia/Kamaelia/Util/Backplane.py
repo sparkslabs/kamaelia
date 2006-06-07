@@ -98,4 +98,4 @@ class subscribeTo(Axon.Component.component):
             self.pause()
             yield 1            
 
-# RELEASE: MPS
+# RELEASE: MH, MPS
