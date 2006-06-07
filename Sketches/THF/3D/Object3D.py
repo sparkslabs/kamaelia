@@ -124,37 +124,37 @@ class Object3D(Axon.Component.component):
 
         # draw faces 
         glBegin(GL_QUADS)
-        glColor4f(1.0,0.0,0.0,0.5)
+        glColor4f(1.0,0.75,0.75,0.5)
         glVertex3f(1.0,1.0,1.0)
         glVertex3f(-1.0,1.0,1.0)
         glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(1.0,-1.0,1.0)
 
-        glColor4f(0.0,1.0,0.0, 0.5)
+        glColor4f(0.75,1.0,0.75, 0.5)
         glVertex3f(1.0,1.0,-1.0)
         glVertex3f(1.0,-1.0,-1.0)
         glVertex3f(-1.0,-1.0,-1.0)
         glVertex3f(-1.0,1.0,-1.0)
         
-        glColor4f(0.0,0.0,1.0, 0.5)
+        glColor4f(0.75,0.75,1.0, 0.5)
         glVertex3f(1.0,1.0,1.0)
         glVertex3f(1.0,-1.0,1.0)
         glVertex3f(1.0,-1.0,-1.0)
         glVertex3f(1.0,1.0,-1.0)
 
-        glColor4f(1.0,0.0,1.0, 0.5)
+        glColor4f(1.0,0.75,1.0, 0.5)
         glVertex3f(-1.0,1.0,1.0)
         glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,-1.0)
         glVertex3f(-1.0,1.0,-1.0)
 
-        glColor4f(0.0,1.0,1.0, 0.5)
+        glColor4f(0.75,1.0,1.0, 0.5)
         glVertex3f(1.0,1.0,1.0)
         glVertex3f(-1.0,1.0,1.0)
         glVertex3f(-1.0,1.0,-1.0)
         glVertex3f(1.0,1.0,-1.0)
 
-        glColor4f(1.0,1.0,0.0, 0.5)
+        glColor4f(1.0,1.0,0.75, 0.5)
         glVertex3f(1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,1.0)
         glVertex3f(-1.0,-1.0,-1.0)
@@ -245,8 +245,29 @@ if __name__=='__main__':
                 yield 1
                 cmd = Bunch()
                 cmd.type = "rel_rotation"
-                cmd.value = Vector(0.1, 0.1, 0.0)
+                cmd.value = Vector(0.1, 0.1, 0.1)
                 self.send(cmd, "outbox")
+
+    class CubeMover(Axon.Component.component):
+        def main(self):
+            x,y,z = 3.0, 3.0, -20.0
+            dx = -0.03
+            dy = -0.03
+            dz = -0.03
+            while 1:
+                yield 1
+                cmd = Bunch()
+                cmd.type = "postition" #
+                cmd.value = Vector(x, y, z)
+                self.send(cmd, "outbox")
+                x +=dx
+                y +=dy
+                z +=dz
+                if abs(x)>5: dx = -dx
+                if abs(y)>5: dy = -dy
+                if abs(z+20)>10: dz = -dz
+                print x, y, abs(x), abs(y)
+
     
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Util.Graphline import Graphline
@@ -258,6 +279,7 @@ if __name__=='__main__':
         CUBEB = Object3D(pos=Vector(0,-4,-18), name="Bottom cube"),
         CUBEL = Object3D(pos=Vector(-4, 0,-15), name="Left cube"),
         ROTATOR = CubeRotator(),
+        MOVER = CubeMover(),
         ECHO = consoleEchoer(),
         linkages = {
             ("CUBEC", "outbox") : ("ECHO", "inbox"),
@@ -266,6 +288,7 @@ if __name__=='__main__':
             ("CUBEB", "outbox") : ("ECHO", "inbox"),
             ("CUBEL", "outbox") : ("ECHO", "inbox"),
             ("ROTATOR", "outbox") : ("CUBEC", "3dcontrol"),
+            ("MOVER", "outbox") : ("CUBEC", "3dcontrol"),
         } ).run()
         
     Axon.Scheduler.scheduler.run.runThreads()  
