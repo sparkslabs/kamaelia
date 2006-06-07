@@ -107,4 +107,4 @@ if __name__ == "__main__":
     print
     pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
 
-# RELEASE: MPS
+# RELEASE: MH, MPS
