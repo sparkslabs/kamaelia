@@ -38,7 +38,7 @@ object is ready.
 The selectorComponent is a service that registers with the Coordinating
 Assistant Tracker (CAT).
 
-NOTE: The behaviour and API of this component changed in Kamaelia v0.5 and is
+NOTE: The behaviour and API of this component changed in Kamaelia 0.4 and is
 likely to change again in the near future.
 
 
