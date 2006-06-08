@@ -265,21 +265,23 @@ class linkagechaining_Test(unittest.TestCase):
     def verifyChain(self, *chain):
         """Verify delivery along a chain"""
         target=chain[-1]
-        execute = scheduler.run.main()
+        execute = self.schedthread
         
         for src in chain[:-1]:
             self.verifyDelivery(execute, src, target, len(chain))
         
         
     def verifyDelivery(self, execute, src, target, chainlength):
-        waitcycles=1000
+        waitcycles=10
+        visited = []
         
         (comp,boxname) = src
         if boxname in comp.inboxes:
             # skip if an inbox (can't send from an inbox!)
-            pass
+            boxtype="inbox"
         
         elif boxname in comp.outboxes:
+            boxtype="outbox"
             data = object()
             comp.send(data, boxname)
             
@@ -294,12 +296,15 @@ class linkagechaining_Test(unittest.TestCase):
             self.assert_( tcomp.dataReady(tboxname), "something delivered from "+comp.name+" '"+boxname+"' outbox to  "+tcomp.name+" '"+tboxname+"' inbox" )
             self.assert_( data == tcomp.recv(tboxname), "correct data delivered from "+comp.name+" '"+boxname+"' outbox to  "+tcomp.name+" '"+tboxname+"' inbox" )
         
+            self.failIf( (comp,boxname,boxtype) in visited, "Loop detected in linkage chain!")
+            visited.append((comp,boxname,boxtype))
         else:
             self.fail("ERROR IN TEST - invalid boxname")
 
 
     def initComponents(self,qty):
         scheduler.run = scheduler()
+        self.schedthread = scheduler.run.main()
         return self.makeComponents(qty)
     
     def makeComponents(self, qty):
