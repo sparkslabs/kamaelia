@@ -40,13 +40,20 @@ class MicroProcess_Test(str_Test):
    class DummySched:
       run = None
       def __init__(self):
-         self.threadcount = 0
-         self.threadlist = []
+         self.threads = {}
          if (self.__class__.run is None):
             self.__class__.run = self
-      def _addThread(self, thread):
-         self.threadcount = self.threadcount + 1
-         self.threadlist.append(thread)
+      def _addThread(self, mprocess):
+         self.threads[mprocess] = 1
+      def wakeThread(self, mprocess, canActivate=False):
+         if mprocess in self.threads:
+             self.threads[mprocess] = 1
+      def pauseThread(self, mprocess):
+          if mprocess in self.threads:
+              self.threads[mprocess] = 0
+      def isThreadPaused(self, mprocess):
+          return 0==self.threads[mprocess]
+
 
 ##name
 #   def test_InitWithArgs(self,name = "fred"):
@@ -74,10 +81,10 @@ class MicroProcess_Test(str_Test):
       "Tests the activation method operates as expected with a chosen scheduler"
       testscheduler = self.DummySched()
       mp = self.init_test()
-      temp = testscheduler.threadcount
+      temp = len(testscheduler.threads)
       mp.activate(testscheduler)
-      self.failIf(testscheduler.threadcount != temp + 1, "activate doesn't call _addthread on the requested scheduler")
-      self.failIf(testscheduler.threadlist.count(mp) != 1, "Microprocess not added to scheduler properly.")
+      self.failIf(len(testscheduler.threads) != temp+1, "activate doesn't call _addthread on the requested scheduler")
+      self.failIf(mp not in testscheduler.threads, "Microprocess not added to scheduler properly.")
 
 #setSchedulerClass Test
    def test_activate_afterCallingSetSchedulerClass(self):
@@ -85,7 +92,7 @@ class MicroProcess_Test(str_Test):
       # This creates a DummySched.run instance.
       testscheduler = self.DummySched()
 
-      temp = testscheduler.threadcount
+      temp = len(testscheduler.threads)
       basicmp = self.init_test()
       class SpecialSchedulerMicroprocess(microprocess):
          pass
@@ -93,8 +100,8 @@ class MicroProcess_Test(str_Test):
       specialmp = self.init_test(SpecialSchedulerMicroprocess)
       basicmp.activate()
       specialmp.activate()
-      self.failIf(testscheduler.threadcount != temp + 1, "activate doesn't call _addthread on the requested scheduler")
-      self.failIf(testscheduler.threadlist.count(specialmp) != 1, "Microprocess not added to scheduler properly.")
+      self.failIf(len(testscheduler.threads) == temp+1, "activate doesn't call _addthread on the requested scheduler")
+      self.failIf(specialmp in testscheduler.threads, "Microprocess not added to scheduler properly.")
 
    def test_setSchedulerClass(self):
       "Tests setting scheduler class and that the default scheduler is Scheduler.scheduler"
@@ -122,12 +129,9 @@ class MicroProcess_Test(str_Test):
             while self.i < 100:
                self.i = self.i + 1
                yield 1
-      class dummyScheduler:
-         def _addThread(self,thread):
-            pass
+      
       thr = self.init_test(testthread)
-      sched = dummyScheduler()
-      thr.activate(sched)
+      thr.activate(self.DummySched())
       for i in xrange(1,101):
          self.failUnless(thr.next(), "Unexpected false return value")
          self.failUnless(thr.i == i, "Iteration of main not performed!")
@@ -136,24 +140,27 @@ class MicroProcess_Test(str_Test):
       self.failUnless(thr.i == 100, "Unexpected final result of iteration")
 
    def test_Stop(self):
-      "Tests that after being stopped a microprocess returns true to _isStopped and false to _isRunnable."
+      "After being stopped a microprocess returns true to _isStopped and false to _isRunnable."
       thr = self.init_test()
+      testsched = self.DummySched()
+      thr.activate(testsched)
       self.failIf(thr._isStopped(), "Thread reports itself stopped before stop is called!")
       self.failUnless(thr._isRunnable(), "Thread doesn't report itself runnable before stop is called.")
       thr.stop()
       self.failUnless(thr._isStopped, "Thread doesn't report itself stopped after stop is called.")
-      self.failIf(thr._isRunnable(),"Thread reports as runnable.  Should be stopped at this point.")
-      thr._unpause()
+      self.assert_(thr._isRunnable(),"Scheduler reports thread reports as runnable, but actually thread is stopped at this point.")
+      thr.unpause()
       self.failUnless(thr._isStopped, "Thread doesn't report itself stopped after unpause attempt.")
-      self.failIf(thr._isRunnable(),"Thread reports as runnable.  Unpause should not have worked at this point.")
+      self.assert_(thr._isRunnable(),"Scheduler reports thread reports as runnable, but actually thread is stopped at this point")
 
    def test_pause(self):
-      "Tests that after being pause a microprocess returns false to _isRunnable.  Also tests _isRunnable and _unpause."
+      "After being paused a microprocess returns false to _isRunnable.  Also tests _isRunnable and _unpause."
       thr = self.init_test()
+      thr.activate(self.DummySched())
       self.failUnless(thr._isRunnable(), "Thread doesn't report itself runnable before pause is called.")
       thr.pause()
       self.failIf(thr._isRunnable(),"Thread reports as runnable.  Should be paused at this point.")
-      thr._unpause()
+      thr.unpause()
       self.failUnless(thr._isRunnable(), "Thread doesn't report itself runnable after _unpause is called.")
 
    def test_Next(self):
@@ -166,11 +173,8 @@ class MicroProcess_Test(str_Test):
             while 1:
                self.i = self.i + 1
                yield 1
-      class dummyScheduler:
-         def _addThread(self,thread):
-            pass
       thr = self.init_test(testthread)
-      sched = dummyScheduler()
+      sched = self.DummySched()
       thr.activate(sched)
       for x in xrange(1,5):
          self.failUnless(thr.next())
@@ -178,9 +182,9 @@ class MicroProcess_Test(str_Test):
       thr.pause()
       for x in xrange(5,10):
          self.failUnless(thr.next())
-         self.failUnless(thr.i == 4)
-      thr._unpause()
-      for x in xrange(5,10):
+         self.assert_(thr.i == x, "Thread does not pause itself, that is down to the scheduler")
+      thr.unpause()
+      for x in xrange(10,15):
          self.failUnless(thr.next())
          self.failUnless(thr.i == x)
       thr.stop()
