@@ -263,6 +263,8 @@ class microprocess(Axon.AxonObject):
    def _isRunnable(self):
       """'M._isRunnable()' - test,
       boolean result indicating if the microprocess is paused.
+      
+      This query is passed on to this microprocess's scheduler.
       """
       if self.debugger.areDebugging("microprocess._isRunnable", 10):
          self.debugger.debugmessage("microprocess._isRunnable", "self.scheduler.isMProcessPaused(self)", self.scheduler.isMProcessPaused(self))
@@ -274,7 +276,6 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.stop", 1):
          self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
-#      self.__runnable = 0
 
    def pause(self):
        """M.pause() - Pauses the microprocess.
