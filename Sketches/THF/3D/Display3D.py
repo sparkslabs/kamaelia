@@ -537,7 +537,7 @@ To strive, to seek, to find, and not to yield.
     
     Graphline(
         CUBE = SimpleCube(pos = Vector(3,3,-15)),
-        PLANE = TexPlane(pos=Vector(-3, 0,-10), tex="Kamaelia.gif", name="1st Tex Plane"),
+        PLANE = TexPlane(pos=Vector(-3, 0,-10), tex="Kamaelia.png", name="1st Tex Plane"),
         BUTTON1 = Button(caption="Press SPACE or click"),
         BUTTON2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)),
         BUTTON3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)),
