@@ -87,6 +87,8 @@ class TexPlane(Axon.Component.component):
         self.tex = argd.get("tex", None)
 
         self.grabbed = 0
+        
+        self.texID = 0
 
         # prepare vertices for intersection test
         x = float(self.size.x/2)
@@ -159,13 +161,18 @@ class TexPlane(Axon.Component.component):
     def draw(self):
         glMatrixMode(GL_MODELVIEW)
 
+        # set texure
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+
         # set generated matrix
         glPushMatrix()
         glLoadMatrixf(self.transform.getMatrix())
 
         # draw faces 
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         glBegin(GL_QUADS)
-        glColor4f(1.0, 1.0, 1.0, 0.5)
+        glColor3f(0,1,0)
         glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  0.0)
         glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  0.0)
         glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0,  0.0)
@@ -173,6 +180,8 @@ class TexPlane(Axon.Component.component):
         glEnd()
 
         glPopMatrix()
+
+        glDisable(GL_TEXTURE_2D)
     
     
     def handleEvents(self):
@@ -221,18 +230,16 @@ class TexPlane(Axon.Component.component):
 
         # load texture
         if self.tex is not None:
-            print self.tex
             glEnable(GL_TEXTURE_2D)
-
             textureSurface = pygame.image.load(self.tex)
             textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
-
-            glBindTexture(GL_TEXTURE_2D, textures[0])
-            print glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
-                          GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+            self.texID = glGenTextures(1)
+            glBindTexture(GL_TEXTURE_2D, self.texID)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-                
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+                            GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+            glDisable(GL_TEXTURE_2D)
 
         while 1:
 
