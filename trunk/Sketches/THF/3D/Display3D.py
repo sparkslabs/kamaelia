@@ -19,25 +19,28 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""\
-=====================
-General 3D Object
-=====================
-TODO
-"""
+
 
 import pygame
 import Axon
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from math import tan, pi
+from math import *
 from Util3D import *
 from Axon.ThreadedComponent import threadedcomponent
 import time
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 _cat = Axon.CoordinatingAssistantTracker
 
 #"events" : (self, "events"),#
+
+class Control3D:
+    POSITION, REL_POSITION, ROTATION, REL_ROTATION, SCALING, REL_SCALING = range(6)
+    def __init__(self, type, amount):
+        # Command types
+        self.type = type
+        self.amount = amount
 
 class Bunch: pass
 
@@ -82,7 +85,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             service=(display,"notify")
             return service
     getDisplayService = staticmethod(getDisplayService)
-
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Display3D,self).__init__()
@@ -91,9 +94,18 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.height = argd.get("height",600)
         self.background_colour = argd.get("background_colour", (255,255,255))
         self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
+        self.next_position = (0,0)
+
+        # 3D component handling
         self.objects = []
+        
+        # Pygame component handling
+        self.surfaces = []
+        self.overlays = []
+        self.visibility = {}
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
+        self.surface_to_texnames = {}
 
         # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
@@ -103,6 +115,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         global pi
         self.farPlaneHeight = self.farPlaneDist*2.0/tan(pi/2.0-self.perspectiveAngle*pi/360.0)
         self.farPlaneWidth = self.farPlaneHeight*self.aspectRatio
+        self.farPlaneScaling = self.farPlaneWidth/self.width
         
         # initialize the display      
         pygame.init()
@@ -110,7 +123,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         pygame.display.set_caption(self.caption)
         pygame.mixer.quit()
         
-        glEnable(GL_TEXTURE_2D)
         glClearColor(1.0,1.0,1.0,0.0)
         glClearDepth(1.0)
         glEnable(GL_DEPTH_TEST)
@@ -125,6 +137,22 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()                                
         gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
+        
+        self.texnum = -1
+
+
+    def overridePygameDisplay(self):
+        PygameDisplay.setDisplayService(self)
+    
+    
+    
+    def surfacePosition(self,surface):
+        """Returns a suggested position for a surface. No guarantees its any good!"""
+        position = self.next_position
+        self.next_position = position[0]+50, position[1]+50
+        return position
+
+        
         
     def handleDisplayRequest(self):
             """\
@@ -163,22 +191,152 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if eventservice is not None:
                         eventcomms = self.addOutbox("eventsfeedback")
                         self.link((self,eventcomms), eventservice)
-                    
                     self.objects.append( (message.get("object"), eventcomms) )
                     
+                elif message.get("DISPLAYREQUEST", False):
+                    self.needsRedrawing = True
+                    callbackservice = message["callback"]
+                    eventservice = message.get("events", None)
+                    size = message["size"]
+
+                    # make dimensions a power of two
+                    # this is needed because otherwise texturing is REALLY slow
+                    size = (2**(ceil(log(size[0], 2))), 2**(ceil(log(size[1], 2))))
+
+                    surface = pygame.Surface(size)
+                    alpha = message.get("alpha", 255)
+                    surface.set_alpha(alpha)
+                    if message.get("transparency", None):
+                        surface.set_colorkey(message["transparency"])
+                    position = message.get("position", self.surfacePosition(surface))
+                    callbackcomms = self.addOutbox("displayerfeedback")
+                    eventcomms = None
+                    if eventservice is not None:
+                        eventcomms = self.addOutbox("eventsfeedback")
+                        self.events_wanted[eventcomms] = {}
+                        self.link((self,eventcomms), eventservice)
+                        self.visibility[eventcomms] = (surface,size,position)
+                        self.surface_to_eventcomms[str(id(surface))] = eventcomms
+                    self.link((self, callbackcomms), callbackservice)
+                    self.send(surface, callbackcomms)
+
+                    # generate texture name
+                    texname = glGenTextures(1)
+                    self.surface_to_texnames[str(id(surface))] = texname
+
+                    self.surfaces.append( (surface, position, callbackcomms, eventcomms, texname) )
+                    
                 elif message.get("ADDLISTENEVENT", None) is not None:
-                    eventcomms = self.surface_to_eventcomms[str(id(message["object3d"]))]
+                    eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                     self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
 
                 elif message.get("REMOVELISTENEVENT", None) is not None:
-                    eventcomms = self.surface_to_eventcomms[str(id(message["object3d"]))]
+                    eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
                     self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+                    
+                elif message.get("CHANGEDISPLAYGEO", False):
+                    try:
+                        surface = message.get("surface", None)
+                        if surface is not None:
+                            self.needsRedrawing = True
+                            c = 0
+                            found = False
+                            while c < len(self.surfaces) and not found:
+                                if self.surfaces[c][0] == surface:
+                                    found = True
+                                    break
+                                c += 1
+                            if found:
+                                (surface, position, callbackcomms, eventcomms, texname) = self.surfaces[c]
+                                new_position = message.get("position", position)
+                                # update texture
+                                self.updatePygameTexture(surface, texname)
+                                
+                                self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms, texname)
+                    except Exception, e:
+                        print "It all went horribly wrong", e   
+                
+                elif message.get("OVERLAYREQUEST", False):
+                    self.needsRedrawing = True
+                    size = message["size"]
+                    pixformat = message["pixformat"]
+                    position = message.get("position", (0,0))
+                    overlay = pygame.Overlay(pixformat, size)
+                    yuvdata = message.get("yuv", ("","",""))
+                    
+                    # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                    if len(yuvdata) == 3:
+                          yuvdata = (yuvdata[0], yuvdata[2], yuvdata[1])
+
+                    yuvservice = message.get("yuvservice",False)
+                    if yuvservice:
+                        yuvinbox = self.addInbox("overlay_yuv")
+                        self.link( yuvservice, (self, yuvinbox) )
+                        yuvservice = (yuvinbox, yuvservice)
+
+                    posservice = message.get("positionservice",False)
+                    if posservice:
+                        posinbox = self.addInbox("overlay_position")
+                        self.link (posservice, (self, posinbox) )
+                        posservice = (posinbox, posservice)
+                    
+                    self.overlays.append( {"overlay":overlay,
+                                           "yuv":yuvdata,
+                                           "position":position,
+                                           "size":size,
+                                           "yuvservice":yuvservice,
+                                           "posservice":posservice}
+                                        )
+                                        
+                elif message.get("REDRAW", False):
+                    self.needsRedrawing=True
+                    surface = message["surface"]
+                    self.updatePygameTexture(surface, self.surface_to_texnames[str(id(surface))])
+
                         
 
     def handleEvents(self):
         # pre-fetch all waiting events in one go
         events = [ event for event in pygame.event.get() ]
 
+        # Handle Pygame events
+        for surface, position, callbackcomms, eventcomms, texname in self.surfaces:
+            # see if this component is interested in events
+            if eventcomms is not None:
+                listener = eventcomms
+                # go through events, for each, check if the listener is interested in that time of event         
+                bundle = []
+                for event in events:
+                    wanted = False
+                    try:   wanted = self.events_wanted[listener][event.type]
+                    except KeyError: pass
+                    if wanted:
+                        # if event contains positional information, remap it
+                        # for the surface's coordiate origin
+                        if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                            e = Bunch()
+                            e.type = event.type
+                            pos = event.pos[0],event.pos[1]
+                            try:
+                                e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
+                                if event.type == pygame.MOUSEMOTION:
+                                    e.rel = event.rel
+                                if event.type == pygame.MOUSEMOTION:
+                                    e.buttons = event.buttons
+                                else:
+                                    e.button = event.button
+                                event = e
+                            except TypeError:
+                                "XXXX GRRR"
+                                pass
+
+                        bundle.append(event)
+
+                # only send events to listener if we've actually got some
+                if bundle != []:
+                    self.send(bundle, listener)
+
+        # Handle 3D object events
         directions = {}
         for event in events:
             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
@@ -208,27 +366,89 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # only send events to listener if we've actually got some
                 if bundle != []:
                     self.send(bundle, eventcomms)
+
+
+
+    def updatePygameTexture(self, surface, texname):
+        print "UPDATING", texname
+        # set surface as texture
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texname)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        textureData = pygame.image.tostring(surface, "RGBX", 1)
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0,
+                        GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+        glDisable(GL_TEXTURE_2D)
+
+
+
+    def drawPygameSurfaces(self):
+        # disable depth testing temporarely to ensure that pygame components
+        # are on top of everything
+        glDisable(GL_DEPTH_TEST)
+        glEnable(GL_TEXTURE_2D)
+        for surface, position, callbackcomms, eventcomms, texname in self.surfaces:
+            # create texture if not already done
+            if not glIsTexture(texname):
+                self.updatePygameTexture(surface, texname)
+                
+            glBindTexture(GL_TEXTURE_2D, texname)
+
+            # determine surface positions on far Plane
+            l = position[0]*self.farPlaneScaling-self.farPlaneWidth/2
+            t = -position[1]*self.farPlaneScaling+self.farPlaneHeight/2
+            r = l + surface.get_width()*self.farPlaneScaling
+            b = t - surface.get_height()*self.farPlaneScaling
+            
+            # draw just the texture, no background
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+
+            # draw faces 
+            glBegin(GL_QUADS)
+            glColor3f(1, 0, 0)
+            glTexCoord2f(0.0, 0.0); glVertex3f( l, b,  -self.farPlaneDist+1)
+            glTexCoord2f(1.0, 0.0); glVertex3f( r, b,  -self.farPlaneDist+1)
+            glTexCoord2f(1.0, 1.0); glVertex3f( r,  t,  -self.farPlaneDist+1)
+            glTexCoord2f(0.0, 1.0); glVertex3f( l,  t,  -self.farPlaneDist+1)
+            glEnd()
+        glDisable(GL_TEXTURE_2D)
+        glEnable(GL_DEPTH_TEST)        
+  
+        
+        
+    def drawBackground(self):        
+        glBegin(GL_QUADS)
+        glColor4f(0.9, 0.9, 1.0, 1.0)
+        glVertex3f(-self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glColor4f(0.8, 1.0, 0.8, 1.0)
+        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
+        glVertex3f(self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glVertex3f(-self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
+        glEnd()
+        
+
         
     def updateDisplay(self):
-        # Display
+        
+        #display pygame components
+        self.drawPygameSurfaces()
+        
+        # show frame
         glFlush()
         pygame.display.flip()
         
         # clear drawing buffer
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-        glBegin(GL_QUADS)
-        glColor3f(0.9, 0.9, 1.0)
-        glVertex3f(-self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glColor3f(0.8, 1.0, 0.8)
-        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(-self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glEnd()
+        # draw background
+        self.drawBackground()
+
+        
 
     def main(self):
         """Main loop."""
@@ -238,3 +458,103 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleEvents()
             self.updateDisplay()
             yield 1
+
+
+if __name__=='__main__':
+    class Bunch: pass
+        
+    class CubeRotator(Axon.Component.component):
+        def main(self):
+            while 1:
+                yield 1
+                self.send( Control3D(Control3D.REL_ROTATION, Vector(0.1, 0.1, 0.1)), "outbox")
+
+    class CubeMover(Axon.Component.component):
+        def main(self):
+            x,y,z = 3.0, 3.0, -20.0
+            dx = -0.03
+            dy = -0.03
+            dz = -0.03
+            while 1:
+                yield 1
+                self.send( Control3D(Control3D.POSITION, Vector(x, y, z)), "outbox")
+                x +=dx
+                y +=dy
+                z +=dz
+                if abs(x)>5: dx = -dx
+                if abs(y)>5: dy = -dy
+                if abs(z+20)>10: dz = -dz
+#                print x, y, abs(x), abs(y)
+
+
+    import random
+
+    class CubeBuzzer(Axon.Component.component):
+        def main(self):
+            r = 1.00
+            f = 0.01
+            while 1:
+                yield 1
+                if  r>1.0: f -= 0.001
+                else: f += 0.001
+                r += f
+                
+                self.send( Control3D(Control3D.SCALING, Vector(r, r, r)), "outbox")
+
+    text = """\
+The lights begin to twinkle from the rocks;
+The long day wanes; the slow moon climbs; the deep
+Moans round with many voices.  Come, my friends.
+'T is not too late to seek a newer world.Push off, and sitting well in order smite
+The sounding furrows; for my purpose holds
+To sail beyond the sunset, and the baths
+Of all the western stars, until I die.
+It may be that the gulfs will wash us down;
+It may be we shall touch the Happy Isles,
+And see the great Achilles, whom we knew.
+Tho' much is taken, much abides; and tho'
+We are not now that strength which in old days
+Moved earth and heaven, that which we are, we are,--
+One equal temper of heroic hearts,
+Made weak by time and fate, but strong in will
+To strive, to seek, to find, and not to yield.
+"""
+    class datasource(Axon.Component.component):
+        def main(self):
+            for x in text.split():
+                self.send(x,"outbox")
+                yield 1
+
+    
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Util.Graphline import Graphline
+    from Kamaelia.UI.Pygame.Button import Button
+    from Kamaelia.UI.Pygame.Ticker import Ticker
+    from SimpleCube import SimpleCube
+    from TexPlane import TexPlane
+
+    Display3D.getDisplayService()[0].overridePygameDisplay()
+    
+    Graphline(
+        CUBE = SimpleCube(pos = Vector(3,3,-15)),
+        PLANE = TexPlane(pos=Vector(-3, 0,-10), tex="Kamaelia.gif", name="1st Tex Plane"),
+        BUTTON1 = Button(caption="Press SPACE or click"),
+        BUTTON2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)),
+        BUTTON3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)),
+        ROTATOR = CubeRotator(),
+        MOVER = CubeMover(),
+        BUZZER = CubeBuzzer(),
+        ECHO = consoleEchoer(),
+        TICKER = Ticker(position = (400, 300), render_left = 0, render_right=256, render_top=0, render_bottom=256),
+        TEXT = datasource(),
+        linkages = {
+            ("PLANE", "outbox") : ("ECHO", "inbox"),
+            ("ROTATOR", "outbox") : ("PLANE", "control3d"),
+            ("BUTTON1", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
+            ("TEXT", "outbox") : ("TICKER", "inbox"),
+            ("MOVER", "outbox") : ("CUBE", "control3d"),
+        } ).run()
+        
+    Axon.Scheduler.scheduler.run.runThreads()  
