@@ -71,8 +71,6 @@ class linkage(AxonObject):
     """
     def __init__(self, source, sink, sourcebox="outbox", sinkbox="inbox", passthrough=0, pipewidth=None, synchronous=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
-        if pipewidth is not None:
-            raise NotImplementedError("Pipewidth cannot be set at present - functionality dropped at present in favour of performance")
         if synchronous is not None:
             raise NotImplementedError("Link cannot be set synchronous at present - functionality dropped at present in favour of performance")
         super(linkage,self).__init__()
@@ -81,6 +79,10 @@ class linkage(AxonObject):
         self.sourcebox = sourcebox
         self.sinkbox   = sinkbox
         self.passthrough = passthrough
+        print self.getSinkbox().setSize(15)
+        print "You're not finished"
+#        if pipewidth is not None:
+#            raise NotImplementedError("Pipewidth cannot be set at present - functionality dropped at present in favour of performance")
 
     def sourcePair(self):
         return self.source, self.sourcebox
