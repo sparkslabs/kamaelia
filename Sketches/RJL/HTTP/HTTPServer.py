@@ -42,27 +42,40 @@ def currentTimeHTTP():
     return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
 
 def removeTrailingCr(line):
-    if len(line) == 0: return line
-    if line[-1] == "\r":
+    if len(line) == 0:
+        return line
+    elif line[-1] == "\r":
         return line[0:-1]
+    else:
+        return line
 
 def splitUri(requestobject):
     splituri = string.split(requestobject["raw-uri"], "://")
     if len(splituri) > 1:
         requestobject["uri-protocol"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "://"):]
-        splituri = string.split(requestobject["raw-uri"], "/")
-        if splituri[0] != "":
-            requestobject["uri-server"] = splituri[0]						
-            requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "/"):]
-            splituri = string.split(["uri-server"], "@")
-            if len(splituri) > 0:
-                requestobject["uri-username"] = splituri[0]
-                requestobject["uri-server"] = requestobject["uri-server"][len(splituri[0] + "@"):]
-                splituri = string.split(requestobject["uri-username"], ":")
-                if len(splituri) == 2:
-                    requestobject["uri-username"] = splituri[0]
-                    requestobject["uri-password"] = splituri[1]
+    
+    splituri = string.split(requestobject["raw-uri"], "/")
+    if splituri[0] != "":
+        requestobject["uri-server"] = splituri[0]
+        requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "/"):]
+    else:
+        requestobject["uri-server"] = requestobject["raw-uri"]
+        requestobject["raw-uri"] = ""
+        
+    splituri = string.split(requestobject["uri-server"], ":")
+    if len(splituri) == 2:
+        requestobject["uri-port"] = splituri[1]
+        requestobject["uri-server"] = splituri[0]
+        
+    splituri = string.split(requestobject["uri-server"], "@")
+    if len(splituri) == 2:
+        requestobject["uri-username"] = splituri[0]
+        requestobject["uri-server"] = requestobject["uri-server"][len(splituri[0] + "@"):]
+        splituri = string.split(requestobject["uri-username"], ":")
+        if len(splituri) == 2:
+            requestobject["uri-username"] = splituri[0]
+            requestobject["uri-password"] = splituri[1]
 
 
 class HTTPParser(component):
