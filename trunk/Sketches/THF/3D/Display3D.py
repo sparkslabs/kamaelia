@@ -201,9 +201,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
                     # make dimensions a power of two
                     # this is needed because otherwise texturing is REALLY slow
-                    size = (2**(ceil(log(size[0], 2))), 2**(ceil(log(size[1], 2))))
+                    pow2size = (2**(ceil(log(size[0], 2))), 2**(ceil(log(size[1], 2))))
 
-                    surface = pygame.Surface(size)
+                    surface = pygame.Surface(pow2size)
                     alpha = message.get("alpha", 255)
                     surface.set_alpha(alpha)
                     if message.get("transparency", None):
@@ -224,7 +224,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     texname = glGenTextures(1)
                     self.surface_to_texnames[str(id(surface))] = texname
 
-                    self.surfaces.append( (surface, position, callbackcomms, eventcomms, texname) )
+                    self.surfaces.append( (surface, position, size, callbackcomms, eventcomms, texname) )
                     
                 elif message.get("ADDLISTENEVENT", None) is not None:
                     eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -247,7 +247,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                     break
                                 c += 1
                             if found:
-                                (surface, position, callbackcomms, eventcomms, texname) = self.surfaces[c]
+                                (surface, position, size, callbackcomms, eventcomms, texname) = self.surfaces[c]
                                 new_position = message.get("position", position)
                                 # update texture
                                 self.updatePygameTexture(surface, texname)
@@ -300,7 +300,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         events = [ event for event in pygame.event.get() ]
 
         # Handle Pygame events
-        for surface, position, callbackcomms, eventcomms, texname in self.surfaces:
+        for surface, position, size, callbackcomms, eventcomms, texname in self.surfaces:
             # see if this component is interested in events
             if eventcomms is not None:
                 listener = eventcomms
@@ -370,7 +370,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def updatePygameTexture(self, surface, texname):
-        print "UPDATING", texname
+#        print "UPDATING", texname
         # set surface as texture
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, texname)
@@ -388,7 +388,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # are on top of everything
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
-        for surface, position, callbackcomms, eventcomms, texname in self.surfaces:
+        for surface, position, size, callbackcomms, eventcomms, texname in self.surfaces:
             # create texture if not already done
             if not glIsTexture(texname):
                 self.updatePygameTexture(surface, texname)
@@ -398,19 +398,23 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # determine surface positions on far Plane
             l = position[0]*self.farPlaneScaling-self.farPlaneWidth/2
             t = -position[1]*self.farPlaneScaling+self.farPlaneHeight/2
-            r = l + surface.get_width()*self.farPlaneScaling
-            b = t - surface.get_height()*self.farPlaneScaling
+            r = l + size[0]*self.farPlaneScaling
+            b = t - size[1]*self.farPlaneScaling
             
+            #determine texture coordinates
+            tex_w = float(size[0])/float(surface.get_width())
+            tex_h = float(size[1])/float(surface.get_height())
+                
             # draw just the texture, no background
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
 
             # draw faces 
             glBegin(GL_QUADS)
             glColor3f(1, 0, 0)
-            glTexCoord2f(0.0, 0.0); glVertex3f( l, b,  -self.farPlaneDist+1)
-            glTexCoord2f(1.0, 0.0); glVertex3f( r, b,  -self.farPlaneDist+1)
-            glTexCoord2f(1.0, 1.0); glVertex3f( r,  t,  -self.farPlaneDist+1)
-            glTexCoord2f(0.0, 1.0); glVertex3f( l,  t,  -self.farPlaneDist+1)
+            glTexCoord2f(0.0, 1.0-tex_h);         glVertex3f( l, b,  -self.farPlaneDist+1)
+            glTexCoord2f(tex_w, 1.0-tex_h);     glVertex3f( r, b,  -self.farPlaneDist+1)
+            glTexCoord2f(tex_w, 1.0); glVertex3f( r,  t,  -self.farPlaneDist+1)
+            glTexCoord2f(0.0, 1.0);     glVertex3f( l,  t,  -self.farPlaneDist+1)
             glEnd()
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_DEPTH_TEST)        
@@ -545,14 +549,14 @@ To strive, to seek, to find, and not to yield.
         MOVER = CubeMover(),
         BUZZER = CubeBuzzer(),
         ECHO = consoleEchoer(),
-        TICKER = Ticker(position = (400, 300), render_left = 0, render_right=256, render_top=0, render_bottom=256),
+        TICKER = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=257),
         TEXT = datasource(),
         linkages = {
             ("PLANE", "outbox") : ("ECHO", "inbox"),
             ("ROTATOR", "outbox") : ("PLANE", "control3d"),
             ("BUTTON1", "outbox") : ("ECHO", "inbox"),
             ("BUTTON2", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON3", "outbox") : ("TICKER", "inbox"),
             ("TEXT", "outbox") : ("TICKER", "inbox"),
             ("MOVER", "outbox") : ("CUBE", "control3d"),
         } ).run()
