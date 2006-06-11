@@ -58,16 +58,15 @@ def splitUri(requestobject):
     splituri = string.split(requestobject["raw-uri"], "/")
     if splituri[0] != "":
         requestobject["uri-server"] = splituri[0]
-        requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "/"):]
+        requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0]):]
     else:
-        requestobject["uri-server"] = requestobject["raw-uri"]
-        requestobject["raw-uri"] = ""
+        requestobject["uri-server"] = ""
         
     splituri = string.split(requestobject["uri-server"], ":")
     if len(splituri) == 2:
         requestobject["uri-port"] = splituri[1]
         requestobject["uri-server"] = splituri[0]
-        
+    
     splituri = string.split(requestobject["uri-server"], "@")
     if len(splituri) == 2:
         requestobject["uri-username"] = splituri[0]
@@ -76,8 +75,7 @@ def splitUri(requestobject):
         if len(splituri) == 2:
             requestobject["uri-username"] = splituri[0]
             requestobject["uri-password"] = splituri[1]
-
-
+    
 class HTTPParser(component):
     Inboxes =  { "inbox"         : "Raw HTTP requests",
                  "control"       : "UNUSED" }
