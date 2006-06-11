@@ -12,7 +12,7 @@
 
 # Written by Bram Cohen, Uoti Urpala and John Hoffman
 
-# Converted to a kamaelia threadcomponent by Ryan Lothian
+# Converted to a kamaelia threadedcomponent by Ryan Lothian
 
 from __future__ import division
 
@@ -69,6 +69,7 @@ class TorrentClient(threadedcomponent):
         """Main loop"""
         uiname = 'bittorrent-console'
         defaults = get_defaults(uiname)
+        defaults["twisted"] = 0
         metainfo = None
         config, args = configfile.parse_configuration_and_args(defaults, uiname)
         try:
