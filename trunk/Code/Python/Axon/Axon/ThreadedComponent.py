@@ -155,6 +155,7 @@ class threadedcomponent(Component.component):
    def _handlemessagefromthread(self,msg):
        """STUB - for handling messages from the thread"""
        (cmd, argL, argD) = msg
+#       print cmd, argL, argD
        result = cmd(*argL,**argD)
        self.axontothreadqueue.put(result)
 
@@ -174,7 +175,7 @@ class threadedcomponent(Component.component):
 
    def link(self, source,sink,passthrough=0):
         cmd = super(threadedcomponent,self).link
-        return self._do_threadsafe( cmd, (source,sink,passthrough), {} )
+        return self._do_threadsafe( cmd, (source,sink), {"passthrough":passthrough} )
 
    def unlink(self, thecomponent=None, thelinkage=None):
         cmd = super(threadedcomponent,self).unlink
