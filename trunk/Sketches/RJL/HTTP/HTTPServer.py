@@ -89,6 +89,8 @@ class HTTPServer(component):
         #self.httphandler.filereader.activate()
 
     def main(self):
+        self.initialiseComponent()
+        shouldbreak = False
         while 1:
             yield 1
             while self.dataReady("inbox"):
@@ -100,7 +102,9 @@ class HTTPServer(component):
                 if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
                     self.send(temp, "mime-control")
                     self.send(temp, "http-control")
-                    return
+                    print "HTTPServer received shutdown"
+                    shouldbreak = True
+                    break
             
             while self.dataReady("http-outbox"):
                 temp = self.recv("http-outbox")
@@ -122,11 +126,15 @@ class HTTPServer(component):
                     sig = producerFinished(self)
                     self.send(sig, "mime-control")                
                     self.send(sig, "signal")
-                    return
+                    shouldbreak = True
                     #close the connection
-                    
-            self.pause()
             
+            self.pause()
+            if shouldbreak:
+                break
+                
+        self.closeDownComponent()
+        
     def closeDownComponent(self):
         for child in self.childComponents():
             self.removeChild(child)
@@ -224,9 +232,9 @@ if __name__ == '__main__':
     from Axon.Component import scheduler
     import socket
     SimpleServer(protocol=HTTPServer, port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
-    pipeline(
-        Introspector(),
-        TCPClient("127.0.0.1", 1500),
-    ).activate()
+    #pipeline(
+    #    Introspector(),
+    #    TCPClient("127.0.0.1", 1500),
+    #).activate()
     #Lagger().activate()
     scheduler.run.runThreads(slowmo=0)
