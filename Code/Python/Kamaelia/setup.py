@@ -23,7 +23,7 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia",
-      version = "0.4",
+      version = "0.4.0",
       description = "Kamaelia - Multimedia & Server Development Kit",
       author = "Michael & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
@@ -52,7 +52,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Device",
                   "Kamaelia.Device.DVB",
                   ""],
-      scripts = ['Tools/KamaeliaPresent.py'],
+#      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
 """
       )
