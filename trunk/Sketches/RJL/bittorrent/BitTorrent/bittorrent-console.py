@@ -69,9 +69,10 @@ class TorrentClient(threadedcomponent):
         """Main loop"""
         uiname = 'bittorrent-console'
         defaults = get_defaults(uiname)
-        defaults["twisted"] = 0
+        
         metainfo = None
         config, args = configfile.parse_configuration_and_args(defaults, uiname)
+        config["twisted"] = 0
         try:
             metainfo, errors = GetTorrent.get( self.torrentfilename )
             if errors:
@@ -146,7 +147,7 @@ class DLKamaelia(Feedback):
             print str(e)
             return
         self.get_status()
-        #self.multitorrent.rawserver.install_sigint_handler()
+        #self.multitorrent.rawserver.install_sigint_handler() - can only be done on the main thread so does not work with Kamaelia
         self.multitorrent.rawserver.listen_forever( self.d )
         self.d.display({'activity':_("shutting down"), 'fractionDone':0})
         self.torrent.shutdown()
