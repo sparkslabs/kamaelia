@@ -85,8 +85,5 @@ class testComponent(component):
         result = self.recv("_input")
         print "consumer finished with result: ", result , "!"
 
-p = testComponent()
-p.activate()
-p.run()
-#scheduler.run.runThreads(slowmo=0) 
+testComponent().run()
 
