@@ -290,7 +290,7 @@ class component(microprocess):
       return self.inboxes[boxname].local_len()
 
 
-   def link(self, source,sink,passthrough=0):
+   def link(self, source,sink,**optionalargs):
       """'C.link(source,sink)' -
       create linkage between a source and sink.
 
@@ -301,7 +301,7 @@ class component(microprocess):
       """
       # NOTE: support for synchronous and pipewidth now missing
 
-      return self.postoffice.link(source, sink, passthrough)
+      return self.postoffice.link(source, sink, **optionalargs)
 
 
    def unlink(self, thecomponent=None, thelinkage=None):

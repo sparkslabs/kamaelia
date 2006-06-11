@@ -22,12 +22,20 @@
 #
 #
 
+from AxonExceptions import noSpaceInBox
 
 class nullsink(object):
     def __init__(self):
         super(nullsink,self).__init__()
+        self.size = None
+        self.tag = None
+        self.showtransit = None
     def append(self, data):
-        pass
+        if self.showtransit:
+            print "Discarding Delivery via [", self.tag, "] of ", repr(data)
+    def setShowTransit(self,showtransit, tag):
+        self.showtransit = showtransit
+        self.tag = tag
     def __len__(self):
         return 0
     def pop(self,index):
@@ -35,12 +43,23 @@ class nullsink(object):
     
     
 class realsink(list):
-    def __init__(self, notify):
+    def __init__(self, notify, size=None):
         super(realsink,self).__init__()
         self.notify = notify
+        self.size = size
+        self.tag = None
+        self.showtransit = None
     def append(self,data):
+        if self.showtransit:
+            print "Delivery via [", self.tag, "] of ", repr(data)
+        if self.size is not None:
+           if len(self) >= self.size:
+               raise noSpaceInBox(len(self),self.size)
         list.append(self,data)
         self.notify()
+    def setShowTransit(self,showtransit, tag):
+        self.showtransit = showtransit
+        self.tag = tag
 
 
 class postbox(object):
@@ -101,16 +120,26 @@ class postbox(object):
         for source in self.sources:
             source._retarget(newtarget=self.sink)
 
+    def setSize(self, size):
+        self.storage.size = size
+        return self.getSize()
+    def getSize(self):
+        return self.storage.size
 
+    def setShowTransit(self, showtransit=False, tag=None):
+        self.storage.setShowTransit(showtransit, tag)
 
 thenullsink = nullsink()
 
-def makeInbox(notify):
+def makeInbox(notify, size = None):
     """Returns a postbox object suitable for use as an Axon inbox."""
-    return postbox(storage=realsink(notify=notify))
+    result = postbox(storage=realsink(notify=notify))
+    if size is not None:
+       result.setSize(size)
+    return result
 
 def makeOutbox():
     """Returns a postbox object suitable for use a an Axon outbox."""
     return postbox(storage=thenullsink)
 
-# RELEASE: MH
+# RELEASE: MH, MPS
