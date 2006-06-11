@@ -81,9 +81,7 @@ class linkage(AxonObject):
         self.passthrough = passthrough
         if pipewidth is not None:
            self.getSinkbox().setSize(pipewidth)
-           print self.getSinkbox().getSize()
-           print "You're not finished"
-
+ 
     def sourcePair(self):
         return self.source, self.sourcebox
  
@@ -111,7 +109,6 @@ class linkage(AxonObject):
 
     def setShowTransit(self, showtransit, tag):
         self.getSinkbox().setShowTransit(showtransit, tag)
-#        raise NotImplementedError("Showing transit of a link has been disabled for now, due to performance optimisations")
 
 
 if __name__ == '__main__':

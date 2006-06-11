@@ -195,7 +195,6 @@ class component(microprocess):
       """You want to overide this method locally. You MUST call this superconstructor for
       things to work however. The way you do this super(YourClass,self).__init__()
       """
-      print "Sproingle"
       super(component, self).__init__()
       self.inboxes = dict()
       self.outboxes = dict()
@@ -291,7 +290,6 @@ class component(microprocess):
       return self.inboxes[boxname].local_len()
 
 
-#   def link(self, source,sink,passthrough=0):
    def link(self, source,sink,**optionalargs):
       """'C.link(source,sink)' -
       create linkage between a source and sink.
@@ -377,8 +375,6 @@ class component(microprocess):
    def _deliver(self, message, boxname="inbox"):
        """For tests and debugging ONLY - delivers message to an inbox."""
        self.inboxes[boxname].append(message)
-
-print "HUH?"
 
 if 0: # if __name__ == '__main__':
    def producersConsumersSystemTest():

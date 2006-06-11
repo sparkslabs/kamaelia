@@ -22,6 +22,7 @@
 #
 #
 
+from AxonExceptions import noSpaceInBox
 
 class nullsink(object):
     def __init__(self):
@@ -52,8 +53,8 @@ class realsink(list):
         if self.showtransit:
             print "Delivery via [", self.tag, "] of ", repr(data)
         if self.size is not None:
-           if len(self) == self.size:
-               raise "No more space in the Inn " + str(self.size)
+           if len(self) >= self.size:
+               raise noSpaceInBox(len(self),self.size)
         list.append(self,data)
         self.notify()
     def setShowTransit(self,showtransit, tag):
@@ -133,11 +134,8 @@ thenullsink = nullsink()
 def makeInbox(notify, size = None):
     """Returns a postbox object suitable for use as an Axon inbox."""
     result = postbox(storage=realsink(notify=notify))
-    print "Here?"
-#    if size is None:
-#        raise "You've not finished"
     if size is not None:
-       result.setSize(size) # This is deliberately easy to break
+       result.setSize(size)
     return result
 
 def makeOutbox():

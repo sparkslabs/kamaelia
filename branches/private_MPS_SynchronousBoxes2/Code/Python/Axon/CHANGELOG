@@ -53,6 +53,44 @@
       component should simply shutdown. This does not force the component
       to shutdown, merely requests it.
 
+    Synchronous Links & Link Tracing API
+    * As part of the changes to box optimisations, there has been a change
+      to the API for synchronous links. This is currently our best guess as
+      to what we think makes sense, but should be considered experimental
+      until Axon 2.0 (We'll endevour to keep the current API however for as
+      long as it makes sense).
+
+      L = link( (source, box), (dest, box), pipewidth=5)
+      # L is a synchronous link of width 5
+
+      L = link( (source, box), (dest, box))
+      L.setSynchronous(4)
+      # L is a synchronous link of width 4
+
+      L = link( (source, box), (dest, box), pipewidth=5)
+      # L is a synchronous link of width 5
+      L.setSynchronous()
+      # L no longer has a maximum pipewidth.
+      L.setSynchronous(4)
+      # L is a now synchronous link of width 4
+      L.setSynchronous(10)
+      # L is a now synchronous link of width 10
+
+      When a synchronous link reaches maximum capacity, attempting to send
+      data to the synchronous link results in an exception being thrown.
+      This includes the current size of the pipe, and it's maximum capacity.
+      The exception thrown is as follows:
+
+      L.setSynchronous(0)
+      # L now has a pipewidth of zero. (ie zero capacity)
+      try:
+         self.send("data", "outbox")
+      except noSpaceInBox, e:
+         print "Failed to deliver"
+         size, capacity = e.args
+         print "Box Capacity", capacity
+         print "Current size", size
+
      
 1.1.1 -> 1.1.2
      Instated use of ctypes to use posix.sched_yield during the main loop.
