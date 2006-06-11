@@ -23,9 +23,9 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia",
-      version = "0.3.0",
-      description = "Kamaelia - Server Development Kit",
-      author = "Michael",
+      version = "0.4",
+      description = "Kamaelia - Multimedia & Server Development Kit",
+      author = "Michael & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
       packages = ["Kamaelia",
@@ -47,7 +47,10 @@ setup(name = "Kamaelia",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.PhysicsGraph",
                   "Kamaelia.Codec",
-                  "Kamaelia.Sketch", # Empty on RELEASE branch
+                  "Kamaelia.Support",
+                  "Kamaelia.Support.Tk",
+                  "Kamaelia.Device",
+                  "Kamaelia.Device.DVB",
                   ""],
       long_description = """
 """
