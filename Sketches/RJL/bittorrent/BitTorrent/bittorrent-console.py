@@ -69,10 +69,12 @@ class TorrentClient(threadedcomponent):
         """Main loop"""
         uiname = 'bittorrent-console'
         defaults = get_defaults(uiname)
+        defaults.append(('twisted', 0,
+     _("Use Twisted network libraries for network connections. 1 means use twisted, 0 means do not use twisted, -1 means autodetect, and prefer twisted")))
         
         metainfo = None
         config, args = configfile.parse_configuration_and_args(defaults, uiname)
-        config["twisted"] = 0
+
         try:
             metainfo, errors = GetTorrent.get( self.torrentfilename )
             if errors:
