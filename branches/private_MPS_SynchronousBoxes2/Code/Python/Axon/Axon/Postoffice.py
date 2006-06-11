@@ -65,10 +65,10 @@ class postoffice(object):
       result = result + "links " + self.linkages.__str__() + " }}"
       return result
 
-   def link(self, source, sink, passthrough=0):
+   def link(self, source, sink, **optionalargs):
        (sourcecomp, sourcebox) = source
        (sinkcomp, sinkbox) = sink
-       thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,passthrough)
+       thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,**optionalargs)
        self.linkages.append(thelink)
        thelink.getSinkbox().addsource( thelink.getSourcebox() )
        return thelink

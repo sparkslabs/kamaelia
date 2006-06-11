@@ -27,8 +27,14 @@ class nullsink(object):
     def __init__(self):
         super(nullsink,self).__init__()
         self.size = None
+        self.tag = None
+        self.showtransit = None
     def append(self, data):
-        pass
+        if self.showtransit:
+            print "Discarding Delivery via [", self.tag, "] of ", repr(data)
+    def setShowTransit(self,showtransit, tag):
+        self.showtransit = showtransit
+        self.tag = tag
     def __len__(self):
         return 0
     def pop(self,index):
@@ -40,12 +46,19 @@ class realsink(list):
         super(realsink,self).__init__()
         self.notify = notify
         self.size = size
+        self.tag = None
+        self.showtransit = None
     def append(self,data):
+        if self.showtransit:
+            print "Delivery via [", self.tag, "] of ", repr(data)
         if self.size is not None:
            if len(self) == self.size:
                raise "No more space in the Inn " + str(self.size)
         list.append(self,data)
         self.notify()
+    def setShowTransit(self,showtransit, tag):
+        self.showtransit = showtransit
+        self.tag = tag
 
 
 class postbox(object):
@@ -108,7 +121,12 @@ class postbox(object):
 
     def setSize(self, size):
         self.storage.size = size
+        return self.getSize()
+    def getSize(self):
+        return self.storage.size
 
+    def setShowTransit(self, showtransit=False, tag=None):
+        self.storage.setShowTransit(showtransit, tag)
 
 thenullsink = nullsink()
 
