@@ -194,6 +194,10 @@ class scheduler(microprocess):
                else:
                    self.threads[mprocess] = _SLEEPING
 
+           # make sure, even if there weren't any micprocesses active, we yield
+           # control at least once
+           yield 1
+           
            # process pause requests first - to prevent race conditions, we do
            # wakeup requests second - safer to leave a thread awake than asleep
            while not self.pauseRequests.empty():
@@ -230,7 +234,7 @@ class scheduler(microprocess):
                     pass
            
            running = len(self.threads)
-
+               
    def runThreads(self,slowmo=0):
       for i in self.main(slowmo,canblock=True): pass
 
