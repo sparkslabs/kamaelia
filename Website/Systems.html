@@ -40,12 +40,13 @@
 <p></p>
 <ul type="disc"><li><span style="font-family:courier new">--connectto=&lt;host&gt;:&lt;port&gt;</span><br />Tell sketcher to connect to another instance listening on the specified port.</li></ul>
 <p>Draw using the mouse (or stylus if you've got a tablet). At the top is a drawing colour palette and eraser tool. Click on them to select them. Click with the right mouse button to toggle in and out of a fullscreen mode.</p>
-<p>Whilst it is running, you also get a command prompt. This injects commands directly to the drawing Canvas component. Primarily it is there for you to load and save sketches (in bmp format, ensure you include the extension):</p>
-<p><span style="font-family:courier new">&gt;&gt;&gt; LOAD &quot;filename.bmp&quot;<br />&gt;&gt;&gt; SAVE &quot;filename.bmp&quot;</span></p>
+<p>Whilst it is running, you also get a command prompt. This injects commands directly to the drawing Canvas component. Primarily it is there for you to load and save sketches (in bmp format, ensure you include the extension) and to clear the whiteboard:</p>
+<p><span style="font-family:courier new">&gt;&gt;&gt; load &quot;filename.bmp&quot;<br />&gt;&gt;&gt; save &quot;filename.bmp&quot;<br />&gt;&gt;&gt; clear</span></p>
 <p>The design centres on a Backplane component that acts as a bus. This connects together:</p>
 <ul type="disc"><li>The local 'sketcher' (Canvas and paint tools)</li>
 <li>Any clients that have connected (if you allowed serving)</li>
 <li>A connection to a server</li></ul>
+<p>Whenever something sends to the backplane, everything else receives. So, if two or more backplanes are coupled (by, for example, network connections) then they effectively behave like a single distributed backplane.</p>
 <p>This has started out as a pet, personal time project by <a href="Matt.html">Matt</a>.</p>
 <p><span style="font-size:12pt;font-weight:600">General Stuff</span></p>
 <p><span style="font-weight:600">Availability:</span> Many of these are in Kamaelia's CVS, in Sketches</p>
