@@ -237,6 +237,8 @@ class ConnectedSocketAdapter(component):
            return True
        if self.receiving:
            return True
+       if self.anyReady():
+           return True
        return False
 
    def main(self):
