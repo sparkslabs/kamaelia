@@ -68,11 +68,20 @@ class HTTPParser(component):
     def __init__(self, mode="request"):
         super(HTTPParser, self).__init__()
         self.mode = mode
-        
+        #print "Parser init"
         self.requeststate = 1 # awaiting request line
         self.lines = []
         self.readbuffer = ""
 
+    def splitProtocolVersion(self, protvers, requestobject):
+        protvers = protvers.split("/")
+        if len(protvers) != 2:
+            requestobject["bad"] = True
+            requestobject["version"] = "0.9"
+        else:
+            requestobject["protocol"] = protvers[0]
+            requestobject["version"]  = protvers[1]
+    
     def dataFetch(self):
         if self.dataReady("inbox"):
             self.readbuffer += self.recv("inbox")
@@ -84,6 +93,7 @@ class HTTPParser(component):
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
+                #print "HTTPParser should shutdown"
                 return True
         
         return False
@@ -97,15 +107,28 @@ class HTTPParser(component):
             self.readbuffer = self.readbuffer[lineendpos + 1:] #the remainder after the \n
             #print "Received line: " + line
             return line
-        
+    
     def main(self):
 
         while 1:
             if self.mode == "request":
-                requestobject = { "bad": False, "headers": {}, "raw-uri": "", "version": "0.9", "method": "", "protocol":"" }
+                requestobject = { "bad": False,
+                                  "headers": {},
+                                  "raw-uri": "",
+                                  "version": "0.9",
+                                  "method": "",
+                                  "protocol": "",
+                                  "body": "" }
             else:
-                requestobject = { "bad": False, "headers": {}, "responsecode": "", "version": "0.9", "method": "", "protocol":"" }
-            
+                requestobject = { "bad": False,
+                                  "headers": {},
+                                  "responsecode": "",
+                                  "version": "0.9",
+                                  "method": "",
+                                  "protocol": "",
+                                  "body": "" }
+                                  
+            #print "Awaiting initial line"
             #state 1 - awaiting initial line
             currentline = None
             while currentline == None:
@@ -120,11 +143,11 @@ class HTTPParser(component):
             #print "Initial line found"
             splitline = string.split(currentline, " ")
             
-            if len(splitline) < 2:
-                requestobject["bad"] = True
-                # bad request
-            else:
-                if len(splitline) < 3:
+            if self.mode == "request":
+                #e.g. GET / HTTP/1.0
+                if len(splitline) < 2:
+                    requestobject["bad"] = True
+                elif len(splitline) == 2:
                     # must be HTTP/0.9
                     requestobject["method"] = splitline[0]
                     requestobject["raw-uri"] = splitline[1]
@@ -136,24 +159,23 @@ class HTTPParser(component):
                     #next line supports all working clients but also 
                     #some broken clients that don't encode spaces properly!
                     requestobject["raw-uri"] = string.join(splitline[1:-1], "%20") 
-                    protvers = string.split(splitline[-1], "/")
-                    if len(protvers) != 2:
-                        requestobject["bad"] = True
-                        requestobject["version"] = "0.9"
-                    else:
-                        requestobject["protocol"] = protvers[0]
-                        requestobject["version"] = protvers[1]
-                    
+                    self.splitProtocolVersion(splitline[-1], requestobject)
                     splitUri(requestobject)
-                    
-                #foo://toor:letmein@server.bigcompany.com:80/bla?this&that=other could be handled better
-
-                if requestobject["method"] == "PUT" or requestobject["method"] == "POST":
+            else:
+                #e.g. HTTP/1.1 200 OK that's fine
+                if len(splitline) < 2:
+                    requestobject["version"] = "0.9"
+                else:
+                    requestobject["responsecode"] = splitline[1]
+                    self.splitProtocolVersion(splitline[0], requestobject)
+            
+            if not requestobject["bad"]:
+                if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
                     bodiedrequest = True
                 else:
                     bodiedrequest = False
 
-                if requestobject["version"] != "HTTP/0.9":
+                if requestobject["version"] != "0.9":
                     #state 2 - as this is a valid request, we now accept headers	
                     previousheader = ""
                     endofheaders = False
@@ -180,13 +202,38 @@ class HTTPParser(component):
                         if not endofheaders:
                             self.pause()
                             yield 1
+
                 if requestobject["headers"].has_key("host"):
                     requestobject["uri-server"] = requestobject["headers"]["host"]
                 
                 if bodiedrequest:
                     #state 3 - the headers are complete - awaiting the message
-                    if not requestobject["headers"].has_key("content-length"):
-                        #this is not strictly required - it breaks compatible with chunked encoding
+                    if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
+                        while 1:
+                            while currentline == None:
+                                if self.shouldShutdown(): return
+                                while self.dataFetch():
+                                    pass
+                                currentline = self.nextLine()
+                                if currentline == None:
+                                    self.pause()
+                                    yield 1
+                            splitline = currentline.split(";")
+                            bodylength = splitline[0].atoi(16)
+                            if bodylength == 0:
+                                break
+                            
+                            while len(self.readbuffer) < bodylength:
+                                if self.shouldShutdown(): return						
+                                while self.dataFetch():
+                                    pass
+                                if len(self.readbuffer) < bodylength:
+                                    self.pause()
+                                    yield 1
+                            requestobject["body"] += self.readbuffer[:bodylength]
+
+                    elif not requestobject["headers"].has_key("content-length"):
+                        #this is not strictly required - it breaks compatibility with chunked encoding
                         #but will do for now
                         requestobject["bad"] = 411 #length required
                     else:
@@ -218,5 +265,6 @@ class HTTPParser(component):
                     
             self.send(requestobject, "outbox")
             if string.lower(requestobject["headers"].get("connection", "")) == "close":
+                #print "HTTPParser connection close"
                 self.send(producerFinished(), "signal") #this functionality is semi-complete
                 return
