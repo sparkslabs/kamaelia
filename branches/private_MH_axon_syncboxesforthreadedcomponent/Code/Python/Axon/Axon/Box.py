@@ -40,6 +40,8 @@ class nullsink(object):
         return 0
     def pop(self,index):
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
+    def isFull(self):
+        return False
     
     
 class realsink(list):
@@ -60,6 +62,8 @@ class realsink(list):
     def setShowTransit(self,showtransit, tag):
         self.showtransit = showtransit
         self.tag = tag
+    def isFull(self):
+        return (self.size != None) and (len(self) >= self.size)
 
 
 class postbox(object):
@@ -116,6 +120,7 @@ class postbox(object):
         self.append  = self.sink.append
         self.pop     = self.sink.pop
         self.__len__ = self.sink.__len__
+        self.isFull  = self.sink.isFull
         # propagate the change back up the chain
         for source in self.sources:
             source._retarget(newtarget=self.sink)

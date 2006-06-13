@@ -29,6 +29,7 @@ from __future__ import generators
 
 import Component
 from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
+from AxonExceptions import noSpaceInBox
 import threading
 import Queue
 from idGen import numId
@@ -37,19 +38,23 @@ import sys
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
       a component by running them inside a thread in the component.
+      
+      Internal queues buffer data going to and from inboxes and outboxes. Set
+      the size of these at initialisation (default=10)
    """
 
-   def __init__(self):
+   def __init__(self,queuelengths=10):
       super(threadedcomponent,self).__init__()
       
       self._threadrunning = False
-
+      
+      self.queuelengths = queuelengths
       self.inqueues = dict()
       self.outqueues = dict()
       for box in self.inboxes.iterkeys():
-         self.inqueues[box] = Queue.Queue()
+         self.inqueues[box] = Queue.Queue(self.queuelengths)
       for box in self.outboxes.iterkeys():
-         self.outqueues[box] = Queue.Queue()
+         self.outqueues[box] = Queue.Queue(self.queuelengths)
 
       self.threadtoaxonqueue = Queue.Queue()
       self.axontothreadqueue = Queue.Queue()
@@ -116,7 +121,8 @@ class threadedcomponent(Component.component):
        self._thethread.start()
        running = True
        self._threadrunning = True
-       while running:
+       stuffWaiting = False
+       while running or stuffWaiting:
           # decide if we need to stop...
           running = self._thethread.isAlive()
           # ...but we'll still flush queue's through:
@@ -137,16 +143,25 @@ class threadedcomponent(Component.component):
                   msg = self._nonthread_recv(box)
                   self.inqueues[box].put(msg)
                   
+          stuffWaiting = False
           for box in self.outboxes:
+              
               while not self.outqueues[box].empty():
-                  msg = self.outqueues[box].get()
-                  self._nonthread_send(msg, box)
+                  if not self.outboxes[box].isFull():
+                      msg = self.outqueues[box].get()
+                      try:
+                          self._nonthread_send(msg, box)
+                      except noSpaceInBox, e:
+                          raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                  else:
+                      stuffWaiting = True
+                      break
                   
           for i in range(0,msgcount):
               msg = self.threadtoaxonqueue.get()
               self._handlemessagefromthread(msg)
 
-          if running:
+          if running and not stuffWaiting:
               Component.component.pause(self)
           
           yield 1
@@ -170,8 +185,11 @@ class threadedcomponent(Component.component):
        return self.inqueues[boxname].get()
 
    def send(self,message, boxname="outbox"):
-       self.outqueues[boxname].put(message)
-       Component.component.unpause(self)        # FIXME: Fragile
+       try:
+           self.outqueues[boxname].put_nowait(message)
+           Component.component.unpause(self)        # FIXME: Fragile
+       except Queue.Full:
+           raise noSpaceInBox(self.outqueues[boxname].qsize(), self.queuelengths)
 
    def link(self, source,sink,passthrough=0):
         cmd = super(threadedcomponent,self).link
@@ -203,8 +221,8 @@ class threadedcomponent(Component.component):
             return cmd(*argL,**argD)
 
 class threadedadaptivecommscomponent(threadedcomponent, _AC):
-    def __init__(self):
-        threadedcomponent.__init__(self)
+    def __init__(self,queuelengths=10):
+        threadedcomponent.__init__(self,queuelengths)
         _AC.__init__(self)
 
     def addInbox(self,*args):
@@ -221,7 +239,7 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
         
     def _unsafe_addInbox(self,*args):
         name = super(threadedadaptivecommscomponent,self).addInbox(*args)
-        self.inqueues[name] = Queue.Queue()
+        self.inqueues[name] = Queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteInbox(self,name):
@@ -230,7 +248,7 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
     
     def _unsafe_addOutbox(self,*args):
         name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
-        self.outqueues[name] = Queue.Queue()
+        self.outqueues[name] = Queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteOutbox(self,name):
@@ -358,3 +376,46 @@ if __name__ == "__main__":
                 yield 1
                 
     c = Container().run()
+    
+    print "-----Synchronous inbox delivered to by a threaded component-----"
+
+    class SynchronousSlowReceiver(Component.component):
+        def main(self):
+            self.inboxes['inbox'].setSize(5)
+            while 1:
+                while not self.dataReady("inbox"):
+                    self.pause()
+                    yield 1
+                    
+                r = self.recv("inbox")
+                
+                t=time.time() + 0.2
+                while time.time() < t:
+                    yield 1
+                
+                sys.stdout.write("SynchronousSlowReceiver: received "+str(r)+"\n")
+                sys.stdout.flush()
+                
+                if not r: break
+                
+    class ThreadedSender(threadedcomponent):
+        def main(self):
+            for i in range(20,-1,-1):
+#                yield 1
+                while 1:
+#                    yield 1
+                    try:
+                        sys.stdout.write("                                      ThreadedSender: sending "+str(i)+"\n")
+                        sys.stdout.flush()
+                        self.send(i,"outbox")
+                        break;
+                    except noSpaceInBox:
+                        sys.stdout.write("                                      ThreadedSender: held up, sending "+str(i)+"\n")
+                        sys.stdout.flush()
+                        time.sleep(0.1)
+    
+    t = ThreadedSender().activate()
+    r = SynchronousSlowReceiver()
+    r.link( (t,"outbox"), (r,"inbox") )
+    
+    r.run()
