@@ -26,9 +26,22 @@
 TODO
 """
 
-from math import sin, cos, pi, sqrt
+from math import *
 
+# =========================
+# Control3D contains movement commands
+# =========================
+class Control3D:
+    POSITION, REL_POSITION, ROTATION, REL_ROTATION, SCALING, REL_SCALING = range(6)
+    def __init__(self, type, amount):
+        # Command types
+        self.type = type
+        self.amount = amount
+
+
+# =====================
 # Vector: used for handling 3D Vectors
+# =====================
 class Vector:
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.x = float(x)
@@ -110,7 +123,9 @@ class Vector:
         return Vector(self.x -other.x, self.y -other.y, self.z-other.z)
 
         
+# =============================
 # Transform: for generating transformation matrices
+# =============================
 class Transform:
     def __init__(self):
         # load identity
