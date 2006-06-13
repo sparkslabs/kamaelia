@@ -33,15 +33,6 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 _cat = Axon.CoordinatingAssistantTracker
 
-#"events" : (self, "events"),#
-
-class Control3D:
-    POSITION, REL_POSITION, ROTATION, REL_ROTATION, SCALING, REL_SCALING = range(6)
-    def __init__(self, type, amount):
-        # Command types
-        self.type = type
-        self.amount = amount
-
 class Bunch: pass
 
 class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -53,6 +44,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Outboxes = { "outbox" : "NOT USED",
                      "signal" : "NOT USED",
                   }
+                
+                
                  
     def setDisplayService(pygamedisplay, tracker = None):
         """\
@@ -65,6 +58,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             tracker = _cat.coordinatingassistanttracker.getcat()
         tracker.registerService("3ddisplay", pygamedisplay, "notify")
     setDisplayService = staticmethod(setDisplayService)
+
+
+
 
     def getDisplayService(tracker=None): # STATIC METHOD
         """\
@@ -86,6 +82,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             return service
     getDisplayService = staticmethod(getDisplayService)
     
+    
+    
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Display3D,self).__init__()
@@ -106,6 +105,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
         self.surface_to_texnames = {}
+        self.surface_to_pow2surface = {}
 
         # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
@@ -139,6 +139,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
         
         self.texnum = -1
+
 
 
     def overridePygameDisplay(self):
@@ -198,12 +199,13 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     callbackservice = message["callback"]
                     eventservice = message.get("events", None)
                     size = message["size"]
+                    surface = pygame.Surface(size)
 
-                    # make dimensions a power of two
+                    #create another surface, with dimensions a power of two
                     # this is needed because otherwise texturing is REALLY slow
                     pow2size = (2**(ceil(log(size[0], 2))), 2**(ceil(log(size[1], 2))))
+                    pow2surface = pygame.Surface(pow2size)
 
-                    surface = pygame.Surface(pow2size)
                     alpha = message.get("alpha", 255)
                     surface.set_alpha(alpha)
                     if message.get("transparency", None):
@@ -223,8 +225,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     # generate texture name
                     texname = glGenTextures(1)
                     self.surface_to_texnames[str(id(surface))] = texname
+                    self.surface_to_pow2surface[str(id(surface))] = pow2surface
 
-                    self.surfaces.append( (surface, position, size, callbackcomms, eventcomms, texname) )
+                    self.surfaces.append( (surface, position, size, callbackcomms, eventcomms, pow2surface, texname) )
                     
                 elif message.get("ADDLISTENEVENT", None) is not None:
                     eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -247,7 +250,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                     break
                                 c += 1
                             if found:
-                                (surface, position, size, callbackcomms, eventcomms, texname) = self.surfaces[c]
+                                (surface, position, size, callbackcomms, eventcomms, pow2surface, texname) = self.surfaces[c]
                                 new_position = message.get("position", position)
                                 # update texture
                                 self.updatePygameTexture(surface, texname)
@@ -291,7 +294,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 elif message.get("REDRAW", False):
                     self.needsRedrawing=True
                     surface = message["surface"]
-                    self.updatePygameTexture(surface, self.surface_to_texnames[str(id(surface))])
+                    self.updatePygameTexture(surface, self.surface_to_pow2surface[str(id(surface))], self.surface_to_texnames[str(id(surface))])
 
                         
 
@@ -300,7 +303,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         events = [ event for event in pygame.event.get() ]
 
         # Handle Pygame events
-        for surface, position, size, callbackcomms, eventcomms, texname in self.surfaces:
+        for surface, position, size, callbackcomms, eventcomms, pow2surface, texname in self.surfaces:
             # see if this component is interested in events
             if eventcomms is not None:
                 listener = eventcomms
@@ -369,15 +372,16 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
 
-    def updatePygameTexture(self, surface, texname):
-#        print "UPDATING", texname
+    def updatePygameTexture(self, surface, pow2surface, texname):
+        # blit component surface to power of 2 sized surface
+        pow2surface.blit(surface, (0,0))
         # set surface as texture
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, texname)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        textureData = pygame.image.tostring(surface, "RGBX", 1)
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0,
+        textureData = pygame.image.tostring(pow2surface, "RGBX", 1)
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, pow2surface.get_width(), pow2surface.get_height(), 0,
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
         glDisable(GL_TEXTURE_2D)
 
@@ -388,11 +392,11 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # are on top of everything
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
-        for surface, position, size, callbackcomms, eventcomms, texname in self.surfaces:
+        for surface, position, size, callbackcomms, eventcomms, pow2surface, texname in self.surfaces:
             # create texture if not already done
             if not glIsTexture(texname):
-                self.updatePygameTexture(surface, texname)
-                
+                self.updatePygameTexture(surface, pow2surface, texname)
+            
             glBindTexture(GL_TEXTURE_2D, texname)
 
             # determine surface positions on far Plane
@@ -402,8 +406,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             b = t - size[1]*self.farPlaneScaling
             
             #determine texture coordinates
-            tex_w = float(size[0])/float(surface.get_width())
-            tex_h = float(size[1])/float(surface.get_height())
+            tex_w = float(size[0])/float(pow2surface.get_width())
+            tex_h = float(size[1])/float(pow2surface.get_height())
                 
             # draw just the texture, no background
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
@@ -411,10 +415,10 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # draw faces 
             glBegin(GL_QUADS)
             glColor3f(1, 0, 0)
-            glTexCoord2f(0.0, 1.0-tex_h);         glVertex3f( l, b,  -self.farPlaneDist+1)
-            glTexCoord2f(tex_w, 1.0-tex_h);     glVertex3f( r, b,  -self.farPlaneDist+1)
-            glTexCoord2f(tex_w, 1.0); glVertex3f( r,  t,  -self.farPlaneDist+1)
-            glTexCoord2f(0.0, 1.0);     glVertex3f( l,  t,  -self.farPlaneDist+1)
+            glTexCoord2f(0.0, 1.0-tex_h);         glVertex3f( l, b,  -self.farPlaneDist)
+            glTexCoord2f(tex_w, 1.0-tex_h);     glVertex3f( r, b,  -self.farPlaneDist)
+            glTexCoord2f(tex_w, 1.0); glVertex3f( r,  t,  -self.farPlaneDist)
+            glTexCoord2f(0.0, 1.0);     glVertex3f( l,  t,  -self.farPlaneDist)
             glEnd()
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_DEPTH_TEST)        
@@ -462,6 +466,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleEvents()
             self.updateDisplay()
             yield 1
+
+
 
 
 if __name__=='__main__':
