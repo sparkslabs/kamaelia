@@ -52,6 +52,14 @@ class SimpleTestMProc(object):
     def _closeDownMicroprocess(self):
         self.closedDown = True
 
+class TestRunningMProc(object):
+    def next(self):
+        self.mainCalled=True
+    def stop(self):
+        raise "ARGH"
+    def _closeDownMicroprocess(self):
+        raise "ARGH 2"
+
 
 class scheduler_Test(unittest.TestCase):
     
@@ -132,24 +140,17 @@ class scheduler_Test(unittest.TestCase):
    def test_pausedMicroprocessDoesNotGetCalled(self):
        """A microprocess is run until paused, by calling scheduler.pauseThread(). The microprocess is then no longer 'run'."""
        
-       class TestMProc(microprocess):
-           def next(self):
-                self.mainCalled=True
-           def stop(self):
-               raise "ARGH"
-           def _closeDownMicroprocess(self):
-               raise "ARGH 2"
-       
        s=scheduler()
        sched = s.main()
-       mprocess = TestMProc()
+       mprocess = TestRunningMProc()
        s._addThread(mprocess)
        try:
            for _ in range(0,3):   # give it a few cycles grace
                sched.next()
            for _ in range(0,10):
                mprocess.mainCalled=False
-               sched.next()
+               for i in range(0,3):
+                   sched.next()
                self.assert_(mprocess.mainCalled, "Microprocess next() should be being called at this stage.")
            s.pauseThread(mprocess)
            for _ in range(0,3):   # give it a few cycles grace
@@ -161,6 +162,132 @@ class scheduler_Test(unittest.TestCase):
        except:
            raise
            
+   def test_oneMicroprocessPausesOthersContinueToRun(self):
+       """If one microprocess is paused, the scheduler continues to run other microprocesses."""
+       s=scheduler()
+       sched = s.main()
+       paused = TestRunningMProc()
+       s._addThread(paused)
+       others = []
+       for _ in range(0,5):
+           mp=TestRunningMProc()
+           s._addThread(mp)
+           others.append(mp)
+       all = others + [paused]
+       
+       try:
+           for _ in range(0,3*len(all)):   # give it a few cycles grace
+               sched.next()
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in all:
+                   self.assert_(mp.mainCalled, "Microprocess next() should be being called at this stage.")
+           s.pauseThread(paused)
+           for _ in range(0,3*len(all)):   # give it a few cycles grace
+               sched.next()
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in others:
+                   self.assert_(mp.mainCalled, "Microprocess next() should be being called at this stage.")
+               self.assert_(paused.mainCalled==False, "Microprocess next() should not be being called at this stage.")
+       except:
+           raise
+               
+   def test_pausedMicroprocessCanBeWoken(self):
+       """If a microprocess is paused, calling sheduler.wakeThread() will unpause it."""
+       s=scheduler()
+       sched = s.main()
+       paused = TestRunningMProc()
+       s._addThread(paused)
+       others = []
+       for _ in range(0,5):
+           mp=TestRunningMProc()
+           s._addThread(mp)
+           others.append(mp)
+       all = others + [paused]
+       try:
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+           
+           s.pauseThread(paused)
+
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in others:
+                   self.assert_(mp.mainCalled, "Microprocess next() should be being called at this stage.")
+               self.assert_(paused.mainCalled==False, "Microprocess next() should not be being called at this stage.")
+               
+           s.wakeThread(paused)
+           for _ in range(0,5*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in all:
+                   self.assert_(mp.mainCalled, "Microprocess next() should be being called at this stage.")
+       except:
+           raise
+       
+   def test_wakingPausedMicroprocessDoesntWakeOthers(self):
+       """Waking a paused microprocess will not wake other paused microprocesses."""
+       s=scheduler()
+       sched = s.main()
+       notpaused = TestRunningMProc()
+       s._addThread(notpaused)
+       others = []
+       for _ in range(0,5):
+           mp=TestRunningMProc()
+           s._addThread(mp)
+           others.append(mp)
+       all = others + [notpaused]
+       try:
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+           
+           for mp in all:
+               s.pauseThread(mp)
+
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in all:
+                   self.assert_(mp.mainCalled==False, "Microprocess next() should not be being called at this stage.")
+               
+           s.wakeThread(notpaused)
+           for _ in range(0,5*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for _ in range(0,10):
+               for mp in all:
+                   mp.mainCalled=False
+               for i in range(len(all)*2):
+                   sched.next()
+               for mp in others:
+                   self.assert_(mp.mainCalled == False, "Microprocess next() should notbe being called at this stage.")
+               self.assert_(notpaused.mainCalled, "Microprocess next() should be being called at this stage.")
+
+       except:
+           raise
 
 if __name__=='__main__':
    unittest.main()
