@@ -290,18 +290,17 @@ class component(microprocess):
       return self.inboxes[boxname].local_len()
 
 
-   def link(self, source,sink,**optionalargs):
-      """'C.link(source,sink)' -
+   def link(self, source,sink,*optionalargs, **kwoptionalargs):
+      """'C.link(source,sink, ...)' -
       create linkage between a source and sink.
 
       source is a tuple: (source_component, source_box)
       sink is a tuple: (sink_component, sink_box)
 
-      passthrough and pipewidth are defined as in the linkage class
+      See Axon.Postoffice.link(...) for more information.
       """
-      # NOTE: support for synchronous and pipewidth now missing
 
-      return self.postoffice.link(source, sink, **optionalargs)
+      return self.postoffice.link(source, sink, *optionalargs, **kwoptionalargs)
 
 
    def unlink(self, thecomponent=None, thelinkage=None):
