@@ -256,7 +256,8 @@ class scheduler_Test(unittest.TestCase):
            others.append(mp)
        all = others + [notpaused]
        try:
-           for _ in range(0,3*len(all)): # give it a few cycles grace
+           
+           for _ in range(0,5*len(all)): # give it a few cycles grace
                sched.next()
            
            for mp in all:
@@ -288,6 +289,139 @@ class scheduler_Test(unittest.TestCase):
 
        except:
            raise
+
+   def test_wakingAlreadyAwakeMicroprocessHasNoEffect(self):
+       """Waking or pausing a microprocess that is already awake or paused (respectively) has no effect."""
+       s=scheduler()
+       sched = s.main()
+       themp = TestRunningMProc()
+       others = [ TestRunningMProc() for _ in range(0,5) ]
+       all = others + [themp]
+       
+       for m in all: s._addThread(m)
+       
+       try:
+           for m in all:
+               m.mainCalled=False
+           
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           for m in all:
+               self.assert_(m.mainCalled, "Threads should all be running")
+               m.mainCalled=False
+           
+           self.assert_( all.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+           
+           s.wakeThread(themp)
+           
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+           
+           self.assert_( all.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+           
+           for m in all:
+               self.assert_(m.mainCalled, "Threads should all be running")
+               m.mainCalled=False
+
+           s.pauseThread(themp)
+
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           for m in others:
+               self.assert_(m.mainCalled, "Threads should all be running except one")
+               m.mainCalled=False
+           self.assert_(not themp.mainCalled, "Threads should all be running except one")
+
+       except:
+           raise
+
+   def test_wakingOrPausingNonActivatedMicroprocessHasoEffect(self):
+       """Waking or pausing a microprocess that has not yet been activated has no effect."""
+       s=scheduler()
+       sched = s.main()
+       themp = TestRunningMProc()
+       others = [ TestRunningMProc() for _ in range(0,5) ]
+       all = others + [themp]
+       
+       for m in others: s._addThread(m)
+       
+       try:
+           for m in all:
+               m.mainCalled=False
+           
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           for m in others:
+               self.assert_(m.mainCalled, "Threads should all be running")
+               m.mainCalled=False
+           self.assert_(not themp.mainCalled, "Threads should all be running except one")
+           
+           self.assert_( others.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+           
+           s.wakeThread(themp)
+           
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+           
+           self.assert_( others.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+           
+           for m in others:
+               self.assert_(m.mainCalled, "Threads should all be running")
+               m.mainCalled=False
+           self.assert_(not themp.mainCalled, "Threads should all be running except one")
+
+           s.pauseThread(themp)
+
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           for m in others:
+               self.assert_(m.mainCalled, "Threads should all be running except one")
+               m.mainCalled=False
+           self.assert_(not themp.mainCalled, "Threads should all be running except one")
+
+       except:
+           raise
+        
+   def test_listAllThreadsMethodListsAllMicroprocesses(self):
+       """The listAllThreads() method returns a list of all activated microprocesses whether paused or awake."""
+       s=scheduler()
+       sched = s.main()
+       all = [ TestRunningMProc() for _ in range(0,5) ]
+       
+       for m in all: s._addThread(m)
+       
+       try:
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           self.assert_( all.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+           
+           s.pauseThread(all[1])
+           s.pauseThread(all[4])
+           
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+       
+           self.assert_( all.sort() == s.listAllThreads().sort(), "Threads we think should be running are.")
+
+       except:
+           raise
+        
+   def test_slowmoNonZero(self):
+       """Specifying slowMo>0 argument to main() does XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"""
+       self.fail("Test not yet implemented")
+        
+   def test_canBlockFalseDefault(self):
+       """By default, if all microprocesses are paused, the scheduler will immediately yield back."""
+       self.fail("Test not yet implemented")
+    
+   def test_canBlockTrue(self):
+       """If canBlock argument of main() is True, then the scheduler may/will block if all microprocesses are paused."""
+       self.fail("Test not yet implemented")
 
 if __name__=='__main__':
    unittest.main()
