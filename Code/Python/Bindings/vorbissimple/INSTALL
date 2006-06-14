@@ -9,7 +9,7 @@ libvorbissimple first:
 
 You need to have Pyrex installed in order to build the python bindings.
 If you don't already have this, do the following
-   * Grab pyrex - we used Pyrex-0.9.2.1.tar.gz here
+   * cd <root of tarball>
    * tar zxf Pyrex-0.9.2.1.tar.gz
    * cd Pyrex-0.9.2.1
    * python setup.py install

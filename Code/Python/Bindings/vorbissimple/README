@@ -1,10 +1,4 @@
 This directory contains libvorbissimple and some basic python bindings.
-
-What is libvorbissimple ? It is an auxillary library to Kamaelia used 
-for building simple vorbis decode and playback components. See also
-the BytesToBeeps PDF document, which documents the ideas and design
-encompassed by this library in detail.
-
 2 sample programs are included using the libraries:
    * simple_decoder.c
    * simple_decoder.py
