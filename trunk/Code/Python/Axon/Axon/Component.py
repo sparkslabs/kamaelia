@@ -365,10 +365,11 @@ class component(microprocess):
       return None
    def closeDownComponent(self):
       """Stub method. **This method is designed to be overridden.** """
-      for callback in self._callOnCloseDown:
-          callback()
       return 1
    def _closeDownMicroprocess(self):
+      for callback in self._callOnCloseDown:
+          callback()
+      self.postoffice.unlinkAll()
       return None
 
    def _deliver(self, message, boxname="inbox"):
