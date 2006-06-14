@@ -42,10 +42,15 @@ cdef class vorbissimple:
    cdef source_buffer* sourceBuffer
    cdef decode_buffer* decodeBuffer
 
-   def __init__(self):
+   def __new__(self):
       self.sourceBuffer = newSourceBuffer(NULL,BUFSIZE)
       self.oggVorbisContext = newOggVorbisContext()
       self.decodeBuffer = NULL
+      
+   def __dealloc__(self):
+      if self.decodeBuffer:
+         free(self.decodeBuffer)
+         self.decodeBuffer = NULL
 
    def sendBytesForDecode(self, bytes):
       cdef int i 
@@ -60,6 +65,7 @@ cdef class vorbissimple:
    def _getAudio(self):
       if self.decodeBuffer:
          free(self.decodeBuffer)
+         self.decodeBuffer = NULL
       self.decodeBuffer = getAudio(self.oggVorbisContext)
       if self.decodeBuffer.status == NEEDDATA:
          raise "NEEDDATA"
