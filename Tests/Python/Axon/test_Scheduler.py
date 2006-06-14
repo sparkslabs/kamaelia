@@ -411,17 +411,18 @@ class scheduler_Test(unittest.TestCase):
        except:
            raise
         
-   def test_slowmoNonZero(self):
-       """Specifying slowMo>0 argument to main() does XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"""
+   def test_runThreadsSlowmo(self):
+       """Specifying slowMo>0 argument to runThreads() causes a delay of the specified number of seconds between each pass through all microprocesses. During the delay it will yield."""
        self.fail("Test not yet implemented")
         
-   def test_canBlockFalseDefault(self):
-       """By default, if all microprocesses are paused, the scheduler will immediately yield back."""
+   def test_directUsageOfMainDoesntBlock(self):
+       """By default, if all microprocesses are paused, the scheduler will immediately yield back - it will not block."""
        self.fail("Test not yet implemented")
     
-   def test_canBlockTrue(self):
+   def test_runThreadsUsesNonBusyWaitingMode(self)
        """If canBlock argument of main() is True, then the scheduler may/will block if all microprocesses are paused."""
        self.fail("Test not yet implemented")
+
 
 if __name__=='__main__':
    unittest.main()
