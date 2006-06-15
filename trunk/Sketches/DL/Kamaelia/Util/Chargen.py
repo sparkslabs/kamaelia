@@ -63,10 +63,14 @@ class Chargen(Axon.Component.component):
    """\
    Chargen() -> new Chargen component.
 
-   Component that emits a continuous stream of the string "Hello World" from its
+   Component that emits a continuous stream of the given string or "Hello World" by default from its
    "outbox" outbox as fast as it can.
    """
+   def __init__(self, string="Hello World"):
 
+      self.__super.__init__()
+      self.string = string
+      
    Inboxes  = { "inbox"   : "NOT USED",
                 "control" : "NOT USED",
               }
@@ -78,7 +82,7 @@ class Chargen(Axon.Component.component):
    def main(self):
       """Main loop."""
       while 1:
-         self.send("Hello World", "outbox")
+         self.send(self.string, "outbox")
          yield 1
 
 def tests():
@@ -87,7 +91,7 @@ def tests():
 
    class testComponent(Axon.Component.component):
       def main(self):
-        chargen= Chargen()
+        chargen= Chargen("testTest!")
         display = consoleEchoer()
 
         self.link((chargen,"outbox"), (display,"inbox"))
