@@ -221,10 +221,10 @@ class HTTPParser(component):
                 if requestobject["headers"].has_key("host"):
                     requestobject["uri-server"] = requestobject["headers"]["host"]
                 
-            if requestobject["version"] == "1.1":
-                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
-            else:
-                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
+                if requestobject["version"] == "1.1":
+                    requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
+                else:
+                    requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
 
                 if bodiedrequest:
                     #print "HTTPParser::main - stage 3 start"
