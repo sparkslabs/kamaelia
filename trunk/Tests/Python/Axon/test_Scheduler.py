@@ -413,7 +413,57 @@ class scheduler_Test(unittest.TestCase):
         
    def test_runThreadsSlowmo(self):
        """Specifying slowMo>0 argument to runThreads() causes a delay of the specified number of seconds between each pass through all microprocesses. During the delay it will yield."""
-       self.fail("Test not yet implemented")
+       
+       class MOCK_TIME_MODULE(object):
+           def __init__(self):
+               self.count = 0
+               self.thetime = 0
+           def time(self):
+               # time jumps to just after 1 second, after 1000 iterations
+               self.count += 1
+               if self.count > 1000:
+                   self.thetime = 1.01
+               if self.count > 2000:
+                   raise "Test should have finished by now!"
+               return self.thetime
+           def sleep(self,seconds):
+               self.thetime = self.thetime + seconds
+           
+       # plug in mock
+       timemod = MOCK_TIME_MODULE()
+       Axon.Scheduler.time = timemod
+       
+       class Success(Exception): pass
+       
+       class MProc(object):
+           def __init__(self,testcase):
+               super(MProc,self).__init__()
+               self.testcase = testcase
+           def next(self):
+               self.testcase.assert_(timemod.thetime >= 1.00, "Should not have been executed before a 1 second delay has passed")
+               raise Success
+           def stop(self):
+               raise "ARGH"
+           def _closeDownMicroprocess(self):
+               raise "ARGH 2"
+       
+       try:
+           s=Axon.Scheduler.scheduler()
+           
+           mp = MProc(self)
+           s._addThread(mp)
+           
+           try:
+               s.runThreads(slowmo=1.0)
+               self.fail("Should not have reached here")
+           except Success:
+               pass   # test succeeded
+           except:
+               raise
+       finally:
+           # unplug mock
+           import time as t
+           Axon.Scheduler.time = t
         
    def test_directUsageOfMainDoesntBlock(self):
        """By default, if all microprocesses are paused, the scheduler will immediately yield back - it will not block."""
@@ -422,6 +472,7 @@ class scheduler_Test(unittest.TestCase):
    def test_runThreadsUsesNonBusyWaitingMode(self):
        """If canBlock argument of main() is True, then the scheduler may/will block if all microprocesses are paused."""
        self.fail("Test not yet implemented")
+
 
 
 if __name__=='__main__':
