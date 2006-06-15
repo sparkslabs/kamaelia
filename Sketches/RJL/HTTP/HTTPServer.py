@@ -90,8 +90,8 @@ class HTTPServer(component):
 
     def main(self):
         self.initialiseComponent()
-        shouldbreak = False
-        while 1:
+        loop = True
+        while loop:
             yield 1
             while self.dataReady("inbox"):
                 temp = self.recv("inbox")
@@ -99,11 +99,13 @@ class HTTPServer(component):
 
             while self.dataReady("control"):
                 temp = self.recv("control")
-                if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished):
+                if isinstance(temp, producerFinished):
                     self.send(temp, "mime-control")
-                    self.send(temp, "http-control")
-                    print "HTTPServer received shutdown"
-                    shouldbreak = True
+                elif isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
+                    self.send(shutdown(), "mime-control")
+                    self.send(shutdown(), "http-control")
+                    #print "HTTPServer received shutdown"
+                    loop = False
                     break
             
             while self.dataReady("http-outbox"):
@@ -126,12 +128,10 @@ class HTTPServer(component):
                     sig = producerFinished(self)
                     self.send(sig, "mime-control")                
                     self.send(sig, "signal")
-                    shouldbreak = True
+                    loop = False
                     #close the connection
             
             self.pause()
-            if shouldbreak:
-                break
                 
         self.closeDownComponent()
         
