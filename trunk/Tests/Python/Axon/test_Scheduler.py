@@ -27,7 +27,7 @@
 import unittest
 
 # import preconditions record values
-from Axon.Scheduler import *
+import Axon.Scheduler
 
 
 class SimpleTestMProc(object):
@@ -66,13 +66,13 @@ class scheduler_Test(unittest.TestCase):
    def setUp(self):
       pass
    def test_importsuccess(self):
-      self.failUnless(microprocess.schedulerClass is scheduler)
-      self.failUnless(scheduler.run)
+      self.failUnless(Axon.Scheduler.microprocess.schedulerClass is Axon.Scheduler.scheduler)
+      self.failUnless(Axon.Scheduler.scheduler.run)
    def test_SmokeTest_NoArguments(self):
       "__init__ - Called with no arguments ... "
-      scheduler.run = None
-      s=scheduler()
-      self.failUnless(scheduler.run is s)
+      Axon.Scheduler.scheduler.run = None
+      s=Axon.Scheduler.scheduler()
+      self.failUnless(Axon.Scheduler.scheduler.run is s)
       
 #   def test_sensiblestructure(self):
 #      "Conceptual issue to discuss"
@@ -86,7 +86,7 @@ class scheduler_Test(unittest.TestCase):
       
    def test_stopsIfNoThreads(self):
        """When run, the scheduler microprocess terminates immediately if there are no microprocesses to schedule."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        try:
            # give it a few cycles grace
@@ -102,7 +102,7 @@ class scheduler_Test(unittest.TestCase):
    def test_runsMicroprocessToCompletionThenStops(self):
        """When run with a single microprocess, the scheduler microprocess only terminates once the scheduled microprocess has terminated."""
        
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        t=SimpleTestMProc()
        s._addThread(t)
@@ -119,7 +119,7 @@ class scheduler_Test(unittest.TestCase):
    def test_runsMicroprocessesAllToCompletionThenStops(self):
        """When run with multiple microprocesses, the scheduler microprocess only terminates once all scheduled microprocesses have terminated."""
        
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        mprocesses = []
        for i in range(1,5):
@@ -140,7 +140,7 @@ class scheduler_Test(unittest.TestCase):
    def test_pausedMicroprocessDoesNotGetCalled(self):
        """A microprocess is run until paused, by calling scheduler.pauseThread(). The microprocess is then no longer 'run'."""
        
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        mprocess = TestRunningMProc()
        s._addThread(mprocess)
@@ -164,7 +164,7 @@ class scheduler_Test(unittest.TestCase):
            
    def test_oneMicroprocessPausesOthersContinueToRun(self):
        """If one microprocess is paused, the scheduler continues to run other microprocesses."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        paused = TestRunningMProc()
        s._addThread(paused)
@@ -201,7 +201,7 @@ class scheduler_Test(unittest.TestCase):
                
    def test_pausedMicroprocessCanBeWoken(self):
        """If a microprocess is paused, calling sheduler.wakeThread() will unpause it."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        paused = TestRunningMProc()
        s._addThread(paused)
@@ -245,7 +245,7 @@ class scheduler_Test(unittest.TestCase):
        
    def test_wakingPausedMicroprocessDoesntWakeOthers(self):
        """Waking a paused microprocess will not wake other paused microprocesses."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        notpaused = TestRunningMProc()
        s._addThread(notpaused)
@@ -292,7 +292,7 @@ class scheduler_Test(unittest.TestCase):
 
    def test_wakingAlreadyAwakeMicroprocessHasNoEffect(self):
        """Waking or pausing a microprocess that is already awake or paused (respectively) has no effect."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        themp = TestRunningMProc()
        others = [ TestRunningMProc() for _ in range(0,5) ]
@@ -339,7 +339,7 @@ class scheduler_Test(unittest.TestCase):
 
    def test_wakingOrPausingNonActivatedMicroprocessHasoEffect(self):
        """Waking or pausing a microprocess that has not yet been activated has no effect."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        themp = TestRunningMProc()
        others = [ TestRunningMProc() for _ in range(0,5) ]
@@ -388,7 +388,7 @@ class scheduler_Test(unittest.TestCase):
         
    def test_listAllThreadsMethodListsAllMicroprocesses(self):
        """The listAllThreads() method returns a list of all activated microprocesses whether paused or awake."""
-       s=scheduler()
+       s=Axon.Scheduler.scheduler()
        sched = s.main()
        all = [ TestRunningMProc() for _ in range(0,5) ]
        
@@ -419,7 +419,7 @@ class scheduler_Test(unittest.TestCase):
        """By default, if all microprocesses are paused, the scheduler will immediately yield back - it will not block."""
        self.fail("Test not yet implemented")
     
-   def test_runThreadsUsesNonBusyWaitingMode(self)
+   def test_runThreadsUsesNonBusyWaitingMode(self):
        """If canBlock argument of main() is True, then the scheduler may/will block if all microprocesses are paused."""
        self.fail("Test not yet implemented")
 
