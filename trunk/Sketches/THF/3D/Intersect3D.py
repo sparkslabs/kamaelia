@@ -78,7 +78,7 @@ class Intersect3D:
         
         # test if the ray is parallel
         den = n.dot(r_dir)
-        if den<0.0001:
+        if abs(den)<0.0001:
             return 0
         
         # calc distance to point of intersection
@@ -100,7 +100,7 @@ class Intersect3D:
         
         # test if the ray is parallel
         den = n.dot(r_dir)
-        if den<Intersect3D.epsilon:
+        if abs(den)<Intersect3D.epsilon:
             t = 0
         else:        
             # calc distance to point of intersection
@@ -108,7 +108,8 @@ class Intersect3D:
             t = nom/den
 
         # determine point of intersection p
-        if t==0: return 0
+        if t==0:
+            return 0
         p3d = r_origin+r_dir*t
 
         # project points of polyon to axis plane where polygon area is maximized
@@ -128,13 +129,11 @@ class Intersect3D:
         e0 = points[-1]
         e1 = points[0]
         y0 = e0[1] >= p[1]
-        ints = 0
         for i in range(1, len(points)+1):
             y1 = e1[1] >= p[1]
             if y0 != y1:
                 y2 = (e1[1]-p[1])*(e0[0]-e1[0]) >= (e1[0]-p[0])*(e0[1]-e1[1])
                 if y2 == y1:
-                    ints = ints+1
                     inside = not inside
             if i < len(points):
                 y0 = y1
