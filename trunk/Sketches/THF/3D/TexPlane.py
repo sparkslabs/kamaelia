@@ -112,7 +112,15 @@ class TexPlane(Axon.Component.component):
     def intersectRay(self, o, d):
         transformedVerts = [self.transform.transformVector(v) for v in self.vertices]    
         t = Intersect3D.ray_Polygon(o, d, transformedVerts)
-        if t!=0:print "point of intersection:", d*t
+        pint = d*t
+        Ap = pint-transformedVerts[0]
+        AB = transformedVerts[1]-transformedVerts[0]
+        AD = transformedVerts[3]-transformedVerts[0]
+        x = Ap.dot(AB)
+        y = Ap.dot(AD)
+        
+        if t!=0:
+            print "2D:", x, y
         return t
 
 
