@@ -99,7 +99,7 @@ class HTTPParser(component):
     def shouldShutdown(self):
         while self.dataReady("control"):
             temp = self.recv("control")
-            if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished) or isinstance(temp, shutdown):
+            if isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
                 #print "HTTPParser should shutdown"
                 return True
         
@@ -167,7 +167,8 @@ class HTTPParser(component):
 
                     #next line supports all working clients but also 
                     #some broken clients that don't encode spaces properly!
-                    requestobject = splitUri(string.join(splitline[1:-1], "%20") )
+                    #update is used to merge the uri-dictionary with the request object
+                    requestobject.update(splitUri(string.join(splitline[1:-1], "%20")))
                     self.splitProtocolVersion(splitline[-1], requestobject)
                     
                     if requestobject["protocol"] != "HTTP":
@@ -259,7 +260,7 @@ class HTTPParser(component):
                             #we're supposed to say continue, but this is a pain
                             #and everything still works if we don't just with a few secs delay
                             pass
-                        
+                        #print "HTTPParser::main - stage 3.length known start"
                         
                         bodylength = int(requestobject["headers"]["content-length"])
                          
@@ -273,14 +274,17 @@ class HTTPParser(component):
                                 yield 1
                         requestobject["body"] = self.readbuffer[:bodylength]
                         self.readbuffer = self.readbuffer[bodylength:]
-                    elif requestobject["headers"]["connection"] == "close":
+                    elif requestobject["headers"]["connection"].lower() == "close":
+                        #print "HTTPParser::main - stage 3.connection close start"
                         connectionopen = True
                         while connectionopen:
                             #print "HTTPParser::main - stage 3.connection close.1"
                             if self.shouldShutdown(): return						
                             while self.dataFetch():
+                                print "!"
                                 pass
                             while self.dataReady("control"):
+                                print "!"                            
                                 temp = self.recv("control")
                                 if isinstance(temp, producerFinished):
                                     connectionopen = False
@@ -296,7 +300,7 @@ class HTTPParser(component):
                     else:
                         #no way of knowing how long the body is
                         requestobject["bad"] = 411 #length required
-                       
+                        #print "HTTPParser::main - stage 3.bad"
 
                 #state 4 - request complete, send it on
             #print "Request sent on."
