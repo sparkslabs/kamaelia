@@ -33,6 +33,7 @@ import pygame, pygame.image
 from pygame.locals import *
 from Display3D import Display3D
 from Util3D import *
+from Intersect3D import *
 import Axon
 
 textures = [0,0]
@@ -93,8 +94,7 @@ class TexPlane(Axon.Component.component):
         # prepare vertices for intersection test
         x = float(self.size.x/2)
         y = float(self.size.y/2)
-        z = float(self.size.z/2)
-        self.vertices = [ Vector(x, 0.0, 0.0), Vector(0.0, y, 0.0), Vector(0.0, 0.0, z) ]
+        self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
         
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
@@ -110,36 +110,15 @@ class TexPlane(Axon.Component.component):
     # if no intersection occurs, 0 is returned
     # Algorithm from "Realtime Rendering"
     def intersectRay(self, o, d):
-        transformed = [self.transform.transformVector(v) for v in self.vertices]
-        tmin = -10000
-        tmax = 10000
-           
-        p = self.pos-o
-        halfwidths = [self.size.x/2, self.size.y/2, self.size.z/2]
-        for i in range(3):
-            a = transformed[i]-p
-            h = halfwidths[i]
-            e = a.dot(p)
-            f = a.dot(d)
-            if abs(f)>0.0001:
-                t1 = (e+h)/f
-                t2 = (e-h)/f
-                if t1 > t2:
-                    x = t1
-                    t1 = t2
-                    t2 = x
-                if t1 > tmin: tmin = t1
-                if t2 < tmax: tmax = t2
-                if tmin > tmax: return 0
-                if tmax < 0: return 0
-            elif -e-h > 0 or -e+h < 0: return 0
-        if tmin > 0: return tmin
-        else: return tmax
+        transformedVerts = [self.transform.transformVector(v) for v in self.vertices]    
+        t = Intersect3D.ray_Polygon(o, d, transformedVerts)
+        if t!=0:print "point of intersection:", d*t
+        return t
 
 
     def applyTransforms(self):
         # generate new transformation matrix if needed
-        if True:#self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
+        if self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
             self.transform.reset()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rot)
@@ -316,7 +295,7 @@ if __name__=='__main__':
         ECHO = consoleEchoer(),
         linkages = {
             ("PLANE", "outbox") : ("ECHO", "inbox"),
-            ("ROTATOR", "outbox") : ("PLANE", "control3d"),
+#            ("ROTATOR", "outbox") : ("PLANE", "control3d"),
 #            ("MOVER", "outbox") : ("PLANE", "control3d"),
 #            ("BUZZER", "outbox") : ("CUBER", "control3d"),
         } ).run()
