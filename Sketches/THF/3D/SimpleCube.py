@@ -33,6 +33,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from Display3D import Display3D
 from Util3D import *
+from Intersect3D import *
 import Axon
 
 class Control3D:
@@ -105,35 +106,13 @@ class SimpleCube(Axon.Component.component):
     # Algorithm from "Realtime Rendering"
     def intersectRay(self, o, d):
         transformed = [self.transform.transformVector(v) for v in self.vertices]
-        tmin = -10000
-        tmax = 10000
-           
-        p = self.pos-o
         halfwidths = [self.size.x/2, self.size.y/2, self.size.z/2]
-        for i in range(3):
-            a = transformed[i]-p
-            h = halfwidths[i]
-            e = a.dot(p)
-            f = a.dot(d)
-            if abs(f)>0.0001:
-                t1 = (e+h)/f
-                t2 = (e-h)/f
-                if t1 > t2:
-                    x = t1
-                    t1 = t2
-                    t2 = x
-                if t1 > tmin: tmin = t1
-                if t2 < tmax: tmax = t2
-                if tmin > tmax: return 0
-                if tmax < 0: return 0
-            elif -e-h > 0 or -e+h < 0: return 0
-        if tmin > 0: return tmin
-        else: return tmax
+        return Intersect3D.ray_OBB(o, d, self.pos, transformed, halfwidths)
 
 
     def applyTransforms(self):
         # generate new transformation matrix if needed
-        if True:#self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
+        if self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
             self.transform.reset()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rot)
