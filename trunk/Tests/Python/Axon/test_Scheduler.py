@@ -60,6 +60,19 @@ class TestRunningMProc(object):
     def _closeDownMicroprocess(self):
         raise "ARGH 2"
 
+class TestPausedMProc(object):
+    def __init__(self, scheduler):
+        self.s = scheduler
+        self.__thread = self.main()
+        self.next = self.__thread.next
+    def main(self):
+        self.s.pauseThread(self)
+        yield 1
+    def stop(self):
+        pass
+    def _closeDownMicroprocess(self):
+        pass
+
 
 class scheduler_Test(unittest.TestCase):
     
@@ -467,11 +480,67 @@ class scheduler_Test(unittest.TestCase):
         
    def test_directUsageOfMainDoesntBlock(self):
        """By default, if all microprocesses are paused, the scheduler will immediately yield back - it will not block."""
-       self.fail("Test not yet implemented")
+       
+       # XXX This test probably needs to be better implemented/defined ... it simply checks that it doesn't
+       #     block for too long using a timeout
+       import threading
+       
+       class SchedLaunch(threading.Thread):
+           def __init__(self):
+               super(SchedLaunch,self).__init__()
+               self.exception = None
+               self.s = Axon.Scheduler.scheduler()
+               self.smain = self.s.main()
+               self.mps = [TestRunningMProc() for _ in range(0,5)]
+               for mp in self.mps:
+                   self.s._addThread(mp)
+               for _ in range(0,100):
+                   self.smain.next()
+               for mp in self.mps:
+                   self.s.pauseThread(mp)
+           def run(self):
+               try:
+                   for _ in range(0,100):
+                       self.smain.next()
+               except:
+                    exception = sys.exc_info()
+                    def throwexception(exception):
+                        raise exception[0], exception[1], exception[2]
+                    self.exception = sys.exc_info()
+                    
+       thread = SchedLaunch()
+       thread.start()
+       thread.join(5.0)
+       self.assert_(not thread.isAlive(), "Scheduler should not have taken this long")
+       if thread.exception:
+           raise thread.exception[0],thread.exception[1],thread.exception[2]
     
    def test_runThreadsUsesNonBusyWaitingMode(self):
-       """If canBlock argument of main() is True, then the scheduler may/will block if all microprocesses are paused."""
-       self.fail("Test not yet implemented")
+       """If run using the runThreads method, then the scheduler may/will block for short periods, relinquishing processor time, if all microprocesses are paused."""
+       
+       # we'll measure CPU time used over 3 seconds and expect it to be <1% of 3 seconds
+       seconds = 3.0
+       
+       s = Axon.Scheduler.scheduler()
+       mps = [TestPausedMProc(s) for _ in range(0,5)]
+       for mp in mps:
+           s._addThread(mp)
+       
+       import os,time
+       import threading
+       
+       def causeCompletion():
+           for mp in mps:
+               s.wakeThread(mp)
+       
+       timer = threading.Timer(seconds,causeCompletion)
+       
+       timer.start()
+       starttime = os.times()[1]
+       s.runThreads()
+       endtime = os.times()[2]
+       
+       self.assert_(endtime-starttime <= 0.01*seconds, "Time consumed should have been <1% of CPU time")
 
 
 
