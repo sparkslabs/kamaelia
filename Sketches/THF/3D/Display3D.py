@@ -106,7 +106,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.surface_to_eventcomms = {}
         self.surface_to_texnames = {}
         self.surface_to_pow2surface = {}
-
+        
+        self.wrappedsurfaces = []
+       
         # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
         self.farPlaneDist = argd.get("far", 100.0)
@@ -193,6 +195,15 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         eventcomms = self.addOutbox("eventsfeedback")
                         self.link((self,eventcomms), eventservice)
                     self.objects.append( (message.get("object"), eventcomms) )
+                    
+                elif message.get("WRAPPERREQUEST", False):
+                    surface = message.get("surface")
+                    self.wrappedsurfaces.append(str(id(surface)));
+                    print str(self.wrappedsurfaces)
+                    callbackservice = message["wrapcallback"]
+                    callbackcomms = self.addOutbox("wrapfeedback")
+                    self.link((self,callbackcomms), callbackservice)
+                    self.send(self.surface_to_texnames[str(id(surface))], callbackcomms)
                     
                 elif message.get("DISPLAYREQUEST", False):
                     self.needsRedrawing = True
@@ -396,6 +407,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # create texture if not already done
             if not glIsTexture(texname):
                 self.updatePygameTexture(surface, pow2surface, texname)
+
+            # skip surfaces which get wrapped
+            if str(id(surface)) in self.wrappedsurfaces: continue
             
             glBindTexture(GL_TEXTURE_2D, texname)
 
