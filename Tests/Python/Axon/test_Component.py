@@ -307,6 +307,46 @@ class Component_Test(unittest.TestCase):
       sm=c._closeDownMicroprocess()
       self.failUnless(sm == None)
 
+   def test_linkagesRemovedOnComponentShutdown(self):
+       """The _closeDownMicroprocess method ensures any linkages the component has made that still exist are removed."""
+       
+       a=component()
+       b=component()
+       c=component()
+       d=component()
+       
+       
+       c.link((a,"outbox"),(b,"inbox"))
+       c.link((c,"outbox"),(b,"outbox"),passthrough=2)
+       c.link((c,"inbox"),(a,"inbox"),passthrough=1)
+       
+       d.link((d,"outbox"),(c,"inbox"))
+       d.link((b,"outbox"),(d,"inbox"))
+       
+       # verify existing linkages
+       msg = "hello"
+       d.send(msg,"outbox")
+       self.assert_(msg == a.recv("inbox"))
+       c.send(msg,"outbox")
+       self.assert_(msg == d.recv("inbox"))
+       a.send(msg,"outbox")
+       self.assert_(msg == b.recv("inbox"))
+       
+       # stop component c
+       c._closeDownMicroprocess()
+       
+       # verify linkages have disappeared, but that those made by d still exist
+       msg = "bye"
+       d.send(msg,"outbox")
+       self.assert_(msg == c.recv("inbox"))
+       self.assert_(not a.dataReady("inbox"))
+       c.send(msg,"outbox")
+       self.assert_(not d.dataReady("inbox"))
+       b.send(msg,"outbox")
+       self.assert_(d.dataReady("inbox"))
+       a.send(msg,"outbox")
+       self.assert_(not b.dataReady("inbox"))
+       
 def suite():
    return unittest.makeSuite(Component_Test)
       
