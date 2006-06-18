@@ -59,7 +59,8 @@ class PygameWrapperPlane(Axon.Component.component):
         # 3D status
         "position" : "send position status when updated",
         "rotation": "send rotation status when updated",
-        "scaling": "send scaling status when updated"
+        "scaling": "send scaling status when updated",
+        "wrapped_eventsfeedback": "Used to send events to wrapped pygame comp",
     }
     
     def __init__(self, **argd):
@@ -92,6 +93,7 @@ class PygameWrapperPlane(Axon.Component.component):
 
         # vertices for intersection test
         self.vertices = []
+        self.transformedVertices = []
                 
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
@@ -107,17 +109,8 @@ class PygameWrapperPlane(Axon.Component.component):
     # if no intersection occurs, 0 is returned
     # Algorithm from "Realtime Rendering"
     def intersectRay(self, o, d):
-        transformedVerts = [self.transform.transformVector(v) for v in self.vertices]    
-        t = Intersect3D.ray_Polygon(o, d, transformedVerts)
-        pint = d*t
-        Ap = pint-transformedVerts[0]
-        AB = transformedVerts[1]-transformedVerts[0]
-        AD = transformedVerts[3]-transformedVerts[0]
-        if t !=0:
-            x = Ap.dot(AB)/(AB.length()**2)
-            y = Ap.dot(AD)/(AD.length()**2)
-            self.send("2D: (%2.2f, %2.2f);    " % (x*self.width, y*self.height), "outbox")
-
+        self.transformedVertices = [self.transform.transformVector(v) for v in self.vertices]    
+        t = Intersect3D.ray_Polygon(o, d, self.transformedVertices)
         return t
 
 
@@ -175,24 +168,42 @@ class PygameWrapperPlane(Axon.Component.component):
     def handleEvents(self):
         while self.dataReady("inbox"):
             for event in self.recv("inbox"):
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button in [1,3] and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        self.grabbed = event.button
-                    if event.button == 4 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        self.pos.z -= 1
-                    if event.button == 5 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        self.pos.z += 1
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button in [1,3]:
-                        self.grabbed = 0
-                if event.type == pygame.MOUSEMOTION:
-                    if self.grabbed == 1:
-                        self.rot.y += float(event.rel[0])
-                        self.rot.x += float(event.rel[1])
-                        self.rot %= 360
-                    if self.grabbed == 3:
-                        self.pos.x += float(event.rel[0])/10.0
-                        self.pos.y -= float(event.rel[1])/10.0
+                # If movementMode is True, translate input to movement commands
+                if event.movementMode:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button in [1,3] and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                            self.grabbed = event.button
+                        if event.button == 4 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                            self.pos.z -= 1
+                        if event.button == 5 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
+                            self.pos.z += 1
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        if event.button in [1,3]:
+                            self.grabbed = 0
+                    if event.type == pygame.MOUSEMOTION:
+                        if self.grabbed == 1:
+                            self.rot.y += float(event.rel[0])
+                            self.rot.x += float(event.rel[1])
+                            self.rot %= 360
+                        if self.grabbed == 3:
+                            self.pos.x += float(event.rel[0])/10.0
+                            self.pos.y -= float(event.rel[1])/10.0
+                # If movementMode is False, forward events to wrapped component
+                else:
+                    # test if ray intersects plane
+                    t = self.intersectRay(Vector(0,0,0), event.dir);
+                    # if an intersection was detected, map position on plane
+                    if t != 0:
+                        p = event.dir*t
+                        Ap = p-self.transformedVertices[0]
+                        AB = self.transformedVertices[1]-self.transformedVertices[0]
+                        AD = self.transformedVertices[3]-self.transformedVertices[0]
+                        x = Ap.dot(AB)/(AB.length()**2)
+                        y = Ap.dot(AD)/(AD.length()**2)
+                        event.pos = (x*self.width,y*self.height)
+                        self.send([event], "wrapped_eventsfeedback")
+#                        self.send("2D: (%2.2f, %2.2f);    " % (x*self.width, y*self.height), "outbox")
+
                         
     def handleMovementCommands(self):
         while self.dataReady("control3d"):
@@ -245,6 +256,9 @@ class PygameWrapperPlane(Axon.Component.component):
         x = self.width/200.0
         y = self.height/200.0
         self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
+        # setup event communications
+        if b.eventservice is not None:
+            self.link((self, "wrapped_eventsfeedback"), b.eventservice)
 
         while 1:
 
@@ -310,34 +324,49 @@ if __name__=='__main__':
 
 
     text = """\
+All objects in this scene can be moved when the CTRL
+key is pressed. Otherwise all interaction gets translated
+to pygame events. Try it on the button.
 The size of these 2 Ticker components is (350,250).
-Click on one of them to show the mapped 2D coordinates.
-The wrapped button is not yet functional (but moveable).
+The wrapped button is now fully functional (assigned to SPACE).
+Bottom left there is a Magna Doodle (tm) component. You can draw 
+green lines on it by using your left mouse button. Use the right mouse
+button to erase your artwork.
 """
     class datasource(Axon.Component.component):
         def main(self):
             for x in text.split():
                 self.send(x,"outbox")
                 yield 1
-    
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Util.Graphline import Graphline
     from Kamaelia.UI.Pygame.Ticker import Ticker
     from Kamaelia.UI.Pygame.Button import Button
+    from SimpleCube import *
+    import sys;
+    sys.path.append("../pygame/")
+    from MagnaDoodle import *
+    sys.path.append("../../MPS/Paint/")
+    from Paint import *
 
     Display3D.getDisplayService()[0].overridePygameDisplay()
    
     TEXT = datasource().activate()
     TICKER1 = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
-    TICKER1WRAPPER = PygameWrapperPlane(wrap=TICKER1, pos=Vector(-2, 0,-10), name="1st Wrapper Plane").activate()
+    TICKER1WRAPPER = PygameWrapperPlane(wrap=TICKER1, pos=Vector(-2, 1,-10), name="1st Wrapper Plane").activate()
     TICKER2 = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
-    TICKER2WRAPPER = PygameWrapperPlane(wrap=TICKER2, pos=Vector(2, 0,-10),  name="2nd Wrapper Plane").activate()
-    BUTTON = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
-    BUTTONWRAPPER = PygameWrapperPlane(wrap=BUTTON, pos=Vector(0, 1,-5),  name="2nd Wrapper Plane").activate()
+    TICKER2WRAPPER = PygameWrapperPlane(wrap=TICKER2, pos=Vector(2, 1,-10),  name="2nd Wrapper Plane").activate()
+    BUTTON = Button(caption="This button...",msg="...can be moved AND activated!", key=pygame.K_SPACE).activate()
+    BUTTONWRAPPER = PygameWrapperPlane(wrap=BUTTON, pos=Vector(0, 1.5,-5),  name="2nd Wrapper Plane").activate()
+    MAGNADOODLE = MagnaDoodle(size=(255,255)).activate()
+    MAGNADOODLEWRAPPER = PygameWrapperPlane(wrap=MAGNADOODLE, pos=Vector(-2, -2,-10),  name="Magna Doodle Wrapper Plane").activate() 
     ECHO = consoleEchoer().activate()
+    CUBE = SimpleCube(pos = Vector(2,-2,-10)).activate()
+    CUBEROTATOR = CubeRotator().activate()
     TICKER1WRAPPER.link((TICKER1WRAPPER, "outbox"), (TICKER2, "inbox"))
     TICKER2WRAPPER.link((TICKER2WRAPPER, "outbox"), (TICKER2, "inbox"))
     BUTTON.link((BUTTON, "outbox"), (TICKER2, "inbox"))
     TEXT.link((TEXT, "outbox"), (TICKER1, "inbox"))
+    CUBEROTATOR.link((CUBEROTATOR,"outbox"), (CUBE, "control3d"))
         
     Axon.Scheduler.scheduler.run.runThreads()  
