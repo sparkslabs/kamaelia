@@ -199,11 +199,21 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 elif message.get("WRAPPERREQUEST", False):
                     surface = message.get("surface")
                     self.wrappedsurfaces.append(str(id(surface)));
-                    print str(self.wrappedsurfaces)
                     callbackservice = message["wrapcallback"]
                     callbackcomms = self.addOutbox("wrapfeedback")
+                    pow2surface = self.surface_to_pow2surface[str(id(surface))]
+                    #determine texture coordinates
+                    tex_w = float(surface.get_width())/float(pow2surface.get_width())
+                    tex_h = float(surface.get_height())/float(pow2surface.get_height())
+                    # send display data
                     self.link((self,callbackcomms), callbackservice)
-                    self.send(self.surface_to_texnames[str(id(surface))], callbackcomms)
+                    b = Bunch()
+                    b.texname = self.surface_to_texnames[str(id(surface))]
+                    b.tex_w = tex_w
+                    b.tex_h = tex_h
+                    b.width = surface.get_width()
+                    b.height = surface.get_height()
+                    self.send( b, callbackcomms)
                     
                 elif message.get("DISPLAYREQUEST", False):
                     self.needsRedrawing = True
@@ -214,7 +224,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
                     #create another surface, with dimensions a power of two
                     # this is needed because otherwise texturing is REALLY slow
-                    pow2size = (2**(ceil(log(size[0], 2))), 2**(ceil(log(size[1], 2))))
+                    pow2size = (int(2**(ceil(log(size[0], 2)))), int(2**(ceil(log(size[1], 2)))))
                     pow2surface = pygame.Surface(pow2size)
 
                     alpha = message.get("alpha", 255)
@@ -316,6 +326,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # Handle Pygame events
         for surface, position, size, callbackcomms, eventcomms, pow2surface, texname in self.surfaces:
             # see if this component is interested in events
+            # skip surfaces which get wrapped
+            if str(id(surface)) in self.wrappedsurfaces: continue
+
             if eventcomms is not None:
                 listener = eventcomms
                 # go through events, for each, check if the listener is interested in that time of event         
