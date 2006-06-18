@@ -97,6 +97,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # 3D component handling
         self.objects = []
+        self.movementMode = False
         
         # Pygame component handling
         self.surfaces = []
@@ -104,6 +105,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.visibility = {}
         self.events_wanted = {}
         self.surface_to_eventcomms = {}
+        self.surface_to_eventservice = {}
         self.surface_to_texnames = {}
         self.surface_to_pow2surface = {}
         
@@ -213,7 +215,11 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     b.tex_h = tex_h
                     b.width = surface.get_width()
                     b.height = surface.get_height()
-                    self.send( b, callbackcomms)
+                    try:
+                        b.eventservice = self.surface_to_eventservice[str(id(surface))]
+                    except KeyError:
+                        b.eventservice = None
+                    self.send(b, callbackcomms)
                     
                 elif message.get("DISPLAYREQUEST", False):
                     self.needsRedrawing = True
@@ -240,6 +246,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         self.link((self,eventcomms), eventservice)
                         self.visibility[eventcomms] = (surface,size,position)
                         self.surface_to_eventcomms[str(id(surface))] = eventcomms
+                        self.surface_to_eventservice[str(id(surface))] = eventservice
                     self.link((self, callbackcomms), callbackservice)
                     self.send(surface, callbackcomms)
 
@@ -327,7 +334,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for surface, position, size, callbackcomms, eventcomms, pow2surface, texname in self.surfaces:
             # see if this component is interested in events
             # skip surfaces which get wrapped
-            if str(id(surface)) in self.wrappedsurfaces: continue
 
             if eventcomms is not None:
                 listener = eventcomms
@@ -341,6 +347,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         # if event contains positional information, remap it
                         # for the surface's coordiate origin
                         if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                            if str(id(surface)) in self.wrappedsurfaces: continue
                             e = Bunch()
                             e.type = event.type
                             pos = event.pos[0],event.pos[1]
@@ -363,15 +370,24 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if bundle != []:
                     self.send(bundle, listener)
 
-        # Handle 3D object events
+
         directions = {}
         for event in events:
+            # Determine input mode
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LCTRL:
+                print "Movement mode on"
+                self.movementMode = True
+            if event.type == pygame.KEYUP and event.key == pygame.K_LCTRL:
+                print "Movement mode off"
+                self.movementMode = False
+            # Determine direction vectors
             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
                 # determine intersection ray
                 xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
                 yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
-                directions[event] = Vector(xclick, yclick, -self.farPlaneDist).norm()
+                directions[id(event)] = Vector(xclick, yclick, -self.farPlaneDist).norm()
 
+        # Handle 3D object events
         for obj, eventcomms in self.objects:
             # see if this component is interested in events
             if eventcomms is not None:
@@ -381,7 +397,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
                         e = Bunch()
                         e.type = event.type
-                        e.dir = directions[event]
+                        e.dir = directions[id(event)]
+                        e.movementMode = self.movementMode
                         if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
                             e.button = event.button
                         if event.type == pygame.MOUSEMOTION:
@@ -397,6 +414,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def updatePygameTexture(self, surface, pow2surface, texname):
+#        print "UPDATE", texname
         # blit component surface to power of 2 sized surface
         pow2surface.blit(surface, (0,0))
         # set surface as texture
@@ -569,13 +587,14 @@ To strive, to seek, to find, and not to yield.
     from Kamaelia.UI.Pygame.Ticker import Ticker
     from SimpleCube import SimpleCube
     from TexPlane import TexPlane
+    from pygame.locals import *
 
     Display3D.getDisplayService()[0].overridePygameDisplay()
     
     Graphline(
         CUBE = SimpleCube(pos = Vector(3,3,-15)),
         PLANE = TexPlane(pos=Vector(-3, 0,-10), tex="Kamaelia.png", name="1st Tex Plane"),
-        BUTTON1 = Button(caption="Press SPACE or click"),
+        BUTTON1 = Button(caption="Press SPACE or click", key=K_SPACE),
         BUTTON2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)),
         BUTTON3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)),
         ROTATOR = CubeRotator(),
