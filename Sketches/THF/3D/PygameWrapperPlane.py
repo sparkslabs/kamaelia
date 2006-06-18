@@ -81,15 +81,18 @@ class PygameWrapperPlane(Axon.Component.component):
 
         self.grabbed = 0
         
-        self.texID = 0
+        self.texname = 0
+        self.tex_w = 0
+        self.tex_h = 0
+        self.width = 0
+        self.height= 0
+        
         
         self.wrappedComp = argd.get("wrap")
 
-        # prepare vertices for intersection test
-        x = float(self.size.x/2)
-        y = float(self.size.y/2)
-        self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
-        
+        # vertices for intersection test
+        self.vertices = []
+                
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
 #                                          "callback" : (self,"callback"),
@@ -110,11 +113,11 @@ class PygameWrapperPlane(Axon.Component.component):
         Ap = pint-transformedVerts[0]
         AB = transformedVerts[1]-transformedVerts[0]
         AD = transformedVerts[3]-transformedVerts[0]
-        x = Ap.dot(AB)
-        y = Ap.dot(AD)
-        
-        if t!=0:
-            print "2D:", x, y
+        if t !=0:
+            x = Ap.dot(AB)/(AB.length()**2)
+            y = Ap.dot(AD)/(AD.length()**2)
+            self.send("2D: (%2.2f, %2.2f);    " % (x*self.width, y*self.height), "outbox")
+
         return t
 
 
@@ -144,20 +147,24 @@ class PygameWrapperPlane(Axon.Component.component):
 
         # set texure
         glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glBindTexture(GL_TEXTURE_2D, self.texname)
 
         # set generated matrix
         glPushMatrix()
         glLoadMatrixf(self.transform.getMatrix())
 
+        w = self.width/200.0
+        h = self.height/200.0
+#        print "size", self.width, self.height
+#        print "draw", w,h
         # draw faces 
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         glBegin(GL_QUADS)
         glColor3f(0,1,0)
-        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  0.0)
-        glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  0.0)
-        glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0,  0.0)
-        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0,  0.0)
+        glTexCoord2f(0.0, 1.0-self.tex_h);                         glVertex3f(-w, -h,  0.0)
+        glTexCoord2f(self.tex_w, 1.0-self.tex_h);              glVertex3f( w, -h,  0.0)
+        glTexCoord2f(self.tex_w, 1.0);                                glVertex3f( w,  h,  0.0)
+        glTexCoord2f(0.0, 1.0);                                            glVertex3f(-w,  h,  0.0)
         glEnd()
 
         glPopMatrix()
@@ -216,20 +223,28 @@ class PygameWrapperPlane(Axon.Component.component):
         self.link((self,"display_signal"), displayservice)
         self.send(self.disprequest, "display_signal");
 
-        print "HELLO1"
         while 1:
             try: 
                 self.wraprequest = { "WRAPPERREQUEST" : True,
                                                   "wrapcallback" : (self, "wrapcallback"),
                                                   "surface": self.wrappedComp.display }
-                print "HELLO"
                 self.send( self.wraprequest, "display_signal")
                 break
             except AttributeError:
                 yield 1
                 
         for _ in self.waitBox("wrapcallback"): yield 1
-        self.texID = self.recv("wrapcallback")
+        b = self.recv("wrapcallback")
+        self.texname = b.texname
+        self.tex_w = b.tex_w
+        self.tex_h = b.tex_h
+#        print "size", b.width, b.height
+        self.width = float(b.width)
+        self.height = float(b.height)
+        #prepare vertices for intersection test
+        x = self.width/200.0
+        y = self.height/200.0
+        self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
 
         while 1:
 
@@ -295,22 +310,9 @@ if __name__=='__main__':
 
 
     text = """\
-The lights begin to twinkle from the rocks;
-The long day wanes; the slow moon climbs; the deep
-Moans round with many voices.  Come, my friends.
-'T is not too late to seek a newer world.Push off, and sitting well in order smite
-The sounding furrows; for my purpose holds
-To sail beyond the sunset, and the baths
-Of all the western stars, until I die.
-It may be that the gulfs will wash us down;
-It may be we shall touch the Happy Isles,
-And see the great Achilles, whom we knew.
-Tho' much is taken, much abides; and tho'
-We are not now that strength which in old days
-Moved earth and heaven, that which we are, we are,--
-One equal temper of heroic hearts,
-Made weak by time and fate, but strong in will
-To strive, to seek, to find, and not to yield.
+The size of these 2 Ticker components is (350,250).
+Click on one of them to show the mapped 2D coordinates.
+The wrapped button is not yet functional (but moveable).
 """
     class datasource(Axon.Component.component):
         def main(self):
@@ -321,14 +323,21 @@ To strive, to seek, to find, and not to yield.
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Util.Graphline import Graphline
     from Kamaelia.UI.Pygame.Ticker import Ticker
+    from Kamaelia.UI.Pygame.Button import Button
 
     Display3D.getDisplayService()[0].overridePygameDisplay()
    
     TEXT = datasource().activate()
-    TICKER = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=257).activate()
-    WRAPPER = PygameWrapperPlane(wrap=TICKER, pos=Vector(0, 0,-6), tex="Kamaelia.gif", name="1st Tex Plane").activate()
+    TICKER1 = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
+    TICKER1WRAPPER = PygameWrapperPlane(wrap=TICKER1, pos=Vector(-2, 0,-10), name="1st Wrapper Plane").activate()
+    TICKER2 = Ticker(position = (400, 300), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
+    TICKER2WRAPPER = PygameWrapperPlane(wrap=TICKER2, pos=Vector(2, 0,-10),  name="2nd Wrapper Plane").activate()
+    BUTTON = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
+    BUTTONWRAPPER = PygameWrapperPlane(wrap=BUTTON, pos=Vector(0, 1,-5),  name="2nd Wrapper Plane").activate()
     ECHO = consoleEchoer().activate()
-    WRAPPER.link((WRAPPER, "outbox"), (ECHO, "inbox"))
-    TEXT.link((TEXT, "outbox"), (TICKER, "inbox"))
+    TICKER1WRAPPER.link((TICKER1WRAPPER, "outbox"), (TICKER2, "inbox"))
+    TICKER2WRAPPER.link((TICKER2WRAPPER, "outbox"), (TICKER2, "inbox"))
+    BUTTON.link((BUTTON, "outbox"), (TICKER2, "inbox"))
+    TEXT.link((TEXT, "outbox"), (TICKER1, "inbox"))
         
     Axon.Scheduler.scheduler.run.runThreads()  
