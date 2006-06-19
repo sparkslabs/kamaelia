@@ -40,7 +40,7 @@ textures = [0,0]
 
 class PygameWrapperPlane(Axon.Component.component):
     Inboxes = {
-       "inbox": "not used",
+       "inbox": "used to handle events",
        "control": "ignored",
         # 3D control
 #       "translation" : "receive 3D movement Vectors here"
@@ -51,6 +51,7 @@ class PygameWrapperPlane(Axon.Component.component):
 #       "rel_scaling": "receive 3D scaling Vectors here",
         "control3d": "receive Control3D commands here",
         "wrapcallback": "receive wrap data after WRAPREQUEST",
+        "eventrequests": "receive event requests from wrapped component here",
     }
     
     Outboxes = {
@@ -89,7 +90,8 @@ class PygameWrapperPlane(Axon.Component.component):
         self.height= 0
         
         
-        self.wrappedComp = argd.get("wrap")
+        self.wrapped_comp = argd.get("wrap")
+        self.events_wanted = {}
 
         # vertices for intersection test
         self.vertices = []
@@ -164,11 +166,25 @@ class PygameWrapperPlane(Axon.Component.component):
 
         glDisable(GL_TEXTURE_2D)
     
+
+    
+    def handleEventRequests(self):
+        while self.dataReady("eventrequests"):
+            message = self.recv("eventrequests")
+            if message.get("ADDLISTENEVENT", None) is not None:
+                self.events_wanted[message["ADDLISTENEVENT"]] = True
+            elif message.get("REMOVELISTENEVENT", None) is not None:
+                self.events_wanted[message["REMOVELISTENEVENT"]] = False
+
+
     
     def handleEvents(self):
         while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 # If movementMode is True, translate input to movement commands
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button in [1,3]:
+                        self.grabbed = 0
                 if event.movementMode:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button in [1,3] and self.intersectRay(Vector(0,0,0), event.dir) > 0:
@@ -177,9 +193,6 @@ class PygameWrapperPlane(Axon.Component.component):
                             self.pos.z -= 1
                         if event.button == 5 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
                             self.pos.z += 1
-                    if event.type == pygame.MOUSEBUTTONUP:
-                        if event.button in [1,3]:
-                            self.grabbed = 0
                     if event.type == pygame.MOUSEMOTION:
                         if self.grabbed == 1:
                             self.rot.y += float(event.rel[0])
@@ -190,19 +203,26 @@ class PygameWrapperPlane(Axon.Component.component):
                             self.pos.y -= float(event.rel[1])/10.0
                 # If movementMode is False, forward events to wrapped component
                 else:
-                    # test if ray intersects plane
-                    t = self.intersectRay(Vector(0,0,0), event.dir);
-                    # if an intersection was detected, map position on plane
-                    if t != 0:
-                        p = event.dir*t
-                        Ap = p-self.transformedVertices[0]
-                        AB = self.transformedVertices[1]-self.transformedVertices[0]
-                        AD = self.transformedVertices[3]-self.transformedVertices[0]
-                        x = Ap.dot(AB)/(AB.length()**2)
-                        y = Ap.dot(AD)/(AD.length()**2)
-                        event.pos = (x*self.width,y*self.height)
-                        self.send([event], "wrapped_eventsfeedback")
-#                        self.send("2D: (%2.2f, %2.2f);    " % (x*self.width, y*self.height), "outbox")
+                    wanted = False
+                    #test if event is wanted by wrapped component
+                    try:   wanted = self.events_wanted[event.type]
+                    except KeyError: pass
+
+                    if wanted:
+#                        print "Event forwarded to ", self.wrapped_comp.name
+                        # test if ray intersects plane
+                        t = self.intersectRay(Vector(0,0,0), event.dir);
+                        # if an intersection was detected, map position on plane
+                        if t != 0:
+                            p = event.dir*t
+                            Ap = p-self.transformedVertices[0]
+                            AB = self.transformedVertices[1]-self.transformedVertices[0]
+                            AD = self.transformedVertices[3]-self.transformedVertices[0]
+                            x = Ap.dot(AB)/(AB.length()**2)
+                            y = Ap.dot(AD)/(AD.length()**2)
+                            event.pos = (x*self.width,y*self.height)
+                            self.send([event], "wrapped_eventsfeedback")
+    #                        self.send("2D: (%2.2f, %2.2f);    " % (x*self.width, y*self.height), "outbox")
 
                         
     def handleMovementCommands(self):
@@ -238,7 +258,8 @@ class PygameWrapperPlane(Axon.Component.component):
             try: 
                 self.wraprequest = { "WRAPPERREQUEST" : True,
                                                   "wrapcallback" : (self, "wrapcallback"),
-                                                  "surface": self.wrappedComp.display }
+                                                  "eventrequests" : (self, "eventrequests"),
+                                                  "surface": self.wrapped_comp.display }
                 self.send( self.wraprequest, "display_signal")
                 break
             except AttributeError:
@@ -249,7 +270,6 @@ class PygameWrapperPlane(Axon.Component.component):
         self.texname = b.texname
         self.tex_w = b.tex_w
         self.tex_h = b.tex_h
-#        print "size", b.width, b.height
         self.width = float(b.width)
         self.height = float(b.height)
         #prepare vertices for intersection test
@@ -261,14 +281,8 @@ class PygameWrapperPlane(Axon.Component.component):
             self.link((self, "wrapped_eventsfeedback"), b.eventservice)
 
         while 1:
-
-#            for _ in self.waitBox("callback"): yield 1
-#            self.display = self.recv("callback")
-
-# There is no need for a callback yet
-            
             yield 1
-            
+            self.handleEventRequests()            
             self.handleEvents()
             self.handleMovementCommands()
             self.applyTransforms()
