@@ -108,6 +108,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.surface_to_eventservice = {}
         self.surface_to_texnames = {}
         self.surface_to_pow2surface = {}
+        self.surface_to_eventrequestcomms = {}
         
         self.wrappedsurfaces = []
        
@@ -164,7 +165,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             Check "notify" inbox for requests for surfaces, events and overlays and
             process them.
             """
-            if self.dataReady("notify"):
+            # changed from if to while
+            while self.dataReady("notify"):
                 message = self.recv("notify")
                 if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
 #                    print "SURFACE", message
@@ -220,6 +222,19 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     except KeyError:
                         b.eventservice = None
                     self.send(b, callbackcomms)
+                    #handle only events if wrapped components can receive them
+                    try :
+                        eventcomms = self.surface_to_eventcomms[str(id(surface))]
+                        # save callback for event requests
+                        eventrequestservice = message["eventrequests"]
+                        eventrequestcomms = self.addOutbox("eventrequests")
+                        self.link((self,eventrequestcomms), eventrequestservice)
+                        self.surface_to_eventrequestcomms[str(id(surface))] = eventrequestcomms
+                        # transmit already requested eventtypes
+                        for (etype, wanted) in self.events_wanted[eventcomms].items():
+                            if wanted == True:
+                                self.send( {"ADDLISTENEVENT":etype}, eventrequestcomms)
+                    except KeyError: pass
                     
                 elif message.get("DISPLAYREQUEST", False):
                     self.needsRedrawing = True
@@ -258,12 +273,20 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.surfaces.append( (surface, position, size, callbackcomms, eventcomms, pow2surface, texname) )
                     
                 elif message.get("ADDLISTENEVENT", None) is not None:
-                    eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
-                    self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
+                    # test if surface is beeing wrapped
+                    if str(id(surface)) in self.wrappedsurfaces:
+                        self.send(message, self.surface_to_eventrequestcomms[str(id(surface))])
+                    else:
+                        eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+                        self.events_wanted[eventcomms][message["ADDLISTENEVENT"]] = True
 
                 elif message.get("REMOVELISTENEVENT", None) is not None:
-                    eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
-                    self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
+                   # test if surface is beeing wrapped
+                    if str(id(surface)) in self.wrappedsurfaces:
+                        self.send(message, self.surface_to_eventrequestcomms[str(id(surface))])
+                    else:
+                        eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
+                        self.events_wanted[eventcomms][message["REMOVELISTENEVENT"]] = False
                     
                 elif message.get("CHANGEDISPLAYGEO", False):
                     try:
@@ -375,10 +398,10 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for event in events:
             # Determine input mode
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LCTRL:
-                print "Movement mode on"
+#                print "Movement mode on"
                 self.movementMode = True
             if event.type == pygame.KEYUP and event.key == pygame.K_LCTRL:
-                print "Movement mode off"
+#                print "Movement mode off"
                 self.movementMode = False
             # Determine direction vectors
             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
