@@ -44,6 +44,7 @@ class MagnaDoodle(Axon.Component.component):
       self.foregroundColour = fgcolour
       self.margin = margin
       self.oldpos = None
+      self.drawing = False
 ###      print "KEY",key
       
       self.size = size
@@ -95,6 +96,14 @@ class MagnaDoodle(Axon.Component.component):
                   "surface" : self.display},
                   "display_signal")
 
+      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                  "surface" : self.display},
+                  "display_signal")
+
+      self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
+                  "surface" : self.display},
+                  "display_signal")
+
       done = False
       while not done:
          while self.dataReady("control"):
@@ -105,20 +114,26 @@ class MagnaDoodle(Axon.Component.component):
          
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
-###                print event
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if  event.button == 1:
+                        self.drawing = True
+                    elif event.button == 3:
+                        self.oldpos = None
+                        self.drawBG()
+                        self.blitToSurface()
+
+                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    self.drawing = False
+                    self.oldpos = None
+                elif event.type == pygame.MOUSEMOTION:
 #                   print "BUTTON", event.button
-                   if self.innerRect.collidepoint(*event.pos):
-                      if event.button == 1:
-                          if self.oldpos == None:
-                             self.oldpos = event.pos
-                          else:
-                             pygame.draw.line(self.display, (0,255,0), self.oldpos, event.pos, 3)
-                             self.oldpos = event.pos
-                      elif event.button == 3:
-                         self.oldpos = None
-                         self.drawBG()
-                      self.blitToSurface()
+                    if self.drawing and self.innerRect.collidepoint(*event.pos):
+                        if self.oldpos == None:
+                            self.oldpos = event.pos
+                        else:
+                            pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+                            self.oldpos = event.pos
+                        self.blitToSurface()
          self.pause()
          yield 1
             
