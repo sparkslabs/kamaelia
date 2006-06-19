@@ -423,6 +423,70 @@ class scheduler_Test(unittest.TestCase):
 
        except:
            raise
+           
+   def test_isThreadPausedWorks(self):
+       """The isThreadPaused() method returns True if a thread is currently paused, or False is it is active."""
+       s=Axon.Scheduler.scheduler()
+       sched = s.main()
+       all = [ TestRunningMProc() for _ in range(0,5) ]
+       
+       for m in all: s._addThread(m)
+       
+       try:
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for m in all:
+               self.assert_(not s.isThreadPaused(m))
+               
+           for mp in all:
+               s.pauseThread(mp)
+               
+               for _ in range(0,3*len(all)): # give it a few cycles grace
+                   sched.next()
+                   
+               for m in all:
+                   if m==mp:
+                       self.assert_(s.isThreadPaused(m))
+                   else:
+                       self.assert_(not s.isThreadPaused(m))
+                       
+               s.wakeThread(mp)
+
+       except:
+           raise
+       
+   def test_isThreadPausedNotRecognised(self):
+       """The isThreadPaused() method will return True for micropocesses not scheduled with this scheduler."""
+       s=Axon.Scheduler.scheduler()
+       sched = s.main()
+       all = [ TestRunningMProc() for _ in range(0,5) ]
+       other = TestRunningMProc()
+       
+       for m in all: s._addThread(m)
+       
+       try:
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+               
+           for m in all:
+               self.assert_(not s.isThreadPaused(m))
+               
+           self.assert_(s.isThreadPaused(other))
+               
+           for mp in all:
+               s.pauseThread(mp)
+               
+           for _ in range(0,3*len(all)): # give it a few cycles grace
+               sched.next()
+                   
+           for m in all:
+               self.assert_(s.isThreadPaused(m))
+               
+           self.assert_(s.isThreadPaused(other))
+
+       except:
+           raise
         
    def test_runThreadsSlowmo(self):
        """Specifying slowMo>0 argument to runThreads() causes a delay of the specified number of seconds between each pass through all microprocesses. During the delay it will yield."""
