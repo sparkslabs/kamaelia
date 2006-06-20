@@ -17,11 +17,13 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 from heapq import heappush,heappop
 import time
 
+from ThreadedComponent import threadedadaptivecommscomponent
+
 # events are a single value 'when' - representing the time
 # the event should trigger
 
 
-class _TimerCore(AdaptiveCommsComponent):
+class _TimerCore(threadedadaptivecommscomponent): # (AdaptiveCommsComponent):
     Inboxes = { "inbox"   : "Requests for timing stuff go here.",
                 "register": "Registration/deregistration messages",
                 "control" : "Shutdown signalling.",
@@ -71,8 +73,10 @@ class _TimerCore(AdaptiveCommsComponent):
             now=time.time()
             
             # pop off events that have triggered
+            timeout = None
             while len(self.events):
                 if now < self.events[0][0]:
+                    timeout = self.events[0][0] - now
                     break
                 else:
                     (when,handle) = heappop(self.events)
@@ -84,10 +88,10 @@ class _TimerCore(AdaptiveCommsComponent):
                         pass
                 
             
-            if not self.anyReady() and not len(self.events):
-                self.pause()
+            if not self.anyReady():
+                self.pause(timeout)
             
-            yield 1
+#            yield 1
 
     def setTimerServices(timer, tracker = None):
         """\
