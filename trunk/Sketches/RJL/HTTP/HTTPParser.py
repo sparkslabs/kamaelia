@@ -24,6 +24,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 import string
 
+#modify to handle %20 style encoding
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
     splituri = string.split(requestobject["raw-uri"], "://")
@@ -232,6 +233,7 @@ class HTTPParser(component):
                     if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
                         while 1:
                             #print "HTTPParser::main - stage 3"
+                            currentline = None
                             while currentline == None:
                                 #print "HTTPParser::main - stage 3.chunked.1"
                                 if self.shouldShutdown(): return
@@ -241,8 +243,16 @@ class HTTPParser(component):
                                 if currentline == None:
                                     self.pause()
                                     yield 1
+                            #print requestobject
                             splitline = currentline.split(";")
-                            bodylength = splitline[0].atoi(16)
+
+                            try:
+                                bodylength = string.atoi(splitline[0], 16)
+                            except ValueError:
+                                print "Warning: bad chunk length in request/response being parsed by HTTPParser"
+                                bodylength = 0
+                                requestobject["bad"] = True
+                            #print "Chunking: '%s' '%s' %d" % (currentline, splitline, bodylength)
                             if bodylength == 0:
                                 break
                             
@@ -255,6 +265,15 @@ class HTTPParser(component):
                                     self.pause()
                                     yield 1
                             requestobject["body"] += self.readbuffer[:bodylength]
+                            if self.readbuffer[bodylength:bodylength+2] == "\r\n":
+                                self.readbuffer = self.readbuffer[bodylength+2:]
+                            elif self.readbuffer[bodylength:bodylength+1] == "\n":
+                                self.readbuffer = self.readbuffer[bodylength+1:]
+                            else:
+                                print "Warning: no trailing new line on chunk in HTTPParser"
+                                requestobject["bad"] = True
+                                break
+                                
                     elif requestobject["headers"].has_key("content-length"):
                         if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
                             #we're supposed to say continue, but this is a pain
