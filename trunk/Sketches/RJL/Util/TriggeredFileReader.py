@@ -34,32 +34,33 @@ This component does not terminate.
 from Axon.Component import component
 
 class TriggeredFileReader(component):
-	"""\
-	TriggeredFileReader() -> component that creates and writes files 
-	"""
-	Inboxes = { "inbox" : "filepaths to read",
+    """\
+    TriggeredFileReader() -> component that creates and writes files 
+    """
+    Inboxes = { "inbox" : "filepaths to read",
 				"control" : "UNUSED"
 			  }
-	Outboxes = { "outbox" : "file contents, 1 per message",
+    Outboxes = { "outbox" : "file contents, 1 per message",
 				 "signal" : "UNUSED"
 			   }
 	
-	def __init__(self):
-		super(TriggeredFileReader, self).__init__()
+    def __init__(self):
+        super(TriggeredFileReader, self).__init__()
 		
-	def readFile(self, filename):
-		"""Read data out of a file"""
-		file = open(filename, "rb", 0)
-		data = file.read()
-		file.close()
-		return data
+    def readFile(self, filename):
+        """Read data out of a file"""
+        file = open(filename, "rb", 0)
+        data = file.read()
+        file.close()
+        return data
 
-	def main(self):
-		"""Main loop"""
-		while 1:
-			yield 1
-			
-			if self.dataReady("inbox"):
-				command = self.recv("inbox")
-				self.send(self.readFile(command), "outbox")
-				
+    def main(self):
+        """Main loop"""
+        while 1:
+            yield 1
+
+            while self.dataReady("inbox"):
+                command = self.recv("inbox")
+                #print "Read file " + command
+                self.send(self.readFile(command), "outbox")				
+            self.pause()
