@@ -42,44 +42,54 @@ from BitTorrent.RawServer_twisted import RawServer, task
 from BitTorrent.ConvertedMetainfo import ConvertedMetainfo
 from BitTorrent.platform import get_temp_dir
 inject_main_logfile()
-from Axon.ThreadedComponent import threadedcomponent
 
+from Axon.ThreadedComponent import threadedcomponent
+from Axon.Component import component
+
+#TorrentClient Responses
 class IPCNewTorrentCreated(object):
     def __init__(self, torrentid, savefolder):
         super(IPCNewTorrentCreated, self).__init__()
         self.torrentid = torrentid
         self.savefolder = savefolder
-
+    def gettext(self):
+        return "New torrent %s created in %s" % (self.torrentid, self.savefolder)
+        
 class IPCTorrentAlreadyDownloading(object):
     def __init__(self, torrentid):
         super(IPCTorrentAlreadyDownloading, self).__init__()
         self.torrentid = torrentid
-
+    def gettext(self):
+        return "That torrent is already downloading!"
+        
 class IPCTorrentStartFail(object):
-    pass
-
-class IPCCreateNewTorrent(object):
-    def __init__(self, rawmetainfo):
-        super(IPCCreateNewTorrent, self).__init__()
-        self.rawmetainfo = rawmetainfo
-
-class IPCCloseTorrent(object):
-    def __init__(self, torrentid):
-        super(IPCCloseTorrent, self).__init__()
-        self.torrentid = torrentid
+    def gettext(self):
+        return "Torrent failed to start!"
 
 class IPCTorrentStatusUpdate(object):
     def __init__(self, torrentid, statsdictionary):
         super(IPCTorrentStatusUpdate, self).__init__()    
         self.torrentid = torrentid
         self.statsdictionary = statsdictionary
+    def gettext(self):
+        return "Torrent %d status : %s" % (self.torrentid, str(int(self.statsdictionary.get("fractionDone","0") * 100)) + "%")
+
+#Requests to TorrentClient
+class IPCCreateNewTorrent(object):
+    def __init__(self, rawmetainfo):
+        super(IPCCreateNewTorrent, self).__init__()
+        self.rawmetainfo = rawmetainfo
+        
+class IPCCloseTorrent(object):
+    def __init__(self, torrentid):
+        super(IPCCloseTorrent, self).__init__()
+        self.torrentid = torrentid
+
 
 class MakeshiftTorrent(object):
     def __init__(self, metainfo):
         super(MakeshiftTorrent, self).__init__()
         self.metainfo = metainfo
-    def get_status(self):
-        return {}
         
 class TorrentClient(threadedcomponent):
     """Using threadedcomponent so we don't have to worry about blocking IO or making
@@ -91,13 +101,12 @@ class TorrentClient(threadedcomponent):
     Outboxes = { "outbox" : "State change information, e.g. finished",
                 "signal" : "NOT USED",
               }
-    TickInterval = 5 #Seconds
-    
-    def __init__(self):
+    def __init__(self, tickInterval = 5):
         super(TorrentClient, self).__init__()
         self.totaltorrents = 0
         self.torrents = {}
         self.torrentinfohashes = {}
+        self.tickInterval = tickInterval #seconds
         
     def main(self):
         uiname = "bittorrent-console"
@@ -164,7 +173,7 @@ class TorrentClient(threadedcomponent):
         
     def tick(self):
         "Called periodically"
-        self.multitorrent.rawserver.add_task(self.TickInterval, self.tick)
+        self.multitorrent.rawserver.add_task(self.tickInterval, self.tick)
         #print "Tick"
         while self.dataReady("inbox"):
             temp = self.recv("inbox")
@@ -193,23 +202,39 @@ class TorrentClient(threadedcomponent):
                     self.torrents.erase(temp.torrentid)
                     
         for torrentid, torrent in self.torrents.items():
-            self.send(IPCTorrentStatusUpdate(torrentid, torrent.get_status()), "outbox")
+            if not isinstance(torrent, MakeshiftTorrent):
+                self.send(IPCTorrentStatusUpdate(torrentid, torrent.get_status()), "outbox")
         
         #if self.torrent is not None:
         #    status = self.torrent.get_status(self.config['spew'])
         #    self.d.display(status)
 
+
+class BasicTorrentExplainer(component):
+    def main(self):
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                temp = self.recv("inbox")
+                try:
+                    self.send(temp.gettext() + "\n", "outbox")
+                except:
+                    pass
+            self.pause()
+           
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     import sys ; sys.path.append("/home/ryan/kamaelia/Sketches/RJL/")
     from TriggeredFileReader import TriggeredFileReader
-    
-    # download a linux distro
+    from Axon.Component import component
+
+    # download a linux distro or whatever
     pipeline(
         ConsoleReader(">>> ", ""),
         TriggeredFileReader(),
         TorrentClient(),
+        BasicTorrentExplainer(),
         ConsoleEchoer(),    
     ).run()   
 
