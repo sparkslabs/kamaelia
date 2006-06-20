@@ -15,6 +15,7 @@ from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 from Axon.Ipc import shutdownMicroprocess,producerFinished
+from Axon.Ipc import WaitComplete
 from heapq import heappush,heappop
 import time
 
@@ -148,7 +149,6 @@ class Timer(component):
         
     def main(self):
         # get access to the timer
-        cat = CAT.getcat()
         services = _TimerCore.getTimerServices()
         ctrllinkage = self.link((self,"_ctrlToTimer"),    services[0])
         eventlinkage = self.link((self,"_eventsToTimer"), services[1])
@@ -233,22 +233,30 @@ if __name__ == "__main__":
         Outboxes = { "outbox" : "output",
                      "signal" : "shutdown signalling",
                      "_toTimer" : "Request timer notifications",
+                     "_timerSignal" : "Shutdown timer",
                    }
+                   
+        def waitUntil(self, t):
+            self.send( self.scheduler.time + 1.0, "_toTimer")
+            while not self.dataReady("_fromTimer"):
+                self.pause()
+                yield 1
+            self.recv("_fromTimer")
+                   
         def main(self):
             timer = Timer().activate()
+            self.addChildren(timer)
             self.link((self,"_toTimer"),(timer,"inbox"))
             self.link((timer,"outbox"),(self,"_fromTimer"))
+            self.link((self,"_timerSignal"),(timer,"control"))
             
             for i in range(0,10):
-                self.send( self.scheduler.time + 1.0, "_toTimer")
-                while not self.dataReady("_fromTimer"):
-                    self.pause()
-                    yield 1
-                self.recv("_fromTimer")
+                for _ in self.waitUntil( self.scheduler.time + 1.0): yield _
                 self.send( "Waited, then output "+str(i),"outbox")
                 
             yield 1
-#            self.send(producerFinished(), "signal")
+            self.send(producerFinished(), "_timerSignal")
+            self.send(producerFinished(), "signal")
                 
     
     from Kamaelia.Util.PipelineComponent import pipeline
