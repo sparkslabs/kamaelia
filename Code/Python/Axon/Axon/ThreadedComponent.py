@@ -284,7 +284,7 @@ if __name__ == "__main__":
             box,linkage = [(box,linkage) for (box,(d,linkage)) in self.destinations.items() if d==dst][0]
             del self.destinations[box]
             self.send("DEL SRC", box)
-            self.unlink(linkage)
+            self.unlink(thelinkage=linkage)
             self.deleteOutbox(box)
             
         def main(self):
