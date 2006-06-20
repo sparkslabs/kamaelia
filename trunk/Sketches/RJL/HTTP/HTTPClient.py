@@ -1,5 +1,5 @@
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.Internet.TCPClient import TCPClient
 import string, time
 from Lagger import Lagger
@@ -41,16 +41,7 @@ class HTTPClient(component):
         self.tcpclient = None
         self.httpparser = None
         self.lines = ""
-        
-    def shouldShutdown(self):
-        while self.dataReady("control"):
-            temp = self.recv("control")
-            print "checking control"
-            if isinstance(temp, shutdownMicroprocess) or isinstance(temp, producerFinished) or isinstance(temp, shutdown):
-                print "Should shutdown!"
-                return True
-        
-        return False
+        self.requestqueue = []
         
     def formRequest(self, url):
         splituri = splitUri(url)
@@ -59,10 +50,12 @@ class HTTPClient(component):
         if splituri.has_key("uri-port"):
             host += ":" + splituri["uri-port"]
         
-        splituri["request"] = "GET " + splituri["raw-uri"] + " HTTP/1.0\r\nHost: " + host + "\r\nUser-agent: Kamaelia HTTP Client 0.1 (RJL)\r\nConnection: close\r\n\r\n"
+        splituri["request"] = "GET " + splituri["raw-uri"] + " HTTP/1.1\r\nHost: " + host + "\r\nUser-agent: Kamaelia HTTP Client 0.1 (RJL)\r\nConnection: Keep-Alive\r\n\r\n" #keep-alive is a work around for lack of shutdown notification in TCPClient
         return splituri
 
     def makeRequest(self, request):
+        self.tcpclient = None
+        self.httpparser = None
         port = intval(request.get("uri-port", ""))
         if port == None:
             port = 80
@@ -86,52 +79,69 @@ class HTTPClient(component):
         self.tcpclient.activate()
         self.httpparser.activate()
         self.send(request["request"], "tcp-inbox")
-        
-        self.requestqueue = []
-        self.responsestate = 0
+
+    def shutdownKids(self):
+        if self.tcpclient != None and self.httpparser != None:
+            self.removeChild(self.tcpclient)
+            self.removeChild(self.httpparser)    
+            self.send(shutdown(), "tcp-control")
+            self.send(shutdown(), "parser-control")
+            self.tcpclient = None
+            self.httpparser = None
                         
     def main(self):
+        waitforrequests = True
         while 1:
             yield 1
             #print "HTTPClient::main"
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 url = self.recv("inbox")
-
-                if self.tcpclient == None: #no current request so fetch resource now
-                    self.makeRequest(self.formRequest(url))
-                else:
-                    self.requestqueue.append(self.formRequest(url))
-                    
-            elif self.dataReady("parser-outbox"):
+                self.requestqueue.append(self.formRequest(url))
+                                
+            while self.dataReady("parser-outbox"):
                 response = self.recv("parser-outbox")
+                #print "Parsed"
                 self.send(response["body"], "outbox")
+                self.shutdownKids()
                 
-            elif self.dataReady("parser-signal"):
+            while self.dataReady("parser-signal"):
                 temp = self.recv("parser-signal")
-                print type(temp)
-                
-            elif self.dataReady("control"):
-                if self.shouldShutdown():
-                    return
-                    
-            elif self.dataReady("tcp-signal"):
-                temp = self.recv("tcp-signal")
-                self.send(temp, "parser-signal")
+                print "parser-signal"
                 print type(temp)
 
-            elif self.dataReady("tcp-outbox"):
+            while self.dataReady("tcp-outbox"):
                 temp = self.recv("tcp-outbox")
                 self.send(temp, "parser-inbox")
+                #print "Received: " + temp
                 
-            else:
-                self.pause()
+            while self.dataReady("tcp-signal"):
+                temp = self.recv("tcp-signal")
+                self.send(temp, "parser-control")
+                print "tcp-signal"
+
+                print type(temp)
+
+            while self.dataReady("control"):
+                temp = self.recv("control")
+                if isinstance(temp, producerFinished):
+                    waitforrequests = False
+                elif isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
+                    self.shutdownKids()
+                    return
+                
+            if self.tcpclient == None:
+                if len(self.requestqueue) > 0:
+                    self.makeRequest(self.requestqueue.pop(0))
+                elif waitforrequests == False:
+                    return #producer has finished so quit
+            self.pause()
 
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     
-    # download a linux distro
+    # type in a URL e.g. http://www.google.co.uk and have it saved to disk
     pipeline(
         ConsoleReader(">>> ", ""),
         HTTPClient(),
