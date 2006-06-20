@@ -14,6 +14,7 @@
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+from Axon.Ipc import shutdownMicroprocess,producerFinished
 from heapq import heappush,heappop
 import time
 
@@ -210,6 +211,8 @@ if __name__ == "__main__":
             self.send(then+6.0*m+o,"outbox")
             yield 1
     
+#            self.send(producerFinished(), "signal")
+    
     class Tag(component):
         def __init__(self,text):
             super(Tag,self).__init__()
@@ -222,12 +225,42 @@ if __name__ == "__main__":
                 self.pause()
                 yield 1
     
+    class InternalTimerUser(component):
+        Inboxes = { "inbox" : "NOT USED",
+                    "control" : "NOT USED",
+                    "_fromTimer" : "Receive timer events",
+                  }
+        Outboxes = { "outbox" : "output",
+                     "signal" : "shutdown signalling",
+                     "_toTimer" : "Request timer notifications",
+                   }
+        def main(self):
+            timer = Timer().activate()
+            self.link((self,"_toTimer"),(timer,"inbox"))
+            self.link((timer,"outbox"),(self,"_fromTimer"))
+            
+            for i in range(0,10):
+                self.send( self.scheduler.time + 1.0, "_toTimer")
+                while not self.dataReady("_fromTimer"):
+                    self.pause()
+                    yield 1
+                self.recv("_fromTimer")
+                self.send( "Waited, then output "+str(i),"outbox")
+                
+            yield 1
+#            self.send(producerFinished(), "signal")
+                
+    
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     
     pipeline( TimerUser(offset=0.5),
               Timer(),
               Tag("B"),
+              ConsoleEchoer(),
+            ).activate()
+            
+    pipeline( InternalTimerUser(),
               ConsoleEchoer(),
             ).activate()
             
