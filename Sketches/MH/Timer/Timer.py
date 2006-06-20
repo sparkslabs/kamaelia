@@ -237,7 +237,7 @@ if __name__ == "__main__":
                    }
                    
         def waitUntil(self, t):
-            self.send( self.scheduler.time + 1.0, "_toTimer")
+            self.send( t, "_toTimer")
             while not self.dataReady("_fromTimer"):
                 self.pause()
                 yield 1
@@ -259,6 +259,41 @@ if __name__ == "__main__":
             self.send(producerFinished(), "signal")
                 
     
+    class InternalTimerUser2(component):
+        Inboxes = { "inbox" : "NOT USED",
+                    "control" : "NOT USED",
+                    "_fromTimer" : "Receive timer events",
+                  }
+        Outboxes = { "outbox" : "output",
+                     "signal" : "shutdown signalling",
+                     "_toTimer" : "Request timer notifications",
+                     "_timerRegister" : "Register with the timer",
+                   }
+    
+        def waitUntil(self, t):
+            self.send( (t, self.id), "_toTimer")
+            while not self.dataReady("_fromTimer"):
+                self.pause()
+                yield 1
+            self.recv("_fromTimer")
+    
+        def main(self):
+            registerService, requestService, timer = _TimerCore.getTimerServices()
+            if timer:
+                timer.activate()
+            self.link((self,"_toTimer"), requestService)
+            self.link((self,"_timerRegister"), registerService)
+            dest = ((self,"_fromTimer"), 0)
+            self.send( ("REGISTER", self.id, dest ), "_timerRegister")
+            
+            for i in range(0,10):
+                for _ in self.waitUntil( self.scheduler.time + 1.0): yield _
+                self.send( "Manual Waited, then output "+str(i),"outbox")
+                
+            yield 1
+            self.send(producerFinished(), "signal")
+    
+    
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     
@@ -269,6 +304,10 @@ if __name__ == "__main__":
             ).activate()
             
     pipeline( InternalTimerUser(),
+              ConsoleEchoer(),
+            ).activate()
+            
+    pipeline( InternalTimerUser2(),
               ConsoleEchoer(),
             ).activate()
             
