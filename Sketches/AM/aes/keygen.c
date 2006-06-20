@@ -29,11 +29,11 @@ void get_key(char *random_key, unsigned key_len) {
        random_key[key_cnt] = 0;
 }
 
-int main() {
+/*int main() {
 	char random_key[10];
 	get_key(random_key,9);
 	printf("%s",random_key);
-}
+}*/
 //Usage: 
 //initialize of random function with seed
 //char random_key[33]; 
