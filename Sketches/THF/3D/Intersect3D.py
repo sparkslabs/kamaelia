@@ -35,13 +35,13 @@ class Intersect3D:
             r_origin = origin of the ray
             r_dir = normalized direction of the ray
             b_pos = position of the box
-            b_orientation = list of half length vectors of the box
+            b_orientation = list of normalised half length vectors of the box
             b_halflengths = list of positive half lengths of the box
             returns the distance from r_origin to the point of intersection
         """
         tmin = -10000
         tmax = 10000
-           
+        
         p = b_pos-r_origin
         for i in range(3):
             a = b_orientation[i]-p
@@ -78,7 +78,7 @@ class Intersect3D:
         
         # test if the ray is parallel
         den = n.dot(r_dir)
-        if abs(den)<0.0001:
+        if abs(den)<Intersect3D.epsilon:
             return 0
         
         # calc distance to point of intersection
