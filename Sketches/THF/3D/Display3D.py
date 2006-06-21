@@ -83,6 +83,9 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     getDisplayService = staticmethod(getDisplayService)
     
     
+    def overridePygameDisplay():
+        PygameDisplay.setDisplayService(Display3D.getDisplayService()[0])
+    overridePygameDisplay = staticmethod(overridePygameDisplay)    
     
     
     def __init__(self, **argd):
@@ -147,8 +150,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
 
-    def overridePygameDisplay(self):
-        PygameDisplay.setDisplayService(self)
     
     
     
