@@ -36,8 +36,6 @@ from Util3D import *
 from Intersect3D import *
 import Axon
 
-textures = [0,0]
-
 class Control3D:
     POSITION, REL_POSITION, ROTATION, REL_ROTATION, SCALING, REL_SCALING = range(6)
     def __init__(self, type, amount):
@@ -111,17 +109,7 @@ class TexPlane(Axon.Component.component):
     # Algorithm from "Realtime Rendering"
     def intersectRay(self, o, d):
         transformedVerts = [self.transform.transformVector(v) for v in self.vertices]    
-        t = Intersect3D.ray_Polygon(o, d, transformedVerts)
-        pint = d*t
-        Ap = pint-transformedVerts[0]
-        AB = transformedVerts[1]-transformedVerts[0]
-        AD = transformedVerts[3]-transformedVerts[0]
-        x = Ap.dot(AB)
-        y = Ap.dot(AD)
-        
-        if t!=0:
-            print "2D:", x, y
-        return t
+        return Intersect3D.ray_Polygon(o, d, transformedVerts)
 
 
     def applyTransforms(self):
@@ -156,13 +144,13 @@ class TexPlane(Axon.Component.component):
         glPushMatrix()
         glLoadMatrixf(self.transform.getMatrix())
 
-        # draw faces 
+        # draw faces
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         glBegin(GL_QUADS)
-        glColor3f(0,1,0)
-        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  0.0)
-        glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  0.0)
-        glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0,  0.0)
+#        glColor3f(0,1,0)
+        glTexCoord2f(0.0, 1.0-self.tex_h); glVertex3f(-1.0, -1.0,  0.0)
+        glTexCoord2f(self.tex_w, 1.0-self.tex_h); glVertex3f( 1.0, -1.0,  0.0)
+        glTexCoord2f(self.tex_w, 1.0); glVertex3f( 1.0,  1.0,  0.0)
         glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0,  0.0)
         glEnd()
 
@@ -217,10 +205,27 @@ class TexPlane(Axon.Component.component):
 
         # load texture
         if self.tex is not None:
-            glEnable(GL_TEXTURE_2D)
-            textureSurface = pygame.image.load(self.tex)
+            # load image
+            image = pygame.image.load(self.tex)
+            # create power of 2 dimensioned surface
+            pow2size = (int(2**(ceil(log(image.get_width(), 2)))), int(2**(ceil(log(image.get_height(), 2)))))
+            if pow2size != image.get_size():
+                textureSurface = pygame.Surface(pow2size, pygame.SRCALPHA, 32)
+                # determine texture coordinates
+                self.tex_w = float(image.get_width())/pow2size[0]
+                self.tex_h = float(image.get_height())/pow2size[1]
+                # copy image data to pow2surface
+                textureSurface.blit(image, (0,0))
+            else:
+                textureSurface = image
+                self.tex_w = 1.0
+                self.tex_h = 1.0
+            # read pixel data
             textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
+            # gen tex name
             self.texID = glGenTextures(1)
+            # create texture
+            glEnable(GL_TEXTURE_2D)
             glBindTexture(GL_TEXTURE_2D, self.texID)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
@@ -296,7 +301,7 @@ if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline
     
     Graphline(
-        PLANE = TexPlane(pos=Vector(0, 0,-6), tex="Kamaelia.gif", name="1st Tex Plane"),
+        PLANE = TexPlane(pos=Vector(0, 0,-6), tex="Kamaelia.png", name="1st Tex Plane"),
         ROTATOR = CubeRotator(),
 #        MOVER = CubeMover(),
 #        BUZZER = CubeBuzzer(),
