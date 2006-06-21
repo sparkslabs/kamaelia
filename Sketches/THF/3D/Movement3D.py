@@ -81,15 +81,15 @@ class LinearPath3D:
     def __getitem__(self, key):
         return self.points[key]
         
+    def __len__(self):
+        return len(self.points)
+        
     def next(self):
         v = self.points[self.nextpoint]
         self.nextpoint += 1
         if self.nextpoint == len(self.points): self.nextpoint = 0
         return v
     
-    def __iter__(self):
-        return self
-        
     
 # ==================================
 # InterpolatedPath3D generates a hermitean interpolated Path
@@ -97,17 +97,101 @@ class LinearPath3D:
 class InterpolatedPath3D:
     def __init__(self, points = [], steps = 0):
         pass
+    
         
-        
+# =========================
+# PathMover: moves a 3d object along a path
+# =========================
 class PathMover(Axon.Component.component):
-    def __init__(self, path):
+    Inboxes = {
+       "inbox": "Commands are received here",
+       "control": "ignored",
+    }
+    
+    Outboxes = {
+        "outbox" : "Outbox for sending Control3D commands",
+        "status": "Used to send status messages",
+    }
+    def __init__(self, path, repeat=True):
         super(PathMover, self).__init__()
         self.path = path
+        self.repeat = repeat
+        
+        self.running = True
+        self.currentIndex = 0
+        self.lastIndex = 0
         
     def main(self):
         while 1:
             yield 1
-            self.send( Control3D(Control3D.POSITION, self.path.next()), "outbox")
+            while self.dataReady("inbox"):
+                msg = self.recv("inbox")
+                if msg == "Play":
+                    self.running = True
+                if msg == "Stop":
+                    self.running = False
+                if msg == "Next":
+                    self.currentIndex += 1
+                if msg == "Previous":
+                    self.currentIndex -= 1
+                if msg == "Rewind":
+                    self.currentIndex = 0
+            
+            if self.running:
+                self.currentIndex += 1
+                
+            if self.currentIndex >= len(self.path):
+                self.send("End", "status")
+                if self.repeat:
+                    self.currentIndex = 0
+                else:
+                    self.currentIndex -=1
+                    self.running = False
+            elif self.currentIndex < 0:
+                self.currentIndex = 0
+                
+            if self.currentIndex != self.lastIndex:
+                self.send( Control3D(Control3D.POSITION, self.path[self.currentIndex]), "outbox")
+                self.lastIndex = self.currentIndex
+
+
+class Rotator(Axon.Component.component):
+    def main(self):
+        while 1:
+            yield 1
+            self.send( Control3D(Control3D.REL_ROTATION, Vector(0.1, 0.1, 0.1)), "outbox")
+
+class Mover(Axon.Component.component):
+    def main(self):
+        x,y,z = 3.0, 3.0, -20.0
+        dx = -0.03
+        dy = -0.03
+        dz = -0.03
+        while 1:
+            yield 1
+            self.send( Control3D(Control3D.POSITION, Vector(x, y, z)), "outbox")
+            x +=dx
+            y +=dy
+            z +=dz
+            if abs(x)>5: dx = -dx
+            if abs(y)>5: dy = -dy
+            if abs(z+20)>10: dz = -dz
+#                print x, y, abs(x), abs(y)
+
+
+import random
+
+class Buzzer(Axon.Component.component):
+    def main(self):
+        r = 1.00
+        f = 0.01
+        while 1:
+            yield 1
+            if  r>1.0: f -= 0.001
+            else: f += 0.001
+            r += f
+            
+            self.send( Control3D(Control3D.SCALING, Vector(r, r, r)), "outbox")
     
         
 if __name__=='__main__':
