@@ -28,14 +28,6 @@ class ipc(object):
    """Message base class"""
    pass
 
-class WaitComplete(ipc):
-   def __init__(self, *args):
-      self.args = args
-
-class reactivate(ipc):
-   def __init__(self, original):
-      self.original = original
-
 class newComponent(ipc):
    """Message used to inform the scheduler of a new component that needs a thread
    of control and activating"""
@@ -57,10 +49,6 @@ class notify(ipc):
       self.object = payload
       self.caller = caller
 
-class shutdown(ipc):
-   """Message used to indicate that the component recieving it should shutdown"""
-   pass
-
 class status(ipc):
    """General Status message"""
    def __init__(self, status):
@@ -75,7 +63,7 @@ class wouldblock(ipc):
       self.caller = caller
 
 class producerFinished(ipc):
-   """Message to indicate that the producer has completed its work and will produce no more output. The receiver may wish to shutdown"""
+   """Message to indicate that the producer has completed its work and will produce no more output."""
    def __init__(self,caller=None,message=None):
       self.caller = caller
       self.message = message

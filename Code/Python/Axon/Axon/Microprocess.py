@@ -186,16 +186,6 @@ from debug import debug
 import Axon
 import CoordinatingAssistantTracker as cat
 
-class _NullScheduler(object):
-    def wakeThread(self,mprocess):
-        pass
-    def pauseThread(self,mprocess):
-        pass
-    def isThreadPaused(self,mprocess):
-        return False
-
-_nullscheduler = _NullScheduler()
-
 class microprocess(Axon.AxonObject):
    schedulerClass = None
    trackerClass = None
@@ -212,20 +202,15 @@ class microprocess(Axon.AxonObject):
       cls.schedulerClass = newSchedulerClass
    setSchedulerClass = classmethod(setSchedulerClass)
 
-   def __init__(self, thread = None, closeDownValue = 0):
+   def __init__(self):
       """Microprocess constructor.
       Subclasses must call this using the idiom super(TheClass, self).__init__()      """
       self.init  = 1
       self.id,self.name = tupleId(self)
+      self.__runnable =1
       self.__stopped = 0
-      if thread is not None:
-         self.__thread = thread
-      else:
-         self.__thread = None # Explicit better than implicit
-         
-      self.closeDownValue = closeDownValue
-         
-      self.scheduler = _nullscheduler
+      self.__thread = None
+      self.scheduler = None
       self.tracker=cat.coordinatingassistanttracker.getcat()
 
       # If the client has defined a debugger in their class we don't want to override it.
@@ -243,7 +228,7 @@ class microprocess(Axon.AxonObject):
       result = result + self.name + " :"
       result = result + self.id.__str__() + " :"
       result = result + self.init.__str__() + " :"
-#      result = result + self.__runnable.__str__() + " :"
+      result = result + self.__runnable.__str__() + " :"
       result = result + self.__stopped.__str__() + " :"
       return result
 
@@ -254,6 +239,9 @@ class microprocess(Axon.AxonObject):
       timeslice down to the actual generator."""
       return self.__thread.next()
 
+   def _activityCreator(self):
+      return False
+
    def _isStopped(self):
       """'M._isStopped()' - test, boolean result indicating if the microprocess is halted."""
       if self.debugger.areDebugging("microprocess._isStopped", 1):
@@ -263,12 +251,10 @@ class microprocess(Axon.AxonObject):
    def _isRunnable(self):
       """'M._isRunnable()' - test,
       boolean result indicating if the microprocess is paused.
-      
-      This query is passed on to this microprocess's scheduler.
       """
       if self.debugger.areDebugging("microprocess._isRunnable", 10):
-         self.debugger.debugmessage("microprocess._isRunnable", "self.scheduler.isMProcessPaused(self)", self.scheduler.isMProcessPaused(self))
-      return not self.scheduler.isThreadPaused(self)
+         self.debugger.debugmessage("microprocess._isRunnable", "self.runnable",self.__runnable)
+      return self.__runnable == 1
 
    def stop(self):
       """'M.stop()' -
@@ -276,38 +262,28 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.stop", 1):
          self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
+      self.__runnable = 0
 
    def pause(self):
-       """M.pause() - Pauses the microprocess.
-       
-       Pauses this microprocess. Internally, the request is forwarded to this
-       microprocess's scheduler.
-       """
-       if self.debugger.areDebugging("microprocess.pause", 1):
-           self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
-       self.scheduler.pauseThread(self)
-
-   def unpause(self):
-       """M.unpause() - Un-pauses the microprocess.
-
-       This can only be performed by an external microprocess. This is provided
-       to allow other microprocesses to 'wake up' this one.
-
-       Does nothing if microprocess has been stopped.
-       
-       Internally, the request is forwarded to this microprocess's scheduler.
-       """
-       if self.debugger.areDebugging("microprocess.unpause", 1):
-           self.debugger.debugmessage("microprocess.unpause", "Microprocess UNPAUSED", self.id,self.name,self)
-       self.scheduler.wakeThread(self)
+      """'M.pause()' - Pauses the microprocess.
+      sets the runnable flag to false - thus pausing the microprocess."""
+      if self.debugger.areDebugging("microprocess.pause", 1):
+         self.debugger.debugmessage("microprocess.pause", "Microprocess PAUSED", self.id,self.name,self)
+      self.__runnable = 0
 
    def _unpause(self):
-       """DEPRECATED - use M.unpause() instead""" 
-       if self.debugger.areDebugging("microprocess._unpause", 1):
-           self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
-       noisydeprecationwarning = "Use self.unpause() rather than self._unpause(). self._unpause() will be deprecated."
-       print noisydeprecationwarning
-       return self.unpause()
+      """'M._unpause()' - Un-pauses the microprocess, sets the runnable flag to true.
+
+      Unpauses the microprocess by setting the runnable flag to true.
+      This can only be performed by an external microprocess. This is provided
+      since it is conceivable that a more complex scheduler than the one at
+      present may wish to manipulate this sort of flag.  Does nothing if
+      microprocess has been stopped.
+      ."""
+      if self.debugger.areDebugging("microprocess._unpause", 1):
+         self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
+      if not self._isStopped():
+         self.__runnable = 1
 
    def main(self):
       """'M.main()' - stub function. Client classes are expected to override this.
@@ -320,7 +296,7 @@ class microprocess(Axon.AxonObject):
       yield 1
       return
 
-   def _microprocessGenerator(self,someobject, mainmethod="main"):
+   def _microprocessGenerator(self,someobject):
       """This contains the mainloop for a microprocess, returning a
       generator object. Creates the thread of control by calling the
       class's main method, then in a loop repeatedly calls the resulting
@@ -329,26 +305,31 @@ class microprocess(Axon.AxonObject):
       back to its caller.
       """
       # someobject.setthread = (self) # XXXX Check -- Appears no to be used!
-      pc = someobject.__getattribute__(mainmethod)()
+      pc = someobject.main() # Call the object, get a generator function
       while(1):
-          # Continually try to run the code, and then release control
-          if someobject._isStopped():
-              # Microprocess has stopped
-              yield None
-              return
-          else:
-              v = pc.next()
-              yield v           # Yield control back - making us into a generator function
+         # Continually try to run the code, and then release control
+         if someobject._isRunnable() :
+            # If the object is runnable, we run the objectscheduler=
+            v = pc.next()
+            yield v           # Yield control back - making us into a generator function
+         else:
+            # Microprocess is not running, has it stopped completely?
+            if someobject._isStopped():
+               # Microprocess has stopped
+               yield None
+               return
+            else:
+               # Microprocess simply paused
+               yield "Paused"
 
-   def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
+   def activate(self, Scheduler=None, Tracker=None):
       """calls the _microprocessGenerator function to create a generator
       object, places this into the thread attribute of the microprocess
       and appends the component to the scheduler's run queue."""
 
       if self.debugger.areDebugging("microprocess.activate", 1):
          self.debugger.debugmessage("microprocess.activate", "Activating microprocess",self)
-      if not self.__thread:
-         self.__thread = self._microprocessGenerator(self,mainmethod)
+      self.__thread = self._microprocessGenerator(self)
 
       #
       # Whilst a basic microprocess does not "need" a local scheduler,
@@ -374,12 +355,17 @@ class microprocess(Axon.AxonObject):
 
    def _closeDownMicroprocess(self):
       "Stub method that is overridden internally in Axon but not clients"
-      return self.closeDownValue
+      return 0
 
    def run(self):
       "run - activates the microprocess and runs it from start to finish until StopIteration"
       self.activate()
       self.__class__.schedulerClass.run.runThreads()
+#      try:
+#         while 1:
+#            self.next()
+#      except StopIteration:
+#         pass # Expect this!
 
 if __name__ == '__main__':
    print "Test code currently disabled"

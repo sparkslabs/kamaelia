@@ -40,22 +40,11 @@ from debug import debug
 from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
-import Queue
-try:   
-    from ctypes import *   
-    libc = cdll.LoadLibrary("/lib/libc.so.6")   
-    sched_yield = libc.sched_yield   
-except ImportError:   
-    def sched_yield(): pass
 
 def _sort(somelist):
    a=[ x for x in somelist]
    a.sort()
    return a
-
-_ACTIVE       = object()        # microprocess is active (is in the runqueue)
-_SLEEPING     = object()        # microprocess is paused (is not in the runqueue)
-_GOINGTOSLEEP = object()        # microprocess to be paused (should be removed from the runqueue)
 
 class scheduler(microprocess):
    """Scheduler - runs microthreads of control."""
@@ -66,7 +55,7 @@ class scheduler(microprocess):
       modules always have access to a standalone scheduler.
       Internal attributes:
          * time = time when this object was last active.
-         * threads = set of threads to be run, including their state - whether active or sleeping(paused)
+         * threads = list of threads to run.
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
@@ -75,10 +64,10 @@ class scheduler(microprocess):
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 
       self.time = time.time()
-      
-      self.threads = {}    # current set of threads and their states (whether sleeping, or running)
-      self.wakeRequests = Queue.Queue()
-      self.pauseRequests = Queue.Queue()
+      self.threads = list()     # Don't use [] to avoid Python wierdness
+      self.newthreads = list()
+      if self.debugger.areDebugging("scheduler.__init__", 1):
+         self.debugger.debugmessage("scheduler.__init__", "STARTED: ", self.name, self.id)
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -86,157 +75,112 @@ class scheduler(microprocess):
       use this method to activate themselves, see the component class to see
       how you do that.
       """
-      self.wakeThread(mprocess, True)
-      
-   def wakeThread(self, mprocess, canActivate=False):
-      """\
-      wakeThread(mprocess[,canActivate]) - request to wake a sleeping mprocess.
-      
-      If sleeping or already active, the specified microprocess will be ensured
-      to be active on the next cycle through the scheduler.
-      
-      If the microprocess is not running yet then it will not be woken, unless
-      canActivate = True (default is False).
+      self.newthreads.append(mprocess)
+
+   def main(self,slowmo=0):
+      """This is the meat of the scheduler  - this actively loops round the threads
+      that it has available to run, and runs them. The only control over the scheduler
+      at present is a means to slow it down - ie run in slow motion.
+      The way this is runn is as follows:
+      scheduler.run.runThreads(slowmo=/delay/)
+      where delay is in seconds. If the delay is 0, the the system runs all the
+      threads as fast as it can. If the delay is non zero - eg 0.5, then the system
+      runs all the threads for one "cycle", waits until the delay has passed, and then
+      times again. Note : the delay is between the start points of cycles, and not
+      between the start and end points of cycles. The delay is NOT 100% accurate
+      nor guaranteed and can be extended by threads that take too long to
+      complete. (Think of it as a "hello world" of soft-real time scheduling)
       """
-      self.wakeRequests.put( (mprocess, canActivate) )
-      
-   def pauseThread(self, mprocess):
-       """\
-       pauseThread(mprocess) - request to put a mprocess to sleep.
-       
-       If active, or already sleeping, the specified microprocess will be put
-       to leep on the next cycle through the scheduler.
-       """
-       self.pauseRequests.put( mprocess )
+      crashAndBurnWithErrors = True
+      mprocesses = self.newthreads          # Grab the singleton set of threads.
+      if self.debugger.areDebugging("scheduler.main", 1):
+         self.debugger.debugmessage("scheduler.main", "SCHEDULER:",self)
+         self.debugger.debugmessage("scheduler.main", "Scheduler Starting, # threads to run:")
+         self.debugger.debugmessage("scheduler.main", "   ", len(self.newthreads))
 
-   def isThreadPaused(self, mprocess):
-       """\
-       Returns True if the specified microprocess is sleeping, or the scheduler
-       does not know about it.
-       """
-       return self.threads.get(mprocess, _SLEEPING) == _SLEEPING
-       # doesn't include _GOINGTOSLEEP (inference is the thread isn't asleep yet!)
-   
-   def listAllThreads(self):
-       """Returns a list of all microprocesses (both active and sleeping)"""
-       return self.threads.keys()
-   
-   def handleMicroprocessShutdownKnockon(self, knockon):
-     if isinstance(knockon, shutdownMicroprocess):
-        for i in xrange(len(self.threads)):
-           if self.threads[i] in knockon.microprocesses():
-              self.threads[i] = None
-              
-     if isinstance(knockon, reactivate):
-         self._addThread(knockon.original)
+      yield 1
+      running = len(self.newthreads) > 0
+      if self.debugger.areDebugging("scheduler.main", 5):
+         self.debugger.debugmessage("scheduler.main", "THR", self.newthreads)
+      cx=0
+      lastcx=0
+      lasttime = time.time()
+      starttime= lasttime
+      if self.debugger.areDebugging("scheduler.main", 5):
+         self.debugger.debugmessage("scheduler.main", "# CX Ave, CX this")
+      while(running):           # Threads gets re-assigned so this can reduce to []
+        now = time.time()
+        if (now - self.time) > slowmo or slowmo == 0:
+         self.threads=self.newthreads             # Make the new runset the run set
+         self.newthreads = list()  # We go through all the threads,
+                                   # if they don't exit they get put here.
+         self.time = now   # Update last run time - only really useful if slowmo != 0
+         if self.debugger.areDebugging("scheduler.main.threads", 1):
+            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", len(self.threads))
+         if self.debugger.areDebugging("scheduler.main.threads", 2):
+            self.debugger.debugmessage("scheduler.main.threads", "Threads to run:", _sort([ thr.name for thr in self.threads if thr is not None]))
+         if self.debugger.areDebugging("scheduler.main.threads", 5):
+            self.debugger.debugmessage("scheduler.main.threads", "Axon Objects active", len([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         if self.debugger.areDebugging("scheduler.objecttrack", 10):
+            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x.__class__) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
+         if self.debugger.areDebugging("scheduler.objecttrack", 15):
+            self.debugger.debugmessage("scheduler.objecttrack", "Axon Objects active", "\n           ".join([ str(x) for x in _gc.get_objects() if isinstance(x, _AxonObject) ]))
 
-   def main(self,slowmo=0,canblock=False):
-       """\
-       main([slowmo][,canblock]) - Scheduler main loop generator
-       
-       Each pass through this generator does two things:
-       * one pass through all active microprocesses, giving executing them.
-       * processing of wake/sleep requests
-       
-       slowmo specifies a delay (in seconds) before the main loop is run.
-       slowmo defaults to 0.
-       
-       If canblock is True, this generator will briefly) block if there are
-       no active microprocesses, otherwise it will return immediately (default).
-       
-       This generator terminates when there are no microprocesses left to run.
-       """
-       nextrunqueue = []
-       running = True
-       
-       while running:
-           sched_yield()
-           
-           # slowmo
-           now = time.time()
-           until = now + slowmo
-           if canblock:
-               time.sleep(until-now)
-           else:
-               while now < until:
-                   yield 1
-                   now = time.time()
-           
-           self.time = now   # set "time" attribute for benefit for microprocesses
-           
-           runqueue = nextrunqueue
-           nextrunqueue = []
-           
-           # run microprocesses in the runqueue
-           for mprocess in runqueue:
-               yield 1
-               
-               if self.threads[mprocess] == _ACTIVE:
-                   try:
-                       result = mprocess.next()
-                       
-                       if isinstance(result, newComponent):
-                           for c in result.components():
-                               c.activate()
-                       if isinstance(result, WaitComplete):
-                           newThread = microprocess(result.args[0], reactivate(mprocess))
-                           newThread.activate()
-                           del self.threads[mprocess]
-                           mprocess = None
-                           
-                       if mprocess:
-                           nextrunqueue.append(mprocess)
-                   except StopIteration:
-                       del self.threads[mprocess]
-                       mprocess.stop()
-                       knockon = mprocess._closeDownMicroprocess()
-                       self.handleMicroprocessShutdownKnockon(knockon)
-               else:
-                   self.threads[mprocess] = _SLEEPING
-
-           # make sure, even if there weren't any micprocesses active, we yield
-           # control at least once
-           yield 1
-           
-           # process pause requests first - to prevent race conditions, we do
-           # wakeup requests second - safer to leave a thread awake than asleep
-           while not self.pauseRequests.empty():
-               mprocess = self.pauseRequests.get()
-               self.threads[mprocess] = _GOINGTOSLEEP
-               # marked as going to sleep, rather than asleep since mprocess
-               # is still in runqueue (more efficient to leave it to be
-               # removed when we iterate through the runqueue)
-           
-           allsleeping = len(self.threads) > 0 and len(nextrunqueue) == 0
-           
-           while (allsleeping and canblock) or not self.wakeRequests.empty():
-               
-               # process requests to wake threads
+         if self.debugger.areDebugging("scheduler.scheduler", 1):
+            self.debugger.debugmessage("scheduler.main", "SCHEDULED", self.name,self.id)
+         activeMicroprocesses = 0
+         for mprocess in self.threads:
+            cx=cx+1
+            if (now - lasttime)> 1:
+                 if self.debugger.areDebugging("scheduler.main", 10):
+                    self.debugger.debugmessage("scheduler.main", cx/(now-starttime), ",", cx-lastcx)
+                 lasttime = now
+                 lastcx=cx
+            if mprocess:
                try:
-                    # wait for wakeup requests, blocks but with a
-                    # modest timeout so we still regularly yield (in case this
-                    # is a microprocess running in another scheduler)
-                    mprocess, canActivate = self.wakeRequests.get(True,0.01)
-                    try:
-                        currentstate = self.threads[mprocess]
-                        if currentstate == _SLEEPING:
-                            nextrunqueue.append(mprocess)
-                        allsleeping = False
-                        self.threads[mprocess] = _ACTIVE
-                    except KeyError:
-                        # not activated, can we?
-                        if canActivate:
-                            nextrunqueue.append(mprocess)
-                            self.threads[mprocess] = _ACTIVE
+                  if self.debugger.areDebugging("scheduler.main", 10):
+                     self.debugger.debugmessage("scheduler.main", "Scheduler about to yield",self)
+                  yield 1                       # Relinquish control between every thread
 
-               except Queue.Empty:
-                    # catch timeout
-                    pass
-           
-           running = len(self.threads)
-               
+                  if self.debugger.areDebugging("scheduler.main", 10):
+                     self.debugger.debugmessage("scheduler.main", "Scheduler back yield",self)
+                  result = mprocess.next()      # Run the thread for a cycle. (calls the generator function)
+
+                  if (issubclass(result.__class__, newComponent)):
+                     # The class sent us a newComponent message, which
+                     # can contain several components.
+                     for component in result.components():   # For each one
+                        if self.debugger.areDebugging("scheduler.main", 5):
+                           self.debugger.debugmessage("scheduler.main", "Starting a new component",component)
+                        t = component.activate()      # Activate it - adds itself to the runset
+                        if t._activityCreator():
+                           activeMicroprocesses +=1
+                  if mprocess._activityCreator():
+                     activeMicroprocesses +=1
+                  self.newthreads.append(mprocess)    # Add the current thread to the new run set
+               except StopIteration:             # Thread exited
+                  if self.debugger.areDebugging("scheduler.main", 5):
+                     self.debugger.debugmessage("scheduler.main", "STOP ITERATION THROWN", mprocess)
+                  mprocess.stop() # set the stop flag on the microprocess, so anyone observing can see
+                  knockon = mprocess._closeDownMicroprocess()
+                  if knockon:
+                     if self.debugger.areDebugging("scheduler.main", 5):
+                        self.debugger.debugmessage("scheduler.main", "KNOCKON", knockon)
+                     if isinstance(knockon, shutdownMicroprocess):
+                        if self.debugger.areDebugging("scheduler.main", 5):
+                           self.debugger.debugmessage("scheduler.main", "TO CLOSEDOWN", [(x.name,x.debugname) for x in knockon.microprocesses() ])
+                        for i in xrange(len(self.threads)):
+                           if self.threads[i] in knockon.microprocesses():
+                              self.threads[i] = None
+                        # In-efficient first pass at handling knockon threads without having expensive deletions.
+                        #for i in xrange(len(newthreads)):
+                        #   if newthreads[i] in knockon.microprocesses():
+                        #      newthreads[i] = None
+               #_gc.collect()
+            running = activeMicroprocesses > 0
+
    def runThreads(self,slowmo=0):
-      for i in self.main(slowmo,canblock=True): pass
+      for i in self.main(slowmo): pass
 
 microprocess.setSchedulerClass(scheduler)
 scheduler() # Initialise the class.
@@ -247,6 +191,8 @@ if __name__ == '__main__':
       def main(self):
          while 1:
             yield 1
+      def _activityCreator(self):
+         return True
    a=foo()
    a.activate()
    print a

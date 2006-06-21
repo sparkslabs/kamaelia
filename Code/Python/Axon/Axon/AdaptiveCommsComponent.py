@@ -22,14 +22,13 @@
 
 from Component import component
 import idGen
-from Box import makeInbox, makeOutbox
 
-class _AdaptiveCommsable(object):
+class AdaptiveCommsComponent(component):
    #
    # Public Methods
    #
    def __init__(self):
-      super(_AdaptiveCommsable, self).__init__()
+      super(AdaptiveCommsComponent, self).__init__()
       self._resourceStore = {}
       self._resourceLookup = {}
 
@@ -60,25 +59,21 @@ class _AdaptiveCommsable(object):
    def addInbox(self,*args):
       "Adds a custom inbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the inbox added."
       name = self._newInboxName(*args)
-      self.inboxes[name]=makeInbox(self.unpause)
+      self.inboxes[name]=[]
       return name
 
    def deleteInbox(self,name):
       "Deletes the named inbox"
-      ### XXX DOESNT DEAL WITH SITUATION OF LINKAGES TO/FROM THIS BOX EXIST
-      ### might have been created by another component, in which case won't be registered with local postoffice
       del self.inboxes[name]
 
    def addOutbox(self,*args):
       "Adds a custom outbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the outbox added."
       name = self._newOutboxName(*args)
-      self.outboxes[name]=makeOutbox()
+      self.outboxes[name]=[]
       return name
 
    def deleteOutbox(self,name):
       "Deletes the named outbox"
-      ### XXX DOESNT DEAL WITH SITUATION OF LINKAGES TO/FROM THIS BOX EXIST
-      ### might have been created by another component, in which case won't be registered with local postoffice
       del self.outboxes[name]
    #
    # Private Methods
@@ -95,12 +90,6 @@ class _AdaptiveCommsable(object):
          name =name+str(idGen.idGen().next())
       return name
 
-class AdaptiveCommsComponent(component, _AdaptiveCommsable):
-   def __init__(self):
-      component.__init__(self)
-      _AdaptiveCommsable.__init__(self)
-          
-
 if __name__=="__main__":
-   print "Tests are separated into test/test_AdaptiveCommsableComponent.py"
+   print "Tests are separated into test/test_AdaptiveCommsComponent.py"
 

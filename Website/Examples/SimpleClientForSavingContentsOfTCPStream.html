@@ -1,7 +1,0 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
-<p align="right"><span style="font-size:18pt">How can I...?</span></p>
-<p>Examples 12 : Simple TCP based client for the streamer above. <span style="font-weight:600">Components used: </span><a href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>, <a href="/Components/pydoc/Kamaelia.Internet.TCPClient.TCPClient.html">TCPClient</a>, <a href="/Components/pydoc/Kamaelia.File.Writing.SimpleFileWriter.html">SimpleFileWriter</a></p>
-<ul type="disc"><div>[[pre]<span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Kamaelia.Internet.TCPClient <span style="font-weight:600">import</span> TCPClient<br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><span style="font-weight:600">from</span> Kamaelia.File.Writing <span style="font-weight:600">import</span> SimpleFileWriter<br /><br />outputfile = &quot;/tmp/received.raw&quot;<br />clientServerTestPort=1500<br /><br />pipeline(TCPClient(&quot;127.0.0.1&quot;,clientServerTestPort),<br />         SimpleFileWriter(outputfile)<br />        ).run()<br />] <span style="font-weight:600">Source:</span> Examples/example12/ClientStreamToFile.py</div></ul>
-<p></p>
-</body></html>

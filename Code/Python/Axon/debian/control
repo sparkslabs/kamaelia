@@ -1,0 +1,30 @@
+Source: python-axon
+Section: python
+Priority: optional
+Maintainer: Gintautas Miliauskas <gintas@pov.lt>
+Build-Depends: debhelper (>= 4.0.0), python2.3-dev, python2.4-dev
+Standards-Version: 3.6.1.0
+
+Package: python2.3-axon
+Architecture: all
+Depends: python2.3
+Suggests: python2.3-kamaelia
+Description: coroutine-based concurrency framework
+ Axon is a software component system. In Axon, components are active and
+ reactive, independent processing nodes responding to a CSP-like environment.
+ Systems are composed by creating communications channels (linkages) between
+ components.
+ .
+ This version is usable with python2.3.
+
+Package: python2.4-axon
+Architecture: all
+Depends: python2.4
+Suggests: python2.4-kamaelia
+Description: coroutine-based concurrency framework
+ Axon is a software component system. In Axon, components are active and
+ reactive, independent processing nodes responding to a CSP-like environment.
+ Systems are composed by creating communications channels (linkages) between
+ components.
+ .
+ This version is usable with python2.4.
