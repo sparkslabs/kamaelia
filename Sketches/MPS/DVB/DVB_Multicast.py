@@ -22,6 +22,7 @@ feparams = {
     "coderate_HP" : dvb3.frontend.FEC_3_4,
     "coderate_LP" : dvb3.frontend.FEC_3_4,
 }
+feparams = {}
 service_ids = { "BBC ONE": 4168,
                 "BBC TWO": 4232,
                 "CBEEBIES":16960,
@@ -46,13 +47,14 @@ class blockise(component):
        while 1:
            while self.dataReady("inbox"):
                buffer = buffer + self.recv("inbox")
-               if len(buffer) > maxlen:
+               while len(buffer) > maxlen:
                   send = buffer[:maxlen]
                   buffer = buffer[maxlen:]
+                  self.send(send, "outbox")
                else:
                   send = buffer
                   buffer = ""
-               self.send(send, "outbox")
+                  self.send(send, "outbox")
            yield 1
 
 class counter(component):
@@ -69,7 +71,27 @@ class counter(component):
             self.pause()
             yield 1
 
-if 1:
+import time
+class dataRateMeasure(component):
+    def main(self):
+        size = 0
+        c = 0
+        t = time.time()
+        while 1:
+            while self.dataReady("inbox"):
+                c += 1
+                data = self.recv("inbox")
+                size += len(data)
+                self.send(data, "outbox")
+            if (c % 20) == 0:
+                t_dash = time.time()
+                if t_dash - t > 1:
+                    print int((size/(t_dash - t))*8)
+                    t = t_dash
+                    size = 0
+            yield 1
+
+if 0:
     pipeline(
         DVB_Multiplex(freq, [600,601], feparams),
         SimpleFileWriter("somefile.ts"),
@@ -85,5 +107,21 @@ if 0:
     pipeline(
         Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
         detuple(1),
+        SimpleFileWriter("otherfile.ts"),
+    ).run()
+
+
+if 1:
+    pipeline(
+        DVB_Multiplex(freq, [600,601], feparams),
+        blockise(),
+        Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
+    ).activate()
+
+if 1:
+    pipeline(
+        Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
+        detuple(1),
+        dataRateMeasure(),
         SimpleFileWriter("otherfile.ts"),
     ).run()
