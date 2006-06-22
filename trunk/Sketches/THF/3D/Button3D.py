@@ -53,9 +53,9 @@ class Button3D(Axon.Component.component):
         "scaling": "send scaling status when updated"
     }
     
-    def __init__(self, caption=None, position=None, margin=8, bgcolour = (200,200,244), fgcolour = (0,0,0), msg=None,
+    def __init__(self, caption=None, position=None, margin=8, bgcolour = (244,244,244), fgcolour = (0,0,0), msg=None,
                 key = None, transparent = False,
-                fontsize = 50, pixelscaling = 100, thickness = 0.2,
+                fontsize = 50, pixelscaling = 100, thickness = 0.2, sidecolour = (200,200,244),
                 size=None, pos = Vector(0,0,0), rot = Vector(0,0,0), scaling = Vector(1,1,1)):
         super(Button3D, self).__init__()
         # 3D object initialisation
@@ -81,6 +81,7 @@ class Button3D(Axon.Component.component):
         self.key = key
         self.caption = caption
         
+        self.sideColour = sidecolour
         self.fontsize = fontsize
         self.pixelscaling = pixelscaling
         self.thickness = thickness
@@ -115,7 +116,7 @@ class Button3D(Axon.Component.component):
         # create power of 2 dimensioned surface
         pow2size = (int(2**(ceil(log(self.image.get_width(), 2)))), int(2**(ceil(log(self.image.get_height(), 2)))))
         textureSurface = pygame.Surface(pow2size)
-        textureSurface.fill( (244,244,244))#self.backgroundColour )
+        textureSurface.fill( self.backgroundColour )
         # determine texture coordinates
         self.tex_w = float(self.image.get_width()+2*self.margin)/pow2size[0]
         self.tex_h = float(self.image.get_height()+2*self.margin)/pow2size[1]
@@ -184,7 +185,7 @@ class Button3D(Axon.Component.component):
 #        glDisable(GL_DEPTH_TEST)
         glDisable(GL_BLEND)
         glBegin(GL_QUADS)
-        glColor4f(self.backgroundColour[0]/256.0, self.backgroundColour[1]/256.0, self.backgroundColour[2]/256.0, 0.5)
+        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
 
             
         glVertex3f(hs.x,hs.y,hs.z)
@@ -296,9 +297,9 @@ class Button3D(Axon.Component.component):
 
     def steadyMovement(self):
         self.rot += self.wiggle
-        self.wiggle += self.wiggleadd
-        if self.wiggle.x > 0.1 or self.wiggle.x <-0.1:
+        if self.wiggle.x >= 0.1 or self.wiggle.x <=-0.1:
             self.wiggleadd *= -1
+        self.wiggle += self.wiggleadd
 
         if self.activated:
             self.rot += Vector(3,0,0)%360
