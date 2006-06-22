@@ -106,13 +106,14 @@ class Multicast_transceiver(Axon.Component.component):
                 "signal" : "NOT USED",
               }
 
-   def __init__(self, local_addr, local_port, remote_addr, remote_port):
+   def __init__(self, local_addr, local_port, remote_addr, remote_port, debug=False):
        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
        super(Multicast_transceiver, self).__init__()
        self.local_addr = local_addr   # Multicast address we join
        self.local_port = local_port   # and port
        self.remote_addr = remote_addr # Multicast address we send to (may be same)
        self.remote_port = remote_port # and port.
+       self.debug = debug
 
    def main(self):
         """Main loop"""
@@ -126,25 +127,33 @@ class Multicast_transceiver(Axon.Component.component):
                                     socket.inet_aton(self.remote_addr) + socket.inet_aton("0.0.0.0"))
 
         sock.setblocking(0)
+
+        # This buffer collects data to be sent
         tosend = []
         while 1:
            try:
-              data, addr = sock.recvfrom(1024)
+              data, addr = sock.recvfrom(16384)
            except socket.error, e:
               pass
            else:
               message = (addr, data)
               self.send(message,"outbox")
            yield 1
-           if self.dataReady("inbox"):
+
+           while self.dataReady("inbox"):
               data = self.recv()
               tosend.append(data)
+
+           if self.debug:
+              print self.inboxes["inbox"]
+
+           while len(tosend)>0:
               try:
                   l = sock.sendto(tosend[0], (self.remote_addr,self.remote_port) );
                   del tosend[0]
               except socket.error, e:
-                  # Just keep trying next time
-                  pass
+                  # break out the loop, since we can't send right now
+                  break
 
 def tests():
    print "This module is acceptance tested as part of a system."
