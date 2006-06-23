@@ -29,15 +29,19 @@ class ParsePAT(component):
     
     def parseTable(self, table_id, current_next, sections):
         
-        msg = { "table_type" : "PAT",
-                "table_id"   : table_id,
-                "current"    : current_next,
+        msg = { "table_type"        : "PAT",
+                "table_id"          : table_id,
+                "current"           : current_next,
               }
-        programs = {}
+        streams = {}
         
         for (data,section_length) in sections:
             
-            msg['transportstream_id'] = (ord(data[3])<<8) + ord(data[4])
+            transportstream_id = (ord(data[3])<<8) + ord(data[4])
+            try:
+                programs = streams[transportstream_id]
+            except KeyError:
+                programs = {}
             lo = ord(data[5])
             
             i=8
@@ -51,8 +55,12 @@ class ParsePAT(component):
                 else:
                     programs[program] = pid
                 i+=4
+                
+            # append to any existing records for this transportstream_id
+            # (or start a new list)
+            streams[transportstream_id] = programs
     
-        msg['programs_PIDs'] = programs
+        msg['transport_streams'] = streams
         return  msg
 
     
