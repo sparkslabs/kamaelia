@@ -66,6 +66,12 @@ class ParsePMT(component):
                     stream['descriptors'].append(descriptor)
                     
                 service['streams'].append(stream)
+                
+                # a little bit of simplification here:
+                if   stream['type'] in [3,4] and 'audio_pid' not in service:
+                    service['audio_pid'] = stream['pid']
+                elif stream['type'] in [1,2] and 'video_pid' not in service:
+                    service['video_pid'] = stream['pid']
             
             services[service_id] = service
         msg['services'] = services
