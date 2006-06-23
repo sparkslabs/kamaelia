@@ -107,7 +107,7 @@ class Annotator(Axon.Component.component):
       n=1
       while 1:
          yield 1
-         if self.dataReady("inbox"):
+         while self.dataReady("inbox"):
             item = self.recv("inbox")
             self.send((n, item), "outbox")
             n = n + 1
@@ -127,7 +127,7 @@ class RecoverOrder(Axon.Component.component):
       datasource = []
       while 1:
          yield 1
-         if self.dataReady("inbox"):
+         while self.dataReady("inbox"):
             item = self.recv("inbox")
             datasource.append(item)
       

@@ -212,7 +212,7 @@ class Framer(Axon.Component.component):
         while 1:
             if self.shutdown():
                 return
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 message = self.recv("inbox")
                 self.send(str(SimpleFrame(*message)), "outbox")
             yield 1
@@ -248,7 +248,7 @@ class DeFramer(Axon.Component.component):
         while 1:
             if self.shutdown():
                 return
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 message = self.recv("inbox")
                 try:
                     self.send(SimpleFrame.fromString(message),"outbox")
@@ -309,7 +309,7 @@ class DataChunker(Axon.Component.component):
         while 1:
             if self.shutdown():
                 return
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 message = self.recv("inbox")
                 newMessage = self.encodeChunk(message)
                 self.send(newMessage, "outbox")
@@ -385,7 +385,7 @@ class DataDeChunker(Axon.Component.component):
         while 1:
             if self.shutdown(): return
 
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 buffer += data
                 location = buffer.find(self.syncmessage,len(self.syncmessage))
