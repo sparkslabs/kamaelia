@@ -82,12 +82,15 @@ if __name__ == "__main__":
        nested = 1
        # what the embedded instance will see as sys.argv:
        args = ['-pi1','In <\\#>:','-pi2', '   .\\D.:','-po','Out<\\#>:','-nosep']
-   from IPython.Shell import IPShellEmbed
+   try:
+       from IPython.Shell import IPShellEmbed
+   except ImportError:
+       print "Sorry, but in order to use the axon shell, you need IPython installed!"
+   else:
+       ipshell = IPShellEmbed(args,
+                              banner = 'Starting Axon Interactive Shell',
+                              exit_msg = '')
 
-   ipshell = IPShellEmbed(args,
-                          banner = 'Starting Axon Interactive Shell',
-                          exit_msg = '')
-
-   ipshell('***Called from top level. '
-           'Hit Ctrl-D to exit interpreter and continue program.')
+       ipshell('***Called from top level. '
+               'Hit Ctrl-D to exit interpreter and continue program.')
 
