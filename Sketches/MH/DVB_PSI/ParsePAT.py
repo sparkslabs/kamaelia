@@ -2,6 +2,12 @@
 
 # Code to parse the different table types in a DVB transport stream
 
+# NB: the word 'service' is used here to refer to:
+#   * 'service' as defined in "Specification for Service Information (SI) in
+#     DVB systems" (ETSI EN 300 468)
+#   * 'program' as defined in "Generic coding of moving pictures and associated
+#     audio: systems" (ISO/IEC 13818-1) (MPEG Systems standard)
+
 from CRC import dvbcrc
 
 from Axon.Component import component
@@ -39,26 +45,26 @@ class ParsePAT(component):
             
             transportstream_id = (ord(data[3])<<8) + ord(data[4])
             try:
-                programs = streams[transportstream_id]
+                services = streams[transportstream_id]
             except KeyError:
-                programs = {}
+                services = {}
             lo = ord(data[5])
             
             i=8
             section_end = section_length+3-4
             while i < section_end:
-                program = (ord(data[i])<<8) + ord(data[i+1])
+                service_id = (ord(data[i])<<8) + ord(data[i+1])
                 pid = (ord(data[i+2])<<8) + ord(data[i+3])
                 pid = pid & 0x1fff
-                if program==0:
-                    msg['network_PID'] = pid
+                if service_id==0:
+                    msg['NIT_PID'] = pid
                 else:
-                    programs[program] = pid
+                    services[service_id] = pid
                 i+=4
                 
             # append to any existing records for this transportstream_id
             # (or start a new list)
-            streams[transportstream_id] = programs
+            streams[transportstream_id] = services
     
         msg['transport_streams'] = streams
         return  msg
@@ -133,6 +139,34 @@ class ParsePAT(component):
             yield 1
                     
 
+class PrettyPrintPAT(component):
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+                pat = self.recv("inbox")
+                output =  "PAT received:\n"
+                output += "    Table ID           : " + str(pat['table_id']) + "\n"
+                output += "    Table is valid for : " + ["NEXT","CURRENT"][pat['current']] + "\n"
+                output += "    NIT is in PID      : " + str(pat['NIT_PID']) + "\n"
+                for ts in pat['transport_streams']:
+                    output += "    For transport stream id : "+str(ts) + "\n"
+                    tsmap = pat['transport_streams'][ts]
+                    for services in tsmap:
+                        output += "        For service "+str(services)+" : PMT is in PID " + str(tsmap[services]) + "\n"
+                output += "----\n"
+                self.send(output,"outbox")
+                
+            self.pause()
+            yield 1
+
 if __name__ == "__main__":
     
     from Kamaelia.Util.PipelineComponent import pipeline
@@ -153,6 +187,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ 0:["outbox"]}),
               PSIPacketReconstructor(),
               ParsePAT(),
+              PrettyPrintPAT(),
               ConsoleEchoer(),
             ).run()
             
