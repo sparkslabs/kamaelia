@@ -69,36 +69,40 @@ from Axon.Ipc import producerFinished
 
 import time
 class ReadFileAdaptor(component):
-   """An instance of this class is a read file adaptor component. It's
+   """\
+   An instance of this class is a read file adaptor component. It's
    constructor arguments are all optional. If no arguments are provided,
    then the default is to read from stdin, one line at a time, as fast as
    possible. Note that this will cause the outbox to fill at the same rate
    as stdin can provide data. (Be wary of memory constraints this will
    cause!)
-
+   
    Arguments & meaning:
       * filename="filename" - the name of the file to read. If you want stdin,
-      do not provide a filename! If you want the output from a command,
-      also leave this blank...
+        do not provide a filename! If you want the output from a command,
+        also leave this blank...
       * command="command" - the name of the command you want the
-      output from. Leave the filename blank if you use this!
+        output from. Leave the filename blank if you use this!
       * readmode - possible values:
          "bitrate" - read at a specified bitrate.
-      "line" - read on a line by line basis
-      "block" - read the file on a block by block basis.
+         "line" - read on a line by line basis
+         "block" - read the file on a block by block basis.
       * If bitrate mode is set, you should set bitrate= to your
-      desired bitrate (unless you want 64Kbit/s), and chunkrate=
-      to your desired chunkrate (unless you want 24 fps). You are
-      expected to be able to handle the bit rate you request!
+        desired bitrate (unless you want 64Kbit/s), and chunkrate=
+        to your desired chunkrate (unless you want 24 fps). You are
+        expected to be able to handle the bit rate you request!
       * If block mode is set then you should set readsize (size of the
-      block in bytes), and steptime (how often you want bytes). If
-      steptime is set to zero, you will read blocks at the speed the
-      source device can provide them. (be wary of memory constraints)
-
+        block in bytes), and steptime (how often you want bytes). If
+        steptime is set to zero, you will read blocks at the speed the
+        source device can provide them. (be wary of memory constraints)
+   
    After setting the ReadFileAdaptor in motion, you can then hook it into
-   your linkages like any other component, and it's interfaces are:
+   your linkages like any other component.
+
+   Its interfaces are:
       * inboxes=["inbox"] - not actually read at present
       * outboxes=["outbox"]) - When data is read, it is made available here.
+
    """
    def __init__(self, filename="",
                   command="",
@@ -195,6 +199,9 @@ class ReadFileAdaptor(component):
          sig = producerFinished(self)
          self.send(sig, "signal")
          return 0 # Finish looping, we've stopped reading
+
+__kamaelia_components__  = ( ReadFileAdaptor, )
+
 
 if __name__ == '__main__':
    """Debugging/Testing code. Each test/bit is commented out since we're

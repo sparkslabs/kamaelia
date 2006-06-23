@@ -19,25 +19,75 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===================
+Basic Result Tester
+===================
+
+A simple component for testing that a stream of data tests true.
+This is NOT intended for live systems, but for testing and development purposes
+only.
+
+
+
+Example Usage
+-------------
+::
+    pipeline( source(), testResultComponent() ).activate()
+    
+Raises an assertion error if source() generates a value that doesn't test
+true.
+
+
+
+How does it work?
+-----------------
+
+If the component receives a value on its "inbox" inbox that does not test true,
+then an AssertionError is raised.
+
+If the component receives a StopSystem message on its "control" inbox then a
+StopSystemException message is raised as an exception.
+
+This component does not terminate (unless it throws an exception).
+
+It does not pass on the data it receives.
+"""
+
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess,ipc
 from Axon.AxonExceptions import AxonException
 
 class StopSystem(ipc):
-    "This IPC message is the command to the component to throw a StopSystemException and bring the Axon system to a halt."
-    pass
-    
-class StopSystemException(AxonException):
-    "This exception is used to stop the whole Axon system."
+    """\
+    This IPC message is the command to the component to throw a 
+    StopSystemException and bring the Axon system to a halt.
+    """
     pass
 
+    
+class StopSystemException(AxonException):
+    """This exception is used to stop the whole Axon system."""
+    pass
+
+
 class testResultComponent(component):
-    """DO NOT USE IN LIVE SYSTEMS.  This class is largely intended for use is
-    system testing and particularly unit testing of other components.  In the
-    case of error or request it is intended to throw an exception stop the Axon
-    system and jump back to the unit test."""
-    Outboxes = []
+    """\
+    testResultComponent() -> new testResultComponent.
+    
+    Component that raises an AssertionError if it receives data on its "inbox"
+    inbox that does not test true. Or raises a StopSystemException if a
+    StopSystem message is received on its "control" inbox.
+    """
+
+    Inboxes = { "inbox"   : "Data to test",
+                "control" : "StopSystemException messages",
+              }
+    Outboxes = { "outbox" : "NOT USED",
+                 "signal" : "NOT USED",
+               }
+
     def mainBody(self):
         if self.dataReady():
             if not self.recv():
@@ -48,3 +98,4 @@ class testResultComponent(component):
                 raise StopSystemException("StopSystem request raised from TestResultComponent")
         return 1
     
+__kamaelia_components__  = ( testResultComponent, )

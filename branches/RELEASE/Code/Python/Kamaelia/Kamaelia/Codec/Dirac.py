@@ -19,7 +19,122 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+===================
+Dirac video decoder
+===================
+
+This component decodes a stream of video, coded using the Dirac codec, into
+frames of YUV video data.
+
+This component is a thin wrapper around the Dirac Python bindings.
+
+
+
+Example Usage
+-------------
+A simple video player::
+
+    pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
+             DiracDecoder(),
+             RateLimit(framerate),
+             VideoOverlay()
+            ).activate()
+
+
+
+More detail
+-----------
+Reads a raw dirac data stream, as strings, from the "inbox" inbox.
+
+Sends out frames of decoded video to the "outbox" outbox.
+
+The frames may not be emitted at a constant rate. You may therefore need to
+buffer and rate limit them if displaying them.
+
+The decoder will terminate if it receives a shutdownMicroprocess message on
+its "control" inbox. The message is passed on out of the "signal" outbox.
+ 
+It will ignore producerFinished messages.
+
+The decoder is able to work out from the data stream when it has reached the
+end of the stream. It then sends a producerFinished message out of the "signal"
+outbox and terminates.
+
+For more information see the Dirac Python bindings documentation.
+
+
+
+===================
+Dirac video encoder
+===================
+
+This component encodes frames of YUV video data with the Dirac codec.
+
+This component is a thin wrapper around the Dirac Python bindings.
+
+
+
+Example Usage
+-------------
+Raw video file encoder::
+
+    imagesize = (352, 288)      # "CIF" size video
+    
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+             RawYUVFramer(imagesize),
+             DiracEncoder(preset="CIF"),
+             WriteFileAdapter("diracvideo.drc")
+            ).activate()
+
+RawYUVFramer is needed to frame raw YUV data into individual video frames.
+
+
+
+More detail
+-----------
+
+Reads video frames from the "inbox" inbox.
+
+Sends out encoded video data (as strings) in chunks to the "outbox" outbox.
+
+The encoder can be configured with simple presets and/or more detailed encoder
+and sequence parameters. Encoder and sequence parameters override those set with
+a preset.
+
+For more information see the Dirac Python bindings documentation.
+
+The encoder will terminate if it receives a shutdownMicroprocess or
+producerFinished message on its "control" inbox. The message is passed on out of
+the "signal" outbox. If the message is producerFinished, then it will also send
+any data still waiting to be sent out of the "outbox" outbox, otherwise any
+pending data is lost.
+
+The component does not yet support output of instrumentation or locally decoded
+frames (the "verbose" option).
+ 
+
+=========================
+UNCOMPRESSED FRAME FORMAT
+=========================
+
+Uncompresed video frames are output by the decoder, as dictionaries. Each
+contains the following entries::
+    {
+      "yuv" : (y_data, u_data, v_data)  # a tuple of strings
+      "size" : (width, height)          # in pixels
+      "frame_rate" : fps                # frames per second
+      "interlaced" : 0 or not 0         # non-zero if the frame is two interlaced fields
+      "topfieldfirst" : 0 or not 0      # non-zero the first field comes first in the data
+      "pixformat" :  "YUV420_planar"    # format of raw video data
+      "chroma_size" : (width, height)   # in pixels, for the u and v data
+    }
+
+The encoder expects data in the same format, but only requires "yuv", "size",
+and "pixformat".
+
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -30,6 +145,7 @@ from dirac_encoder import DiracEncoder as EncoderWrapper
 from Kamaelia.Data.Rationals import rational
 
 def map_chroma_type(chromatype):
+    """Maps string names for chrominance data formats to those understood by the Dirac Python bindings."""
     if chromatype == "420":
         return "YUV420_planar"
     else:
@@ -37,24 +153,27 @@ def map_chroma_type(chromatype):
 
 
 class DiracDecoder(component):
-    """Dirac decoder component
-
-       decodes dirac video!
-
-       Receives dirac encoded video as strings on inbox
-
-       Responds only to shutdownMicroprocess msgs (ignores producerFinished)
-       as dirac encoder is perfectly capable of working out that the stream has
-       finished, at which point it sends its own producerFinished msg.
     """
+    DiracDecoder() -> new Dirac decoder component
+
+    Creates a component that decodes Dirac video.
+    """
+
+    Inboxes  = { "inbox"   : "Strings containing an encoded dirac video stream",
+                 "control" : "for shutdown signalling",
+               }
+    Outboxes = { "outbox" : "YUV decoded video frames",
+                 "signal" : "for shutdown/completion signalling",
+               }
        
     def __init__(self):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(DiracDecoder, self).__init__()
         self.decoder = DiracParser()
         self.inputbuffer = ""
 
     def main(self):
-
+        """Main loop"""
         done = False
         while not done:
             dataShortage = False
@@ -104,34 +223,21 @@ class DiracDecoder(component):
             
 
 class DiracEncoder(component):
-    """Dirac encoder component
+    """
+    DiracEncoder([preset][,verbose][,encParams][,seqParams]) -> new Dirac encoder component
 
-       Encodes dirac video!
+    Creates a component to encode video using the Dirac codec. Configuration based on
+    optional preset, optionally overriden by individual encoder and sequence parameters.
 
-       Receives frame dictionaries containing a 'yuv' key containing (y,u,v)
-       tuple of strings
-
-       Emits byte stream as strings
-
-       Finishes the stream in response to a producerFinished msg.
-       shutdownMicroprocess does not do this, but will still shut the component
-       down.
-
-       Does not yet support output of instrumentation or locally decoded frames
+    Keyword arguments:
+    preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
+    verbose    -- NOT YET IMPLEMENTED (IGNORED)
+    encParams  -- dict of encoder setup parameters
+    seqParams  -- dict of video sequence info parameters
     """
 
     def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}):
-        """Initialisation.
-
-        Either specify a preset and/or encoder and sequence parameters
-        to set up the encoder. Any encoder or sequence params manually specified will
-        override those specified through a preset.
-
-        bufsize is recommended to be at least 1 MByte. It is the buffer into which the
-        compressed stream is output. If the buffer size is too small, the encoder will
-        generate errors.
-        """
-
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(DiracEncoder, self).__init__()
 
         if 'frame_rate' in seqParams:
@@ -141,7 +247,7 @@ class DiracEncoder(component):
 
         
     def main(self):
-
+        """Main loop"""
         done = False
         msg = None
         while not done:
@@ -186,3 +292,5 @@ class DiracEncoder(component):
                 self.pause()
 
             yield 1
+
+__kamaelia_components__ = ( DiracDecoder, DiracEncoder )

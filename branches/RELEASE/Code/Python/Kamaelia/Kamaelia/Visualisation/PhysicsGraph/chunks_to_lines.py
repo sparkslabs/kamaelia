@@ -20,43 +20,91 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# Simple topography viewer server - takes textual commands from a single socket
-# and renders the appropriate graph
+"""\
+==================
+Text line splitter
+==================
 
-import pygame
-from pygame.locals import *
+This component takes chunks of text and splits them at line breaks into
+individual lines.
 
-import random, time, re, sys
 
-from Axon.Scheduler import scheduler as _scheduler
-import Axon as _Axon
 
-import Kamaelia.Physics.Simple
-from Kamaelia.Physics.Simple import Particle as BaseParticle
-from Kamaelia.UI.MH import PyGameApp, DragHandler
+Example usage
+-------------
+A system that connects to a server and receives fragmented text data, but then
+displays it a whole line at a time::
+	    pipeline( TCPClient(host=..., port=...),
+              chunks_to_lines(),
+              consoleEcho()
+            ).run()
+            
 
-component = _Axon.Component.component
+            
+How does it work?
+-----------------
 
-from Kamaelia.Util.PipelineComponent import pipeline
+chunks_to_lines buffers all text it receives on its "inbox" inbox. If there is a
+line break ("\\n") in the text it has buffered, then it extracts that line of
+text, including the line break character and sends it on out of its "outbox"
+outbox.
+
+It also removes any "\\r" characters in the text.
+
+If a producerFinished() or shutdownMicroprocess() message is received on this
+component's "control" inbox, then it will send it on out of its "signal" outbox
+and immediately terminate. It will not flush any whole lines of text that may
+still be buffered.
+"""
+
+from Axon.Component import component
+from Axon.Ipc import shutdownMicroprocess, producerFinished
+
 
 class chunks_to_lines(component):
-   """Takes in chunked textual data and breaks it at line breaks into lines."""
+   """\
+   chunks_to_lines() -> new chunks_to_lines component.
+   
+   Takes in chunked textual data and splits it at line breaks into individual
+   lines.
+   """
+   
+   Inboxes = { "inbox" : "Chunked textual data",
+               "control" : "Shutdown signalling",
+             }
+   Outboxes = { "outbox" : "Individual lines of text",
+                "signal" : "Shutdown signalling",
+              }
 
    def main(self):
+      """Main loop."""
       gotLine = False
       line = ""
-      while 1: 
+      while not self.shutdown(): 
+         
+         while self.dataReady("inbox"):
+            chunk = self.recv("inbox")
+            chunk = chunk.replace("\r", "")
+            line = line + chunk
+         
          pos = line.find("\n")
-         if pos > -1:
+         while pos > -1:
             self.send(line[:pos], "outbox")
             line = line[pos+1:] 
-         else:
-            if self.dataReady("inbox"):
-               chunk = self.recv("inbox")
-               chunk = chunk.replace("\r", "")
-               line = line + chunk
-            else:
-               self.pause()
+            pos = line.find("\n")
+         
+         self.pause()
          yield 1
 
+   def shutdown(self):
+      """\
+      Returns True if a shutdownMicroprocess or producerFinished message was received.
+      """
+      while self.dataReady("control"):
+        msg = self.recv("control")
+        if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
+          self.send(msg,"signal")
+          return True
+      return False
 
+__kamaelia_components__  = ( chunks_to_lines, )

@@ -19,23 +19,76 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# Original author: Tom Gibson (whilst at BBC)
-#
-# This file contains 3 components - use demonstrated below - that simulate
-# the effects of multicast delivery over wireless or a WAN. Specifically, 
-# they components will randomly reorder packets, duplicate packets or lose
-# packets of data. This was used for the development of a simple recovery
-# protocol. The actual version in use replaces the string2tuple and
-# tuple2string code (in sketches in tomg.py, omitted here), with something
-# more robust.
-#
+"""\
+=========================
+Broken Network Simulation
+=========================
+
+Components to simulate properties of an unreliable network connection.
+Specifically: out of order delivery, duplication, and loss of packets.
+
+Original author: Tom Gibson (whilst at BBC)
+
+
+
+Example Usage
+-------------
+
+Testing a forward-error correction scheme to cope with an unreliable network::
+    
+    pipeline( RateControlledFileReader("sourcefile",rate=1000000),
+              MyForwardErrorCorrector(),
+              Duplicate(),
+              Throwaway(),
+              Reorder(),
+              MyErrorRecoverer(),
+              SimpleFileWriter("receiveddata")
+            ).activate()
+
+
+
+Duplicate, Throwaway, Reorder
+-----------------------------
+
+These three components all receive data and, respectively, randomly duplicate
+packets, re-order packets or throw some packets away.
+
+They can be used to simulate the effects of multicast delivery over wireless or
+a WAN.
+
+
+
+More details
+------------
+
+These component all receive data on their "inbox" inbox and send it on to their
+"outbox" outbox. However, they will sometimes tamper with the data in the
+manners described!
+
+None of these components terminate when sent shutdown messages.
+
+
+
+History
+-------
+This was used for the development of a simple recovery
+protocol. The actual version in use replaces the string2tuple and
+tuple2string code (in sketches in tomg.py, omitted here), with something
+more robust.
+
+"""
 
 import random
 
 from Axon.Component import component
 
 class Duplicate(component):
+   """\
+   Duplicate() -> new component.
+
+   This component passes on data it receives. Sometimes it randomly duplicates
+   items.
+   """
    def main(self):
       while 1:
          yield 1
@@ -48,6 +101,11 @@ class Duplicate(component):
                self.send(item, "outbox")
 
 class Throwaway(component):
+   """\
+   Throwaway() -> new component.
+
+   This component passes on data it receives, but sometimes it doesn't!
+   """
    def main(self):
       while 1:
          yield 1
@@ -57,6 +115,12 @@ class Throwaway(component):
                self.send(item, "outbox")
 
 class Reorder(component):
+    """\
+    Reorder() -> new component
+
+    This component passes on data it receives, but will sometimes jumble it up
+    (reordering it).
+    """
     def main(self):
         newlist = []
         while 1:
@@ -69,6 +133,7 @@ class Reorder(component):
                     self.send(newlist[temp], "outbox")
                     newlist.remove(newlist[temp])
 
+__kamaelia_components__  = ( Duplicate, Throwaway, Reorder)
 
 if __name__ == "__main__":
     import time

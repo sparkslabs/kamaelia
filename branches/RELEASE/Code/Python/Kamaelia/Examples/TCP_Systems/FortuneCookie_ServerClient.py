@@ -24,19 +24,18 @@
 #
 #
 
-from Axon.Scheduler import scheduler as _scheduler
-from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol as _FortuneCookieProtocol
-from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
-from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
-from Kamaelia.Util.ConsoleEcho import consoleEchoer as _consoleEchoer
+from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
+from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Util.PipelineComponent import pipeline
 import random
 
 clientServerTestPort=random.randint(1500,1599)
 
-_SimpleServer(protocol=_FortuneCookieProtocol, port=clientServerTestPort).activate()
-pipeline(_TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
-          _consoleEchoer()
-        ).activate()
+SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
-_scheduler.run.runThreads(slowmo=0)
+pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+         ConsoleEchoer()
+        ).run()
+

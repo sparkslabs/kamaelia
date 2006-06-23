@@ -19,14 +19,61 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===============================================
+Particle in a discrete time physics simulation
+===============================================
 
-# physics code for forces between particles
-#
-# unbonded force acts between all non bonded particles
-# bonded force acts between bonded particles
+The Particle class provides the basis for particles in a ParticleSystem
+simulation. The particles handle their own physics interaction calculations.
+You can have as many, or few, spatial dimensions as you like.
 
-from SpatialIndexer import SpatialIndexer
+Extend this base class to add extra functionality, such as the ability to render
+to a graphics display (see RenderingParticle for an example of this)
 
+
+
+Example Usage
+-------------
+See ParticleSystem
+
+
+
+How does it work?
+-----------------
+
+Particle maintains lists of other particles it is bonded to. The bonds have
+direction, so the bonding information is stored in two lists - bondedTo and
+bondedFrom.
+
+Bonds are made and broken by calling the makeBond(...), breakBond(...) and
+breakAllBonds(...) methods.
+
+Particle calculates its interactions with other particles when the
+doInteractions(...) method is called. This must be supplied with an object
+containins the laws to apply, and another providing the ability to search for
+particles within a given distance of a point. See SimpleLaws/MultipleLaws and
+SpatialIndexer respectively. This updates the velocity of the particle but not
+its actual position.
+
+The particle's position is only updated when the update(...) method is called.
+
+A simulation system should calculate each simulation cycle as a two step
+process: First, for all particles, calling doInteractions(...). Second, for all
+particles, calling update(...).
+
+A particle can be frozen in place by calling freeze() and unFreeze(). This
+forces the particle's velocity to zero, meaning it doesn't move because of
+interactions with other particles.
+
+The simulation must have a 'tick' counter, whose value changes (increments)
+every simulation cycle. Particle stores the last tick value it was presented
+with so that, when interacting with other particles, it can see which others
+have already been processed in the current cycle. This way, it avoids
+accidentaly calculating some interactions twice.
+"""
+
+# optimisation to speed up access to these functions:
 from operator import sub as _sub
 from operator import add as _add
 from operator import mul as _mul
@@ -42,22 +89,24 @@ class Particle(object):
     Bonds are bi-directional. Establishing a bond from A to B, will also establish it back from B to A.
     Similarly, breaking the bond will do so in both directions too.
     """
-    
+    """Initialise particle.
+        position    = tuple of coordinates
+        initialTick = initial value for tick counter (should be same as for particle system)
+        ptype       = particle type identifier
+        velocity    = tuple of initial velocity vectors
+        ID          = unique identifier
+    """
+
     def __init__(self, position, initialTick = 0, ptype = None, velocity = None, ID = None):
-        """Initialise particle.
-           position    = tuple of coordinates
-           initialTick = initial value for tick counter (should be same as for particle system)
-           ptype       = particle type identifier
-           velocity    = tuple of initial velocity vectors
-           ID          = unique identifier
-        """
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(Particle,self).__init__()
+        
         self.pos    = position
         self.tick   = initialTick
         self.static = False
         self.ptype  = ptype
         self.bondedTo   = []
         self.bondedFrom = []
-        self.latestInteractWith = (None,None)
         
         if velocity != None:
             self.velocity = list(velocity)
@@ -79,8 +128,10 @@ class Particle(object):
         return self.bondedFrom
 
     def makeBond(self,particles, index):
-       """Make bond between this particle and another
-       Specified by its index into the 'particles' entity you provide.
+       """\
+       makeBond(particles, index) -> bonds to particle in particles[index]
+
+       Make a bond between this particle and another.
        
        If the bond already exists, then this method does nothing.
        """
@@ -91,21 +142,27 @@ class Particle(object):
            particles[index].bondedFrom += [self]
          
     def breakBond(self, particles, index):
-        """Break bond between this particle and another
-        Specified by its index into the 'particles' entity you provide.
-        
+        """\
+        breakBond(particles, index) -> breaks bond to particle in particles[index]
+
+        Breaks the bond between this particle and another.
+
         If the bond doesnt already exist, this method will fail.
         """
         self.bondedTo.remove( particles[index] )
         particles[index].bondedFrom.remove(self)
        
     def breakAllBonds(self, outgoing=True, incoming=True):
-        """Breaks all bonds between this particle to others.
-          Default behaviour is to break all bonds both from this node
-          to others (outgoing) and from others to this (incoming).
-          
-          If outgoing or incoming are set to false, then bonds in those
-          directions will not be broken
+        """\
+        breakAllBonds([outgoing][,incoming]) -> breaks all bonds
+
+        Breaks all bonds between this particle and any others.
+
+        If outgoing=True (default=True) then all bond *from* this particle to
+        other particles are broken.
+
+        If incoming=True (default=True) then all bonds *to* this particle from
+        other particles are broken.
         """
         if outgoing:
             for bondTo in self.bondedTo:
@@ -118,7 +175,7 @@ class Particle(object):
             self.bondedFrom = []
         
     def getLoc(self):
-        """Return current possition"""
+        """Return current possition vector (x,y,z, ...)"""
         return self.pos
         
         
@@ -137,36 +194,31 @@ class Particle(object):
         return sum(map(lambda x1,x2 : (x1-x2)*(x1-x2), self.pos, altpos))
 
     def doInteractions(self, particleIndex, laws, tick):
-        """Apply laws in relation to this particle with respect to other particles,
-        to update the velocity of this particle.
-        
-        particleIndex is an object with a withinRadius(centre, radius, filter) method that
-        returns a list of (particles, distSquared) tuples, listing particles within that distance
-        of the specified coordinates. The filter argument is a function that returns true if a
-        given particle is to be included in the list.
-        
-        laws.maxInteractRadius is the max distance at which unbonded interactions are considered
-        laws.unbonded(ptype, ptype, dist, distanceSquared) is the velocity change applied to both particles.
-        +ve = attraction -ve = repulsion
-        laws.bonded(dist, distanceSquared) is the same but for bonded particles
-        
-        Tick is the current tick counter value. Any particles this one encounters that already
-        have reached 'tick' will not be interacted with since it will be assumed that
-        that particle has already performed the interaction math.
-        
-        This code relies on any bonds being registered in both directions (a->b and b->a).
-        If you override the bonding code in this class, then make sure you maintain this property.
+        """\
+        Interact with other particles according to the provided laws, adjusting
+        the velocities of this particles and those it interacts with.
+
+        Updates current 'tick' to the supplied value and only interacts with
+        particles not also on the same 'tick' value.
+
+        Keyword args:
+        - particleIndex  -- index of all particles, implementing withinRadius(...) method (see SpatialIndexer)
+        - laws           -- object implementing interaction laws (see SimpleLaws)
+        - tick           -- time index of current simulation cycle
         """
+        # move time forward for this particle
         self.tick = tick
+
+        # performance optimisation(!) to reduce overhead dict lookups
         _bonded   = laws.bonded
         _unbonded = laws.unbonded
-        __add, __sub, __mul = _add, _sub, _mul
+        __add, __sub, __mul = _add, _sub, _mul  
 
-        # bonded interactions with bonded particles        
+        # repel/attract from/to particles we're bonded to
+        # but only those whose 'tick' counts are different and we've therefore not yet interacted with
         bonded = self.getBondedTo() + self.getBondedFrom()
         for particle in bonded:
-            if particle.tick != self.tick and particle.latestInteractWith != (self.tick, self):
-                particle.latestInteractWith != (self.tick, self)
+            if particle.tick != self.tick:
                 ds = self.distSquared(particle.pos)
                 if ds > 0.0:
                     dist = ds ** 0.5
@@ -174,16 +226,16 @@ class Particle(object):
                     deltas = map(__sub, particle.pos, self.pos)
                     dv_d = dvelocity / dist
                     scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                    # adjust velocity for us and the other particle (equal and opposite reaction)
                     self.velocity     = map(__add, self.velocity,     scaleddeltas)
                     particle.velocity = map(__sub, particle.velocity, scaleddeltas)
-#                    self.velocity     = map(lambda delta,v : v + (delta*dv_d), deltas, self.velocity)
-#                    particle.velocity = map(lambda delta,v : v - (delta*dv_d), deltas, particle.velocity)
                 else:
                     pass # dunno, ought to have an error i guess
 
-        # repulsion of other particles (not self, or those bonded to)
+        # filter for only particles not yet interacted with and not bonded to
         filter = lambda particle : (particle.tick != self.tick) and not (particle in (bonded + [self]))
 
+        # repel against particles not bonded to
         particles = particleIndex.withinRadius(self.pos, laws.particleMaxInteractRadius(self.ptype), filter)
         for (particle, ds) in particles:
             if ds > 0.0:
@@ -192,10 +244,9 @@ class Particle(object):
                 deltas = map(__sub, particle.pos, self.pos)
                 dv_d = dvelocity / dist
                 scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                # adjust velocity for us and the other particle (equal and opposite reaction)
                 self.velocity     = map(__add, self.velocity,     scaleddeltas)
                 particle.velocity = map(__sub, particle.velocity, scaleddeltas)
-#                self.velocity     = map(lambda delta,v : v+(+delta*dv_d), deltas, self.velocity)
-#                particle.velocity = map(lambda delta,v : v+(-delta*dv_d), deltas, particle.velocity)
             else:
                 pass # dunno, ought to have an error i guess
 

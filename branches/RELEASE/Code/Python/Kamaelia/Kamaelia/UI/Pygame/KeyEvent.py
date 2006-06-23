@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,7 +19,61 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+=============================
+Pygame keypress event handler
+=============================
+
+A component that registers with a PygameDisplay service component to receive
+key-up and key-down events from Pygame. You can set up this component to send
+out different messages from different outboxes depending on what key is pressed.
+
+
+
+Example Usage
+-------------
+
+Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
+    Graphline( output = consoleEchoer(),
+               keys = KeyEvent( key_events={ K_1 : (1,"numbers"),
+                                             K_2 : (2,"numbers"),
+                                             K_3 : (3,"numbers"),
+                                             K_a : ("A", "letters"),
+                                             K_b : ("B", "letters"),
+                                             K_c : ("C", "letters"),
+                                           },
+                                outboxes={ "numbers" : "numbers between 1 and 3",
+                                           "letters" : "letters between A and C",
+                                         }
+                              ),
+               linkages = { ("keys","numbers"):("output","inbox"),
+                            ("keys","letters"):("output","inbox")
+                          }
+             ).run()
+
+
+
+How does it work?
+-----------------
+
+This component requests a zero sized display surface from the PygameDisplay
+service component and registers to receive events from pygame.
+
+Whenever a KEYDOWN event is received, the pygame keycode is looked up in the
+mapping you specified. If it is there, then the specified message is sent
+out of the specified outbox.
+
+In addition, if the allKeys flag was set to True during initialisation, then
+any KEYDOWN or KEYUP event will result in a ("DOWN",keycode) or ("UP",keycode)
+message being sent to the "allkeys" outbox.
+
+If you have specified a message to send for a particular key, then both that
+message and the 'all-keys' message will be sent when the KEYDOWN event occurs.
+
+If this component receives a shutdownMicroprocess or producerFinished message on
+its "control" inbox, then this will be forwarded out of its "signal" outbox and
+the component will then terminate.
+"""
 
 import pygame
 import Axon
@@ -27,81 +81,46 @@ from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class KeyEvent(Axon.Component.component):
-   """
+   """\
+   KeyEvent([allkeys][,key_events][,outboxes]) -> new KeyEvent component.
+
+   Component that sends out messages in response to pygame keypress events.
+
+   Keyword arguments:
+   - allkeys     -- if True, all keystrokes send messages out of "allkeys" outbox (default=False)
+   - key_events  -- dict mapping pygame keycodes to (msg,"outboxname") pairs (default=None)
+   - outboxes    -- dict of "outboxname":"description" key:value pairs (default={})
    """
    
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
-               "control"  : "",
+               "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
                "callback" : "Receive callbacks from PygameDisplay"
              }
-   Outboxes = { "outbox" : "button click events emitted here",
-                "allkeys" : "Outbox that receives *every* keystroke if enabled",
-                "signal" : "",
+   Outboxes = { "outbox"         : "NOT USED",
+                "allkeys"        : "Outbox that receives *every* keystroke if enabled",
+                "signal"         : "Shutdown signalling: shutdownMicroprocess or producerFinished",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
-   def __init__(self, caption=None, 
-                position=None, margin=8,
-                bgcolour = (224,224,224),
-                fgcolour = (0,0,0),
-                msg=None,
-                allkeys = False,
-                key_events = None,
-                transparent = False,
-                outboxes = {}):
-      """Creates and activates a button widget
-         caption  = text label for the button / None for default label
-         position = (x,y) pair / None
-         margin   = margin size (around the text) in pixels
-         bgcolour = background colour
-         fgcolour = text colour
-         msg      = message to be sent when this button is clicked / None for default
-         """
+   def __init__(self, allkeys=False, key_events=None, outboxes = {}):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       self.Outboxes = self.__class__.Outboxes
       self.Outboxes.update(outboxes)
       super(KeyEvent,self).__init__()
 
       self.allkeys = allkeys
-      self.backgroundColour = bgcolour
-      self.foregroundColour = fgcolour
-      self.margin = margin
       self.key_events = key_events
       if self.key_events is None: self.key_events = {}
       
-      if caption is None:
-         caption = "Button "+str(self.id)
-      
-      pygame.font.init()      
-#      self.buildCaption(caption)
-
-      if msg is None:
-         msg = ("CLICK", self.id)
-      self.eventMsg = msg      
-      if transparent:
-         transparency = bgcolour
-      else:
-         transparency = None
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
                            "events" : (self, "inbox"),
-                           "size": (0,0),
-                           "transparency" : transparency }
+                           "size": (0,0) }
       
-      if not position is None:
-        self.disprequest["position"] = position         
 
-   def buildCaption(self, text):
-      """Render the text to go on the button label.
-      (This doesn't actually place the text onto the 'surface')
-      """
-      font = pygame.font.Font(None, 14)
-      self.image = font.render(text,True, self.foregroundColour, )
-      
-      (w,h) = self.image.get_size()
-      self.size = (w + 2*self.margin, h + 2*self.margin)
-      self.imagePosition = (self.margin, self.margin)
       
        
    def waitBox(self,boxname):
+      """Generator. yields 1 until data is ready on the named inbox."""
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
@@ -109,6 +128,7 @@ class KeyEvent(Axon.Component.component):
 
    
    def main(self):
+      """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -117,7 +137,6 @@ class KeyEvent(Axon.Component.component):
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
-      self.blitToSurface()
       
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
@@ -143,38 +162,15 @@ class KeyEvent(Axon.Component.component):
          
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                   bounds = self.display.get_rect()
-                   if bounds.collidepoint(*event.pos):
-                      self.send( self.eventMsg, "outbox" )
                 if event.type == pygame.KEYDOWN:
                    if event.key in self.key_events:
                       self.send( self.key_events[event.key][0] , self.key_events[event.key][1] )
                    if self.allkeys:
                       self.send(("DOWN", event.key), "allkeys")
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYUP:
                    if self.allkeys:
                       self.send(("UP", event.key), "allkeys")
          yield 1
             
-      
-   def blitToSurface(self):
-       try:
-           self.display.fill( self.backgroundColour )
-           self.display.blit( self.image, self.imagePosition )
-       except:
-           pass
-                  
-if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
-   
-   button1 = Button().activate()
-   button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
-   button3 = Button(caption="Mary...",msg="Mary had a little lamb").activate()
-   
-   ce = consoleEchoer().activate()
-   button1.link( (button1,"outbox"), (ce,"inbox") )
-   button2.link( (button2,"outbox"), (ce,"inbox") )
-   button3.link( (button3,"outbox"), (ce,"inbox") )
-   
-   Axon.Scheduler.scheduler.run.runThreads()  
+__kamaelia_components__  = ( KeyEvent, )
+

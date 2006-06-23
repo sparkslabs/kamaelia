@@ -4,10 +4,9 @@
 # components.
 #
 
-import socket
 import Axon
 
-file_to_stream = "/home/zathras/Documents/Music/PopularClassics/3/audio_09.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 def tests():
    from Axon.Scheduler import scheduler

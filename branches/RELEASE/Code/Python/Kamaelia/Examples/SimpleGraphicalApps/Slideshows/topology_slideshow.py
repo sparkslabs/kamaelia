@@ -21,8 +21,6 @@
 # -------------------------------------------------------------------------
 #
 
-import Axon
-
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
@@ -31,7 +29,6 @@ from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import Topology
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.PipelineComponent import pipeline
-
 import os
 
 graph = ["\n","""DEL ALL
@@ -143,8 +140,16 @@ ADD LINK FileWriter NokiaDisplay
 
 path = "Slides"
 extn = ".gif"
-files = os.listdir(path)
-files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
+#files = os.listdir(path)
+#files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
+#files.sort()
+
+allfiles = os.listdir(path)
+files = list()
+for fname in allfiles:
+    if fname[-len(extn):]==extn:
+        files.append(os.path.join(path,fname))
+
 files.sort()
 
 Graphline(
@@ -163,14 +168,11 @@ Graphline(
      }
 ).activate()
 
-animation = pipeline(
+pipeline(
      Button(caption="dink", msg="NEXT", position=(136,0), transparent=True),
-#     Button(caption="dink", msg="NEXT", position=(136,8)),
      Chooser(items = graph),
      chunks_to_lines(),
      lines_to_tokenlists(),
      TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
-).activate()
+).run()
 
-from Axon.Scheduler import scheduler
-scheduler.run.runThreads(slowmo=0)

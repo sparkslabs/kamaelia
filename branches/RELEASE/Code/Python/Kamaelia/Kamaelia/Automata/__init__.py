@@ -19,5 +19,12 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+==========================
+Physics and behaviour code
+==========================
+
+Components and support code providing simple physics/behaviours.
+"""
 
 import Simple

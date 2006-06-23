@@ -26,13 +26,63 @@ from Kamaelia.Physics.Simple import SimpleLaws, MultipleLaws
 
 from pygame.locals import *
 
+"""\
+====================================
+Particle Laws for Axon Visualisation
+====================================
+
+This class is a specialisation of Kamaelia.Physics.Simple.MultipleLaws that
+specifies the laws for particle interactions when visualising Axon/Kamaelia
+systems.
+
+
+
+Example Usage
+-------------
+Instantiate a topology viewer using rendering code for each particle type, and the
+appropriate laws to govern their interactions::
+    visualiser = TopologyViewerComponent( particleTypes={ "component" : PComponent,
+                                                          "inbox"     : PPostbox.Inbox,
+                                                          "outbox"    : PPostbox.Outbox
+                                                        }
+                                          laws = AxonLaws(),
+                                        ).activate()
+
+
+
+How does it work?
+-----------------
+
+AxonLaws is a subclass of MultipleLaws. It sets the bond lengths and strengths 
+of forces for two types of particles that represent components and 
+inboxes/outboxes respectively. 
+
+These laws are mapped to work for particles identified as being of type
+"component" and "postbox".
+
+At initialisation you can specify the length of the postbox to postbox bond
+(which represents Axon linkages). The ranges over which forces act (but not their
+magnitude) are scaled appropriately.
+
+See MultipleLaws for information on the role of this class for physics
+simulation and topology visualisation.
+"""
 
 _COMPONENT_RADIUS = 32    
 
 class AxonLaws(MultipleLaws):
-    """Laws for axon components and postboxes
+    """\
+    AxonLaws([postboxBondLength]) -> new AxonLaws object.
+    
+    Encapsulates laws for interactions between particles of types "Component"
+    and "Postbox" in a physics simulation. Subclass of MultipleLaws.
+    
+    Keyword arguments:
+    - postboxBondLength  -- length of bond that represents Axon linkages (default=100)
     """
+    
     def __init__(self, postboxBondLength = 100):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         damp       = 1.0 - 0.8
         dampcutoff = 0.4
         maxvel     = 32

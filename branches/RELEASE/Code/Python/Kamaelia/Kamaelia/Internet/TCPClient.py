@@ -1,4 +1,8 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
+#
+# FIXME: Uses the selector service, but has no way of indicating to the
+#        selector service that its services are no longer required.
+#        This needs resolving.
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,57 +23,150 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=================
+Simple TCP Client
+=================
+
+This component is for making a TCP connection to a server. Send to its "inbox"
+inbox to send data to the server. Pick up data received from the server on its
+"outbox" outbox.
+
+
+
+Example Usage
+-------------
+
+Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
+
+    pipeline( RateControlledFileReader("myfile", rate=100000),
+              TCPClient("1.2.3.4", 1000),
+            ).activate()
+
+
+
+How does it work?
+-----------------
+
+TCPClient opens a socket connection to the specified server on the specified
+port. Data received over the connection appears at the component's "outbox"
+outbox as strings. Data can be sent as strings by sending it to the "inbox"
+inbox.
+
+An optional delay (between component activation and attempting to connect) can
+be specified. The default is no delay.
+
+It creates a ConnectedSocketAdapter (CSA) to handle the socket connection and
+registers it with a selectorComponent so it is notified of incoming data. The
+selectorComponent is obtained by calling
+selectorComponent.getSelectorService(...) to look it up with the local
+Coordinating Assistant Tracker (CAT).
+
+TCPClient wires itself to the "CreatorFeedback" outbox of the CSA. It also wires
+its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox,
+and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
+
+Socket errors (after the connection has been successfully established) may be
+sent to the "signal" outbox.
+
+This component will terminate if the CSA sends a socketShutdown message to its
+"CreatorFeedback" outbox.
+
+Messages sent to the "control" inbox are ignored - users of this component
+cannot ask it to close the connection.
+"""
 
 import socket
 import errno
 
 import Axon
 from Axon.util import Finality
-from Axon.Component import component
+
 from Axon.Ipc import newComponent, status
 from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
-import Axon.CoordinatingAssistantTracker as cat
 
-import Selector
+from Kamaelia.Internet.Selector import Selector
 
-class TCPClient(component):
-   Inboxes = ["inbox", "_socketFeedback", "control"]
-   Outboxes = ["outbox","signal","_selectorSignal"]
+class TCPClient(Axon.Component.component):
+   """\
+   TCPClient(host,port[,delay]) -> component with a TCP connection to a server.
+
+   Establishes a TCP connection to the specified server.
+   
+   Keyword arguments:
+   - host     -- address of the server to connect to (string)
+   - port     -- port number to connect on
+   - delay    -- delay (seconds) after activation before connecting (default=0)
+   """
+   Inboxes  = { "inbox"           : "data to send to the socket",
+                "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
+                "control"         : "NOT USED"
+              }
+   Outboxes = { "outbox"         :  "data received from the socket",
+                "signal"         :  "socket errors",
+                "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
+
+              }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
-   def __init__(self,host,port,chargen=0,delay=0):
+   def __init__(self,host,port,delay=0):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPClient, self).__init__()
       self.host = host
       self.port = port
-      self.chargen=chargen
       self.delay=delay
+      self.CSA = None
+      self.sock = None
 
    def main(self):
+      """Main loop."""
+
+      # wait before connecting
       import time
       t=time.time()
       while time.time()-t<self.delay:
          yield 1
+
       for v in self.runClient():
          yield v
-      # SMELL - we may need to send a shutdown message
+      
+      if (self.sock is not None) and (self.CSA is not None):
+         self.send(removeReader(self.CSA, self.sock), "_selectorSignal")
+         self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
+      
 
    def setupCSA(self, sock):
-      CSA = ConnectedSocketAdapter(sock) #  self.createConnectedSocket(sock)
-      self.addChildren(CSA)
-      selectorService , newSelector = Selector.selectorComponent.getSelectorService(self.tracker)
+      """\
+      setupCSA(sock) -> new ConnectedSocketAdapter component
+
+      Creates a ConnectedSocketAdapter component for the socket, and wires up to
+      it. Also sends the CSA to the "selector" service.
+      """
+      selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
       if newSelector:
          self.addChildren(newSelector)
 
+      CSA = ConnectedSocketAdapter(sock, selectorService) #  self.createConnectedSocket(sock)
+      self.addChildren(CSA)
       self.link((self, "_selectorSignal"),selectorService)
-      self.link((CSA, "FactoryFeedback"),(self,"_socketFeedback"))
+ 
+      self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
-      self.link((self, "inbox"), (CSA, "DataSend"), passthrough=1)
+      self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
 
-      self.send(newCSA(self, (CSA,sock)), "_selectorSignal")
+      self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
+      self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
+      self.CSA = CSA # We need this for shutdown later
+
       return self.childComponents()
 
    def waitCSAClose(self):
+      """Returns True if a socketShutdown message is received on "_socketFeedback" inbox."""
       if self.dataReady("_socketFeedback"):
          message = self.recv("_socketFeedback")
          if isinstance(message, socketShutdown):
@@ -77,6 +174,12 @@ class TCPClient(component):
       return True
 
    def safeConnect(self, sock, *sockArgsList):
+      """\
+      Connect to socket and handle possible errors that may occur.
+
+      Returns True if successful, or False on failure. Unhandled errors are raised
+      as exceptions.
+      """
       try:
          sock.connect(*sockArgsList); # Expect socket.error: (115, 'Operation now in progress')
             # EALREADY
@@ -110,6 +213,7 @@ class TCPClient(component):
       # nothing else specific.
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
+         self.sock = sock # We need this for shutdown later
          try:
             sock.setblocking(0); yield 0.6
             try:
@@ -135,61 +239,21 @@ class TCPClient(component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-          self.send(e, "signal")
+         pass
+#          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
-def _tests():
-   from Axon.Linkage import linkage
 
-   print "This test suite requires access to an active network server"
-   client=TCPClient("127.0.0.1",1500)
-   clientGen = client.main()
-   r = clientGen.next() # assert r == 0.3 (Socket Created)
-   assert r==0.3, "Socket Created"
-   r = clientGen.next() # assert r == 0.6 (Socket set non-blocking)
-   assert r==0.6, "Socket set non-blocking"
-   r = clientGen.next() # assert r == 1   (Socket connecting)
-   assert r==1, "Socket connecting"
-   print "1", r
-   m=clientGen.next()
-   try:
-      assert isinstance(m, newComponent), "We connected and have been returned a new component to activate"
-   except AssertionError:
-      print "Connection to remote server Failed", m
-      raise
+__kamaelia_components__  = ( TCPClient, )
 
-   print "cgn", m
-   CSA=m.components()[0]
-
-   # Put some linkages in place for testing
-   outboxLink=linkage(CSA,client,"outbox","outbox",passthrough=2)
-   feedbackLink=linkage(CSA,client,"FactoryFeedback","_socketFeedback")
-
-   CSA.initialiseComponent()
-   CSA.mainBody()
-   CSA._deliver(status("data ready"),"DataReady")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   CSA._deliver(socketShutdown(1),"control")
-   print CSA
-   CSA.mainBody()
-   print CSA
-   outboxLink.moveDataWithCheck()  # Move output from the CSA to output of the client
-   feedbackLink.moveDataWithCheck()  # Move output from the CSA to input of client
-   print CSA,"\n",client
-   client._safeCollect("_selectorSignal")
-   print client._safeCollect("outbox")
-   print CSA,"\n",client
-   for i in clientGen:
-      print i
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.SimpleServerComponent import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer
-   # _tests()
+   from Axon.Component import component
+
 
    class testHarness(component): # Spike component to test interoperability with TCPServer
       def __init__(self):

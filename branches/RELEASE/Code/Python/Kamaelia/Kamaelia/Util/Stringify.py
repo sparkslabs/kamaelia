@@ -19,31 +19,68 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
-A simple component that takes objects in on its inbox, creates a stringized
-version and returns that.
+"""\
+=======================
+Convert Data to Strings
+=======================
 
+A simple component that takes data items and converts them to strings.
+
+
+
+Example Usage
+-------------
+::
+    pipeline( sourceOfNonStrings(),
+              ToStringComponent(),
+              consumerThatWantsStrings(),
+            ).activate()
+            
+
+
+How does it work?
+-----------------
+
+Send data items to this component's "inbox" inbox. They are converted to
+strings using the str(...) function, and sent on out of the "outbox" outbox.
+
+Anything sent to this component's "control" inbox is ignored.
+
+This component does not terminate.
 """
+
 from Axon.Component import component, scheduler
+
 class ToStringComponent(component):
-   #Inboxes=["inbox"] List of inbox names if different
-   #Outboxes=["outbox"] List of outbox names if different
-   #Usescomponents=[] # List of classes used.
+   """\
+   ToStringComponent() -> new ToStringComponent.
+   
+   A component that converts data items received on its "inbox" inbox to
+   strings and sends them on out of its "outbox" outbox.
+   """
+   
+   Inboxes = { "inbox"   : "Data items to convert to string",
+               "control" : "NOT USED",
+             }
+   Outboxes = { "outbox" : "Data items converted to strings",
+                "signal" : "NOT USED",
+              }
+              
    def __init__(self):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
       self.activate()
 
-   def initialiseComponent(self):
-      return 1
 
    def mainBody(self):
+      """Main loop body."""
       if self.dataReady("inbox"):
          theData = self.recv("inbox")
          self.send(str(theData), "outbox")
       return 1
 
-   def closeDownComponent(self):
-      pass
+__kamaelia_components__  = ( ToStringComponent, )
+
 
 if __name__ =="__main__":
    myComponent("A",3,1)

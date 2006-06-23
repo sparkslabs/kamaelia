@@ -39,5 +39,8 @@ class nullSinkComponent(component):
             return 0
       return 1
 
+__kamaelia_components__  = ( nullSinkComponent, )
+
+
 if __name__ =="__main__":
    print "This module has no system test"

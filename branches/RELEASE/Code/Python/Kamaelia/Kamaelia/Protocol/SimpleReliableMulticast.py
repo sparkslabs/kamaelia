@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,7 +19,72 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+=========================
+Simple Reliable Multicast
+=========================
+
+A pair of pipelines for encoding (and decoding again) a stream of data such that
+is can be transported over an unreliable connection that may lose, duplicate or
+reorder data.
+
+These components will ensure that data arrives in the right order and that
+duplicates are removed. However it cannot recover lost data.
+
+
+Example Usage
+-------------
+Reliably transporting a file over multicast (assuming no packets are lost)::
+    pipeline(RateControlledFileReader("myfile"),
+             SRM_Sender(),
+             Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
+            ).activate()
+
+On the client::
+    class discardSeqnum(component):
+        def main(self):
+            while 1:
+                if self.dataReady("inbox"):
+                    (_, data) = self.recv("inbox")
+                    self.send(data,"outbox")
+    
+    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+              SRM_Receiver(),
+              discardSeqnum(),
+              consoleEchoer()
+            ).activate()
+
+
+
+How does it work?
+-----------------
+
+SRM_Sender is a pipeline of three components:
+- Annotator    -- annotates a data stream with sequence numbers
+- Framer       -- frames the data
+- DataChunker  -- inserts markers between frames
+
+SRM_Receiver is a pipeline of three components:
+- DataDeChunker  -- recovers chunks based on markers
+- DeFramer       -- removes framing
+- RecoverOrder   -- sorts data by sequence numbers
+
+These components will ensure that data arrives in the right order and that
+duplicates are removed. However it cannot recover lost data. But the final
+output is (seqnum,data) pairs - so there is enough information for the
+receiver to know that data has been lost.
+
+The Annotator component receives data on its "inbox" inbox, and emits
+(seqnum, data) tuples on its "outbox" outbox. The sequence numbers start at 1
+and increments by 1 for each item.
+
+The Annotator component does not terminate and ignores messages arriving on its
+"control" inbox.
+
+See documentation for the other components for details of their design and
+behaviour.
+"""
+
 import Axon
 from Kamaelia.Util.PipelineComponent import pipeline
 
@@ -29,12 +94,20 @@ from Kamaelia.Protocol.Framing import DeFramer as _DeFramer
 from Kamaelia.Protocol.Framing import DataChunker as _DataChunker
 from Kamaelia.Protocol.Framing import DataDeChunker as _DataDeChunker
 
+
 class Annotator(Axon.Component.component):
+   """\
+   Annotator() -> new Annotator component.
+
+   Takes incoming data and outputs (n, data) where n is an incrementing sequence
+   number, starting at 1.
+   """
    def main(self):
+      """Main loop"""
       n=1
       while 1:
          yield 1
-         if self.dataReady("inbox"):
+         while self.dataReady("inbox"):
             item = self.recv("inbox")
             self.send((n, item), "outbox")
             n = n + 1
@@ -42,12 +115,19 @@ class Annotator(Axon.Component.component):
 
 
 class RecoverOrder(Axon.Component.component):
+   """\
+   RecoverOrder() -> new RecoverOrder component.
+
+   Receives and buffers (seqnum, data) pairs, and reorders them by ascending
+   sequence number and emits them (when its internal buffer is full).
+   """
    def main(self):
+      """Main loop."""
       bufsize = 30
       datasource = []
       while 1:
          yield 1
-         if self.dataReady("inbox"):
+         while self.dataReady("inbox"):
             item = self.recv("inbox")
             datasource.append(item)
       
@@ -70,7 +150,18 @@ class RecoverOrder(Axon.Component.component):
                      self.send(datasource[0], "outbox")
             del datasource[0]
 
+
+            
 def SRM_Sender():
+    """\
+    Simple Reliable Multicast sender.
+
+    Sequence numbers, frames and chunks a data stream, making it suitable for
+    sending over an unreliable connection that may lose, reorder or duplicate
+    data. Can be decoded by SRM_Receiver.
+
+    This is a pipeline of components.
+    """
     return pipeline(
         Annotator(),
         _Framer(),
@@ -78,12 +169,25 @@ def SRM_Sender():
     )
 
 def SRM_Receiver():
+    """\
+    Simple Reliable Multicast receiver.
+
+    Dechunks, deframes and recovers the order of a data stream that has been
+    encoded by SRM_Sender.
+
+    Final emitted data is (seqnum, data) pairs.
+
+    This is a pipeline of components.
+    """
     return pipeline(
         _DataDeChunker(),
         _DeFramer(),
         RecoverOrder()
     )
 
+__kamaelia_components__  = ( Annotator, RecoverOrder, )
+__kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
+    
 if __name__ == "__main__":
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Internet.Simulate.BrokenNetwork import Duplicate, Throwaway, Reorder

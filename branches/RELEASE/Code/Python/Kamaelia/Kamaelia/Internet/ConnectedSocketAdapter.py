@@ -19,44 +19,66 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# A connected socket adapter (CSA) component acts as a wrapper
-# between a network server socket which has a connected client,
-# and the component framework. It deals with new data arriving
-# on the socket, and packetises it into messages available in its
-# outbox, and taking messages from it's inbox "DataReady", and
-# sending the data verbatim out the network socket.
-#
-# A component does not directly create a CSA, but rather it gets
-# passed to a component from a Primary Listener Socket component,
-# when a new connection is recieved on the server socket.
-# A CSA presents its user with the following external connectors:
-#    * inboxes=DataReady, DataSend, Initialise, control
-#       * DataReady - this is a private connector, which tells the
-#         component to read from the socket. It is used by the PLS
-#         that created this component to tell the CSA that there is
-#         data ready for reading from the socket.
-#       * DataSend - a user of this component would expect to connect
-#         a linkage to this inbox - since this is the inbox whereby recieved
-#         data is sent to the client as soon as possible.
-#       * Initialise - not actually used for anything, candidate for removal.
-#       * control - standard control inbox, the socket will close connection
-#         when there is nothing left in its DataSend and DataReady boxes if it is
-#         sent a Axon.Ipc.producerFinished ipc object.
-#    * outboxes=outbox, FactoryFeedback, signal
-#       * outbox - Any data recieved from the socket will be made available
-#         on this outbox.
-#       * FactoryFeedback - In order to signal to the Primary Listener that the socket
-#         has died, this outbox is made available for signalling purposes.
-#       * signal - This performs a similar function, but is intended for use by
-#         the client of the CSA - ie what ever is actually expecting data from the
-#         CSA. You should check the signal for a message of the form:
-#         {'shutdownCSA': CSA} periodically to check whether the client
-#         has disappeared or not!
-#
-#    Other than the external interface, this component has no user servicable
-#    parts.
-#
+"""\
+==========================
+Talking to network sockets
+==========================
+
+A Connected Socket Adapter (CSA) component talks to a network server socket.
+Data is sent to and received from the socket via this component's inboxes and
+outboxes. A CSA is effectively a wrapper for a socket.
+
+Most components should not need to create CSAs themselves. Instead, use
+components such as TCPClient to make an outgoing connection, or TCPServer or
+SimpleServer to be a server that responds to incoming connections.
+
+
+
+Example Usage
+-------------
+See source code for TCPClient to see how Connected Socket Adapters can be used.
+
+
+See also
+--------
+- TCPClient     -- for making a connection to a server
+- TCPServer     -- 
+- SimpleServer  -- a prefab chassis for building a server
+
+
+How does it work?
+-----------------
+A CSA is usually created either by a component such as TCPClient that wants to
+establish a connection to a server; or by a primary listener socket - a
+component acting as a server - listening for incoming connections from clients.
+
+The socket should be set up and passed to the constructor to make the CSA.
+
+Incoming data, read by the CSA, is sent out of its "outbox" outbox as strings
+containing the received binary data. Send data by sending it, as strings, to
+the "inbox" outbox.
+
+The CSA expects to be wired to a component that will notify it when new data
+has arrived at its socket (by sending an Axon.Ipc.status message to its
+"ReadReady" inbox. This is to allow the CSA to sleep rather than busy-wait or
+blocking when waiting for new data to arrive. Typically this is the Selector
+component.
+
+This component will terminate (and close its socket) if it receives a
+producerFinished message on its "control" inbox.
+
+When this component terminates, it sends a socketShutdown(socket) message out of
+its "CreatorFeedback" outbox and a shutdownCSA((selfCSA,self.socket)) message
+out of its "signal" outbox.
+
+The message sent to "CreatorFeedback" is to notify the original creator that
+the socket is now closed and that this component should be unwired.
+
+The message sent to the "signal" outbox serves to notify any other component
+involved - such as the one feeding notifications to the "ReadReady" inbox (eg.
+the Selector component).
+"""
+
 
 import socket, time
 import errno
@@ -65,127 +87,182 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
 from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+
 from Kamaelia.KamaeliaExceptions import *
 import traceback
+import pprint
 
 whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
 crashAndBurn = { "uncheckedSocketShutdown" : True,
                             "receivingDataFailed" : True,
                             "sendingDataFailed" : True }
 
-def _safesend(sock, data,selffile = None):
-   """Internal only function, used for sending data, and handling EAGAIN style
-   retry scenarios gracefully"""
-   try:
-      bytes_sent = sock.send(data)
-      return bytes_sent
-   except socket.error, socket.msg:
-      (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
-         raise socket.msg        # then rethrow the error.
-      return 0                                                                        # Otherwise return 0 for failure on sending
-   except exceptions.TypeError, ex:
-      if whinge["socketSendingFailure"]:
-         print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
-      raise ex
 
-def _saferecv(sock, size=1024):
-   """Internal only function, used for recieving data, and handling EAGAIN style
-   retry scenarios gracefully"""
-   data = None;
-   try:
-      data = sock.recv(size)
-      if not data: # This implies the connection has barfed.
-         raise connectionDiedReceiving(sock,size)
-   except socket.error, socket.msg:
-      (errorno, errmsg) = socket.msg.args
-      if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
-         #"Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
-         raise socket.msg # rethrow
-   return data
 
 class ConnectedSocketAdapter(component):
-   Inboxes=["DataReady", "DataSend", "Initialise", "control"]
-   Outboxes=["outbox", "FactoryFeedback","signal"]
+   """\
+   ConnectedSocketAdapter(socket) -> new CSA component wrapping specified socket
 
-   def __init__(self, listensocket):
+   Component for communicating with a socket. Send to its "inbox" inbox to
+   send data, and receive data from its "outbox" outbox.
+
+   "ReadReady" inbox must be wired to something that will notify it when new
+   data has arrived at the socket.
+   """
+       
+   Inboxes  = { "inbox"   : "Data for this CSA to send through the socket (Axon.Ipc.status message)",
+                "control"    : "Shutdown on producerFinished message (incoming & outgoing data is flushed first)",
+                "ReadReady"  : "Notify this CSA that there is incoming data ready on the socket",
+                "SendReady" : "Notify this CSA that the socket is ready to send",
+              }
+   Outboxes = { "outbox"          : "Data received from the socket",
+                "CreatorFeedback" : "Expected to be connected to some form of signal input on the CSA's creator. Signals socketShutdown (this socket has closed)",
+                "signal"          : "Signals shutdownCSA (this CSA is shutting down)",
+                "_selectorSignal" : "For communication to the selector",
+              }
+
+   def __init__(self, listensocket, selectorService, crashOnBadDataToSend=False, noisyErrors = True):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConnectedSocketAdapter, self).__init__()
-      self.time = time.time()
       self.socket = listensocket
-      self.resend_queue = []
-      self.file = None
-
-   def handleDataReady(self):
-      if self.dataReady("DataReady"):
-         data = self.recv("DataReady")
-         if (isinstance(data, status)):
-            socketdata = None
-            try:
-               socketdata = _saferecv(self.socket, 1024) ### Receiving may die horribly
-            except connectionDiedReceiving, cd:
-               raise cd # rethrow
-            except Exception, e: # Unexpected error that might cause crash. Do we want to really crash & burn?
-               if crashAndBurn["receivingDataFailed"]:
-                  raise e
-            if (socketdata):
-               self.send(socketdata, "outbox")
-
-   def handleDataSend(self):
-       try:
-          if self.dataReady("DataSend"):
-             data = self.recv("DataSend")
-             self.resend_queue.append(data)
-          if len(self.resend_queue)>0:
-             data = self.resend_queue[0]
-             try:
-                bytes_sent = _safesend(self.socket, data, self.file) ### Sending may fail....
-                if bytes_sent:
-                    if bytes_sent == len(data):
-                        del self.resend_queue[0]
-                    else:
-                        self.resend_queue[0] = data[bytes_sent:]
-             except Exception, e: # If it does, and we get an exception the connection is unstable or closed
-                if crashAndBurn["sendingDataFailed"]:
-                   raise connectionDiedReceiving(e)
-                raise connectionClosedown(e)
-          return 1        # Since we got here, client is still around, so return true.
-       except:
-          print "TRACEBACK INSIDE CONNECTED SOCKET ADAPTOR"
-          traceback.print_exc()
-
+      self.sendQueue = []
+      self.crashOnBadDataToSend = crashOnBadDataToSend
+      self.noisyErrors = noisyErrors
+      self.selectorService = selectorService
+   
    def handleControl(self):
-      #if self is Axon.Foo:
-      #      print "CSA: CONTROL", self.dataReady("control"),
-      #      print "CSA: DATASEND", self.dataReady("DataSend"),
-      #      print "CSA: DATAREADY", self.dataReady("DataReady")
-      #if not (self.dataReady("DataSend") or self.dataReady("DataReady")):
-         if self.dataReady("control"):
-            data = self.recv("control")
-            if isinstance(data, producerFinished):
-               #print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
-               raise connectionServerShutdown()
+      """Check for producerFinished message and shutdown in response"""
+      if self.dataReady("control"):
+          data = self.recv("control")
+          if isinstance(data, producerFinished):
+#              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
+              self.connectionRECVLive = False
+              self.connectionSENDLive = False
+              self.howDied = "producer finished"
+   
+   def handleSendRequest(self):
+       """Check for data to send to the socket, add to an internal send queue buffer."""
+       if self.dataReady("inbox"):
+            data = self.recv("inbox")
+            self.sendQueue.append(data)
 
-   def mainBody(self):
-      self.pause()
-      try:
-         self.handleDataReady()
-         self.handleDataSend()
-         self.handleControl()
-         return wouldblock(self)
-      except connectionDied, cd: # Client went away or socket error
-         self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-#         self.send(socketShutdown(self), "signal")
-         self.send(shutdownCSA(self, (self,self.socket)), "signal")
-         return 0
-      except connectionServerShutdown, cd: # Client went away or socket error
-         self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-#         self.send(socketShutdown(self), "signal")
-         self.send(shutdownCSA(self, (self,self.socket)), "signal")
-         return 0
-      except Exception, ex: # Some other exception
-         self.send(socketShutdown(self,self.socket), "FactoryFeedback")
-#         self.send(socketShutdown(self), "signal")
-         self.send(shutdownCSA(self, (self,self.socket)), "signal")
-         if crashAndBurn["uncheckedSocketShutdown"]:
-            raise ex
-         return 0
+   def passOnShutdown(self):
+        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
+        self.send(shutdownCSA(self, (self,self.socket)), "signal")
+
+   def _safesend(self, sock, data):
+       """Internal only function, used for sending data, and handling EAGAIN style
+       retry scenarios gracefully"""
+       bytes_sent = 0
+       try:
+          bytes_sent = sock.send(data)
+          return bytes_sent
+
+       except socket.error, socket.msg:
+          (errorno, errmsg) = socket.msg.args
+          if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
+             self.connectionSENDLive = False
+             self.howDied = socket.msg
+
+       except TypeError, ex:
+
+          if self.noisyErrors:
+             print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
+          if self.crashOnBadDataToSend:
+              raise ex
+       self.sending = False
+       if self.connectionSENDLive:
+           self.send(newWriter(self, ((self, "SendReady"), sock)), "_selectorSignal")
+       return bytes_sent
+   
+   def flushSendQueue(self):
+       if len(self.sendQueue) > 0:
+           data = self.sendQueue[0]
+           bytes_sent = self._safesend(self.socket, data)
+           if bytes_sent:
+               if bytes_sent == len(data):
+                   del self.sendQueue[0]
+               else:
+                   self.sendQueue[0] = data[bytes_sent:]
+
+   def _saferecv(self, sock, size=32768):
+       """Internal only function, used for recieving data, and handling EAGAIN style
+       retry scenarios gracefully"""
+       try:
+          data = sock.recv(size)
+          if data:
+              self.failcount = 0
+              return data
+          else: # This implies the connection has closed for some reason
+                 self.connectionRECVLive = False
+
+       except socket.error, socket.msg:
+          (errorno, errmsg) = socket.msg.args
+          if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
+              # "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
+              self.connectionRECVLive = False
+              self.howDied = socket.msg
+       self.receiving = False
+       if self.connectionRECVLive:
+           self.send(newReader(self, ((self, "ReadReady"), sock)), "_selectorSignal")
+       return None  # Explicit rather than implicit.
+
+   def handleReceive(self):
+       successful = True
+       while successful and self.connectionRECVLive: ### Fixme - probably want maximum iterations here
+         socketdata = self._saferecv(self.socket, 32768) ### Receiving may die horribly         
+         if (socketdata):
+             self.send(socketdata, "outbox")
+             successful = True
+         else:
+             successful = False
+#       print "There!",successful
+#       if not self.connectionRECVLive:
+#           print len(self.outboxes["outbox"]), "FOO", socketdata
+#           print "self.howDied", self.howDied
+
+   def checkSocketStatus(self):
+       if self.dataReady("ReadReady"):
+           self.receiving = True
+           self.recv("ReadReady")
+
+       if self.dataReady("SendReady"):
+           self.sending = True
+           self.recv("SendReady")
+
+   def canDoSomething(self):
+       if self.sending and len(self.sendQueue) > 0:
+           return True
+       if self.receiving:
+           return True
+       if self.anyReady():
+           return True
+       return False
+
+   def main(self):
+       self.link((self, "_selectorSignal"), self.selectorService)
+       # self.selectorService ...
+       self.sending = True
+       self.receiving = True
+       self.connectionRECVLive = True
+       self.connectionRECVLive = True
+       self.connectionSENDLive = True
+       while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
+          yield 1
+          self.checkSocketStatus() # To be written
+          self.handleSendRequest() # Check for data, in our "inbox", to send to the socket, add to an internal send queue buffer.
+          self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
+          if self.sending:
+              self.flushSendQueue()
+          if self.receiving:
+              self.handleReceive()
+          if not self.canDoSomething():
+              self.pause()
+ 
+
+       self.passOnShutdown()
+       # NOTE: the creator of this CSA is responsible for removing it from the selector
+
+__kamaelia_components__  = ( ConnectedSocketAdapter, )

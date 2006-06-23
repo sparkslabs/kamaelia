@@ -20,38 +20,93 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# Simple topography viewer server - takes textual commands from a single socket
-# and renders the appropriate graph
+"""\
+==============================
+Generic Topology Viewer Server
+==============================
 
-import pygame
-from pygame.locals import *
+A generic topology viewer that one client can connect to at a time over a
+TCP socket and send topology change data for visualisation.
 
-import random, time, re, sys
 
-from Axon.Scheduler import scheduler as _scheduler
-import Axon as _Axon
 
-import Kamaelia.Physics
-from Kamaelia.Physics.Simple import Particle as BaseParticle
-from Kamaelia.UI.MH import PyGameApp, DragHandler
+Example Usage
+-------------
+Visualiser that listens on port 1500 for a TCP connection through which
+it receives topology change data to render::
+    TopologyViewerServer( serverPort = 1500 ).run()
+    
+A simple client to drive the visualiser::
+    pipeline( ConsoleReader(),
+              TCPClient( server=<address>, port=1500 ),
+            ).run()
+    
+Run the server, then run the client::
+    >>> DEL ALL
+    >>> ADD NODE 1 "1st node" randompos -
+    >>> ADD NODE 2 "2nd node" randompos -
+    >>> ADD NODE 3 "3rd node" randompos -
+    >>> ADD LINK 1 2
+    >>> ADD LINK 3 2
+    >>> DEL LINK 1 2
+    >>> DEL NODE 1
 
-component = _Axon.Component.component
+See also Kamaelia.Visualisation.Axon.AxonVisualiserServer - which is a
+specialisation of this component.
+
+
+
+How does it work?
+-----------------
+
+TopologyViewerServer is a pipeline of the following components:
+- Kamaelia.SingleServer
+- chunks_to_lines
+- lines_to_tokenlists
+- TopologyViewerComponent
+- consoleEchoer
+
+This pipeline serves to listen on the specified port (defaults to 1500) for
+clients. One client is allowed to connect at a time.
+
+That client can then send topology change commands formatted as lines of text.
+The lines are parsed and tokenised for the TopologyViewerComponent.
+
+Any output from the TopologyViewerComponent is sent to the console.
+
+If the noServer option is used at initialisation, then the pipeline is built
+without the SingleServer component. It then becomes a TopologyViewer
+capable of processing non-tokenised input and with diagnostic console output.
+
+See TopologyViewerComponent for more detail on topology change data and
+its behaviour.
+"""
 
 from Kamaelia.Util.PipelineComponent import pipeline
 
 from chunks_to_lines import chunks_to_lines
 from lines_to_tokenlists import lines_to_tokenlists
 from TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Util.ConsoleEcho import consoleEchoer
+
 
 class TopologyViewerServer(pipeline):
+    """\
+    TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
+
+    One-client-at-a-time TCP socket Topology viewer server. Connect on the
+    specified port and send topology change data for display by a
+    TopologyViewerComponent.
+    
+    Keywork arguments:
+    - noServer    -- False, or True to not include the server component (default=False)
+    - serverPort  -- None, or port number to listen on (default=1500)
+    - args        -- all remaining keyword arguments passed onto TopologyViewerComponent
+    """
+
     def __init__(self, noServer = False, serverPort = None, **dictArgs):
-        """particleTypes = dictionary mapping names to particle classes
-        
-           All remaining named arguments are passed onto the TopologyViewerComponent
-        """
-        
-        from Kamaelia.SingleServer import SingleServer
-        from Kamaelia.Util.ConsoleEcho import consoleEchoer
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         
         pipe = [chunks_to_lines(),
                 lines_to_tokenlists(),
@@ -62,9 +117,7 @@ class TopologyViewerServer(pipeline):
             if serverPort == None:
                 serverPort = 1500
             pipe.insert(0, SingleServer(port=serverPort))
-            
 
         super(TopologyViewerServer, self).__init__(*pipe)
          
-
-
+__kamaelia_prefab__ = ( TopologyViewerServer, )

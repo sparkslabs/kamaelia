@@ -29,20 +29,20 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 import Kamaelia.ReadFileAdaptor
 
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+clientServerTestPort=1500
+
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
-            super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
+            super(klass,self).__init__(filename, readmode="bitrate", bitrate=128000)
     return klass
-
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
-clientServerTestPort=1500
 
 server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
                     port=clientServerTestPort).activate()
 
 pipeline(
-   TCPClient("127.0.0.1",clientServerTestPort, chargen=1),
+   TCPClient("127.0.0.1",clientServerTestPort),
    VorbisDecode(),
    AOAudioPlaybackAdaptor() 
 ).run()

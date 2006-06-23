@@ -21,15 +21,11 @@
 # -------------------------------------------------------------------------
 #
 
-import Axon
-
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.PipelineComponent import pipeline
-
-import os
 
 graph = """\
 

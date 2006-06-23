@@ -20,47 +20,83 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-# Simple topography viewer server - takes textual commands from a single socket
-# and renders the appropriate graph
+"""\
+=============================
+Simple line-of-text tokeniser
+=============================
 
-import pygame
-from pygame.locals import *
+This component takes a line of text and splits it into space character
+separated tokens. Tokens can be encapsulated with single or double quote marks,
+allowing spaces to appear within a token.
 
-import random, time, re, sys
 
-from Axon.Scheduler import scheduler as _scheduler
-import Axon as _Axon
 
-import Kamaelia.Physics.Simple
-from Kamaelia.Physics.Simple import Particle as BaseParticle
-from Kamaelia.UI.MH import PyGameApp, DragHandler
+Example Usage
+-------------
+::
+    pipeline( ConsoleReader(),
+              lines_to_tokenlists(),
+              ConsoleEchoer()
+            ).run()
 
-component = _Axon.Component.component
+At runtime::
+    >>> Hello world "how are you" 'john said "hi"' "i replied \"hi\"" "c:\\windows" end
+    [ 'Hello',
+      'world',
+      'how are you',
+      'john said "hi"', 
+      'i replied "hi"',
+      'c:\windows',
+      'end' ]
+            
+            
+            
+How does it work?
+-----------------
+                 
+lines_to_tokenlists receives individual lines of text on its "inbox" inbox. A 
+line is converted to a list of tokens, which is sent out of its "outbox"
+outbox.
 
-from Kamaelia.Util.PipelineComponent import pipeline
+Space characters are treated as the token separator, however a token can be
+encapsulated in single or double quotes allowing space characters to appear
+within it.
+
+If you need to use a quote mark or backslash within a token encapsulated by 
+quote marks, it must be escaped by prefixing it with a backslash. Only do
+this if the token is encapsulated.
+
+encapsulating quote marks are removed when the line is tokenised. Escaped
+backslashes and quote marks are converted to plain backslashes and quote marks.
+
+If a producerFinished() or shutdownMicroprocess() message is received on this
+component's "control" inbox, then it will send it on out of its "signal" outbox
+and immediately terminate. It will not flush any whole lines of text that may
+still be buffered.
+"""
+import re
+
+from Axon.Component import component
+
 
 class lines_to_tokenlists(component):
-    """Takes in lines and outputs a list of tokens on each line.
-      
-       Tokens are separated by white space.
-      
-       Tokens can be encapsulated with single or double quote marks, allowing you
-       to include white space. If you do this, backslashs should be used to escape
-       a quote mark that you want to include within the token. Represent backslash
-       with a double backslash.
-      
-       Example:
-           Hello world "how are you" 'john said "hi"' "i replied \"hi\"" end
-      
-         Becomes:
-         [ 'Hello',
-           'world',
-           'how are you',
-           'john said "hi"', 
-           'i replied "hi"',
-           'end' ]
+    """\
+    lines_to_tokenlists() -> new lines_to_tokenlists component.
+    
+    Takes individual lines of text and separates them into white
+    space separated tokens. Tokens can be enclosed with single or 
+    double quote marks.
     """
+    
+    Inboxes = { "inbox" : "Individual lines of text",
+                "control" : "Shutdown signalling",
+              }
+    Outboxes = { "outbox" : "list of tokens making up the line of text",
+                 "signal" : "Shutdown signalling",
+               }
+                                                                
     def __init__(self):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(lines_to_tokenlists, self).__init__()
         
         doublequoted = r'(?:"((?:(?:\\.)|[^\\"])*)")'
@@ -74,17 +110,28 @@ class lines_to_tokenlists(component):
         
    
     def main(self):
-       
-        while 1:
+        """Main loop."""
+        while not self.shutdown():
            while self.dataReady("inbox"):
                line = self.recv("inbox")
                tokens = self.lineToTokens(line)
                if tokens != []:
                    self.send(tokens, "outbox")
+           self.pause()
            yield 1
     
            
     def lineToTokens(self, line):
+        """\
+        linesToTokens(line) -> list of tokens.
+        
+        Splits a line into individual white-space separated tokens.
+        Tokens can be enclosed in single or double quotes to allow spaces
+        to be used in them.
+        
+        Escape backslash and single or double quotes by prefixing them
+        with a backslash *only* if used within an quote encapsulated string.
+        """
         tokens = []    #re.split("\s+",line.strip())
         while line != None and line.strip() != "":
             match = self.tokenpat.match(line)
@@ -99,3 +146,18 @@ class lines_to_tokenlists(component):
             else:
                 return []
         return tokens
+
+
+    def shutdown(self):
+        """\
+        Returns True if a shutdownMicroprocess or producerFinished message was received.
+        """
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
+                self.send(msg,"signal")
+                return True
+        return False
+
+__kamaelia_components__  = ( lines_to_tokenlists, )
+                                                                     

@@ -45,7 +45,7 @@ class InternetHandlingTest(component):
       conecho = _consoleEchoer()
       self.addChildren(conecho)
 
-      client=_TCPClient("127.0.0.1",clientServerTestPort, chargen=1)
+      client=_TCPClient("127.0.0.1",clientServerTestPort)
       self.addChildren(client)
       self.link((client,"outbox"), (conecho,"inbox"))
       return _Axon.Ipc.newComponent(*(self.children))

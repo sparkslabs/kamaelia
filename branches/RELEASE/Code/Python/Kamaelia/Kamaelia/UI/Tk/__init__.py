@@ -20,3 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""\
+==============
+Tk integration
+==============
+
+Simple components providing a basic way to integrate Tk windows as Kamaelia
+components.
+"""

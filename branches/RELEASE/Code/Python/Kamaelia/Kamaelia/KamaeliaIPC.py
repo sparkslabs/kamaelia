@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -49,3 +49,61 @@ class newServer(notify):
       super(newServer, self).__init__(caller, CSA)
    def handlesWriting(self):
       return False
+
+#
+# Two new classes to simplify the selector.
+# 
+# Note that hasOOB is only to be set for SOCKETS, and relates to out of band
+# information regarding the socket. This is used to put the specific thing
+# to monitor into the exceptions set (places we get out of band info)
+#
+# For more help as to what's going on with exceptionals, look at
+#   $ man 2 select_tut
+#
+# This may get simplified further at some point to simply add in a newExceptionalReader
+# message (indeed I'm in two minds right now about that!)
+#
+
+
+class newWriter(notify):
+    """Helper class to notify of new CSAs as they are created.  newCSA.object
+    will return the CSA."""
+    def __init__(self, caller, CSA):
+        super(newWriter, self).__init__(caller, CSA)
+        self.hasOOB = False 
+
+class newReader(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(newReader, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class newExceptional(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(newExceptional, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeReader(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeReader, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeWriter(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeWriter, self).__init__(caller, CSA)
+      self.hasOOB = False
+
+class removeExceptional(notify):
+   """Helper class to notify of new CSAs as they are created.  newCSA.object
+   will return the CSA."""
+   def __init__(self, caller, CSA):
+      super(removeExceptional, self).__init__(caller, CSA)
+      self.hasOOB = False
+

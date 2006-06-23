@@ -23,21 +23,12 @@
 # simple kamaelia pipeline builder GUI
 # run this program
 
-COMPONENTS = {
-    "Kamaelia.Util.Introspector"    : ["Introspector"],
-    "Kamaelia.Internet.TCPClient"   : ["TCPClient"],
-    "Kamaelia.SingleServer"         : ["SingleServer"],
-    "Kamaelia.ReadFileAdaptor"      : ["ReadFileAdaptor"],
-    "Kamaelia.Util.ConsoleEcho"     : ["consoleEchoer"],
-    "Kamaelia.Util.Chooser"         : ["Chooser"],
-    "Kamaelia.Internet.Multicast_sender" : ["Multicast_sender"],
-    "Kamaelia.Internet.Multicast_receiver" : ["Multicast_receiver"],
-    "Kamaelia.Internet.Simulate.BrokenNetwork" : ["Duplicate","Throwaway","Reorder"],
-    "Kamaelia.vorbisDecodeComponent" : [ "VorbisDecode", "AOAudioPlaybackAdaptor" ],
-    "Kamaelia.Codec.Dirac" : [ "DiracDecoder" ],
-    "Kamaelia.Util.RateFilter" : [ "MessageRateLimit" ],
-    "Kamaelia.UI.Pygame.VideoOverlay" : [ "VideoOverlay"],
-    }
+import Kamaelia.Data.Repository
+
+C = Kamaelia.Data.Repository.GetAllKamaeliaComponents()
+COMPONENTS = {}
+for key in C.keys():
+    COMPONENTS[".".join(key)] = C[key]
 
 import inspect
     
@@ -45,9 +36,11 @@ def getAllClasses( modules ):
     _modules = list(modules.keys())
     _modules.sort()
     for modname in _modules:
-        for entry in getModuleConstructorArgs( modname, modules[modname] ):
-            yield entry
-
+        try:
+            for entry in getModuleConstructorArgs( modname, modules[modname] ):
+                yield entry
+        except ImportError:
+            continue
 
 def getModuleConstructorArgs( modulename, classnames):
     clist = []
@@ -122,5 +115,9 @@ if __name__ == "__main__":
                           )
         ).activate()
     
-    
-    scheduler.run.runThreads()
+    try:
+        scheduler.run.runThreads()
+    except:
+        pass
+
+

@@ -21,8 +21,6 @@
 # -------------------------------------------------------------------------
 #
 
-import Axon
-
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Util.Chooser import Chooser
@@ -30,11 +28,14 @@ from Kamaelia.Util.Graphline import Graphline
 
 import os
 
-path = "/home/zathras/Documents/Presentations/Kamaelia_200504"
 path = "Slides"
 extn = ".gif"
-files = os.listdir(path)
-files = [ os.path.join(path,fname) for fname in files if fname[-len(extn):]==extn ]
+allfiles = os.listdir(path)
+files = list()
+for fname in allfiles:
+    if fname[-len(extn):]==extn:
+        files.append(os.path.join(path,fname))
+
 files.sort()
 
 Graphline(

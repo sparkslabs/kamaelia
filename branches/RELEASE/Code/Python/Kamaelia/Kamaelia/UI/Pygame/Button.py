@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,7 +19,63 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
+"""\
+====================
+Pygame Button Widget
+====================
+
+A button widget for pygame display surfaces. Sends a message when clicked.
+
+Uses the PygameDisplay service.
+
+
+
+Example Usage
+-------------
+Three buttons that output messages to the console::
+    
+    button1 = Button(caption="Press SPACE or click",key=K_SPACE).activate()
+    button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
+    button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
+    
+    ce = consoleEchoer().activate()
+    button1.link( (button1,"outbox"), (ce,"inbox") )
+    button2.link( (button2,"outbox"), (ce,"inbox") )
+    button3.link( (button3,"outbox"), (ce,"inbox") )
+    
+
+
+How does it work?
+-----------------
+
+The component requests a display surface from the PygameDisplay service
+component. This is used as the surface of the button. It also binds event
+listeners to the service, as appropriate.
+
+Arguments to the constructor configure the appearance and behaviour of the
+button component:
+
+- If an output "msg" is not specified, the default is a tuple ("CLICK", id) where
+id is the self.id attribute of the component.
+
+- A pygame keycode can be specified that will also trigger the button as if it
+had been clicked
+
+- you can set the text label, colour, margin size and position of the button
+
+- the button can have a transparent background
+
+- you can specify a size as width,height. If specified, the margin size is
+  ignored and the text label will be centred within the button
+
+If a producerFinished or shutdownMicroprocess message is received on its
+"control" inbox. It is passed on out of its "signal" outbox and the component
+terminates.
+
+Upon termination, this component does *not* unbind itself from the PygameDisplay
+service. It does not deregister event handlers and does not relinquish the
+display surface it requested.
+"""
 
 import pygame
 import Axon
@@ -27,31 +83,36 @@ from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Button(Axon.Component.component):
-   """Simple button widget.
-      Specify a text label, and whenever it is clicked, it
-      will send ("CLICK", self.id) out of its outbox, unless you specify
-      a different one.
+   """\
+   Button(...) -> new Button component.
+
+   Create a button widget in pygame, using the PygameDisplay service. Sends a
+   message out of its outbox when clicked.
+
+   Keyword arguments (all optional):
+   - caption      -- text (default="Button <component id>")
+   - position     -- (x,y) position of top left corner in pixels
+   - margin       -- pixels margin between caption and button edge (default=8)
+   - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
+   - fgcolour     -- (r,g,b) text colour (default=(0,0,0))
+   - msg          -- sent when clicked (default=("CLICK",self.id))
+   - key          -- if not None, pygame keycode to trigger click (default=None)
+   - transparent  -- draw background transparent if True (default=False)
+   - size         -- None or (w,h) in pixels (default=None)
    """
    
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
-               "control"  : "",
+               "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay"
              }
    Outboxes = { "outbox" : "button click events emitted here",
-                "signal" : "",
+                "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
                 key = None,
-                transparent = False):
-      """Creates and activates a button widget
-         caption  = text label for the button / None for default label
-         position = (x,y) pair / None
-         margin   = margin size (around the text) in pixels
-         bgcolour = background colour
-         fgcolour = text colour
-         msg      = message to be sent when this button is clicked / None for default
-         """
+                transparent = False, size=None):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Button,self).__init__()
       
       self.backgroundColour = bgcolour
@@ -62,6 +123,8 @@ class Button(Axon.Component.component):
       
       if caption is None:
          caption = "Button "+str(self.id)
+      
+      self.size = size
       
       pygame.font.init()      
       self.buildCaption(caption)
@@ -83,18 +146,21 @@ class Button(Axon.Component.component):
         self.disprequest["position"] = position         
 
    def buildCaption(self, text):
-      """Render the text to go on the button label.
-      (This doesn't actually place the text onto the 'surface')
-      """
+      """Pre-render the text to go on the button label."""
+      # Text is rendered to self.image
       font = pygame.font.Font(None, 14)
       self.image = font.render(text,True, self.foregroundColour, )
       
       (w,h) = self.image.get_size()
-      self.size = (w + 2*self.margin, h + 2*self.margin)
-      self.imagePosition = (self.margin, self.margin)
+      if not self.size:
+          self.size = (w + 2*self.margin, h + 2*self.margin)
+          self.imagePosition = (self.margin, self.margin)
+      else:
+          self.imagePosition = ( (self.size[0]-w)/2, (self.size[1]-h)/2 )
       
        
    def waitBox(self,boxname):
+      """Generator. yields 1 until data ready on the named inbox."""
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
@@ -102,6 +168,7 @@ class Button(Axon.Component.component):
 
    
    def main(self):
+      """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -128,9 +195,10 @@ class Button(Axon.Component.component):
 #         yield 1
       done = False
       while not done:
-         if self.dataReady("control"):
+         while self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+               self.send(cmsg, "signal")
                done = True
          
          while self.dataReady("inbox"):
@@ -145,22 +213,29 @@ class Button(Axon.Component.component):
 ###                   print "EVENT", event.type, event.key
                    if event.key == self.key:
                       self.send( self.eventMsg, "outbox" )
+         self.pause()
          yield 1
             
       
    def blitToSurface(self):
+       """Clears the background and renders the text label onto the button surface."""
        try:
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
        except:
            pass
+       self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
+__kamaelia_components__  = ( Button, )
+
                   
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from pygame.locals import *
    
-   button1 = Button().activate()
+   button1 = Button(caption="Press SPACE or click",key=K_SPACE).activate()
    button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
-   button3 = Button(caption="Mary...",msg="Mary had a little lamb").activate()
+   button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
    
    ce = consoleEchoer().activate()
    button1.link( (button1,"outbox"), (ce,"inbox") )

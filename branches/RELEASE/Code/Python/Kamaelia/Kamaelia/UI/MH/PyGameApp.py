@@ -18,6 +18,69 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===================================
+Simple Pygame application framework
+===================================
+
+A component that sets up a pygame display surface and provides a main loop and
+simple event dispatch framework.
+
+The rendering surface is requested from the PygameDisplay service component, so
+this component can coexist with other components using pygame.
+
+
+
+Example Usage
+-------------
+::
+    class SimpleApp1(PyGameApp):
+    
+        def initialiseComponent(self):
+            self.addHandler(MOUSEBUTTONDOWN, lambda event : self.mousedown(event))
+            
+        def mainLoop(self):
+            ... draw and do other stuff here...
+            return 1
+
+        def mousedown(self, event):
+            print "Mouse down!"
+    
+    app = SimpleApp1( (800,600) ).run()
+
+
+
+How does it work?
+-----------------
+
+Subclass this component to implement your own pygame 'app'. Replace the
+mainLoop() stub with your own code to redraw the display surface etc. This
+method will be called every cycle - do not incorporate your own loop!
+
+The self.screen attribute is the pygame surface you should render to.
+
+The component provides a simple event dispatch framework. Call addHandler and
+removeHandler to register and deregister handlers from events.
+
+More than one handler can be registered for a given event. They are called in
+the order in which they were registered. If a handler returns True then the
+event is 'claimed' and no further handlers will be called.
+
+The component will terminate if the user clicks the close button on the pygame
+display window, however your mainLoop() method will not be notified, and there
+is no specific 'quit' event handler.
+"""
+
+
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+# XXX TODO
+#
+# - 'mainloop' ought to be modded to be a true loop - something that yields.
+#   but users of this class will need to be modded too.
+# - redundant args in initialiser need removing too (same applies)
+#
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 import pygame
 from pygame.locals import *
@@ -25,17 +88,31 @@ import Axon as _Axon
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class PyGameApp(_Axon.Component.component):
-    """Simple Axon component for a PyGame application.
-    
-    Provides a simple main loop and PyGame event dispatch mechanism.
+    """\
+    PyGameApp(screensize[,caption][,transparency][,position]) -> new PyGameApp component.
 
-    Implement your runtime loop in mainLoop().
+    Creates a PyGameApp component that obtains a pygame display surface and provides
+    an internal pygame event dispatch mechanism.
+
+    Subclass to implement your own pygame "app".
     
-    Use addHandler() and removeHandler() register handlers for pygame events.
-        
+    Keyword arguments:
+    - screensize    -- (width,height) of the display area (default = (800,600))
+    - caption       -- Caption for the pygame window (default = "Topology Viewer")
+    - fullscreen    -- True to start up in fullscreen mode (default = False)
+    - transparency  -- None, or (r,g,b) colour to make transparent
+    - position      -- None, or (left,top) position for surface within pygame window
     """
-    Inboxes = ["inbox", "events", "displaycontrol", "control"]
-    Outboxes = [ "signal", "outbox", "displaysignal" ]
+    
+    Inboxes  = { "inbox"          : "NOT USED",
+                 "control"        : "NOT USED",
+                 "events"         : "Event notifications from PygameDisplay service",
+                 "displaycontrol" : "Replies from PygameDisplay service",
+               }
+    Outboxes = { "signal"        : "NOT USED",
+                 "outbox"        : "NOT USED",
+                 "displaysignal" : "Requests to PygameDisplay service",
+               }
 
     def __init__(self, screensize, 
                  caption="PyGame Application", 
@@ -43,14 +120,15 @@ class PyGameApp(_Axon.Component.component):
                  depth=0, 
                  transparency = None,
                  position = None):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PyGameApp, self).__init__()
         pygame.init()
         
-        flags = DOUBLEBUF
-        if fullscreen:
-            flags = flags | -abs(FULLSCREEN)
-        self.flags = flags
-        self.depth = depth
+#        flags = DOUBLEBUF
+#        if fullscreen:
+#            flags = flags | -abs(FULLSCREEN)
+#        self.flags = flags
+#        self.depth = depth
         self.screensize = screensize
         self.caption = caption
         self.transparency = transparency
@@ -60,12 +138,14 @@ class PyGameApp(_Axon.Component.component):
         self.flip = False
     
     def waitBox(self,boxname):
+        """Generator. Yields until data ready on the named inbox."""
         waiting = True
         while waiting:
            if self.dataReady(boxname): return
            else: yield 1
 
     def main(self):
+        """Main loop. Do not override"""
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"displaysignal"), displayservice)
         displayrequest = { "DISPLAYREQUEST" : True,
@@ -95,6 +175,7 @@ class PyGameApp(_Axon.Component.component):
             self._dispatch()
             if not self.quitting:
                 self.mainLoop()
+            self.send({"REDRAW":True, "surface":self.screen}, "displaysignal")
             if not self.quitting and self.flip:
                 pygame.display.flip()
                 yield 1
@@ -119,18 +200,19 @@ class PyGameApp(_Axon.Component.component):
 
 
     def events(self):
+       """Generator. Receive events on "events" inbox and yield then one at a time."""
        while self.dataReady("events"):
           event_bundle = self.recv("events")
           for event in event_bundle:
              yield event
 
     def _dispatch(self):
-        """Internal pygame event dispatcher.
+        """\
+        Internal pygame event dispatcher.
         
-           For all events received, it calls all event handlers in sequence
-           until one returns True
+        For all events received, it calls all event handlers in sequence
+        until one returns True.
         """
-#        for event in pygame.event.get():
         for event in self.events():
             if self.eventHandlers.has_key(event.type):
                 for handler in self.eventHandlers[event.type]:
@@ -138,17 +220,10 @@ class PyGameApp(_Axon.Component.component):
                         break
 
     def addHandler(self, eventtype, handler):
-        """Add an event handler, for a given PyGame event type.
+        """\
+        Add an event handler, for a given PyGame event type.
         
-        Handler is passed the pygame event object when called.
-        
-        Multiple handlers can be registered for a given PyGame event.
-        They are called in the order in which they are registered.
-        
-        The even is passed to all registered handlers, in the order in
-        which they were registered. If, however, one of the handlers returns
-        something that evaluates to True, then the event is deemed to have
-        been 'claimed' and it will not be passed on any further.
+        The handler is passed the pygame event object as its argument when called.
         """
         if not self.eventHandlers.has_key(eventtype):
             self.eventHandlers[eventtype] = []
@@ -159,15 +234,13 @@ class PyGameApp(_Axon.Component.component):
         return handler
             
     def removeHandler(self, eventtype, handler):
-        """Remove the specified pygame event handler"""
+        """Remove the specified pygame event handler from the specified event."""
         if self.eventHandlers.has_key(eventtype): 
             self.eventHandlers[eventtype].remove(handler) # Latent bug, handler not in list
-#            if len(self.eventHandlers[eventtype]) == 0:
-#               self.send({ "REMOVELISTENEVENT" : eventtype,
-#                           "surface" : self.screen,
-#                         }, "displaysignal")
 
 
     def quit(self, event = None):
         """Call this method/event handler to finish"""
         self.quitting = True
+
+__kamaelia_components__  = ( PyGameApp, )

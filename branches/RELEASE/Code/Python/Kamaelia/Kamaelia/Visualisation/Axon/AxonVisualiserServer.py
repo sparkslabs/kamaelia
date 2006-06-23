@@ -21,7 +21,6 @@
 # -------------------------------------------------------------------------
 
 import Kamaelia.Visualisation.PhysicsGraph
-#from Visualisation import TopologyViewerServer
 
 _TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
 
@@ -30,9 +29,62 @@ from PPostbox import PPostbox
 from AxonLaws import AxonLaws
 from ExtraWindowFurniture import ExtraWindowFurniture
 
+"""\
+----------------------------------
+Axon/Kamaelia Visualisation Server
+----------------------------------
+
+A specialisation of TopologyViewerServer for visualising Axon/Kamaelia systems.
+
+
+
+Example Usage
+-------------
+Visualiser that listens on its default port for a TCP connection through which
+it receives Introspection topology data to render::
+    AxonVisualiserServer().run()
+
+
+
+How does it work?
+-----------------
+AxonVisualiserServer is a subclass of TopologyViewerServer, where the following
+are already specified:
+- types of particles
+- their laws of interaction
+- the number of simulation cycles per redraw
+- extra window furniture
+
+The remaining keyword arguments of the TopologyviewerServer component can all
+be specified when initialising AxonVisualiserServer.
+
+The particles used are:
+- Kamaelia.Visualisation.Axon.PComponent
+- Kamaelia.Visualisation.Axon.PPostbox
+
+The laws used are Kamaelia.Visualisation.Axon.AxonLaws.
+
+The extra window furniture is supplied by 
+Kamaelia.Visualisation.Axon.ExtraWindowFurniture.
+"""
+
+
 class AxonVisualiserServer(_TopologyViewerServer):
+    """\
+    AxonVisualiserServer(...) -> new AxonVisualiserServer component.
+    
+    A specialisation of the TopologyViewerServer component for viewing
+    Axon/Kamaelia systems.
+    
+    Keyword arguments are those for TopologyViewerServer, excluding:
+    - particleTypes
+    - laws
+    - simCyclesPerRedraw
+    - extraWindowFurniture
+    """
 
     def __init__(self, **dictArgs):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         particleTypes = { "component" : PComponent,
                           "inbox"     : PPostbox.Inbox,
                           "outbox"    : PPostbox.Outbox
@@ -44,3 +96,4 @@ class AxonVisualiserServer(_TopologyViewerServer):
                                                    extraDrawing = ExtraWindowFurniture(),
                                                    **dictArgs
                                                  )
+__kamaelia_components__  = ( AxonVisualiserServer, )

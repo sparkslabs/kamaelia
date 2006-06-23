@@ -19,60 +19,88 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+======================================
+Legacy stub for BasicMarshallComponent
+======================================
+
+The functionality of this component has been superceeded by the Marshaller and
+DeMarshaller components in Kamaelia.Util.Marshalling. Please use these in
+preference.
+
+This component contains both marshalling and demarshalling facilities. It is
+a thin wrapper combining a Marshalling and DeMarshalling component.
+
+
+
+Example Usage
+-------------
+
+None. Please use Kamaelia.Util.Marshalling in preference.
+
+
+
+How does it work?
+-----------------
+
+Behaviour is consistent with that of Kamaelia.Util.Marshalling, except that the
+"inbox" inbox and "outbox" outbox are not used.
+
+Marshall data by sending it to the "marshall" inbox. The marshalled data is
+sent to the "marshalled" outbox.
+
+Demarshall data by sending it to the "demarshall" inbox. The marshalled data is
+sent to the "demarshalled" outbox.
+
 """
-Basic Marshalling Component. - UNTESTED
 
-The Basic Marshalling Component is given a simple class. It then expects to
-be passed objects of that class, and then performs the following actions:
-   * __str__ on an object
-   * fromString on an object
+from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
-The idea is that you would place this between your logic and a network
-socket, which simply serialises and deserialises objects for transmission
-over the wire. The initial data format this is designed to work with is the
-MimeDict object.
+def BasicMarshallComponent(klass):
+    return Graphline(marsh=Marshaller(klass),
+                     demarsh=DeMarshaller(klass),
+                     linkages = {
+                       ("self", "marshall") : ("marsh","inbox"),
+                       ("marsh", "outbox") : ("self","marshalled"),
 
-For simplicity, this component expects to be given an entire object to
-marshall/demarshall. This requires the user to deal with framing of objects.
-It is expected that there will be a more complex marshaller that is capable
-of taking (say) a generator or component as an argument for the fromString
-static method.
+                       ("self", "demarshall") : ("demarsh","inbox"),
+                       ("demarsh", "outbox") : ("self","demarshalled"),
 
-Since this is a bidirectional component we have the following boxes:
-   * control - on which we may receive a shutdown message
-   * signal - one which we will send shutdown messages
-   * demarshall - an inbox to which you send strings for demarshalling
-   * marshall - an inbox to which you send objects for marshalling
-   * demarshalled - an outbox which spits out demarshalled objects
-   * marshalled = an outbox which spits out marshalled strings
-"""
+                       ("self","control") : ("marsh","control"),
+                       ("marsh","signal") : ("demarsh","control"),
+                       ("demarsh","signal") : ("self","signal"),
+                     }
+                    )
 
-from Axon.Component import component, scheduler
+__kamaelia_prefab__ = ( BasicMarshallComponent, )
 
-class BasicMarshallComponent(component):
-   Inboxes =["control", "demarshall", "marshall"] 
-   Outboxes=["signal", "demarshalled", "marshalled"]
-   def __init__(self,klass):
-      super(BasicMarshallComponent, self).__init__() # Accept default in/outboxes
-      self.klass = klass
-
-   def main(self):
-      while 1:
-         self.pause()
-         if self.dataReady("control"):
-            data = self.recv("control")
-            if isinstance(data, Axon.Ipc.producerFinished):  # Not ideal, should be Axon.Ipc.Shutdown
-               self.send(Axon.Ipc.producerFinished(), "signal")
-               return
-         if self.dataReady("marshall"):
-            data = self.recv("marshall")
-            self.send(str(data),"marshalled")
-         if self.dataReady("demarshall"):
-            data = self.recv("demarshall")
-            self.send(self.klass.fromString(data),"demarshalled")
-
-         yield 1
-
+#from Axon.Component import component, scheduler
+#
+#class BasicMarshallComponent(component):
+#   Inboxes =["control", "demarshall", "marshall"] 
+#   Outboxes=["signal", "demarshalled", "marshalled"]
+#   def __init__(self,klass):
+#      super(BasicMarshallComponent, self).__init__() # Accept default in/outboxes
+#      self.klass = klass
+#
+#   def main(self):
+#      while 1:
+#         self.pause()
+#         if self.dataReady("control"):
+#            data = self.recv("control")
+#            if isinstance(data, Axon.Ipc.producerFinished):  # Not ideal, should be Axon.Ipc.Shutdown
+#               self.send(Axon.Ipc.producerFinished(), "signal")
+#               return
+#         if self.dataReady("marshall"):
+#            data = self.recv("marshall")
+#            self.send(str(data),"marshalled")
+#         if self.dataReady("demarshall"):
+#            data = self.recv("demarshall")
+#            self.send(self.klass.fromString(data),"demarshalled")
+#
+#         yield 1
+#
 if __name__ == '__main__':
    print "no test harness (NASTY)"
    print "Sample Test Harness could probably make us of MimeDict as an example"
