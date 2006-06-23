@@ -36,9 +36,11 @@ def getAllClasses( modules ):
     _modules = list(modules.keys())
     _modules.sort()
     for modname in _modules:
-        for entry in getModuleConstructorArgs( modname, modules[modname] ):
-            yield entry
-
+        try:
+            for entry in getModuleConstructorArgs( modname, modules[modname] ):
+                yield entry
+        except ImportError:
+            continue
 
 def getModuleConstructorArgs( modulename, classnames):
     clist = []
