@@ -11,6 +11,8 @@ from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Util.Detuple import SimpleDetupler
+from Kamaelia.Protocol.Packetise import MaxSizePacketiser
 
 # from Kamaelia.File.Writing import SimpleFileWriter
 # from Kamaelia.File.UnixPipe import Pipethrough
@@ -28,34 +30,6 @@ service_ids = { "BBC ONE": 4168,
                 "CBEEBIES":16960,
                 "CBBC":4671,
               }
-
-class detuple(component):
-   def __init__(self, index):
-      super(detuple, self).__init__()
-      self.index = index
-   def main(self):
-      while 1:
-         if self.dataReady("inbox"):
-            tuple=self.recv("inbox")
-            self.send(tuple[self.index], "outbox")
-         yield 1
-
-class blockise(component):
-    def main(self):
-       maxlen = 1000 # Needs to be parameterisable
-       buffer = ""
-       while 1:
-           while self.dataReady("inbox"):
-               buffer = buffer + self.recv("inbox")
-               while len(buffer) > maxlen:
-                  send = buffer[:maxlen]
-                  buffer = buffer[maxlen:]
-                  self.send(send, "outbox")
-               else:
-                  send = buffer
-                  buffer = ""
-                  self.send(send, "outbox")
-           yield 1
 
 class counter(component):
     def __init__(self, tag):
@@ -100,13 +74,13 @@ if 0:
 if 0:
     pipeline(
         ReadFileAdaptor("somefile.ts",readsize=8000000),
-        blockise(),
+        MaxSizePacketiser(),
         Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
     ).activate()
 
     pipeline(
         Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
-        detuple(1),
+        SimpleDetupler(1),
         SimpleFileWriter("otherfile.ts"),
     ).run()
 
@@ -114,14 +88,14 @@ if 0:
 if 1:
     pipeline(
         DVB_Multiplex(freq, [600,601], feparams),
-        blockise(),
+        MaxSizePacketiser(),
         Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
-    ).activate()
+    ).run()
 
-if 1:
+if 0:
     pipeline(
         Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
-        detuple(1),
+        SimpleDetupler(1),
         dataRateMeasure(),
         SimpleFileWriter("otherfile.ts"),
     ).run()
