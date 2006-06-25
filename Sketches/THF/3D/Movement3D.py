@@ -120,6 +120,7 @@ class PathMover(Axon.Component.component):
         self.running = True
         self.currentIndex = 0
         self.lastIndex = 0
+        self.flipped = False
         
     def main(self):
         while 1:
@@ -135,23 +136,38 @@ class PathMover(Axon.Component.component):
                 if msg == "Previous":
                     self.currentIndex -= 1
                 if msg == "Rewind":
-                    self.currentIndex = 0
+                    if not self.flipped:
+                        self.currentIndex = 0
+                    else:
+                        self.currentIndex = len(self.path)-1
+                if msg == "Forward":
+                    self.flipped = False
+                if msg == "Backward":
+                    self.flipped = True
             
             if self.running:
-                self.currentIndex += 1
+                if not self.flipped:
+                    self.currentIndex += 1
+                else:
+                    self.currentIndex -= 1
                 
             if self.currentIndex >= len(self.path):
-                self.send("End", "status")
+                self.send("Finish", "status")
                 if self.repeat:
                     self.currentIndex = 0
                 else:
                     self.currentIndex -=1
                     self.running = False
             elif self.currentIndex < 0:
-                self.currentIndex = 0
+                self.send("Start", "status")
+                if self.repeat:
+                    self.currentIndex = len(self.path)-1
+                else:
+                    self.currentIndex = 0
+                    self.running = False
                 
             if self.currentIndex != self.lastIndex:
-                self.send( Control3D(Control3D.POSITION, self.path[self.currentIndex]), "outbox")
+                self.send( Control3D(Control3D.POSITION, self.path[self.currentIndex].copy()), "outbox")
                 self.lastIndex = self.currentIndex
 
 
