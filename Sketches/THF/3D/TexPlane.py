@@ -89,10 +89,6 @@ class TexPlane(Axon.Component.component):
         
         self.texID = 0
 
-        # prepare vertices for intersection test
-        x = float(self.size.x/2)
-        y = float(self.size.y/2)
-        self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
         
         # similar to Pygame component registration
         self.disprequest = { "3DDISPLAYREQUEST" : True,
@@ -148,10 +144,12 @@ class TexPlane(Axon.Component.component):
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         glBegin(GL_QUADS)
 #        glColor3f(0,1,0)
-        glTexCoord2f(0.0, 1.0-self.tex_h); glVertex3f(-1.0, -1.0,  0.0)
-        glTexCoord2f(self.tex_w, 1.0-self.tex_h); glVertex3f( 1.0, -1.0,  0.0)
-        glTexCoord2f(self.tex_w, 1.0); glVertex3f( 1.0,  1.0,  0.0)
-        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0,  0.0)
+        w = self.size.x/2.0
+        h = self.size.y/2.0
+        glTexCoord2f(0.0, 1.0-self.tex_h); glVertex3f(-w, -h,  0.0)
+        glTexCoord2f(self.tex_w, 1.0-self.tex_h); glVertex3f( w, -h,  0.0)
+        glTexCoord2f(self.tex_w, 1.0); glVertex3f( w,  h,  0.0)
+        glTexCoord2f(0.0, 1.0); glVertex3f(-w,  h,  0.0)
         glEnd()
 
         glPopMatrix()
@@ -220,6 +218,12 @@ class TexPlane(Axon.Component.component):
                 textureSurface = image
                 self.tex_w = 1.0
                 self.tex_h = 1.0
+            # set plane size
+            self.size = Vector(float(image.get_width())/100.0, float(image.get_height())/100.0, 0)
+            # prepare vertices for intersection test
+            x = float(self.size.x/2)
+            y = float(self.size.y/2)
+            self.vertices = [ Vector(-x, y, 0.0), Vector(x, y, 0.0), Vector(x, -y, 0.0), Vector(-x, -y, 0.0) ]
             # read pixel data
             textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
             # gen tex name
