@@ -33,7 +33,9 @@ class BasicEncryption(Component.component):
         
         if self.mode is "ECB":
             self.operatingmode = self.method.MODE_ECB
-
+        elif self.mode is "CBC":
+            self.operatingmode = self.method.MODE_CBC
+            
     def createBlock(self, text):
 
         if len(text) % self.blocksize == 0:
@@ -97,12 +99,13 @@ class Decryptor(BasicEncryption):
                 self.send(plaintext, "outbox")
             yield 1
 
-pipeline(
-    Chargen(),
-    Encryptor("1234567812345678"),
-    Decryptor("1234567812345679"),
-    consoleEchoer()
-    ).run()
-    
+if __name__ == "__main__":
+    pipeline(
+        SerialChargen(),
+        Encryptor("1234567812345678"),
+        Decryptor("1234567812345678"),
+        consoleEchoer()
+        ).run()
+
                 
             
