@@ -76,7 +76,18 @@ parser_cable_delivery_system_Descriptor       = parser_Null_Descriptor
 parser_VBI_data_Descriptor                    = parser_Null_Descriptor
 parser_VBI_teletext_Descriptor                = parser_Null_Descriptor
 parser_bouquet_name_Descriptor                = parser_Null_Descriptor
-parser_service_Descriptor                     = parser_Null_Descriptor
+
+def parser_service_Descriptor(data,i,length,end):
+    d = { "type" : "service",
+          "service_type" : _service_types.get(ord(data[i+2]), ord(data[i+2])),
+        }
+    length = ord(data[i+3])
+    j = i+4+length
+    d['service_provider_name'] = data[i+4:j]
+    length = ord(data[j])
+    d['service_name'] = data[j+1:j+1+length]
+    return d
+
 parser_country_availability_Descriptor        = parser_Null_Descriptor
 parser_linkage_Descriptor                     = parser_Null_Descriptor
 parser_NVOD_reference_Descriptor              = parser_Null_Descriptor
@@ -219,6 +230,25 @@ __descriptor_parsers = {
 
 # Aciliary support stuff
 
+# service descriptor, service types
+_service_types = {
+       0x01 : "digital television service",
+       0x02 : "digital radio sound service",
+       0x03 : "Teletext service",
+       0x04 : "NVOD reference service",
+       0x05 : "NVOD time-shifted service",
+       0x06 : "mosaic service",
+       0x07 : "PAL coded signal",
+       0x08 : "SECAM coded signal",
+       0x09 : "D/D2-MAC",
+       0x0A : "FM Radio",
+       0x0B : "NTSC coded signal",
+       0x0C : "data broadcast service",
+       0x0E : "RCS Map",
+       0x0F : "RCS FLS",
+       0x10 : "DVB MHP service",
+    }
+
 # table for iso_639_descriptor
 _iso639_audiotypes = {
         0 : "",
@@ -264,3 +294,4 @@ _stream_component_mappings = {
        (0x03, 0x22) : ("DVB subtitles (for the hard of hearing)", "for display on 16:9 aspect ratiomonitor"),
        (0x03, 0x23) : ("DVB subtitles (for the hard of hearing)", "for display on 2.21:1 aspect ratiomonitor"),
     }
+
