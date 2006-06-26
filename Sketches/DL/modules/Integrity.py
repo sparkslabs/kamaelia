@@ -4,6 +4,9 @@ from Axon import Component
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Chargen import Chargen
 from Kamaelia.Util.ConsoleEcho import consoleEchoer
+from DL_Util import SerialChargen
+from Encryption import BasicEncryption
+
 import random
 """
 ============================
@@ -21,18 +24,6 @@ Data Producer -- (data) -- IntegrityStamper() -- (data, hash) -- <other componen
 
 """
 
-class SerialChargen(Chargen):
-    """ Generates Hello World0, Hello World1, Hello World2, ....."""
-
-    def main(self):
-        """Main loop."""
-        count = 0
-        while 1:
-            self.send("Hello World" + str(count), "outbox")
-            count += 1
-            yield 1
-
-                                  
 class IntegrityError(Exception):
 
     def __str__(self):
@@ -52,11 +43,14 @@ class BasicIntegrity(Component.component):
         if self.algorithm is "SHA":
             from Crypto.Hash import SHA
             self.method = SHA
-        else:
-            if self.algorithm is "MD5":
-                from Crypto.Hash import MD5
-                self.method = MD5
-
+        elif self.algorithm is "MD5":
+            from Crypto.Hash import MD5
+            self.method = MD5
+#        elif self.algorithm is "RIPEMD":
+#            from Crypto.Hash import RIPEMD # Cannot do this for some reason
+#            self.method = RIPEMD
+            
+        
     def calcHash(self, data):
 
         hashobj = self.method.new(data)
@@ -131,12 +125,61 @@ class DisruptiveComponent(Component.component):
                 self.send((data, checksum), "outbox")
             yield 1
 
+class MAC_Stamper(BasicIntegrity):
+    """ Provides message authentication only, message is still sent in plain text
+    """
+       
+    def __init__(self, key,  encryption="AES", mode="ECB", hash="SHA"):
+
+        self.__super.__init__(hash)
+        self.encryptobj = BasicEncryption(key, encryption, mode)
         
-pipeline(
-    SerialChargen(),
-    IntegrityStamper(),
-    DisruptiveComponent(),
-    IntegrityChecker(),
-    consoleEchoer()
-    ).run()
+    def main(self):
+
+        while 1:
+
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+
+                mac = self.encryptobj.encrypt(self.calcHash(data))
+                self.send((data, mac), "outbox")
+            yield 1
+
+
+class MAC_Checker(BasicIntegrity):
+
+    def __init__(self, key, encryption="AES", mode="ECB", hash="SHA"):
+
+        self.__super.__init__(hash)
+        self.decryptobj = BasicEncryption(key, encryption, mode)
+        
+    def main(self):
+
+        while 1:
+            try:
+                if self.dataReady("inbox"):
+
+                    (data, mac) = self.recv("inbox")
+                    checksum = self.decryptobj.decrypt(mac)
+                    if checksum == self.calcHash(data):
+
+                        self.send(data, "outbox")
+                    else:                      # we have a hash failure
+                        raise IntegrityError  # This mechanism needs improvement
+            except IntegrityError:
+
+                print "Integrity Error"
+                
+            yield 1
+
+
+
+if __name__ == "__main__":
+    pipeline(
+        SerialChargen(),
+        MAC_Stamper("1234567812345678", mode="CBC"),
+        DisruptiveComponent(),
+        MAC_Checker("1234567812345678", mode="CBC"),
+        consoleEchoer()
+        ).run()
 
