@@ -219,12 +219,6 @@ int xxtea_decrypt(char* in_file, char* out_file, char* key) {
     u_char plaintext[64];
     struct stat statbuf;
 
-    /* drop any privileges given to us by someone dumb enough to */
-    /* make xxt a SUID program                                   */
-    uid = getuid();
-    setuid(uid);
-
-
     /* They must give us an input file, and it must */
     /* be statable and readable by us or we fail    */
     if(in_file != NULL) {
