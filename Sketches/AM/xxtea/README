@@ -1,0 +1,7 @@
+xxtea is extended TEA, an encryption algorithm developed by David Wheeler & Roger Needham of Cambridge University 
+This directory contains libxxtea, an xxtea implementation and some basic pyrex bindings.
+Sample code that shows usage is at libxxtea/xxtea_test.c
+
+
+Anagha, June 2006
+
