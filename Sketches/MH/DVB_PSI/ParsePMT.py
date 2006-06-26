@@ -6,6 +6,7 @@ from CRC import dvbcrc
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished,shutdownMicroprocess
+from Descriptors import parseDescriptor
 
 class ParsePMT(component):
     """
@@ -146,12 +147,6 @@ class ParsePMT(component):
             self.pause()
             yield 1
 
-def parseDescriptor(i,data):
-    # just a simple extract the tag and body of the descriptor
-    tag    = ord(data[i])
-    length = ord(data[i+1])
-    end    = i+2+length
-    return (tag,data[i+2:end]), end
 
 if __name__ == "__main__":
     
