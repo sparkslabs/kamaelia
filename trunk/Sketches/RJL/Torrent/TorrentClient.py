@@ -147,7 +147,7 @@ class TorrentClient(threadedcomponent):
     
         # HACK!! Rewrite when INITIALIZING state is available.
         if t is None or not t.is_initialized():
-            self.logger.debug( "Waiting for torrent to initialize." )
+            #self.logger.debug( "Waiting for torrent to initialize." )
             self.multitorrent.rawserver.add_task(3, self._start_torrent, metainfo, torrentid)
             return
 
