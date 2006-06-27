@@ -8,13 +8,13 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished,shutdownMicroprocess
 from Descriptors import parseDescriptor
 
-def ParseSDT_ActualNetwork():
+def ParseSDT_ActualTS():
     return ParseSDT(acceptTables = {0x42:"ACTUAL"})
 
-def ParseSDT_OtherNetwork():
+def ParseSDT_OtherTS():
     return ParseSDT(acceptTables = {0x46:"OTHER"})
 
-def ParseSDT_ActualAndOtherNetwork():
+def ParseSDT_ActualAndOtherTS():
     return ParseSDT(acceptTables = {0x42:"ACTUAL",0x46:"OTHER"})
 
 _running_status = [
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x11], feparams),
               DVB_Demuxer({ 0x11:["outbox"]}),
               PSIPacketReconstructor(),
-              ParseSDT_ActualAndOtherNetwork(),
+              ParseSDT_ActualAndOtherTS(),
               SDT_to_SimpleServiceList(),
               ConsoleEchoer(),
             ).run()
