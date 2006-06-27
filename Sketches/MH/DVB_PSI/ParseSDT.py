@@ -60,6 +60,8 @@ class ParseSDT(component):
                 "table_id"            : table_id,
                 "actual_other"        : self.acceptTables[table_id],
                 "current"             : current_next,
+                "transport_stream_id" : transport_stream_id,
+                "original_network_id" : original_network_id,
               }
         services = {}
         
