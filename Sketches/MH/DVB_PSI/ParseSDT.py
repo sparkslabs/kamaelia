@@ -9,10 +9,13 @@ from Axon.Ipc import producerFinished,shutdownMicroprocess
 from Descriptors import parseDescriptor
 
 def ParseSDT_ActualNetwork():
-    return ParseSDT(accept_tableID = 0x42)
+    return ParseSDT(acceptTables = {0x42:"ACTUAL"})
 
 def ParseSDT_OtherNetwork():
-    return ParseSDT(accept_tableID = 0x46)
+    return ParseSDT(acceptTables = {0x46:"OTHER"})
+
+def ParseSDT_ActualAndOtherNetwork():
+    return ParseSDT(acceptTables = {0x42:"ACTUAL",0x46:"OTHER"})
 
 _running_status = [
         0,
@@ -36,8 +39,8 @@ class ParseSDT(component):
     
     Outputs both 'current' and 'next' tables.
     
-    Can only handle one SDT at a time ... you can't feed it mutiple SDTs from
-    multiple PIDs. Nor will it handle more than one table id simultaneously.
+    Can only handle multiple SDTs with multiple table id's all simultaneously. Those
+    table IDs must be registered in the initializer.
     """
     Inboxes = { "inbox" : "DVB PSI Packets from a single PID containing SDT table sections",
                 "control" : "Shutdown signalling",
@@ -46,22 +49,21 @@ class ParseSDT(component):
                  "signal" : "Shutdown signalling",
                }
                
-    def __init__(self, accept_tableID = 0x42):
+    def __init__(self, acceptTables = {0x42:"ACTUAL",0x46:"OTHER"}):
         super(ParseSDT,self).__init__()
-        self.tid = accept_tableID
+        self.acceptTables = acceptTables
 
-    def parseTable(self, table_id, current_next, sections):
+    def parseTable(self, index, sections):
+        (table_id, current_next, transport_stream_id, original_network_id) = index
         
         msg = { "table_type"          : "SDT",
                 "table_id"            : table_id,
+                "actual_other"        : self.acceptTables[table_id],
                 "current"             : current_next,
               }
         services = {}
         
         for (data,section_length) in sections:
-            
-            msg["transport_stream_id"] = (ord(data[3])<<8) + ord(data[4])
-            msg["orginal_network_id"]  = (ord(data[8])<<8) + ord(data[9])
             
             i=11
             while i < section_length+3-4:
@@ -101,7 +103,7 @@ class ParseSDT(component):
         # initialise buffers
         # ...for holding table sections (until we get  complete table)
         
-        # indexed by (current_next, transport_stream_id, original_network_id)
+        # indexed by (table_id, current_next, transport_stream_id, original_network_id)
         sections = {}
         latest_versions = {}
         last_section_numbers = {}
@@ -117,7 +119,7 @@ class ParseSDT(component):
                 e = [ord(data[i]) for i in (0,1,2,3,4,5,6,7,8,9) ]
 
                 table_id = e[0]
-                if table_id != self.tid:
+                if table_id not in self.acceptTables.keys():
                     continue
                 
                 syntax = e[1] & 0x80
@@ -134,7 +136,7 @@ class ParseSDT(component):
                 transport_stream_id = (e[3]<<8) + e[4]
                 original_network_id  = (e[8]<<8) + e[9]
                 
-                index = (current_next, transport_stream_id, original_network_id)
+                index = (table_id, current_next, transport_stream_id, original_network_id)
 
                 # if version number has changed, flush out all previously fetched tables
                 crcpass = False
@@ -157,7 +159,7 @@ class ParseSDT(component):
                         # see if we have all sections of the table
                         # if we do, send the whole bundle onwards
                         if missing_sections_count[index] == 0:
-                            table = self.parseTable(table_id, current_next, sections[index])
+                            table = self.parseTable(index, sections[index])
                             self.send( table, "outbox")
                         
             self.pause()
@@ -190,7 +192,6 @@ if __name__ == "__main__":
     from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
     from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
     from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Util.Fanout import fanout
     from Kamaelia.Util.Graphline import Graphline
     
     import dvb3.frontend
@@ -201,21 +202,10 @@ if __name__ == "__main__":
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
     
-    SDTPARSE = Graphline( ACTUAL = ParseSDT_ActualNetwork(),
-                          OTHER  = ParseSDT_OtherNetwork(),
-                          FANOUT = fanout(["other"]),
-                          linkages = { ("self","inbox") : ("FANOUT","inbox"),
-                                       ("FANOUT","outbox") : ("ACTUAL","inbox"),
-                                       ("FANOUT","other")  : ("OTHER","inbox"),
-                                       ("ACTUAL","outbox") : ("self","outbox"),
-                                       ("OTHER","outbox") : ("self","outbox"),
-                                     }
-                        )
-
     pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x11], feparams),
               DVB_Demuxer({ 0x11:["outbox"]}),
               PSIPacketReconstructor(),
-              SDTPARSE,
+              ParseSDT_ActualAndOtherNetwork(),
               SDT_to_SimpleServiceList(),
               ConsoleEchoer(),
             ).run()
