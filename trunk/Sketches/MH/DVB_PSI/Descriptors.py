@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # parsing routines for DVB PSI table descriptors
+import dvb3.frontend as dvb3f
 
 def parseDescriptor(i,data):
     # just a simple extract the tag and body of the descriptor
@@ -68,8 +69,24 @@ parser_IBP_Descriptor                          = parser_Null_Descriptor
 
 # ETSI EN 300 468 defined descriptors
 
-parser_network_name_Descriptor                = parser_Null_Descriptor
-parser_service_list_Descriptor                = parser_Null_Descriptor
+def parser_network_name_Descriptor(data,i,length,end):
+    d = { "type" : "network_name",
+          "network_name" : data[i+2:end]
+        }
+    return d
+
+def parser_service_list_Descriptor(data,i,length,end):
+    d = { "type" : "network_name",
+          "services" : []
+        }
+    i=i+2
+    while i<end:
+        sid = (ord(data[i])<<8) + ord(data[i+1])
+        sit = _service_types.get(ord(data[i+2]), ord(data[i+2])),
+        d['services'].append( {"service_id":sid, "service_type":sit } )
+        i=i+3
+    return d
+
 parser_stuffing_Descriptor                    = parser_Null_Descriptor
 parser_satellite_delivery_system_Descriptor   = parser_Null_Descriptor
 parser_cable_delivery_system_Descriptor       = parser_Null_Descriptor
@@ -127,15 +144,78 @@ def parser_subtitling_Descriptor(data,i,length,end):
         }
     return d
 
-parser_terrestrial_delivery_system_Descriptor = parser_Null_Descriptor
+def parser_terrestrial_delivery_system_Descriptor(data,i,length,end):
+    d = { "type" : "terrestrial_delivery_system",
+        }
+    e = [ord(data[x]) for x in range(i+2,i+9)]
+    params = {}
+    params['frequency'] = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
+    v = e[4] >> 5
+    params['bandwidth'] = _dvbt_bandwidths.get(v,v)
+    v = e[5] >> 6
+    params['constellation'] = _dvbt_constellations.get(v,v)
+    v = (e[5] >> 3) & 0x07
+    params['hierarchy_information'] = _dvbt_hierarchy.get(v,v)
+    v = e[5] & 0x07
+    params['code_rate_HP'] = _dvbt_code_rate_hp.get(v,v)
+    v = e[6] >> 5
+    params['code_rate_LP'] = _dvbt_code_rate_lp.get(v,v)
+    v = (e[6] >> 3) & 0x03
+    params['guard_interval'] = _dvbt_guard_interval.get(v,v)
+    v = (e[6] >> 1) & 0x03
+    params['transmission_mode'] = _dvbt_transmission_mode.get(v,v)
+    
+    # other desirable params
+    params['inversion'] = dvb3f.INVERSION_AUTO
+    
+    d['params'] = params
+    d['other_frequencies'] = e[6] & 0x01
+    
+    return d
+
 parser_multilingual_network_name_Descriptor   = parser_Null_Descriptor
 parser_multilingual_bouquet_name_Descriptor   = parser_Null_Descriptor
 parser_multilingual_service_name_Descriptor   = parser_Null_Descriptor
 parser_multilingual_component_Descriptor      = parser_Null_Descriptor
-parser_private_data_specifier_Descriptor      = parser_Null_Descriptor
+
+def parser_private_data_specifier_Descriptor(data,i,length,end):
+    n = (ord(data[i+2])<<24) + (ord(data[i+3])<<16) + (ord(data[i+4])<<8) + ord(data[i+5])
+    d = { "type" : "private_data_specifier",
+          "private_data_specifier" : _private_data_specifiers.get(n,n),
+        }
+    return d
+    
 parser_service_move_Descriptor                = parser_Null_Descriptor
 parser_short_smoothing_buffer_Descriptor      = parser_Null_Descriptor
-parser_frequency_list_Descriptor              = parser_Null_Descriptor
+
+def parser_frequency_list_Descriptor(data,i,length,end):
+    d = { "type" : "frequency_list",
+          "frequencies" : [],
+        }
+    coding_type = ord(data[i+2]) & 0x03
+    i=i+3
+    while i<end:
+        e = [ord(data[x]) for x in range(i,i+4)]
+        freq = None
+        if   coding_type==1:  # satellite
+            freq = 10000000000*unBCD(e[0]) + \
+                     100000000*unBCD(e[1]) + \
+                       1000000*unBCD(e[2]) + \
+                         10000*unBCD(e[3])
+        elif coding_type==2:  # cable
+            freq = 100000000*unBCD(e[0]) + \
+                     1000000*unBCD(e[1]) + \
+                       10000*unBCD(e[2]) + \
+                         100*unBCD(e[3])
+        elif coding_type==3:  # terrestrial
+            freq = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
+        else:
+            pass        # just ignore the value cos we don't know what to do with it
+        if freq:
+            d['frequencies'].append(freq)
+        i=i+4
+    return data[i+2:end]
+
 parser_partial_transport_stream_Descriptor    = parser_Null_Descriptor
 parser_data_broadcast_Descriptor              = parser_Null_Descriptor
 parser_CA_system_Descriptor                   = parser_Null_Descriptor
@@ -230,6 +310,52 @@ __descriptor_parsers = {
 
 # Aciliary support stuff
 
+def unBCD(byte):
+    return (byte>>4)*10 + (byte & 0xf)
+
+# dvbt transmission parameters
+
+_dvbt_bandwidths = {
+        0 : dvb3f.BANDWIDTH_8_MHZ,
+        1 : dvb3f.BANDWIDTH_7_MHZ,
+        2 : dvb3f.BANDWIDTH_6_MHZ,
+    }
+
+_dvbt_constellations = {
+        0 : dvb3f.QPSK,
+        1 : dvb3f.QAM_16,
+        2 : dvb3f.QAM_64,
+    }
+    
+_dvbt_hierarchy = {
+        0 : dvb3f.HIERARCHY_NONE,
+        1 : dvb3f.HIERARCHY_1,
+        2 : dvb3f.HIERARCHY_2,
+        3 : dvb3f.HIERARCHY_4,
+     }
+
+_dvbt_code_rate_hp = {
+        0 : dvb3f.FEC_1_2,
+        1 : dvb3f.FEC_2_3,
+        2 : dvb3f.FEC_3_4,
+        3 : dvb3f.FEC_5_6,
+        4 : dvb3f.FEC_7_8,
+     }
+
+_dvbt_code_rate_lp = _dvbt_code_rate_hp
+
+_dvbt_guard_interval = {
+        0 : dvb3f.GUARD_INTERVAL_1_32,
+        1 : dvb3f.GUARD_INTERVAL_1_16,
+        2 : dvb3f.GUARD_INTERVAL_1_8,
+        3 : dvb3f.GUARD_INTERVAL_1_4,
+     }
+
+_dvbt_transmission_mode = {
+        0 : dvb3f.TRANSMISSION_MODE_2K,
+        1 : dvb3f.TRANSMISSION_MODE_8K,
+     }
+    
 # service descriptor, service types
 _service_types = {
        0x01 : "digital television service",
@@ -295,3 +421,23 @@ _stream_component_mappings = {
        (0x03, 0x23) : ("DVB subtitles (for the hard of hearing)", "for display on 2.21:1 aspect ratiomonitor"),
     }
 
+_private_data_specifiers = {
+        0x00000001 : "SES",
+        0x00000002 : "BSkyB 1",
+        0x00000003 : "BSkyB 2",
+        0x00000004 : "BSkyB 3",
+        0x000000BE : "BetaTechnik",
+        0x00006000 : "News Datacom",
+        0x00006001 : "NDC 1",
+        0x00006002 : "NDC 2",
+        0x00006003 : "NDC 3",
+        0x00006004 : "NDC 4",
+        0x00006005 : "NDC 5",
+        0x00006006 : "NDC 6",
+        0x00362275 : "Irdeto",
+        0x004E544C : "NTL",
+        0x00532D41 : "Scientific Atlanta",
+        0x44414E59 : "News Datacom (IL) 1",
+        0x46524549 : "News Datacom (IL) 1",
+        0x53415053 : "Scientific Atlanta",
+    }
