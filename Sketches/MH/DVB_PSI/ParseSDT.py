@@ -107,12 +107,6 @@ class ParseSDT(component):
         last_section_numbers = {}
         missing_sections_count = {}
         
-#         # two sets of each buffer - one for 'next' and 'current' respectively
-#         sections = [ [],[] ]
-#         latest_versions = [-1,-1]
-#         last_section_numbers = [0,0]
-#         missing_sections_count = [0,0]
-        
         while not self.shutdown():
              
             while self.dataReady("inbox"):
@@ -137,7 +131,7 @@ class ParseSDT(component):
                 section_number = e[6]
                 last_section_number = e[7]
 
-                transport_stream_id = (e[3]<<8) + e[9]
+                transport_stream_id = (e[3]<<8) + e[4]
                 original_network_id  = (e[8]<<8) + e[9]
                 
                 index = (current_next, transport_stream_id, original_network_id)
