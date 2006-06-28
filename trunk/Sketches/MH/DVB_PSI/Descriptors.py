@@ -236,6 +236,27 @@ parser_cell_list_Descriptor                   = parser_Null_Descriptor
 parser_cell_frequency_link_Descriptor         = parser_Null_Descriptor
 parser_announcement_support_Descriptor        = parser_Null_Descriptor
 
+# "Digital Terrestrial Television: Requirements for Interoperability V4.0"
+# UK Digital Television Group (www.dtg.org.uk) document descriptors
+
+def parser_logical_channel_Descriptor(data,i,length,end):
+    d = { "type" : "logical_channel",
+        }
+    i=i+2
+    services = {}
+    while i < end:
+        service_id = (ord(data[i])<<8) + ord(data[i+1])
+        logical_channel_number = ((ord(data[i+2])<<8) + ord(data[i+3])) & 0x03ff
+        services[service_id] = logical_channel_number
+        i=i+4
+    d['mappings'] = services
+    return d
+
+parser_preferred_name_list_Descriptor       = parser_Null_Descriptor
+parser_preferred_name_identifier_Descriptor = parser_Null_Descriptor
+parser_service_attribute_Descriptor         = parser_Null_Descriptor
+parser_short_service_name_Descriptor        = parser_Null_Descriptor
+
 
 __descriptor_parsers = {
     # ISO 13818-1 defined descriptors
@@ -306,6 +327,15 @@ __descriptor_parsers = {
         0x6C : parser_cell_list_Descriptor,
         0x6D : parser_cell_frequency_link_Descriptor,
         0x6E : parser_announcement_support_Descriptor,
+        
+    # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
+    # UK Digital Television Group (www.dtg.org.uk) document descriptors
+    
+        0x83 : parser_logical_channel_Descriptor,
+        0x84 : parser_preferred_name_list_Descriptor,
+        0x85 : parser_preferred_name_identifier_Descriptor,
+        0x86 : parser_service_attribute_Descriptor,
+        0x87 : parser_short_service_name_Descriptor,
 }
 
 # Aciliary support stuff
