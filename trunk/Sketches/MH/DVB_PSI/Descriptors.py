@@ -109,10 +109,36 @@ parser_country_availability_Descriptor        = parser_Null_Descriptor
 parser_linkage_Descriptor                     = parser_Null_Descriptor
 parser_NVOD_reference_Descriptor              = parser_Null_Descriptor
 parser_time_shifted_service_Descriptor        = parser_Null_Descriptor
-parser_short_event_Descriptor                 = parser_Null_Descriptor
+
+def parser_short_event_Descriptor(data,i,length,end):
+    d = { "type"          : "short_event",
+          "language_code" : data[i+2:i+5],
+        }
+    name_length = ord(data[i+5])
+    i = i+6
+    d['name'] = data[i:i+name_length]
+    text_length = ord(data[i+name_length])
+    i = i+name_length+1
+    d['text'] = data[i:i+text_length]
+    return d
+
 parser_extended_event_Descriptor              = parser_Null_Descriptor
 parser_time_shifted_event_Descriptor          = parser_Null_Descriptor
-parser_component_Descriptor                   = parser_Null_Descriptor
+
+def parser_component_Descriptor(data,i,length,end):
+    e = [ord(data[i+2]), ord(data[i+3]), ord(data[i+4])]
+    e[0]=e[0] & 0x0f
+    sctype = _stream_component_mappings.get((e[0],e[1]), (e[0],e[1]))
+    d = { "type" : "component",
+          "stream_content" : e[0],
+          "component_type" : e[1],
+          "component_tag"  : e[2],
+          "content,type"   : sctype,
+          "language_code"  : data[i+5:i+8],
+          "text"           : data[i+8:end],
+        }
+    return d
+    
 parser_mosaic_Descriptor                      = parser_Null_Descriptor
 
 def parser_stream_identifier_Descriptor(data,i,length,end):
