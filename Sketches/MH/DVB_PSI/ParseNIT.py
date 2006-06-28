@@ -127,7 +127,7 @@ class ParseNIT(component):
                 current_next = e[5] & 0x01
                 section_number = e[6]
                 last_section_number = e[7]
-
+                
                 index = (table_id, current_next, network_id)
 
                 # if version number has changed, flush out all previously fetched tables
@@ -158,24 +158,6 @@ class ParseNIT(component):
             yield 1
 
 
-# class SDT_to_SimpleServiceList(component):
-#     
-#     def shutdown(self):
-#         while self.dataReady("control"):
-#             msg = self.recv("control")
-#             self.send(msg,"signal")
-#             if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-#                 return True
-#         return False
-#     
-#     def main(self):
-#         while not self.shutdown():
-#             while self.dataReady("inbox"):
-#                 sdt = self.recv("inbox")
-#                 s =dict([(service['descriptors'][0][1]['service_name'],sid) for (sid,service) in sdt['services'].items()])
-#                 self.send(s,"outbox")
-#             self.pause()
-#             yield 1
 
 
 if __name__ == "__main__":
