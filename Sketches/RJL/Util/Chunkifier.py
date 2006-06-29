@@ -80,10 +80,10 @@ class Chunkifier(component):
     Outboxes = { "outbox" : "Each message is a chunk",
                 "signal": "UNUSED" }
 
-    def __init__(self, chunksize = 1048576):
+    def __init__(self, chunksize = 1048576, nodelay = false):
         super(Chunkifier, self).__init__()
         self.chunksize = chunksize
-
+        self.nodelay = nodelay
     def main(self):
         buffer = ""
         while 1:
@@ -93,6 +93,10 @@ class Chunkifier(component):
                 while len(buffer) >= self.chunksize: #send out a full chunk
                     self.send(buffer[0:self.chunksize], "outbox")
                     buffer = buffer[self.chunksize:]
+            
+            if self.nodelay:
+                self.send(buffer)
+                
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished):
