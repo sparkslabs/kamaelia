@@ -496,12 +496,12 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
     def drawBackground(self):        
         glBegin(GL_QUADS)
-        glColor4f(0.9, 0.9, 1.0, 1.0)
+        glColor4f(0.85, 0.85, 1.0, 1.0)
         glVertex3f(-self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
         glVertex3f(self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
         glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
         glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glColor4f(0.8, 1.0, 0.8, 1.0)
+        glColor4f(0.75, 1.0, 0.75, 1.0)
         glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
         glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
         glVertex3f(self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
