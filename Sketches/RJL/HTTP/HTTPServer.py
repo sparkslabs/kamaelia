@@ -28,7 +28,7 @@
 import array
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
@@ -157,18 +157,29 @@ class HTTPRequestHandler(component):
         
 
     def fetchResource(self, request):
-        for (prefix, handler) in website.URLHandlers:
-            if request["raw-uri"][:len(prefix)] == prefix:
-                resource = handler(request)
-                return resource
-        
+        try:
+            for (prefix, handler) in website.URLHandlers:
+                if request["raw-uri"][:len(prefix)] == prefix:
+                    resource = handler(request)
+                    return resource
+            return { "statuscode": 404, "type": "text/plain", "data": "The resource you requested ain't there!" }
+        except Exception, e:
+            print e
+            return { "statuscode": 500, "type": "text/plain", "data": "Your request failed because of a problem at our end. DON'T PANIC!\n" }
+
     def formHeaderResponse(self, resource, protocolversion):
+        if isinstance(resource.get("statuscode"), int):
+            resource["statuscode"] = str(resource["statuscode"])
+        elif not isinstance(resource.get("statuscode"), str):
+            resource["statuscode"] = "500"
+                    
         if resource["statuscode"] == "200": statustext = "200 OK"
-        if resource["statuscode"] == "400": statustext = "400 Bad Request"
-        if resource["statuscode"] == "404": statustext = "404 Not Found"
-        if resource["statuscode"] == "500": statustext = "500 Internal Server Error"
-        if resource["statuscode"] == "501": statustext = "501 Not Implemented"
-        if resource["statuscode"] == "411": statustext = "411 Length Required"
+        elif resource["statuscode"] == "400": statustext = "400 Bad Request"
+        elif resource["statuscode"] == "404": statustext = "404 Not Found"
+        elif resource["statuscode"] == "500": statustext = "500 Internal Server Error"
+        elif resource["statuscode"] == "501": statustext = "501 Not Implemented"
+        elif resource["statuscode"] == "411": statustext = "411 Length Required"
+        else: statustext = resource["statuscode"]
 
         if (protocolversion == "0.9"):
             header = ""        
