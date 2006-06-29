@@ -223,7 +223,8 @@ class FilterOutNotCurrent(component):
 
 class SimplifyEIT(component):
     """\
-    Component that simplifies EIT data
+    Component that simplifies EIT data, converting the table to simpler EIT
+    event messages.
     """
     
     def shutdown(self):
@@ -264,6 +265,7 @@ class SimplifyEIT(component):
                     
                     
                     msg = { 'service'   : event['service_id'],
+                            'event_id'  : event['event_id'],
                             'when'      : when,
                             'startdate' : event['starttime'][0:3],
                             'starttime' : event['starttime'][3:6],
@@ -279,6 +281,66 @@ class SimplifyEIT(component):
             yield 1
             
 
+class NowNextProgrammeJunctionDetect(component):
+    """\
+    Distinguishes between updates to the details of an event;
+    and a change in running status of an event.
+    
+    Only works for NOW and NEXT events. Schedule events are ignored and sunk.
+    
+    If the running status has changed, the event is output
+    """
+    Outboxes = { "outbox"      : "new NOW events, at programme junctions only",
+                 "now"         : "same as for 'outbox' outbox",
+                 "now_update"  : "NOW events, when details change, but its still the same programme",
+                 "next"        : "new NEXT events, at programme junctions only",
+                 "next_update" : "NEXT events, when details change, but its still the same programme",
+                 "signal"      : "Shutdown signalling",
+               }
+    
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+    
+    def main(self):
+        outbox_mappings = {
+                ("NOW",True)   : ["now","outbox"],
+                ("NOW",False)  : ["now_update"],
+                ("NEXT",True)  : ["next"],
+                ("NEXT",False) : ["next_update"],
+            }
+        
+        event_ids = {}   # indexed by (service_id, and 'NOW'/'NEXT')
+        
+        while not self.shutdown():
+            
+            while self.dataReady("inbox"):
+                event = self.recv("inbox")
+                
+                service_id = event['service']
+                when       = event['when']
+                
+                if not (when=="NOW" or when=="NEXT"):
+                    continue
+                
+                # its a junction if the event_id has changed
+                index = (service_id,when)
+                if event['event_id'] != event_ids.get(index, -1):
+                    event_ids[index] = event['event_id']
+                    isJunction=True
+                else:
+                    isJunction=False
+                    
+                sendto = outbox_mappings[(when,isJunction)]
+                for boxname in sendto:
+                    self.send(event, boxname)
+            
+            self.pause()
+            yield 1
 
 if __name__ == "__main__":
     
@@ -303,6 +365,7 @@ if __name__ == "__main__":
               PSIPacketReconstructor(),
               ParseEIT_Subset(True,False,False,False),
               SimplifyEIT(),
+              NowNextProgrammeJunctionDetect(),
               NowNextServiceFilter(4164),
               ConsoleEchoer(),
             ).run()
