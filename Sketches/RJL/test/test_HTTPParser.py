@@ -46,7 +46,7 @@ class Recorder(Axon.Component.component):
     
 class HTTPParser_Test(unittest.TestCase):
     """A set of tests for the HTTPParser class."""
-    def test_SmokeTest(self):
+    def test_smokeTest(self):
         """__init__ - Called with no arguments succeeds"""
         P = HTTPParser()
         self.assert_(isinstance(P, Axon.Component.component))
@@ -84,7 +84,37 @@ class HTTPParser_Test(unittest.TestCase):
                 break
         if componentExit or P._isRunnable():
             self.fail("If the component receives no input it should pause rather than busywait")
-            
+    
+    def test_validRequest(self):       
+        P = HTTPParser()
+        R = Recorder()
+        R.link( (P, "outbox"), (R, "inbox"))
+        R.activate()
+        P.activate()
+        P._deliver("HEAD http://localhost/temp.txt?wibble&foo=bar HTTP/1.1\r\nConnection: keep-alive\r\nHost: localhost\r\n\r\n", "inbox")
+        componentExit = False
+        for i in xrange(2000):
+            if len(R.heard) > 0:
+                break
+            try:
+                P.next()
+                R.next()
+            except StopIteration:
+                pass
+                
+        if len(R.heard) == 0:
+            self.fail("If the component receives a valid and complete HTTP request it should output a request object")
+        else:
+            requestobject = R.heard[0]
+            if requestobject.get("uri-server","") != "localhost":
+                self.fail("If the component receives a valid and complete HTTP request it should output a request object containing the correct uri-server item")
+            elif requestobject.get("raw-uri","") != "/temp.txt?wibble&foo=bar":
+                self.fail("If the component receives a valid and complete HTTP request it should output a request object containing the correct raw-uri item")
+            elif requestobject.get("version","") != "1.1":
+                self.fail("If the component receives a valid and complete HTTP request it should output a request object containing the correct version item")
+            elif requestobject.get("bad",True) != False:
+                self.fail("If the component receives a valid and complete HTTP request it should output a request object containing \"bad\":False")
+        
     def test_incoherentRequest(self):
         """main - Non-HTTP requests are marked bad"""
         P = HTTPParser()
@@ -92,7 +122,7 @@ class HTTPParser_Test(unittest.TestCase):
         R.link( (P, "outbox"), (R, "inbox"))
         R.activate()
         P.activate()
-        P._deliver("\n\n\n\n", "inbox")
+        P._deliver("ecky\n\n\n\n", "inbox")
         componentExit = False
         for i in xrange(2000):
             if len(R.heard) > 0:
@@ -106,6 +136,6 @@ class HTTPParser_Test(unittest.TestCase):
             self.fail("If the component receives non-HTTP requests it should send on a bad request message - none sent")
         elif not R.heard[0].get("bad",False):
             self.fail("If the component receives non-HTTP requests it should send on a bad request message")
-            
+                        
 if __name__=='__main__':
    unittest.main()
