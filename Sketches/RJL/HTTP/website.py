@@ -91,9 +91,11 @@ def websiteKamaeliaIrcLogs(request):
         if logsdata == 404:
             resource = getErrorPage(404, u"Specified log file not found.")
         else:
-            data = u"<h2>#kamaelia IRC channel logs - " + arg + u"</h2><p>This page is also available in <a href=\"/kamaelia/irc/" + arg + u"\">plain text form</a></p>\n<p style='font-family: Courier, monospace; font-size: 80%;'>"
+            data = u"<h2>#kamaelia IRC channel logs - " + arg + u"</h2><p>This page is also available in <a href=\"/kamaelia/irc/" + arg + u"\">plain text form</a>. All times given are in GMT.</p>\n<p style='font-family: Courier, monospace; font-size: 80%;'>"
             escapeddata = escape(logsdata)
-            data += escapeddata.replace(u"\n",u"<br />\n") + u"</p>"
+            escapeddata = escapeddata.replace(u"\n", u"<br />\n")
+            escapeddata = escapeddata.replace(u"@", u"<img src=\"/at.png\" /><!-->mail.<-->")
+            data += escapeddata + u"</p>"
             data = websitetemplate.formHeader(meta) + websitetemplate.formMainTableHeader(meta) + data + websitetemplate.formMainTableFooter(meta) + websitetemplate.formFooter(meta)
             resource = {
                 "type" : "text/html",
@@ -109,6 +111,11 @@ def websiteHandlerForms(request):
         "data" : u"<html>\n<body>\n<p>You requested " + request["raw-uri"] + u" with body data\n" + request["body"] + u". Isn't that just spiffing?</p>\n<img src='/poweredbykamaelia.png' style='border: 1px solid #AAAAAA;' alt='Powered by Kamaelia' /></body>\n</html>\n"
     }
     return resource
+    
+def websiteHandlerBuggy(request):
+    x = 1 / 0
+    return "hi"
+
 def websiteHandlerFish(request):
     resource = {
         "type" : "text/html",
@@ -197,5 +204,6 @@ URLHandlers = [
     ["/fish/"                  , websiteHandlerFish],
     ["/formhandler"            , websiteHandlerForms],
     ["/kamaelia/irc-view/"     , websiteKamaeliaIrcLogs],
-    ["/"                       , websiteHandlerDefault]
+    ["/error"                  , websiteHandlerBuggy],    
+    ["/"                       , websiteHandlerDefault] #should always be last as catches all
 ]
