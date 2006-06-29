@@ -10,4 +10,15 @@ class DataSource(component):
         while len(self.messages) > 0:
             yield 1
             self.send(self.messages.pop(0), "outbox")
+        yield 1
         self.send(producerFinished(), "signal")
+        return
+
+if __name__ == "__main__":
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+    pipeline(
+        DataSource( ["hello", " ", "there", " ", "how", " ", "are", " ", "you", " ", "today\r\n", "?", "!"] ),
+        ConsoleEchoer()
+    ).run()
