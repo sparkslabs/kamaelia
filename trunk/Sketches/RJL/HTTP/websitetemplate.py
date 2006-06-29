@@ -25,7 +25,7 @@ from xml.sax.handler import ContentHandler
 
 def getIrcLogs(datestring):
     def formatIrcLogs(logs):
-        logs = unicode(logs, "utf-8")
+        logs = unicode(logs, "utf-8", "ignore")
         outputtext = ""
         lines = string.split(logs, "\n")
         for line in lines:
