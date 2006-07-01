@@ -23,9 +23,9 @@
 # simple kamaelia pipeline builder GUI
 # run this program
 
-import Kamaelia.Data.Repository
+import Kamaelia.Support.Data.Repository
 
-C = Kamaelia.Data.Repository.GetAllKamaeliaComponents()
+C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
 COMPONENTS = {}
 for key in C.keys():
     COMPONENTS[".".join(key)] = C[key]
@@ -40,6 +40,7 @@ def getAllClasses( modules ):
             for entry in getModuleConstructorArgs( modname, modules[modname] ):
                 yield entry
         except ImportError:
+            print "WARNING: Import Error: ", modname
             continue
 
 def getModuleConstructorArgs( modulename, classnames):
@@ -79,7 +80,7 @@ def getConstructorArgs(component):
 
 if __name__ == "__main__":
     import sys
-    sys.path.append("PipeBuilder")
+    sys.path.append("Compose")
 
     from Axon.Scheduler import scheduler
 

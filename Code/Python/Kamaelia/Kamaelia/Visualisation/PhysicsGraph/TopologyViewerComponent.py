@@ -187,7 +187,7 @@ classes, for example::
 See below for information on how to write your own particle classes.
 
 Layout of the nodes on the surface is assisted by a physics model, provided
-by an instance of the Kamaelia.Physics.Simple.ParticleSystem class.
+by an instance of the Kamaelia.Support.Particles.ParticleSystem class.
 
 Customise the laws used for each particle type by providing a
 Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
@@ -196,7 +196,7 @@ Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
 Writing your own particle class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-should inherit from Kamaelia.Physics.Simple.Particle and implement the following
+should inherit from Kamaelia.Support.Particles.Particle and implement the following
 methods (for rendering purposes):
 
     setOffset( (left,top) )
@@ -216,7 +216,7 @@ methods (for rendering purposes):
         below)
     
 The coordinates of the particle are updated automatically both due to mouse 
-dragging and due to the physics model. See Kamaelia.Physics.Simple.Particle for
+dragging and due to the physics model. See Kamaelia.Support.Particles.Particle for
 more information.
 
 The render(...) method should return a generator that will render the particle
@@ -262,7 +262,7 @@ import sys
 import pygame
 
 import Axon
-import Kamaelia.Physics.Simple
+import Kamaelia.Support.Particles
 import Kamaelia.UI
 
 from GridRenderer import GridRenderer
@@ -334,7 +334,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.initialBonds   = list(initialTopology[1])
         
         if laws==None:
-            self.laws = Kamaelia.Physics.Simple.SimpleLaws(bondLength=100)
+            self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=100)
         else:
             self.laws = laws
             
@@ -368,7 +368,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
         self.addHandler(pygame.KEYDOWN, self.keyDownHandler)
         self.addHandler(pygame.KEYUP,   self.keyUpHandler)
         
-        self.physics = Kamaelia.Physics.Simple.ParticleSystem(self.laws, [], 0)
+        self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
         
         for node in self.initialNodes:
            self.addParticle(*node)

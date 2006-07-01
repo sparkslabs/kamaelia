@@ -31,8 +31,8 @@ import random, time, re, sys
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
 
-import Kamaelia.Physics
-from Kamaelia.Physics.Simple import Particle as BaseParticle
+# import Kamaelia.Physics
+from Kamaelia.Support.Particles import Particle as BaseParticle
 from Kamaelia.UI.MH import PyGameApp, DragHandler
 
 component = _Axon.Component.component

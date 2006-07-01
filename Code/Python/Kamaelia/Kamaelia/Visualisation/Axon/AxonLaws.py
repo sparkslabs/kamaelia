@@ -22,7 +22,7 @@
 
 import Kamaelia.Visualisation
 from Kamaelia.Visualisation.PhysicsGraph import TopologyViewerServer, BaseParticle
-from Kamaelia.Physics.Simple import SimpleLaws, MultipleLaws
+from Kamaelia.Support.Particles import SimpleLaws, MultipleLaws
 
 from pygame.locals import *
 

@@ -122,8 +122,8 @@ terminating.
 """
 import Axon
 
-from Kamaelia.Data.Escape import escape as _escape
-from Kamaelia.Data.Escape import unescape as _unescape
+from Kamaelia.Support.Data.Escape import escape as _escape
+from Kamaelia.Support.Data.Escape import unescape as _unescape
 
 class CorruptFrame(Exception):
    """Data frame is corrupt."""

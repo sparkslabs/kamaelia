@@ -22,7 +22,7 @@
 
 # first test of Physics module
 
-import Kamaelia.Physics as Physics
+import Kamaelia.Support.Particles
 import Kamaelia.UI.MH
 
 import pygame
@@ -34,8 +34,8 @@ import random
 from Axon.Component import component
 # class component(object): pass
 
-class VisibleParticle(Physics.Simple.Particle):
-    """Version of Physics.Particle with added rendering functions,
+class VisibleParticle(Kamaelia.Support.Particles.Particle):
+    """Version of Kamaelia.Support.Particles.Particle with added rendering functions,
     and a list of particles it is bonded to."""
 
     def __init__(self, position, pname, radius):
@@ -102,8 +102,8 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
         self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
         self.addHandler(KEYDOWN, self.quit)
         
-        self.laws    = Physics.Simple.SimpleLaws(bondLength = 100)
-        self.physics = Physics.Simple.ParticleSystem(self.laws, [], 0)
+        self.laws    = Kamaelia.Support.Particles.SimpleLaws(bondLength = 100)
+        self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
         
         for node in self.nodes:
            self.makeParticle(*node)

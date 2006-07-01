@@ -142,7 +142,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 from dirac_parser import DiracParser
 from dirac_encoder import DiracEncoder as EncoderWrapper
 
-from Kamaelia.Data.Rationals import rational
+from Kamaelia.Support.Data.Rationals import rational
 
 def map_chroma_type(chromatype):
     """Maps string names for chrominance data formats to those understood by the Dirac Python bindings."""
