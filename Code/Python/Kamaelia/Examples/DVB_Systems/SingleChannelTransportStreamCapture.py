@@ -5,7 +5,7 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Multiplex
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.File.UnixPipe import Pipethrough
 
