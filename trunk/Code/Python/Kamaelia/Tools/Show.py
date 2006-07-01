@@ -45,7 +45,7 @@ from Show.GraphSlides import onDemandGraphFileParser_Prefab
 if len(sys.argv) > 1:
     basepath = sys.argv[1]
 else:
-    basepath = "ShowExample"
+    basepath = "WhatIsShow.show"
 
 GraphsFile = os.path.join(basepath, "Graphs.xml")
 path = os.path.join(basepath, "Slides")

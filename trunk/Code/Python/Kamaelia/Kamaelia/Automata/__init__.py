@@ -27,4 +27,3 @@ Physics and behaviour code
 Components and support code providing simple physics/behaviours.
 """
 
-import Simple

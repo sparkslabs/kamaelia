@@ -6,7 +6,8 @@ from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess, ipc, newComponent
 from Axon import Ipc
 import time
-
+import sys
+sys.path.append("../MPS")
 from IRCClient import SimpleIRCClient
 
 
@@ -326,7 +327,7 @@ if __name__ == "__main__":
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
-    pipeline( RateControlledFileReader("CiaranEaton/twelfthnight.txt", readmode="lines", rate=50, chunksize=1),
+    pipeline( RateControlledFileReader("../CE/twelfthnight.txt", readmode="lines", rate=50, chunksize=1),
               demodulation(),
               error_correction(),
               demultiplexing(),

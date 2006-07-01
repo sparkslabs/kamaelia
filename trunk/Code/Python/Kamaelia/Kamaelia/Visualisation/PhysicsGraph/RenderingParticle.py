@@ -35,7 +35,7 @@ Example Usage
 A topology viewer where particles of type "-" are rendered by RenderingParticle
 instances::
     TopologyViewerComponent( particleTypes = {"-":RenderingParticle},
-                             laws = Kamaelia.Physics.Simple.SimpleLaws(),
+                             laws = Kamaelia.Support.Particles.SimpleLaws(),
                            ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
@@ -45,7 +45,7 @@ types.
 
 How does it work?
 -----------------
-This object subclasses Kamaelia.Physics.Simple.Particle and adds methods to
+This object subclasses Kamaelia.Support.Particles.Particle and adds methods to
 support rendering.
 
 At initialisation, provide a unique ID, a starting (x,y) position tuple, and
@@ -75,7 +75,7 @@ See TopologyViewerComponent for more details.
 """
 
 import pygame
-from Kamaelia.Physics.Simple import Particle as BaseParticle
+from Kamaelia.Support.Particles import Particle as BaseParticle
 
 class RenderingParticle(BaseParticle):
     """\

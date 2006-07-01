@@ -48,8 +48,8 @@ inbox. MimeRequest objects come out the outbox.
 from Axon.Component import component, scheduler,linkage,newComponent
 from Axon.Ipc import errorInformation
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Data.MimeObject import mimeObject
-import Kamaelia.Data.requestLine
+from Kamaelia.Support.Data.MimeObject import mimeObject
+import Kamaelia.Support.Data.requestLine
 
 class MimeRequestComponent(component):
    """Component that accepts raw data, parses it into consituent
@@ -169,8 +169,8 @@ class MimeRequestComponent(component):
             return 1
       self.gotRequest = 1
       try:
-         self.request = Kamaelia.Data.requestLine.requestLine(self.requestLine)
-      except Kamaelia.Data.requestLine.BadRequest, br:
+         self.request = Kamaelia.Support.Data.requestLine.requestLine(self.requestLine)
+      except Kamaelia.Support.Data.requestLine.BadRequest, br:
          errinf = errorInformation(self, br)
          self.send(errinf, "signal")
          return 0
