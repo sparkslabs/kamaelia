@@ -9,7 +9,7 @@ or form, and they're fixed who they're sending to, etc, which is why
 it's a simple peer.
 """
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipelines import pipeline
 from Kamaelia.Util.Chargen import Chargen
 from Kamaelia.Internet.UDP import SimplePeer
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Codec.Dirac import DiracDecoder
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Util.RateFilter import MessageRateLimit

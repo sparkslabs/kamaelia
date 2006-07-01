@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
 from Kamaelia.Codec.Dirac import DiracEncoder, DiracDecoder
