@@ -43,7 +43,7 @@ class Button3D(Axon.Component.component):
        "control": "ignored",
         "control3d": "receive Control3D commands here"
     }
-    
+
     Outboxes = {
         "outbox": "not used",
         "display_signal" : "Outbox used for communicating to the display surface",
@@ -52,7 +52,7 @@ class Button3D(Axon.Component.component):
         "rotation": "send rotation status when updated",
         "scaling": "send scaling status when updated"
     }
-    
+
     def __init__(self, caption=None, position=None, margin=8, bgcolour = (244,244,244), fgcolour = (0,0,0), msg=None,
                 key = None, transparent = False,
                 fontsize = 50, pixelscaling = 100, thickness = 0.2, sidecolour = (200,200,244),
@@ -74,21 +74,21 @@ class Button3D(Axon.Component.component):
         # Button initialisation
         if caption is None:
             caption = "Button"
-        
+
         self.backgroundColour = bgcolour
         self.foregroundColour = fgcolour
         self.margin = margin
         self.key = key
         self.caption = caption
-        
+
         self.sideColour = sidecolour
         self.fontsize = fontsize
         self.pixelscaling = pixelscaling
         self.thickness = thickness
-    
+
         if msg is None:
             msg = ("CLICK", self.id)
-        self.eventMsg = msg      
+        self.eventMsg = msg
 
         self.wiggle = Vector(0.1,0.1,0.1)
         self.wiggleadd = Vector(0.001, 0.001, 0.001)
@@ -105,12 +105,12 @@ class Button3D(Axon.Component.component):
 #                                          "size": self.size,
 #                                          "pos": self.pos,
                                           "object": self }
-                                          
+
 
     def buildCaption(self, text):
         """Pre-render the text to go on the button label."""
         # Text is rendered to self.image
-        pygame.font.init()      
+        pygame.font.init()
         font = pygame.font.Font(None, self.fontsize)
         self.image = font.render(text,True, self.foregroundColour, )
         # create power of 2 dimensioned surface
@@ -140,7 +140,7 @@ class Button3D(Axon.Component.component):
 
         if self.size is None:
             self.size=Vector(self.image.get_width()/float(self.pixelscaling), self.image.get_height()/float(self.pixelscaling), self.thickness)
-        
+
 
     # Ray intersection test
     # returns the distance of the origin o to the point of intersection
@@ -181,13 +181,13 @@ class Button3D(Axon.Component.component):
         glLoadMatrixf(self.transform.getMatrix())
 
         hs = self.size/2.0
-        # draw faces 
+        # draw faces
 #        glDisable(GL_DEPTH_TEST)
         glDisable(GL_BLEND)
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
 
-            
+
         glVertex3f(hs.x,hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,-hs.z)
@@ -209,13 +209,13 @@ class Button3D(Axon.Component.component):
         glVertex3f(hs.x,-hs.y,-hs.z)
         glEnd()
 
-        
+
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
 
         glBegin(GL_QUADS)
-        # back plane        
+        # back plane
         glTexCoord2f(self.tex_w, 1.0-self.tex_h)
         glVertex3f(hs.x,hs.y,-hs.z)
         glTexCoord2f(0.0, 1.0-self.tex_h)
@@ -239,8 +239,8 @@ class Button3D(Axon.Component.component):
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
 #        glEnable(GL_DEPTH_TEST)
-    
-    
+
+
     def handleEvents(self):
         while self.dataReady("inbox"):
             for event in self.recv("inbox"):
@@ -276,8 +276,8 @@ class Button3D(Axon.Component.component):
                                 #activate
                                 self.send( self.eventMsg, "outbox" )
                                 self.activated = True
-                            
-                        
+
+
     def handleMovementCommands(self):
         while self.dataReady("control3d"):
             cmd = self.recv("control3d")
@@ -296,10 +296,10 @@ class Button3D(Axon.Component.component):
 
 
     def steadyMovement(self):
-        self.rot += self.wiggle
-        if self.wiggle.x >= 0.1 or self.wiggle.x <=-0.1:
-            self.wiggleadd *= -1
-        self.wiggle += self.wiggleadd
+#        self.rot += self.wiggle
+#        if self.wiggle.x >= 0.1 or self.wiggle.x <=-0.1:
+#            self.wiggleadd *= -1
+#        self.wiggle += self.wiggleadd
 
         if self.activated:
             self.rot += Vector(3,0,0)%360
@@ -314,7 +314,7 @@ class Button3D(Axon.Component.component):
         self.send(self.disprequest, "display_signal");
 
         self.buildCaption(self.caption)
-        
+
 
         while 1:
 
@@ -322,10 +322,10 @@ class Button3D(Axon.Component.component):
 #            self.display = self.recv("callback")
 
 # There is no need for a callback yet
-            
+
             yield 1
             self.steadyMovement()
-            
+
             self.handleEvents()
             self.handleMovementCommands()
             self.applyTransforms()
@@ -343,22 +343,23 @@ if __name__=='__main__':
     from Display3D import *
     from Movement3D import *
     path1 = LinearPath3D([Vector(3,3,-20), Vector(4,0,-20), Vector(3,-3,-20), Vector(0,-4,-20), Vector(-3,-3,-20),Vector(-4,0,-20),  Vector(-3,3,-20),Vector(0,4,-20),  Vector(3,3,-20)], 1000)
-    
+
     Display3D.overridePygameDisplay()
 
     ECHO = consoleEchoer().activate()
-    BUTTON1 = Button3D(caption="<<", msg="Previous", pos=Vector(-3,0,-10)).activate()    
-    BUTTON2 = Button3D(caption=">>", msg="Next", pos=Vector(3,0,-10)).activate()    
-    BUTTON3 = Button3D(caption="Play", msg="Play", pos=Vector(-1,0,-10)).activate()    
-    BUTTON4 = Button3D(caption="Stop", msg="Stop", pos=Vector(1,0,-10)).activate()    
+    BUTTON1 = Button3D(caption="<<", msg="Previous", pos=Vector(-3,0,-10)).activate()
+    BUTTON2 = Button3D(caption=">>", msg="Next", pos=Vector(3,0,-10)).activate()
+    BUTTON3 = Button3D(caption="Play", msg="Play", pos=Vector(-1,0,-10)).activate()
+    BUTTON4 = Button3D(caption="Stop", msg="Stop", pos=Vector(1,0,-10)).activate()
     PATHMOVER = PathMover(path1).activate()
     CUBE = SimpleCube().activate()
-    
+
     BUTTON1.link((BUTTON1, "outbox"), (PATHMOVER, "inbox"))
     BUTTON2.link((BUTTON2, "outbox"), (PATHMOVER, "inbox"))
     BUTTON3.link((BUTTON3, "outbox"), (PATHMOVER, "inbox"))
     BUTTON4.link((BUTTON4, "outbox"), (PATHMOVER, "inbox"))
     PATHMOVER.link((PATHMOVER,"outbox"), (CUBE,"control3d"))
     PATHMOVER.link((PATHMOVER,"status"), (ECHO,"inbox"))
-        
-    Axon.Scheduler.scheduler.run.runThreads()  
+
+    Axon.Scheduler.scheduler.run.runThreads()
+    
