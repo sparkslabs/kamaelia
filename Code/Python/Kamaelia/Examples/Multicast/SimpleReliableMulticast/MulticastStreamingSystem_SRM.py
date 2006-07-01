@@ -10,7 +10,7 @@ from Axon.Component import component
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Protocol.SimpleReliableMulticast import SRM_Sender, SRM_Receiver
 from Kamaelia.Protocol.Packetise import MaxSizePacketiser
 from Kamaelia.Util.Detuple import SimpleDetupler
