@@ -41,7 +41,7 @@ import pygame
 import random
 import os
 
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
 from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne

@@ -24,7 +24,7 @@
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 import os
 

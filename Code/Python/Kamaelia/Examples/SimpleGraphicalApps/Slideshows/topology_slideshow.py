@@ -27,7 +27,7 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import pipeline
 import os
 
