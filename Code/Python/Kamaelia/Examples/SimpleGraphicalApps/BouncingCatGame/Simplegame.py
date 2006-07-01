@@ -44,7 +44,7 @@ import os
 from Kamaelia.Util.Graphline import Graphline
 
 from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
-from Kamaelia.Physics.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
+from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
 from Kamaelia.Util.Fanout import fanout
 from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
