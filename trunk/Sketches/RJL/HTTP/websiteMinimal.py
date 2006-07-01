@@ -4,23 +4,8 @@
 import string, time, dircache, os
 from cgi import escape
 
-def getErrorPage(errorcode, msg = ""):
-    if errorcode == 400:
-        return { "statuscode" : "400",
-                 "data"       : u"<html>\n<title>400 Bad Request</title>\n<body style='background-color: black; color: white;'>\n<h2>400 Bad Request</h2>\n<p>" + msg + "</p></body>\n</html>\n\n",
-                 "type"       : "text/html" }
-    elif errorcode == 404:
-        return { "statuscode" : "404",
-                 "data"       : u"<html>\n<title>404 Not Found</title>\n<body style='background-color: black; color: white;'>\n<h2>404 Not Found</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
-                 "type"       : "text/html" }
-    elif errorcode == 500:
-        return { "statuscode" : "500",
-                 "data"       : u"<html>\n<title>500 Internal Server Error</title>\n<body style='background-color: black; color: white;'>\n<h2>500 Internal Server Error</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
-                 "type"       : "text/html" }
-    elif errorcode == 501:
-        return { "statuscode" : "501",
-                 "data"       : u"<html>\n<title>501 Not Implemented</title>\n<body style='background-color: black; color: white;'>\n<h2>501 Not Implemented</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
-                 "type"       : "text/html" }
+import MimeTypes
+import ErrorPages
 
 def sanitizeFilename(filename):
     output = ""
@@ -56,58 +41,55 @@ def websiteListFilesPage(directory):
     for entry in files:
         data += u"<li><a href=\"" + directory + entry + u"\">" + entry + u"</a></li>\n"
     data += u"</ul></body>\n</html>\n\n"
+    
     return {
-                 "statuscode" : "200",
-                 "data"       : data,
-                 "type"       : "text/html" }
+        "statuscode" : "200",
+        "data"       : data,
+        "type"       : "text/html"
+    }
 
-def websiteHandlerDefault(request):
+def handler(request):
+    print "websiteMinimal.handler"
     try:
         filename = sanitizePath(request["raw-uri"])
-        if os.path.isdir(filename):
+        if os.path.isdir(homedirectory + filename):
             if filename[-1:] != "/": filename += "/"
-            if os.path.isfile(filename + indexfilename):
+            if os.path.isfile(homedirectory + filename + indexfilename):
                 filename += indexfilename
             else:
-                return websiteListFilesPage(filename)
+                yield websiteListFilesPage(filename)
+                return
          
-        filetype = workoutMimeType(filename)
+        filetype = MimeTypes.workoutMimeType(filename)
+                
         sourcefile = open(homedirectory + filename, "rb", 0)
-        data = sourcefile.read()
-        sourcefile.close()
-           
+        
+        data = sourcefile.read(1024)
+        data = (data, sourcefile.read(1024))
+        
         resource = {
             "type" : filetype,
             "statuscode" : "200",
-            "data" : data
+            "data" : data[0],
+            "incomplete" : len(data[1]) != 0,
         }
+        yield resource
+
+        while len(data[1]) > 0:
+            data = (data[1], sourcefile.read(1024))
+            resource["data"] = data[0]
+            resource["incomplete"] = (len(data[1]) != 0)
+            yield resource
+        
+        sourcefile.close()
+           
+        
     except IOError:
-        resource = getErrorPage(404)
-    
-    return resource
+        resource = ErrorPages.getErrorPage(404)
+        yield resource
+        
+    return
 
-
-def workoutMimeType(filename):
-    fileextension = string.rsplit(filename,".",1)[-1]
-    if extensionToMimeType.has_key(fileextension):
-        return extensionToMimeType[fileextension]
-    else:
-        return "application/octet-stream"
-
-extensionToMimeType = {
-    "png"  : "image/png",
-    "gif"  : "image/gif",
-    "jpg"  : "image/jpeg",
-    "jpeg" : "image/jpeg",
-    "txt"  : "text/plain",
-    "htm"  : "text/html",
-    "html" : "text/html",
-    "css"  : "text/css",
-    "cool" : "text/cool"
-}	
 
 indexfilename = "index.html"
 homedirectory = "./"
-URLHandlers = [
-    ["/"                       , websiteHandlerDefault]
-]
