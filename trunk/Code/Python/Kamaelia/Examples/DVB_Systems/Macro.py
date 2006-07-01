@@ -15,7 +15,7 @@ import dvb3
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor, EITPacketParser, NowNextServiceFilter, NowNextChanges, TimeAndDatePacketParser
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 import time, os
 
 class EITDemux(Axon.Component.component):
