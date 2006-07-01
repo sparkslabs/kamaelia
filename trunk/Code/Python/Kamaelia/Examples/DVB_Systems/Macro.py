@@ -5,7 +5,7 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.File.UnixPipe import Pipethrough
 import Axon
