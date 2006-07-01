@@ -268,6 +268,8 @@ class Progress3D(Axon.Component.component):
     def handleProgress(self):
          while self.dataReady("progress"):
             self.progress = self.recv("progress")
+            if self.progress < 0.0: self.progress = 0.0
+            if self.progress > 1.0: self.progress = 1.0
             
 
     def main(self):
@@ -283,7 +285,7 @@ class Progress3D(Axon.Component.component):
             
             yield 1
             self.handleProgress()
-            self.steadyMovement()
+#            self.steadyMovement()
             
             self.handleEvents()
             self.handleMovementCommands()
