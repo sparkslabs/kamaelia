@@ -3,7 +3,7 @@
 import Axon
 from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SingleServer import SingleServer
  
