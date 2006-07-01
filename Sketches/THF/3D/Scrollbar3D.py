@@ -356,7 +356,7 @@ class Scrollbar3D(Axon.Component.component):
 # There is no need for a callback yet
             
             yield 1
-            self.steadyMovement()
+#            self.steadyMovement()
             
             self.handleEvents()
             self.handleMovementCommands()
