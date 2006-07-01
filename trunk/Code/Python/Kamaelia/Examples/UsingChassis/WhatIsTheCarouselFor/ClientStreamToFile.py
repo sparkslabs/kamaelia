@@ -28,7 +28,7 @@
 #
 
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 outputfile = "/tmp/received.raw"

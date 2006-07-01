@@ -29,7 +29,7 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Chassis.Prefab import JoinChooserToCarousel
 from Kamaelia.File.Reading import FixedRateControlledReusableFileReader
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Chooser import ForwardIteratingChooser # InfiniteChooser import InfiniteChooser
 
