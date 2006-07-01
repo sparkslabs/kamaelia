@@ -7,7 +7,7 @@
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Util.Detuple import SimpleDetupler
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
