@@ -35,8 +35,9 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Axon.Ipc import producerFinished, errorInformation
 import string, time, website
-from Lagger import Lagger
+
 from HTTPParser import HTTPParser
+import HTTPResourceGlue # this works out what the correct response to a request is
 
 def currentTimeHTTP():
     curtime = time.gmtime()
@@ -142,12 +143,15 @@ class HTTPServer(component):
         self.httphandler = None
 
 class HTTPRequestHandler(component):
-    Inboxes =  { "inbox"               : "Raw HTTP requests",
-                 #"filereader-outbox"   : "File reader's outbox",
-                 "control"             : "Signal component termination" }
-    Outboxes = { "outbox"              : "HTTP request object",
-                 #"filereader-inbox"    : "File reader's inbox",
-                 "signal"              : "Signal connection to close" }
+    Inboxes =  {
+        "inbox"   : "Raw HTTP requests",
+        "control" : "Signal component termination"
+    }
+    
+    Outboxes = {
+        "outbox"  : "HTTP responses",
+        "signal"  : "Signal connection to close"
+    }
 
     def convertUnicodeToByteStream(self, data):
         return data.encode("utf-8")
@@ -155,19 +159,58 @@ class HTTPRequestHandler(component):
     def __init__(self):
         super(HTTPRequestHandler, self).__init__()
         
-
-    def fetchResource(self, request):
+    def provideResource(self, request):
+        resourceGen = HTTPResourceGlue.fetchResource(request)
+        
         try:
-            for (prefix, handler) in website.URLHandlers:
-                if request["raw-uri"][:len(prefix)] == prefix:
-                    resource = handler(request)
-                    return resource
-            return { "statuscode": 404, "type": "text/plain", "data": "The resource you requested ain't there!" }
-        except Exception, e:
-            print e
-            return { "statuscode": 500, "type": "text/plain", "data": "Your request failed because of a problem at our end. DON'T PANIC!\n" }
+            resource = resourceGen.next()
+            # if the response is marked as complete, we need not used chunked transfer encoding
+                
+            complete = not resource.get("incomplete", True) 
+            
+            if request["method"] == "HEAD": #just send the header
+                complete = True
+                resource["data"] = ""
+                
+            if complete == True:
+                # support unicode strings as resource data (as opposed to octet-strings)
+                if isinstance(resource["data"], unicode):
+                    resource["data"] = self.convertUnicodeToByteStream(resource["data"])
+                    resource["charset"] = "utf-8"
+                
+                # form and send the header, including a content-length header
+                self.send(self.formResponseHeader(resource, request["version"], "explicit"), "outbox")
+                # send the message body (page data)
+                self.send(resource["data"], "outbox")
+                return "explicit"
+                
+            else:
+                lengthMethod = "chunked" # preferred encoding is chunked
 
-    def formHeaderResponse(self, resource, protocolversion):
+                if request["version"] < "1.1":
+                    lengthMethod = "close"
+                
+                self.send(self.formResponseHeader(resource, request["version"], lengthMethod), "outbox")
+
+                while 1:
+                    if lengthMethod == "chunked":
+                        self.send(hex(len(resource["data"]))[2:] + "\r\n", "outbox")
+                        self.send(resource["data"], "outbox")
+                        self.send("\r\n", "outbox")
+                    elif lengthMethod == "close":
+                        self.send(resource["data"], "outbox")
+                    
+                    resource["data"] = ""
+                    resource.update(resourceGen.next())
+                
+                
+        except StopIteration, e:
+            print "StopIteration in provideResource"
+            if lengthMethod == "chunked":
+                self.send("0\r\n\r\n");
+            return lengthMethod;
+
+    def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
             resource["statuscode"] = str(resource["statuscode"])
         elif not isinstance(resource.get("statuscode"), str):
@@ -179,58 +222,62 @@ class HTTPRequestHandler(component):
         elif resource["statuscode"] == "500": statustext = "500 Internal Server Error"
         elif resource["statuscode"] == "501": statustext = "501 Not Implemented"
         elif resource["statuscode"] == "411": statustext = "411 Length Required"
+        elif resource["statuscode"] == "501": statustext = "411 Not Implemented"
         else: statustext = resource["statuscode"]
 
         if (protocolversion == "0.9"):
             header = ""        
         else:
-            header = "HTTP/1.1 " + statustext + "\nServer: Kamaelia HTTP Server (RJL) 0.2\nDate: " + currentTimeHTTP() + "\n"
+            header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.2\r\nDate: " + currentTimeHTTP() + "\r\n"
             if resource.has_key("charset"):
-                header += "Content-type: " + resource["type"] + "; " + resource["charset"] + "\n"
+                header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
             else:
-                header += "Content-type: " + resource["type"] + "\n"
-            header += "Content-length: " + str(len(resource["data"])) + "\n\n"
+                header += "Content-Type: " + resource["type"] + "\r\n"
+            
+            if lengthMethod == "explicit":
+                header += "Content-length: " + str(len(resource["data"])) + "\r\n"
+            elif lengthMethod == "chunked":
+                header += "Transfer-Encoding: chunked\r\n"
+                header += "Connection: keep-alive\r\n"                
+            else: #connection close
+                header += "Connection: close\r\n"
+
+            header += "\r\n";            
         return header
 
+    def checkRequestValidity(self, request):
+        if request["protocol"] != "HTTP":
+            request["bad"] = "400"
+            
+        elif request["version"] > "1.0" and not request["headers"].has_key("host"):
+            request["bad"] = "400"
+            request["error-msg"] = "Host header required."
+            
+        if request["method"] not in ("GET", "HEAD", "POST"):
+            request["bad"] = "501"
+       
     def main(self):
         while 1:
             yield 1
             while self.dataReady("inbox"):
                 request = self.recv("inbox")
                 print "Request for " + request["raw-uri"]
-                if request["bad"] == "411":
-                    pagedata = website.getErrorPage(411, "Um - content-length plz!")
-                    self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-                elif request["bad"]:
-                    pagedata = website.getErrorPage(400, "Your request sucked!")
-                    self.send(self.formHeaderResponse(pagedata, "1.0") + pagedata["data"], "outbox")
-
-                elif request["protocol"] != "HTTP":
-                    pagedata = website.getErrorPage(400, "Non-HTTP")
-                    self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-                else:
-                    if request["version"] > "1.0" and not request["headers"].has_key("host"):
-                        pagedata = website.getErrorPage(400, "could not find host header")
-                        self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-                    elif request["method"] == "GET" or request["method"] == "POST":
-                        pagedata = self.fetchResource(request)
-                        if isinstance(pagedata["data"], unicode):
-                             pagedata["data"] = self.convertUnicodeToByteStream(pagedata["data"])
-                             pagedata["charset"] = "utf-8"
-                             
-                        self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-                    else:
-                        pagedata = website.getErrorPage(501,"The request method is not implemented")
-                        self.send(self.formHeaderResponse(pagedata, request["version"]) + pagedata["data"], "outbox")
-                        print "Sent 501 not implemented response"                    
+                
+                # add ["bad"] and ["error-msg"] keys to the request if it is invalid
+                self.checkRequestValidity(request)
                     
-                    if request["version"] == "1.1":
-                        connection = request["headers"].get("connection", "keep-alive")
-                    else:
-                        connection = request["headers"].get("connection", "close")
-                    if connection.lower() == "close":
-                        self.send(producerFinished(), "signal") #this functionality is semi-complete
-                        return
+                if request["version"] == "1.1":
+                    connection = request["headers"].get("connection", "keep-alive")
+                else:
+                    connection = request["headers"].get("connection", "close")
+
+
+                if self.provideResource(request) == "close":
+                    connection = "close"
+                    
+                if connection.lower() == "close":
+                    self.send(producerFinished(), "signal") #this functionality is semi-complete
+                    return
 
             while self.dataReady("control"):
                 temp = self.recv("control")
