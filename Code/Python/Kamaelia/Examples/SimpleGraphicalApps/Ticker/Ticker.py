@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from Kamaelia.UI.Pygame.Ticker import Ticker
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 
 pipeline( ReadFileAdaptor("Ulysses",readmode="line",steptime=0.5),
