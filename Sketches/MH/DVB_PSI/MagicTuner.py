@@ -8,48 +8,157 @@
 
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
+from Axon.AxonExceptions import ServiceAlreadyExists
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
+from Kamaelia.Chassis.Pipeline import pipeline
+
+from Kamaelia.Device.DVB.Core import DVB_Multiplex
+from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
+
+from Demuxer import DVB_Demuxer
+from PSIPacketReconstructor import PSIPacketReconstructorService
 import dvb3.frontend
 
-
-class DVB_Tuner(AdaptiveCommsComponent):
-    """\
-    Some kind of dvb tuner service.
-    
-    The first should register itself as the "DVB_Tuner" service
-    It should also register as "DVB_Tuner_XXX" where XXX is the frequency
-    """
-    
-    
-    def __init__(self, frequency, feparams={}):
-        super(DVB_Tuner,self).__init__()
-        
-    def main(self):
-        # I dunno yet
-        yield 1
-        pass
+from ParseSDT import ParseSDT_ActualTS
+from ParsePAT import ParsePAT
+from ParsePMT import ParsePMT
 
 
+# def DVB_SI(called, fromDemuxer):
+#     service = PSIPacketReconstructorService()
+#     
+#     
+#     
+#     return service
 
-class DVB_TuneToChannel(component):
+PAT_PID = 0x00
+SDT_PID = 0x11
+
+class DVB_TuneToChannel(AdaptiveCommsComponent):
     """Uses tuner services to find and start getting the audio and video pids
     for the specified channel"""
 
-    def __init__(self, channel="BBC ONE"):
+    def __init__(self, channel, fromDemuxer):
         super(DVB_TuneToChannel,self).__init__()
+        self.channelname = channel
+        self.demuxerservice = fromDemuxer
+        
 
     def main(self):
-        # I dunno yet!
+        # get the demuxer service
+        toDemuxer = self.addOutbox("toDemuxer")
+        cat = CAT.getcat()
+        service = cat.retrieveService(self.demuxerservice)
+        self.link((self,toDemuxer),service)
+        
+        
+        # stage 1, we need to get the service ID, so we'll query the SDT
+        sdt_parser = pipeline( PSIPacketReconstructor(),
+                               ParseSDT_ActualTS(),
+                             ).activate()
+        self.send( ("ADD",(sdt_parser,"inbox"),[SDT_PID]), toDemuxer)
+        
+        fromSDT = self.addInbox("fromSDT")
+        fromSDT_linkage = self.link( (sdt_parser,"outbox"),(self,fromSDT) )
+        
+        # wait until we get data back from the SDT
+        # note that we wait until we find our service, there's no timeout
+        service_id = None
+        while service_id == None:
+            while not self.dataReady(fromSDT):
+                self.pause()
+                yield 1
+        
+            sdt_table = self.recv(fromSDT)
+            
+            transport_stream_id = sdt_table['transport_stream_id']
+            
+            # see if we can find our services channel name
+            for (sid,service) in sdt_table['services'].items():
+                for (dtype,descriptor) in service['descriptors']:
+                    if descriptor['type'] == "service":
+                        if descriptor['service_name'].lower() == self.channelname.lower():
+                            service_id = sid
+                            break
+        
+        print "Found service id:",service_id
+        print "Its in transport stream id:",transport_stream_id
+            
+            
+        # stage 2, find out which PID contains the PMT for the service,
+        # so we'll query the PAT
+        pat_parser = pipeline( PSIPacketReconstructor(),
+                               ParsePAT(),
+                             ).activate()
+        self.send( ("ADD", (pat_parser,"inbox"),[PAT_PID]), toDemuxer)
+        
+        fromPAT = self.addInbox("fromPAT")
+        fromPAT_linkage = self.link( (pat_parser,"outbox"),(self,fromPAT) )
+        
+        # wait until we get data back from the PAT
+        PMT_PID = None
+        while PMT_PID == None:
+            while not self.dataReady(fromPAT):
+                self.pause()
+                yield 1
+        
+            sdt_table = self.recv(fromPAT)
+            # see if we can find our service's PMT
+            ts_services = sdt_table['transport_streams'][transport_stream_id]
+            if service_id in ts_services:
+                PMT_PID = ts_services[service_id]
+                break
+            
+        print "Found PMT PID for this service:",PMT_PID
+            
+        # stage 3, find out which PIDs contain AV data, so we'll query this
+        # service's PMT
+        pmt_parser = pipeline( PSIPacketReconstructor(),
+                               ParsePMT(),
+                             ).activate()
+        self.send( ("ADD", (pmt_parser,"inbox"),[PMT_PID]), toDemuxer)
+        
+        fromPMT = self.addInbox("fromPMT")
+        fromPMT_linkage = self.link( (pmt_parser,"outbox"),(self,fromPMT) )
+        
+        # wait until we get data back from the PMT
+        audio_pid = None
+        video_pid = None
+        while audio_pid == None and video_pid == None:
+            while not self.dataReady(fromPMT):
+                self.pause()
+                yield 1
+                
+            pmt_table = self.recv(fromPMT)
+            if service_id in pmt_table['services']:
+                service = pmt_table['services'][service_id]
+                for stream in service['streams']:
+                    if   stream['type'] in [3,4] and not audio_pid:
+                        audio_pid = stream['pid']
+                    elif stream['type'] in [1,2] and not video_pid:
+                        video_pid = stream['pid']
+
+        print "Found audio PID:",audio_pid
+        print "Found video PID:",video_pid
+        
         yield 1
-        pass
-
-
+        # now set up to receive those pids and forward them on for all eternity
+        
+        fromDemuxer = self.addInbox("fromDemuxer")
+        self.send( ("ADD", (self,fromDemuxer),[audio_pid,video_pid]), toDemuxer)
+        
+        while 1:
+            while self.dataReady(fromDemuxer):
+                packet = self.recv(fromDemuxer)
+                self.send(packet,"outbox")
+                
+            self.pause()
+            yield 1
+        
 
 if __name__ == "__main__":
     
-    from Kamaelia.Chassis.Pipeline import pipeline
-    from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.File.Writing import SimpleFileWriter
@@ -63,9 +172,13 @@ if __name__ == "__main__":
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-    mux = DVB_Tuner(505833330.0/1000000.0, feparams).activate()
+    pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x2000], feparams),
+              DVB_Demuxer(called="MUX1"),
+            ).activate()
 
-    pipeline( DVB_TuneToChannel("BBC ONE"),
+#    si  = DVB_SI(called="MUX1_SI",fromDemuxer="MUX1").activate()
+
+    pipeline( DVB_TuneToChannel(channel="BBC ONE",fromDemuxer="MUX1"),
               SimpleFileWriter("bbc_one.ts"),
             ).run()
 
