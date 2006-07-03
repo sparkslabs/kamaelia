@@ -10,6 +10,8 @@ def intval(mystring):
         retval = int(mystring)
     except ValueError:
         retval = None
+    except TypeError:
+        retval = None    
     return retval
 
 def removeTrailingCr(line):
@@ -176,7 +178,7 @@ class IcecastClient(component):
                         state = 0
                 self.pause()
             
-            metadatainterval = intval(header["headers"].get("icy-metaint", None))
+            metadatainterval = intval(header["headers"].get("icy-metaint", 0))
             if metadatainterval == None:
                 metadatainterval = 0
             bytesUntilMetadata = metadatainterval
