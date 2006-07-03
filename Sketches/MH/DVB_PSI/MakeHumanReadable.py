@@ -253,16 +253,12 @@ def formatDescriptors(title,lineprefix,descriptors):
     
     for (dtype,descriptor) in descriptors:
         output += lineprefix + "Descriptor "+hex(dtype)+ " : "
-        try:
-            output += descriptor['type'] + "\n"
-            keys = descriptor.keys()
-            keys.remove("type")
-            keys.sort()
-            for key in keys:
-                output += pformat(lineprefix+"    ", key+" : ", descriptor[key]) + "\n"
-        except TypeError:
-            output += "<<NOT PARSED>>\n"
-            output += lineprefix+"Contents : "+str(descriptor)+"\n"
+        output += descriptor['type'] + "\n"
+        keys = descriptor.keys()
+        keys.remove("type")
+        keys.sort()
+        for key in keys:
+            output += pformat(lineprefix+"    ", key+" : ", descriptor[key]) + "\n"
             
     if output == "":
         return title+"\n" + lineprefix+"<<NONE>>\n"
