@@ -139,34 +139,6 @@ class ParsePAT(component):
             yield 1
                     
 
-class PrettyPrintPAT(component):
-    def shutdown(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg,"signal")
-            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                return True
-        return False
-
-    def main(self):
-        while not self.shutdown():
-            while self.dataReady("inbox"):
-                pat = self.recv("inbox")
-                output =  "PAT received:\n"
-                output += "    Table ID           : " + str(pat['table_id']) + "\n"
-                output += "    Table is valid for : " + ["NEXT","CURRENT"][pat['current']] + "\n"
-                output += "    NIT is in PID      : " + str(pat['NIT_PID']) + "\n"
-                for ts in pat['transport_streams']:
-                    output += "    For transport stream id : "+str(ts) + "\n"
-                    tsmap = pat['transport_streams'][ts]
-                    for services in tsmap:
-                        output += "        For service "+str(services)+" : PMT is in PID " + str(tsmap[services]) + "\n"
-                output += "----\n"
-                self.send(output,"outbox")
-                
-            self.pause()
-            yield 1
-
 if __name__ == "__main__":
     
     from Kamaelia.Util.PipelineComponent import pipeline
@@ -174,6 +146,7 @@ if __name__ == "__main__":
     from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
     from Kamaelia.Util.Console import ConsoleEchoer
     
+    from MakeHumanReadable import MakePATHumanReadable
     
     import dvb3.frontend
     feparams = {
@@ -187,7 +160,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ 0:["outbox"]}),
               PSIPacketReconstructor(),
               ParsePAT(),
-              PrettyPrintPAT(),
+              MakePATHumanReadable(),
               ConsoleEchoer(),
             ).run()
             

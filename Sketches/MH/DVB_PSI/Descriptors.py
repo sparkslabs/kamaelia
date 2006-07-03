@@ -240,7 +240,7 @@ def parser_frequency_list_Descriptor(data,i,length,end):
         if freq:
             d['frequencies'].append(freq)
         i=i+4
-    return data[i+2:end]
+    return d
 
 parser_partial_transport_stream_Descriptor    = parser_Null_Descriptor
 parser_data_broadcast_Descriptor              = parser_Null_Descriptor
