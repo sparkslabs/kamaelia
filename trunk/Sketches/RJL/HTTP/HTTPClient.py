@@ -95,6 +95,7 @@ class SingleShotHTTPClient(component):
 
     Outboxes = {
         "outbox"         : "Requested file",
+        "debug"          : "Output to aid debugging",
         
         "_parsersignal"  : "Signals for HTTP parser",
                 
@@ -184,13 +185,11 @@ class SingleShotHTTPClient(component):
         return
         
     def mainBody(self):
-        print "SingleShotHTTPClient.mainBody()"    
+        self.send("SingleShotHTTPClient.mainBody()", "debug")
         while self.dataReady("_parserinbox"):
             msg = self.recv("_parserinbox")
-            print "SingleShotHTTPClient received on _parserinbox"
-            print msg
-            
             if isinstance(msg, ParsedHTTPHeader):
+                self.send("SingleShotHTTPClient received a ParsedHTTPHeader on _parserinbox", "debug")                        
                 # if the page is a redirect page
                 if not self.handleRedirect(msg.header):
                     if msg.header["responsecode"] == "200":
@@ -199,18 +198,19 @@ class SingleShotHTTPClient(component):
                         pass
                         
             elif isinstance(msg, ParsedHTTPBodyChunk):
+                self.send("SingleShotHTTPClient received a ParsedHTTPBodyChunk on _parserinbox", "debug")
                 if len(self.requestqueue) == 0: # if not redirecting then send the response on
                     self.send(msg, "outbox")
                 
             elif isinstance(msg, ParsedHTTPEnd):
+                self.send("SingleShotHTTPClient received a ParsedHTTPEnd on _parserinbox", "debug")
                 if len(self.requestqueue) == 0: # if not redirecting then send the response on
                     self.send(msg, "outbox")
                 self.shutdownKids()
             
         while self.dataReady("_parsercontrol"):
             temp = self.recv("_parsercontrol")
-            print "parser-signal"
-            print type(temp)
+            self.send("SingleShotHTTPClient received something on _parsercontrol", "debug")
             
         while self.dataReady("_tcpcontrol"):
             msg = self.recv("_tcpcontrol")
@@ -251,11 +251,14 @@ class SimpleHTTPClient(component):
         "outbox"          : "Requested file's data string",
         "signal"          : "Signal I have shutdown",
         "_carouselnext"   : "Create a new SingleShotHTTPClient",
-        "_carouselsignal" : "Shutdown the carousel"
+        "_carouselsignal" : "Shutdown the carousel",
+        "debug"           : "Information to aid debugging"
     }
 
     def __init__(self):
-        print "SimpleHTTPClient.__init__()"    
+        """Create and link to a carousel object"""
+
+        self.send("SimpleHTTPClient.__init__()", "debug")    
         super(SimpleHTTPClient, self).__init__()
 
         self.carousel = Carousel(componentFactory=makeSSHTTPClient)
@@ -267,19 +270,19 @@ class SimpleHTTPClient(component):
         self.carousel.activate()
         
     def cleanup(self):
-        print "SimpleHTTPClient.cleanup()"
+        self.send("SimpleHTTPClient.cleanup()", "debug")
         self.send(shutdown(), "_carouselsignal")
         self.removeChild(self.carousel)
         self.send(producerFinished(), "signal")
         
     def main(self):
-        print "SimpleHTTPClient.main()"
+        self.send("SimpleHTTPClient.main()", "debug")
         finished = False
         while not finished:
             yield 1
             while self.dataReady("inbox"):
                 url = self.recv("inbox")
-                print "SimpleHTTPClient received url " + url
+                self.send("SimpleHTTPClient received url " + url, "debug")
                 self.send(url, "_carouselnext")
                 
                 filebody = ""
