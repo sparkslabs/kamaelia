@@ -21,7 +21,9 @@ def parseDescriptor(i,data):
 
 
 def parser_Null_Descriptor(data,i,length,end):
-    return data[i+2:end]
+    return { "type" : "UNKNOWN",
+             "contents" : data[i+2:end]
+           }
 
 
 
