@@ -5,6 +5,8 @@ from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 import string, time
 
 from HTTPParser import *
+from HTTPClient import *
+
 def intval(mystring):
     try:
         retval = int(mystring)
@@ -36,90 +38,10 @@ class IceIPCDataChunk(object):
 
 class IceIPCDisconnected(object):
     pass
-    
-class IcecastClient(component):
-    Inboxes =  {             
-        "_parserinbox"   : "Data from HTTP parser",
-        "_parsercontrol" : "Signals from HTTP parser",
-        "_tcpcontrol"    : "Signals from TCP client",
-        
-        "inbox"          : "UNUSED",
-        "control"        : "UNUSED"
-    }
-        
 
-    Outboxes = {
-        "outbox"         : "Audio/Video Stream",
-        
-        "_tcpoutbox"     : "Send over TCP connection",
-        "_tcpsignal"     : "Signals shutdown of TCP connection",
-        
-        "_parsersignal"  : "Signals for HTTP parser",
-        
-        "signal"         : "UNUSED"
-    }
-    
-    def __init__(self, host, port):
-        print "IcecastClient.__init__()"
-        super(IcecastClient, self).__init__()
-        self.readbuffer = ""
-        
-        # TODO: just have a stream URL supplied and work out host and port from that
-        self.host = host
-        self.port = int(port)
-        
-        self.tcpclient = None
-        self.httpparser = None
-  
-    def connect(self):
-        print "IcecastClient.connect()"
-        self.tcpclient = TCPClient(self.host, self.port, 1)
-        self.httpparser = HTTPParser(mode="response")
-        
-        self.link( (self, "_tcpoutbox"),       (self.tcpclient, "inbox") )
-        self.link( (self, "_tcpsignal"),       (self.tcpclient, "control") )
-        self.link( (self.tcpclient, "signal"), (self, "_tcpcontrol") )
 
-        self.link( (self.tcpclient, "outbox"), (self.httpparser, "inbox") ) #incoming TCP data -> HTTPParser directly
-        
-        self.link( (self, "_parsersignal"), (self.httpparser, "control") )
-        self.link( (self.httpparser, "outbox"), (self, "_parserinbox") )
-        self.link( (self.httpparser, "signal"), (self, "_parsercontrol") )
-
-        self.addChildren( self.tcpclient, self.httpparser )
-        # is it necessary to activate as well?
-        self.tcpclient.activate()
-        self.httpparser.activate()
-        print "We have a"
-        print self.tcpclient
-        print self.httpparser
-        
-    def formRequest(self):
-        print "IcecastClient.formRequest()"
-        request =  "GET / HTTP/1.1\r\n"
-        
-        hoststring = self.host
-        if (self.port != 80):
-            hoststring += ":" + str(self.port)
-            
-        request += "Host: " + hoststring + "\r\n"
-        #request += "User-agent: kamcastclient\r\n"
-        request += "Connection: Keep-Alive\r\n"
-        request += "icy-metadata: 1\r\n"
-        request += "\r\n" 
-        
-        return request
-
-    def shutdownKids(self):
-        print "IcecastClient.shutdownKids()"    
-        if self.tcpclient != None and self.httpparser != None:
-            self.removeChild(self.tcpclient)
-            self.removeChild(self.httpparser)    
-            self.send(shutdown(), "_tcpsignal")
-            self.send(shutdown(), "_parsersignal")
-            self.tcpclient = None
-            self.httpparser = None
-    
+class IcecastDemux(component):
+    """Split an Icecast stream into A/V data and metadata"""
     def dictizeMetadata(self, metadata):
         #print "IcecastClient.dictizeMetadata()"    
         #format:
@@ -138,102 +60,82 @@ class IcecastClient(component):
                     val = val[1:-1] 
                 metadict[key] = val
         return metadict
-        
-    def main(self):
-        print "IcecastClient.main()"    
-        while 1:
-            self.connect()
-            yield 1
-            request = self.formRequest()
-            self.send(request, "_tcpoutbox")
-          
-            state = 1 #awaiting header
-            while state == 1:
-                yield 1
-                #read the header
-                while self.dataReady("_parserinbox"):
-                    msg = self.recv("_parserinbox")
-                    print "Message from PARSER"
-                    print msg
-                    if (isinstance(msg, ParsedHTTPHeader)):
-                        state = 2
-                        header = msg.header
-                        contenttype = header["headers"].get("content-type", "")
-                        self.send(IceIPCHeader(contenttype), "outbox")
-                        break
-                    else:
-                        #error
-                        state = 0
-                        
-                while self.dataReady("_tcpcontrol"):
-                    msg = self.recv("_tcpcontrol")
-                    if isinstance(msg, shutdown):
-                        print "1. Shutdown received on _tcpcontrol"
-                        state = 0
-                                            
-                while self.dataReady("_parsercontrol"):
-                    msg = self.recv("_parsercontrol")
-                    if isinstance(msg, shutdown):
-                        print "1. Shutdown received on _parsercontrol"
-                        state = 0
-                self.pause()
-            
-            metadatainterval = intval(header["headers"].get("icy-metaint", 0))
-            if metadatainterval == None:
-                metadatainterval = 0
-            bytesUntilMetadata = metadatainterval
-            
-            print "Metadata interval is " + str(metadatainterval)
-            
-            metadatamode = False
-            readbuffer = ""
-            while state == 2: #reading body
-                yield 1
-                        
-                while self.dataReady("_parserinbox"):
-                    msg = self.recv("_parserinbox")
-                    if (isinstance(msg, ParsedHTTPBodyChunk)):
-                        readbuffer += msg.bodychunk
-                
-                while len(readbuffer) > 0:       
-                    if metadatainterval == 0: #if no metadata
-                        self.send(IceIPCDataChunk(readbuffer), "outbox")
-                        readbuffer = ""
-                    else:
-                        chunkdata = readbuffer[0:bytesUntilMetadata]
-                        if len(chunkdata) > 0:
-                            self.send(IceIPCDataChunk(chunkdata), "outbox")
-                                                    
-                        readbuffer = readbuffer[bytesUntilMetadata:]
-                        bytesUntilMetadata -= len(chunkdata)
-                        if len(readbuffer) > 0: #we must have some metadata (perhaps only partially complete) at the start
-                            metadatalength = ord(readbuffer[0]) * 16 # they encode it as bytes / 16
-                            if len(readbuffer) >= metadatalength + 1: # +1 for the length byte we just read. if we have all the metadata chunk
-                                metadata = self.dictizeMetadata(readbuffer[1:metadatalength + 1])
-                                self.send(IceIPCMetadata(metadata), "outbox")
-                                                                
-                                bytesUntilMetadata = metadatainterval
-                                readbuffer = readbuffer[metadatalength + 1:]
-                            else:
-                                break #we need more data before we can do anything
-                                
-                while self.dataReady("_tcpcontrol"):
-                    msg = self.recv("_tcpcontrol")
-                    if isinstance(msg, shutdown):
-                        print "2. Shutdown received on _tcpcontrol"
-                        state = 0
-                                            
-                while self.dataReady("_parsercontrol"):
-                    msg = self.recv("_parsercontrol")
-                    if isinstance(msg, shutdown):
-                        print "2. Shutdown received on _parsercontrol"                    
-                        state = 0
 
-                self.pause()
+    def main(self):
+        metadatamode = False
+        readbuffer = ""
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                msg = self.recv("inbox")
+
+                if isinstance(msg, ParsedHTTPHeader):
+                    metadatainterval = intval(msg.header["headers"].get("icy-metaint", 0))
+                    if metadatainterval == None:
+                        metadatainterval = 0
+                    bytesUntilMetadata = metadatainterval
+                    self.send(IceIPCHeader(msg.header["headers"].get("content-type")), "outbox")
+                    
+                    print "Metadata interval is " + str(metadatainterval)
+                    
+                elif isinstance(msg, ParsedHTTPBodyChunk):
+                    readbuffer += msg.bodychunk
+                    
+                elif isinstance(msg, ParsedHTTPEnd):
+                    self.send(IceIPCDisconnected(), "outbox")
                 
-            self.send(IceIPCDisconnected(), "outbox")
-            self.shutdownKids()
-            # now try to reconnect
+            while len(readbuffer) > 0:       
+                if metadatainterval == 0: #if no metadata
+                    self.send(IceIPCDataChunk(readbuffer), "outbox")
+                    readbuffer = ""
+                else:
+                    chunkdata = readbuffer[0:bytesUntilMetadata]
+                    if len(chunkdata) > 0:
+                        self.send(IceIPCDataChunk(chunkdata), "outbox")
+                                                
+                    readbuffer = readbuffer[bytesUntilMetadata:]
+                    bytesUntilMetadata -= len(chunkdata)
+                    if len(readbuffer) > 0: #we must have some metadata (perhaps only partially complete) at the start
+                        metadatalength = ord(readbuffer[0]) * 16 # they encode it as bytes / 16
+                        if len(readbuffer) >= metadatalength + 1: # +1 for the length byte we just read. if we have all the metadata chunk
+                            metadata = self.dictizeMetadata(readbuffer[1:metadatalength + 1])
+                            self.send(IceIPCMetadata(metadata), "outbox")
+                                                            
+                            bytesUntilMetadata = metadatainterval
+                            readbuffer = readbuffer[metadatalength + 1:]
+                        else:
+                            break #we need more data before we can do anything
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    return
+                                                
+            self.pause()
+
+class IcecastClient(SingleShotHTTPClient):
+
+    def formRequest(self, url): #override the standard HTTP request with an Icecast/SHOUTcast variant
+        print "IcecastClient.formRequest()"
+        
+        splituri = splitUri(url)
+        
+        host = splituri["uri-server"]
+        if splituri.has_key("uri-port"):
+            host += ":" + splituri["uri-port"]
+        
+        splituri["request"] =  "GET " + splituri["raw-uri"] + " HTTP/1.1\r\n"
+        splituri["request"] += "Host: " + host + "\r\n"
+        splituri["request"] += "User-agent: Kamaelia Icecast Client 0.3 (RJL)\r\n"
+        splituri["request"] += "Connection: Keep-Alive\r\n"
+        splituri["request"] += "icy-metadata: 1\r\n"
+        splituri["request"] += "\r\n"
+        return splituri
+    
+    def main(self):
+        while 1: #keep reconnecting
+            self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
+            while self.mainBody():
+                yield 1
 
 class IcecastStreamWriter(component):
     Inboxes = {
@@ -261,8 +163,8 @@ class IcecastStreamWriter(component):
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     
-    
     pipeline(
-        IcecastClient("yourlocalscene.wazee.org", 8020),
+        IcecastClient("http://yourlocalscene.wazee.org:8020/"),
+        IcecastDemux(),
         IcecastStreamWriter("stream.mp3"),
     ).run()
