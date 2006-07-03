@@ -155,6 +155,7 @@ if __name__ == "__main__":
     from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
     from Kamaelia.Util.Console import ConsoleEchoer
     
+    from MakeHumanReadable import MakePMTHumanReadable
     
     import dvb3.frontend
     feparams = {
@@ -168,7 +169,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ 4228:["outbox"]}),
               PSIPacketReconstructor(),
               ParsePMT(),
-#              PrettyPrintPAT(),
+              MakePMTHumanReadable(),
               ConsoleEchoer(),
             ).run()
 

@@ -77,7 +77,7 @@ class ParseSDT(component):
                 service['eit_present_following'] = lo & 0x01
                 hi = ord(data[i+3])
                 service['running_status']        = hi >> 5
-                service['scrambled']             = hi & 0x10
+                service['free_CA_mode']          = hi & 0x10
                 
                 descriptors_length = ((hi<<8) + ord(data[i+4])) & 0x0fff
                 i = i + 5
@@ -196,6 +196,8 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Util.Graphline import Graphline
     
+    from MakeHumanReadable import MakeSDTHumanReadable
+    
     import dvb3.frontend
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -208,7 +210,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ 0x11:["outbox"]}),
               PSIPacketReconstructor(),
               ParseSDT_ActualAndOtherTS(),
-              SDT_to_SimpleServiceList(),
+              MakeSDTHumanReadable(),
               ConsoleEchoer(),
             ).run()
 

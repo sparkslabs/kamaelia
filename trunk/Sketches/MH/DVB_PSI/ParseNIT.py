@@ -158,8 +158,6 @@ class ParseNIT(component):
             yield 1
 
 
-
-
 if __name__ == "__main__":
     
     from Kamaelia.Util.PipelineComponent import pipeline
@@ -167,6 +165,8 @@ if __name__ == "__main__":
     from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Util.Graphline import Graphline
+    
+    from MakeHumanReadable import MakeNITHumanReadable
     
     import dvb3.frontend
     feparams = {
@@ -180,7 +180,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ 0x10:["outbox"]}),
               PSIPacketReconstructor(),
               ParseNIT_ActualNetwork(),
-#              SDT_to_SimpleServiceList(),
+              MakeNITHumanReadable(),
               ConsoleEchoer(),
             ).run()
 

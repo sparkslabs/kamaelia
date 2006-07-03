@@ -352,6 +352,9 @@ if __name__ == "__main__":
     
     from Kamaelia.Device.DVB.EIT import NowNextServiceFilter
     
+    from MakeHumanReadable import MakeEITHumanReadable
+
+    
     import dvb3.frontend
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -364,9 +367,10 @@ if __name__ == "__main__":
               DVB_Demuxer({ 0x12:["outbox"]}),
               PSIPacketReconstructor(),
               ParseEIT_Subset(True,False,False,False),
-              SimplifyEIT(),
-              NowNextProgrammeJunctionDetect(),
-              NowNextServiceFilter(4164),
+              MakeEITHumanReadable(),
+#              SimplifyEIT(),
+#              NowNextProgrammeJunctionDetect(),
+#              NowNextServiceFilter(4164),
               ConsoleEchoer(),
             ).run()
 
