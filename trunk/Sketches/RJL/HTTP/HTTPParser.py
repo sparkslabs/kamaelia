@@ -66,7 +66,18 @@ def removeTrailingCr(line):
         return line[0:-1]
     else:
         return line
+
+class ParsedHTTPHeader:
+    def __init__(self, header):
+        self.header = header
+    
+class ParsedHTTPBodyChunk:
+    def __init__(self, bodychunk):
+        self.bodychunk = bodychunk
         
+class ParsedHTTPEnd:
+    pass
+    
 class HTTPParser(component):
     Inboxes =  { "inbox"         : "Raw HTTP requests/responses",
                  "control"       : "UNUSED" }
@@ -80,12 +91,12 @@ class HTTPParser(component):
         self.requeststate = 1 # awaiting request line
         self.lines = []
         self.readbuffer = ""
-
+        
     def splitProtocolVersion(self, protvers, requestobject):
         protvers = protvers.split("/")
         if len(protvers) != 2:
-            requestobject["bad"] = True
-            requestobject["version"] = "0.9"
+            requestobject["protocol"] = protvers[0]
+            requestobject["version"] = "0"
         else:
             requestobject["protocol"] = protvers[0]
             requestobject["version"]  = protvers[1]
@@ -172,12 +183,12 @@ class HTTPParser(component):
                     requestobject.update(splitUri(string.join(splitline[1:-1], "%20")))
                     self.splitProtocolVersion(splitline[-1], requestobject)
                     
-                    if requestobject["protocol"] != "HTTP":
-                        requestobject["bad"] = True
+                    #if requestobject["protocol"] != "HTTP":
+                    #    requestobject["bad"] = True
             else:
                 #e.g. HTTP/1.1 200 OK that's fine
                 if len(splitline) < 2:
-                    requestobject["version"] = "0.9"
+                    requestobject["bad"] = True
                 else:
                     requestobject["responsecode"] = splitline[1]
                     self.splitProtocolVersion(splitline[0], requestobject)
@@ -188,35 +199,34 @@ class HTTPParser(component):
                 else:
                     bodiedrequest = False
 
-                if requestobject["version"] != "0.9":
-                    #state 2 - as this is a valid request, we now accept headers	
-                    previousheader = ""
-                    endofheaders = False
-                    while not endofheaders:
-                        #print "HTTPParser::main - stage 2"
-                        if self.shouldShutdown(): return						
-                        while self.dataFetch():
-                            pass
-                            
-                        currentline = self.nextLine()
-                        while currentline != None:
-                            #print "HTTPParser::main - stage 2.1"
-                            if currentline == "":
-                                #print "End of headers found"
-                                endofheaders = True
-                                break
+                #state 2 - as this is a valid request, we now accept headers	
+                previousheader = ""
+                endofheaders = False
+                while not endofheaders:
+                    #print "HTTPParser::main - stage 2"
+                    if self.shouldShutdown(): return						
+                    while self.dataFetch():
+                        pass
+                        
+                    currentline = self.nextLine()
+                    while currentline != None:
+                        #print "HTTPParser::main - stage 2.1"
+                        if currentline == "":
+                            #print "End of headers found"
+                            endofheaders = True
+                            break
+                        else:
+                            if currentline[0] == " " or currentline[0] == "\t": #continued header
+                                requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
                             else:
-                                if currentline[0] == " " or currentline[0] == "\t": #continued header
-                                    requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
-                                else:
-                                    splitheader = string.split(currentline, ":")
-                                    #print "Found header: " + splitheader[0]
-                                    requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
-                            currentline = self.nextLine()
-                            #should parse headers header
-                        if not endofheaders:
-                            self.pause()
-                            yield 1
+                                splitheader = string.split(currentline, ":")
+                                #print "Found header: " + splitheader[0]
+                                requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
+                        currentline = self.nextLine()
+                        #should parse headers header
+                    if not endofheaders:
+                        self.pause()
+                        yield 1
 
                 #print "HTTPParser::main - stage 2 complete"
                 if requestobject["headers"].has_key("host"):
@@ -227,6 +237,8 @@ class HTTPParser(component):
                 else:
                     requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
 
+                # The header section is complete, so send it on.
+                self.send(ParsedHTTPHeader(requestobject), "outbox")
                 if bodiedrequest:
                     #print "HTTPParser::main - stage 3 start"
                     #state 3 - the headers are complete - awaiting the message
@@ -252,6 +264,7 @@ class HTTPParser(component):
                                 print "Warning: bad chunk length in request/response being parsed by HTTPParser"
                                 bodylength = 0
                                 requestobject["bad"] = True
+
                             #print "Chunking: '%s' '%s' %d" % (currentline, splitline, bodylength)
                             if bodylength == 0:
                                 break
@@ -261,14 +274,17 @@ class HTTPParser(component):
                                 if self.shouldShutdown(): return						
                                 while self.dataFetch():
                                     pass
+                                    
                                 if len(self.readbuffer) < bodylength:
                                     self.pause()
                                     yield 1
-                            requestobject["body"] += self.readbuffer[:bodylength]
-                            if self.readbuffer[bodylength:bodylength+2] == "\r\n":
-                                self.readbuffer = self.readbuffer[bodylength+2:]
-                            elif self.readbuffer[bodylength:bodylength+1] == "\n":
-                                self.readbuffer = self.readbuffer[bodylength+1:]
+                            # we could do better than this - this will eat memory when overly large chunks are used
+                            self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylength]), "outbox")
+                            
+                            if self.readbuffer[bodylength:bodylength + 2] == "\r\n":
+                                self.readbuffer = self.readbuffer[bodylength + 2:]
+                            elif self.readbuffer[bodylength:bodylength + 1] == "\n":
+                                self.readbuffer = self.readbuffer[bodylength + 1:]
                             else:
                                 print "Warning: no trailing new line on chunk in HTTPParser"
                                 requestobject["bad"] = True
@@ -281,52 +297,66 @@ class HTTPParser(component):
                             pass
                         #print "HTTPParser::main - stage 3.length known start"
                         
-                        bodylength = int(requestobject["headers"]["content-length"])
+                        bodylengthremaining = int(requestobject["headers"]["content-length"])
                          
-                        while len(self.readbuffer) < bodylength:
+                        while bodylengthremaining > 0:
                             #print "HTTPParser::main - stage 3.length known.1"
                             if self.shouldShutdown(): return						
                             while self.dataFetch():
                                 pass
-                            if len(self.readbuffer) < bodylength:
+                             
+                            if bodylengthremaining < len(self.readbuffer): #i.e. we have some extra data from the next request
+                                self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylengthremaining]), "outbox")
+                                self.readbuffer = self.readbuffer[bodylengthremaining:]
+                                bodylengthremaining = 0
+                            elif len(self.readbuffer) > 0:
+                                bodylength -= len(self.readbuffer)
+                                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                                self.readbuffer = ""
+                                
+                            if bodylengthremaining > 0:
                                 self.pause()
                                 yield 1
-                        requestobject["body"] = self.readbuffer[:bodylength]
-                        self.readbuffer = self.readbuffer[bodylength:]
-                    elif requestobject["headers"]["connection"].lower() == "close":
+                        
+                        self.readbuffer = self.readbuffer[bodylength:] #for the next request
+                    else: #we'll assume it's a connection: close jobby
                         #print "HTTPParser::main - stage 3.connection close start"
                         connectionopen = True
                         while connectionopen:
                             #print "HTTPParser::main - stage 3.connection close.1"
                             if self.shouldShutdown(): return						
                             while self.dataFetch():
-                                print "!"
+                                #print "!"
                                 pass
+                                
+                            if len(self.readbuffer) > 0:
+                                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                                self.readbuffer = ""
+                                
                             while self.dataReady("control"):
-                                print "!"                            
+                                #print "!"                            
                                 temp = self.recv("control")
                                 if isinstance(temp, producerFinished):
                                     connectionopen = False
                                     break
                                 elif isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
                                     return
-                                    
+                            
+                            
                             if connectionopen:
                                 self.pause()
                                 yield 1
-                        requestobject["body"] = self.readbuffer
-                        self.readbuffer = ""
-                    else:
-                        #no way of knowing how long the body is
-                        requestobject["bad"] = 411 #length required
-                        #print "HTTPParser::main - stage 3.bad"
+                    #else:
+                    #    #no way of knowing how long the body is
+                    #    requestobject["bad"] = 411 #length required
+                    #    #print "HTTPParser::main - stage 3.bad"
 
                 #state 4 - request complete, send it on
             #print "Request sent on."
             #print requestobject
             
                     
-            self.send(requestobject, "outbox")
+            self.send(ParsedHTTPEnd(), "outbox")
             if string.lower(requestobject["headers"].get("connection", "")) == "close":
                 #print "HTTPParser connection close"
                 self.send(producerFinished(), "signal") #this functionality is semi-complete
