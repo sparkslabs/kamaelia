@@ -622,7 +622,7 @@ class SimpleGame(component):
             yield newComponent(*components)
          yield 1
 
-screen_surface = pygame.display.set_mode(screensize, DOUBLEBUF|FULLSCREEN)
+screen_surface = pygame.display.set_mode(screensize)#, DOUBLEBUF|FULLSCREEN)
 background = makeAndInitialiseBackground(banner_location, screensize, screen_surface,back_colour)
 cat_sprites = make_cats(cat_location, screensize, border,1)
 cat_args = (cat_location, screensize, border)
