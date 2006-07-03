@@ -332,7 +332,7 @@ def randomFromRangeExcludingZero(min,max):
 
 def make_cat(cat_location, screensize, border ):
       # Get the cat again!
-      files = [ x for x in os.listdir("pictures") if x not in ("README","CVS") ]
+      files = [ x for x in os.listdir("pictures") if x not in ("README","CVS",".svn") ]
       image_location = files[random.randint(0,len(files)-1)]
       print "XXX", image_location
       cat_surface = pygame.image.load("pictures/"+image_location)
