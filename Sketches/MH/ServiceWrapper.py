@@ -9,8 +9,6 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 
 
 def Service(component, services):
-    super(Service,self).__init__()
-
     cat = CAT.getcat()
     for (name, boxname) in services.items():
         
