@@ -68,7 +68,7 @@ class DVB_Multiplex(threadedcomponent):
         
         # This is then a file reader, actually.
         # Should be a little more system friendly really
-        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)
+        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY | os.O_NONBLOCK)
         while not self.shutdown():
             
             while self.dataReady("inbox"):
@@ -80,7 +80,7 @@ class DVB_Multiplex(threadedcomponent):
                     data = os.read(fd, 2048)
                     self.send(data, "outbox")
                 except OSError:
-                    pass
+                    self.sync()
             else:
                 self.sync()
 
