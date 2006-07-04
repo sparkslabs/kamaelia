@@ -28,12 +28,8 @@
 SingleShotHTTPClient
 =================
 
-This component is for downloading a file from an HTTP server.
-Send to its "inbox"
-inbox to send data to the server. Pick up data received from the server on its
-"outbox" outbox.
-
-
+This component is for downloading a single file from an HTTP server.
+Pick up data received from the server on its "outbox" outbox.
 
 Example Usage
 -------------
@@ -42,7 +38,23 @@ TO DO
 
 How does it work?
 -----------------
-Barely
+SingleShotHTTPClient creates an HTTPParser instance and then connects
+to the HTTP server. It sends an HTTP request and then any response from
+the server is received by the HTTPParser. HTTPParser processes the response
+and outputs it in parts as:
+
+ParsedHTTPHeader,
+ParsedHTTPBodyChunk,
+ParsedHTTPBodyChunk,
+       ...
+ParsedHTTPBodyChunk,
+ParsedHTTPEnd
+
+If SingleShotHTTPClient detects that the requested URL is a redirect page
+(using the Location header) then it begins this cycle anew with the URL
+of the new page, otherwise the parts of the page output by HTTPParser are
+sent on through "outbox". 
+
 """
 
 
@@ -80,7 +92,7 @@ class SingleShotHTTPClient(component):
     SingleShotHTTPClient() -> component that can download a file using HTTP by URL
 
     Arguments:
-    - url     -- the URL of the file to download
+    - starturl     -- the URL of the file to download
     """
    
     Inboxes =  {             
@@ -153,7 +165,7 @@ class SingleShotHTTPClient(component):
         self.send(request.requestobject["request"], "_tcpoutbox")
 
     def shutdownKids(self):
-        """Close TCP connection and HTTP parser"""    
+        """Close TCP connection and HTTP parser"""
         if self.tcpclient != None and self.httpparser != None:
             self.removeChild(self.tcpclient)
             self.removeChild(self.httpparser)    
@@ -163,6 +175,9 @@ class SingleShotHTTPClient(component):
             self.httpparser = None
 
     def handleRedirect(self, header):
+        """Check for a redirect response and queue the fetching the page it points to if it is such a response.
+        Returns true if it was a redirect page and false otherwise."""
+        
         if header["responsecode"] == "302" or header["responsecode"] == "303" or header["responsecode"] == "307":
             # location header gives the redirect URL
             newurl = header["headers"].get("location", "")
@@ -177,14 +192,19 @@ class SingleShotHTTPClient(component):
             return False
                             
     def main(self):
+        """Main loop."""
         self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
         while self.mainBody():
             yield 1
-        self.send(producerFinished(), "signal")
+        self.send(producerFinished(self), "signal")
         yield 1
         return
         
     def mainBody(self):
+        """Called repeatedly by main loop. Checks inboxes and processes messages received.
+        Start the fetching of the new page if the current one is a redirect and has been
+        completely fetched."""
+        
         self.send("SingleShotHTTPClient.mainBody()", "debug")
         while self.dataReady("_parserinbox"):
             msg = self.recv("_parserinbox")
@@ -238,6 +258,7 @@ class SingleShotHTTPClient(component):
         return 1
 
 def makeSSHTTPClient(url):
+    """Creates a SingleShotHTTPClient for the given URL. Needed for Carousel."""
     return SingleShotHTTPClient(url)
 
 class SimpleHTTPClient(component):
@@ -270,12 +291,14 @@ class SimpleHTTPClient(component):
         self.carousel.activate()
         
     def cleanup(self):
+        """Destroy child components and send producerFinished when we quit."""    
         self.send("SimpleHTTPClient.cleanup()", "debug")
         self.send(shutdown(), "_carouselsignal")
         self.removeChild(self.carousel)
-        self.send(producerFinished(), "signal")
+        self.send(producerFinished(self), "signal")
         
     def main(self):
+        """Main loop."""
         self.send("SimpleHTTPClient.main()", "debug")
         finished = False
         while not finished:
@@ -303,7 +326,7 @@ class SimpleHTTPClient(component):
                             self.cleanup()
                             
                     while self.dataReady("_carouselready"):
-                        msg = self.recv("_carouselready")
+                        msg =S self.recv("_carouselready")
                         carouselbusy = False
 
                     self.pause()
