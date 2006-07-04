@@ -1,21 +1,26 @@
+"""An example application using the TorrentPatron component to download
+several files concurrently, fetching their .torrent files using HTTP."""
+
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Axon.Scheduler import scheduler
 
-import sys ; sys.path.append("../")
+import sys
+sys.path.append("../../")
 
-from TriggeredFileReader import TriggeredFileReader
-from DataSource import DataSource
-from HTTPClient import HTTPClient
-from btkam import BasicTorrentExplainer
-from btkamservice import TorrentPatron
+from Util.DataSource import DataSource
+
+from HTTP.HTTPClient import SimpleHTTPClient
+
+from Torrent.TorrentClient import BasicTorrentExplainer
+from Torrent.TorrentPatron import TorrentPatron
 
 if __name__ == '__main__':
     
     # download a linux distro
     X = pipeline(
         DataSource( ["http://www.legaltorrents.com/bit/trusted-computing.torrent"] ),
-        HTTPClient(),
+        SimpleHTTPClient(),
         TorrentPatron(),
         BasicTorrentExplainer(),
         ConsoleEchoer(),    
@@ -24,7 +29,7 @@ if __name__ == '__main__':
     Y = pipeline(
         DataSource( ["http://www.legaltorrents.com/bit/trusted-computing.torrent",
                      "http://www.legaltorrents.com/bit/freeculture.zip.torrent"] ),
-        HTTPClient(),
+        SimpleHTTPClient(),
         TorrentPatron(),
         BasicTorrentExplainer(),
         ConsoleEchoer(),    
