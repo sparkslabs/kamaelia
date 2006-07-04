@@ -46,61 +46,77 @@ inject_main_logfile()
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
-#TorrentClient Responses
-class IPCNewTorrentCreated(object):
-    def __init__(self, torrentid, savefolder):
-        super(IPCNewTorrentCreated, self).__init__()
-        self.torrentid = torrentid
-        self.savefolder = savefolder
-    def gettext(self):
-        return "New torrent %s created in %s" % (self.torrentid, self.savefolder)
-        
-class IPCTorrentAlreadyDownloading(object):
-    def __init__(self, torrentid):
-        super(IPCTorrentAlreadyDownloading, self).__init__()
-        self.torrentid = torrentid
-    def gettext(self):
-        return "That torrent is already downloading!"
-        
-class IPCTorrentStartFail(object):
-    def gettext(self):
-        return "Torrent failed to start!"
+from TorrentIPC import *
 
-class IPCTorrentStatusUpdate(object):
-    def __init__(self, torrentid, statsdictionary):
-        super(IPCTorrentStatusUpdate, self).__init__()    
-        self.torrentid = torrentid
-        self.statsdictionary = statsdictionary
-    def gettext(self):
-        return "Torrent %d status : %s" % (self.torrentid, str(int(self.statsdictionary.get("fractionDone","0") * 100)) + "%")
+"""\
+=================
+TorrentClient - a BitTorrent Client
+=================
 
-#Requests to TorrentClient
-class IPCCreateNewTorrent(object):
-    def __init__(self, rawmetainfo):
-        super(IPCCreateNewTorrent, self).__init__()
-        self.rawmetainfo = rawmetainfo
-        
-class IPCCloseTorrent(object):
-    def __init__(self, torrentid):
-        super(IPCCloseTorrent, self).__init__()
-        self.torrentid = torrentid
+This component is for downloading and uploading data using the peer-to-peer
+BitTorrent protocol.
 
+I should start by saying "DO NOT USE THIS COMPONENT YOURSELF".
+
+This component wraps the Mainline (official) BitTorrent client, which
+unfortunately is not thread-safe (at least with the latest version - 4.20).
+If you run two instances of this client simultaneously, Python will die
+with an exception, or if you're really unlucky, a segfault.
+
+But despair not! There is a solution - use TorrentHandler instead.
+TorrentHandlers will organise the sharing of a single TorrentClient amongst
+themselves and expose exactly the same interface (except that the
+tickInterval optional argument cannot be set) with the key advantage
+that you can run as many of them as you want.
+
+For a description of the interfaces of TorrentClient see TorrentHandler.py.
+
+How does it work?
+-----------------
+
+TorrentClient is a threadedcomponent that uses the libraries of the Mainline
+(official) BitTorrent client to provide BitTorrent functionality. As Mainline
+was designed to block (use blocking function calls) this makes it incompatible
+with the normal structure of an Axon component - it cannot yield regularly.
+As such it uses a threadedcomponent, allowing it to block with impunity.
+
+Each torrent is assigned a unique id (currently equal to the count of torrents
+seen but don't rely on it). Inboxes are checked periodically (every tickInterval
+seconds, where tickInterval is 5 by default)
+
+TorrentClient currently cannot be shutdown.
+"""
 
 class MakeshiftTorrent(object):
+    """While a torrent is started, an instance of this class is used in place of
+    a real Torrent object (a class from Mainline) to store its metainfo"""
+    
     def __init__(self, metainfo):
         super(MakeshiftTorrent, self).__init__()
         self.metainfo = metainfo
         
 class TorrentClient(threadedcomponent):
-    """Using threadedcomponent so we don't have to worry about blocking IO or making
-    mainline yield periodically"""
+    """\
+    TorrentClient([tickInterval]) -> component capable of downloading/sharing torrents.
+
+    Initialises the Mainline client.
+   
+    Arguments:
+    - [tickInterval=5] -- the interval in seconds at which TorrentClient checks inboxes
     
-    Inboxes  = { "inbox"   : "Torrent URL",
-                "control" : "NOT USED",
-              }
-    Outboxes = { "outbox" : "State change information, e.g. finished",
-                "signal" : "NOT USED",
-              }
+    Using threadedcomponent so we don't have to worry about blocking I/O or making
+    mainline yield periodically
+    """
+    
+    Inboxes = {
+        "inbox"   : "Torrent IPC - add a torrent, stop a torrent etc.",
+        "control" : "NOT USED"
+    }
+    Outboxes = {
+        "outbox"  : "Torrent IPC - status updates, completion, new torrent added etc.",
+        "signal"  : "NOT USED"
+    }
+
     def __init__(self, tickInterval = 5):
         super(TorrentClient, self).__init__()
         self.totaltorrents = 0
@@ -109,6 +125,10 @@ class TorrentClient(threadedcomponent):
         self.tickInterval = tickInterval #seconds
         
     def main(self):
+        """\
+        Start the Mainline client and block forever listening for connectons
+        """
+      
         uiname = "bittorrent-console"
         defaults = get_defaults(uiname)
         config, args = configfile.parse_configuration_and_args(defaults, uiname)
@@ -162,6 +182,11 @@ class TorrentClient(threadedcomponent):
         #    print "Failed to start torrent"
 
     def decodeTorrent(self, data):
+        """\
+        Converts bencoded raw metadata (as one would find in a .torrent file) into
+        a metainfo object (which one can then get the torrent's properties from).
+        """
+            
         from BitTorrent.bencode import bdecode, bencode
         metainfo = None
         try:
@@ -172,12 +197,17 @@ class TorrentClient(threadedcomponent):
         return metainfo
         
     def tick(self):
-        "Called periodically"
+        """\
+        Called periodically... by itself (gets rawserver to call it back after a delay of
+        tickInterval seconds). Checks inboxes and sends a status-update message for every
+        active torrent.
+        """
+
         self.multitorrent.rawserver.add_task(self.tickInterval, self.tick)
         #print "Tick"
         while self.dataReady("inbox"):
             temp = self.recv("inbox")
-            if isinstance(temp, IPCCreateNewTorrent) or isinstance(temp, str):
+            if isinstance(temp, TIPCCreateNewTorrent) or isinstance(temp, str):
                 if isinstance(temp, str):
                     metainfo = self.decodeTorrent(temp)
                 else:
@@ -187,15 +217,15 @@ class TorrentClient(threadedcomponent):
                     
                     existingTorrentId = self.torrentinfohashes.get(metainfo.infohash, 0)
                     if existingTorrentId != 0:
-                        self.send(IPCTorrentAlreadyDownloading(existingTorrentId), "outbox")
+                        self.send(TIPCTorrentAlreadyDownloading(torrentid=existingTorrentId), "outbox")
                     else:
                         self.totaltorrents += 1
                         self.torrentinfohashes[metainfo.infohash] = self.totaltorrents
                         self.torrents[self.totaltorrents] = MakeshiftTorrent(metainfo)                    
                         self.startTorrent(metainfo, savefolder, savefolder, self.totaltorrents)
-                        self.send(IPCNewTorrentCreated(self.totaltorrents, savefolder), "outbox")
-            elif isinstance(temp, IPCCloseTorrent):
-                torrent = self.torrents.get(temp.torrentid,None)
+                        self.send(TIPCNewTorrentCreated(torrentid=self.totaltorrents, savefolder=savefolder), "outbox")
+            elif isinstance(temp, TIPCCloseTorrent):
+                torrent = self.torrents.get(temp.torrentid, None)
                 if torrent != None:
                     self.multitorrent.remove_torrent(torrent.metainfo.infohash)
                     self.torrentinfohashes.erase(torrent.metainfo.infohash)
@@ -203,7 +233,7 @@ class TorrentClient(threadedcomponent):
                     
         for torrentid, torrent in self.torrents.items():
             if not isinstance(torrent, MakeshiftTorrent):
-                self.send(IPCTorrentStatusUpdate(torrentid, torrent.get_status()), "outbox")
+                self.send(TIPCTorrentStatusUpdate(torrentid=torrentid, statsdictionary=torrent.get_status()), "outbox")
         
         #if self.torrent is not None:
         #    status = self.torrent.get_status(self.config['spew'])
@@ -211,6 +241,12 @@ class TorrentClient(threadedcomponent):
 
 
 class BasicTorrentExplainer(component):
+    """\
+    BasicTorrentExplainer() -> component useful for debugging TorrentClient/TorrentPatron
+
+    This component converts each torrent IPC messags it receives into human readable
+    line of text.
+    """
     def main(self):
         while 1:
             yield 1
@@ -225,11 +261,17 @@ class BasicTorrentExplainer(component):
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    import sys ; sys.path.append("/home/ryan/kamaelia/Sketches/RJL/")
+    
+    import sys
+    sys.path.append("../Util/")
+    
     from TriggeredFileReader import TriggeredFileReader
     from Axon.Component import component
 
     # download a linux distro or whatever
+    # NOTE: Do not follow this example. It is used to illustrate/test the use of a TorrentClient component
+    # alone. TorrentPatron can and should be used in place of TorrentClient for user applications
+    # as it supports multiple instances (create two TorrentClients and see it all come falling down).
     pipeline(
         ConsoleReader(">>> ", ""),
         TriggeredFileReader(),
