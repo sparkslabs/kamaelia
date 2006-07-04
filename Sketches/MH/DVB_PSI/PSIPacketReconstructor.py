@@ -14,15 +14,16 @@ from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 class PSIPacketReconstructorService(AdaptiveCommsComponent):
     """\
     
-    Subscribe to PSI packets by sending ("ADD", (component,inbox), [PIDs] ) to "notify"
-    Unsubscribe by sending ("REMOVE", (component,inbox), [PIDs] ) to "notify"
+    Subscribe to PSI packets by sending ("ADD", (component,inbox), [PIDs] ) to "request"
+    Unsubscribe by sending ("REMOVE", (component,inbox), [PIDs] ) to "request"
     """
     Inboxes = { "inbox" : "Incoming DVB TS packets",
                 "control" : "Shutdown signalling",
-                "notify" : "Place for subscribing/unsubscribing from different PSI packet streams",
+                "request" : "Place for subscribing/unsubscribing from different PSI packet streams",
               }
     Outboxes = { "outbox" : "NOT USED",
                  "signal" : "Shutdown signalling",
+                 "pid_request" : "For issuing requests for PIDs",
                }
                
     def __init__(self):
@@ -66,6 +67,7 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
                 try:
                     outboxname, ctrlboxname, inboxname, PSIcomponent = self.activePids[pid]
                 except KeyError:
+                    # set up a new PSI packet reconstructor
                     outboxname = self.addOutbox("_toReconstructor_"+str(pid))
                     inboxname  = self.addInbox("_fromReconstructor_"+str(pid))
                     ctrlboxname = self.addOutbox("_signalReconstructor_"+str(pid))
@@ -75,6 +77,8 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
                     self.link((self,ctrlboxname),(PSIcomponent,"control"))
                     self.link((PSIcomponent,"outbox"),(self,inboxname))
                     self.activePids[pid] = outboxname, ctrlboxname, inboxname, PSIcomponent
+                    # and subscribe to the PID for it
+                    self.send( ("ADD",[pid],(self,"inbox")), "pid_request")
                     
                 # add (or fetch existing) routing for this PID
                 try:
@@ -116,6 +120,8 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
                         self.deleteOutbox(ctrlboxname)
                         self.deleteInbox(inboxname)
                         del self.activePids[pid]
+                        # and unsubscribe from the PID for it
+                        self.send( ("REMOVE",[pid],(self,"inbox")), "pid_request")
                         
             # if no longer subscribed to any PIDs on this destination, then clean it up
             if not subscribedToPids:
@@ -127,8 +133,8 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
     def main(self):
         while not self.shutdown():
             
-            while self.dataReady("notify"):
-                self.handleSubscribeUnsubscribe(self.recv("notify"))
+            while self.dataReady("request"):
+                self.handleSubscribeUnsubscribe(self.recv("request"))
                     
             
             # route incoming transport stream packets according to PID to the
@@ -219,7 +225,7 @@ if __name__ == "__main__":
             print self.spacing,"  ",self.subscribed
                 
         def main(self):
-            self.link((self,"outbox"),(svc,"notify"))
+            self.link((self,"outbox"),(svc,"request"))
             nextchangetime = self.scheduler.time + random.randrange(5,10)
             self.notyetreceived = self.subscribed[:]
             while 1:
