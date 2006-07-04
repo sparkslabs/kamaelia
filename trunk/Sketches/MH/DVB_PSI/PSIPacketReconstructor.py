@@ -142,7 +142,7 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
             while self.dataReady("inbox"):
                 ts_packet = self.recv("inbox")
                 
-                pid = ((ord(ts_packet[1]) << 8) + ord(ts_packet[2])) & 0x01ff
+                pid = ((ord(ts_packet[1]) << 8) + ord(ts_packet[2])) & 0x01fff
                 try:
                     toReconstructorBox = self.activePids[pid][0]
                     self.send(ts_packet, toReconstructorBox)
