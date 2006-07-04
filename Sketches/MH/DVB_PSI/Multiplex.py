@@ -42,26 +42,11 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, feparams={}, called=None):
+    def __init__(self, freq, feparams={}):
         self.freq = freq
         self.feparams = feparams
         super(DVB_Multiplex, self).__init__()
         
-        if called:
-            self.servicename = called
-            cat = CAT.getcat()
-            try:
-                cat.registerService(self.servicename, self, "inbox")
-            except Axon.AxonExceptions.ServiceAlreadyExists, e:
-                print "***************************** ERROR *****************************"
-                print "An attempt to make a 2nd DVB_Multiplex with the same name happened."
-                print "This is incorrect usage."
-                print 
-                traceback.print_exc(3)
-                print "***************************** ERROR *****************************"
-    
-                raise e
-    
     
     def shutdown(self):
         while self.dataReady("control"):
@@ -154,6 +139,8 @@ class DVB_Multiplex(threadedcomponent):
                     del demuxers[pid]
                     
             return demuxers
+
+
 
 if __name__=="__main__":
     
@@ -267,6 +254,10 @@ if __name__=="__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Demuxer import DVB_Demuxer
     
+    from sys import path
+    path.append("..")
+    from ServiceWrapper import Service
+    
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
@@ -279,15 +270,14 @@ if __name__=="__main__":
     Subscriber("MUX1", 0,  0,0x11,0x12,600,601).activate()
     Subscriber("MUX1", 25, 0,0x11,0x12,600,601).activate()
 
-    Graphline( MUX = DVB_Multiplex(505833330.0/1000000.0, feparams),
-               DEMUX = DVB_Demuxer(called="MUX1"),
-               linkages = {
-                       ("DEMUX","pid_request") : ("MUX",  "inbox"),
-                       ("MUX",  "outbox")      : ("DEMUX","inbox"),
-                   }
-             ).run()
+    demux = Graphline( MUX   = DVB_Multiplex(505833330.0/1000000.0, feparams),
+                       DEMUX = DVB_Demuxer(),
+                       linkages = {
+                           ("self", "inbox")       : ("DEMUX","request"),
+                           ("DEMUX","pid_request") : ("MUX",  "inbox"),
+                           ("MUX",  "outbox")      : ("DEMUX","inbox"),
+                       }
+                     )
+                     
+    Service(demux,{"MUX1":"inbox"}).run()
 
-#    pipeline( DVB_Multiplex(505833330.0/1000000.0, feparams, called="MUX1"),
-#              DVB_PacketAligner(),
-#              Subscriber("MUX1", 0,     0, 0x11, 0x12, 600, 601),
-#            ).run()
