@@ -1,3 +1,34 @@
+"""\
+===================
+Icecast/SHOUTcast MP3 streaming client
+===================
+
+This component uses HTTP to stream MP3 audio from a SHOUTcast/Icecast server.
+
+Example Usage
+-------------
+
+IcecastClient fetches the combined audio and metadata stream from the
+HTTP server hosting the stream. IcecastDemux separates the audio data
+from the metadata in stream and IcecastStreamWriter writes the audio
+data to disk (discarding metadata).
+
+    pipeline(
+        IcecastClient("http://64.236.34.97:80/stream/1049"),
+        IcecastDemux(),
+        IcecastStreamWriter("stream.mp3"),
+    ).run()
+
+How does it work?
+-----------------
+The SHOUTcast protocol is virtually identical to HTTP. As such, IcecastClient
+subclasses SingleShotHTTPClient modifying the request slightly to ask for
+stream metadata(e.g. track name) to be included (by adding the icy-metadata header).
+It is otherwise identical to its parent class.
+
+
+"""
+
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.Internet.TCPClient import TCPClient
@@ -41,7 +72,7 @@ class IceIPCDisconnected(object):
 
 
 class IcecastDemux(component):
-    """Split an Icecast stream into A/V data and metadata"""
+    """Splits an Icecast stream into A/V data and metadata"""
     def dictizeMetadata(self, metadata):
         #print "IcecastClient.dictizeMetadata()"    
         #format:
@@ -113,9 +144,19 @@ class IcecastDemux(component):
             self.pause()
 
 class IcecastClient(SingleShotHTTPClient):
+    """\
+    IcecastClient(starturl) -> Icecast/SHOUTcast MP3 streaming component
 
-    def formRequest(self, url): #override the standard HTTP request with an Icecast/SHOUTcast variant
-        print "IcecastClient.formRequest()"
+    Arguments:
+    - starturl    -- the URL of the stream
+    """
+    
+    def formRequest(self, url): 
+        """Overrides the standard HTTP request with an Icecast/SHOUTcast variant
+        which includes the icy-metadata header required to get metadata with the
+        stream"""
+        
+        self.send("IcecastClient.formRequest()", "debug")
         
         splituri = splitUri(url)
         
@@ -146,6 +187,7 @@ class IcecastStreamWriter(component):
         "outbox"  : "UNUSED",
         "signal"  : "UNUSED"
     }
+
     def __init__(self, filename):
         super(IcecastStreamWriter, self).__init__()
         self.filename = filename
@@ -164,7 +206,7 @@ if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     
     pipeline(
-        IcecastClient("http://yourlocalscene.wazee.org:8020/"),
+        IcecastClient("http://64.236.34.97:80/stream/1049"),
         IcecastDemux(),
         IcecastStreamWriter("stream.mp3"),
     ).run()
