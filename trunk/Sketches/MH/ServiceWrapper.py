@@ -13,8 +13,8 @@ def Service(component, services):
     for (name, boxname) in services.items():
         
         try:
-            cat.registerService(name, comp, boxname)
-        except Axon.AxonExceptions.ServiceAlreadyExists, e:
+            cat.registerService(name, component, boxname)
+        except ServiceAlreadyExists, e:
             print "***************************** ERROR *****************************"
             print "An attempt to reuse service names happened."
             print "This is incorrect usage."
