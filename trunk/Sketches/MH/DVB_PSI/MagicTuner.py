@@ -13,10 +13,8 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 
 from Kamaelia.Chassis.Pipeline import pipeline
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
 
-from Demuxer import DVB_Demuxer
 from PSIPacketReconstructor import PSIPacketReconstructorService
 import dvb3.frontend
 
@@ -172,9 +170,15 @@ if __name__ == "__main__":
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-    pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x2000], feparams),
-              DVB_Demuxer(called="MUX1"),
-            ).activate()
+    from Multiplex import DVB_Receiver
+    from sys import path
+    path.append("..")
+    from ServiceWrapper import Service
+    
+    Service( DVB_Receiver(505833330.0/1000000.0, feparams),
+             {"MUX1":"inbox"}
+           ).activate()
+    
 
 #    si  = DVB_SI(called="MUX1_SI",fromDemuxer="MUX1").activate()
 
