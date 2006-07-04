@@ -42,24 +42,25 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, feparams={}, called="MUX"):
+    def __init__(self, freq, feparams={}, called=None):
         self.freq = freq
         self.feparams = feparams
         super(DVB_Multiplex, self).__init__()
         
-        self.servicename = called
-        cat = CAT.getcat()
-        try:
-            cat.registerService(self.servicename, self, "inbox")
-        except Axon.AxonExceptions.ServiceAlreadyExists, e:
-            print "***************************** ERROR *****************************"
-            print "An attempt to make a 2nd DVB_Multiplex with the same name happened."
-            print "This is incorrect usage."
-            print 
-            traceback.print_exc(3)
-            print "***************************** ERROR *****************************"
-
-            raise e
+        if called:
+            self.servicename = called
+            cat = CAT.getcat()
+            try:
+                cat.registerService(self.servicename, self, "inbox")
+            except Axon.AxonExceptions.ServiceAlreadyExists, e:
+                print "***************************** ERROR *****************************"
+                print "An attempt to make a 2nd DVB_Multiplex with the same name happened."
+                print "This is incorrect usage."
+                print 
+                traceback.print_exc(3)
+                print "***************************** ERROR *****************************"
+    
+                raise e
     
     
     def shutdown(self):
@@ -179,11 +180,11 @@ if __name__=="__main__":
         def changeSubscription(self):
             if random.randrange(0,2) == 1:
                 pids = self.takesomefrom(self.notsubscribed)
-                self.send( ("ADD",pids), "outbox")
+                self.send( ("ADD",(self,"inbox"),pids), "outbox")
                 self.subscribed.extend(pids)
             else:
                 pids = self.takesomefrom(self.subscribed)
-                self.send( ("REMOVE",pids), "outbox")
+                self.send( ("REMOVE",(self,"inbox"),pids), "outbox")
                 self.notsubscribed.extend(pids)
             print self.spacing,"Now subscribed to pids:"
             print self.spacing,"  ",self.subscribed
@@ -263,6 +264,9 @@ if __name__=="__main__":
                 yield 1
 
     from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Demuxer import DVB_Demuxer
+    
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
@@ -270,12 +274,20 @@ if __name__=="__main__":
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-#    print "---1st subscriber:------|---2nd subscriber:------"
-#    
-#    Subscriber("MUX1", 0,  0,0x11,0x12).activate()
-#    Subscriber("MUX1", 25, 1,2,3,4,5).activate()
+    print "---1st subscriber:------|---2nd subscriber:------"
+    
+    Subscriber("MUX1", 0,  0,0x11,0x12,600,601).activate()
+    Subscriber("MUX1", 25, 0,0x11,0x12,600,601).activate()
 
-    pipeline( DVB_Multiplex(505833330.0/1000000.0, feparams, called="MUX1"),
-              DVB_PacketAligner(),
-              Subscriber("MUX1", 0,     0, 0x11, 0x12, 600, 601),
-            ).run()
+    Graphline( MUX = DVB_Multiplex(505833330.0/1000000.0, feparams),
+               DEMUX = DVB_Demuxer(called="MUX1"),
+               linkages = {
+                       ("DEMUX","pid_request") : ("MUX",  "inbox"),
+                       ("MUX",  "outbox")      : ("DEMUX","inbox"),
+                   }
+             ).run()
+
+#    pipeline( DVB_Multiplex(505833330.0/1000000.0, feparams, called="MUX1"),
+#              DVB_PacketAligner(),
+#              Subscriber("MUX1", 0,     0, 0x11, 0x12, 600, 601),
+#            ).run()
