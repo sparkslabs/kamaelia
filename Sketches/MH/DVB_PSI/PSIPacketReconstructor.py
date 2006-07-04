@@ -50,7 +50,7 @@ class PSIPacketReconstructorService(AdaptiveCommsComponent):
         
         
     def handleSubscribeUnsubscribe(self, msg):
-        cmd, dest, pids = msg
+        cmd, pids, dest = msg
         
         if cmd=="ADD":
             # add (or fetch existing) outbox going to this destination
@@ -215,11 +215,11 @@ if __name__ == "__main__":
         def changeSubscription(self):
             if random.randrange(0,2) == 1:
                 pids = self.takesomefrom(self.notsubscribed)
-                self.send( ("ADD",(self,"inbox"),pids), "outbox")
+                self.send( ("ADD",pids,(self,"inbox")), "outbox")
                 self.subscribed.extend(pids)
             else:
                 pids = self.takesomefrom(self.subscribed)
-                self.send( ("REMOVE",(self,"inbox"),pids), "outbox")
+                self.send( ("REMOVE",pids,(self,"inbox")), "outbox")
                 self.notsubscribed.extend(pids)
             print self.spacing,"Now subscribed to pids:"
             print self.spacing,"  ",self.subscribed
