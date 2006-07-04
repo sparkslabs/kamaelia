@@ -8,11 +8,11 @@ from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 
 
-def Service(component, *services):
+def Service(component, services):
     super(Service,self).__init__()
 
     cat = CAT.getcat()
-    for (name, boxname) in services:
+    for (name, boxname) in services.items():
         
         try:
             cat.registerService(name, comp, boxname)
