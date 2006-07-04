@@ -10,16 +10,15 @@ import dvb3.dmx
 import time
 import struct
 
-from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import shutdownMicroprocess,producerFinished
-from Axon.AxonExceptions import ServiceAlreadyExists
-from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+from Kamaelia.Chassis.Graphline import Graphline
+from Demuxer import DVB_Demuxer
 
 
 DVB_PACKET_SIZE = 188
 DVB_RESYNC = "\x47"
-import Axon.AdaptiveCommsComponent
+    
     
 class DVB_Multiplex(threadedcomponent):
     """\
@@ -141,10 +140,27 @@ class DVB_Multiplex(threadedcomponent):
             return demuxers
 
 
+def DVB_Receiver(frequency, feparams):
+    return Graphline( MUX   = DVB_Multiplex(frequency, feparams),
+                      DEMUX = DVB_Demuxer(),
+                      linkages = {
+                          ("self", "inbox")       : ("DEMUX","request"),
+                          ("DEMUX","pid_request") : ("MUX",  "inbox"),
+                          ("MUX",  "outbox")      : ("DEMUX","inbox"),
+                          
+                          # propagate shutdown messages
+                          ("self",  "control") : ("MUX",   "control"),
+                          ("MUX",   "signal")  : ("DEMUX", "control"),
+                          ("DEMUX", "signal")  : ("self",  "signal"),
+                      }
+                    )
 
 if __name__=="__main__":
     
     import random
+    from Axon.Component import component
+    from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+    from Axon.AxonExceptions import ServiceAlreadyExists
 
     class Subscriber(component):
         def __init__(self, servicename, spacing, *pids):
@@ -202,57 +218,9 @@ if __name__=="__main__":
                 if self.subscribed:
                     self.pause()
                 yield 1
-                
-                
-                
-    class DVB_PacketAligner(component):
-        def shutdown(self):
-            while self.dataReady("control"):
-                msg = self.recv("control")
-                self.send(msg,"signal")
-                if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                    self.shuttingdown=True
-            return self.shuttingdown
-        
-        def main(self):
-            buffer = ""
-            buffers = []
-            self.shuttingdown=False
-            
-            while not self.shutdown():
-                
-                while self.dataReady("inbox"):
-                    buffers.append(self.recv("inbox"))
-                    
-                while len(buffers)>0:
-                    
-                    if len(buffer) == 0:
-                        buffer = buffers.pop(0)
-                    else:
-                        buffer += buffers.pop(0)
-        
-                    while len(buffer) >= DVB_PACKET_SIZE:
-                        i = buffer.find(DVB_RESYNC)
-                        if i == -1: # if not found
-                            "we have a dud"
-                            buffer = ""
-                            continue
-                        if i>0:
-                            # if found remove all bytes preceeding that point in the buffers
-                            # And try again
-                            buffer = buffer[i:]
-                            continue
-                        # packet is the first 188 bytes in the buffer now
-                        packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
-        
-                        self.send(packet, "outbox")
-                            
-                self.pause()
-                yield 1
+
 
     from Kamaelia.Chassis.Pipeline import pipeline
-    from Kamaelia.Chassis.Graphline import Graphline
-    from Demuxer import DVB_Demuxer
     
     from sys import path
     path.append("..")
@@ -270,14 +238,7 @@ if __name__=="__main__":
     Subscriber("MUX1", 0,  0,0x11,0x12,600,601).activate()
     Subscriber("MUX1", 25, 0,0x11,0x12,600,601).activate()
 
-    demux = Graphline( MUX   = DVB_Multiplex(505833330.0/1000000.0, feparams),
-                       DEMUX = DVB_Demuxer(),
-                       linkages = {
-                           ("self", "inbox")       : ("DEMUX","request"),
-                           ("DEMUX","pid_request") : ("MUX",  "inbox"),
-                           ("MUX",  "outbox")      : ("DEMUX","inbox"),
-                       }
-                     )
+    demux = DVB_Receiver(505833330.0/1000000.0, feparams)
                      
     Service(demux,{"MUX1":"inbox"}).run()
 
