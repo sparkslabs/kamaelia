@@ -49,23 +49,6 @@ class DVB_Demuxer(AdaptiveCommsComponent):
         "pid_request" : "Messages to subscribe/unsubscribe from PIDs",
     }
     
-    def __init__(self, called):
-        super(DVB_Demuxer, self).__init__()
-        
-        self.servicename = called
-        cat = CAT.getcat()
-        try:
-            cat.registerService(self.servicename, self, "request")
-        except Axon.AxonExceptions.ServiceAlreadyExists, e:
-            print "***************************** ERROR *****************************"
-            print "An attempt to make a 2nd DVB_Demux with the same name happened."
-            print "This is incorrect usage."
-            print 
-            traceback.print_exc(3)
-            print "***************************** ERROR *****************************"
-
-            raise e
-
 
     def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
     def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
@@ -276,7 +259,10 @@ if __name__=="__main__":
     Subscriber("MUX1", 25, 1,2,3,4,5).activate()
 
     from Kamaelia.Chassis.Pipeline import pipeline
+    from sys import path
+    path.append("..")
+    from ServiceWrapper import Service
     
     pipeline( PacketSource(),
-              DVB_Demuxer(called="MUX1"),
+              Service(DVB_Demuxer(),{"MUX1":"request"}),
             ).run()
