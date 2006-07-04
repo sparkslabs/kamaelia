@@ -121,7 +121,7 @@ class DVB_Demuxer(AdaptiveCommsComponent):
 
     def handleCommand(self,cmd):
         if cmd[0] == "ADD":
-            dest, pidlist = cmd[1], cmd[2]          # dest = (component,inboxname)
+            pidlist, dest = cmd[1], cmd[2]          # dest = (component,inboxname)
             
             # get, or set up the outbox
             try:
@@ -148,7 +148,7 @@ class DVB_Demuxer(AdaptiveCommsComponent):
                     self.boxRefCount[outboxname] += 1
             
         elif cmd[0] == "REMOVE":
-            dest, pidlist = cmd[1], cmd[2]
+            pidlist, dest = cmd[1], cmd[2]
             
             # skip if we dont' actually know about this destination
             try:
@@ -217,11 +217,11 @@ if __name__=="__main__":
         def changeSubscription(self):
             if random.randrange(0,2) == 1:
                 pids = self.takesomefrom(self.notsubscribed)
-                self.send( ("ADD",(self,"inbox"),pids), "outbox")
+                self.send( ("ADD",pids,(self,"inbox")), "outbox")
                 self.subscribed.extend(pids)
             else:
                 pids = self.takesomefrom(self.subscribed)
-                self.send( ("REMOVE",(self,"inbox"),pids), "outbox")
+                self.send( ("REMOVE",pids,(self,"inbox")), "outbox")
                 self.notsubscribed.extend(pids)
             print self.spacing,"Now subscribed to pids:"
             print self.spacing,"  ",self.subscribed

@@ -55,7 +55,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         sdt_parser = pipeline( PSIPacketReconstructor(),
                                ParseSDT_ActualTS(),
                              ).activate()
-        self.send( ("ADD",(sdt_parser,"inbox"),[SDT_PID]), toDemuxer)
+        self.send( ("ADD",[SDT_PID],(sdt_parser,"inbox")), toDemuxer)
         
         fromSDT = self.addInbox("fromSDT")
         fromSDT_linkage = self.link( (sdt_parser,"outbox"),(self,fromSDT) )
@@ -89,7 +89,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         pat_parser = pipeline( PSIPacketReconstructor(),
                                ParsePAT(),
                              ).activate()
-        self.send( ("ADD", (pat_parser,"inbox"),[PAT_PID]), toDemuxer)
+        self.send( ("ADD",[PAT_PID], (pat_parser,"inbox")), toDemuxer)
         
         fromPAT = self.addInbox("fromPAT")
         fromPAT_linkage = self.link( (pat_parser,"outbox"),(self,fromPAT) )
@@ -115,7 +115,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         pmt_parser = pipeline( PSIPacketReconstructor(),
                                ParsePMT(),
                              ).activate()
-        self.send( ("ADD", (pmt_parser,"inbox"),[PMT_PID]), toDemuxer)
+        self.send( ("ADD",[PMT_PID], (pmt_parser,"inbox")), toDemuxer)
         
         fromPMT = self.addInbox("fromPMT")
         fromPMT_linkage = self.link( (pmt_parser,"outbox"),(self,fromPMT) )
@@ -144,7 +144,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         # now set up to receive those pids and forward them on for all eternity
         
         fromDemuxer = self.addInbox("fromDemuxer")
-        self.send( ("ADD", (self,fromDemuxer),[audio_pid,video_pid]), toDemuxer)
+        self.send( ("ADD",[audio_pid,video_pid], (self,fromDemuxer)), toDemuxer)
         
         while 1:
             while self.dataReady(fromDemuxer):
