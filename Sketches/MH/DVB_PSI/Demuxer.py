@@ -43,6 +43,12 @@ class DVB_Demuxer(AdaptiveCommsComponent):
         "request" : "Where we receive add and remove messages",
         "control" : "We will receive shutdown messages here",
     }
+    Outboxes = {
+        "outbox" : "NOT USED",
+        "signal" : "Shutdown signalling",
+        "pid_request" : "Messages to subscribe/unsubscribe from PIDs",
+    }
+    
     def __init__(self, called):
         super(DVB_Demuxer, self).__init__()
         
@@ -151,6 +157,8 @@ class DVB_Demuxer(AdaptiveCommsComponent):
                 except KeyError:
                     outboxes = []
                     self.pid2outboxes[pid] = outboxes
+                    # subscribe to this pid
+                    self.send(("ADD",[pid]), "pid_request")
                     
                 if outboxname not in outboxes:
                     outboxes.append(outboxname)
@@ -175,6 +183,7 @@ class DVB_Demuxer(AdaptiveCommsComponent):
                         
                     if outboxes == []:
                         del self.pid2outboxes[pid]
+                        self.send(("REMOVE",[pid]), "pid_request")
                         
                 except KeyError:
                     pass
