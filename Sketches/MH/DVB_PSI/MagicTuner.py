@@ -13,8 +13,6 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 
 from Kamaelia.Chassis.Pipeline import pipeline
 
-from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor
-
 from PSIPacketReconstructor import PSIPacketReconstructorService
 import dvb3.frontend
 
@@ -23,12 +21,6 @@ from ParsePAT import ParsePAT
 from ParsePMT import ParsePMT
 
 
-# def DVB_SI(called, fromDemuxer):
-#     service = PSIPacketReconstructorService()
-#     
-#     
-#     
-#     return service
 
 PAT_PID = 0x00
 SDT_PID = 0x11
@@ -50,12 +42,16 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         service = cat.retrieveService(self.demuxerservice)
         self.link((self,toDemuxer),service)
         
+        # create a PSI packet reconstructor, and wire it so it can ask
+        # the demuxer for PIDs as required.
+        psi = PSIPacketReconstructorService().activate()
+        self.link((psi,"pid_request"), service)
+        toPSI = self.addOutbox("toPSI")
+        self.link((self,toPSI),(psi,"request"))
         
         # stage 1, we need to get the service ID, so we'll query the SDT
-        sdt_parser = pipeline( PSIPacketReconstructor(),
-                               ParseSDT_ActualTS(),
-                             ).activate()
-        self.send( ("ADD",[SDT_PID],(sdt_parser,"inbox")), toDemuxer)
+        sdt_parser = ParseSDT_ActualTS().activate()
+        self.send( ("ADD",[SDT_PID],(sdt_parser,"inbox")), toPSI)
         
         fromSDT = self.addInbox("fromSDT")
         fromSDT_linkage = self.link( (sdt_parser,"outbox"),(self,fromSDT) )
@@ -86,10 +82,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
             
         # stage 2, find out which PID contains the PMT for the service,
         # so we'll query the PAT
-        pat_parser = pipeline( PSIPacketReconstructor(),
-                               ParsePAT(),
-                             ).activate()
-        self.send( ("ADD",[PAT_PID], (pat_parser,"inbox")), toDemuxer)
+        pat_parser = ParsePAT().activate()
+        self.send( ("ADD", [PAT_PID], (pat_parser,"inbox")), toPSI)
         
         fromPAT = self.addInbox("fromPAT")
         fromPAT_linkage = self.link( (pat_parser,"outbox"),(self,fromPAT) )
@@ -112,10 +106,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
             
         # stage 3, find out which PIDs contain AV data, so we'll query this
         # service's PMT
-        pmt_parser = pipeline( PSIPacketReconstructor(),
-                               ParsePMT(),
-                             ).activate()
-        self.send( ("ADD",[PMT_PID], (pmt_parser,"inbox")), toDemuxer)
+        pmt_parser = ParsePMT().activate()
+        self.send( ("ADD", [PMT_PID], (pmt_parser,"inbox")), toPSI)
         
         fromPMT = self.addInbox("fromPMT")
         fromPMT_linkage = self.link( (pmt_parser,"outbox"),(self,fromPMT) )
@@ -127,7 +119,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
             while not self.dataReady(fromPMT):
                 self.pause()
                 yield 1
-                
+
             pmt_table = self.recv(fromPMT)
             if service_id in pmt_table['services']:
                 service = pmt_table['services'][service_id]
@@ -179,8 +171,6 @@ if __name__ == "__main__":
              {"MUX1":"inbox"}
            ).activate()
     
-
-#    si  = DVB_SI(called="MUX1_SI",fromDemuxer="MUX1").activate()
 
     pipeline( DVB_TuneToChannel(channel="BBC ONE",fromDemuxer="MUX1"),
               SimpleFileWriter("bbc_one.ts"),
