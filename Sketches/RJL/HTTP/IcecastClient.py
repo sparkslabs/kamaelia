@@ -178,6 +178,17 @@ class IcecastClient(SingleShotHTTPClient):
             while self.mainBody():
                 yield 1
 
+class IcecastStreamRemoveMetadata(component):
+    def main(self):
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                msg = self.recv("inbox")
+                if isinstance(msg, IceIPCDataChunk):
+                    self.send(msg.data, "outbox")
+            self.pause()
+
+
 class IcecastStreamWriter(component):
     Inboxes = {
         "inbox"   : "Icecast stream",
