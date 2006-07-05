@@ -8,6 +8,16 @@ class TIPC(object):
     def getText(self):
         return self.__class__.__doc__ % self.__dict__
 
+# ====================== Messages to send to TorrentMaker =======================
+class TIPCMakeTorrent(TIPC):
+    "Create a .torrent file"
+    #Parameters:
+    # trackerurl - the URL of the BitTorrent tracker that will be used
+    #  log2piecesizebytes - log base 2 of the hash-piece-size, sensible value: 18
+    #  title - name of the torrent
+    #  comment - a field that can be read by users when they download the torrent
+    #  srcfile - the file that the .torrent file will have metainfo about
+    
 # ========= Messages for TorrentPatron to send to TorrentService ================
 
 # a message for TorrentClient (i.e. to be passed on by TorrentService)
@@ -45,7 +55,7 @@ class TIPCTorrentStartFail(object):
 class TIPCTorrentStatusUpdate(object):
     "Current status of a single torrent"
     def __init__(self, torrentid, statsdictionary):
-        super(IPCTorrentStatusUpdate, self).__init__()    
+        super(TIPCTorrentStatusUpdate, self).__init__()    
         self.torrentid = torrentid
         self.statsdictonary = statsdictionary
     def gettext(self):
