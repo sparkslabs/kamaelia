@@ -9,6 +9,10 @@ from TorrentIPC import *
 TorrentPatron - a BitTorrent Client
 =================
 
+State of development: BETA
+Known quirks: Clear out your ~/.bittorrent/ directory if you get errors
+about torrents including files that are part of other torrents.
+
 This component is for downloading and uploading data using the peer-to-peer
 BitTorrent protocol.
 
@@ -86,7 +90,7 @@ class TorrentPatron(Axon.Component.component):
             if self.dataReady("inbox"):
                 print "TorrentPatron inbox"            
                 msg = self.recv("inbox")
-                msg = TIPCServicePassOn(replyService=(self, "torrent-inbox"), msg)
+                msg = TIPCServicePassOn(replyService=(self, "torrent-inbox"), message=msg)
                 self.send(msg, "torrent-outbox")
                 
             elif self.dataReady("torrent-inbox"):
@@ -106,6 +110,6 @@ class TorrentPatron(Axon.Component.component):
             
             
         #unregister with the service
-        self.send(TIPCServiceRemove(replyService=(self, "torrent-inbox"), "torrent-outbox")
+        self.send(TIPCServiceRemove(replyService=(self, "torrent-inbox")), "torrent-outbox")
         
 __kamaelia_components__  = ( TorrentPatron, )
