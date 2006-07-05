@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 #
-# FIXME: Uses the selector service, but has no way of indicating to the
-#        selector service that its services are no longer required.
-#        This needs resolving.
-#
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -25,7 +21,7 @@
 # -------------------------------------------------------------------------
 """\
 =================
-SingleShotHTTPClient
+Single-Shot HTTP Client
 =================
 
 This component is for downloading a single file from an HTTP server.
@@ -33,15 +29,15 @@ Pick up data received from the server on its "outbox" outbox.
 
 Example Usage
 -------------
-TO DO
+Generally you should use SimpleHTTPClient in preference to this.
 
 
 How does it work?
 -----------------
 SingleShotHTTPClient creates an HTTPParser instance and then connects
-to the HTTP server. It sends an HTTP request and then any response from
-the server is received by the HTTPParser. HTTPParser processes the response
-and outputs it in parts as:
+to the HTTP server using a TCPClient component. It sends an HTTP request
+and then any response from the server is received by the HTTPParser.
+HTTPParser processes the response and outputs it in parts as:
 
 ParsedHTTPHeader,
 ParsedHTTPBodyChunk,
@@ -55,10 +51,33 @@ If SingleShotHTTPClient detects that the requested URL is a redirect page
 of the new page, otherwise the parts of the page output by HTTPParser are
 sent on through "outbox". 
 
+=================
+Simple HTTP Client
+=================
+
+This component downloads the pages corresponding to HTTP URLs received
+on "inbox" and outputs their contents (file data) as a message, one per
+URL, in the order they were received.
+
+Example Usage
+-------------
+
+pipeline(
+    ConsoleReader(">>> ", ""),
+    SimpleHTTPClient(),
+    SimpleFileWriter("downloadedfile.txt"),
+).run()
+
+How does it work?
+-----------------
+SimpleHTTPClient uses the Carousel component to create a new
+SingleShotHTTPClient component for every URL requested. As URLs are
+handled sequentially, there is only one SSHC at anyone time.
+
 """
 
-
 from Axon.Component import component
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.Internet.TCPClient import TCPClient
@@ -87,6 +106,11 @@ class HTTPRequest(object):
         self.requestobject = requestobject
         self.redirectcount = redirectcount
 
+def AttachConsoleToDebug(comp):
+    comp.debuggingconsole = ConsoleEchoer()
+    comp.link((comp, "debug"), (comp.debuggingconsole, "inbox"))
+    comp.debuggingconsole.activate()
+    
 class SingleShotHTTPClient(component): 
     """\
     SingleShotHTTPClient() -> component that can download a file using HTTP by URL
@@ -117,13 +141,14 @@ class SingleShotHTTPClient(component):
         "signal"         : "UNUSED"
     }
         
-    def __init__(self, starturl):
+    def __init__(self, starturl, postbody = ""):
         print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
         self.httpparser = None
         self.requestqueue = []
         self.starturl = starturl
+        self.postbody = postbody
         print "Start url: " + starturl
         
     def formRequest(self, url):
@@ -133,8 +158,24 @@ class SingleShotHTTPClient(component):
         host = splituri["uri-server"]
         if splituri.has_key("uri-port"):
             host += ":" + splituri["uri-port"]
+
+        splituri["request"] = []        
+        if self.postbody == "":    
+            splituri["request"].append("GET " + splituri["raw-uri"] + " HTTP/1.1\r\n")
+        else:
+            splituri["request"].append("POST " + splituri["raw-uri"] + " HTTP/1.1\r\n")
+            splituri["request"].append("Content-Length: " + str(len(self.postbody)) + "\r\n")
+
+        splituri["request"].append("Host: " + host + "\r\n")
+        splituri["request"].append("User-agent: Kamaelia HTTP Client 0.3 (RJL)\r\n")
+        splituri["request"].append("Connection: Keep-Alive\r\n") # keep-alive is a work around for lack of shutdown notification in TCPClient
+        splituri["request"].append("\r\n") 
+
+        splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
         
-        splituri["request"] = "GET " + splituri["raw-uri"] + " HTTP/1.1\r\nHost: " + host + "\r\nUser-agent: Kamaelia HTTP Client 0.3 (RJL)\r\nConnection: Keep-Alive\r\n\r\n" #keep-alive is a work around for lack of shutdown notification in TCPClient
+        if self.postbody != "":
+            splituri["request"].append(self.postbody)
+        
         return splituri
 
     def makeRequest(self, request):
@@ -162,15 +203,19 @@ class SingleShotHTTPClient(component):
         self.tcpclient.activate()
         self.httpparser.activate()
         self.response = ""
-        self.send(request.requestobject["request"], "_tcpoutbox")
+        if isinstance(request.requestobject["request"], str):
+            self.send(request.requestobject["request"], "_tcpoutbox")
+        else:
+            for part in request.requestobject["request"]:
+                self.send(part, "_tcpoutbox")
 
     def shutdownKids(self):
         """Close TCP connection and HTTP parser"""
         if self.tcpclient != None and self.httpparser != None:
-            self.removeChild(self.tcpclient)
-            self.removeChild(self.httpparser)    
-            self.send(shutdown(), "_tcpsignal")
+            self.send(producerFinished(), "_tcpsignal")
             self.send(shutdown(), "_parsersignal")
+            self.removeChild(self.tcpclient)
+            self.removeChild(self.httpparser)            
             self.tcpclient = None
             self.httpparser = None
 
@@ -195,6 +240,7 @@ class SingleShotHTTPClient(component):
         """Main loop."""
         self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
         while self.mainBody():
+            print "SingleShotHTTPClient.main"
             yield 1
         self.send(producerFinished(self), "signal")
         yield 1
@@ -227,6 +273,7 @@ class SingleShotHTTPClient(component):
                 if len(self.requestqueue) == 0: # if not redirecting then send the response on
                     self.send(msg, "outbox")
                 self.shutdownKids()
+                return 1
             
         while self.dataReady("_parsercontrol"):
             temp = self.recv("_parsercontrol")
@@ -257,9 +304,10 @@ class SingleShotHTTPClient(component):
         self.pause()
         return 1
 
-def makeSSHTTPClient(url):
+def makeSSHTTPClient(paramdict):
     """Creates a SingleShotHTTPClient for the given URL. Needed for Carousel."""
-    return SingleShotHTTPClient(url)
+    
+    return SingleShotHTTPClient(paramdict.get("url",""), paramdict.get("postbody",""))
 
 class SimpleHTTPClient(component):
     Inboxes = {
@@ -278,10 +326,10 @@ class SimpleHTTPClient(component):
 
     def __init__(self):
         """Create and link to a carousel object"""
-
-        self.send("SimpleHTTPClient.__init__()", "debug")    
         super(SimpleHTTPClient, self).__init__()
-
+        AttachConsoleToDebug(self)
+        self.send("SimpleHTTPClient.__init__()", "debug")    
+        
         self.carousel = Carousel(componentFactory=makeSSHTTPClient)
         self.addChildren(self.carousel)
         self.link((self, "_carouselnext"),        (self.carousel, "next"))
@@ -293,19 +341,24 @@ class SimpleHTTPClient(component):
     def cleanup(self):
         """Destroy child components and send producerFinished when we quit."""    
         self.send("SimpleHTTPClient.cleanup()", "debug")
-        self.send(shutdown(), "_carouselsignal")
-        self.removeChild(self.carousel)
+        self.send(producerFinished(self), "_carouselsignal") #shutdown() not currently supported by Carousel
         self.send(producerFinished(self), "signal")
+        self.removeChild(self.carousel)        
+        self.unpause()
         
     def main(self):
         """Main loop."""
-        self.send("SimpleHTTPClient.main()", "debug")
+        self.send("SimpleHTTPClient.main()\n", "debug")
         finished = False
         while not finished:
             yield 1
+            print "SimpleHTTPClient.main1"
             while self.dataReady("inbox"):
-                url = self.recv("inbox")
-                self.send("SimpleHTTPClient received url " + url, "debug")
+                paramdict = self.recv("inbox")
+                if isinstance(paramdict, str):
+                    paramdict = { "url": paramdict }
+                    
+                self.send("SimpleHTTPClient received url " + paramdict.get("url","") + "\n", "debug")
                 self.send(url, "_carouselnext")
                 
                 filebody = ""
@@ -313,6 +366,7 @@ class SimpleHTTPClient(component):
                 
                 while carouselbusy:
                     yield 1
+                    print "SimpleHTTPClient.main2"
                     while self.dataReady("_carouselinbox"):
                         msg = self.recv("_carouselinbox")
                         if isinstance(msg, ParsedHTTPBodyChunk):
@@ -321,22 +375,34 @@ class SimpleHTTPClient(component):
                     while self.dataReady("control"):
                         msg = self.recv("control")
                         if isinstance(msg, producerFinished):
-                            producerfinished = True
+                            finished = True
                         elif isinstance(msg, shutdown):
                             self.cleanup()
+                            return
                             
                     while self.dataReady("_carouselready"):
-                        msg =S self.recv("_carouselready")
+                        msg = self.recv("_carouselready")
                         carouselbusy = False
 
                     self.pause()
                 self.send(filebody, "outbox")
                 filebody = ""
-                        
-            self.pause()
             
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished):
+                    finished = True
+                elif isinstance(msg, shutdown):
+                    self.cleanup()
+                    return
+                    
+            self.pause()
+        
+        print "eoml in SimpleHTTPClient"
         self.cleanup()
-
+        yield 1
+        return
+        
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
