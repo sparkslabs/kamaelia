@@ -367,7 +367,7 @@ class SimpleHTTPClient(component):
                     paramdict = { "url": paramdict }
                     
                 self.send("SimpleHTTPClient received url " + paramdict.get("url","") + "\n", "debug")
-                self.send(url, "_carouselnext")
+                self.send(paramdict, "_carouselnext")
                 
                 filebody = ""
                 carouselbusy = True
