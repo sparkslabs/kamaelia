@@ -59,12 +59,21 @@ class newComponent(Axon.Component.component):
         super(newComponent,self).__init__()
         del self.tracker
         self.tracker = GLOBAL_TRACKER
+        self.service_handles = []
             
     def acquireService(self,name):
-        return self.tracker._acquireService(self, name)
+        handle, service = self.tracker._acquireService(self, name)
+        self.service_handles.append(handle)
+        return handle, service
     
     def releaseService(self,handle):
+        self.service_handles.remove(handle)
         return self.tracker._releaseService(handle)
+    
+    def _closeDownMicroprocess(self):
+        for handle in self.service_handles:
+            self.tracker._releaseService(handle)
+        return super(newComponent,self)._closeDownMicroprocess() 
 
 ## override!!!
 #Axon.Component.component = newComponent
@@ -144,7 +153,7 @@ class ServiceUser(newComponent):
         print "Deregistering"
         
         self.unlink(linkage)
-        self.releaseService(service_handle)
+#        self.releaseService(service_handle)  # not needed, as the component tracks this itself now
         
         
 GLOBAL_TRACKER.setupService("TEST",CharGen,"request")
