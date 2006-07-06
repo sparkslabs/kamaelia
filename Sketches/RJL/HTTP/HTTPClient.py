@@ -30,7 +30,15 @@ Pick up data received from the server on its "outbox" outbox.
 Example Usage
 -------------
 Generally you should use SimpleHTTPClient in preference to this.
+If you want to use it directly, note that it doesn't output strings
+but ParsedHTTPHeader, ParsedHTTPBodyChunk and ParsedHTTPEnd like
+HTTPParser.
 
+pipeline(
+    SingleShotHTTPClient("http://www.google.co.uk/"),
+    SomeComponentThatUnderstandsThoseMessageTypes()
+).run()
+    
 
 How does it work?
 -----------------
