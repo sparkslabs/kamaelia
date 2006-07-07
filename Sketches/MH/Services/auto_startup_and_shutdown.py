@@ -53,31 +53,38 @@ class ServiceTracker(object):
 
 GLOBAL_TRACKER = ServiceTracker()
 
+# modify the existing Axon.Component.component
+# ... bit messy I know, but hey!
 
-class newComponent(Axon.Component.component):
-    def __init__(self):
-        super(newComponent,self).__init__()
+__component_old___init__               = Axon.Component.component.__init__
+__component_old__closeDownMicroprocess = Axon.Component.component._closeDownMicroprocess
+
+def __component_new___init__(self):
+        __component_old___init__(self)
         del self.tracker
         self.tracker = GLOBAL_TRACKER
         self.service_handles = []
-            
-    def acquireService(self,name):
-        handle, service = self.tracker._acquireService(self, name)
-        self.service_handles.append(handle)
-        return handle, service
-    
-    def releaseService(self,handle):
-        self.service_handles.remove(handle)
-        return self.tracker._releaseService(handle)
-    
-    def _closeDownMicroprocess(self):
-        for handle in self.service_handles:
-            self.tracker._releaseService(handle)
-        return super(newComponent,self)._closeDownMicroprocess() 
+        
+def __component_new_acquireService(self,name):
+    handle, service = self.tracker._acquireService(self, name)
+    self.service_handles.append(handle)
+    return handle, service
 
-## override!!!
-#Axon.Component.component = newComponent
+def __component_new_releaseService(self,handle):
+    self.service_handles.remove(handle)
+    return self.tracker._releaseService(handle)
 
+def __component_new__closeDownMicroprocess(self):
+    for handle in self.service_handles:
+        self.tracker._releaseService(handle)
+    return __component_old__closeDownMicroprocess(self) 
+
+Axon.Component.component.__init__ = __component_new___init__
+Axon.Component.component.acquireService = __component_new_acquireService
+Axon.Component.component.releaseService = __component_new_releaseService
+Axon.Component.component._closeDownMicroprocess = __component_new__closeDownMicroprocess
+
+from Axon.Component import component
 
 # ---------------------
 # now some test code
@@ -121,7 +128,7 @@ class CharGen(AdaptiveCommsComponent):
             del self.destinations[dest]
             
 
-class ServiceUser(newComponent):
+class ServiceUser(component):
     def __init__(self, servicename,startwhen,count):
         super(ServiceUser,self).__init__()
         self.servicename = servicename
@@ -153,7 +160,7 @@ class ServiceUser(newComponent):
         print "Deregistering"
         
         self.unlink(linkage)
-#        self.releaseService(service_handle)  # not needed, as the component tracks this itself now
+#        self.releaseService(service_handle)  # not needed, as the component tracks this
         
         
 GLOBAL_TRACKER.setupService("TEST",CharGen,"request")
@@ -161,4 +168,5 @@ GLOBAL_TRACKER.setupService("TEST",CharGen,"request")
 ServiceUser("TEST",0,10).activate()
 ServiceUser("TEST",0,5).activate()
 ServiceUser("TEST",0,20).activate()
-ServiceUser("TEST",50,5).run()
+ServiceUser("TEST",50,10).activate()
+ServiceUser("TEST",55,10).run()
