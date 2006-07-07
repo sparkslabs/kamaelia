@@ -117,6 +117,12 @@ particleTypes = { "component" : PComponent2,
                     "inbox"     : PPostbox.Inbox,
                     "outbox"    : PPostbox.Outbox
                 }
+                
+from Kamaelia.UI.PygameDisplay import PygameDisplay
+
+pgd = PygameDisplay(width=800,height=600).activate()
+PygameDisplay.setDisplayService(pgd)
+
 TVC = TopologyViewerComponent(position=(0,0), laws = AxonLaws(), particleTypes=particleTypes)
 
 SANDBOX = Sandbox()
