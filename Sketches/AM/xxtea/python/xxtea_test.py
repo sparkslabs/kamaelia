@@ -21,17 +21,22 @@
 # -------------------------------------------------------------------------
 
 import xxtea
+sss = 'abcdefghijklmnopqrstuvwxyz'
+ccc = xxtea.xxbtea(sss,2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+#print sss
+#print ccc
+tt = xxtea.xxbtea(ccc,-2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+print tt
+#status = xxtea.enc_xxtea("xxtea.pyx", "xxtea.enc", "AABBCCDDEE0123456789AABBCCDDEEFF") 
+#if(status == 0):
+#    print "encryption success"
+#else:
+#    print "encryption failed:" + str(status)
 
-status = xxtea.enc_xxtea("xxtea.pyx", "xxtea.enc", "AABBCCDDEE0123456789AABBCCDDEEFF") 
-if(status == 0):
-    print "encryption success"
-else:
-    print "encryption failed:" + str(status)
 
-
-status = xxtea.dec_xxtea("xxtea.enc", "xxtea.dec", "AABBCCDDEE0123456789AABBCCDDEEFF") 
-if(status == 0):
-    print "decryption success, check that xxtea.dec and xxtea.pyx should be same"
-else:
-    print "decryption failed:" + str(status)
+#status = xxtea.dec_xxtea("xxtea.enc", "xxtea.dec", "AABBCCDDEE0123456789AABBCCDDEEFF") 
+#if(status == 0):
+#    print "decryption success, check that xxtea.dec and xxtea.pyx should be same"
+#else:
+#    print "decryption failed:" + str(status)
 
