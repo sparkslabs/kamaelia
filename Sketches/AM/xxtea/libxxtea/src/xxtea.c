@@ -80,8 +80,8 @@
 #include <netinet/in.h>
 #include "xxtea.h"
 
-static long btea( int32_t * v, int32_t n , int32_t * k );
 
+static long btea( int32_t * v, int32_t n , int32_t * k ); 
 int xxtea_encrypt(char* in_file, char* out_file, char* key) {
     extern int errno;
     int c;
@@ -319,14 +319,16 @@ int xxtea_decrypt(char* in_file, char* out_file, char* key) {
 }
 /*
 int main (int argc, char *argv[]) {
-	printf("encrypting \n");
-	encrypt("test","test.enc","12345678901234567890123456789012");
-	printf("encrypted \n");
-	printf("decrypting \n");
-	decrypt("test.enc","test.dec","12345678901234567890123456789012");
-	printf("decrypted \n");
+
+       
 }
+
 */
+
+long btea_8bytes(unsigned char* data, int rounds, unsigned char* key) {
+	btea((int32_t *)data, rounds, (int32_t*)key);
+}
+
 /* nearly all the following xxtea crypto */
 /* code from the post script             */
 /* by David Wheeler and Roger Needham    */
