@@ -2,5 +2,5 @@
 
 print """
 This was a simple test script simply created to test whether
-syncmail is installed right or not (!)
+the cia (ie #commits) and svn-notify hooks are installed right or not (!)
 """
