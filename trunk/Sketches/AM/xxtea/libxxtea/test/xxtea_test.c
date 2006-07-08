@@ -19,8 +19,18 @@
  -------------------------------------------------------------------------
 */
 // compile with gcc -c 
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <inttypes.h>
+#include <string.h>
+#include <errno.h>
+#include <time.h>
+#include <netinet/in.h>
 # include "xxtea.h"
-int main(int argc, char* argv) {
+void enc_entire_file() {
     int ret;
     // note that the caller is responsible for allocating memory for the key
     char key[32];
@@ -43,3 +53,21 @@ int main(int argc, char* argv) {
     } else
        printf("Decryption failed. Status %d \n", ret);
  }
+
+void enc_char_string() {
+       char txt[6];
+       char *key = "12345678901234567890123456789012";
+       strcpy(txt,"hello");
+       btea_8bytes(txt, 2, key);
+       printf("cipher text : [%s] \n",txt);
+       btea_8bytes(txt, -2, key);
+       printf("decipher text : [%s] \n",txt);
+  
+}
+
+int main() {
+   enc_entire_file();
+   printf("**************************************ECNRYPTED ENTIRE FILE \n");
+   enc_char_string();
+   printf("**************************************ECNRYPTED STRING \n");
+}  
