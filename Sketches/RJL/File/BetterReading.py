@@ -1,6 +1,6 @@
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdown
 from Kamaelia.KamaeliaIPC import newReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.PipelineComponent import pipeline
@@ -40,11 +40,11 @@ class IntelligentFileReader(component):
         return os.open(filename, os.O_RDONLY)
         
     def selectorWait(self, fd):
-        print "selectorWait"
+        #print "selectorWait"
         self.send(newReader(self, ((self, "_selectorready"), fd)), "_selectorask")
 
     def tryReadChunk(self, fd):
-        print "tryReadChunk()"
+        #print "tryReadChunk()"
         data = os.read(fd, self.chunksize - len(self.chunkbuffer))
         if len(data) == 0: #eof
             if len(self.chunkbuffer) > 0:
@@ -55,7 +55,7 @@ class IntelligentFileReader(component):
             self.send(data, "outbox")
         else:
             self.chunkbuffer += data
-            if len(chunkbuffer) == self.chunksize:
+            if len(self.chunkbuffer) == self.chunksize:
                 self.send(self.chunkbuffer, "outbox")
                 self.chunkbuffer = ""
         
@@ -78,7 +78,7 @@ class IntelligentFileReader(component):
         
         self.done = False
         while not self.done:
-            print "main"
+            #print "main"
             yield 1
             
             # we use inbox just to wake us up
@@ -88,19 +88,20 @@ class IntelligentFileReader(component):
             # if we should send some more if we can
             if len(self.outboxes["outbox"]) < self.maxqueue:
                 if self.dataReady("_selectorready"):
-                    print "selector is ready"
+                    #print "selector is ready"
                     msg = self.recv("_selectorready")
                     self.tryReadChunk(self.fd)
                     self.selectorWait(self.fd)
             self.pause()
             
         self.send(producerFinished(self), "signal")
-
+        #print "IntelligentFileReader terminated"
+        
 class DebugOutput(component):
     def main(self):
         while 1:
             yield 1
-            self.pause()                                                                                              
+            self.pause()
             #if self.dataReady("inbox"):
             #    msg = self.recv("inbox")
             
