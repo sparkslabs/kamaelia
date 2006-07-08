@@ -7,6 +7,14 @@ from cgi import escape
 import MimeTypes
 import ErrorPages
 
+from Axon.Ipc import producerFinished, shutdown
+
+import sys
+sys.path.append("../Util/")
+sys.path.append("../File/")
+from Axon.Component import component
+from BetterReading import IntelligentFileReader
+
 def sanitizeFilename(filename):
     output = ""
     for char in filename:
@@ -48,48 +56,90 @@ def websiteListFilesPage(directory):
         "type"       : "text/html"
     }
 
-def handler(request):
-    print "websiteMinimal.handler"
-    try:
-        filename = sanitizePath(request["raw-uri"])
-        if os.path.isdir(homedirectory + filename):
-            if filename[-1:] != "/": filename += "/"
-            if os.path.isfile(homedirectory + filename + indexfilename):
-                filename += indexfilename
-            else:
-                yield websiteListFilesPage(filename)
-                return
+# a one shot request handler
+class websiteMinimal(component):
+    Inboxes = {
+        "inbox"        : "UNUSED",
+        "control"      : "UNUSED",
+        "_fileread"    : "File data",
+        "_filecontrol" : "Signals from file reader"
+    }
+    Outboxes = {
+        "outbox"      : "Response dictionaries",
+        "signal"      : "UNUSED",
+		"_fileprompt" : "Get the file reader to do some reading",
+        "_filesignal" : "Shutdown the file reader"
+	}
+    
+    
+    def __init__(self, request):
+	    self.request = request
+	    super(websiteMinimal, self).__init__()
+        
+    def main(self):
+        print "websiteMinimal.handler"
+        filename = sanitizePath(self.request["raw-uri"])
+        #if os.path.isdir(homedirectory + filename):
+        #    if filename[-1:] != "/": filename += "/"
+        #    if os.path.isfile(homedirectory + filename + indexfilename):
+        #        filename += indexfilename
+        #    else:
+        #        yield websiteListFilesPage(filename)
+        #        return
          
         filetype = MimeTypes.workoutMimeType(filename)
+        
+        error = None
+        try:
+            if os.path.isfile(homedirectory + filename):
+                resource = {
+                    "type"           : filetype,
+                    "statuscode"     : "200",
+                    "length" : os.path.getsize(homedirectory + filename) 
+                }
+                self.send(resource, "outbox")
+            else:
+                error = 404
                 
-        sourcefile = open(homedirectory + filename, "rb", 0)
+        except OSError, e:
+            error = 404
+            
+        if error == 404:
+            resource = ErrorPages.getErrorPage(404)
+            resource["incomplete"] = False
+            self.send(resource, "outbox")
+            self.send(producerFinished(self), "signal")
+            return
+            
+        self.filereader = IntelligentFileReader(homedirectory + filename, 30000, 5)
+        self.link((self, "_fileprompt"), (self.filereader, "inbox"))
+        self.link((self, "_filesignal"), (self.filereader, "control"))
+        self.link((self.filereader, "outbox"), (self, "_fileread"))
+        self.link((self.filereader, "signal"), (self, "_filecontrol"))
+        self.addChildren(self.filereader)
+        self.filereader.activate()
+        yield 1        
         
-        data = sourcefile.read(1024)
-        data = (data, sourcefile.read(1024))
+        done = False
+        while not done:
+            yield 1
+            while self.dataReady("_fileread") and len(self.outboxes["outbox"]) < 3:
+                msg = self.recv("_fileread")
+                resource = { "data" : msg }
+                self.send(resource, "outbox")
+                
+            if len(self.outboxes["outbox"]) < 3:
+                self.send("GARBAGE", "_fileprompt")
+                        
+            while self.dataReady("_filecontrol") and not self.dataReady("_fileread"):
+                msg = self.recv("_filecontrol")
+                if isinstance(msg, producerFinished):
+                    done = True
+                    
+            self.pause()
         
-        resource = {
-            "type" : filetype,
-            "statuscode" : "200",
-            "data" : data[0],
-            "incomplete" : len(data[1]) != 0,
-        }
-        yield resource
-
-        while len(data[1]) > 0:
-            data = (data[1], sourcefile.read(1024))
-            resource["data"] = data[0]
-            resource["incomplete"] = (len(data[1]) != 0)
-            yield resource
-        
-        sourcefile.close()
-           
-        
-    except IOError:
-        resource = ErrorPages.getErrorPage(404)
-        yield resource
-        
-    return
-
+        self.send(producerFinished(self), "signal")
+        #print "websiteMinimal terminated"
 
 indexfilename = "index.html"
-homedirectory = "./"
+homedirectory = "~/kamhttpsite/"
