@@ -1,0 +1,7 @@
+Actual implementations live below here. Since we hope for various parts of
+Kamaelia and Axon to be potentially implementable in other languages.
+Whether or not this happens, but the directory structure here is intended to
+allow for this to happen.
+
+
+Michael, October 2004

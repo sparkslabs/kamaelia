@@ -1,0 +1,23 @@
+In order to install the vorbissimple extension, you need to install
+libvorbissimple first:
+   * cd <root of tarball>
+   * cd libvorbissimple
+   * ./configure
+   * make 
+   * make install
+   * ldconfig
+
+You need to have Pyrex installed in order to build the python bindings.
+If you don't already have this, do the following
+   * cd <root of tarball>
+   * tar zxf Pyrex-0.9.2.1.tar.gz
+   * cd Pyrex-0.9.2.1
+   * python setup.py install
+
+Then you build and install install the python bindings:
+   * cd <root of tarball>
+   * cd python
+   * python setup.py install
+
+
+Michael, July 2004

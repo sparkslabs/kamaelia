@@ -1,0 +1,44 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:20pt;font-weight:600">Downloads</span></p>
+<p>Kamaelia's main download site is the Kamaelia project page on sourceforge:</p>
+<ul type="disc"><li><a href="http://sourceforge.net/projects/kamaelia">http://sourceforge.net/projects/kamaelia</a></li></ul>
+<p><span style="font-weight:600">You are highly recommended to look at the </span><a href="/GettingStarted.html"><span style="font-weight:600">download, setup and quickstart page</span></a><span style="font-weight:600"> for instructions on getting started quickly!</span></p>
+<p>Kamaelia is divided into two portions - Axon and Kamaelia. Axon forms the core concurrency toolkit, like a kernal. Kamaelia is a collection a components that use Axon to run (like user apps). You need BOTH in order to run Kamaelia based systems.</p>
+<ul type="disc"><li>Kamaelia's main release currently stands at 0.3.0, and requires Axon 1.1.2 for full functionality.</li>
+<li>Axon's main release currently stands at 1.1.2</li></ul>
+<p>Installation of these packages is the usual dance:</p>
+<ul type="disc"><li><span style="font-family:Courier">sudo python setup.py install</span></li></ul>
+<p dir="ltr">Updated debian packages will probably emerge after Euro OSCON. Current snapshot of packages available:</p>
+<ul type="disc"><li dir="ltr">Kamaelia-0.3.0</li>
+<li dir="ltr">Axon-1.1.2</li>
+<li dir="ltr">debian-python-2.4-kamaelia-0.2.0  </li>
+<li dir="ltr">debian-python-2.4-axon-1.1.1</li>
+<li dir="ltr">python-dirac-0.0.1</li>
+<li dir="ltr">vorbissimple-0.0.1</li></ul>
+<p><span style="font-weight:600">Europython Distribution</span></p>
+<p>For Europython we produced a Kamaelia 0.2.0 pre-release version to accompany the presentation and slides. This distribution is still on the Europython site here: <a href="http://www.python-in-business.org/ep2005/download.cpy?document=9432">Kamaelia_EP2005.tar.gz</a>. Inside you will find the following:</p>
+<ul type="disc"><li>A simple presentation tool written in Kamaelia</li>
+<li>The bulk of the presentation as slides in a Slides directory</li>
+<li>The tar ball of Axon-1.1.1-ep.tar.gz - which is a pre-release version of 1.1.1</li>
+<li>The tar ball of Kamaelia-0.2.0-ep.tar.gz - which is a pre-release version of Axon 0.2</li></ul>
+<p>This version is deprecated however, simply because 0.3.0 <a href="http://kamaelia.sourceforge.net/Kamaelia-0.3.0-ReleaseNotes.html">adds significant functionality and facilities</a>.</p>
+<p>The release versions didn't change too much afterwards. However shortly after Euro OSCON we'll be making available a Kamaelia_EOSCON2005.tar.gz distribution. </p>
+<p><span style="font-weight:600">CVS</span></p>
+<p>Developers are particularly welcome to play with the CVS tree. This always has more in than the releases! In the following <span style="font-family:Courier">$root</span> refers to the directory in which you've done a <span style="font-family:Courier">cvs co .</span> . </p>
+<p>The development approach taken is this:</p>
+<ul type="disc"><li dir="ltr">New ideas are developed in <span style="font-family:Courier">$root/Sketches.</span> Most new stuff is developed under <span style="font-family:Courier">$root/Sketches/</span><span style="font-family:Courier;font-style:italic">DI</span> (Where DI stands for <span style="font-weight:600">D</span>eveloper <span style="font-weight:600">I</span>nitials.)</li>
+<li dir="ltr">After they have proven useful for some purpose, a position is chosen in the main tree.</li>
+<ul type="disc"><li dir="ltr">If the sketch extends Axon, the locatiion will be below <span style="font-family:Courier">$root/Code/Python/Axon/....</span></li>
+<li dir="ltr">If the sketch is a collection of Kamaelia components it will be below: <span style="font-family:Courier">$root/Code/Python/Kamaelia/Kamaelia...</span></li>
+<li dir="ltr">If the sketch simply glues together existing components, if it's unlikely to be extended further or is trivial is will go below:<span style="font-family:Courier">$root/Code/Python/Kamaelia/Examples...</span></li>
+<li dir="ltr">If the sketch is a useful application of some kind related to Kamaelia, it will go in <span style="font-family:Courier">$root/Code/Python/Kamaelia/Tools.</span></li></ul>
+<li dir="ltr">After using the resulting components in their new location, once we're sure these components are useful and in a good place, they're added into the RELEASE branch.</li></ul>
+<p dir="ltr">New releases of Axon are created by doing the following:</p>
+<ul type="disc"><div dir="ltr">while not happy with release: <br />    <span style="font-family:Courier">$root/Code/Python/buildAxonRelease.sh<br /></span>Release to sourceforge<br /><span style="font-family:Courier">$root/Code/Python/tagAxonRelease.sh</span></div></ul>
+<p>New releases of Kamaelia are created by doing the following:</p>
+<ul type="disc"><div dir="ltr">while not happy with release: <br />    <span style="font-family:Courier">$root/Code/Python/buildKamaeliaRelease.sh<br /></span>Release to sourceforge<br /><span style="font-family:Courier">$root/Code/Python/tagKamaeliaRelease.sh</span></div></ul>
+<p dir="ltr"></p>
+<p dir="ltr"></p>
+<p dir="ltr">Updated: Michael, October 2005</p>
+<p></p>
+</body></html>
