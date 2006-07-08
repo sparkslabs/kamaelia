@@ -158,6 +158,7 @@ class TCPClient(Axon.Component.component):
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
+      self.link((self, "control"), (CSA, "control"), passthrough=1)      
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
       self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
