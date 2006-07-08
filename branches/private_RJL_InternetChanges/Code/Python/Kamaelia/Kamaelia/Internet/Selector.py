@@ -214,6 +214,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
         while 1: # SmokeTests_Selector.test_RunsForever
+            #print "Selector"
             if self.dataReady("control"):
                 message = self.recv("control")
                 if isinstance(message,shutdown):
@@ -249,6 +250,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
+                #print "SYNC"
+                time.sleep(1.0)                
                 self.sync()        # momentary pause-ish thing
             else:
                 print "HMM"
