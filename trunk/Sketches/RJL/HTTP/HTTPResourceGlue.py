@@ -1,5 +1,6 @@
 # import the modules that you want for your website
 from websiteMinimal import websiteMinimal
+from websiteSessionExample import websiteSessionExample
 
 import ErrorPages
 import types
@@ -10,7 +11,8 @@ URLHandlers = [
     #["/fish/"                  , websiteHandlerFish],
     #["/formhandler"            , websiteHandlerForms],
     #["/kamaelia/irc-view/"     , websiteKamaeliaIrcLogs],
-    #["/error"                  , websiteHandlerBuggy],    
+    #["/error"                  , websiteHandlerBuggy],
+    ["/session/"               , websiteSessionExample],
     ["/"                       , websiteMinimal] #should always be last as catches all
 ]
 # the second item should be a component class that takes one parameter (the request)
@@ -24,7 +26,8 @@ def createRequestHandler(request):
     else:
         for (prefix, handler) in URLHandlers:
             if request["raw-uri"][:len(prefix)] == prefix:
-                request["uri-suffix-trigger"] = prefix
+                request["uri-prefix-trigger"] = prefix
+                request["uri-suffix"] = request["raw-uri"][len(prefix):]
                 return handler(request)
             
     return ErrorPages.websiteErrorPage(404, "No resource handlers could be found for the requested URL.")
