@@ -87,7 +87,7 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
         self.link((self, particularOutbox), replyService)
         self.outboxFor[replyService] = particularOutbox;
         
-    def removeClient(self, replyTo, replyInbox):
+    def removeClient(self, replyService):
         """Deregisters a TorrentPatron with this service, deleting its outbox"""
             
         particularOutbox = self.outboxFor[replyService]
