@@ -3,7 +3,8 @@ CC = gcc
 INC_PATH = ../include
 LIB_PATH = ../lib
 CFLAGS = -fPIC
-INSTALL_PATH = /usr/lib
+INSTALL_PATH = /usr/local/lib
+LDCONFIG = /sbin/ldconfig
 xxt:$(OBJS)
 	$(CC) -shared xxtea.o keygen.o -o $(LIB_PATH)/libxxtea.so
 xxtea.o:xxtea.c
@@ -15,4 +16,4 @@ clean:
 	rm ../lib/libxxtea.so
 install:xxt
 	cp $(LIB_PATH)/libxxtea.so $(INSTALL_PATH)
-
+	$(LDCONFIG)
