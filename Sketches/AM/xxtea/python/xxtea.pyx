@@ -33,7 +33,10 @@ def dec_xxtea(char* infile, char* outfile, char* key):
 # This might be the only function useful to kamaelia.
 # 8 bytes of a passed parameter are processed. The rest are just ignored.
 
-def xxbtea(char* data, int no , char* key):
-    btea_8bytes(<unsigned char*>data, no,<unsigned char*>key)
-    return PyString_FromStringAndSize(data,8)
-
+def xxbtea(data, int no , key):
+    cdef  char* Cdata
+    cdef char* Ckey
+    Cdata = data
+    Ckey = key
+    btea_8bytes(Cdata, no,Ckey)
+    return PyString_FromStringAndSize(Cdata,8)
