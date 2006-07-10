@@ -32,5 +32,6 @@
 
 extern int xxtea_decrypt(char* in_file, char* out_file, char* key);
 extern int xxtea_encrypt(char* in_file, char* out_file, char* key);
-long btea_8bytes(unsigned char* data, int rounds, unsigned char* key);
+//long btea_8bytes(unsigned char* data, int rounds, unsigned char* key);
+long btea_8bytes(char* data, int rounds, char* key);
 #endif
