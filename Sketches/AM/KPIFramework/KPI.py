@@ -29,79 +29,14 @@ from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 from Kamaelia.Util.passThrough import passThrough
 from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Backplane import *
 
-import xxtea
-
-class Backplane(Axon.Component.component):
-    def __init__(self, name):
-        super(Backplane,self).__init__()
-        assert name == str(name)
-        self.name = name
-        self.splitter = Splitter()
-
-        splitter = self.splitter
-        cat = CAT.getcat()
-        try:
-            cat.registerService("Backplane_I_"+self.name, splitter, "inbox")
-            cat.registerService("Backplane_O_"+self.name, splitter, "configuration")
-        except Axon.AxonExceptions.ServiceAlreadyExists, e:
-            print "***************************** ERROR *****************************"
-            print "An attempt to make a second backplane with the same name happened."
-            print "This is incorrect usage."
-            print 
-            traceback.print_exc(3)
-            print "***************************** ERROR *****************************"
-
-
-            raise e
-    def main(self):
-        yield newComponent(self.splitter)
-        self.splitter = None
-        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
-        # FIXME: then this while loop here would be irrelevent, which would be cool.
-        while 1:
-            self.pause()
-            yield 1
-
-
-class publishTo(Axon.Component.component):
-    def __init__(self, destination):
-        super(publishTo, self).__init__()
-        self.destination = destination
-    def main(self):
-        cat = CAT.getcat()
-        service = cat.retrieveService("Backplane_I_"+self.destination)
-        self.link((self,"inbox"), service, passthrough=1)
-        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
-        # FIXME: then this while loop here would be irrelevent, which would be cool.
-        # FIXME: especially if we could exec in such a way that passthrough linkages
-        # FIXME: still operated as you'd expect.
-        while 1:
-            self.pause()
-            yield 1            
-            
-            
-class subscribeTo(Axon.Component.component):
-    def __init__(self, source):
-        super(subscribeTo, self).__init__()
-        self.source = source
-    def main(self):
-        cat = CAT.getcat()
-        splitter,configbox = cat.retrieveService("Backplane_O_"+self.source)
-        p = passThrough()
-        plug = Plug(splitter, p)
-        self.link( (p,"outbox"), (self,"outbox"), passthrough=2)
-        self.addChildren(plug)
-        yield newComponent(plug)
-        # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
-        # FIXME: then this while loop here would be irrelevent, which would be cool.
-        # FIXME: especially if we could exec in such a way that passthrough linkages
-        # FIXME: still operated as you'd expect.
-        while 1:
-            self.pause()
-            yield 1            
-
-# RELEASE: MH, MPS
+from Kamaelia.File import ReadFileAdaptor
+from Kamaelia.File.Reading import PromptedFileReader
+from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Util.RateFilter import ByteRate_RequestControl
+from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Internet.TCPClient import TCPClient
 
 class MyReader(Axon.Component.component):
     def main(self):
@@ -112,6 +47,8 @@ class MyReader(Axon.Component.component):
             self.send(line, "outbox")
             yield 1
 
+
+import xxtea
 class Encryptor(Axon.Component.component):
    def __init__(self,key):
       super(Encryptor,self).__init__()
@@ -124,7 +61,6 @@ class Encryptor(Axon.Component.component):
 	 while self.dataReady("inbox"):
 	    data = self.recv("inbox")
 	    print "encrypting data: ",data
-	    print data
 	    enc = xxtea.xxbtea(data,2,"AABBCCDDEE0123456789AABBCCDDEEFF")
 	    self.send(enc, "outbox")
 
@@ -139,7 +75,6 @@ class Decryptor(Axon.Component.component):
 	 yield 1
 	 while self.dataReady("inbox"):
 	    data = self.recv("inbox")
-	    print "in decrypt"
 	    dec = xxtea.xxbtea(data,-2,"AABBCCDDEE0123456789AABBCCDDEEFF")
 	    print "decrypted data ",dec
 	    self.send(dec, "outbox")
@@ -155,30 +90,56 @@ class echoer(Axon.Component.component):
                 print "echoer #",self.id,":", data, "count:", count
                 count = count +1
 
-Backplane("RandomTalk").activate()
-m = MyReader()
-enc = Encryptor("12345678901234567890123456789012")
-dec = Decryptor("12345678901234567890123456789012")
-
-p = publishTo("RandomTalk")
-e = echoer()
-s = subscribeTo("RandomTalk")
-
-
 # create a back plane by name Random talk
-# create a reader and pipeline it to publish object
+Backplane("RandomTalk").activate()
 
-pipeline(
-       m,
-       enc,
-       p
-).activate()
+def fixedString():
+ # create a reader and pipeline it to publish object
+ pipeline(
+        MyReader(),
+        Encryptor("12345678901234567890123456789012"),
+        publishTo("RandomTalk"),
+ ).activate()
 
-#pipeline the subscribe object to the echoer
-#note the connection publisher and subscriber is via BACKPLANE:)
-pipeline(
-        s,
-        dec,
-	e
-).run()
+ #pipeline the subscribe object to the echoer
+ #note the connection publisher and subscriber is via BACKPLANE:)
+ pipeline(
+         subscribeTo("RandomTalk"),
+         Decryptor("12345678901234567890123456789012"),
+	 echoer(),
+ ).run()
+
+def fileRW():
+ port = 1602
+ #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
+ 
+ pipeline(
+        ByteRate_RequestControl(rate=100,chunksize=8),
+        PromptedFileReader("SelfishTriangle.jpg","bytes"),
+        Encryptor("12345678901234567890123456789012"),
+        #SingleServer(port=port),
+        publishTo("RandomTalk")
+ ).activate()
+
+# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
+ pipeline(
+        subscribeTo("RandomTalk"),
+        #TCPClient("127.0.0.1",port),
+        Decryptor("12345678901234567890123456789012"),
+        SimpleFileWriter("SelfishTriangle-dec.jpg")
+ ).run()
+
+#fixedString()
+fileRW()
+
+
+
+
+
+
+
+
+
+
+
             
