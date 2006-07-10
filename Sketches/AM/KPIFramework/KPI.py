@@ -114,7 +114,7 @@ def fileRW():
  #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
  
  pipeline(
-        ByteRate_RequestControl(rate=10000,chunksize=8),
+        ByteRate_RequestControl(rate=10000,chunksize=8), #The rate parameter might have to change for if it becomes across a network.
         PromptedFileReader("SelfishTriangle.jpg","bytes"),
         Encryptor("12345678901234567890123456789012"),
         #SingleServer(port=port),
