@@ -98,7 +98,7 @@ int xxtea_encrypt(char* in_file, char* out_file, char* key) {
     int uid;
     int use_file = 0;
     uint32_t randpad[16];
-    uint32_t filesize = 0;
+    off_t filesize = 0;
     uint32_t filesize_msb = 0;
     uint32_t read_filesize_msb = 0;
     uint32_t read_filesize = 0;
@@ -115,7 +115,7 @@ int xxtea_encrypt(char* in_file, char* out_file, char* key) {
             return IN_FILE_ERROR;
         }
         else {
-            (off_t) filesize = statbuf.st_size;
+            filesize = statbuf.st_size;
             filesize_msb = htonl(filesize);
         }
         if(-1 == access(in_file,R_OK)) {
@@ -209,7 +209,7 @@ int xxtea_decrypt(char* in_file, char* out_file, char* key) {
     int uid;
     int use_file = 0;
     uint32_t randpad[16];
-    uint32_t filesize = 0;
+    off_t filesize = 0;
     uint32_t filesize_msb = 0;
     uint32_t read_filesize_msb = 0;
     uint32_t read_filesize = 0;
@@ -227,7 +227,7 @@ int xxtea_decrypt(char* in_file, char* out_file, char* key) {
             return IN_FILE_ERROR;
         }
         else {
-            (off_t) filesize = statbuf.st_size;
+            filesize = statbuf.st_size;
             filesize_msb = htonl(filesize);
         }
         if(-1 == access(in_file,R_OK)) {
@@ -325,7 +325,9 @@ int main (int argc, char *argv[]) {
 
 */
 
-long btea_8bytes(unsigned char* data, int rounds, unsigned char* key) {
+long btea_8bytes(char* data, int rounds,char* key) {
+//long btea_8bytes(unsigned char* data, int rounds, unsigned char* key) {
+	//TODO: Allocate memory and make sure original memory is not changed. 
 	btea((int32_t *)data, rounds, (int32_t*)key);
 }
 
