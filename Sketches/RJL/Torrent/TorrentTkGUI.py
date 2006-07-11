@@ -11,6 +11,7 @@ class TorrentWindow(TkWindow):
     Outboxes = {
         "outbox" : "To TorrentPatron backend",
         "fetcher" : "To TorrentPatron backend via a resource fetcher, e.g. file reader or HTTP client",
+        "fetchersignal" : "Shutdown resource fetcher",
         "signal" : "When I've shutdown"
     }
         
@@ -55,18 +56,20 @@ class TorrentWindow(TkWindow):
                     self.torrents[msg.torrentid] = (torrentname, newlabel, labeltext)
                     labeltext.set(torrentname + " - 0%")
                     
-                    newlabel.grid(row=len(self.torrents), column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+                    newlabel.grid(row=len(self.torrents), column=0, columnspan=2, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
                     self.window.rowconfigure(len(self.torrents), weight=1)
                     
                 elif isinstance(msg, TIPCTorrentStartFail) or isinstance(msg, TIPCTorrentAlreadyDownloading):
                     self.pendingtorrents.pop(0)
                 
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
-                    print msg.statsdictionary.get("fractionDone","-1")
+                    #print msg.statsdictionary.get("fractionDone","-1")
                     self.torrents[msg.torrentid][2].set(self.torrents[msg.torrentid][0] + " - " + str(int(msg.statsdictionary.get("fractionDone","0") * 100)) + "%")
             
             self.tkupdate()
-            
+        self.send(shutdown(), "signal") 
+        self.send(shutdown(), "fetchersignal")
+                
 if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     import sys
@@ -80,11 +83,12 @@ if __name__ == "__main__":
         backend=TorrentPatron(),
         linkages = {
             ("gui", "outbox") : ("backend", "inbox"),
+            ("gui", "fetchersignal") : ("httpclient", "control"),
             ("gui", "signal") : ("backend", "control"),
             ("gui", "fetcher") : ("httpclient", "inbox"),
             ("httpclient", "outbox") : ("backend", "inbox"),
             ("backend", "outbox"): ("gui", "inbox")
-            
         }
     ).run()
             
+
