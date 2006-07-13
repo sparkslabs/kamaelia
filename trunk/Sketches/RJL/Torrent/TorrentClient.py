@@ -43,6 +43,7 @@ from BitTorrent.ConvertedMetainfo import ConvertedMetainfo
 from BitTorrent.platform import get_temp_dir
 inject_main_logfile()
 
+from Axon.Ipc import shutdown, producerFinished
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
@@ -145,6 +146,9 @@ class TorrentClient(threadedcomponent):
         rawserver.add_task(0, self.core_doneflag.addCallback, lambda r: rawserver.external_add_task(0, shutdown))
         rawserver.listen_forever(self.rawserver_doneflag)
 
+        self.send(producerFinished(self), "signal")
+        print "TorrentClient has shutdown"
+                        
     def startTorrent(self, metainfo, save_incomplete_as, save_as, torrentid):
         """startTorrent causes MultiTorrent to begin downloading a torrent eventually.
         Use it instead of _start_torrent."""
@@ -235,6 +239,13 @@ class TorrentClient(threadedcomponent):
             if not isinstance(torrent, MakeshiftTorrent):
                 self.send(TIPCTorrentStatusUpdate(torrentid=torrentid, statsdictionary=torrent.get_status()), "outbox")
         
+        while self.dataReady("control"):
+            temp = self.recv("control")
+            if isinstance(temp, shutdown):
+                print "TorrentClient trying to shutdown"
+                #cause us to shutdown
+                self.rawserver_doneflag.set()
+                self.core_doneflag.set()
         #if self.torrent is not None:
         #    status = self.torrent.get_status(self.config['spew'])
         #    self.d.display(status)
@@ -252,10 +263,10 @@ class BasicTorrentExplainer(component):
             yield 1
             while self.dataReady("inbox"):
                 temp = self.recv("inbox")
-                try:
-                    self.send(temp.gettext() + "\n", "outbox")
-                except:
-                    pass
+                #try:
+                self.send(temp.getText() + "\n", "outbox")
+                #except:
+                #    pass
             self.pause()
            
 if __name__ == '__main__':
