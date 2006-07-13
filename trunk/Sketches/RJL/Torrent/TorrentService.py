@@ -45,7 +45,9 @@ be created by TorrentPatron. If a TorrentService already exists, creating one yo
 may crash Python (see the effects of creating two TorrentClient components in
 TorrentClient.py)
 
+The shutting down of this component (when not in use) is very ugly.
 """
+
 
 class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     """\
@@ -55,9 +57,10 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
     existing instance, or automatically creates a new one.
     """
     Inboxes = {
-         "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
-         "inbox"   : "Connects to TorrentClient (the BitTorrent code)",
-         "notify"  : "Used to be notified about things to select"
+        "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
+        "inbox"   : "Connects to TorrentClient (the BitTorrent code)",
+        "notify"  : "Used to be notified about things to select",
+        "_torrentcontrol" : "Notice that TorrentClient has shutdown",
     }
     Outboxes = {
         "signal"   : "Not used",
@@ -66,42 +69,52 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
     
     def __init__(self):
         print "Torrent service init"
+        super(TorrentService, self).__init__()
+                
         self.outboxFor = {}
         self.torrentBelongsTo = {}
         self.pendingAdd = []
-        super(TorrentService, self).__init__()
         
+        self.initTorrentClient()
+        self.myclients = 0
+        
+    def initTorrentClient():
         self.handler = TorrentClient()
         self.addChildren(self.handler)
         self.link((self, "outbox"), (self.handler, "inbox"))
+        self.link((self, "signal"), (self.handler, "control"))
         self.link((self.handler, "outbox"), (self, "inbox"))        
+        self.link((self, "signal"), (self.handler, "_torrentcontrol"))
         
         self.handler.activate()
-        
+    
     def addClient(self, replyService):
         """Registers a TorrentPatron with this service, creating an outbox connected to it"""
         
         print "Adding client!"
         print replyService
+        
+        self.myclients += 1
         particularOutbox = self.addOutbox("clientoutbox")
         self.link((self, particularOutbox), replyService)
         self.outboxFor[replyService] = particularOutbox;
         
     def removeClient(self, replyService):
         """Deregisters a TorrentPatron with this service, deleting its outbox"""
-            
+
+        self.myclients -= 1            
         particularOutbox = self.outboxFor[replyService]
         self.unlink((self, particularOutbox), replyService)
-        self.deleteOutbox(particularoutbox)
+        #self.deleteOutbox(particularOutbox) WHY NOT
 
     def sendToClient(self, msg, replyService):    
         """Send a message to a TorrentPatron"""
         self.send(msg, self.outboxFor[replyService])
 
     def main(self):
-        """Main loop"""    
+        """Main loop"""
         while 1:
-            print "TorrentService main loop"
+            #print "TorrentService main loop"
             yield 1
             while self.dataReady("notify"):
                 message = self.recv("notify")
@@ -123,8 +136,8 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
 
             while self.dataReady("inbox"):
                 message = self.recv("inbox")
-                print "INBOX"
-                print message                
+                #print "INBOX"
+                #print message                
                 if isinstance(message, TIPCNewTorrentCreated):
                     replyService = self.pendingAdd.pop(0)
                     self.torrentBelongsTo[message.torrentid] = replyService
@@ -146,8 +159,36 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
                 if isinstance(message, shutdown):
                     return
                     
-            self.pause()
-       
+            if self.myclients == 0:
+                self.send(shutdown(), "signal")
+                torrentclientfinished = False
+                while not torrentclientfinished:
+                    yield 1            
+                    while self.dataReady("_torrentcontrol"):
+                        msg = self.recv("_torrentcontrol")
+                        if isinstance(msg, producerFinished):
+                            torrentclientfinished = True
+                            yield 1
+                            break
+                    self.pause()
+                
+                if not self.dataReady("notify"):
+                    TorrentService.endTorrentServices()
+                else:
+                    #whoops we need to start again doh!
+                    initTorrentClient()
+                    
+            self.pause()                
+        
+        
+        
+    def endTorrentServices(tracker = None):
+        if not tracker:
+            tracker = cat.coordinatingassistanttracker.getcat()
+        tracker.deRegisterService("torrentsrv")
+        tracker.deRegisterService("torrentsrvshutdown")
+    endTorrentServices = staticmethod(endTorrentServices) 
+    
     def setTorrentServices(torrentsrv, tracker = None):
         """\
         Sets the given TorrentService as the service for the selected tracker or the
@@ -185,4 +226,5 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
     getTorrentServices = staticmethod(getTorrentServices)
 
 __kamaelia_components__  = ( TorrentService, )
+
 
