@@ -202,7 +202,10 @@ class scheduler(microprocess):
            # wakeup requests second - safer to leave a thread awake than asleep
            while not self.pauseRequests.empty():
                mprocess = self.pauseRequests.get()
-               self.threads[mprocess] = _GOINGTOSLEEP
+               # only sleep if we're actually in the set of threads(!)
+               # otherwise it inadvertently gets added!
+               if self.threads.has_key(mprocess):
+                   self.threads[mprocess] = _GOINGTOSLEEP
                # marked as going to sleep, rather than asleep since mprocess
                # is still in runqueue (more efficient to leave it to be
                # removed when we iterate through the runqueue)
