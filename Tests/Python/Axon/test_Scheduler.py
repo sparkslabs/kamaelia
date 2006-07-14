@@ -488,6 +488,32 @@ class scheduler_Test(unittest.TestCase):
        except:
            raise
         
+   def test_pauseThenTerminateTerminates(self):
+       """If a microprocess pauses and immediately terminates (without further yields) it will still terminate properly."""
+       s=Axon.Scheduler.scheduler()
+       sched = s.main()
+
+       class ImmediateTerminator(object):
+           def next(self):
+               s.pauseThread(self)
+               raise StopIteration
+           def stop(self):
+               pass # this should happen!
+           def _closeDownMicroprocess(self):
+               pass # this should happen!
+               
+       m = ImmediateTerminator()
+       s._addThread(m)
+       try:
+           for _ in range(0,100):
+               sched.next()
+               
+           self.fail("Scheduler should have terminated by now.")
+       except StopIteration:
+           pass
+       except:
+           raise
+
    def test_runThreadsSlowmo(self):
        """Specifying slowMo>0 argument to runThreads() causes a delay of the specified number of seconds between each pass through all microprocesses. During the delay it will yield."""
        
