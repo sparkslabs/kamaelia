@@ -18,7 +18,7 @@ class PureTransformer(component):
                     self.send(returnval, "outbox")
             while self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstnace(msg, shutdown):
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
                     self.send(producerFinished(self), "signal")
                     return
             self.pause()
