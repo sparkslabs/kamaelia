@@ -1,9 +1,23 @@
 # import the modules that you want for your website
+from websiteWiki import websiteWiki
 from websiteMinimal import websiteMinimal
 from websiteSessionExample import websiteSessionExample
 
 import ErrorPages
 import types
+
+"""
+What does it do?
+====================
+It picks the appropriate resource handler for a request using any of the
+request's attributes (e.g. uri, accepted encoding, language, source etc.)
+
+Its basic setup is to match prefixes of the request URI each of which have
+their own predetermined request handler class (a component class).
+
+HTTPResourceGlue also creates an instance of the handler component,
+allowing complete control over its __init__ parameters.
+"""
 
 # then define what paths should trigger those modules, in order of priority
 # i.e. put more specific URL handlers first
@@ -12,6 +26,7 @@ URLHandlers = [
     #["/formhandler"            , websiteHandlerForms],
     #["/kamaelia/irc-view/"     , websiteKamaeliaIrcLogs],
     #["/error"                  , websiteHandlerBuggy],
+    ["/wiki/"                  , websiteWiki],
     ["/session/"               , websiteSessionExample],
     ["/"                       , websiteMinimal] #should always be last as catches all
 ]
