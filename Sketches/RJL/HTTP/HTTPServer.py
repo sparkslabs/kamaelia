@@ -33,13 +33,15 @@ import string, time, website
 from HTTPParser import *
 import HTTPResourceGlue # this works out what the correct response to a request is
 
+
 def currentTimeHTTP():
+    "Get the current date and time in the format specified by HTTP/1.1"
     curtime = time.gmtime()
     return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
 
 class HTTPServer(component):
     """\
-    HTTPServer() -> new HTTPServer
+    HTTPServer() -> new HTTPServer component capable of handling a single connection
     """
     
     Inboxes =  { "inbox"         : "TCP data stream - receive",
@@ -57,6 +59,10 @@ class HTTPServer(component):
         super(HTTPServer, self).__init__()
 
     def initialiseComponent(self):
+        """Create an HTTPParser component to convert the requests we receive
+        into a more convenient form, and a HTTPRequestHandler component to
+        sort out the correct response to requests received."""
+        
         self.mimehandler = HTTPParser()
         self.httphandler = HTTPRequestHandler()
         #self.httphandler.filereader = TriggeredFileReader()
@@ -113,12 +119,67 @@ class HTTPServer(component):
         self.closeDownComponent()
         
     def closeDownComponent(self):
+        "Remove my subcomponents (HTTPParser, HTTPRequestHandler)"
         for child in self.childComponents():
             self.removeChild(child)
         self.mimehandler = None
         self.httphandler = None
 
 class HTTPRequestHandler(component):
+    """\
+    HTTPRequestHandler() -> new HTTPRequestHandler component capable of fulfilling the requests
+    received over a single connection after they have been parsed by HTTPParser
+    
+    
+    How does it work?
+    ========================
+    Both requests and responses are handled in a stepwise manner (as opposed to processing a
+    whole request or response in one go) to reduce latency and cope well with bottlenecks.
+
+    One request handler (self.handler) component is used per request - the particular 
+    component instance (including parameters, componetn state) is picked by HTTPResourceGlue.
+    Generally you will have a handler spawned for each new request, terminating after completing
+    the sending of the response. However, it is also possible to use a 'persistent' component
+    if you do the required jiggery-pokery to make sure that at any one time this component is
+    not servicing more than one request simultaenously ('cause it wouldn't work).
+    
+    What does it support?
+    ========================
+    
+    Components as request handlers (hurrah!).
+    
+    3 different ways in which the response data (body) can be terminated
+    -- Chunked transfer encoding --
+    This is the most complex of the 3 ways and was introduced in HTTP/1.1. Its performance is
+    slightly worse that the other 2 as multiple length-lines have to be added to the data stream.
+    
+    -- Explicit length --
+    This is the easiest of the 3 ways but requires the length of the response to be known before
+    it is sent. It uses a header 'Content-Length' to indicate this value.
+    This method is prefered for any response whose length is known in advance.
+    
+    -- Connection: close --
+    This method closes (or half-closes) the TCP connection when the response is complete.
+    This is highly inefficient when the client wishes to download several resources as a new
+    TCP connection must be created and destroyed for each resource. This method is retained for
+    HTTP/1.0 compatibility.
+    It is however preferred for responses that do not have a true end, e.g. a continuous stream
+    over HTTP as the alternative, chunked transfer encoding, has poorer performance.
+    
+    The choice of these three methods is determined at runtime by the characteristics of the
+    first response part produced by the request handler and the version of HTTP that the client
+    supports (chunked requires 1.1 or higher).
+    
+    What may need work?
+    ========================
+    - HTTP standard compliance (e.g. handling of version numbers for a start)
+    - Requests for byte ranges, cache control (though these may be better implemented
+      in each request handler)
+    - Performance tuning
+    - Prevent many MBs of data being queued up because TCPClient finds it has a slow
+      upload to the remote host
+    """
+    
     Inboxes =  {
         "inbox"         : "Raw HTTP requests",
         "control"       : "Signal component termination",
@@ -176,6 +237,7 @@ class HTTPRequestHandler(component):
     }
     
     def resourceUTF8Encode(self, resource):
+        "Encode a resource's unicode data as utf-8 octets"
         if isinstance(resource["data"], unicode):
             resource["data"] = resource["data"].encode("utf-8")
             resource["charset"] = "utf-8"
@@ -225,9 +287,15 @@ class HTTPRequestHandler(component):
             request["bad"] = "501"
        
     def waitingOnNetworkToSend(self):
-        return len(self.outboxes["outbox"]) > 1
+        """Will be used in future to prevent MBs of data piling up at a network bottleneck.
+        Uncommenting the following line will cause connections to hang unless Axon unpauses
+        us when our messages are sent (using TCPClient)."""
+        
+        #return len(self.outboxes["outbox"]) > 5
+        return False
 
     def connectResourceHandler(self):
+        "Link to the resource handler we've created so we can receive its output"
         self.link((self.handler, "outbox"), (self, "_handlerinbox"))
         self.link((self.handler, "signal"), (self, "_handlercontrol"))        
         self.link((self, "_handleroutbox"), (self.handler, "inbox"))
@@ -235,16 +303,19 @@ class HTTPRequestHandler(component):
         self.handler.activate()
 
     def disconnectResourceHandler(self):
+        "Disconnect the now finished resource handler"
         self.unlink((self.handler, "outbox"), (self, "_handlerinbox"))
         self.unlink((self, "_handleroutbox"), (self.handler, "inbox"))        
         self.removeChild(self.handler) 
 
     def sendChunkExplicit(self, resource):
+        "Send some more of the resource's data, having already sent a content-length header"
         if len(resource.get("data","")) > 0:
             self.resourceUTF8Encode(resource)
             self.send(resource["data"], "outbox")
                 
     def sendChunkChunked(self, resource):
+        "Send some more of the resource's data, for a response that uses chunked transfer-encoding"    
         if len(resource.get("data","")) > 0:
             self.resourceUTF8Encode(resource)
             self.send(hex(len(resource["data"]))[2:] + "\r\n", "outbox")
@@ -252,12 +323,15 @@ class HTTPRequestHandler(component):
             self.send("\r\n", "outbox")
 
     def sendEndChunked(self):
-         self.send("0\r\n\r\n", "outbox")
+        "Called when a chunk-encoded response ends"
+        self.send("0\r\n\r\n", "outbox")
 
     def sendEndClose(self):
-        self.send(producerFinished(self), "outbox")
+        "Called when a connection: close terminated response ends"
+        self.send(producerFinished(self), "signal")
         
     def sendEndExplicit(self):
+        "Called when a response that had a content-length header ends"    
         pass
         
     def main(self):
@@ -265,12 +339,13 @@ class HTTPRequestHandler(component):
             yield 1        
 
             while self.dataReady("inbox"):
+                # we have a new request from the remote HTTP client
                 request = self.recv("inbox")
                 if not isinstance(request, ParsedHTTPHeader):
-                    continue
+                    continue # then there's something odd going on, probably the remote host is sending blank lines or some such non-HTTP nonsense
                 request = request.header
                 
-                #ParsedHTTPHeader
+                # output what the requested URL (path) was to stdout - by all means comment this out
                 print "Request for " + request["raw-uri"]
                 
                 # add ["bad"] and ["error-msg"] keys to the request if it is invalid
@@ -284,7 +359,8 @@ class HTTPRequestHandler(component):
                 self.handler = HTTPResourceGlue.createRequestHandler(request)
                 
                 assert(self.handler != None) # if no URL handlers match our request then HTTPResourceGlue should produce a 404 handler
-                # Generally even that will not happen because you'll set a "/" handler which catches all
+                # Generally even that will not happen because you'll set a "/" handler which catches all then produces its own 404 page
+                # if the requested file is not found. i.e. if self.handler == None, HTTPResourceGlue is wrong.
                      
                 self.connectResourceHandler()
                 
@@ -292,15 +368,14 @@ class HTTPRequestHandler(component):
                 senkChunk = None
                 
                 while not self.dataReady("_handlerinbox") or self.waitingOnNetworkToSend():
-                    self.pause()
+                    #self.pause()
                     yield 1
                     
                 msg = self.recv("_handlerinbox")
                 
-                if msg.get("complete"):
+                if msg.get("complete"): # if the response consists of a single part rather than streaming many parts consecutively
                     lengthMethod = "explicit"
                     msg["length"] = len(msg["data"])
-
                 elif msg.has_key("length"):
                     lengthMethod = "explicit"
                         
@@ -310,7 +385,7 @@ class HTTPRequestHandler(component):
                     sendChunk = self.sendChunkExplicit
                     sendEnd = self.sendEndExplicit
                     
-                elif request["version"] < "1.1":
+                elif True: #request["version"] < "1.1":
                     lengthMethod = "close"
                     self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
                     sendChunk = self.sendChunkExplicit
@@ -327,7 +402,7 @@ class HTTPRequestHandler(component):
                         sendChunk(msg)
                         msg = None
                         
-                    yield 1
+                    
                     if self.dataReady("inbox") and not requestEndReached:
                         request = self.recv("inbox")
                         if isinstance(request, ParsedHTTPEnd):
@@ -335,15 +410,18 @@ class HTTPRequestHandler(component):
                         else:
                             assert(isinstance(request, ParsedHTTPBodyChunk))
                             self.send(request.bodychunk, "_handleroutbox")
-                    elif self.dataReady("_handlerinbox") and not self.waitingOnNetworkToSend():
-                        msg = self.recv("_handlerinbox")
-                        
+                    elif self.dataReady("_handlerinbox"):
+                        if not self.waitingOnNetworkToSend():
+                            msg = self.recv("_handlerinbox")
+                        else:
+                            yield 1
                     elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
                         ctrl = self.recv("_handlercontrol")
                         print ctrl
                         if isinstance(ctrl, producerFinished):
                             break
                     else:
+                        yield 1
                         self.pause()
                 
                 sendEnd()
