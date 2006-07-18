@@ -88,7 +88,7 @@ from Axon.Component import component
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
-from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Internet.TCPClient import TCPClient as TCPClient
 import string, time
 
 from HTTPParser import *
@@ -149,13 +149,15 @@ class SingleShotHTTPClient(component):
         "signal"         : "UNUSED"
     }
         
-    def __init__(self, starturl, postbody = ""):
+    def __init__(self, starturl, postbody = "", connectionclass = TCPClient):
         print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
         self.httpparser = None
         self.requestqueue = []
         self.starturl = starturl
+        self.connectionclass = connectionclass
+        
         self.postbody = postbody
         print "Start url: " + starturl
         
@@ -194,7 +196,7 @@ class SingleShotHTTPClient(component):
         if port == None:
             port = 80
         
-        self.tcpclient = TCPClient(request.requestobject["uri-server"], port)
+        self.tcpclient = self.connectionclass(request.requestobject["uri-server"], port)
         self.httpparser = HTTPParser(mode="response")
                 
         self.link( (self, "_tcpoutbox"),       (self.tcpclient, "inbox") )
