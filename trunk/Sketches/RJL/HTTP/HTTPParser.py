@@ -20,6 +20,47 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""\
+=================
+HTTP Parser
+=================
+
+This component is for transforming HTTP requests or responses
+into multiple easy-to-use dictionary objects.
+
+Example Usage
+-------------
+Unless you are implementing a new HTTP component you should not
+use this component directly. Either SimpleHTTPClient, HTTPServer (in
+conjuncton with SimpleServer) or SingleShotHTTPClient will
+likely serve your needs.
+
+If you want to use it directly, note that it doesn't output strings
+but ParsedHTTPHeader, ParsedHTTPBodyChunk and ParsedHTTPEnd objects.
+
+If you want to play around with parsing HTTP responses: (like a client)
+
+pipeline(
+    ConsoleReader(),
+    HTTPParser(mode="response"),
+    ConsoleEchoer()
+).run()
+
+If you want to play around with parsing HTTP requests: (like a server)
+
+pipeline(
+    ConsoleReader(),
+    HTTPParser(mode="response"),
+    ConsoleEchoer()
+).run()
+    
+
+How does it work?
+-----------------
+
+"""
+
+
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 import string
@@ -107,6 +148,8 @@ class HTTPParser(component):
             requestobject["version"]  = protvers[1]
     
     def dataFetch(self):
+        """Read once from inbox (generally a TCP connection) and add
+        what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
             self.readbuffer += self.recv("inbox")
             return 1
@@ -123,6 +166,7 @@ class HTTPParser(component):
         return False
         
     def nextLine(self):
+        "Fetch the next complete line in the readbuffer, if there is one"
         lineendpos = string.find(self.readbuffer, "\n")
         if lineendpos == -1:
             return None
