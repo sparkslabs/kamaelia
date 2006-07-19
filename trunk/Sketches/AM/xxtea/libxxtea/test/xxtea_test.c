@@ -30,6 +30,8 @@
 #include <time.h>
 #include <netinet/in.h>
 # include "xxtea.h"
+#include <pthread.h>
+
 void enc_entire_file() {
     int ret;
     // note that the caller is responsible for allocating memory for the key
@@ -53,21 +55,66 @@ void enc_entire_file() {
     } else
        printf("Decryption failed. Status %d \n", ret);
  }
+void enc_entire_file_thr(void* arg) {
+    int ret;
+    // note that the caller is responsible for allocating memory for the key
+    char key[32];
+    char dest_file[32];
+    char dec_file[32];
 
-void enc_char_string() {
+    get_key(key,32);
+    // now you have the key. use it to encrypt the file.
+    // in this example i'll encrypt this source file.
+     strcpy(dest_file,"xxtea_test.enc");
+     strcat(dest_file,(char*)arg);
+     ret = xxtea_encrypt("xxtea_test.c",dest_file,key);
+    if(ret == 0)
+    	printf("Encrypted to %s \n",dest_file);
+    else
+       printf("Encryption failed. Status %d \n", ret);
+    printf("Decrypting file %s \n",dest_file);
+
+    strcpy(dec_file,"xxtea_testdec");
+    strcat(dec_file,(char*)arg);
+    printf("dec file name %s",dec_file);
+
+    ret = xxtea_decrypt(dest_file,dec_file,key);
+    if(ret == 0) {
+    } else
+       printf("Decryption failed. Status %d \n", ret);
+}
+void enc_char_string(void* args) {
        char txt[6];
        char *key = "12345678901234567890123456789012";
+       for(;;) {
        strcpy(txt,"hello");
        btea_8bytes(txt, 2, key);
-       printf("cipher text : [%s] \n",txt);
+       //printf("cipher text : [%s] \n",txt);
        btea_8bytes(txt, -2, key);
+       printf("thread id %s",(char*) args);
        printf("decipher text : [%s] \n",txt);
-  
+  }
 }
 
 int main() {
-   enc_entire_file();
-   printf("**************************************ECNRYPTED ENTIRE FILE \n");
-   enc_char_string();
-   printf("**************************************ECNRYPTED STRING \n");
+   pthread_t t1;
+   pthread_t t2;
+    if ( pthread_create(&t1, NULL, enc_entire_file_thr, (void *)"1") != 0 ) {
+    printf("pthread_create() error \n");
+    abort();
+   }
+ 
+    if ( pthread_create(&t2, NULL, enc_entire_file_thr, (void *)"2") != 0 ) {
+    printf("pthread_create() error \n");
+    abort();
+   } 
+   
+   while (1)
+      sleep(100);
+
+   
+   //enc_entire_file();
+   //printf("**************************************ECNRYPTED ENTIRE FILE \n");
+   //enc_char_string();
+   //printf("**************************************ECNRYPTED STRING \n");
 }  
