@@ -23,12 +23,11 @@
 
 import Axon
 import pygame
-import zlib
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
-from Kamaelia.Util.Console import ConsoleReader
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
 from Kamaelia.Util.PipelineComponent import pipeline
@@ -47,81 +46,45 @@ from Whiteboard.Canvas import Canvas
 from Whiteboard.Painter import Painter
 from Whiteboard.TwoWaySplitter import TwoWaySplitter
 from Whiteboard.SingleShot import OneShot
+from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
-def buildPalette(cols, topleft=(0,0), size=32):
+
+colours = { "black" :  (0,0,0), 
+            "red" :    (192,0,0),
+            "orange" : (192,96,0),
+            "yellow" : (160,160,0),
+            "green" :  (0,192,0),
+            "turquoise" : (0,160,160),
+            "blue": (0,0,255),
+            "purple" : (192,0,192),
+            "darkgrey" : (96,96,96),
+            "lightgrey" :(192,192,192),
+          }
+
+colours_order = [ "black", "red", "orange", "yellow", "green", "turquoise", "blue", "purple", "darkgrey", "lightgrey" ]
+
+def buildPalette(cols, order, topleft=(0,0), size=32):
     buttons = {}
     links = {}
     pos = topleft
     i=0
     # Interesting/neat trick MPS
-    for col in cols:
-        buttons[str(i)] = Button(caption="", position=pos, size=(size,size), bgcolour=col, msg=col)
-        links[ (str(i),"outbox") ] = ("self","outbox")
+    for col in order:
+        buttons[col] = Button(caption="", position=pos, size=(size,size), bgcolour=cols[col], msg=cols[col])
+        links[ (col,"outbox") ] = ("self","outbox")
         pos = (pos[0] + size, pos[1])
         i=i+1
     return Graphline( linkages = links,  **buttons )
 
-colours = [ (0,0,0), (192,0,0), (192,96,0), (160,160,0), (0,192,0),
-            (0,160,160), (0,0,255), (192,0,192), (96,96,96), (192,192,192),
-          ]
-
-
-class OneShot(component):
-    def __init__(self, msg=None):
-        super(OneShot, self).__init__()
-        self.msg = msg
-    def main(self):
-        self.send(self.msg,"outbox")
-        yield 1
-
-def parseCommands():
-    from Kamaelia.Util.Marshalling import Marshaller
-    
-    class CommandParser:
-        def marshall(data):
-            output = [data]
-            if data[0].upper() == "LOAD":
-                output.append(["GETIMG"])    # to propogate loaded image to other connected canvases
-            return output
-        marshall = staticmethod(marshall)
-        
-    return Marshaller(CommandParser)
-                    
-
-def makeSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
-                      PAINTER = Painter(),
-                      PALETTE = buildPalette( cols=colours, topleft=(left+64,top), size=32 ),
-                      ERASER  = Button(caption="Eraser", size=(64,32), position=(left,top)),
-                      SPLIT   = TwoWaySplitter(),
-
-                      linkages = {
-                          ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
-                          ("PALETTE", "outbox")    : ("PAINTER", "colour"),
-                          ("ERASER", "outbox")     : ("PAINTER", "erase"),
-                          ("PAINTER", "outbox")    : ("SPLIT", "inbox"),
-                          ("SPLIT", "outbox")      : ("CANVAS", "inbox"),
-
-                          ("self", "inbox")        : ("CANVAS", "inbox"),
-                          ("SPLIT", "outbox2")     : ("self", "outbox"),
-                          ("CANVAS", "outbox")     : ("self", "outbox"),
-                          },
-                    )
-
-
-if __name__=="__main__":
-    import sys, getopt, re
-
-    shortargs = ""
-    longargs  = [ "serveport=", "connectto=" ]
-
-    optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
-
+def parseOptions():
     rhost, rport = None, None
     serveport = None
 
-    for o,a in optlist:
+    shortargs = ""
+    longargs  = [ "serveport=", "connectto=" ]
+    optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
 
+    for o,a in optlist:
         if o in ("-s","--serveport"):
             serveport = int(a)
 
@@ -129,28 +92,9 @@ if __name__=="__main__":
             rhost,rport = re.match(r"^([^:]+):([0-9]+)$", a).groups()
             rport = int(rport)
 
+    return rhost, rport, serveport
 
-    mainsketcher = \
-        Graphline( SKETCHER = makeSketcher(width=1024,height=768),
-                   CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
-
-                   linkages = { ('self','inbox'):('SKETCHER','inbox'),
-                                ('SKETCHER','outbox'):('self','outbox'),
-                                ('CONSOLE','outbox'):('SKETCHER','inbox'),
-                              }
-                 )
-
-    # primary whiteboard
-    pipeline( subscribeTo("WHITEBOARD"),
-              TagAndFilterWrapper(mainsketcher),
-              publishTo("WHITEBOARD")
-            ).activate()
-
-    # setup a server, if requested
-    if serveport:
-        # server
-        # any requests for connections get plugged into the backplane
-        # does the same tagging and filtering, and conversion tokenlists <-> lines
+def LocalEventServer(backplane="WHITEBOARD", port=1500):
         from Kamaelia.Chassis.ConnectedServer import SimpleServer
         from Kamaelia.Util.Console import ConsoleEchoer
 
@@ -159,45 +103,133 @@ if __name__=="__main__":
                 chunks_to_lines(),
                 lines_to_tokenlists(),
                 FilterAndTagWrapper(
-                    pipeline( publishTo("WHITEBOARD"),
+                    pipeline( publishTo(backplane),
                                 # well, should be to separate pipelines, this is lazier!
-                                subscribeTo("WHITEBOARD"),
+                              subscribeTo(backplane),
                             )
                     ),
                 tokenlists_to_lines(),
                 )
 
-        SimpleServer(protocol=clientconnector, port=serveport).activate()
+        return SimpleServer(protocol=clientconnector, port=serveport)
 
-    # connect to remote host & port, if requested
-    if rhost and rport:
+def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
         # plug a TCPClient into the backplae
         from Kamaelia.Internet.TCPClient import TCPClient
 
         loadingmsg = "Fetching sketch from server..."
 
-        pipeline( subscribeTo("WHITEBOARD"),
-                  TagAndFilterWrapper(
-                      Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
-                                 PIPE = pipeline(
+        return pipeline( subscribeTo(backplane),
+                         TagAndFilterWrapper(
+                         Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
+                                    PIPE = pipeline(
                                             tokenlists_to_lines(),
                                             TCPClient(host=rhost,port=rport),
                                             chunks_to_lines(),
                                             lines_to_tokenlists(),
                                         ),
-                                 BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
-                                 linkages = { ("self","inbox") : ("PIPE","inbox"),
-                                              ("self","control") : ("PIPE","control"),
-                                              ("PIPE","outbox") : ("self","outbox"),
-                                              ("PIPE","signal") : ("self","signal"),
-                                              ("GETIMG","outbox") : ("PIPE","inbox"),
-                                              ("BLACKOUT","outbox") : ("self","outbox"),
-                                            },
-                               )
-                      ),
-                  publishTo("WHITEBOARD"),
-                ).activate()
+                                    BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
+                                    linkages = { ("self","inbox") : ("PIPE","inbox"),
+                                                 ("self","control") : ("PIPE","control"),
+                                                 ("PIPE","outbox") : ("self","outbox"),
+                                                 ("PIPE","signal") : ("self","signal"),
+                                                 ("GETIMG","outbox") : ("PIPE","inbox"),
+                                                 ("BLACKOUT","outbox") : ("self","outbox"),
+                                               },
+                                  )
+                         ),
+                         publishTo(backplane),
+                       ) #.activate()
 
+def parseCommands():
+    from Kamaelia.Util.Marshalling import Marshaller
 
+    class CommandParser:
+        def marshall(data):
+            output = [data]
+            if data[0].upper() == "LOAD":
+                output.append(["GETIMG"])    # to propogate loaded image to other connected canvases
+            return output
+        marshall = staticmethod(marshall)
+
+    return Marshaller(CommandParser)
+
+def makeBasicSketcher(left=0,top=0,width=1024,height=768):
+    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
+                      PAINTER = Painter(),
+                      PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
+                      ERASER  = Button(caption="Eraser", size=(64,32), position=(left,top)),
+
+                      PREV  = Button(caption="<<",
+                                     size=(63,32), 
+                                     position=(left+64+32*len(colours), top),
+                                     msg='prev'),
+                      NEXT  = Button(caption=">>",
+                                     size=(63,32), 
+                                     position=(left+(64*2)+32*len(colours), top),
+                                     msg='next'),
+                      CHECKPOINT  = Button(caption="checkpoint",
+                                     size=(63,32),
+                                     position=(left+(64*3)+32*len(colours), top),
+                                     msg="new"),
+
+                      HISTORY = CheckpointSequencer(lambda X: [["LOAD", "Scribbles/slide.%d.png" % (X,)]],
+                                                    lambda X: [["SAVE", "Scribbles/slide.%d.png" % (X,)]],
+                                                    initial = 0,
+                                                    highest = 0,
+                                ),
+
+                      SPLIT   = TwoWaySplitter(),
+                      DEBUG   = ConsoleEchoer(),
+
+                      linkages = {
+                          ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
+                          ("PALETTE", "outbox")    : ("PAINTER", "colour"),
+                          ("ERASER", "outbox")     : ("PAINTER", "erase"),
+
+                          ("PREV","outbox")        : ("HISTORY", "inbox"),
+                          ("NEXT","outbox")        : ("HISTORY", "inbox"),
+                          ("CHECKPOINT","outbox")  : ("HISTORY", "inbox"),
+                          ("HISTORY","outbox")     : ("CANVAS", "inbox"),
+
+                          ("PAINTER", "outbox")    : ("SPLIT", "inbox"),
+                          ("SPLIT", "outbox")      : ("CANVAS", "inbox"),
+
+                          ("self", "inbox")        : ("CANVAS", "inbox"),
+                          ("SPLIT", "outbox2")     : ("self", "outbox"),
+                          ("CANVAS", "outbox")     : ("self", "outbox"),
+                          
+                          ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
+                          },
+                    )
+
+mainsketcher = \
+    Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
+               CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
+
+               linkages = { ('self','inbox'):('SKETCHER','inbox'),
+                            ('SKETCHER','outbox'):('self','outbox'),
+                            ('CONSOLE','outbox'):('SKETCHER','inbox'),
+                          }
+                 )
+
+# primary whiteboard
+pipeline( subscribeTo("WHITEBOARD"),
+          TagAndFilterWrapper(mainsketcher),
+          publishTo("WHITEBOARD")
+        ).activate()
+
+if __name__=="__main__":
+    import sys, getopt, re
+
+    rhost, rport, serveport = parseOptions()
+
+    # setup a server, if requested
+    if serveport:
+        LocalEventServer("WHITEBOARD", port=serveport).activate()
+
+    # connect to remote host & port, if requested
+    if rhost and rport:
+        EventServerClients(rhost, rport, "WHITEBOARD").activate()
 
     Backplane("WHITEBOARD").run()
