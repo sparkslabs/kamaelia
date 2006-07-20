@@ -125,6 +125,8 @@ class SingleShotHTTPClient(component):
 
     Arguments:
     - starturl     -- the URL of the file to download
+    - [postbody]   -- data to POST to that URL
+    - [connectionclass] -- specify a class other than TCPClient to connect with
     """
    
     Inboxes =  {             
