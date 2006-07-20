@@ -1,12 +1,6 @@
-# import the modules that you want for your website
-from websiteWiki import websiteWiki
-from websiteMinimal import websiteMinimal
-from websiteSessionExample import websiteSessionExample
-
-import ErrorPages
-import types
-
 """
+HTTP Resource Glue 
+
 What does it do?
 ====================
 It picks the appropriate resource handler for a request using any of the
@@ -19,16 +13,18 @@ HTTPResourceGlue also creates an instance of the handler component,
 allowing complete control over its __init__ parameters.
 """
 
+# import the modules that you want for your website
+from websiteMinimal import websiteMinimal
+from websiteSessionExample import websiteSessionExample
+
+import ErrorPages
+import types
+
 # then define what paths should trigger those modules, in order of priority
 # i.e. put more specific URL handlers first
 URLHandlers = [
-    #["/fish/"                  , websiteHandlerFish],
-    #["/formhandler"            , websiteHandlerForms],
-    #["/kamaelia/irc-view/"     , websiteKamaeliaIrcLogs],
-    #["/error"                  , websiteHandlerBuggy],
-    ["/wiki/"                  , websiteWiki],
     ["/session/"               , websiteSessionExample],
-    ["/"                       , websiteMinimal] #should always be last as catches all
+    ["/"                       , websiteMinimal] # "/" should always be last as it catches all
 ]
 # the second item should be a component class that takes one parameter (the request)
 # OR some other function that takes one parameter returns a component instance
