@@ -38,10 +38,15 @@ def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
     curtime = time.gmtime()
     return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
-
+    
 class HTTPServer(component):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
+    
+    Arguments:
+       -- createRequestHandler - a function required by HTTPRequestHandler that
+                                 creates the appropriate request-handler component
+                                 for each request, see HTTPResourceGlue
     """
     
     Inboxes =  { "inbox"         : "TCP data stream - receive",
@@ -55,8 +60,9 @@ class HTTPServer(component):
                  "http-control"  : "To HTTP resource retriever's signalling inbox",
                  "signal"        : "UNUSED" }
 
-    def __init__(self):
+    def __init__(self, createRequestHandler):
         super(HTTPServer, self).__init__()
+        self.createRequestHandler = createRequestHandler
 
     def initialiseComponent(self):
         """Create an HTTPParser component to convert the requests we receive
@@ -64,7 +70,7 @@ class HTTPServer(component):
         sort out the correct response to requests received."""
         
         self.mimehandler = HTTPParser()
-        self.httphandler = HTTPRequestHandler()
+        self.httphandler = HTTPRequestHandler(createRequestHandler)
         #self.httphandler.filereader = TriggeredFileReader()
         
         self.link( (self,"mime-control"), (self.mimehandler,"control") )
@@ -242,9 +248,10 @@ class HTTPRequestHandler(component):
             resource["data"] = resource["data"].encode("utf-8")
             resource["charset"] = "utf-8"
         
-    def __init__(self):
+    def __init__(self, createRequestHandler):
         super(HTTPRequestHandler, self).__init__()
-
+        self.ssCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
+        self.createRequestHandler = createRequestHandler
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
             resource["statuscode"] = str(resource["statuscode"])
@@ -333,8 +340,18 @@ class HTTPRequestHandler(component):
     def sendEndExplicit(self):
         "Called when a response that had a content-length header ends"    
         pass
+    
+    def updateShouldShutdown(self):
+        while self.dataReady("control"):
+            temp = self.recv("control")
+            if isinstance(temp, shutdown):
+                self.ssCode |= 2
+            elif isinstance(temp, producerFinished):
+                self.ssCode |= 1
+        return 0
         
     def main(self):
+
         while 1:
             yield 1        
 
@@ -356,7 +373,7 @@ class HTTPRequestHandler(component):
                 else:
                     connection = request["headers"].get("connection", "close")
                     
-                self.handler = HTTPResourceGlue.createRequestHandler(request)
+                self.handler = self.createRequestHandler(request)
                 
                 assert(self.handler != None) # if no URL handlers match our request then HTTPResourceGlue should produce a 404 handler
                 # Generally even that will not happen because you'll set a "/" handler which catches all then produces its own 404 page
@@ -367,10 +384,14 @@ class HTTPRequestHandler(component):
                 lengthMethod = ""
                 senkChunk = None
                 
-                while not self.dataReady("_handlerinbox") or self.waitingOnNetworkToSend():
-                    #self.pause()
-                    yield 1
-                    
+                while self.ssCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
+                    yield 1                
+                    self.updateShouldShutdown()
+                    self.pause()
+
+                if self.ssCode & 2 > 0: # if we've received a shutdown request
+                    break
+                
                 msg = self.recv("_handlerinbox")
                 
                 if msg.get("complete"): # if the response consists of a single part rather than streaming many parts consecutively
@@ -402,6 +423,9 @@ class HTTPRequestHandler(component):
                         sendChunk(msg)
                         msg = None
                         
+                    self.updateShouldShutdown()
+                    if self.ssCode & 2 > 0:
+                        break # immediate shutdown
                     
                     if self.dataReady("inbox") and not requestEndReached:
                         request = self.recv("inbox")
@@ -431,17 +455,16 @@ class HTTPRequestHandler(component):
                     self.send(producerFinished(), "signal") #this functionality is semi-complete
                     return
 
-            while self.dataReady("control"):
-                temp = self.recv("control")
-                if isinstance(temp, shutdown) or isinstance(temp, producerFinished):
-                    return
+            self.updateShutdownStatus()
+            if self.ssCode > 0:
+                return
 
             self.pause()
 
 if __name__ == '__main__':
     from Axon.Component import scheduler
     import socket
-    SimpleServer(protocol=HTTPServer, port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
+    SimpleServer(protocol=lambda : HTTPServer(HTTPResourceGlue.createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
     #pipeline(
     #    Introspector(),
     #    TCPClient("127.0.0.1", 1500),
