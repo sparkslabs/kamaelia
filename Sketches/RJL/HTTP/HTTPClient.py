@@ -152,7 +152,7 @@ class SingleShotHTTPClient(component):
     }
         
     def __init__(self, starturl, postbody = "", connectionclass = TCPClient):
-        print "SingleShotHTTPClient.__init__()"
+        #print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
         self.httpparser = None
@@ -161,7 +161,7 @@ class SingleShotHTTPClient(component):
         self.connectionclass = connectionclass
         
         self.postbody = postbody
-        print "Start url: " + starturl
+        #print "Start url: " + starturl
         
     def formRequest(self, url):
         """Craft a HTTP request string for the supplied url"""
@@ -252,7 +252,7 @@ class SingleShotHTTPClient(component):
         """Main loop."""
         self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
         while self.mainBody():
-            print "SingleShotHTTPClient.main"
+            #print "SingleShotHTTPClient.main"
             yield 1
         self.send(producerFinished(self), "signal")
         yield 1
@@ -339,8 +339,8 @@ class SimpleHTTPClient(component):
     def __init__(self):
         """Create and link to a carousel object"""
         super(SimpleHTTPClient, self).__init__()
-        AttachConsoleToDebug(self)
-        self.send("SimpleHTTPClient.__init__()", "debug")    
+        #AttachConsoleToDebug(self)
+        self.debug("SimpleHTTPClient.__init__()")    
         
         self.carousel = Carousel(componentFactory=makeSSHTTPClient)
         self.addChildren(self.carousel)
@@ -352,25 +352,28 @@ class SimpleHTTPClient(component):
         
     def cleanup(self):
         """Destroy child components and send producerFinished when we quit."""    
-        self.send("SimpleHTTPClient.cleanup()", "debug")
+        self.debug("SimpleHTTPClient.cleanup()")
         self.send(producerFinished(self), "_carouselsignal") #shutdown() not currently supported by Carousel
         self.send(producerFinished(self), "signal")
         self.removeChild(self.carousel)        
         self.unpause()
         
+    def debug(self, msg):
+        self.send(msg, "debug")
+        
     def main(self):
         """Main loop."""
-        self.send("SimpleHTTPClient.main()\n", "debug")
+        self.debug("SimpleHTTPClient.main()\n")
         finished = False
         while not finished:
             yield 1
-            print "SimpleHTTPClient.main1"
+            self.debug("SimpleHTTPClient.main1")
             while self.dataReady("inbox"):
                 paramdict = self.recv("inbox")
                 if isinstance(paramdict, str):
                     paramdict = { "url": paramdict }
                     
-                self.send("SimpleHTTPClient received url " + paramdict.get("url","") + "\n", "debug")
+                self.debug("SimpleHTTPClient received url " + paramdict.get("url","") + "\n")
                 self.send(paramdict, "_carouselnext")
                 
                 filebody = ""
@@ -378,7 +381,7 @@ class SimpleHTTPClient(component):
                 
                 while carouselbusy:
                     yield 1
-                    print "SimpleHTTPClient.main2"
+                    #print "SimpleHTTPClient.main2"
                     while self.dataReady("_carouselinbox"):
                         msg = self.recv("_carouselinbox")
                         if isinstance(msg, ParsedHTTPBodyChunk):
@@ -410,7 +413,7 @@ class SimpleHTTPClient(component):
                     
             self.pause()
         
-        print "eoml in SimpleHTTPClient"
+        self.debug("eoml in SimpleHTTPClient")
         self.cleanup()
         yield 1
         return
@@ -420,7 +423,7 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     
-    # type in a URL e.g. http://www.google.co.uk and have it saved to disk
+    # type in a URL e.g. http://www.google.co.uk and have that page saved to disk
     pipeline(
         ConsoleReader(">>> ", ""),
         SimpleHTTPClient(),
