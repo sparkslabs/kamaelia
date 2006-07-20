@@ -52,14 +52,14 @@ class TIPCTorrentStartFail(object):
     #Parameters: (none)
 
 # message containing the current status of a particular torrent
-class TIPCTorrentStatusUpdate(object):
+class TIPCTorrentStatusUpdate(TIPC):
     "Current status of a single torrent"
     def __init__(self, torrentid, statsdictionary):
         super(TIPCTorrentStatusUpdate, self).__init__()    
         self.torrentid = torrentid
-        self.statsdictonary = statsdictionary
-    def gettext(self):
-        return "Torrent %d status : %s" % (self.torrentid, str(int(self.statsdictionary.get("fractionDone","0") * 100)) + "%")
+        self.statsdictionary = statsdictionary
+    def getText(self):
+        return "Torrent %d status : %s" % (self.torrentid, str(int(self.statsdictionary.get("fractionDone",0) * 100)) + "%")
 
 # ====================== Messages to send to TorrentClient ======================
 
@@ -69,9 +69,6 @@ class TIPCCreateNewTorrent(TIPC):
     #Parameters: rawmetainfo
 
 # close a running torrent        
-class TIPCCloseTorrent(object):
+class TIPCCloseTorrent(TIPC):
     "Close torrent %(torrentid)d"
     #Parameters: torrentid
-    def __init__(self, torrentid):
-        super(IPCCloseTorrent, self).__init__()
-        self.torrentid = torrentid
