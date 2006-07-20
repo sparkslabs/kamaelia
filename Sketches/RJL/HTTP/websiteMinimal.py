@@ -91,14 +91,15 @@ class websiteMinimal(component):
         
         error = None
         try:
-            if os.path.isfile(homedirectory + filename):
+            if os.path.exists(homedirectory + filename) and not os.path.isdir(homedirectory + filename):
                 resource = {
                     "type"           : filetype,
                     "statuscode"     : "200",
-                    "length" : os.path.getsize(homedirectory + filename) 
+                    #"length" : os.path.getsize(homedirectory + filename) 
                 }
                 self.send(resource, "outbox")
             else:
+                print "Error 404, is not file - " + homedirectory + filename
                 error = 404
                 
         except OSError, e:
@@ -111,7 +112,7 @@ class websiteMinimal(component):
             self.send(producerFinished(self), "signal")
             return
             
-        self.filereader = IntelligentFileReader(homedirectory + filename, 30000, 5)
+        self.filereader = IntelligentFileReader(homedirectory + filename, 50000, 10)
         self.link((self, "_fileprompt"), (self.filereader, "inbox"))
         self.link((self, "_filesignal"), (self.filereader, "control"))
         self.link((self.filereader, "outbox"), (self, "_fileread"))
@@ -142,4 +143,4 @@ class websiteMinimal(component):
         #print "websiteMinimal terminated"
 
 indexfilename = "index.html"
-homedirectory = "~/kamhttpsite/"
+homedirectory = "/home/ryan/kamhttpsite/"
