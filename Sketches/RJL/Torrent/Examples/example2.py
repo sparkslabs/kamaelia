@@ -15,28 +15,27 @@ from DataSource import DataSource
 from OnDemandIntrospector import OnDemandIntrospector
 
 from HTTPClient import SimpleHTTPClient
-from Kamaelia.Util.Introspector import Introspector
 from TorrentClient import BasicTorrentExplainer
 from TorrentPatron import TorrentPatron
 from Kamaelia.Internet.TCPClient import TCPClient
-if __name__ == '__main__':
-    
+
+if __name__ == '__main__':    
     # download a linux distro
     X = pipeline(
         DataSource( ["http://www.legaltorrents.com/bit/trusted-computing.torrent"] ),
         SimpleHTTPClient(),
-        #TorrentPatron(),
-        #BasicTorrentExplainer(),
-        #ConsoleEchoer(),    
+        TorrentPatron(),
+        BasicTorrentExplainer(),
+        ConsoleEchoer(),    
     )
 
     Y = pipeline(
         DataSource( ["http://www.legaltorrents.com/bit/trusted-computing.torrent",
                      "http://www.legaltorrents.com/bit/freeculture.zip.torrent"] ),
         SimpleHTTPClient(),
-        #TorrentPatron(),
-        #BasicTorrentExplainer(),
-        #ConsoleEchoer(),    
+        TorrentPatron(),
+        BasicTorrentExplainer(),
+        ConsoleEchoer(),    
     )
     Z = pipeline(
         ConsoleReader(),
