@@ -84,26 +84,26 @@ class TorrentPatron(Axon.Component.component):
         
         loop = True
         while loop:
-            print "TorrentPatron.main loop"
+            #print "TorrentPatron.main loop"
             yield 1
             
             if self.dataReady("inbox"):
-                print "TorrentPatron inbox"            
+                #print "TorrentPatron inbox"            
                 msg = self.recv("inbox")
                 msg = TIPCServicePassOn(replyService=(self, "torrent-inbox"), message=msg)
                 self.send(msg, "torrent-outbox")
                 
             elif self.dataReady("torrent-inbox"):
                 msg = self.recv("torrent-inbox")
-                print "TorrentPatron torrent-inbox"
-                print msg
+                #print "TorrentPatron torrent-inbox"
+                #print msg
                 self.send(msg, "outbox")
                 
             elif self.dataReady("control"):
-                print "TorrentPatron control"            
+                #print "TorrentPatron control"            
                 msg = self.recv("control")
                 if isinstance(msg, shutdown):
-                    break
+                    loop = False
                     
             else:
                 self.pause()
