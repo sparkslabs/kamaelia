@@ -25,30 +25,39 @@
 IRC Logging Bot
 =======================
 
-This component interacts with an IRC server via its inbox and outbox. It should be connected to a TCP client component
+This component interacts with an IRC server via its inbox and outbox.
 
 This component does not terminate.
 """
 
 import sys
 import datetime
-import time
+import timeIRCIPCChangeNick
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import string
 
-class IRCBot(component):
+from IRCIPC import *
+
+class IRCClient(component):
     """\
-    IRCBot() -> new IRCBot 
+    IRCClient() -> IRCClient 
     """
-    Inboxes = { "inbox"   : "messages received over TCP",
-                "command" : "simple instructions for the bot",
-                "control" : "UNUSED"
-              }
-    Outboxes = { "outbox" : "messages to send over TCP",
-                 "signal" : "UNUSED",
-                 "heard"   : "events e.g. private messages received",
-               }
+    Inboxes = {
+        "inbox"       : "simple instructions for the bot",
+        "control"     : "UNUSED",
+        
+        "_tcpinbox"   : "messages received over TCP",     
+        "_tcpcontrol" : "for receiving connection shutdown signals from TCPClient"
+    }
+    
+    Outboxes = {
+        "outbox"      : "events e.g. private messages received",
+        "signal"      : "UNUSED",
+        
+        "_tcpoutbox"  : "messages to send over TCP",
+        "_tcpsignal"  : "shutdown signals for TCPClient"
+    }
 
     ERR_NOSUCHNICK           = 401
     ERR_NOSUCHSERVER         = 402	
@@ -59,43 +68,73 @@ class IRCBot(component):
     ERR_TOOMANYTARGETS       = 407
     #more to come
 
-    def writeHeard(self, src):
-        t = datetime.datetime.now()
-        epochsecs = time.mktime(t.timetuple())
-        msg = ("%d" % epochsecs) + " " + string.join(src, " ") + "\n"
-        self.send(msg, "heard")
+    MapIPCToFunction = {
+        IRCIPCChangeNick      : (lambda x : self.changeNick(x.nick)),
+        IRCIPCDisconnect      : (lambda x : self.disconnect()),
+        IRCIPCConnect         : (lambda x : self.connect()),
+        IRCIPCLogin           : (lambda x : self.login(x.nick, x.password, x.channel)
+        IRCIPCJoinChannel     : (lambda x : self.joinChannel(x.channel)),
+        IRCIPCSendMessage     : (lambda x : self.say(x.recipient, x.msg)),
+        IRCIPCLeaveChannel    : (lambda x : self.leaveChannel(x.channel)),
+        IRCIPCSetChannelTopic : (lambda x : self.changeTopic(x.channel, x.topic)),
+    }
+    
+    def connect(self):
+        self.tcpclient = TCPClient(self.host, self.port)
+        self.link((self, "_tcpoutbox"), (self.tcpclient, "inbox"))
+        self.link((self, "_tcpsignal"), (self.tcpclient, "control"))
+        self.link((self.tcpclient, "outbox"), (self, "_tcpinbox"))
+        self.link((self.tcpclient, "signal"), (self, "_tcpcontrol"))
+                
+        self.addChildren(self.tcpclient)
 
-    def __init__(self, nick, password, channel, username):
-        super(IRCBot, self).__init__()
+    def disconnect(self):
+        self.unlink((self, "_tcpoutbox"), (self.tcpclient, "inbox"))
+        self.unlink((self, "_tcpsignal"), (self.tcpclient, "control"))
+        self.unlink((self.tcpclient, "outbox"), (self, "_tcpinbox"))
+        self.unlink((self.tcpclient, "signal"), (self, "_tcpcontrol"))
+        self.tcpclient = None
+        
+    def __init__(self, host, port, nick, password, username):
+        super(IRCClient, self).__init__()
+        self.host = host
+        self.port = port
+
+        self.username = username        
         self.nick = nick
         self.password = password
-        self.channel = channel
-        self.username = username
-
+        self.channels = {}
+        
     def changeNick(self, newnick):
         self.nick = newnick
-        self.send("NICK %s\r\n" % newnick, "outbox")
+        self.send("NICK %s\r\n" % newnick, "_tcpoutbox")
 
-    def joinChannel(self):
-        self.send( 'JOIN %s\r\n' % self.channel, "outbox")
+    def joinChannel(self, channel):
+        self.channels[channel] = True
+        self.send("JOIN %s\r\n" % channel, "_tcpoutbox")
+
     def say(self, recipient, message):
         self.send("PRIVMSG %s :%s\r\n" % (recipient, message), "outbox")
+
     def leaveChannel(self, channel):
         self.send("PART %s\r\n" % channel, "outbox")
+
     def changeTopic(self, channel, topic):
         self.send("TOPIC %s :%s\r\n" % (channel, topic), "outbox")
 
-    def login(self):
-        self.send("NICK %s\r\n" % self.nick, "outbox")
-        if self.password:
-            self.send("PASS %s\r\n" % self.password)
-        if not self.username:
-            self.username = self.nick
-        self.send ("USER %s %s %s :%s\r\n" % (self.username,self.nick,self.nick, "Kamaelia IRC Bot"), "outbox")
+    def login(self, nick, password, username):
+        self.send("NICK %s\r\n" % nick, "outbox")
+        if password:
+            self.send("PASS %s\r\n" % password)
+        if not username:
+            username = nick
+        self.send ("USER %s %s %s :%s\r\n" % (username, nick, nick, "Kamaelia IRC Bot"), "outbox")
         self.logging = True
 
     def main(self):
         """Main loop"""
+        
+        self.connect()
         self.login()
         self.joinChannel()
         readbuffer = ""
@@ -103,17 +142,19 @@ class IRCBot(component):
         while 1:
             yield 1
             
-            if self.dataReady("command"):
-                command = self.recv("command")
+            if self.dataReady("inbox"):
+                command = self.recv("inbox")
+                self.MapIPCToFunction(command.__class__)(command) # get the appropriate function for that type of message and pass the message to it
                 self.send(command, "outbox")
-            elif self.dataReady("control"):
-                msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                    self.send("SIGNALCLOSE", "heard")
-                    self.send(msg, "signal")
-                    return
-            elif self.dataReady("inbox"):
-                readbuffer += self.recv("inbox")
+                
+            elif self.dataReady("_tcpcontrol"):
+                msg = self.recv("_tcpcontrol")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    self.send(IRCIPCDisconnected(), "outbox")
+                    self.disconnect()
+                
+            elif self.dataReady("_tcpinbox"):
+                readbuffer += self.recv("_tcpinbox")
                 lines = string.split(readbuffer, "\n")
                 readbuffer = lines.pop() #the remainder after final \n
 
@@ -135,8 +176,7 @@ class IRCBot(component):
 
                     elif splitline[0] == "PRIVMSG":
                         msg = string.join(splitline[2:], " ")[1:]
-                        msg = ( "PRIVMSG", linesender, splitline[1], msg )
-                        self.send(msg, "heard")
+                        self.send(IRCIPCMessageReceived(sender=linesender, recpient=splitline[1], msg=msg), "outbox") 
 
                     elif splitline[0] == "PART":
                         msg = ( "PART", linesender, splitline[1] )
