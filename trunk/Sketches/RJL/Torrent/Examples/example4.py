@@ -3,9 +3,9 @@ from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
 import sys, time
-sys.path.append("../../../Util")
-sys.path.append("../../../HTTP")
-sys.path.append("../../../Torrent")
+sys.path.append("../../Util")
+sys.path.append("../../HTTP")
+sys.path.append("../../Torrent")
 
 from IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
 from Chunkifier import Chunkifier
