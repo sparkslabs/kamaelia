@@ -143,4 +143,4 @@ class websiteMinimal(component):
         #print "websiteMinimal terminated"
 
 indexfilename = "index.html"
-homedirectory = "/home/ryan/kamhttpsite/"
+homedirectory = "htdocs/"
