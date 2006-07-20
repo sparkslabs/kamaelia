@@ -13,6 +13,25 @@ TorrentWindow uses Tkinter to produce a very simple GUI.
 It then produces messages for and accepts messages produced by a
 TorrentPatron component (also would work with TorrentClient but 
 TorrentPatron is preferred, see their respective files).
+
+Example Usage
+-------------
+The following setup allows torrents to be entered as HTTP URLs into the
+GUI and then downloaded with progress information for each torrent.
+
+    Graphline(
+        gui=TorrentWindow(),
+        httpclient=SimpleHTTPClient(),
+        backend=TorrentPatron(),
+        linkages = {
+            ("gui", "outbox") : ("backend", "inbox"),
+            ("gui", "fetchersignal") : ("httpclient", "control"),
+            ("gui", "signal") : ("backend", "control"),
+            ("gui", "fetcher") : ("httpclient", "inbox"),
+            ("httpclient", "outbox") : ("backend", "inbox"),
+            ("backend", "outbox"): ("gui", "inbox")
+        }
+    ).run()
 """
 
 from Kamaelia.UI.Tk.TkWindow import TkWindow
@@ -55,7 +74,7 @@ class TorrentWindow(TkWindow):
         "Request the addition of a new torrent"
         torrenturl = self.entry.get()
         self.pendingtorrents.append(torrenturl.rsplit("/", 1)[-1])
-        self.send(torrenturl, "fetcher") #forward on the torrent URL/path
+        self.send(torrenturl, "fetcher") # forward on the torrent URL/path to the fetcher
         self.entry.delete(0, Tkinter.END)
 
     def main(self):
@@ -80,10 +99,10 @@ class TorrentWindow(TkWindow):
                     self.window.rowconfigure(len(self.torrents), weight=1)
                     
                 elif isinstance(msg, TIPCTorrentStartFail) or isinstance(msg, TIPCTorrentAlreadyDownloading):
-                    self.pendingtorrents.pop(0)
+                    self.pendingtorrents.pop(0) # the oldest torrent not yet started failed so remove it from the list of pending torrents
                 
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
-                    #print msg.statsdictionary.get("fractionDone","-1")
+                    # print msg.statsdictionary.get("fractionDone","-1")
                     self.torrents[msg.torrentid][2].set(self.torrents[msg.torrentid][0] + " - " + str(int(msg.statsdictionary.get("fractionDone","0") * 100)) + "%")
             
             self.tkupdate()
