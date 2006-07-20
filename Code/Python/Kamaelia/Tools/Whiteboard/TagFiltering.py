@@ -52,15 +52,15 @@ class UidTagger(component):
     def main(self):
         uid = self.name
         self.send(uid, "uid")
-        
+
         while not self.finished():
             while self.dataReady("inbox"):
                 item = self.recv("inbox")
                 self.send( (uid,item), "outbox" )
-            
+
             self.pause()
             yield 1
-            
+
 
 class FilterTag(component):
     Inboxes = { "inbox"   : "incoming tagged items",
@@ -81,16 +81,16 @@ class FilterTag(component):
 
     def main(self):
         uid = object()
-        
+
         while not self.finished():
             while self.dataReady("uid"):
                 uid = self.recv("uid")
-                
+
             while self.dataReady("inbox"):
                 (ID,item) = self.recv("inbox")
                 if not ID == uid:
                     self.send( item, "outbox" )
-            
+
             self.pause()
             yield 1
 
@@ -101,49 +101,48 @@ def TagAndFilterWrapper(target):
     coming from its outbox; and filtering outany traffic coming into its inbox
     with the same unique id.
     """
-    
+
     return Graphline( TAGGER = UidTagger(),
                       FILTER = FilterTag(),
                       TARGET = target,
                       linkages = {
                           ("TARGET", "outbox") : ("TAGGER", "inbox"),    # tag data coming from target
                           ("TAGGER", "outbox") : ("self", "outbox"),
-                          
+
                           ("TAGGER", "uid")    : ("FILTER", "uid"),      # ensure filter uses right uid
-                          
+
                           ("self", "inbox")    : ("FILTER", "inbox"),    # filter data going to target
                           ("FILTER", "outbox") : ("TARGET", "inbox"),
-                          
+
                           ("self", "control")  : ("TARGET", "control"),  # shutdown signalling path
                           ("TARGET", "signal") : ("TAGGER", "control"),
                           ("TAGGER", "signal") : ("FILTER", "control"),
                           ("FILTER", "signal") : ("self", "signal"),
                       },
                     )
-                    
+
 def FilterAndTagWrapper(target):
     """\
     Returns a component that wraps a target component, tagging all traffic
     going into its inbox; and filtering outany traffic coming out of its outbox
     with the same unique id.
     """
-    
+
     return Graphline( TAGGER = UidTagger(),
                       FILTER = FilterTag(),
                       TARGET = target,
                       linkages = {
                           ("TARGET", "outbox") : ("FILTER", "inbox"),    # filter data coming from target
                           ("FILTER", "outbox") : ("self", "outbox"),
-                          
+
                           ("TAGGER", "uid")    : ("FILTER", "uid"),      # ensure filter uses right uid
-                          
+
                           ("self", "inbox")    : ("TAGGER", "inbox"),    # tag data going to target
                           ("TAGGER", "outbox") : ("TARGET", "inbox"),
-                          
+
                           ("self", "control")  : ("TARGET", "control"),  # shutdown signalling path
                           ("TARGET", "signal") : ("TAGGER", "control"),
                           ("TAGGER", "signal") : ("FILTER", "control"),
                           ("FILTER", "signal") : ("self", "signal"),
                       },
                     )
-    

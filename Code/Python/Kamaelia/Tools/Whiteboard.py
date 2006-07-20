@@ -174,7 +174,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                      msg="new"),
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", "Scribbles/slide.%d.png" % (X,)]],
-                                                    lambda X: [["SAVE", "Scribbles/slide.%d.png" % (X,)]],
+                                                    lambda X: [["SAVE", "Scribbles//slide.%d.png" % (X,)]],
                                                     initial = 0,
                                                     highest = 0,
                                 ),
