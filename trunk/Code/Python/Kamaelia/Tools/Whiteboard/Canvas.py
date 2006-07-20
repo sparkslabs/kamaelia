@@ -22,9 +22,15 @@
 #
 
 import Axon
+import zlib
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 import pygame
+
+try:
+    import Image
+except ImportError:
+    print "WARNING: Python Imaging Library Not available, defaulting to bmp only mode"
 
 class Canvas(Axon.Component.component):
     """\
@@ -40,6 +46,7 @@ class Canvas(Axon.Component.component):
                  "signal" : "",
                  "toDisplay" : "For sending requests to PygameDisplay service",
                  "eventsOut" : "Events forwarded out of here",
+                 "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                }
 
     def __init__(self, position=(0,0), size=(1024,768), ):
@@ -47,6 +54,12 @@ class Canvas(Axon.Component.component):
         super(Canvas,self).__init__()
         self.position = position
         self.size = size
+        self.antialias = True
+        if self.antialias == True:
+            self.pygame_draw_line = pygame.draw.aaline
+        else:
+            self.pygame_draw_line = pygame.draw.line
+        self.dirty_sent = False
 
     def waitBox(self,boxname):
         waiting = True
@@ -100,6 +113,8 @@ class Canvas(Axon.Component.component):
 
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
+                \
+print repr(msgs)
                 self.redrawNeeded = False
                 for msg in msgs:
                     cmd = msg[0]
@@ -108,7 +123,10 @@ class Canvas(Axon.Component.component):
                     self.handleCommand(cmd, *args)
                 if self.redrawNeeded:
                     self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-
+                    if not self.clean:
+                        if not self.dirty_sent:
+                            self.send("dirty", "surfacechanged")
+                            self.dirty_sent = True
 
             # pass on events received from pygame display
             while self.dataReady("eventsIn"):
@@ -123,24 +141,56 @@ class Canvas(Axon.Component.component):
         # Would then be pluggable.
         #
         cmd = cmd.upper()
-        if cmd=="CLEAR":
-            if len(args) == 3:
-                self.surface.fill( [int(a) for a in args[0:3]] )
-            else:
-                self.surface.fill( (255,255,255) )
-            self.redrawNeeded = True
-
+        if   cmd=="CLEAR":
+            self.clear(args)
+            self.clean = True
+            self.dirty_sent = False
         elif cmd=="LINE":
-            (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
-            pygame.draw.line(self.surface, (r,g,b), (sx,sy), (ex,ey))
-            self.redrawNeeded = True
-
+             self.line(args)
         elif cmd=="CIRCLE":
-            (r,g,b,x,y,radius) = [int(v) for v in args[0:6]]
-            pygame.draw.circle(self.surface, (r,g,b), (x,y), radius, 0)
-            self.redrawNeeded = True
-
+            self.circle(args)
+            self.clean = False
         elif cmd=="LOAD":
+            self.load(args)
+            self.clean = True
+            self.dirty_sent = False
+        elif cmd=="SAVE":
+            self.save(args)
+            self.clean = True
+            self.dirty_sent = False
+        elif cmd=="GETIMG":
+            self.getimg(args)
+            self.clean = False
+        elif cmd=="SETIMG":
+            self.setimg(args)
+            self.clean = False
+        elif cmd=="WRITE":
+            self.write(args)
+            self.clean = False
+
+    def line(self, args):
+        (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
+        self.pygame_draw_line(self.surface, (r,g,b), (sx,sy), (ex,ey))
+#        pygame.draw.aaline(self.surface, (r,g,b), (sx,sy), (ex,ey))
+        self.redrawNeeded = True
+        if not((sy <0) or (ey <0)):
+            self.clean = False
+
+    def clear(self, args):
+        if len(args) == 3:
+            self.surface.fill( [int(a) for a in args[0:3]] )
+        else:
+            self.surface.fill( (255,255,255) )
+        self.redrawNeeded = True
+        self.dirty_sent = True
+        self.clean = True
+
+    def circle(self, args):
+        (r,g,b,x,y,radius) = [int(v) for v in args[0:6]]
+        pygame.draw.circle(self.surface, (r,g,b), (x,y), radius, 0)
+        self.redrawNeeded = True
+
+    def load(self, args):
             filename = args[0]
             try:
                 loadedimage = pygame.image.load(filename)
@@ -149,28 +199,37 @@ class Canvas(Axon.Component.component):
             else:
                 self.surface.blit(loadedimage, (0,0))
             self.redrawNeeded = True
+            self.getimg(())
+            self.clean = True
 
-        elif cmd=="SAVE":
-            filename = args[0]
+    def save(self, args):
+        filename = args[0]
+        try:
+            imagestring = pygame.image.tostring(self.surface,"RGB")
+            pilImage = Image.fromstring("RGB", self.surface.get_size(), imagestring)
+            pilImage.save(filename)
+        except NameError:
             pygame.image.save(self.surface, filename)
+        self.clean = True
 
-        elif cmd=="GETIMG":
+    def getimg(self, args):
             imagestring = pygame.image.tostring(self.surface,"RGB")
             imagestring = zlib.compress(imagestring)
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
 
-        elif cmd=="SETIMG":
+    def setimg(self, args):
             w,h = int(args[1]), int(args[2])
             imagestring = zlib.decompress(args[0])
-            recvsurface = pygame.image.fromstring(imagestring, (w,h), args[3])
+            recvsurface = pygame.image.frombuffer(imagestring, (w,h), args[3])
             self.surface.blit(recvsurface, (0,0))
             self.redrawNeeded = True
 
-        elif cmd=="WRITE":
+    def write(self, args):
             x,y,size,r,g,b = [int(a) for a in args[0:6]]
             text = args[6]
             font = pygame.font.Font(None,size)
-            textimg = font.render(text, False, (r,g,b))
+            textimg = font.render(text, self.antialias, (r,g,b))
             self.surface.blit(textimg, (x,y))
             self.redrawNeeded = True
+

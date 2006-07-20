@@ -34,6 +34,8 @@ class Painter(Axon.Component.component):
                  "control" : "",
                  "colour"  : "select drawing, using colour",
                  "erase"   : "select eraser",
+                 "load"    : "image to load",
+                 "save"    : "filename to save image to",
                }
     Outboxes = { "outbox" : "outputs drawing instructions",
                  "signal" : "",
@@ -70,6 +72,14 @@ class Painter(Axon.Component.component):
             while self.dataReady("erase"):
                 self.recv("erase")
                 mode = "ERASE"
+
+            while self.dataReady("load"):
+                command = self.recv("load")
+                self.sendbuffer.append(command)
+
+            while self.dataReady("save"):
+                command = self.recv("save")
+                self.sendbuffer.append(command)
 
             while self.dataReady("inbox"):
                 message = self.recv("inbox")
