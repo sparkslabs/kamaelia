@@ -21,22 +21,22 @@
 # -------------------------------------------------------------------------
 #
 import Axon
-from Axon.Ipc import newComponent
-from Kamaelia.Util.Splitter import PlugSplitter as Splitter
-from Kamaelia.Util.Splitter import Plug
-from Axon.AxonExceptions import ServiceAlreadyExists
-from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
-from Kamaelia.Util.passThrough import passThrough
-from Kamaelia.Util.PipelineComponent import pipeline
+#from Axon.Ipc import newComponent
+#from Kamaelia.Util.Splitter import PlugSplitter as Splitter
+#from Kamaelia.Util.Splitter import Plug
+#from Axon.AxonExceptions import ServiceAlreadyExists
+#from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+#from Kamaelia.Util.passThrough import passThrough
+#from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Backplane import *
 from Kamaelia.Util.Graphline import *
-
-from Kamaelia.File import ReadFileAdaptor
-from Kamaelia.File.Reading import PromptedFileReader
+from Kamaelia.File.Reading import RateControlledFileReader
+#from Kamaelia.File import ReadFileAdaptor
+#from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.Util.RateFilter import ByteRate_RequestControl
-from Kamaelia.SingleServer import SingleServer
-from Kamaelia.Internet.TCPClient import TCPClient
+#from Kamaelia.Util.RateFilter import ByteRate_RequestControl
+#from Kamaelia.SingleServer import SingleServer
+#from Kamaelia.Internet.TCPClient import TCPClient
 
 class MyReader(Axon.Component.component):
     def main(self):
@@ -49,35 +49,39 @@ class MyReader(Axon.Component.component):
 
 
 import xxtea
+
 class Encryptor(Axon.Component.component):
    def __init__(self,key):
       super(Encryptor,self).__init__()
       self.key = key
-   
+
    def main(self):
-      while 1:
-	 while self.dataReady("inbox"):
-	    data = self.recv("inbox")
-	    print "encrypting data: ",data
-	    enc = xxtea.xxbtea(data,2,"AABBCCDDEE0123456789AABBCCDDEEFF")
-	    self.send(enc, "outbox")
-         self.pause()
-	 yield 1
+      while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
+         while self.dataReady("inbox"):
+            data = self.recv("inbox")
+            enc = xxtea.xxbtea(data,2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+            self.send(enc, "outbox")
+         if not self.anyReady():
+             self.pause()
+         yield 1
+      self.send(self.recv("control"),"signal")
+
 
 class Decryptor(Axon.Component.component):
    def __init__(self,key):
       super(Decryptor,self).__init__()
       self.key = key
-   
+
    def main(self):
-      while 1:
-	 while self.dataReady("inbox"):
-	    data = self.recv("inbox")
-	    dec = xxtea.xxbtea(data,-2,"AABBCCDDEE0123456789AABBCCDDEEFF")
-	    print "decrypted data ",dec
-	    self.send(dec, "outbox")
-         self.pause()
-	 yield 1
+      while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
+         while self.dataReady("inbox"):
+            data = self.recv("inbox")
+            dec = xxtea.xxbtea(data,-2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+            self.send(dec, "outbox")
+         if not self.anyReady():
+             self.pause()
+         yield 1
+      self.send(self.recv("control"),"signal")
 	    
 class echoer(Axon.Component.component):
     def main(self):
@@ -110,135 +114,34 @@ class Sender(Axon.Component.component):
    
 
 class ClientSimulator(Axon.Component.component):
-   def __init__(self):
+   def __init__(self,id):
       super(ClientSimulator,self).__init__()
-
+      self.id = id;
    def main(self):
-      count = 0
-      while count != 20:
-          mesg = "Client Subscribed " + str(count)
-	  print "mesg is ", mesg
-	  self.send(mesg)
-          count=count+1
-	  yield 1
+         count = 0
+         mesg = "Client Subscribed " + self.id
+         print "mesg is ", mesg
+         self.send(mesg)
+         count=count+1
+         yield 1
       
-
 # create a back plane by name server talk
 Backplane("ServerTalk").activate()
 
 # the client events backplane will publish an event whenever the client joins/leaves the backplane.
-
 Backplane("ClientEvents").activate()
-
-def fixedString():
- # create a reader and pipeline it to publish object
- pipeline(
-        MyReader(),
-        Encryptor("12345678901234567890123456789012"),
-        publishTo("ServerTalk"),
- ).activate()
-
- #pipeline the subscribe object to the echoer
- #note the connection publisher and subscriber is via BACKPLANE:)
- pipeline(
-         subscribeTo("ServerTalk"),
-         Decryptor("12345678901234567890123456789012"),
-	 echoer(),
- ).run()
-
-def fileRW():
- port = 1602
- #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
- 
- pipeline(
-        ByteRate_RequestControl(rate=10000,chunksize=8), #The rate parameter might have to change for if it becomes across a network.
-        PromptedFileReader("SelfishTriangle.jpg","bytes"),
-        Encryptor("12345678901234567890123456789012"),
-        #SingleServer(port=port),
-        publishTo("ServerTalk")
- ).activate()
-
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- pipeline(
-        subscribeTo("ServerTalk"),
-        #TCPClient("127.0.0.1",port),
-        Decryptor("12345678901234567890123456789012"),
-        SimpleFileWriter("SelfishTriangle-dec.jpg")
- ).run()
-
-
-def multipleClients():
- #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
- 
- Graphline(
-        brrc = ByteRate_RequestControl(rate=10000,chunksize=8), #The rate parameter might have to change for if it becomes across a network.
-        pfr = PromptedFileReader("Chekov.txt","bytes"),
-        snd = Sender(),
-        sub = subscribeTo("ClientEvents"), # the sender subscribes to the graphline and comes to know of key change events, like client join/leave
-	enc = Encryptor("12345678901234567890123456789012"),
-	pub = publishTo("ServerTalk"),
-	linkages = { ("brrc","outbox") : ("pfr","inbox"),
-	             ("pfr","outbox") : ("snd","databox"),
-		     ("sub","outbox") : ("snd","keybox"),
-		     ("snd","outbox") : ("pub","inbox"),
-		     #("enc","outbox") : ("pub","inbox"),
-		   }
- ).activate()
-
-# the recipient publishes to a backplane whenever clients join/leave
-
- #Graphline(
-  #     cs = ClientSimulator(),
-   #    pub = publishTo("ClientEvents"),
-    #   linkages = { ("cs","outbox") : ("pub","inbox") 
-     #             }
- #).activate()
- 
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        #dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-1.txt"),
-	linkages = { ("sub","outbox") : ("sf","inbox"),
-	             #("dec","outbox") : ("sf","inbox"),
-		   }
- ).activate()
-
-
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        #dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-2.txt"),
-	linkages = { ("sub","outbox") : ("sf","inbox"),
-	             #("dec","outbox") : ("sf","inbox"),
-		   }
- ).activate()
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        #dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-3.txt"),
-	linkages = { ("sub","outbox") : ("sf","inbox"),
-	             #("dec","outbox") : ("sf","inbox"),
-		   }
- ).run()
 
 def clientSubscribe():
  #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
  
  Graphline(
-        brrc = ByteRate_RequestControl(rate=10000,chunksize=8), #The rate parameter might have to change for if it becomes across a network.
-        pfr = PromptedFileReader("Chekov.txt","bytes"),
+        rcfr = RateControlledFileReader("Chekov.txt",readmode="bytes",rate=100000,chunksize=8),
         snd = Sender(),
         sub = subscribeTo("ClientEvents"), # the sender subscribes to the graphline and comes to know of key change events, like client join/leave
 	enc = Encryptor("12345678901234567890123456789012"),
 	pub = publishTo("ServerTalk"),
-	linkages = { ("brrc","outbox") : ("pfr","inbox"),
-	             ("pfr","outbox") : ("snd","databox"),
+	linkages = {
+	             ("rcfr","outbox") : ("snd","databox"),
 		     ("sub","outbox") : ("snd","keybox"),
 		     ("snd","outbox") : ("enc","inbox"),
 		     ("enc","outbox") : ("pub","inbox"),
@@ -247,45 +150,33 @@ def clientSubscribe():
 
 # the recipient publishes to a backplane whenever clients join/leave
 
- #Graphline(
-  #     cs = ClientSimulator(),
-   #    pub = publishTo("ClientEvents"),
-    #   linkages = { ("cs","outbox") : ("pub","inbox") 
-     #             }
- #).activate()
- 
 # Read 8 bytes from the subscriber, decrypt it and write it to the output file.
  Graphline(
+        cs = ClientSimulator("100"),
         pub = publishTo("ClientEvents"),
         sub = subscribeTo("ServerTalk"),
         dec = Decryptor("12345678901234567890123456789012"),
         sf = SimpleFileWriter("Chekov-dec-1.txt"),
-	linkages = { ("sub","outbox") : ("dec","inbox"),
+	linkages = { ("cs","outbox") : ("pub","inbox"),
+	             ("sub","outbox") : ("dec","inbox"),
 	             ("dec","outbox") : ("sf","inbox"),
 		   }
  ).activate()
 
-
 # Read 8 bytes from the subscriber, decrypt it and write it to the output file.
  Graphline(
+        cs = ClientSimulator("101"),
         pub = publishTo("ClientEvents"),
         sub = subscribeTo("ServerTalk"),
         dec = Decryptor("12345678901234567890123456789012"),
         sf = SimpleFileWriter("Chekov-dec-2.txt"),
-	linkages = { ("sub","outbox") : ("dec","inbox"),
-	             ("dec","outbox") : ("sf","inbox"),
-		   }
- ).activate()
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-dec-3.txt"),
-	linkages = { ("sub","outbox") : ("dec","inbox"),
+	linkages = { ("cs","outbox") : ("pub","inbox"),
+	             ("sub","outbox") : ("dec","inbox"),
 	             ("dec","outbox") : ("sf","inbox"),
 		   }
  ).run()
+
+
 
 #fixedString()
 #fileRW()
