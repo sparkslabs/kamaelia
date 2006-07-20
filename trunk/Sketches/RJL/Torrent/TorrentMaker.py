@@ -10,6 +10,32 @@
 # for the specific language governing rights and limitations under the
 # License.
 
+"""\
+=================
+.torrent Maker
+=================
+
+This component accepts filenames, one per message, in "inbox" and outputs the metadata (contents of the .torrent file) for that file to outbox.
+
+Example Usage
+-------------
+
+This setup accepts filenames, one per line, and then seeds them using the given
+tracker.
+
+pipeline(
+    ConsoleReader(eol=""),
+    TorrentMaker(defaulttracker="http://sometracker.example.com:6969/announce"),
+    TorrentPatron()
+).run()
+    
+
+How does it work?
+-----------------
+TorrentMaker uses the .torrent making functions provided by the MainLine
+BitTorrent client.
+"""
+
 # Written by Bram Cohen
 
 #if __name__ == '__main__':
@@ -53,7 +79,7 @@ class TorrentMaker(threadedcomponent):
             
             make_meta_files(
                 url=request.trackerurl,
-                files=[request.srcfile],
+                files=[(request.srcfile).decode(le)],
                 piece_len_pow2=request.log2piecesizebytes,
                 title=request.title,
                 comment=request.comment,
@@ -61,9 +87,11 @@ class TorrentMaker(threadedcomponent):
                 progressfunc=lambda x: None,
                 filefunc=lambda x: None,
             )
-            tmp = os.fdopen(tmp[0])
-            metadata = tmp.read()
-            tmp.close()
+            tmpfile = os.fdopen(tmp[0])
+            metadata = tmpfile.read()
+            tmpfile.close()
+            os.unlink(tmp[1])
+            tmp, tmpfile = None, None
             
             self.send(metadata, "outbox")
         except BTFailure, e:
@@ -107,8 +135,11 @@ if __name__ == '__main__':
     from Kamaelia.File.Writing import SimpleFileWriter
     
     # type in a file path and have a .torrent file made for it
+    # if you enter two file paths (i.e. two lines) you will get
+    # two .torrent files one after the other in the same file
+    # so don't!
     pipeline(
         ConsoleReader(">>> ", ""),
         TorrentMaker("http://example.com:12345/"),
-        SimpleFileWriter("downloadedfile.txt")
+        SimpleFileWriter("mytorrent.torrent")
     ).run()
