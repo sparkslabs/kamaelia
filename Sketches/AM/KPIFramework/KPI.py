@@ -59,7 +59,7 @@ class Encryptor(Axon.Component.component):
       while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
          while self.dataReady("inbox"):
             data = self.recv("inbox")
-            enc = xxtea.xxbtea(data,2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+            enc = xxtea.xxbtea(data,2,self.key)
             self.send(enc, "outbox")
          if not self.anyReady():
              self.pause()
@@ -76,7 +76,7 @@ class Decryptor(Axon.Component.component):
       while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
          while self.dataReady("inbox"):
             data = self.recv("inbox")
-            dec = xxtea.xxbtea(data,-2,"AABBCCDDEE0123456789AABBCCDDEEFF")
+            dec = xxtea.xxbtea(data,-2,self.key)
             self.send(dec, "outbox")
          if not self.anyReady():
              self.pause()
@@ -101,14 +101,14 @@ class Sender(Axon.Component.component):
       super(Sender,self).__init__()
    def main(self):
       while 1:
-         self.pause()
+         #self.pause()
 	 yield 1
 	 while self.dataReady("keybox"):
 	    #there is a keychange message.
 	    data = self.recv("keybox");
 	    print "event triggered. change key ",data
 	    yield 1
-	 while self.dataReady("databox"):
+	 while self.dataReady("databox") and not self.dataReady("keybox"):
 	       data = self.recv("databox")
 	       self.send(data)
    
@@ -118,12 +118,10 @@ class ClientSimulator(Axon.Component.component):
       super(ClientSimulator,self).__init__()
       self.id = id;
    def main(self):
-         count = 0
-         mesg = "Client Subscribed " + self.id
-         print "mesg is ", mesg
-         self.send(mesg)
-         count=count+1
          yield 1
+	 mesg = "Client Subscribed " + self.id
+         #print "mesg is ", mesg
+         self.send(mesg)
       
 # create a back plane by name server talk
 Backplane("ServerTalk").activate()
