@@ -139,7 +139,7 @@ class TorrentClient(threadedcomponent):
         self.rawserver_doneflag = DeferredEvent()
         
         rawserver = RawServer(config) #event and I/O scheduler
-        self.multitorrent = MultiTorrent(config, self.core_doneflag, rawserver, data_dir) #class used to add, control and remove torrents
+        self.multitorrent = MultiTorrent(config, rawserver, data_dir) #class used to add, control and remove torrents
 
         self.tick() #add periodic function call
     
