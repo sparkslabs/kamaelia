@@ -78,13 +78,13 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
         self.initTorrentClient()
         self.myclients = 0
         
-    def initTorrentClient():
+    def initTorrentClient(self):
         self.handler = TorrentClient()
         self.addChildren(self.handler)
         self.link((self, "outbox"), (self.handler, "inbox"))
         self.link((self, "signal"), (self.handler, "control"))
         self.link((self.handler, "outbox"), (self, "inbox"))        
-        self.link((self, "signal"), (self.handler, "_torrentcontrol"))
+        self.link((self.handler, "signal"), (self, "_torrentcontrol"))
         
         self.handler.activate()
     
