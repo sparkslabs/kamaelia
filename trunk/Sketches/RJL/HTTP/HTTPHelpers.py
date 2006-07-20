@@ -2,6 +2,10 @@
 
 from Axon.Component import component
 
+"""HTTPMakePostRequest is used to turn messages into HTTP POST requests
+for SimpleHTTPClient.
+"""
+
 class HTTPMakePostRequest(component):
     def __init__(self, uploadurl):
         super(HTTPMakePostRequest, self).__init__()
