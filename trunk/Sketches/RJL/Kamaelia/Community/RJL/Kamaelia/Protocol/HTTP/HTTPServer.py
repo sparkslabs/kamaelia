@@ -509,6 +509,8 @@ class HTTPRequestHandler(component):
 
             self.pause()
 
+__kamaelia_components__  = ( HTTPServer, HTTPRequestHandler, )
+
 if __name__ == '__main__':
     from Axon.Component import scheduler
     import HTTPResourceGlue # this works out what the correct response to a request is

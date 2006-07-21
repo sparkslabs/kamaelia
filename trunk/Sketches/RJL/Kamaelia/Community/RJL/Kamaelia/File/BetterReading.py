@@ -154,7 +154,9 @@ class IntelligentFileReader(component):
           
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")
-        
+
+__kamaelia_components__  = ( IntelligentFileReader, )
+
 if __name__ == "__main__":
     class DebugOutput(component):
         def main(self):

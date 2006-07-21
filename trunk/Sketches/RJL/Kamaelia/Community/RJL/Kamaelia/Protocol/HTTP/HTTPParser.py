@@ -52,7 +52,6 @@ pipeline(
     HTTPParser(mode="response"),
     ConsoleEchoer()
 ).run()
-
 """
 
 from Axon.Component import component
@@ -410,3 +409,5 @@ class HTTPParser(component):
                 #print "HTTPParser connection close"
                 self.send(producerFinished(), "signal") #this functionality is semi-complete
                 return
+
+__kamaelia_components__  = ( HTTPParser, )

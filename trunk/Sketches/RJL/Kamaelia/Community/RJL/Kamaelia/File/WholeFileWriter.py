@@ -71,3 +71,5 @@ class WholeFileWriter(component):
                 self.send(command[0], "outbox")
             else:
                 self.pause()
+
+__kamaelia_components__  = ( WholeFileWriter, )
