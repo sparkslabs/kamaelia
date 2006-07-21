@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
 """\
 =================
 HTTP Parser
@@ -53,16 +52,11 @@ pipeline(
     HTTPParser(mode="response"),
     ConsoleEchoer()
 ).run()
-    
-
-How does it work?
------------------
 
 """
 
-
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
+from Axon.Ipc import producerFinished, shutdown
 import string
 
 #modify to handle %20 style encoding
@@ -162,7 +156,7 @@ class HTTPParser(component):
     def shouldShutdown(self):
         while self.dataReady("control"):
             temp = self.recv("control")
-            if isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
+            if isinstance(temp, shutdown):
                 self.debug("HTTPParser should shutdown")
                 return True
         
@@ -394,7 +388,7 @@ class HTTPParser(component):
                                 if isinstance(temp, producerFinished):
                                     connectionopen = False
                                     break
-                                elif isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
+                                elif isinstance(temp, shutdown):
                                     return
                             
                             
