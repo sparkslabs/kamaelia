@@ -252,7 +252,7 @@ class TorrentClient(threadedcomponent):
 
 
 
-BasicTorrentExplainer = PureTransformer(lambda x : str(x) + "\n")
+BasicTorrentExplainer = lambda : PureTransformer(lambda x : str(x) + "\n")
 # BasicTorrentExplainer is component useful for debugging TorrentClient/TorrentPatron
 # it converts each torrent IPC messages it receives into human readable lines of text.
            
