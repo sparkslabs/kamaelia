@@ -49,6 +49,7 @@ from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
 
 """\
 =================
@@ -250,29 +251,16 @@ class TorrentClient(threadedcomponent):
         #    self.d.display(status)
 
 
-class BasicTorrentExplainer(component):
-    """\
-    BasicTorrentExplainer() -> component useful for debugging TorrentClient/TorrentPatron
 
-    This component converts each torrent IPC messags it receives into human readable
-    line of text.
-    """
-    def main(self):
-        while 1:
-            yield 1
-            while self.dataReady("inbox"):
-                temp = self.recv("inbox")
-                self.send(temp.getText() + "\n", "outbox")
-            self.pause()
+BasicTorrentExplainer = PureTransformer(lambda x : str(x) + "\n")
+# BasicTorrentExplainer is component useful for debugging TorrentClient/TorrentPatron
+# it converts each torrent IPC messages it receives into human readable lines of text.
            
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    
-    import sys
-    sys.path.append("../Util/")
-    
-    from TriggeredFileReader import TriggeredFileReader
+
+    from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
     from Axon.Component import component
 
     # download a linux distro or whatever
@@ -288,3 +276,4 @@ if __name__ == '__main__':
     ).run()
 
             
+__kamaelia_components__  = ( TorrentClient, BasicTorrentExplainer, )
