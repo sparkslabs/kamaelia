@@ -123,8 +123,8 @@ class TorrentService(AdaptiveCommsComponent):
             yield 1
             while self.dataReady("notify"):
                 message = self.recv("notify")
-                print "NOTIFY"
-                print message
+                self.debug("NOTIFY")
+                self.debug(message)
                 if isinstance(message, TIPCServiceAdd):
                     self.addClient(message.replyService)
                 elif isinstance(message, TIPCServiceRemove):
