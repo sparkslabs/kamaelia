@@ -20,7 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-"""
+"""\
 =======================
 Triggered File Reader
 =======================
@@ -29,6 +29,9 @@ This component accepts a filepath as an "inbox" message, and outputs the
 contents of that file to "outbox". All requests are processed sequentially.
 
 This component does not terminate.
+
+Drawback - this component uses blocking file reading calls but does not
+run on its own thread.
 """
 
 from Axon.Component import component
@@ -40,11 +43,11 @@ class TriggeredFileReader(component):
     """
     Inboxes = {
         "inbox"   : "filepaths to read",
-        "control" : "UNUSED"
+        "control" : "Shut me down"
     }
     Outboxes = {
         "outbox"  : "file contents, 1 per message",
-        "signal" : "UNUSED"
+        "signal"  : "Signal my shutdown with producerFinished"
     }
 	
     def __init__(self):
@@ -68,9 +71,21 @@ class TriggeredFileReader(component):
                 #print "Read file " + command
                 self.send(self.readFile(command), "outbox")				
             
-            while self.dataReady("control")
+            while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    self.send(producerFinished(self), "signal")
                     return
             
             self.pause()
+
+if __name__ == "__main__":
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+    # Example - display the contents of files whose names are entered
+    pipeline(
+        ConsoleReader(eol=""),
+        TriggeredFileReader(),
+        ConsoleEchoer()
+    ).run()
