@@ -126,7 +126,7 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SimpleServerComponent import SimpleServer
 import string, time, array
 
-from HTTPParser import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
 def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
@@ -165,7 +165,7 @@ class HTTPServer(component):
         together and to the TCP component"""
         
         self.mimehandler = HTTPParser()
-        self.httphandler = HTTPRequestHandler(createRequestHandler)
+        self.httphandler = HTTPRequestHandler(self.createRequestHandler)
         
         self.link( (self,"mime-control"), (self.mimehandler,"control") )
         self.link( (self.mimehandler, "signal"), (self, "mime-signal") )
@@ -239,6 +239,7 @@ class HTTPRequestHandler(component):
     
     Outboxes = {
         "outbox"  : "HTTP responses",
+        "debug"   : "Information to aid debugging",
         "signal"  : "Signal connection to close",
         "_handleroutbox" : "POST data etc. for the request handler"
     }
@@ -286,6 +287,9 @@ class HTTPRequestHandler(component):
         "505" : "HTTP Version Not Supported"
     }
     
+    def debug(self, msg):
+        self.send(msg, "debug")
+        
     def resourceUTF8Encode(self, resource):
         "Encode a resource's unicode data as utf-8 octets"
         if isinstance(resource["data"], unicode):
@@ -485,7 +489,7 @@ class HTTPRequestHandler(component):
                             yield 1
                     elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
                         ctrl = self.recv("_handlercontrol")
-                        print ctrl
+                        self.debug("_handlercontrol received " + str(ctrl))
                         if isinstance(ctrl, producerFinished):
                             break
                     else:
@@ -494,7 +498,7 @@ class HTTPRequestHandler(component):
                 
                 sendEnd()
                 self.disconnectResourceHandler()
-                print "sendEnd"
+                self.debug("sendEnd")
                 if lengthMethod == "close" or connection.lower() == "close":
                     self.send(producerFinished(), "signal") #this functionality is semi-complete
                     return
