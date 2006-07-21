@@ -1,8 +1,8 @@
-import Axon
 from Axon.Ipc import shutdown
+from Axon.Component import component
 
-from TorrentService import TorrentService
-from TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentService import TorrentService
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 """\
 =================
@@ -57,7 +57,7 @@ Those used externally (i.e. seen/sent by user components):
   * TIPCTorrentStatusUpdate - a status object for one of your active torrents
 """
 
-class TorrentPatron(Axon.Component.component):
+class TorrentPatron(component):
     Inboxes = {
         "inbox"          : "Commands for the TorrentClient",
         "torrent-inbox"  : "Received feedback from TorrentClient",
@@ -67,18 +67,20 @@ class TorrentPatron(Axon.Component.component):
     Outboxes = {
         "outbox"         : "Forward feedback from TorrentClient out of",
         "torrent-outbox" : "Talk to TorrentClient with",
-        "signal"         : "UNUSED"
+        "signal"         : "producerFinished sent when I've shutdown"
     }
                  
                 
     def main(self):
         """Main loop of TorrentPatron"""
         
+        # get a reference to a TorrentService which we use to interact with TorrentClient and the Mainline BitTorrent code
         torrentService, torrentShutdownService, newTorrentService = TorrentService.getTorrentServices(self.tracker)
         if newTorrentService:
             newTorrentService.activate()
             self.addChildren(newTorrentService)
 
+        # link to and register with the TorrentService
         self.link((self, "torrent-outbox"), torrentService)
         self.send(TIPCServiceAdd(replyService=(self, "torrent-inbox")), "torrent-outbox")
         
@@ -88,19 +90,15 @@ class TorrentPatron(Axon.Component.component):
             yield 1
             
             if self.dataReady("inbox"):
-                #print "TorrentPatron inbox"            
                 msg = self.recv("inbox")
                 msg = TIPCServicePassOn(replyService=(self, "torrent-inbox"), message=msg)
                 self.send(msg, "torrent-outbox")
                 
             elif self.dataReady("torrent-inbox"):
                 msg = self.recv("torrent-inbox")
-                #print "TorrentPatron torrent-inbox"
-                #print msg
                 self.send(msg, "outbox")
                 
             elif self.dataReady("control"):
-                #print "TorrentPatron control"            
                 msg = self.recv("control")
                 if isinstance(msg, shutdown):
                     loop = False
@@ -111,5 +109,6 @@ class TorrentPatron(Axon.Component.component):
             
         #unregister with the service
         self.send(TIPCServiceRemove(replyService=(self, "torrent-inbox")), "torrent-outbox")
+        self.send(producerFinished(self), "signal")
         
 __kamaelia_components__  = ( TorrentPatron, )

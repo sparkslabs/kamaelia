@@ -10,7 +10,8 @@
 # for the specific language governing rights and limitations under the
 # License.
 
-# Written by Bram Cohen, Uoti Urpala, John Hoffman, and David Harrison
+# Original code written by Bram Cohen, Uoti Urpala, John Hoffman, and David Harrison
+# Kamaelia-ized by Ryan Lothian
 
 from __future__ import division
 
@@ -47,7 +48,7 @@ from Axon.Ipc import shutdown, producerFinished
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
-from TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 """\
 =================
@@ -84,8 +85,6 @@ As such it uses a threadedcomponent, allowing it to block with impunity.
 Each torrent is assigned a unique id (currently equal to the count of torrents
 seen but don't rely on it). Inboxes are checked periodically (every tickInterval
 seconds, where tickInterval is 5 by default)
-
-TorrentClient currently cannot be shutdown.
 """
 
 class MakeshiftTorrent(object):
@@ -263,10 +262,7 @@ class BasicTorrentExplainer(component):
             yield 1
             while self.dataReady("inbox"):
                 temp = self.recv("inbox")
-                #try:
                 self.send(temp.getText() + "\n", "outbox")
-                #except:
-                #    pass
             self.pause()
            
 if __name__ == '__main__':
@@ -289,6 +285,6 @@ if __name__ == '__main__':
         TorrentClient(),
         BasicTorrentExplainer(),
         ConsoleEchoer(),    
-    ).run()   
+    ).run()
 
             
