@@ -1,21 +1,59 @@
+#!/usr/bin/env python
+#
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+#	 All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#	 http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#	 not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#	 http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
+"""\
+=======================
+Intelligent File Reader
+=======================
+
+This component reads the filename specified at its creation and outputs
+it as several messages. When a certain number of messages in its outbox
+have not yet been delivered it will pause to reduce memory and CPU usage.
+To wake it, ideally Axon should unpause it when the outbox has less than
+a certain number of messages (i.e. when some are delivered) but for now
+you can send it an arbitrary message (to "inbox") which will wake the
+component.
+"""
+
+import os, time, fcntl
+
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
+
 from Kamaelia.KamaeliaIPC import newReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Internet.Selector import Selector
-import os, time, fcntl
 
 class IntelligentFileReader(component):
     """\
     IntelligentFileReader(filename, chunksize, maxqueue) -> file reading component
 
-    Creates a file reader component. Reads a chunk of N lines, using the
+    Creates a file reader component. Reads a chunk of chunksize bytes, using the
     Selector to avoid having to block, pausing when the length of its send-queue
     exceeds maxqueue chunks.
-
     """
+    
     Inboxes = {
         "inbox"          : "wake me up by sending anything here",
         "control"        : "for shutdown signalling",
@@ -23,6 +61,7 @@ class IntelligentFileReader(component):
     }
     Outboxes = {
         "outbox"         : "data output",
+        "debug"          : "information designed to aid debugging",
         "signal"         : "outputs 'producerFinished' after all data has been read",
         "_selectorask"   : "ask the Selector to notify readiness to read on a file"
     }
@@ -36,7 +75,10 @@ class IntelligentFileReader(component):
         self.maxqueue = maxqueue    
         self.chunkbuffer = ""
 
-    def makeNonBlocking(self,fd):
+    def debug(self, msg):
+        self.send(msg, "debug")
+    
+    def makeNonBlocking(self, fd):
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NDELAY)
 
@@ -44,7 +86,7 @@ class IntelligentFileReader(component):
         return os.open(filename, os.O_RDONLY)
         
     def selectorWait(self, fd):
-        #print "selectorWait"
+        self.debug("selectorWait")
         self.send(newReader(self, ((self, "_selectorready"), fd)), "_selectorask")
 
     def tryReadChunk(self, fd):
@@ -63,7 +105,8 @@ class IntelligentFileReader(component):
         
     def main(self):
         """Main loop"""
-        selectorService, selectorShutdownService, newSelectorService = Selector.getSelectorServices(self.tracker)
+        
+        selectorService, selectorShutdownService, newSelectorService = Selector.getSelectorServices(self.tracker) # get a reference to a Selector component so we do not have to poll the file descriptor for readiness
         if newSelectorService:
             newSelectorService.activate()
             self.addChildren(newSelectorService)
@@ -110,22 +153,17 @@ class IntelligentFileReader(component):
             self.pause()
           
         self.send(producerFinished(self), "signal")
-        print "IntelligentFileReader terminated"
+        self.debug("IntelligentFileReader terminated")
         
-class DebugOutput(component):
-    def main(self):
-        while 1:
-            yield 1
-            self.pause()
-            #if self.dataReady("inbox"):
-            #    msg = self.recv("inbox")
-            
-            #print "Queue length = " + str(len(self.["inbox"]))
-            
-            
 if __name__ == "__main__":
+    class DebugOutput(component):
+        def main(self):
+            while 1:
+                yield 1
+                self.pause()
+            
     pipeline(
-        ConsoleReader(),
+        ConsoleReader(), # send arbitrary messages to wake it
         IntelligentFileReader("/dev/urandom", 1024, 5),
-        DebugOutput(),
+        DebugOutput(), # component that doesn't check its inbox
     ).run()
