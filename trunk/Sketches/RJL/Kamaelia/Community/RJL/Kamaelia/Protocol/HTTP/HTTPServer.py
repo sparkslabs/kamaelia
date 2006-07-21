@@ -19,8 +19,104 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+========================
+HTTP Server
+========================
+The fundamental parts of a webserver - an HTTP request parser and a request
+handler/response generator. One instance of this component can handle one
+TCP connection. Use a SimpleServer or similar component to allow several
+concurrent HTTP connections to the server.
 
-import array
+Example Usage
+-------------
+
+SimpleServer(protocol=lambda : HTTPServer(
+             HTTPResourceGlue.createRequestHandler, port=80).run()
+
+"lambda : HTTPServer(HTTPResourceGlue.createRequestHandler)" is the
+definition of function which creates a HTTPServer instance with 
+HTTPResourceGlue.createRequestHandler as the request handler component
+creator function.
+
+How does it work?
+-----------------
+HTTPServer creates and links to a HTTPParser and HTTPRequestHandler component.
+Data received over TCP is forwarded to the HTTPParser and the output of 
+HTTPRequestHandler forwarded to the TCP component's inbox for sending.
+
+See HTTPParser (in HTTPParser.py) and HTTPRequestHandler (below) for details
+of how these components work.
+
+HTTPServer accepts a single parameter - a request handler function which is
+passed onto and used by HTTPRequestHandler to generate request handler 
+components. This allows different HTTP server setups to run on different
+ports serving completely different content.
+
+========================
+HTTP Request Handler
+========================
+HTTPRequestHandler accepts parsed HTTP requests (from HTTPParser) and outputs
+appropriate responses to those requests.
+
+How does it work?
+-----------------
+Both requests and responses are handled in a stepwise manner (as opposed to processing a
+whole request or response in one go) to reduce latency and cope well with bottlenecks.
+
+One request handler (self.handler) component is used per request - the particular 
+component instance (including parameters, component state) is picked by a function
+called createRequestHandler - a function specified by the user. A suitable definition
+of this function is available in HTTPResourceGlue.py.
+
+Generally you will have a handler spawned for each new request, terminating after completing
+the sending of the response. However, it is also possible to use a 'persistent' component
+if you do the required jiggery-pokery to make sure that at any one time this component is
+not servicing more than one request simultaenously ('cause it wouldn't work).
+
+What does it support?
+---------------------
+Components as request handlers (hurrah!).
+
+3 different ways in which the response data (body) can be terminated:
+
+Chunked transfer encoding
+*************************
+This is the most complex of the 3 ways and was introduced in HTTP/1.1. Its performance is
+slightly worse that the other 2 as multiple length-lines have to be added to the data stream.
+It is recommended for responses whose size is not known in advance as it allows keep-alive
+connections (more than one HTTP request per TCP connection).
+
+Explicit length
+*************************
+This is the easiest of the 3 ways but requires the length of the response to be known before
+it is sent. It uses a header 'Content-Length' to indicate this value.
+This method is prefered for any response whose length is known in advance.
+
+Connection: close
+*************************
+This method closes (or half-closes) the TCP connection when the response is complete.
+This is highly inefficient when the client wishes to download several resources as a new
+TCP connection must be created and destroyed for each resource. This method is retained for
+HTTP/1.0 compatibility.
+It is however preferred for responses that do not have a true end, e.g. a continuous stream
+over HTTP as the alternative, chunked transfer encoding, has poorer performance.
+
+
+The choice of these three methods is determined at runtime by the characteristics of the
+first response part produced by the request handler and the version of HTTP that the client
+supports (chunked requires 1.1 or higher).
+
+What may need work?
+========================
+- HTTP standards-compliance (e.g. handling of version numbers for a start)
+- Requests for byte ranges, cache control (though these may be better implemented
+    in each request handler)
+- Performance tuning (also in HTTPParser)
+- Prevent many MBs of data being queued up because TCPClient finds it has a slow
+    upload to the remote host
+"""
+
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
@@ -28,11 +124,9 @@ from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.SimpleServerComponent import SimpleServer
-import string, time, website
+import string, time, array
 
 from HTTPParser import *
-import HTTPResourceGlue # this works out what the correct response to a request is
-
 
 def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
@@ -66,12 +160,12 @@ class HTTPServer(component):
 
     def initialiseComponent(self):
         """Create an HTTPParser component to convert the requests we receive
-        into a more convenient form, and a HTTPRequestHandler component to
-        sort out the correct response to requests received."""
+        into a more convenient form and a HTTPRequestHandler component to
+        sort out the correct response to requests received. Then link them
+        together and to the TCP component"""
         
         self.mimehandler = HTTPParser()
         self.httphandler = HTTPRequestHandler(createRequestHandler)
-        #self.httphandler.filereader = TriggeredFileReader()
         
         self.link( (self,"mime-control"), (self.mimehandler,"control") )
         self.link( (self.mimehandler, "signal"), (self, "mime-signal") )
@@ -81,10 +175,9 @@ class HTTPServer(component):
         self.link( (self, "http-control"), (self.httphandler, "control") )
         self.link( (self.httphandler, "signal"), (self, "http-signal") )
         
-        self.addChildren(self.mimehandler, self.httphandler) #self.httphandler.filereader)
+        self.addChildren(self.mimehandler, self.httphandler)
         self.httphandler.activate()
         self.mimehandler.activate()
-        #self.httphandler.filereader.activate()
 
         self.link((self.httphandler, "outbox"), (self, "outbox"), passthrough=2)
         self.link((self, "inbox"), (self.mimehandler, "inbox"), passthrough=1)
@@ -135,55 +228,6 @@ class HTTPRequestHandler(component):
     """\
     HTTPRequestHandler() -> new HTTPRequestHandler component capable of fulfilling the requests
     received over a single connection after they have been parsed by HTTPParser
-    
-    
-    How does it work?
-    ========================
-    Both requests and responses are handled in a stepwise manner (as opposed to processing a
-    whole request or response in one go) to reduce latency and cope well with bottlenecks.
-
-    One request handler (self.handler) component is used per request - the particular 
-    component instance (including parameters, componetn state) is picked by HTTPResourceGlue.
-    Generally you will have a handler spawned for each new request, terminating after completing
-    the sending of the response. However, it is also possible to use a 'persistent' component
-    if you do the required jiggery-pokery to make sure that at any one time this component is
-    not servicing more than one request simultaenously ('cause it wouldn't work).
-    
-    What does it support?
-    ========================
-    
-    Components as request handlers (hurrah!).
-    
-    3 different ways in which the response data (body) can be terminated
-    -- Chunked transfer encoding --
-    This is the most complex of the 3 ways and was introduced in HTTP/1.1. Its performance is
-    slightly worse that the other 2 as multiple length-lines have to be added to the data stream.
-    
-    -- Explicit length --
-    This is the easiest of the 3 ways but requires the length of the response to be known before
-    it is sent. It uses a header 'Content-Length' to indicate this value.
-    This method is prefered for any response whose length is known in advance.
-    
-    -- Connection: close --
-    This method closes (or half-closes) the TCP connection when the response is complete.
-    This is highly inefficient when the client wishes to download several resources as a new
-    TCP connection must be created and destroyed for each resource. This method is retained for
-    HTTP/1.0 compatibility.
-    It is however preferred for responses that do not have a true end, e.g. a continuous stream
-    over HTTP as the alternative, chunked transfer encoding, has poorer performance.
-    
-    The choice of these three methods is determined at runtime by the characteristics of the
-    first response part produced by the request handler and the version of HTTP that the client
-    supports (chunked requires 1.1 or higher).
-    
-    What may need work?
-    ========================
-    - HTTP standard compliance (e.g. handling of version numbers for a start)
-    - Requests for byte ranges, cache control (though these may be better implemented
-      in each request handler)
-    - Performance tuning
-    - Prevent many MBs of data being queued up because TCPClient finds it has a slow
-      upload to the remote host
     """
     
     Inboxes =  {
@@ -375,9 +419,9 @@ class HTTPRequestHandler(component):
                     
                 self.handler = self.createRequestHandler(request)
                 
-                assert(self.handler != None) # if no URL handlers match our request then HTTPResourceGlue should produce a 404 handler
+                assert(self.handler != None) # if no URL handlers match our request then createRequestHandler should produce a 404 handler
                 # Generally even that will not happen because you'll set a "/" handler which catches all then produces its own 404 page
-                # if the requested file is not found. i.e. if self.handler == None, HTTPResourceGlue is wrong.
+                # if the requested file is not found. i.e. if self.handler == None, the createRequestHandler function is wrong.
                      
                 self.connectResourceHandler()
                 
@@ -463,6 +507,8 @@ class HTTPRequestHandler(component):
 
 if __name__ == '__main__':
     from Axon.Component import scheduler
+    import HTTPResourceGlue # this works out what the correct response to a request is
+    
     import socket
     SimpleServer(protocol=lambda : HTTPServer(HTTPResourceGlue.createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
     #pipeline(

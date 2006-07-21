@@ -1,42 +1,63 @@
+#!/usr/bin/env python
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 """\
 ===================
 Icecast/SHOUTcast MP3 streaming client
 ===================
 
-This component uses HTTP to stream MP3 audio from a SHOUTcast/Icecast server.
+This component uses HTTP to stream MP3 audio from a SHOUTcast/Icecast
+server.
 
 Example Usage
 -------------
-
 IcecastClient fetches the combined audio and metadata stream from the
 HTTP server hosting the stream. IcecastDemux separates the audio data
 from the metadata in stream and IcecastStreamWriter writes the audio
 data to disk (discarding metadata).
 
-    pipeline(
-        IcecastClient("http://64.236.34.97:80/stream/1049"),
-        IcecastDemux(),
-        IcecastStreamWriter("stream.mp3"),
-    ).run()
+pipeline(
+    IcecastClient("http://64.236.34.97:80/stream/1049"),
+    IcecastDemux(),
+    IcecastStreamWriter("stream.mp3"),
+).run()
 
 How does it work?
 -----------------
-The SHOUTcast protocol is virtually identical to HTTP. As such, IcecastClient
-subclasses SingleShotHTTPClient modifying the request slightly to ask for
-stream metadata(e.g. track name) to be included (by adding the icy-metadata header).
+The SHOUTcast/Icecast protocol is virtually identical to HTTP. As such,
+IcecastClient subclasses SingleShotHTTPClient modifying the request
+slightly to ask for stream metadata(e.g. track name) to be included
+(by adding the icy-metadata header).
 It is otherwise identical to its parent class.
-
-
 """
 
-from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
-from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 import string, time
 
-from HTTPParser import *
-from HTTPClient import *
+from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdown
+from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import *
 
 def intval(mystring):
     try:
@@ -73,7 +94,8 @@ class IceIPCDisconnected(object):
 
 class IcecastDemux(component):
     """Splits an Icecast stream into A/V data and metadata"""
-    def dictizeMetadata(self, metadata):
+    def dictizeMetadata(self, metadata):    
+        "Convert metadata that was embedded in the stream into a dictionary."
         #print "IcecastClient.dictizeMetadata()"    
         #format:
         #StreamUrl='www.example.com';
@@ -136,6 +158,7 @@ class IcecastDemux(component):
                             readbuffer = readbuffer[metadatalength + 1:]
                         else:
                             break #we need more data before we can do anything
+
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
@@ -216,8 +239,11 @@ class IcecastStreamWriter(component):
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     
+    # Save a SHOUTcast/Icecast stream to disk
+    # (you can then use an MP3 player program to listen to it while it downloads).
+    streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
     pipeline(
-        IcecastClient("http://64.236.34.97:80/stream/1049"),
+        IcecastClient(streamurl),
         IcecastDemux(),
         IcecastStreamWriter("stream.mp3"),
     ).run()

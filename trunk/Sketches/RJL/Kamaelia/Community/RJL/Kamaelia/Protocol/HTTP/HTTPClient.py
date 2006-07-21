@@ -80,20 +80,22 @@ How does it work?
 -----------------
 SimpleHTTPClient uses the Carousel component to create a new
 SingleShotHTTPClient component for every URL requested. As URLs are
-handled sequentially, there is only one SSHC at anyone time.
-
+handled sequentially, it has only one SSHC child at anyone time.
 """
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdown
+
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Carousel import Carousel
-from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
-from Kamaelia.Internet.TCPClient import TCPClient as TCPClient
+from Kamaelia.Internet.TCPClient import TCPClient
+
 import string, time
 
-from HTTPParser import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
 def intval(mystring):
+    """Convert a string to an integer, representing errors by None"""
     try:
         retval = int(mystring)
     except ValueError:
@@ -297,7 +299,7 @@ class SingleShotHTTPClient(component):
 
         while self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, shutdown):
+            if isinstance(msg, shutdown):
                 self.shutdownKids()
                 return 0
 
