@@ -25,13 +25,13 @@
 # modifying Kamaelia's BitTorrent functionality. It's sole purpose is as a
 # dependency of TorrentPatron!
 
-import Axon
-from Axon.Ipc import shutdown
 import Axon.CoordinatingAssistantTracker as cat
+
+from Axon.Ipc import shutdown
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 
-from TorrentClient import TorrentClient
-from TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
                 
 """\
 =================
@@ -49,7 +49,7 @@ The shutting down of this component (when not in use) is very ugly.
 """
 
 
-class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
+class TorrentService(AdaptiveCommsComponent):
     """\
     TorrentService() -> new TorrentService component
 
@@ -60,16 +60,21 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
         "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
         "inbox"   : "Connects to TorrentClient (the BitTorrent code)",
         "notify"  : "Used to be notified about things to select",
-        "_torrentcontrol" : "Notice that TorrentClient has shutdown",
+        "_torrentcontrol" : "Notice that TorrentClient has shutdown"
     }
     Outboxes = {
         "signal"   : "Not used",
-        "outbox"   : "Connects to TorrentClient (the BitTorrent code)"
+        "outbox"   : "Connects to TorrentClient (the BitTorrent code)",
+        "debug"    : "Information that may aid debugging"
     }
     
+    def debug(self, msg):
+        self.send(msg, "debug")
+        
     def __init__(self):
-        print "Torrent service init"
         super(TorrentService, self).__init__()
+        
+        self.debug("Torrent service init")
                 
         self.outboxFor = {}
         self.torrentBelongsTo = {}
@@ -91,8 +96,8 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
     def addClient(self, replyService):
         """Registers a TorrentPatron with this service, creating an outbox connected to it"""
         
-        print "Adding client!"
-        print replyService
+        self.debug("Adding client!")
+        self.debug(replyService)
         
         self.myclients += 1
         particularOutbox = self.addOutbox("clientoutbox")
@@ -136,8 +141,8 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
 
             while self.dataReady("inbox"):
                 message = self.recv("inbox")
-                #print "INBOX"
-                #print message                
+                self.debug("INBOX")
+                self.debug(message)
                 if isinstance(message, TIPCNewTorrentCreated):
                     replyService = self.pendingAdd.pop(0)
                     self.torrentBelongsTo[message.torrentid] = replyService
@@ -149,13 +154,13 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
                     replyService = self.torrentBelongsTo[message.torrentid]
                     self.sendToClient(message, replyService)
                 else:
-                    print "Unknown message to TorrentService from TorrentClient!\n"
-                    print message
+                    self.debug("Unknown message to TorrentService from TorrentClient!\n")
+                    self.debug(message)
 
             while self.dataReady("control"):
                 message = self.recv("control")
-                print "CONTROL"
-                print message                
+                self.debug("CONTROL")
+                self.debug(message)
                 if isinstance(message, shutdown):
                     return
                     
@@ -182,14 +187,14 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
         
         
         
-    def endTorrentServices(tracker = None):
+    def endTorrentServices(tracker = None): # STATIC METHOD
         if not tracker:
             tracker = cat.coordinatingassistanttracker.getcat()
         tracker.deRegisterService("torrentsrv")
         tracker.deRegisterService("torrentsrvshutdown")
     endTorrentServices = staticmethod(endTorrentServices) 
     
-    def setTorrentServices(torrentsrv, tracker = None):
+    def setTorrentServices(torrentsrv, tracker = None): # STATIC METHOD
         """\
         Sets the given TorrentService as the service for the selected tracker or the
         default one.
@@ -220,11 +225,9 @@ class TorrentService(AdaptiveCommsComponent): #Axon.AdaptiveCommsComponent.Adapt
          torrentsrv.setTorrentServices(torrentsrv, tracker)
          service = (torrentsrv, "notify")
          shutdownservice = (torrentsrv, "control")
-         print "Gonna return"
-         print (service, shutdownservice, torrentsrv)
+         #print "Gonna return"
+         #print (service, shutdownservice, torrentsrv)
          return service, shutdownservice, torrentsrv
     getTorrentServices = staticmethod(getTorrentServices)
 
 __kamaelia_components__  = ( TorrentService, )
-
-
