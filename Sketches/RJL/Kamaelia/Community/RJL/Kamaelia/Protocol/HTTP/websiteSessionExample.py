@@ -70,3 +70,4 @@ class websiteSessionExampleComponent(component):
             self.pause()
             yield 1
             
+__kamaelia_components__  = ( websiteSessionExampleComponent, )
