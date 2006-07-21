@@ -21,38 +21,44 @@
 # -------------------------------------------------------------------------
 """\
 =========================
-Chunk Distributor
+Chunk Namer
 =========================
 
-A component that controls TorrentMaker, instructing it to build a metadata
-.torrent file for each message received in "inbox".
+A component that labels each message with a unique filename for that message.
+e.g. "A" ... "B" ... --> ["chunk1", "A"] ... ["chunk2", "B"] ...
 
 This component does not terminate.
 """
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdown
 
-class ChunkDistributor(component):
+class ChunkNamer(component):
     """\
-    ChunkDistributor() -> new ChunkDistributor component.
+    ChunkNamer() -> new ChunkNamer component.
    
     Gives a filename to the chunk and sends it in the form [filename, contents],
     e.g. to a WholeFileWriter component.
    
     Keyword arguments:
-    - chunksize  -- Chunk size in bytes
+    -- basepath - the prefix to apply to the filename
+    -- suffix - the suffix to apply to the filename
     """
    
-    Inboxes = {  "inbox" : "Chunks to be saved",
-                #"filecompletion" : "Names of chunk files written, one per message"
-                 "control" : "UNUSED" }
-    Outboxes = { "outbox" : "List: [file name, file contents]",
-                #"filecompletion" : "Names of chunk files written, one per message"
-                 "signal" : "UNUSED" }
+    Inboxes = {
+        "inbox"   : "Chunks to be saved",
+        "control" : "Shut me down"
+    }
+        
+    Outboxes = {
+        "outbox"  : "List: [file name, file contents]",
+        "signal"  : "signal when I've shut down"
+    }
 
-    def __init__(self, basepath = ""):
-        super(ChunkDistributor,self).__init__()
+    def __init__(self, basepath = "", suffix = ""):
+        super(ChunkNamer, self).__init__()
         self.basepath = basepath
+        self.suffix = suffix
         
     def main(self):
         buffer = ""
@@ -62,11 +68,17 @@ class ChunkDistributor(component):
             while self.dataReady("inbox"):
                 chunknumber += 1
                 data = self.recv("inbox")
-                command = [ self.basepath + "chunk" + `chunknumber`, data ]
-                self.send( command, "outbox" )
+                
+                # create list of form [filename, contents]
+                command = [self.basepath + "chunk" + str(chunknumber) + self.suffix, data]
+                self.send(command, "outbox")
+                
             while self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
                     self.send(msg, "signal")
                     return
+
             self.pause()
+
+__kamaelia_components__  = ( ChunkNamer, )
