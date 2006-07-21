@@ -26,7 +26,7 @@ Chunkifier
 
 A component that fixes the message size of an input stream to a given value,
 outputting blocks of that size when sufficient input has accumulated. This
-component's input is stream orientated - all messages receives are
+component's input is stream orientated - all messages received are
 concatenated to the interal buffer without divisions.
 
 Example Usage
@@ -34,36 +34,71 @@ Example Usage
 
 Chunkifying a console reader::
 
-    from Kamaelia.Util.PipelineComponent import pipeline
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
-
-class ReducedConsoleReader(threadedcomponent):
-   def __init__(self):
-      super(ConsoleReader, self).__init__()
-
-   def run(self):
-      while 1:
-         self.outqueues["outbox"].put( raw_input(self.prompt) )
-    
-    pipeline( ReducedConsoleReader(), Chunkifier(20), consoleEchoer(), ).run()
-
+    pipeline(
+        ConsoleReader(eol=""),
+        Chunkifier(20),
+        ConsoleEchoer()
+    ).run()
 
 How does it work?
 -----------------
 
 Messages received on the "inbox" are buffered until at least N bytes have
-been collected. A message containing those first N bytes is sent out "outbox"
-and those front N bytes in the buffer are removed.
+been collected. A message containing those first N bytes is sent out
+"outbox". A CharacterFIFO object is used to do this in linear time.
 
-Any messages sent to the "control" inbox are ignored. The "signal"
-outbox is not used.
+The usual method of sending a producerFinished/shutdown to the "control"
+inbox is used to shut it down
 
 This component does not terminate.
 """
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdown
 
+import string
+
+class CharacterFIFO(object):
+    def __init__(self):
+        self.queuearray = []
+        self.length = 0
+        self.startboundary = 0
+        
+    def push(self, text):
+        self.queuearray.append(text)
+        self.length += len(text)
+        
+    def __len__(self):
+        return self.length
+        
+    def poplength(self, length):
+        if len(self) < length:
+            raise IndexError
+        else:
+            thischunk = []
+            sizeneeded = length
+            while 1:
+                chunk = self.queuearray[0]
+                sizeneeded -= len(chunk) - self.startboundary
+                
+                if sizeneeded < 0: # new start boundary in the middle of this chunk
+                    thischunk.append(chunk[self.startboundary:len(chunk) + sizeneeded])
+                    self.startboundary = len(chunk) + sizeneeded
+                else: # this chunk is completely within the requested string
+                    if self.startboundary > 0:
+                        thischunk.append(chunk[self.startboundary:])
+                    else:
+                        thischunk.append(chunk)
+                    
+                    self.queuearray.pop(0)
+                    self.startboundary = 0
+                    
+                if sizeneeded <= 0:
+                    break
+
+            self.length -= length
+            return string.join(thischunk, "")
+    
 class Chunkifier(component):
     """\
     Chunkifier([chunksize]) -> new Chunkifier component.
@@ -80,44 +115,49 @@ class Chunkifier(component):
     Outboxes = { "outbox" : "Each message is a chunk",
                 "signal": "UNUSED" }
 
-    def __init__(self, chunksize = 1048576, nodelay = false):
+    def __init__(self, chunksize = 1048576, nodelay = False):
         super(Chunkifier, self).__init__()
+        self.forwardqueue = CharacterFIFO()
         self.chunksize = chunksize
         self.nodelay = nodelay
+    
+    def sendPartialChunk(self):
+        if len(self.forwardqueue) > 0:
+            self.send(self.forwardqueue.poplength(len(self.forwardqueue)), "outbox")
+    
+    def sendChunk(self):
+        self.send(self.forwardqueue.poplength(self.chunksize), "outbox")
+
     def main(self):
-        buffer = ""
         while 1:
             yield 1
             while self.dataReady("inbox"):
-                buffer += self.recv("inbox")
-                while len(buffer) >= self.chunksize: #send out a full chunk
-                    self.send(buffer[0:self.chunksize], "outbox")
-                    buffer = buffer[self.chunksize:]
+                msg = self.recv("inbox")
+                self.forwardqueue.push(msg)
             
+            while len(self.forwardqueue) >= self.chunksize:
+                self.sendChunk()
+                
             if self.nodelay:
-                self.send(buffer)
+                self.sendPartialChunk()
                 
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished):
-                    self.send(buffer, "outbox") #remainder of the buffer
+                    self.sendPartialChunk()
                     self.send(msg, "signal")
                     return
-                elif isinstance(msg, shutdownMicroprocess):
+                elif isinstance(msg, shutdown):
                     self.send(msg, "signal")
                     return
             self.pause()
 
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
-    from Axon.ThreadedComponent import threadedcomponent
-    from time import sleep
-    from Lagger import Lagger
+    from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 
-    class ReducedConsoleReader(threadedcomponent):
-        def run(self):
-            while 1:
-                self.outqueues["outbox"].put( raw_input("> ") )
-    
-    pipeline( Lagger(), ReducedConsoleReader(), Chunkifier(20), consoleEchoer() ).run()
+    pipeline(
+        ConsoleReader(eol=""),
+        Chunkifier(20),
+        ConsoleEchoer()
+    ).run()
