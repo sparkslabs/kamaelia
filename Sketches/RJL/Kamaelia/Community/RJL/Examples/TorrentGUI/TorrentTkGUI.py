@@ -58,7 +58,7 @@ from Kamaelia.UI.Tk.TkWindow import TkWindow
 from Axon.Ipc import producerFinished, shutdown
 import Tkinter, time
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
-from Kamaelia.Community.RJL.Kamaelia.Protocol.TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 
 class TorrentTkWindow(TkWindow):
@@ -76,7 +76,7 @@ class TorrentTkWindow(TkWindow):
     def __init__(self):
         self.pendingtorrents = []
         self.torrents = {}
-        super(TorrentWindow, self).__init__()
+        super(TorrentTkWindow, self).__init__()
         
     def setupWindow(self):
         "Create the GUI controls and window for this application"

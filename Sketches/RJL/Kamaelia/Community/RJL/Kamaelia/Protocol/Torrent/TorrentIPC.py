@@ -4,7 +4,7 @@ class TIPC(object):
     "explanation %(foo)s did %(bar)s"
     Parameters = [] # ["foo", "bar"]
     def __init__(self, **kwds):
-        super(IRCIPC, self).__init__()
+        super(TIPC, self).__init__()
         for param in self.Parameters:
             optional = False
             if param[:1] == "?":
