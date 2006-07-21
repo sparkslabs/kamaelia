@@ -45,24 +45,7 @@ from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
 from Kamaelia.Community.RJL.Kamaelia.Util.DataSource import TriggeredSource
 from Kamaelia.Community.RJL.Kamaelia.Util.UnseenOnly import UnseenOnly
-
-
-from ChunkDistributor import ChunkDistributor
-
-
-
-
-
-
-from OnDemandIntrospector import OnDemandIntrospector
-
-#UTIL
-
-from LineSplit import LineSplit
-
-
-
-
+from Kamaelia.Community.RJL.Kamaelia.Util.LineSplit import LineSplit
 
 
 class CheapAndCheerfulClock(threadedcomponent):
@@ -100,12 +83,6 @@ if __name__ == '__main__':
     partslist = "filelist.txt"
     resourcefetcher = TriggeredFileReader #SimpleHTTPClient
     
-    pipeline(
-        ConsoleReader(),
-        OnDemandIntrospector(),
-        ConsoleEchoer(),
-    ).activate()
-        
     pipeline(
         CheapAndCheerfulClock(30.0),
         TriggeredSource(partslist),
