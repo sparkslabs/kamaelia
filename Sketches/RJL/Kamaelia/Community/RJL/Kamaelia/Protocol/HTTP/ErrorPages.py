@@ -76,3 +76,5 @@ class websiteErrorPage(component):
         resource["incomplete"] = False # mark its data as being complete (i.e. no more chunks to come)
         self.send(resource, "outbox") # send it on to HTTPRequestHandler
         self.send(producerFinished(self), "signal") # and signal that this component has terminated
+
+__kamaelia_components__  = ( websiteErrorPage, )
