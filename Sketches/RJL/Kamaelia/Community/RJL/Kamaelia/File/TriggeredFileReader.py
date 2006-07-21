@@ -79,6 +79,8 @@ class TriggeredFileReader(component):
             
             self.pause()
 
+__kamaelia_components__  = ( TriggeredFileReader, )
+
 if __name__ == "__main__":
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer

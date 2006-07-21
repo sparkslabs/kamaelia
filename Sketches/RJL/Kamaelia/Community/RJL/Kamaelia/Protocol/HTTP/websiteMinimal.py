@@ -165,5 +165,7 @@ class websiteMinimal(component):
         self.send(producerFinished(self), "signal")
         #print "websiteMinimal terminated"
 
+__kamaelia_components__  = ( websiteMinimal, )
+
 indexfilename = "index.html"
 homedirectory = "htdocs/"

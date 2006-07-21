@@ -261,7 +261,6 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
-    from Axon.Component import component
 
     # download a linux distro or whatever
     # NOTE: Do not follow this example. It is used to illustrate/test the use of a TorrentClient component
