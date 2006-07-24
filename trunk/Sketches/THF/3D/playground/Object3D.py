@@ -24,9 +24,10 @@
 General 3D Object
 =====================
 Methods to be overridden:
-    init()
     draw()
     handleEvents()
+    setup()
+    frame()
 """
 
 
@@ -41,7 +42,7 @@ from Display3D import Display3D
 
 class Object3D(Axon.Component.component):
     Inboxes = {
-       "inbox": "not used",
+       "inbox": "Input events",
        "control": "ignored",
        "callback": "for the response after a displayrequest",
         "position" : "receive position triple (x,y,z)",
@@ -57,18 +58,18 @@ class Object3D(Axon.Component.component):
         "display_signal" : "Outbox used for communicating to the display surface",
         "position" : "send position status when updated",
         "rotation": "send rotation status when updated",
-        "scaling": "send scaling status when updated"
+        "scaling": "send scaling status when updated",
+#        "events": "forwards events",
     }
     
     def __init__(self, **argd):
         super(Object3D, self).__init__()
 
         # transformation data
-        self.size = argd.get("size", Vector(2,2,2))
+        self.size = argd.get("size", None)
         self.pos = argd.get("pos",Vector(0,0,-15))
         self.rot = Vector(0.0,0.0,0.0)
         self.scaling = argd.get("scaling",Vector(1,1,1))
-        self.transform = Transform()
         
         # for detection of changes
         self.oldrot = Vector()
@@ -82,10 +83,10 @@ class Object3D(Axon.Component.component):
     def applyTransforms(self):
         # generate new transformation matrix if needed
         if self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
-            self.transform.reset()
-            self.transform.applyScaling(self.scaling)
-            self.transform.applyRotation(self.rot)
-            self.transform.applyTranslation(self.pos)
+            transform = Transform()
+            transform.applyScaling(self.scaling)
+            transform.applyRotation(self.rot)
+            transform.applyTranslation(self.pos)
 
             if self.oldscaling != self.scaling:
                 self.send(self.scaling, "scaling")
@@ -98,7 +99,11 @@ class Object3D(Axon.Component.component):
             if self.oldpos != self.pos:
                 self.send(self.pos, "position")
                 self.oldpos = self.pos.copy()
-
+                
+            transform_update = { "TRANSFORM_UPDATE": True,
+                                                 "ident": self.ident,
+                                                 "transform": transform }
+            self.send(transform_update, "display_signal")
 
     def handleMovement(self):
         while self.dataReady("position"):
@@ -124,17 +129,30 @@ class Object3D(Axon.Component.component):
             
             
     def handleEvents(self):
+        """ Method stub """
         pass        
 
 
     def draw(self):
-        print "HALLO"
+        """ Method stub """
+        pass
+
+    
+    def setup(self):
+        """ Method stub """
+        pass
+
+    def frame(self):
+        """ Method stub """
         pass
 
 
     def main(self):
         # get display service
         displayservice = Display3D.getDisplayService()
+
+        # setup function from derived objects
+        self.setup()        
         
         # display list id
         self.displaylist = glGenLists(1);
@@ -144,28 +162,35 @@ class Object3D(Axon.Component.component):
         glNewList(self.displaylist, GL_COMPILE)
         self.draw()
         glEndList()
-        
+
+        # generate initial transform        
+        transform = Transform()
+        transform.applyScaling(self.scaling)
+        transform.applyRotation(self.rot)
+        transform.applyTranslation(self.pos)
+
         # create display request
         self.disprequest = { "3DDISPLAYREQUEST" : True,
                                           "callback" : (self,"callback"),
                                           "events" : (self, "inbox"),
                                           "size": self.size,
                                           "displaylist": self.displaylist,
-                                          "transform": self.transform}
+                                          "transform": transform}
     
         # send display request
         self.link((self,"display_signal"), displayservice)
-        self.send(self.disprequest, "display_signal");
-
-#        for _ in self.waitBox("callback"): yield 1
-#        response = self.recv("callback")
-#        self.ident = response.ident
+        self.send(self.disprequest, "display_signal")
+        # wait for response
+        while not self.dataReady("callback"): yield 1
+        self.ident = self.recv("callback")
 
         while 1:
             yield 1
             self.applyTransforms()
             self.handleMovement()
             self.handleEvents()
+            # frame function from derived objects
+            self.frame()
 
 
 if __name__=='__main__':
