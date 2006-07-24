@@ -169,10 +169,20 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         eventcomms = self.addOutbox("eventsfeedback")
                         self.eventcomms[ident] = eventcomms
                         self.link((self,eventcomms), eventservice)
-                        
-#                    callbackcomms = self.addOutbox("displayerfeedback")
-#                    self.link((self, callbackcomms), callbackservice)
-#                    self.send(surface, callbackcomms)
+                    
+                    callbackservice = message.get("callback")
+                    callbackcomms = self.addOutbox("displayerfeedback")
+                    self.link((self, callbackcomms), callbackservice)
+                    self.send(ident, callbackcomms)
+
+                elif message.get("DISPLAYLIST_UPDATE", False):
+                    ident = message.get("ident")
+                    glDeleteList(self.displaylists[ident])
+                    self.displaylists[ident] = message.get("displaylist")
+                    
+                elif message.get("TRANSFORM_UPDATE", False):
+                    ident = message.get("ident")
+                    self.transforms[ident] = message.get("transform")
                         
 
     def handleEvents(self):
@@ -226,11 +236,18 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 glPopMatrix()
                 # force completion
                 glFlush()
-                
+
                 # process hits                
                 hits = glRenderMode(GL_RENDER)
-                for hit in hits:
-                    self.send(e, self.eventcomms[hit[2][0]])
+                
+                # send out event
+                hitobjects = [hit[2][0] for hit in hits]
+                for obj in self.objects:
+                    if obj in hitobjects:
+                        #e.hit = True
+                    #else:
+                        #e.hit = False
+                        self.send(e, self.eventcomms[obj])
                     
         
     def drawBackground(self):
