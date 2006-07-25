@@ -38,51 +38,170 @@ from Kamaelia.File.Writing import SimpleFileWriter
 #from Kamaelia.SingleServer import SingleServer
 #from Kamaelia.Internet.TCPClient import TCPClient
 
-class MyReader(Axon.Component.component):
-    def main(self):
-        while 1:
- #           line = raw_input(self.prompt)
-            line = "hello"
-            line = line + "\n"
-            self.send(line, "outbox")
-            yield 1
 
-
-import xxtea
+#import xxtea
+import xtea
 
 class Encryptor(Axon.Component.component):
-   def __init__(self,key):
+   Inboxes = {"inbox" : "data to be encrypted",
+              "control" : "key updates"}
+   def __init__(self):
       super(Encryptor,self).__init__()
-      self.key = key
+      self.key = "\0"
 
    def main(self):
-      while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
-         while self.dataReady("inbox"):
+    keyReady = 'False'
+    while 1:
+      yield 1
+      if self.dataReady("control"):
+            keyReady = 'True'
+	    self.key = self.recv("control")
+	    print "key recieved at the encryptor",self.key
+      while self.dataReady("inbox") and keyReady == 'True':
             data = self.recv("inbox")
-            enc = xxtea.xxbtea(data,2,self.key)
-            self.send(enc, "outbox")
-         if not self.anyReady():
-             self.pause()
-         yield 1
-      self.send(self.recv("control"),"signal")
+	    if len(data) < 8:
+	       data = '88888888'#FIXME: pad with null's the last bytes that are < 8
+            #enc = xxtea.xxbtea(data,2,self.key)
+	    if self.key != "\0":
+               enc = xtea.xtea_encrypt(self.key,data)
+	       print "encrypted text ",enc
+	       self.send(enc, "outbox")
+               yield 1
+	    else:
+              print "key is null. cannot encrypt"#TODO: this might be an exception
 
-
-class Decryptor(Axon.Component.component):
-   def __init__(self,key):
-      super(Decryptor,self).__init__()
-      self.key = key
-
-   def main(self):
-      while self.dataReady("inbox") or not self.dataReady("control"):   # really messy shutdown hack - should really check the kind of message received on "control" inbox
-         while self.dataReady("inbox"):
-            data = self.recv("inbox")
-            dec = xxtea.xxbtea(data,-2,self.key)
-            self.send(dec, "outbox")
-         if not self.anyReady():
-             self.pause()
-         yield 1
-      self.send(self.recv("control"),"signal")
 	    
+class Decryptor(Axon.Component.component):
+   Inboxes = {"inbox" : "data to be decrypted",
+              "control" : "key updates"}
+
+   def __init__(self):
+      super(Decryptor,self).__init__()
+      self.key = "\0"
+
+   def main(self):
+      keyRecieved = 'False'
+      while 1:
+         yield 1
+
+	 if self.dataReady("control"):
+	    self.key = self.recv("control")
+            keyRecieved = 'True'
+            print "key recieved at the decryptor",self.key
+            yield 1
+
+         while self.dataReady("inbox") and keyRecieved == 'True': 
+          data = self.recv("inbox")
+          print "decryptor recieved ",data
+          if self.key != "\0":
+            #dec = xxtea.xxbtea(data,-2,self.key)
+            dec = xtea.xtea_decrypt(self.key,data)
+	    print "decrypted text ",dec
+	    self.send(dec, "outbox")
+            yield 1
+          else:
+             print "key is null. cannot decrypt" #TODO:exception ?
+	    
+class KeyGen(Axon.Component.component):
+   def main(self):
+        self.send('1234567890123456',"outbox") 
+        yield 1
+         
+class Echoer(Axon.Component.component):
+   def main(self):
+      while 1:
+         while self.dataReady("inbox"):
+            data = self.recv("inbox")
+            print"Echoer", data  
+         yield 1
+    
+class DataTransmitter(Axon.Component.component): # packetises and sends the encrypted key/data
+   Inboxes = { "inbox" : "encrypted data to transmit to the sender",
+               "keyin" : "session key encrypted with shared keys"
+	     }
+	     
+   def main(self):
+      dataHeader = 'DAT'
+      keyHeader = 'KEY'
+      while 1:
+         yield 1
+         
+	 while self.dataReady("keyin"):
+	   data = self.recv("keyin")
+	   # the client should be able to distinguish between data and key
+           packet = dataHeader
+	   packet.append(data)
+	   #self.send(data)
+           yield 1
+	   
+         while self.dataReady("inbox"):
+	    data = self.recv("inbox")
+	    print "data transmitter",data
+            self.send(data)
+            yield 1
+
+class SessionKeyController(Axon.Component.component):
+
+   Inboxes = { "control" : "recieve new user-id notifications" } 
+   Outboxes = { "signal" : "sending new session key to the encryptor",
+                "outbox" : "encrypted new session key to transmitter"
+              }
+   def main(self):
+      while 1:
+         #self.pause()
+	 yield 1
+	 while self.dataReady("control"):
+	    data = self.recv("control")
+	    # generate a new session key.
+            sessionKey = '1234567890123456'
+	    print "sending session key",sessionKey
+            self.send(sessionKey, "signal")
+            self.send(sessionKey, "outbox")
+
+   def getSessionKey():
+      return '1234567890123456'
+
+# Both Authenticator and Authenticatee for the time being act as pass thorugh 
+
+class Authenticator(Axon.Component.component):
+   Inboxes = {"inbox" : "pass through",
+              "keyin" : "authentication key" }
+
+   Outboxes = {"signal" : "publishing successful authentication to the keymanagement",
+               "outbox" : "pass through encrypted content" }
+
+   def main(self):
+    while 1:
+      yield 1
+      while self.dataReady("keyin"):
+         data = self.recv("keyin")
+         self.send(data,"signal")
+         yield 1
+      while self.dataReady("inbox"):
+	 data = self.recv("inbox")
+         print "Authenticator sending ",data
+	 self.send(data,"outbox")
+         yield 1
+
+
+class Authenticatee(Axon.Component.component):
+   Inboxes = {"inbox" : "encrypted data pass through" }
+
+   Outboxes = {"outbox" : "encrypted data pass through",
+               "keyout" : "authentication information"}
+
+   def main(self):
+     yield 1
+     self.send("1234567890123456","keyout")
+     while 1:
+       yield 1
+       
+       while self.dataReady("inbox"):
+          data = self.recv("inbox")
+          print "authenticatee sending ",data
+          self.send(data,"outbox")
+          yield 1
+
 class echoer(Axon.Component.component):
     def main(self):
         count = 0
@@ -94,92 +213,87 @@ class echoer(Axon.Component.component):
                 print  data, "count:", count
                 count = count +1
 
-class Sender(Axon.Component.component):
-   Inboxes = {"databox" : "data input",
-              "keybox"  :  "key update messages" }
-   def __init__(self):
-      super(Sender,self).__init__()
-   def main(self):
-      while 1:
-         #self.pause()
-	 yield 1
-	 while self.dataReady("keybox"):
-	    #there is a keychange message.
-	    data = self.recv("keybox");
-	    print "event triggered. change key ",data
-	    yield 1
-	 while self.dataReady("databox") and not self.dataReady("keybox"):
-	       data = self.recv("databox")
-	       self.send(data)
-   
+class MyReader(Axon.Component.component):
+    def main(self):
+        while 1:
+ #           line = raw_input(self.prompt)
+            line = "hello678"
+            self.send(line, "outbox")
+            yield 1
 
-class ClientSimulator(Axon.Component.component):
-   def __init__(self,id):
-      super(ClientSimulator,self).__init__()
-      self.id = id;
-   def main(self):
-         yield 1
-	 mesg = "Client Subscribed " + self.id
-         #print "mesg is ", mesg
-         self.send(mesg)
-      
+
 # create a back plane by name server talk
-Backplane("ServerTalk").activate()
+Backplane("DataManagement").activate()
+Backplane("KeyManagement").activate()
 
-# the client events backplane will publish an event whenever the client joins/leaves the backplane.
-Backplane("ClientEvents").activate()
-
-def clientSubscribe():
- #Read 8 bytes at a time from a file, encrypt it, and publish to the backplane.
- 
- Graphline(
+def EncDec():
+    # Server side code
+    Graphline(
         rcfr = RateControlledFileReader("Chekov.txt",readmode="bytes",rate=100000,chunksize=8),
-        snd = Sender(),
-        sub = subscribeTo("ClientEvents"), # the sender subscribes to the graphline and comes to know of key change events, like client join/leave
-	enc = Encryptor("12345678901234567890123456789012"),
-	pub = publishTo("ServerTalk"),
-	linkages = {
-	             ("rcfr","outbox") : ("snd","databox"),
-		     ("sub","outbox") : ("snd","keybox"),
-		     ("snd","outbox") : ("enc","inbox"),
-		     ("enc","outbox") : ("pub","inbox"),
-		   }
- ).activate()
+        mr = MyReader(),
+        kg = KeyGen(),
+        enc = Encryptor(),
+        dtx = DataTransmitter(),
+        pub = publishTo("DataManagement"),
+        sub = subscribeTo("KeyManagement"),
+        ses = SessionKeyController(),
 
-# the recipient publishes to a backplane whenever clients join/leave
-
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        cs = ClientSimulator("100"),
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-dec-1.txt"),
-	linkages = { ("cs","outbox") : ("pub","inbox"),
-	             ("sub","outbox") : ("dec","inbox"),
-	             ("dec","outbox") : ("sf","inbox"),
-		   }
- ).activate()
-
-# Read 8 bytes from the subscriber, decrypt it and write it to the output file.
- Graphline(
-        cs = ClientSimulator("101"),
-        pub = publishTo("ClientEvents"),
-        sub = subscribeTo("ServerTalk"),
-        dec = Decryptor("12345678901234567890123456789012"),
-        sf = SimpleFileWriter("Chekov-dec-2.txt"),
-	linkages = { ("cs","outbox") : ("pub","inbox"),
-	             ("sub","outbox") : ("dec","inbox"),
-	             ("dec","outbox") : ("sf","inbox"),
-		   }
- ).run()
+        linkages = {
+                     ("rcfr","outbox") : ("enc","inbox"),
+                     ("enc","outbox") : ("dtx","inbox"),
+                     ("dtx","outbox") : ("pub","inbox"),
+                     ("sub","outbox") : ("ses","control"),
+                     ("ses","signal") : ("enc","control"),
+                     #("dec","outbox") : ("ech","inbox"),
+                     #("kg","outbox") : ("enc","control"),
+                   }
+    ).activate()
 
 
+   # Client side code
+    Graphline(
+       authenticator = Authenticator(),
+       notifier = publishTo("KeyManagement"),
+       authenticatee = Authenticatee(),
+       dec = Decryptor(),
+       sub = subscribeTo("DataManagement"),
+       ech = Echoer(),
+       sfw = SimpleFileWriter("Khochev-1.txt"),
+       kg1 = KeyGen(),
 
-#fixedString()
-#fileRW()
-#print " *********************RUNNING UNENCRYPTED  MULTIPLE CLIENTS **************************"
-#multipleClients()
+       linkages = {
+                   ("sub","outbox") : ("authenticator","inbox"),
+                   ("authenticator","signal") : ("notifier","inbox"),
+                   ("authenticator","outbox") : ("authenticatee","inbox"),
+                   ("authenticatee","keyout") : ("authenticator","keyin"),
+                   ("authenticatee","outbox") : ("dec","inbox"),
+                   ("dec","outbox") : ("sfw","inbox"),
+                   ("kg1","outbox") : ("dec","control"),
+                  }
+      ).activate()
 
-print " *********************RUNNING ENCRYPTED  MULTIPLE CLIENTS **************************"
-clientSubscribe()
+
+   # Client side code
+    Graphline(
+       authenticator = Authenticator(),
+       notifier = publishTo("KeyManagement"),
+       authenticatee = Authenticatee(),
+       dec = Decryptor(),
+       sub = subscribeTo("DataManagement"),
+       ech = Echoer(),
+       sfw = SimpleFileWriter("Khochev-2.txt"),
+       kg1 = KeyGen(),
+
+       linkages = {
+                   ("sub","outbox") : ("authenticator","inbox"),
+                   ("authenticator","signal") : ("notifier","inbox"),
+                   ("authenticator","outbox") : ("authenticatee","inbox"),
+                   ("authenticatee","keyout") : ("authenticator","keyin"),
+                   ("authenticatee","outbox") : ("dec","inbox"),
+                   ("dec","outbox") : ("sfw","inbox"),
+                   ("kg1","outbox") : ("dec","control"),
+                  }
+      ).run()
+
+
+EncDec()
