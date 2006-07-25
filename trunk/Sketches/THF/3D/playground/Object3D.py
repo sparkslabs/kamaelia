@@ -79,6 +79,12 @@ class Object3D(Axon.Component.component):
         # name        
         self.name = argd.get("name", "nameless")
 
+        # get display service
+        displayservice = Display3D.getDisplayService()
+        # link display_signal to displayservice
+        self.link((self,"display_signal"), displayservice)
+
+
                                           
     def applyTransforms(self):
         # generate new transformation matrix if needed
@@ -100,8 +106,9 @@ class Object3D(Axon.Component.component):
                 self.send(self.pos, "position")
                 self.oldpos = self.pos.copy()
                 
+            # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
-                                                 "ident": self.ident,
+                                                 "objectid": id(self),
                                                  "transform": transform }
             self.send(transform_update, "display_signal")
 
@@ -128,6 +135,87 @@ class Object3D(Axon.Component.component):
             self.scaling = Vector(*self.recv("rel_scaling"))
             
             
+                    
+            
+    def main(self):
+
+        # generate initial transform        
+#        transform = Transform()
+#        transform.applyScaling(self.scaling)
+#        transform.applyRotation(self.rot)
+#        transform.applyTranslation(self.pos)
+
+        # create display request
+        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
+                                          "objectid" : id(self),
+                                          "callback" : (self,"callback"),
+                                          "events" : (self, "inbox"),
+                                          "size": self.size,
+#                                          "displaylist": self.displaylist,
+#                                          "transform": transform
+                                          }
+    
+        # send display request
+        self.send(self.disprequest, "display_signal")
+
+        # setup function from derived objects
+        self.setup()        
+
+        # inital apply trasformations
+        self.applyTransforms()
+
+        # initial draw to display list
+        self.redraw()
+
+        # wait for response on displayrequest
+        while not self.dataReady("callback"): yield 1
+        self.ogl_name = self.recv("callback")
+
+        while 1:
+            yield 1
+            self.applyTransforms()
+            self.handleMovement()
+            self.handleEvents()
+            # frame function from derived objects
+            self.frame()
+
+    ##
+    # Methods to be used by derived objects
+    ##
+
+    def addListenEvents(self, events):
+#        print ("addlistenevent sending")
+        for event in events:
+#            print event
+            self.send({"ADDLISTENEVENT":event, "objectid":id(self)}, "display_signal")
+
+    
+    def removeListenEvents(self, events):
+        for event in events:
+            self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")
+
+
+    def redraw(self):
+       # display list id
+        self.displaylist = glGenLists(1);
+        # draw object to its displaylist
+#        print "list", self.displaylist
+        glNewList(self.displaylist, GL_COMPILE)
+        self.draw()
+        glEndList()
+
+        
+        dl_update = { "DISPLAYLIST_UPDATE": True,
+                                                "objectid": id(self),
+                                                "displaylist": self.displaylist }
+        self.send(dl_update, "display_signal")
+        
+
+
+    ##
+    # Method stubs to be overridden by derived objects
+    ##
+
     def handleEvents(self):
         """ Method stub """
         pass        
@@ -146,51 +234,6 @@ class Object3D(Axon.Component.component):
         """ Method stub """
         pass
 
-
-    def main(self):
-        # get display service
-        displayservice = Display3D.getDisplayService()
-
-        # setup function from derived objects
-        self.setup()        
-        
-        # display list id
-        self.displaylist = glGenLists(1);
-
-        # draw object to its displaylist
-        print "list", self.displaylist
-        glNewList(self.displaylist, GL_COMPILE)
-        self.draw()
-        glEndList()
-
-        # generate initial transform        
-        transform = Transform()
-        transform.applyScaling(self.scaling)
-        transform.applyRotation(self.rot)
-        transform.applyTranslation(self.pos)
-
-        # create display request
-        self.disprequest = { "3DDISPLAYREQUEST" : True,
-                                          "callback" : (self,"callback"),
-                                          "events" : (self, "inbox"),
-                                          "size": self.size,
-                                          "displaylist": self.displaylist,
-                                          "transform": transform}
-    
-        # send display request
-        self.link((self,"display_signal"), displayservice)
-        self.send(self.disprequest, "display_signal")
-        # wait for response
-        while not self.dataReady("callback"): yield 1
-        self.ident = self.recv("callback")
-
-        while 1:
-            yield 1
-            self.applyTransforms()
-            self.handleMovement()
-            self.handleEvents()
-            # frame function from derived objects
-            self.frame()
 
 
 if __name__=='__main__':
