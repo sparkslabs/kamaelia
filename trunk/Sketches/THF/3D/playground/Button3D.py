@@ -65,39 +65,9 @@ class Button3D(Object3D):
         self.actrot = 0
 
 
-    def buildCaption(self):
-        """Pre-render the text to go on the button label."""
-        # Text is rendered to self.image
-        pygame.font.init()
-        font = pygame.font.Font(None, self.fontsize)
-        self.image = font.render(self.caption,True, self.foregroundColour, )
-        # create power of 2 dimensioned surface
-        pow2size = (int(2**(ceil(log(self.image.get_width(), 2)))), int(2**(ceil(log(self.image.get_height(), 2)))))
-        textureSurface = pygame.Surface(pow2size)
-        textureSurface.fill( self.backgroundColour )
-        # determine texture coordinates
-        self.tex_w = float(self.image.get_width()+2*self.margin)/pow2size[0]
-        self.tex_h = float(self.image.get_height()+2*self.margin)/pow2size[1]
-        # copy image data to pow2surface
-        textureSurface.blit(self.image, (self.margin,self.margin))
- #       textureSurface.set_alpha(128)
-#        textureSurface = textureSurface.convert_alpha()
-
-        # read pixel data
-        textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
-
-        self.texID = glGenTextures(1)
-        # create texture
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, self.texID)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
-                        GL_RGBA, GL_UNSIGNED_BYTE, textureData );
-        glDisable(GL_TEXTURE_2D)
-
-        if self.size is None:
-            self.size=Vector(self.image.get_width()/float(self.pixelscaling), self.image.get_height()/float(self.pixelscaling), self.thickness)
+    def setup(self):
+        self.buildCaption()
+        self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
 
 
     def draw(self):
@@ -181,7 +151,7 @@ class Button3D(Object3D):
                         #self.pos.y -= float(event.rel[1])/10.0
             #else:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:# and event.hit == True:
+                if event.button == 1 and self.ogl_name in event.hitobjects:
                     self.grabbed = event.button
                     self.scaling = Vector(0.9,0.9,0.9)
             if event.type == pygame.MOUSEBUTTONUP:
@@ -189,13 +159,45 @@ class Button3D(Object3D):
                     self.grabbed = 0
                     self.scaling = Vector(1,1,1)
                     #activate
-#                    if event.hit:
-                    self.send( self.eventMsg, "outbox" )
-                    self.activated = True
+                    if self.ogl_name in event.hitobjects:
+                        self.send( self.eventMsg, "outbox" )
+                        self.activated = True
 
     
-    def setup(self):
-        self.buildCaption()
+
+    def buildCaption(self):
+        """Pre-render the text to go on the button label."""
+        # Text is rendered to self.image
+        pygame.font.init()
+        font = pygame.font.Font(None, self.fontsize)
+        self.image = font.render(self.caption,True, self.foregroundColour, )
+        # create power of 2 dimensioned surface
+        pow2size = (int(2**(ceil(log(self.image.get_width(), 2)))), int(2**(ceil(log(self.image.get_height(), 2)))))
+        textureSurface = pygame.Surface(pow2size)
+        textureSurface.fill( self.backgroundColour )
+        # determine texture coordinates
+        self.tex_w = float(self.image.get_width()+2*self.margin)/pow2size[0]
+        self.tex_h = float(self.image.get_height()+2*self.margin)/pow2size[1]
+        # copy image data to pow2surface
+        textureSurface.blit(self.image, (self.margin,self.margin))
+ #       textureSurface.set_alpha(128)
+#        textureSurface = textureSurface.convert_alpha()
+
+        # read pixel data
+        textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
+
+        self.texID = glGenTextures(1)
+        # create texture
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+                        GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+        glDisable(GL_TEXTURE_2D)
+
+        if self.size is None:
+            self.size=Vector(self.image.get_width()/float(self.pixelscaling), self.image.get_height()/float(self.pixelscaling), self.thickness)
 
 
     def steadyMovement(self):
