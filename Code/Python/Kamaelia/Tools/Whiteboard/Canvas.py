@@ -54,7 +54,7 @@ class Canvas(Axon.Component.component):
         super(Canvas,self).__init__()
         self.position = position
         self.size = size
-        self.antialias = True
+        self.antialias = False
         if self.antialias == True:
             self.pygame_draw_line = pygame.draw.aaline
         else:
