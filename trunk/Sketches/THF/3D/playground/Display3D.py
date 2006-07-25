@@ -104,7 +104,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.ogl_nextName = 1
 
         # Movement component handling
-#        self.eventspies = []
+        self.eventspies = []
 
         # pygame component handling
 
@@ -183,6 +183,25 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         self.link((self,eventcomms), eventservice)
                         self.eventswanted[ident] = {}
                     
+                    callbackservice = message.get("callback")
+                    callbackcomms = self.addOutbox("displayerfeedback")
+                    self.link((self, callbackcomms), callbackservice)
+                    self.send(ogl_name, callbackcomms)
+                    
+                elif message.get("EVENTSPY_REQUEST", False):
+                    ident = message.get("objectid")
+                    self.eventspies.append(ident)
+                    
+                    victim = message.get("victim")
+                    
+                    eventservice = message.get("events", None)
+                    if eventservice is not None:
+                        eventcomms = self.addOutbox("eventsfeedback")
+                        self.eventcomms[ident] = eventcomms
+                        self.link((self,eventcomms), eventservice)
+                        self.eventswanted[ident] = {}
+
+                    ogl_name = self.ogl_names[victim]                    
                     callbackservice = message.get("callback")
                     callbackcomms = self.addOutbox("displayerfeedback")
                     self.link((self, callbackcomms), callbackservice)
@@ -268,6 +287,12 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # send events to ogl objects
                 e.hitobjects = [hit[2][0] for hit in hits]
                 for ident in self.ogl_objects:
+                    try:
+                        if self.eventswanted[ident][e.type]:
+                            self.send(e, self.eventcomms[ident])
+                    except KeyError: pass
+                # send events to event spies
+                for ident in self.eventspies:
                     try:
                         if self.eventswanted[ident][e.type]:
                             self.send(e, self.eventcomms[ident])
