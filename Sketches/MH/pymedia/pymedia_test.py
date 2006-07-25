@@ -19,6 +19,8 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 import time
         
+READSIZE=1000
+        
 class PyMediaAudioPlayer(component):
     
     def __init__(self,filename):
@@ -27,32 +29,35 @@ class PyMediaAudioPlayer(component):
     def main(self):
         
         f=open(filename,"rb")
-        data=f.read(99999999)
-        
-        yield 1
-        
         dm = muxer.Demuxer(extension)
-        frames = dm.parse(data)
         
-        yield 1
-        rawout=[]
-        
+        data = f.read(READSIZE)
         frame0 = True
-        for frame in frames:
-            yield 1
-            if frame0:
-                stream_index = frame[0]
-                dec = acodec.Decoder(dm.streams[stream_index])
-                raw = dec.decode(frame[1])
-                snd =sound.Output(raw.sample_rate, raw.channels, sound.AFMT_S16_LE)
-                print len(dm.streams),raw.channels, raw.sample_rate
-                print dm.streams
-                print dm.getHeaderInfo()
-                frame0 = False
+        rawout=[]
+        while data:
+            data = f.read(READSIZE)
         
-            rawout.append(str(raw.data))
-        #    snd.play(raw.data)
-            raw = dec.decode(frame[1])
+            yield 1
+            
+            frames = dm.parse(data)
+            
+            yield 1
+            
+            for frame in frames:
+                yield 1
+                if frame0:
+                    stream_index = frame[0]
+                    dec = acodec.Decoder(dm.streams[stream_index])
+                    raw = dec.decode(frame[1])
+                    snd =sound.Output(raw.sample_rate, raw.channels, sound.AFMT_S16_LE)
+                    print len(dm.streams),raw.channels, raw.sample_rate
+                    print dm.streams
+                    print dm.getHeaderInfo()
+                    frame0 = False
+            
+                rawout.append(str(raw.data))
+            #    snd.play(raw.data)
+                raw = dec.decode(frame[1])
         
         
         #allraw = "".join(rawout)
