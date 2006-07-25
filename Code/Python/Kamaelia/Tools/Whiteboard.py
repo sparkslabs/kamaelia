@@ -63,6 +63,10 @@ colours = { "black" :  (0,0,0),
 
 colours_order = [ "black", "red", "orange", "yellow", "green", "turquoise", "blue", "purple", "darkgrey", "lightgrey" ]
 
+import os
+num_pages = len(os.listdir("Scribbles"))
+
+
 def buildPalette(cols, order, topleft=(0,0), size=32):
     buttons = {}
     links = {}
@@ -171,12 +175,21 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       CHECKPOINT  = Button(caption="checkpoint",
                                      size=(63,32),
                                      position=(left+(64*3)+32*len(colours), top),
+                                     msg="checkpoint"),
+                      CLEAR  = Button(caption="clear",
+                                     size=(63,32),
+                                     position=(left+(64*4)+32*len(colours), top),
+                                     msg=[["clear"]]),
+                      NEWPAGE  = Button(caption="new page",
+                                     size=(63,32),
+                                     position=(left+(64*5)+32*len(colours), top),
                                      msg="new"),
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", "Scribbles/slide.%d.png" % (X,)]],
                                                     lambda X: [["SAVE", "Scribbles//slide.%d.png" % (X,)]],
-                                                    initial = 0,
-                                                    highest = 0,
+                                                    lambda X: [["CLEAR"]],
+                                                    initial = num_pages,
+                                                    highest = num_pages,
                                 ),
 
                       SPLIT   = TwoWaySplitter(),
@@ -186,6 +199,9 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
                           ("PALETTE", "outbox")    : ("PAINTER", "colour"),
                           ("ERASER", "outbox")     : ("PAINTER", "erase"),
+
+                          ("CLEAR","outbox")       : ("CANVAS", "inbox"),
+                          ("NEWPAGE","outbox")     : ("HISTORY", "inbox"),
 
                           ("PREV","outbox")        : ("HISTORY", "inbox"),
                           ("NEXT","outbox")        : ("HISTORY", "inbox"),
