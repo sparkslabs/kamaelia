@@ -42,6 +42,9 @@ class SimpleCube(Object3D):
     def __init__(self, **argd):
         super(SimpleCube, self).__init__(**argd)
         self.grabbed = False
+        
+    def setup(self):
+        self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
 
     def draw(self):
         # draw faces 
@@ -87,7 +90,7 @@ class SimpleCube(Object3D):
     def handleEvents(self):
         while self.dataReady("inbox"):
             event = self.recv("inbox")
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.ogl_name in event.hitobjects:
                 if event.button in [1,3]:
                     self.grabbed = event.button
                 if event.button == 4:
