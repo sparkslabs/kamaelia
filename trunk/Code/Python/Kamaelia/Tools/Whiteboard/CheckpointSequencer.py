@@ -6,16 +6,19 @@ import Axon
 class CheckpointSequencer(Axon.Component.component):
     def __init__(self, rev_access_callback = None,
                        rev_checkpoint_callback = None,
+                       blank_slate_callback = None,
                        initial = 1,
                        highest = 1):
         super(CheckpointSequencer, self).__init__()
         if rev_access_callback: self.loadMessage = rev_access_callback
         if rev_checkpoint_callback: self.saveMessage = rev_checkpoint_callback
+        if blank_slate_callback: self.newMessage = blank_slate_callback
         self.initial = initial
         self.highest = highest
 
     def loadMessage(self, current): return current
     def saveMessage(self, current): return current
+    def newMessage(self, current): return current
 
     def main(self):
         current = self.initial
@@ -39,9 +42,15 @@ class CheckpointSequencer(Axon.Component.component):
                             dirty = False
                         current += 1
                         self.send( self.loadMessage(current), "outbox")
-                if command == "new":
+                if command == "checkpoint":
                     highest += 1
                     current = highest
+                    self.send( self.saveMessage(current), "outbox")
+                if command == "new":
+                    self.send( self.saveMessage(current), "outbox")
+                    highest += 1
+                    current = highest
+                    self.send( self.newMessage(current), "outbox")
                     self.send( self.saveMessage(current), "outbox")
                 if command == "undo":
                     self.send( self.loadMessage(current), "outbox")
@@ -51,6 +60,7 @@ class CheckpointSequencer(Axon.Component.component):
 #                    self.send( self.loadMessage(current), "outbox")
 
             if not self.anyReady():
+                self.pause()
                 yield 1
 
 if __name__ == "__main__":
