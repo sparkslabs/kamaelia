@@ -188,7 +188,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.link((self, callbackcomms), callbackservice)
                     self.send(ogl_name, callbackcomms)
                     
-                elif message.get("EVENTSPY_REQUEST", False):
+                elif message.get("EVENTSPYREQUEST", False):
                     ident = message.get("objectid")
                     self.eventspies.append(ident)
                     
@@ -286,11 +286,16 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 
                 # send events to ogl objects
                 e.hitobjects = [hit[2][0] for hit in hits]
+                #e.hitdists = {}
+                #for hit in hits:
+                    #e.hitdists[hit[2][0]] = float(hit[0])/float(4294967295)
+                    
                 for ident in self.ogl_objects:
                     try:
                         if self.eventswanted[ident][e.type]:
                             self.send(e, self.eventcomms[ident])
                     except KeyError: pass
+                    
                 # send events to event spies
                 for ident in self.eventspies:
                     try:
@@ -298,22 +303,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             self.send(e, self.eventcomms[ident])
                     except KeyError: pass
                     
-        
-    def drawBackground(self):
-        glBegin(GL_QUADS)
-        glColor4f(0.85, 0.85, 1.0, 1.0)
-        glVertex3f(-self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glColor4f(0.75, 1.0, 0.75, 1.0)
-        glVertex3f(-self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, 0.0, -self.farPlaneDist)
-        glVertex3f(self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glVertex3f(-self.farPlaneWidth/2.0, -self.farPlaneHeight/2.0, -self.farPlaneDist)
-        glEnd()
-        
-
         
     def updateDisplay(self):
         # draw all 3D objects
@@ -332,9 +321,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         # clear drawing buffer
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
-        # draw background
-        self.drawBackground()
 
         
 
