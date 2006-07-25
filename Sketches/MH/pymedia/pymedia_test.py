@@ -98,26 +98,39 @@ class PyMediaAudioPlayer(component):
             yield 1
         
 class SoundOutput(component):
+    Outboxes = { "outbox" : "",
+                 "signal" : "",
+                 "_data"  : "raw audio samples going to outputter",
+                 "_ctrl"  : "for shutting down an outputter",
+               }
+                
     def main(self):
-        snd = None
-        
-        CHUNKSIZE=2048
-        shutdown=False
+        outputter = None
+        format = None
+        shutdown = False
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 
                 if data['type'] == "audio":
-                    if not snd:
-                        snd =sound.Output(data['sample_rate'], data['channels'], data['format'])
+                    newformat = (data['sample_rate'], data['channels'], data['format'])
+                    if newformat != format:
+                        format=newformat
+                        # need new audio playback component
+                        # first remove any old one
+                        if outputter:
+                            self.removeChild(outputter)
+                            self.send(producerFinished(), "_ctrl")
+                            for l in linkages:
+                                self.unlink(thelinkage=l)
+                        # now make and wire in a new one
+                        outputter = RawSoundOutput(*format).activate()
+                        self.addChildren(outputter)
+                        linkages = [ self.link( (self,"_data"), (outputter, "inbox") ),
+                                     self.link( (self,"_ctrl"), (outputter, "control") ),
+                                   ]
                 
-                    chunk = data['data']
-                
-                    for i in xrange(0,len(chunk),CHUNKSIZE):
-#                        t=time.time()
-                        snd.play(chunk[i:i+CHUNKSIZE])
-#                        print time.time()-t, snd.getSpace()
-                yield 1
+                    self.send(data['data'], "_data")
             
             while self.dataReady("control"):
                 msg=self.recv("control")
@@ -128,6 +141,11 @@ class SoundOutput(component):
             if not shutdown:
                 self.pause()
             yield 1
+
+        if outputter:
+            self.send(producerFinished(), "_ctrl")
+            self.unlink(thelinkage=datalinkage)
+            self.unlink(thelinkage=ctrllinkage)
 
 class ExtractData(component):
     def main(self):
@@ -181,8 +199,8 @@ class RawSoundOutput(component):
 if __name__ == "__main__":
     pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
               PyMediaAudioPlayer(extension),
-#              SoundOutput(),
-              ExtractData(),
-              RawSoundOutput(),
+              SoundOutput(),
+#              ExtractData(),
+#              RawSoundOutput(),
             ).run()
     
