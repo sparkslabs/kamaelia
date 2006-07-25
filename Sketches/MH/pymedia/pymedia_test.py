@@ -26,6 +26,10 @@ from Kamaelia.Chassis.Pipeline import pipeline
 
 class PyMediaAudioPlayer(component):
     
+    Outboxes = { "outbox" : "audio samples in data structures",
+                 "signal" : "",
+               }
+               
     def __init__(self,extension):
         super(PyMediaAudioPlayer,self).__init__()
         self.extension = extension
@@ -52,38 +56,39 @@ class PyMediaAudioPlayer(component):
                     if frame0:
                         stream_index = frame[0]
                         dec = acodec.Decoder(dm.streams[stream_index])
-                        raw = dec.decode(frame[1])
-                        snd =sound.Output(raw.sample_rate, raw.channels, sound.AFMT_S16_LE)
-                        self.send(snd,"outbox")
-                        print len(dm.streams),raw.channels, raw.sample_rate
-                        print dm.streams
-                        print dm.getHeaderInfo()
                         frame0 = False
-                        self.send(str(raw.data), "outbox")
                         
-                    else:
-                        raw = dec.decode(frame[1])
-                        self.send(str(raw.data), "outbox")
+                    raw = dec.decode(frame[1])
+                        
+                    data = {}
+                    data['type'] = 'audio'
+                    data['data'] = str(raw.data)
+                    data['channels'] = raw.channels
+                    data['sample_rate'] = raw.sample_rate
+                    data['format'] = sound.AFMT_S16_LE
+                    self.send(data,"outbox")
         
             yield 1
         
 class SoundOutput(component):
     def main(self):
-        while not self.dataReady("inbox"):
-            self.pause()
-            yield 1
-            
-        snd = self.recv("inbox")
+        snd = None
         
-        #allraw = "".join(rawout)
         CHUNKSIZE=2048
         while 1:
             while self.dataReady("inbox"):
-                chunk = self.recv("inbox")
-                for i in xrange(0,len(chunk),CHUNKSIZE):
-#                    t=time.time()
-                    snd.play(chunk[i:i+CHUNKSIZE])
-#                    print time.time()-t, snd.getSpace()
+                data = self.recv("inbox")
+                
+                if data['type'] == "audio":
+                    if not snd:
+                        snd =sound.Output(data['sample_rate'], data['channels'], data['format'])
+                
+                    chunk = data['data']
+                
+                    for i in xrange(0,len(chunk),CHUNKSIZE):
+#                        t=time.time()
+                        snd.play(chunk[i:i+CHUNKSIZE])
+#                        print time.time()-t, snd.getSpace()
             yield 1
 
 if __name__ == "__main__":
