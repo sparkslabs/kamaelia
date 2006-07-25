@@ -5,6 +5,7 @@
 import time
 
 filename="/home/matteh/music/Philip Glass/Solo Piano/01 - Metamorphosis One.mp3"
+filename="/home/matteh/music/Muse/Absolution/01 - Intro.mp3"
 #filename="/home/matteh/music/Rodeohead.mp3"
 
 extension = filename.split(".")[-1]
@@ -40,8 +41,8 @@ class PyMediaAudioPlayer(component):
         
         
         frame0 = True
-        rawout=[]
-        while 1:
+        shutdown=False
+        while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
         
@@ -68,6 +69,14 @@ class PyMediaAudioPlayer(component):
                     data['format'] = sound.AFMT_S16_LE
                     self.send(data,"outbox")
         
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
             yield 1
         
 class SoundOutput(component):
@@ -75,7 +84,8 @@ class SoundOutput(component):
         snd = None
         
         CHUNKSIZE=2048
-        while 1:
+        shutdown=False
+        while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 
@@ -89,6 +99,16 @@ class SoundOutput(component):
 #                        t=time.time()
                         snd.play(chunk[i:i+CHUNKSIZE])
 #                        print time.time()-t, snd.getSpace()
+                yield 1
+            
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
             yield 1
 
 if __name__ == "__main__":
