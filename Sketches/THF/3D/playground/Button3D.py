@@ -73,8 +73,6 @@ class Button3D(Object3D):
     def draw(self):
         hs = self.size/2.0
         # draw faces
-#        glDisable(GL_DEPTH_TEST)
-        glDisable(GL_BLEND)
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
 
@@ -130,26 +128,6 @@ class Button3D(Object3D):
     def handleEvents(self):
         while self.dataReady("inbox"):
             event = self.recv("inbox")
-            #if event.movementMode:
-                #if event.type == pygame.MOUSEBUTTONDOWN:
-                    #if event.button in [1,3] and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        #self.grabbed = event.button
-                    #if event.button == 4 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        #self.pos.z -= 1
-                    #if event.button == 5 and self.intersectRay(Vector(0,0,0), event.dir) > 0:
-                        #self.pos.z += 1
-                #if event.type == pygame.MOUSEBUTTONUP:
-                    #if event.button in [1,3]:
-                        #self.grabbed = 0
-                #if event.type == pygame.MOUSEMOTION:
-                    #if self.grabbed == 1:
-                        #self.rot.y += float(event.rel[0])
-                        #self.rot.x += float(event.rel[1])
-                        #self.rot %= 360
-                    #if self.grabbed == 3:
-                        #self.pos.x += float(event.rel[0])/10.0
-                        #self.pos.y -= float(event.rel[1])/10.0
-            #else:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1 and self.ogl_name in event.hitobjects:
                     self.grabbed = event.button
@@ -217,6 +195,7 @@ class Button3D(Object3D):
         self.steadyMovement()
 
 
+from SkyGrassBackground import *
 
 if __name__=='__main__':
 
@@ -224,6 +203,7 @@ if __name__=='__main__':
     BUTTON2 = Button3D(caption=">>", msg="Next", pos=Vector(3,0,-10)).activate()
     BUTTON3 = Button3D(caption="Play", msg="Play", pos=Vector(-1,0,-10)).activate()
     BUTTON4 = Button3D(caption="Stop", msg="Stop", pos=Vector(1,0,-10)).activate()
+    bg = SkyGrassBackground(size=Vector(5000,5000,0), pos = Vector(0, 0, -100)).activate()
 
 
     Axon.Scheduler.scheduler.run.runThreads()
