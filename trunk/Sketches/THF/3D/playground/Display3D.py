@@ -96,12 +96,21 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.fpscounter = 0
 
         # 3D component handling
-        self.objects = []
-        self.sizes = {}
-        self.displaylists = {}
-        self.transforms = {}
+        self.ogl_objects = []
+        self.ogl_names = {}
+        self.ogl_sizes = {}
+        self.ogl_displaylists = {}
+        self.ogl_transforms = {}
+        self.ogl_nextName = 1
+
+        # Movement component handling
+#        self.eventspies = []
+
+        # pygame component handling
+
+        # Event handling
         self.eventcomms = {}
-        self.nextName = 1
+        self.eventswanted = {}
         
         # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
@@ -138,6 +147,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def handleDisplayRequest(self):
             while self.dataReady("notify"):
                 message = self.recv("notify")
+#                print str(message)
                 if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
                     surface = message.message
                     message.message = None
@@ -154,36 +164,49 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                          except:
                               "This sucks"
                               pass
-                elif message.get("3DDISPLAYREQUEST", False):
-                    # generate a identifier for the requesting object
-                    ident = self.nextName
-                    self.nextName += 1
+                elif message.get("OGL_DISPLAYREQUEST", False):
                     # store object
-                    self.objects.append(ident)
-                    self.sizes[ident] = message.get("size")
-                    self.displaylists[ident] = message.get("displaylist")
-                    self.transforms[ident] = message.get("transform")
+                    ident = message.get("objectid")
+                    self.ogl_objects.append(ident)
+                    self.ogl_sizes[ident] = message.get("size")
+#                    self.ogl_displaylists[ident] = message.get("displaylist")
+#                    self.ogl_transforms[ident] = message.get("transform")
+                    # generate and store an ogl name for the requesting object
+                    ogl_name = self.ogl_nextName
+                    self.ogl_nextName += 1
+                    self.ogl_names[ident] = ogl_name
                     # connect to eventcallback
                     eventservice = message.get("events", None)
                     if eventservice is not None:
                         eventcomms = self.addOutbox("eventsfeedback")
                         self.eventcomms[ident] = eventcomms
                         self.link((self,eventcomms), eventservice)
+                        self.eventswanted[ident] = {}
                     
                     callbackservice = message.get("callback")
                     callbackcomms = self.addOutbox("displayerfeedback")
                     self.link((self, callbackcomms), callbackservice)
-                    self.send(ident, callbackcomms)
+                    self.send(ogl_name, callbackcomms)
 
                 elif message.get("DISPLAYLIST_UPDATE", False):
-                    ident = message.get("ident")
-                    glDeleteList(self.displaylists[ident])
-                    self.displaylists[ident] = message.get("displaylist")
+                    ident = message.get("objectid")
+                    try:
+                        glDeleteLists(self.ogl_displaylists[ident], 1)
+                    except KeyError: pass
+                    self.ogl_displaylists[ident] = message.get("displaylist")
                     
                 elif message.get("TRANSFORM_UPDATE", False):
-                    ident = message.get("ident")
-                    self.transforms[ident] = message.get("transform")
-                        
+                    ident = message.get("objectid")
+                    self.ogl_transforms[ident] = message.get("transform")
+                    
+                elif message.get("ADDLISTENEVENT", False):
+                    ident = message.get("objectid")
+                    self.eventswanted[ident][message.get("ADDLISTENEVENT")] = True
+                    
+                elif message.get("REMOVELISTENEVENT", False):
+                    ident = message.get("objectid")
+                    self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
+                
 
     def handleEvents(self):
         # pre-fetch all waiting events in one go
@@ -225,10 +248,12 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 glPushName(0)
                 glMatrixMode(GL_MODELVIEW)
                 glPushMatrix()
-                for obj in self.objects:
-                    glLoadMatrixf(self.transforms[obj].getMatrix())
-                    glLoadName(obj)
-                    glCallList(self.displaylists[obj])
+                for obj in self.ogl_objects:
+                    try:
+                        glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                        glLoadName(self.ogl_names[obj])
+                        glCallList(self.ogl_displaylists[obj])
+                    except KeyError: pass
                 glPopMatrix()
 
                 # restore matrices
@@ -240,14 +265,13 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # process hits                
                 hits = glRenderMode(GL_RENDER)
                 
-                # send out event
-                hitobjects = [hit[2][0] for hit in hits]
-                for obj in self.objects:
-                    if obj in hitobjects:
-                        #e.hit = True
-                    #else:
-                        #e.hit = False
-                        self.send(e, self.eventcomms[obj])
+                # send events to ogl objects
+                e.hitobjects = [hit[2][0] for hit in hits]
+                for ident in self.ogl_objects:
+                    try:
+                        if self.eventswanted[ident][e.type]:
+                            self.send(e, self.eventcomms[ident])
+                    except KeyError: pass
                     
         
     def drawBackground(self):
@@ -270,9 +294,11 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # draw all 3D objects
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
-        for obj in self.objects:
-            glLoadMatrixf(self.transforms[obj].getMatrix())
-            glCallList(self.displaylists[obj])
+        for obj in self.ogl_objects:
+            try:
+                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                glCallList(self.ogl_displaylists[obj])
+            except KeyError: pass
         glPopMatrix()
         
         # show frame
