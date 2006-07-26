@@ -54,12 +54,11 @@ class Object3D(Axon.Component.component):
     }
     
     Outboxes = {
-        "outbox": "used for sending position information",
+        "outbox": "not used",
         "display_signal" : "Outbox used for communicating to the display surface",
         "position" : "send position status when updated",
         "rotation": "send rotation status when updated",
         "scaling": "send scaling status when updated",
-#        "events": "forwards events",
     }
     
     def __init__(self, **argd):
@@ -197,17 +196,17 @@ class Object3D(Axon.Component.component):
 
     def redraw(self):
        # display list id
-        self.displaylist = glGenLists(1);
+        displaylist = glGenLists(1);
         # draw object to its displaylist
 #        print "list", self.displaylist
-        glNewList(self.displaylist, GL_COMPILE)
+        glNewList(displaylist, GL_COMPILE)
         self.draw()
         glEndList()
 
         
         dl_update = { "DISPLAYLIST_UPDATE": True,
                                                 "objectid": id(self),
-                                                "displaylist": self.displaylist }
+                                                "displaylist": displaylist }
         self.send(dl_update, "display_signal")
         
 
