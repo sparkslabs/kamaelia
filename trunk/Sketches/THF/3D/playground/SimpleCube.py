@@ -88,26 +88,27 @@ class SimpleCube(Object3D):
     
     
     def handleEvents(self):
-        while self.dataReady("inbox"):
-            event = self.recv("inbox")
-            if event.type == pygame.MOUSEBUTTONDOWN and self.ogl_name in event.hitobjects:
-                if event.button in [1,3]:
-                    self.grabbed = event.button
-                if event.button == 4:
-                    self.pos.z -= 1
-                if event.button == 5:
-                    self.pos.z += 1
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button in [1,3]:
-                    self.grabbed = 0
-            if event.type == pygame.MOUSEMOTION:
-                if self.grabbed == 1:
-                    self.rot.y += float(event.rel[0])
-                    self.rot.x += float(event.rel[1])
-                    self.rot %= 360
-                if self.grabbed == 3:
-                    self.pos.x += float(event.rel[0])/10.0
-                    self.pos.y -= float(event.rel[1])/10.0
+        pass
+        #while self.dataReady("inbox"):
+            #event = self.recv("inbox")
+            #if event.type == pygame.MOUSEBUTTONDOWN and self.ogl_name in event.hitobjects:
+                #if event.button in [1,3]:
+                    #self.grabbed = event.button
+                #if event.button == 4:
+                    #self.pos.z -= 1
+                #if event.button == 5:
+                    #self.pos.z += 1
+            #if event.type == pygame.MOUSEBUTTONUP:
+                #if event.button in [1,3]:
+                    #self.grabbed = 0
+            #if event.type == pygame.MOUSEMOTION:
+                #if self.grabbed == 1:
+                    #self.rot.y += float(event.rel[0])
+                    #self.rot.x += float(event.rel[1])
+                    #self.rot %= 360
+                #if self.grabbed == 3:
+                    #self.pos.x += float(event.rel[0])/10.0
+                    #self.pos.y -= float(event.rel[1])/10.0
                         
 
 
