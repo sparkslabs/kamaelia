@@ -4,12 +4,6 @@
 
 import time
 
-filename="/home/matteh/music/Philip Glass/Solo Piano/01 - Metamorphosis One.mp3"
-filename="/home/matteh/music/Muse/Absolution/01 - Intro.mp3"
-#filename="/home/matteh/music/Rodeohead.mp3"
-
-extension = filename.split(".")[-1]
-extension = extension.lower()
 
 import pymedia.muxer as muxer
 import pymedia.audio.acodec as acodec
@@ -18,12 +12,6 @@ import pymedia.audio.sound as sound
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-import time
-        
-READSIZE=1000
-        
-from Kamaelia.File.Reading import RateControlledFileReader
-from Kamaelia.Chassis.Pipeline import pipeline
 
 mapping_format_to_pymedia = {
     'AC3'       : sound.AFMT_AC3,
@@ -43,23 +31,32 @@ mapping_format_to_pymedia = {
 mapping_format_from_pymedia = dict([(v,k) for (k,v) in mapping_format_to_pymedia.items() ])
 
 
-class PyMediaAudioPlayer(component):
+class AudioDecoder(component):
+    """\
+    AudioDecoder(fileExtension) -> new pymedia Audio Decoder.
+    
+    Send raw data from a compressed audio file (which had the specified extension)
+    to the "inbox" inbox, and decompressed blocks of audio data (wrapped in a
+    data structure) are emitted from the "outbox" outbox.
+    
+    Keyword  arguments:
+    -- fileExtension  - The file extension (eg. "mp3" or "ogg") of the source (to allow the right codec to be chosen)
+    """
     
     Outboxes = { "outbox" : "audio samples in data structures",
                  "signal" : "",
                }
                
-    def __init__(self,extension):
-        super(PyMediaAudioPlayer,self).__init__()
-        self.extension = extension
+    def __init__(self,fileExtension):
+        super(AudioDecoder,self).__init__()
+        self.extension = fileExtension.lower()
 
     def main(self):
         
         dm = muxer.Demuxer(extension)
         
-        
-        frame0 = True
         shutdown=False
+        decoder=None
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
@@ -71,17 +68,16 @@ class PyMediaAudioPlayer(component):
                 yield 1
                 
                 for frame in frames:
-                    yield 1
-                    if frame0:
+#                    yield 1
+                    if not decoder:
                         stream_index = frame[0]
-                        dec = acodec.Decoder(dm.streams[stream_index])
-                        frame0 = False
+                        decoder = acodec.Decoder(dm.streams[stream_index])
                         
-                    raw = dec.decode(frame[1])
+                    raw = decoder.decode(frame[1])
                         
                     data = {}
                     data['type'] = 'audio'
-                    data['data'] = str(raw.data)
+                    data['audio'] = str(raw.data)
                     data['channels'] = raw.channels
                     data['sample_rate'] = raw.sample_rate
                     data['format'] = mapping_format_from_pymedia[sound.AFMT_S16_LE]
@@ -130,7 +126,7 @@ class SoundOutput(component):
                                      self.link( (self,"_ctrl"), (outputter, "control") ),
                                    ]
                 
-                    self.send(data['data'], "_data")
+                    self.send(data['audio'], "_data")
             
             while self.dataReady("control"):
                 msg=self.recv("control")
@@ -168,7 +164,7 @@ class ExtractData(component):
             yield 1
 
 class RawSoundOutput(component):
-    def __init__(self, sample_rate=44050, channels=2, format="S16_LE"):
+    def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
         super(RawSoundOutput,self).__init__()
         
         pformat = mapping_format_to_pymedia[format]
@@ -195,12 +191,68 @@ class RawSoundOutput(component):
                 self.pause()
             yield 1
 
+class SoundInput(component):
+    def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
+        super(SoundInput,self).__init__()
+        
+        pformat = mapping_format_to_pymedia[format]
+        self.snd = sound.Input(sample_rate, channels, pformat)
+        
+        self.sample_rate = sample_rate
+        self.channels = channels
+        self.format = format
+        
+    def main(self):
+        self.snd.start()
+        
+        shutdown=False
+        while self.anyReady() or not shutdown:
+            raw = self.snd.getData()
+            
+            data={}
+            data['type']        = 'audio'
+            data['audio']       = str(raw)
+            data['channels']    = self.channels
+            data['sample_rate'] = self.sample_rate
+            data['format']      = self.format
+            
+            self.send(data,"outbox")
+            
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            yield 1
 
 if __name__ == "__main__":
-    pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
-              PyMediaAudioPlayer(extension),
-              SoundOutput(),
-#              ExtractData(),
-#              RawSoundOutput(),
-            ).run()
+    from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.Chassis.Pipeline import pipeline
+
+    filename="/home/matteh/music/Philip Glass/Solo Piano/01 - Metamorphosis One.mp3"
+    #filename="/home/matteh/music/Muse/Absolution/01 - Intro.mp3"
+    #filename="/home/matteh/music/Rodeohead.mp3"
     
+    extension = filename.split(".")[-1]
+        
+    test = 1
+    
+    if test == 1:
+        pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
+                  AudioDecoder(extension),
+                  SoundOutput(),
+                ).run()
+                
+    elif test == 2:
+        pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
+                  AudioDecoder(extension),
+                  ExtractData(),
+                  RawSoundOutput(),
+                ).run()
+                
+    elif test == 3:
+        pipeline( SoundInput(),
+                  SoundOutput(),
+                ).run()
+
