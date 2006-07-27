@@ -173,14 +173,14 @@ class Graphline(component):
       
    def main(self):
       """Main loop."""
-      components = []
+#      components = []
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
 
-         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
-         if toComponent   != self and toComponent   not in components: components.append(toComponent)
+#         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
+#         if toComponent   != self and toComponent   not in components: components.append(toComponent)
 
          passthrough = 0
          if fromComponent == self: passthrough = 1
@@ -191,7 +191,7 @@ class Graphline(component):
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
 
-      self.addChildren(*components)
+      self.addChildren(*self.components)
 
       for child in self.children:
           child.activate()
