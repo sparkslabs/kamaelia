@@ -40,7 +40,7 @@ import Axon
 from Util3D import *
 from Display3D import Display3D
 
-class Object3D(Axon.Component.component):
+class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {
        "inbox": "Input events",
        "control": "ignored",
