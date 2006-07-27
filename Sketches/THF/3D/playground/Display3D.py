@@ -227,83 +227,79 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
                 
 
+    def doPicking(self, pos):
+        # object picking
+        glSelectBuffer(512)
+        glRenderMode(GL_SELECT)
+        # prepare matrices
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluPickMatrix(pos[0], self.height-pos[1], 1, 1)
+        gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
+        # "draw" objects in select mode
+        glInitNames()
+        glPushName(0)
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        for obj in self.ogl_objects:
+            try:
+                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                glLoadName(self.ogl_names[obj])
+                glCallList(self.ogl_displaylists[obj])
+            except KeyError: pass
+        glPopMatrix()
+
+        # restore matrices
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        # force completion
+        glFlush()
+
+        # process hits                
+        hits = glRenderMode(GL_RENDER)
+        
+        # return list of hit objects
+        return [hit[2][0] for hit in hits]
+        
+
     def handleEvents(self):
         # pre-fetch all waiting events in one go
         events = [ event for event in pygame.event.get() ]
 
-        # Determine direction vectors
-        directions = {}
-        for event in events:
-            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                # determine intersection ray
-                xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
-                yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
-                directions[id(event)] = Vector(xclick, yclick, -self.farPlaneDist).norm()
-
         # Handle events
         for event in events:
-            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+            if event.type in [ pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
                 # compose event data
                 e = Bunch()
                 e.type = event.type
-                e.pos = event.pos
-                e.dir = directions[id(event)]
-                if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
-                    e.button = event.button
-                if event.type == pygame.MOUSEMOTION:
-                    e.rel = event.rel
-                    e.buttons = event.buttons
-                # object picking
-                glSelectBuffer(512)
-                glRenderMode(GL_SELECT)
-                # prepare matrices
-                glMatrixMode(GL_PROJECTION)
-                glPushMatrix()
-                glLoadIdentity()
-                gluPickMatrix(event.pos[0], self.height-event.pos[1], 1, 1)
-                gluPerspective(self.perspectiveAngle, self.aspectRatio, self.nearPlaneDist, self.farPlaneDist)
-                # "draw" objects in select mode
-                glInitNames()
-                glPushName(0)
-                glMatrixMode(GL_MODELVIEW)
-                glPushMatrix()
-                for obj in self.ogl_objects:
-                    try:
-                        glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
-                        glLoadName(self.ogl_names[obj])
-                        glCallList(self.ogl_displaylists[obj])
-                    except KeyError: pass
-                glPopMatrix()
-
-                # restore matrices
-                glMatrixMode(GL_PROJECTION)
-                glPopMatrix()
-                # force completion
-                glFlush()
-
-                # process hits                
-                hits = glRenderMode(GL_RENDER)
-                
-                # send events to ogl objects
-                e.hitobjects = [hit[2][0] for hit in hits]
-                #e.hitdists = {}
-                #for hit in hits:
-                    #e.hitdists[hit[2][0]] = float(hit[0])/float(4294967295)
-                    
-                for ident in self.ogl_objects:
+                if event.type in [ pygame.KEYDOWN, pygame.KEYUP ]:
+                    # key is the only data in keyevents
+                    e.key = event.key
+                else: #  type is one of pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN
+                    #position
+                    e.pos = event.pos
+                    # determine intersection ray
+                    xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
+                    yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
+                    e.dir = Vector(xclick, yclick, -self.farPlaneDist).norm()
+                    # determine which objects have been hit
+                    e.hitobjects = self.doPicking(event.pos)
+                    # set specific event fields
+                    if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
+                        e.button = event.button
+                    if event.type == pygame.MOUSEMOTION:
+                        e.rel = event.rel
+                        e.buttons = event.buttons
+                  
+                # send events to objects
+                for ident in self.ogl_objects + self.eventspies:
                     try:
                         if self.eventswanted[ident][e.type]:
                             self.send(e, self.eventcomms[ident])
                     except KeyError: pass
-                    
-                # send events to event spies
-                for ident in self.eventspies:
-                    try:
-                        if self.eventswanted[ident][e.type]:
-                            self.send(e, self.eventcomms[ident])
-                    except KeyError: pass
-                    
-        
+
+
     def updateDisplay(self):
         # draw all 3D objects
         glMatrixMode(GL_MODELVIEW)
