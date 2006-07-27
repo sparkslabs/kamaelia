@@ -107,6 +107,15 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.eventspies = []
 
         # pygame component handling
+        self.pygame_surfaces = []
+        self.pygame_sizes = {}
+        self.pygame_positions = {}
+        self.pygame_pow2surfaces = {}
+        self.pygame_texnames = {}
+        # mapping of objectids
+        self.pygame_objectid_to_surface = {}
+        # used for surface positioning
+        self.next_position = (0,0)
 
         # Event handling
         self.eventcomms = {}
@@ -220,12 +229,145 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
                 elif message.get("ADDLISTENEVENT", False):
                     ident = message.get("objectid")
+                    if ident is None:
+                        ident = id(message.get("surface", None))
                     self.eventswanted[ident][message.get("ADDLISTENEVENT")] = True
                     
                 elif message.get("REMOVELISTENEVENT", False):
                     ident = message.get("objectid")
+                    if ident is None:
+                        ident = message.get("surface", None)
                     self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
+
+                elif message.get("DISPLAYREQUEST", False):
+                    # get communication services
+                    callbackservice = message["callback"]
+                    eventservice = message.get("events", None)
                 
+                    # get size
+                    size  = message["size"]
+                    
+                    # create surface
+                    surface = pygame.Surface(size)
+                    self.pygame_surfaces.append(surface)
+                    # save size
+                    self.pygame_sizes[id(surface)] = size
+
+                    # determine object id
+                    objectid = id(callbackservice[0])
+                    self.pygame_objectid_to_surface[objectid] = surface
+#                    print objectid
+
+                    #create another surface, with dimensions a power of two
+                    # this is needed because otherwise texturing is REALLY slow
+                    pow2size = (int(2**(ceil(log(size[0], 2)))), int(2**(ceil(log(size[1], 2)))))
+                    pow2surface = pygame.Surface(pow2size)
+                    self.pygame_pow2surfaces[id(surface)] = pow2surface
+
+                    # handle transparency
+                    alpha = message.get("alpha", 255)
+                    surface.set_alpha(alpha)
+                    if message.get("transparency", None):
+                        surface.set_colorkey(message["transparency"])
+                    
+                    # get or generate position
+                    position = message.get("position", self.surfacePosition(surface))
+                    self.pygame_positions[id(surface)] = position
+
+                    # handle event comms
+                    if eventservice is not None:
+                        eventcomms = self.addOutbox("eventsfeedback")
+                        self.eventswanted[id(surface)] = {}
+                        self.link((self,eventcomms), eventservice)
+                        self.eventcomms[id(surface)] = eventcomms
+                    
+                    # link callback communications
+                    callbackcomms = self.addOutbox("displayerfeedback")
+                    self.link((self, callbackcomms), callbackservice)
+                    self.send(surface, callbackcomms)
+
+                    # generate texture name
+                    texname = glGenTextures(1)
+                    self.pygame_texnames[id(surface)] = texname
+
+                elif message.get("REDRAW", False):
+                    surface = message["surface"]
+                    self.updatePygameTexture(surface, self.pygame_pow2surfaces[id(surface)], self.pygame_texnames[id(surface)])
+        
+
+    def handleEvents(self):
+        # pre-fetch all waiting events in one go
+        events = [ event for event in pygame.event.get() ]
+
+        # Handle 3D object events
+        for event in events:
+            if event.type in [ pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                # compose event data
+                e = Bunch()
+                e.type = event.type
+                if event.type in [ pygame.KEYDOWN, pygame.KEYUP ]:
+                    # key is the only data in keyevents
+                    e.key = event.key
+                else: #  type is one of pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN
+                    #position
+                    e.pos = event.pos
+                    # determine intersection ray
+                    xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
+                    yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
+                    e.dir = Vector(xclick, yclick, -self.farPlaneDist).norm()
+                    # determine which objects have been hit
+                    e.hitobjects = self.doPicking(event.pos)
+                    # set specific event fields
+                    if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
+                        e.button = event.button
+                    if event.type == pygame.MOUSEMOTION:
+                        e.rel = event.rel
+                        e.buttons = event.buttons
+                  
+                # send events to objects
+                for ident in self.ogl_objects + self.eventspies:
+                    try:
+                        if self.eventswanted[ident][e.type]:
+                            self.send(e, self.eventcomms[ident])
+                    except KeyError: pass
+
+        # Handle Pygame events
+        for surface in self.pygame_surfaces:
+            eventcomms = self.eventcomms[id(surface)]
+            if eventcomms is not None:
+                bundle = []
+                for event in events:
+                    wanted = False
+                    try:   wanted = self.eventswanted[id(surface)][event.type]
+                    except KeyError: pass
+                    if wanted:
+                        # if event contains positional information, remap it
+                        # for the surface's coordiate origin
+                        if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+#                            if str(id(surface)) in self.wrappedsurfaces: continue
+                            e = Bunch()
+                            e.type = event.type
+                            pos = event.pos[0],event.pos[1]
+                            surfpos = self.pygame_positions[id(surface)]
+                            try:
+                                e.pos  = ( pos[0]-surfpos[0], pos[1]-surfpos[1] )
+                                if event.type == pygame.MOUSEMOTION:
+                                    e.rel = event.rel
+                                if event.type == pygame.MOUSEMOTION:
+                                    e.buttons = event.buttons
+                                else:
+                                    e.button = event.button
+                                event = e
+                            except TypeError:
+                                "XXXX GRRR"
+                                pass
+
+                        bundle.append(event)
+
+                # only send events to listener if we've actually got some
+                if bundle != []:
+                    self.send(bundle, eventcomms)
+
 
     def doPicking(self, pos):
         # object picking
@@ -261,46 +403,12 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         # return list of hit objects
         return [hit[2][0] for hit in hits]
-        
-
-    def handleEvents(self):
-        # pre-fetch all waiting events in one go
-        events = [ event for event in pygame.event.get() ]
-
-        # Handle events
-        for event in events:
-            if event.type in [ pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                # compose event data
-                e = Bunch()
-                e.type = event.type
-                if event.type in [ pygame.KEYDOWN, pygame.KEYUP ]:
-                    # key is the only data in keyevents
-                    e.key = event.key
-                else: #  type is one of pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN
-                    #position
-                    e.pos = event.pos
-                    # determine intersection ray
-                    xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
-                    yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
-                    e.dir = Vector(xclick, yclick, -self.farPlaneDist).norm()
-                    # determine which objects have been hit
-                    e.hitobjects = self.doPicking(event.pos)
-                    # set specific event fields
-                    if event.type in [pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
-                        e.button = event.button
-                    if event.type == pygame.MOUSEMOTION:
-                        e.rel = event.rel
-                        e.buttons = event.buttons
-                  
-                # send events to objects
-                for ident in self.ogl_objects + self.eventspies:
-                    try:
-                        if self.eventswanted[ident][e.type]:
-                            self.send(e, self.eventcomms[ident])
-                    except KeyError: pass
 
 
     def updateDisplay(self):
+        #display pygame components
+        self.drawPygameSurfaces()
+
         # draw all 3D objects
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
@@ -340,6 +448,74 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.updateDisplay()
             yield 1
 
+
+    def updatePygameTexture(self, surface, pow2surface, texname):
+#        print "UPDATE", texname
+        # blit component surface to power of 2 sized surface
+        pow2surface.blit(surface, (0,0))
+        # set surface as texture
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texname)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        textureData = pygame.image.tostring(pow2surface, "RGBX", 1)
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, pow2surface.get_width(), pow2surface.get_height(), 0,
+                        GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+        glDisable(GL_TEXTURE_2D)
+
+
+    def drawPygameSurfaces(self):
+        # disable depth testing temporarely to ensure that pygame components
+        # are on top of everything
+        glDisable(GL_DEPTH_TEST)
+        glEnable(GL_TEXTURE_2D)
+        for surface in self.pygame_surfaces:
+            texname = self.pygame_texnames[id(surface)]
+            position = self.pygame_positions[id(surface)]
+            size = self.pygame_sizes[id(surface)]
+            pow2surface = self.pygame_pow2surfaces[id(surface)]
+
+            # create texture if not already done
+            if not glIsTexture(texname):
+                self.updatePygameTexture(surface, pow2surface, texname)
+
+            # skip surfaces which get wrapped
+#            if str(id(surface)) in self.wrappedsurfaces: continue
+            
+            glBindTexture(GL_TEXTURE_2D, texname)
+
+            # determine surface positions on far Plane
+            l = position[0]*self.farPlaneScaling-self.farPlaneWidth/2
+            t = -position[1]*self.farPlaneScaling+self.farPlaneHeight/2
+            r = l + size[0]*self.farPlaneScaling
+            b = t - size[1]*self.farPlaneScaling
+            
+            #determine texture coordinates
+            tex_w = float(size[0])/float(pow2surface.get_width())
+            tex_h = float(size[1])/float(pow2surface.get_height())
+                
+            # draw just the texture, no background
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+
+            # draw faces 
+            glBegin(GL_QUADS)
+            glColor3f(1, 0, 0)
+            glTexCoord2f(0.0, 1.0-tex_h);         glVertex3f( l, b,  -self.farPlaneDist)
+            glTexCoord2f(tex_w, 1.0-tex_h);     glVertex3f( r, b,  -self.farPlaneDist)
+            glTexCoord2f(tex_w, 1.0); glVertex3f( r,  t,  -self.farPlaneDist)
+            glTexCoord2f(0.0, 1.0);     glVertex3f( l,  t,  -self.farPlaneDist)
+            glEnd()
+        glDisable(GL_TEXTURE_2D)
+        glEnable(GL_DEPTH_TEST)        
+  
+    def surfacePosition(self,surface):
+        """Returns a suggested position for a surface. No guarantees its any good!"""
+        position = self.next_position
+        self.next_position = position[0]+50, position[1]+50
+        return position
+
+        
+       
 
 
 
