@@ -11,7 +11,7 @@ import pymedia.audio.sound as sound
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
-
+from Axon.ThreadedComponent import threadedcomponent
 
 mapping_format_to_pymedia = {
     'AC3'       : sound.AFMT_AC3,
@@ -61,14 +61,10 @@ class AudioDecoder(component):
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
         
-                yield 1
-                
                 frames = dm.parse(data)
                 
-                yield 1
-                
                 for frame in frames:
-#                    yield 1
+                    
                     if not decoder:
                         stream_index = frame[0]
                         decoder = acodec.Decoder(dm.streams[stream_index])
@@ -159,11 +155,11 @@ class ExtractData(component):
                     shutdown=True
                 self.send(msg,"signal")
                 
-            if not shutdown:
-                self.pause()
+#            if not shutdown:
+#                self.pause()
             yield 1
 
-class RawSoundOutput(component):
+class RawSoundOutput(threadedcomponent):
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
         super(RawSoundOutput,self).__init__()
         
@@ -179,7 +175,6 @@ class RawSoundOutput(component):
                 
                 for i in xrange(0,len(chunk),CHUNKSIZE):
                     self.snd.play(chunk[i:i+CHUNKSIZE])
-                yield 1
             
             while self.dataReady("control"):
                 msg=self.recv("control")
@@ -189,7 +184,8 @@ class RawSoundOutput(component):
                 
             if not shutdown:
                 self.pause()
-            yield 1
+            
+        self.snd.stop()
 
 class SoundInput(component):
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
@@ -225,6 +221,83 @@ class SoundInput(component):
                 self.send(msg,"signal")
                 
             yield 1
+            
+        self.snd.stop()
+
+class AudioEncoder(component):
+    def __init__(self, codec, bitrate, sample_rate, channels, **otherparams):
+        super(AudioEncoder,self).__init__()
+        
+        params = { 'id'          : acodec.getCodecID(codec),
+                   'bitrate'     : bitrate,
+                   'sample_rate' : sample_rate,
+                   'channels'    : channels 
+                 }
+        params.update(otherparams)
+                 
+        self.params = params
+        self.codec = codec
+        
+    def main(self):
+        mux = muxer.Muxer( self.codec )
+        streamId = mux.addStream( muxer.CODEC_TYPE_AUDIO, self.params )
+        enc = acodec.Encoder(self.params)
+        
+        data = mux.start()
+        if data:
+            self.send(data,"outbox")
+        
+        shutdown=False
+        data=""
+        MINSIZE=4096
+        while self.anyReady() or not shutdown:
+            while self.dataReady("inbox"):
+                newdata= self.recv("inbox")
+                data = data+newdata['audio']
+                if len(data)>=MINSIZE:
+                    frames = enc.encode( data )
+                    
+                    for frame in frames:
+                        muxed = mux.write( streamId, frame )
+                        if muxed:
+                            self.send(muxed, "outbox")
+                            
+                    data=""
+        
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
+            yield 1
+        
+        data = mux.end()
+        if data:
+            self.send(data,"outbox")
+        
+
+
+class SimpleDelay(component):
+    def main(self):
+        buffer = []
+        while len(buffer) < 5:
+            while self.dataReady("inbox"):
+                buffer.append(self.recv("inbox"))
+            self.pause()
+            yield 1
+            
+        while buffer:
+            self.send(buffer[0],"outbox")
+            buffer.pop(0)
+            
+        while 1:
+            while self.dataReady("inbox"):
+                self.send(self.recv("inbox"),"outbox")
+            self.pause()
+            yield 1
 
 if __name__ == "__main__":
     from Kamaelia.File.Reading import RateControlledFileReader
@@ -236,7 +309,7 @@ if __name__ == "__main__":
     
     extension = filename.split(".")[-1]
         
-    test = 1
+    test = 3
     
     if test == 1:
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
@@ -253,6 +326,9 @@ if __name__ == "__main__":
                 
     elif test == 3:
         pipeline( SoundInput(),
+                  AudioEncoder(codec="mp3", bitrate=128000, sample_rate=44100, channels=2),
+                  AudioDecoder("mp3"),
+#                  SimpleDelay(),
                   SoundOutput(),
                 ).run()
 
