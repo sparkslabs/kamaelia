@@ -27,7 +27,7 @@ import Axon
 #from Axon.AxonExceptions import ServiceAlreadyExists
 #from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 #from Kamaelia.Util.passThrough import passThrough
-#from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Backplane import *
 from Kamaelia.Util.Graphline import *
 from Kamaelia.File.Reading import RateControlledFileReader
@@ -56,7 +56,7 @@ class Encryptor(Axon.Component.component):
       if self.dataReady("control"):
             keyReady = 'True'
 	    self.key = self.recv("control")
-	    print "key recieved at the encryptor",self.key
+	    #print "key recieved at the encryptor",self.key
       while self.dataReady("inbox") and keyReady == 'True':
             data = self.recv("inbox")
 	    if len(data) < 8:
@@ -64,11 +64,11 @@ class Encryptor(Axon.Component.component):
             #enc = xxtea.xxbtea(data,2,self.key)
 	    if self.key != "\0":
                enc = xtea.xtea_encrypt(self.key,data)
-	       print "encrypted text ",enc
+	       #print "encrypted text ",enc
 	       self.send(enc, "outbox")
                yield 1
-	    else:
-              print "key is null. cannot encrypt"#TODO: this might be an exception
+	    #else:
+              #print "key is null. cannot encrypt"#TODO: this might be an exception
 
 	    
 class Decryptor(Axon.Component.component):
@@ -87,20 +87,20 @@ class Decryptor(Axon.Component.component):
 	 if self.dataReady("control"):
 	    self.key = self.recv("control")
             keyRecieved = 'True'
-            print "key recieved at the decryptor",self.key
+            #print "key recieved at the decryptor",self.key
             yield 1
 
          while self.dataReady("inbox") and keyRecieved == 'True': 
           data = self.recv("inbox")
-          print "decryptor recieved ",data
+          #print "decryptor recieved ",data
           if self.key != "\0":
             #dec = xxtea.xxbtea(data,-2,self.key)
             dec = xtea.xtea_decrypt(self.key,data)
-	    print "decrypted text ",dec
+	    #print "decrypted text ",dec
 	    self.send(dec, "outbox")
             yield 1
-          else:
-             print "key is null. cannot decrypt" #TODO:exception ?
+          #else:
+             #print "key is null. cannot decrypt" #TODO:exception ?
 	    
 class KeyGen(Axon.Component.component):
    def main(self):
@@ -112,7 +112,7 @@ class Echoer(Axon.Component.component):
       while 1:
          while self.dataReady("inbox"):
             data = self.recv("inbox")
-            print"Echoer", data  
+            #print"Echoer", data  
          yield 1
     
 class DataTransmitter(Axon.Component.component): # packetises and sends the encrypted key/data
@@ -126,18 +126,25 @@ class DataTransmitter(Axon.Component.component): # packetises and sends the encr
       while 1:
          yield 1
          
-	 while self.dataReady("keyin"):
+	 if self.dataReady("keyin"):
 	   data = self.recv("keyin")
+           str_list = []
 	   # the client should be able to distinguish between data and key
-           packet = dataHeader
-	   packet.append(data)
-	   #self.send(data)
+           str_list.append(keyHeader)
+	   str_list.append(data)
+           packet = ''.join(str_list)
+           #print "data transmitter",packet
+	   self.send(packet)
            yield 1
 	   
          while self.dataReady("inbox"):
 	    data = self.recv("inbox")
-	    print "data transmitter",data
-            self.send(data)
+            str_list = []
+            str_list.append(dataHeader)
+            str_list.append(data)
+            packet = ''.join(str_list)
+	    #print "data transmitter",packet
+            self.send(packet)
             yield 1
 
 class SessionKeyController(Axon.Component.component):
@@ -154,7 +161,7 @@ class SessionKeyController(Axon.Component.component):
 	    data = self.recv("control")
 	    # generate a new session key.
             sessionKey = '1234567890123456'
-	    print "sending session key",sessionKey
+	    #print "sending session key",sessionKey
             self.send(sessionKey, "signal")
             self.send(sessionKey, "outbox")
 
@@ -165,7 +172,8 @@ class SessionKeyController(Axon.Component.component):
 
 class Authenticator(Axon.Component.component):
    Inboxes = {"inbox" : "pass through",
-              "keyin" : "authentication key" }
+              "keyin" : "authentication key" 
+             }
 
    Outboxes = {"signal" : "publishing successful authentication to the keymanagement",
                "outbox" : "pass through encrypted content" }
@@ -173,45 +181,69 @@ class Authenticator(Axon.Component.component):
    def main(self):
     while 1:
       yield 1
+
       while self.dataReady("keyin"):
          data = self.recv("keyin")
          self.send(data,"signal")
          yield 1
+
       while self.dataReady("inbox"):
 	 data = self.recv("inbox")
-         print "Authenticator sending ",data
+         #print "Authenticator sending ",data
 	 self.send(data,"outbox")
          yield 1
 
 
 class Authenticatee(Axon.Component.component):
-   Inboxes = {"inbox" : "encrypted data pass through" }
+   Inboxes = {"inbox" : "encrypted data pass through"}
 
    Outboxes = {"outbox" : "encrypted data pass through",
-               "keyout" : "authentication information"}
+              "keyout" : "authentication information"
+              }
 
    def main(self):
      yield 1
      self.send("1234567890123456","keyout")
+
      while 1:
        yield 1
-       
        while self.dataReady("inbox"):
           data = self.recv("inbox")
-          print "authenticatee sending ",data
+          #print "authenticatee sending ",data
           self.send(data,"outbox")
           yield 1
 
+class Client(Axon.Component.component):
+
+   Outboxes = {"outbox" : "for encrypted data",
+             "signal" : "for key updates"
+            }
+   def main(self):
+      while 1:
+         yield 1
+         while self.dataReady("inbox"):
+            data = self.recv("inbox")
+            header = data[0:3]
+            #print "in client header",header
+            body = data[3:len(data)]
+            print "body",body
+            if(header == 'KEY'):
+               self.send(body,"signal")
+            elif(header == 'DAT'):
+               self.send(body,"outbox")
+            #else:
+               #print "invalid packet"
+
+
 class echoer(Axon.Component.component):
     def main(self):
-        count = 0
         while 1:
             self.pause()
             yield 1
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                print  data, "count:", count
-                count = count +1
+                print  "echoer",data
+                
 
 class MyReader(Axon.Component.component):
     def main(self):
@@ -239,61 +271,104 @@ def EncDec():
         ses = SessionKeyController(),
 
         linkages = {
+                      #("mr","outbox") : ("enc","inbox"),
                      ("rcfr","outbox") : ("enc","inbox"),
                      ("enc","outbox") : ("dtx","inbox"),
                      ("dtx","outbox") : ("pub","inbox"),
                      ("sub","outbox") : ("ses","control"),
+                     ("ses","outbox") : ("dtx","keyin"),
                      ("ses","signal") : ("enc","control"),
                      #("dec","outbox") : ("ech","inbox"),
                      #("kg","outbox") : ("enc","control"),
                    }
     ).activate()
 
+#client 1
 
+    authenticatee = Authenticatee()
+    authenticator = Authenticator()
+    #Server side authentication component
+    Graphline(
+       auth = authenticator,
+       notifier = publishTo("KeyManagement"),
+       sub = subscribeTo("DataManagement"),
+       linkages = {
+                   ("sub","outbox") : ("auth","inbox"),
+                   ("auth","signal") : ("notifier","inbox"),
+                  }
+    ).activate()
+    
    # Client side code
     Graphline(
-       authenticator = Authenticator(),
-       notifier = publishTo("KeyManagement"),
-       authenticatee = Authenticatee(),
+       auth = authenticatee,
+       cli = Client(),
        dec = Decryptor(),
-       sub = subscribeTo("DataManagement"),
        ech = Echoer(),
        sfw = SimpleFileWriter("Khochev-1.txt"),
        kg1 = KeyGen(),
-
        linkages = {
-                   ("sub","outbox") : ("authenticator","inbox"),
-                   ("authenticator","signal") : ("notifier","inbox"),
-                   ("authenticator","outbox") : ("authenticatee","inbox"),
-                   ("authenticatee","keyout") : ("authenticator","keyin"),
-                   ("authenticatee","outbox") : ("dec","inbox"),
+                   #("kg1","outbox") : ("dec","control"), #change
+                   ("auth","outbox") : ("cli","inbox"),
+                   ("cli","outbox") : ("dec","inbox"),
+                   ("cli","signal") : ("dec","control"),
                    ("dec","outbox") : ("sfw","inbox"),
-                   ("kg1","outbox") : ("dec","control"),
+                   #("dec","outbox") : ("ech","inbox"),
                   }
-      ).activate()
+       ).activate()
+   
+    # Simulation. To be replaced by networked components. Authenticator and authenticatee communicate over a socket etc ..
+    Graphline(
+        authCator = authenticator,
+        authCatee = authenticatee,
+        linkages = {
+                   ("authCator","outbox") : ("authCatee","inbox"),
+                   ("authCatee","keyout") : ("authCator","keyin"),
+                  }
+    ).activate()
 
+#client 2
 
+    authenticatee1 = Authenticatee()
+    authenticator1 = Authenticator()
+    #Server side authentication component
+    Graphline(
+       auth = authenticator1,
+       notifier = publishTo("KeyManagement"),
+       sub = subscribeTo("DataManagement"),
+       linkages = {
+                   ("sub","outbox") : ("auth","inbox"),
+                   ("auth","signal") : ("notifier","inbox"),
+                  }
+    ).activate()
+    
    # Client side code
     Graphline(
-       authenticator = Authenticator(),
-       notifier = publishTo("KeyManagement"),
-       authenticatee = Authenticatee(),
+       auth = authenticatee1,
+       cli = Client(),
        dec = Decryptor(),
-       sub = subscribeTo("DataManagement"),
        ech = Echoer(),
        sfw = SimpleFileWriter("Khochev-2.txt"),
-       kg1 = KeyGen(),
-
+       
        linkages = {
-                   ("sub","outbox") : ("authenticator","inbox"),
-                   ("authenticator","signal") : ("notifier","inbox"),
-                   ("authenticator","outbox") : ("authenticatee","inbox"),
-                   ("authenticatee","keyout") : ("authenticator","keyin"),
-                   ("authenticatee","outbox") : ("dec","inbox"),
+                   #("kg1","outbox") : ("dec","control"), #change
+                   ("auth","outbox") : ("cli","inbox"),
+                   ("cli","outbox") : ("dec","inbox"),
+                   ("cli","signal") : ("dec","control"),
                    ("dec","outbox") : ("sfw","inbox"),
-                   ("kg1","outbox") : ("dec","control"),
+                   #("dec","outbox") : ("ech","inbox"),
                   }
-      ).run()
+       ).activate()
+   
+    # Simulation. To be replaced by networked components. Authenticator and authenticatee communicate over a socket etc ..
+    Graphline(
+        authCator = authenticator1,
+        authCatee = authenticatee1,
+        linkages = {
+                   ("authCator","outbox") : ("authCatee","inbox"),
+                   ("authCatee","keyout") : ("authCator","keyin"),
+                  }
+    ).run()
+
 
 
 EncDec()
