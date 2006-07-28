@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
 
 # You should NOT be using/importing TorrentService unless you are working on
 # modifying Kamaelia's BitTorrent functionality. It's sole purpose is as a
@@ -27,7 +26,7 @@
 
 import Axon.CoordinatingAssistantTracker as cat
 
-from Axon.Ipc import shutdown
+from Axon.Ipc import shutdown, producerFinished
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient

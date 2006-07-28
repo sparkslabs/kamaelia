@@ -1,51 +1,45 @@
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-
-import sys
-sys.path.append("../../Util")
-sys.path.append("../../HTTP")
-sys.path.append("../../Torrent")
-
-from IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
-from Chunkifier import Chunkifier
-from ChunkDistributor import ChunkDistributor
-from WholeFileWriter import WholeFileWriter
-from TorrentMaker import TorrentMaker
 from Kamaelia.Util.Fanout import fanout
-from HTTPHelpers import HTTPMakePostRequest
-from HTTPClient import SimpleHTTPClient
-from TorrentPatron import TorrentPatron
 
-from PureTransformer import PureTransformer
+from Kamaelia.Community.RJL.Kamaelia.Util.ChunkNamer import ChunkNamer
+from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
 
-from OnDemandIntrospector import OnDemandIntrospector
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+
+
+'''from Kamaelia.Community.RJL.Kamaelia.Util.Chunkifier import Chunkifier'''
+
+from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
+
 from Kamaelia.File.Writing import SimpleFileWriter
 
 if __name__ == '__main__':
-    pipeline(
-        ConsoleReader(),
-        OnDemandIntrospector(),
-        ConsoleEchoer(),
-    ).activate()
+    streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
+    trackerannounceurl = raw_input("Tracker Announce URL: ") # e.g. "http://192.168.1.5:6969/announce"    
     Graphline(
         streamin = pipeline(
-            IcecastClient("http://127.0.0.1:1234/"), # a stream's address
+            IcecastClient(streamurl), # a stream's address
             IcecastDemux(),
             IcecastStreamRemoveMetadata(),
             Chunkifier(500000),
-            ChunkDistributor("./"),
+            ChunkNamer("./"),
             WholeFileWriter(),
-            TorrentMaker("http://192.168.1.5:6969/announce"),
+            TorrentMaker(trackerannounceurl),
         ),
         
         split = fanout(["toMetaUploader", "toSharer"]),
         
         fileupload = pipeline(
-            ChunkDistributor("./torrents/", ".torrent"),
+            ChunkNamer("./torrents/", ".torrent"),
             WholeFileWriter(),
-            PureTransformer(lambda x : x + "\n"),
-            SimpleFileWriter("filelist.txt")
+            HTTPMakePostRequest("http://192.168.1.15/torrentupload.php")
         ),
 
         #WholeFileWriter()
