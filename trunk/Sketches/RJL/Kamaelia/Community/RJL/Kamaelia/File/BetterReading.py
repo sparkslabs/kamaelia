@@ -96,7 +96,6 @@ class IntelligentFileReader(component):
                 self.done = True
                 return False
             else:
-                #print len(data)
                 self.send(data, "outbox")
                 return True
                 

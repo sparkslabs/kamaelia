@@ -57,7 +57,9 @@ TorrentClient - a BitTorrent Client
 =================
 
 This component is for downloading and uploading data using the peer-to-peer
-BitTorrent protocol.
+BitTorrent protocol. You MUST have the Mainline (official) BitTorrent client
+installed for any BitTorrent stuff to work in Kamaelia.
+See http://download.bittorrent.com/dl/?M=D
 
 I should start by saying "DO NOT USE THIS COMPONENT YOURSELF".
 
@@ -144,7 +146,7 @@ class TorrentClient(threadedcomponent):
         self.tick() #add periodic function call
     
         rawserver.add_task(0, self.core_doneflag.addCallback, lambda r: rawserver.external_add_task(0, shutdown))
-        rawserver.listen_forever(self.rawserver_doneflag)
+        rawserver.listen_forever(self.rawserver_doneflag) # runs until the component terminates
 
         self.send(producerFinished(self), "signal")
         print "TorrentClient has shutdown"

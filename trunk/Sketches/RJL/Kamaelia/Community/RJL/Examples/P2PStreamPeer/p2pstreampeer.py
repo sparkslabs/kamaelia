@@ -30,6 +30,7 @@ from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.Fanout import fanout
+from Kamaelia.File.Writing import SimpleFileWriter
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
@@ -80,8 +81,8 @@ class StreamReconstructor(component):
             self.pause()
 
 if __name__ == '__main__':
-    partslist = "filelist.txt"
-    resourcefetcher = TriggeredFileReader #SimpleHTTPClient
+    partslist = "http://192.168.1.15/torrentlist.txt"
+    resourcefetcher = SimpleHTTPClient #SimpleHTTPClient
     
     pipeline(
         CheapAndCheerfulClock(30.0),
@@ -93,6 +94,7 @@ if __name__ == '__main__':
         resourcefetcher(),
         TorrentPatron(),
         StreamReconstructor(),
-        ConsoleEchoer()
+        TriggeredFileReader(),
+        SimpleFileWriter("myreconstructedstream.mp3")
     ).run()
     
