@@ -59,6 +59,28 @@ class CheckpointSequencer(Axon.Component.component):
                     dirty = True
 #                    self.send( self.loadMessage(current), "outbox")
 
+                if command == ("prev", "local"):
+                    if current >1:
+                        if dirty:
+                            self.send( self.saveMessage(current), "outbox")
+                            dirty = False
+                        current -= 1
+                        mess = self.loadMessage(current)
+                        mess[0].append("nopropogate")
+                        self.send( mess, "outbox")
+
+                if command == ("next", "local"):
+                    if current <highest:
+                        if dirty:
+                            self.send( self.saveMessage(current), "outbox")
+                            dirty = False
+                        current += 1
+                        mess = self.loadMessage(current)
+                        mess[0].append("nopropogate")
+                        self.send( mess, "outbox")
+#                        self.send( self.loadMessage(current), "outbox")
+
+
             if not self.anyReady():
                 self.pause()
                 yield 1
