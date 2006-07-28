@@ -158,6 +158,22 @@ def parseCommands():
 
     return Marshaller(CommandParser)
 
+class PreFilter(Axon.Component.component): # This is a data tap/siphon/demuxer
+    Outboxes = ["history_event", "outbox"]
+    def main(self):
+        while 1:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                print "INCOMING", data
+                if (data == [["prev"]]) or (data == [["next"]]):
+                    self.send((data[0][0], "local"), "history_event")
+                else:
+                    self.send(data, "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
     return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
                       PAINTER = Painter(),
@@ -185,14 +201,26 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                      position=(left+(64*5)+32*len(colours), top),
                                      msg="new"),
 
+                      REMOTEPREV  = Button(caption="~~<<~~",
+                                     size=(63,32), 
+                                     position=(left+(64*6)+32*len(colours), top),
+                                     msg=[['prev']]),
+                      REMOTENEXT  = Button(caption="~~>>~~",
+                                     size=(63,32), 
+                                     position=(left+(64*7)+32*len(colours), top),
+                                     msg=[['next']]),
+
+                      PREFILTER = PreFilter(),
+
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", "Scribbles/slide.%d.png" % (X,)]],
                                                     lambda X: [["SAVE", "Scribbles//slide.%d.png" % (X,)]],
                                                     lambda X: [["CLEAR"]],
-                                                    initial = num_pages,
+                                                    initial = 1,
                                                     highest = num_pages,
                                 ),
 
                       SPLIT   = TwoWaySplitter(),
+                      SPLIT2  = TwoWaySplitter(),
                       DEBUG   = ConsoleEchoer(),
 
                       linkages = {
@@ -203,6 +231,15 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("CLEAR","outbox")       : ("CANVAS", "inbox"),
                           ("NEWPAGE","outbox")     : ("HISTORY", "inbox"),
 
+#                          ("REMOTEPREV","outbox")  : ("self", "outbox"),
+#                          ("REMOTENEXT","outbox")  : ("self", "outbox"),
+                          ("REMOTEPREV","outbox")  : ("SPLIT2", "inbox"),
+                          ("REMOTENEXT","outbox")  : ("SPLIT2", "inbox"),
+
+                          ("SPLIT2", "outbox")      : ("PREFILTER", "inbox"),
+                          ("SPLIT2", "outbox2")     : ("self", "outbox"), # send to network
+
+
                           ("PREV","outbox")        : ("HISTORY", "inbox"),
                           ("NEXT","outbox")        : ("HISTORY", "inbox"),
                           ("CHECKPOINT","outbox")  : ("HISTORY", "inbox"),
@@ -210,11 +247,13 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
                           ("PAINTER", "outbox")    : ("SPLIT", "inbox"),
                           ("SPLIT", "outbox")      : ("CANVAS", "inbox"),
+                          ("SPLIT", "outbox2")     : ("self", "outbox"), # send to network
 
-                          ("self", "inbox")        : ("CANVAS", "inbox"),
-                          ("SPLIT", "outbox2")     : ("self", "outbox"),
+                          ("self", "inbox")        : ("PREFILTER", "inbox"),
+                          ("PREFILTER", "outbox")  : ("CANVAS", "inbox"),
+                          ("PREFILTER", "history_event")  : ("HISTORY", "inbox"),
                           ("CANVAS", "outbox")     : ("self", "outbox"),
-                          
+
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
                           },
                     )

@@ -113,8 +113,8 @@ class Canvas(Axon.Component.component):
 
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
-                \
-print repr(msgs)
+#                \
+#print repr(msgs)
                 self.redrawNeeded = False
                 for msg in msgs:
                     cmd = msg[0]
@@ -192,6 +192,7 @@ print repr(msgs)
 
     def load(self, args):
             filename = args[0]
+            print "ARGS", args
             try:
                 loadedimage = pygame.image.load(filename)
             except:
@@ -199,7 +200,8 @@ print repr(msgs)
             else:
                 self.surface.blit(loadedimage, (0,0))
             self.redrawNeeded = True
-            self.getimg(())
+            if not ( (len(args) >1) and args[1] == "nopropogate" ):
+                self.getimg(())
             self.clean = True
 
     def save(self, args):
@@ -217,6 +219,7 @@ print repr(msgs)
             imagestring = zlib.compress(imagestring)
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
+            print "GETIMG"
 
     def setimg(self, args):
             w,h = int(args[1]), int(args[2])
