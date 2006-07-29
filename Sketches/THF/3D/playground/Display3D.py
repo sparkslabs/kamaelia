@@ -36,7 +36,7 @@ _cat = Axon.CoordinatingAssistantTracker
 
 class Bunch: pass
 
-class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):#(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     Inboxes =  { "inbox"    : "Default inbox, not currently used",
                      "control" : "NOT USED",
                      "notify"  : "Receive requests for surfaces, overlays and events",
@@ -103,7 +103,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.ogl_transforms = {}
         self.ogl_nextName = 1
 
-        # Movement component handling
+        # Eventspies (receive events of other components)
         self.eventspies = []
 
         # pygame component handling
@@ -112,13 +112,16 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.pygame_positions = {}
         self.pygame_pow2surfaces = {}
         self.pygame_texnames = {}
-        # mapping of objectids
-        self.pygame_objectid_to_surface = {}
         # used for surface positioning
         self.next_position = (0,0)
+        
+        # pygame wrapping
+        self.wrappedsurfaces = []
+        self.wrapper_requestcomms = {}
 
         # Event handling
         self.eventcomms = {}
+        self.eventservices = {}
         self.eventswanted = {}
         
         # determine projection parameters
@@ -143,10 +146,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glDepthFunc(GL_LEQUAL)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
         
-        # enable translucency
-#        glEnable (GL_BLEND);
-#        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
         # projection matrix
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()                                
@@ -156,7 +155,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def handleDisplayRequest(self):
             while self.dataReady("notify"):
                 message = self.recv("notify")
-#                print str(message)
                 if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
                     surface = message.message
                     message.message = None
@@ -178,8 +176,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     ident = message.get("objectid")
                     self.ogl_objects.append(ident)
                     self.ogl_sizes[ident] = message.get("size")
-#                    self.ogl_displaylists[ident] = message.get("displaylist")
-#                    self.ogl_transforms[ident] = message.get("transform")
                     # generate and store an ogl name for the requesting object
                     ogl_name = self.ogl_nextName
                     self.ogl_nextName += 1
@@ -231,13 +227,21 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     ident = message.get("objectid")
                     if ident is None:
                         ident = id(message.get("surface", None))
-                    self.eventswanted[ident][message.get("ADDLISTENEVENT")] = True
+    
+                    if ident in self.wrappedsurfaces:
+                        self.send(message, self.wrapper_requestcomms[id(surface)])
+                    else:
+                        self.eventswanted[ident][message.get("ADDLISTENEVENT")] = True
                     
                 elif message.get("REMOVELISTENEVENT", False):
                     ident = message.get("objectid")
                     if ident is None:
                         ident = message.get("surface", None)
-                    self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
+    
+                    if ident in self.wrappedsurfaces:
+                        self.send(message, self.wrapper_requestcomms[id(surface)])
+                    else:
+                       self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
 
                 elif message.get("DISPLAYREQUEST", False):
                     # get communication services
@@ -252,11 +256,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.pygame_surfaces.append(surface)
                     # save size
                     self.pygame_sizes[id(surface)] = size
-
-                    # determine object id
-                    objectid = id(callbackservice[0])
-                    self.pygame_objectid_to_surface[objectid] = surface
-#                    print objectid
 
                     #create another surface, with dimensions a power of two
                     # this is needed because otherwise texturing is REALLY slow
@@ -276,23 +275,57 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
                     # handle event comms
                     if eventservice is not None:
+                        # save eventservice for later use
+                        self.eventservices[id(surface)] = eventservice
+                        # link eventservice
                         eventcomms = self.addOutbox("eventsfeedback")
                         self.eventswanted[id(surface)] = {}
                         self.link((self,eventcomms), eventservice)
                         self.eventcomms[id(surface)] = eventcomms
+
+                    # generate texture name
+                    texname = glGenTextures(1)
+                    self.pygame_texnames[id(surface)] = texname
                     
                     # link callback communications
                     callbackcomms = self.addOutbox("displayerfeedback")
                     self.link((self, callbackcomms), callbackservice)
                     self.send(surface, callbackcomms)
 
-                    # generate texture name
-                    texname = glGenTextures(1)
-                    self.pygame_texnames[id(surface)] = texname
-
                 elif message.get("REDRAW", False):
                     surface = message["surface"]
                     self.updatePygameTexture(surface, self.pygame_pow2surfaces[id(surface)], self.pygame_texnames[id(surface)])
+
+                elif message.get("WRAPPERREQUEST", False):
+                    # get and store surface to wrap
+                    surface = message.get("surface")
+                    self.wrappedsurfaces.append(id(surface))
+                    # get and link callback comms
+                    callbackservice = message["wrapcallback"]
+                    callbackcomms = self.addOutbox("wrapfeedback")
+                    self.link((self,callbackcomms), callbackservice)
+                    # get and link eventrequest comms
+                    eventrequestservice = message["eventrequests"]
+                    eventrequestcomms = self.addOutbox("eventrequests")
+                    self.link((self,eventrequestcomms), eventrequestservice)
+                    self.wrapper_requestcomms[id(surface)] = eventrequestcomms
+                    # find corresponding pow2surface
+                    pow2surface = self.pygame_pow2surfaces[id(surface)]
+                    #determine texture coordinate lengths
+                    tex_w = float(surface.get_width())/float(pow2surface.get_width())
+                    tex_h = float(surface.get_height())/float(pow2surface.get_height())
+                    # generate response
+                    response = { "texname": self.pygame_texnames[id(surface)],
+                                           "texsize": (tex_w, tex_h),
+                                           "size": self.pygame_sizes[id(surface)] }
+                    try:
+                        response["eventservice"] = self.eventservices[id(surface)]
+                        response["eventswanted"] = self.eventswanted[id(surface)]
+                    except KeyError:
+                        response["eventservice"] = None
+                        response["eventswanted"] = None
+                    # send response
+                    self.send(response, callbackcomms)
         
 
     def handleEvents(self):
@@ -309,7 +342,7 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     # key is the only data in keyevents
                     e.key = event.key
                 else: #  type is one of pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN
-                    #position
+                    # position
                     e.pos = event.pos
                     # determine intersection ray
                     xclick = float(event.pos[0]-self.width/2)*self.farPlaneWidth/float(self.width)
@@ -333,23 +366,26 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # Handle Pygame events
         for surface in self.pygame_surfaces:
-            eventcomms = self.eventcomms[id(surface)]
-            if eventcomms is not None:
-                bundle = []
-                for event in events:
-                    wanted = False
-                    try:   wanted = self.eventswanted[id(surface)][event.type]
-                    except KeyError: pass
-                    if wanted:
-                        # if event contains positional information, remap it
-                        # for the surface's coordiate origin
-                        if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-#                            if str(id(surface)) in self.wrappedsurfaces: continue
-                            e = Bunch()
-                            e.type = event.type
-                            pos = event.pos[0],event.pos[1]
-                            surfpos = self.pygame_positions[id(surface)]
-                            try:
+            try:
+                eventcomms = self.eventcomms[id(surface)]
+                if eventcomms is not None:
+                    bundle = []
+                    for event in events:
+                        wanted = False
+                        try:   wanted = self.eventswanted[id(surface)][event.type]
+                        except KeyError: pass
+                        if wanted:
+                            # if event contains positional information, remap it
+                            # for the surface's coordiate origin
+                            if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                                # skip wrapped components (they get events from their wrappers)
+                                if id(surface) in self.wrappedsurfaces: continue
+                                # assemble event
+                                e = Bunch()
+                                e.type = event.type
+                                pos = event.pos[0],event.pos[1]
+                                surfpos = self.pygame_positions[id(surface)]
+                                # determine position on surface
                                 e.pos  = ( pos[0]-surfpos[0], pos[1]-surfpos[1] )
                                 if event.type == pygame.MOUSEMOTION:
                                     e.rel = event.rel
@@ -358,15 +394,57 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                 else:
                                     e.button = event.button
                                 event = e
-                            except TypeError:
-                                "XXXX GRRR"
-                                pass
 
-                        bundle.append(event)
+                            bundle.append(event)
 
-                # only send events to listener if we've actually got some
-                if bundle != []:
-                    self.send(bundle, eventcomms)
+                    # only send events to listener if we've actually got some
+                    if bundle != []:
+                        self.send(bundle, eventcomms)
+            except KeyError: pass
+    
+
+    def updateDisplay(self):
+        #display pygame components
+        self.drawPygameSurfaces()
+
+        # draw all 3D objects
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        for obj in self.ogl_objects:
+            try:
+                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                glCallList(self.ogl_displaylists[obj])
+            except KeyError: pass
+        glPopMatrix()
+        
+        # show frame
+        glFlush()
+        pygame.display.flip()
+        
+        # clear drawing buffer
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+
+        
+
+    def main(self):
+        """Main loop."""
+        while 1:
+            #show fps
+            if self.showFPS:
+                self.fpscounter += 1
+                if self.fpscounter > 100:
+                    # determine fps
+                    currentTime = time.time()
+                    self.fps = 100/(currentTime-self.lastTime)
+                    self.lastTime = currentTime
+                    pygame.display.set_caption("%s FPS:%d" % (self.caption, self.fps) )
+                    self.fpscounter = 0
+
+            self.handleDisplayRequest()
+            self.handleEvents()
+            self.updateDisplay()
+            yield 1
+#            time.sleep(0.0001)
 
 
     def doPicking(self, pos):
@@ -405,50 +483,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         return [hit[2][0] for hit in hits]
 
 
-    def updateDisplay(self):
-        #display pygame components
-        self.drawPygameSurfaces()
-
-        # draw all 3D objects
-        glMatrixMode(GL_MODELVIEW)
-        glPushMatrix()
-        for obj in self.ogl_objects:
-            try:
-                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
-                glCallList(self.ogl_displaylists[obj])
-            except KeyError: pass
-        glPopMatrix()
-        
-        # show frame
-        glFlush()
-        pygame.display.flip()
-        
-        # clear drawing buffer
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
-        
-
-    def main(self):
-        """Main loop."""
-
-        while 1:
-            #show fps
-            if self.showFPS:
-                self.fpscounter += 1
-                if self.fpscounter > 100:
-                    # determine fps
-                    currentTime = time.time()
-                    self.fps = 100/(currentTime-self.lastTime)
-                    self.lastTime = currentTime
-                    pygame.display.set_caption("%s FPS:%d" % (self.caption, self.fps) )
-                    self.fpscounter = 0
-
-            self.handleDisplayRequest()
-            self.handleEvents()
-            self.updateDisplay()
-            yield 1
-
-
     def updatePygameTexture(self, surface, pow2surface, texname):
 #        print "UPDATE", texname
         # blit component surface to power of 2 sized surface
@@ -456,8 +490,8 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # set surface as texture
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, texname)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         textureData = pygame.image.tostring(pow2surface, "RGBX", 1)
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, pow2surface.get_width(), pow2surface.get_height(), 0,
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
@@ -470,6 +504,10 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
         for surface in self.pygame_surfaces:
+            # skip surfaces which get wrapped
+            if id(surface) in self.wrappedsurfaces: continue
+
+            # get needed vars
             texname = self.pygame_texnames[id(surface)]
             position = self.pygame_positions[id(surface)]
             size = self.pygame_sizes[id(surface)]
@@ -479,9 +517,6 @@ class Display3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if not glIsTexture(texname):
                 self.updatePygameTexture(surface, pow2surface, texname)
 
-            # skip surfaces which get wrapped
-#            if str(id(surface)) in self.wrappedsurfaces: continue
-            
             glBindTexture(GL_TEXTURE_2D, texname)
 
             # determine surface positions on far Plane
