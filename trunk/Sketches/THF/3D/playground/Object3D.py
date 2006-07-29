@@ -40,7 +40,9 @@ import Axon
 from Util3D import *
 from Display3D import Display3D
 
-class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+import time
+
+class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):#(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     Inboxes = {
        "inbox": "Input events",
        "control": "ignored",
@@ -82,16 +84,17 @@ class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         displayservice = Display3D.getDisplayService()
         # link display_signal to displayservice
         self.link((self,"display_signal"), displayservice)
-
+        
+        self.transform = Transform()
 
                                           
     def applyTransforms(self):
         # generate new transformation matrix if needed
         if self.oldscaling != self.scaling or self.oldrot != self.rot or self.oldpos != self.pos:
-            transform = Transform()
-            transform.applyScaling(self.scaling)
-            transform.applyRotation(self.rot)
-            transform.applyTranslation(self.pos)
+            self.transform = Transform()
+            self.transform.applyScaling(self.scaling)
+            self.transform.applyRotation(self.rot)
+            self.transform.applyTranslation(self.pos)
 
             if self.oldscaling != self.scaling:
                 self.send(self.scaling, "scaling")
@@ -108,7 +111,7 @@ class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                                  "objectid": id(self),
-                                                 "transform": transform }
+                                                 "transform": self.transform }
             self.send(transform_update, "display_signal")
 
     def handleMovement(self):
@@ -134,42 +137,27 @@ class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.scaling = Vector(*self.recv("rel_scaling"))
             
             
-                    
-            
     def main(self):
-
-        # generate initial transform        
-#        transform = Transform()
-#        transform.applyScaling(self.scaling)
-#        transform.applyRotation(self.rot)
-#        transform.applyTranslation(self.pos)
-
         # create display request
         self.disprequest = { "OGL_DISPLAYREQUEST" : True,
                                           "objectid" : id(self),
                                           "callback" : (self,"callback"),
                                           "events" : (self, "inbox"),
                                           "size": self.size,
-#                                          "displaylist": self.displaylist,
-#                                          "transform": transform
                                           }
-    
         # send display request
         self.send(self.disprequest, "display_signal")
-
         # setup function from derived objects
         self.setup()        
-
         # inital apply trasformations
         self.applyTransforms()
-
         # initial draw to display list
         self.redraw()
 
         # wait for response on displayrequest
-        while not self.dataReady("callback"): yield 1
+        while not self.dataReady("callback"):  yield 1
         self.ogl_name = self.recv("callback")
-
+        
         while 1:
             yield 1
             self.applyTransforms()
@@ -183,9 +171,7 @@ class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     ##
 
     def addListenEvents(self, events):
-#        print ("addlistenevent sending")
         for event in events:
-#            print event
             self.send({"ADDLISTENEVENT":event, "objectid":id(self)}, "display_signal")
 
     
@@ -198,7 +184,6 @@ class Object3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
        # display list id
         displaylist = glGenLists(1);
         # draw object to its displaylist
-#        print "list", self.displaylist
         glNewList(displaylist, GL_COMPILE)
         self.draw()
         glEndList()
