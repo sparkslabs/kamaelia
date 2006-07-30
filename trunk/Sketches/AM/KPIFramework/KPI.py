@@ -21,354 +21,329 @@
 # -------------------------------------------------------------------------
 #
 import Axon
-#from Axon.Ipc import newComponent
-#from Kamaelia.Util.Splitter import PlugSplitter as Splitter
-#from Kamaelia.Util.Splitter import Plug
-#from Axon.AxonExceptions import ServiceAlreadyExists
-#from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
-#from Kamaelia.Util.passThrough import passThrough
 from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Backplane import *
 from Kamaelia.Util.Graphline import *
-from Kamaelia.File.Reading import RateControlledFileReader
-#from Kamaelia.File import ReadFileAdaptor
-#from Kamaelia.File.Reading import PromptedFileReader
-from Kamaelia.File.Writing import SimpleFileWriter
-#from Kamaelia.Util.RateFilter import ByteRate_RequestControl
-#from Kamaelia.SingleServer import SingleServer
-#from Kamaelia.Internet.TCPClient import TCPClient
-
-
-#import xxtea
 import xtea
+import random
+import struct
+
+class KPIDB(object):
+    def __init__(self):
+      super(KPIDB,self).__init__()
+      self.tree = ['0000000000000000', '1111111111111111', 'AAAAAAAAAAAAAAAA',
+                   'BBBBBBBBBBBBBBBB', 'CCCCCCCCCCCCCCCC', 'DDDDDDDDDDDDDDDD',
+                   'EEEEEEEEEEEEEEEE', 'FFFFFFFFFFFFFFFF']
+    
+
+    def getKey(self, userid):
+        return self.tree[userid]
+
+    def getRootKey(self):
+        return self.tree[1]
+
+    def isValidUser(self, userid):
+        if userid >= len(self.tree)/2 or userid < len(self.tree):
+            return True
+        return False
+
+#    def getCommonKeys(self, userid):
+#        return self.tree[1]
+
+
+class KPIUser(object):
+    def __init__(self, config="", userid=0):
+      super(KPIUser,self).__init__()
+      self.config = config
+      self.userid = userid
+      self.tree = ['0000000000000000', '1111111111111111', 'AAAAAAAAAAAAAAAA',
+                   'BBBBBBBBBBBBBBBB', 'CCCCCCCCCCCCCCCC', 'DDDDDDDDDDDDDDDD',
+                   'EEEEEEEEEEEEEEEE', 'FFFFFFFFFFFFFFFF']
+
+    def getID(self):
+        return self.userid
+
+    def getKey(self):
+        return self.tree[self.userid]
+
+    def getRootKey(self):
+        return self.tree[1]
+    
+
+
+    
+
+class Authenticatee(Axon.Component.component):
+    Inboxes = {"inbox" : "authentication and data packets"}
+    Outboxes = {"outbox" : "authentication",
+                "encout" : "encrypted data packets",
+                "notifykey" : "notify key"}
+
+    def __init__(self, kpiuser):
+      super(Authenticatee,self).__init__()
+      self.kpiuser = kpiuser
+   
+    
+    def main(self):
+        userid = self.kpiuser.getID()
+        data = xtea.xtea_encrypt(self.kpiuser.getRootKey(),
+                                 struct.pack('!2L',0, userid))
+        print "encrypting user id with root key", self.kpiuser.getID(), self.kpiuser.getRootKey()
+        self.send(data, "outbox")
+        yield 1
+
+        while not self.dataReady("inbox"):
+            yield 1
+        data = self.recv("inbox")
+        temp = xtea.xtea_decrypt(self.kpiuser.getKey(), data)
+        padding, challenge = struct.unpack('!2L',temp)
+        response = challenge+1
+        print "received challenge",challenge
+        print "sending response", response
+        data = xtea.xtea_encrypt(self.kpiuser.getKey(),
+                                 struct.pack('!2L',0, response))
+        
+        
+        self.send(data, "outbox")
+        yield 1
+        while not self.dataReady("inbox"):
+            yield 1
+        data = self.recv("inbox")
+        if data == "SUCCESS":
+            print "authentication success"
+        else:
+            print "authenication failure"
+            return
+
+        #decode data
+        while 1:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                print "decoder", data
+                if data.startswith("KEY"):
+                    data = data[len("KEY"):len(data)]
+                    print "decoded key", data
+                    self.send(data, "notifykey")
+                else:
+                    data = data[len("DAT"):len(data)]
+                    print "decoded data", data
+                    self.send(data, "encout")
+            yield 1
+
+
+class Authenticator(Axon.Component.component):
+    Inboxes = {"inbox" : "authentication and data packets"}
+    Outboxes = {"outbox" : "authentication",
+                "notifyuser" : "user notification"}
+    
+    def main(self):
+        kpidb = KPIDB()
+        while not self.dataReady("inbox"):
+            yield 1
+        data = self.recv("inbox")
+        padding,userid = struct.unpack('!2L',
+                xtea.xtea_decrypt(kpidb.getRootKey(),data))
+        print "Authenticator received userid:", userid
+        if kpidb.isValidUser(userid) == False:
+            print "Invalid UserID" # todo shutdown
+            return
+
+        challenge = random.getrandbits(32)
+        temp = struct.pack('!2L',0, challenge)
+        data = xtea.xtea_encrypt(kpidb.getKey(userid), temp)
+        print data, challenge, kpidb.getKey(userid)
+        self.send(data, "outbox")
+        yield 1
+        while not self.dataReady("inbox"):
+            yield 1
+        data = self.recv("inbox")
+        temp = xtea.xtea_decrypt(kpidb.getKey(userid),data)
+        padding, response = struct.unpack('!2L', temp)
+	print data, response
+	if response == challenge + 1:
+            self.send("SUCCESS", "outbox")
+            yield 1
+        else:
+            print "authenication failure"
+            return # shutdown
+
+        self.send("new user change the key please", "notifyuser")
+
+        #subscribe to data Management back plane
+        subscriber = subscribeTo("DataManagement")
+        self.link( (subscriber, "outbox"), (self, "outbox"), passthrough=2)
+        subscriber.activate()
+        yield 1
+
+        while 1:
+            yield 1
+        
+        
+
+class MyDataSource(Axon.Component.component):
+   def main(self):
+       index = 0
+       while 1:
+           data = str(index) + "helloknr"
+           self.send(data[:8], "outbox")
+           index = index + 1
+           yield 1           
+
 
 class Encryptor(Axon.Component.component):
-   Inboxes = {"inbox" : "data to be encrypted",
-              "control" : "key updates"}
+   Inboxes = {"inbox" : "data packets", "keyevent": "key for encryption"}
+   Outboxes = {"outbox" : "encrypted data packets"}    
    def __init__(self):
       super(Encryptor,self).__init__()
       self.key = "\0"
 
    def main(self):
-    keyReady = 'False'
     while 1:
       yield 1
-      if self.dataReady("control"):
-            keyReady = 'True'
-	    self.key = self.recv("control")
-	    #print "key recieved at the encryptor",self.key
-      while self.dataReady("inbox") and keyReady == 'True':
+      if self.dataReady("keyevent"):
+	    self.key = self.recv("keyevent")
+	    print "key recieved at the encryptor",self.key
+      if self.dataReady("inbox"):
             data = self.recv("inbox")
 	    if len(data) < 8:
 	       data = '88888888'#FIXME: pad with null's the last bytes that are < 8
-            #enc = xxtea.xxbtea(data,2,self.key)
 	    if self.key != "\0":
+               print "data to be encrypted", data
                enc = xtea.xtea_encrypt(self.key,data)
-	       #print "encrypted text ",enc
 	       self.send(enc, "outbox")
-               yield 1
-	    #else:
-              #print "key is null. cannot encrypt"#TODO: this might be an exception
 
 	    
 class Decryptor(Axon.Component.component):
-   Inboxes = {"inbox" : "data to be decrypted",
-              "control" : "key updates"}
-
+   Inboxes = {"inbox" : "encrypted data packets", "keyevent": "key for decryption"}
+   Outboxes = {"outbox" : "decrypted data packets"}
+   
    def __init__(self):
       super(Decryptor,self).__init__()
       self.key = "\0"
 
    def main(self):
-      keyRecieved = 'False'
       while 1:
          yield 1
+	 if self.dataReady("keyevent"):
+	    self.key = self.recv("keyevent")
+            print "key recieved at the decryptor",self.key
 
-	 if self.dataReady("control"):
-	    self.key = self.recv("control")
-            keyRecieved = 'True'
-            #print "key recieved at the decryptor",self.key
-            yield 1
-
-         while self.dataReady("inbox") and keyRecieved == 'True': 
-          data = self.recv("inbox")
-          #print "decryptor recieved ",data
-          if self.key != "\0":
-            #dec = xxtea.xxbtea(data,-2,self.key)
-            dec = xtea.xtea_decrypt(self.key,data)
-	    #print "decrypted text ",dec
-	    self.send(dec, "outbox")
-            yield 1
-          #else:
-             #print "key is null. cannot decrypt" #TODO:exception ?
+         if self.dataReady("inbox"):
+            data = self.recv("inbox")
+            print "decryptor data received ",data
+            if self.key != "\0":
+                dec = xtea.xtea_decrypt(self.key,data)
+                print "decrypted data ",dec
+                self.send(dec, "outbox")
 	    
-class KeyGen(Axon.Component.component):
-   def main(self):
-        self.send('1234567890123456',"outbox") 
-        yield 1
-         
-class Echoer(Axon.Component.component):
-   def main(self):
-      while 1:
-         while self.dataReady("inbox"):
-            data = self.recv("inbox")
-            #print"Echoer", data  
-         yield 1
-    
-class DataTransmitter(Axon.Component.component): # packetises and sends the encrypted key/data
-   Inboxes = { "inbox" : "encrypted data to transmit to the sender",
-               "keyin" : "session key encrypted with shared keys"
-	     }
-	     
-   def main(self):
-      dataHeader = 'DAT'
-      keyHeader = 'KEY'
-      while 1:
-         yield 1
-         
-	 if self.dataReady("keyin"):
-	   data = self.recv("keyin")
-           str_list = []
-	   # the client should be able to distinguish between data and key
-           str_list.append(keyHeader)
-	   str_list.append(data)
-           packet = ''.join(str_list)
-           #print "data transmitter",packet
-	   self.send(packet)
-           yield 1
-	   
-         while self.dataReady("inbox"):
-	    data = self.recv("inbox")
-            str_list = []
-            str_list.append(dataHeader)
-            str_list.append(data)
-            packet = ''.join(str_list)
-	    #print "data transmitter",packet
-            self.send(packet)
-            yield 1
 
+#counter based - every 10 packets sends a new key
 class SessionKeyController(Axon.Component.component):
-
-   Inboxes = { "control" : "recieve new user-id notifications" } 
-   Outboxes = { "signal" : "sending new session key to the encryptor",
-                "outbox" : "encrypted new session key to transmitter"
-              }
-   def main(self):
-      while 1:
-         #self.pause()
-	 yield 1
-	 while self.dataReady("control"):
-	    data = self.recv("control")
-	    # generate a new session key.
-            sessionKey = '1234567890123456'
-	    #print "sending session key",sessionKey
-            self.send(sessionKey, "signal")
-            self.send(sessionKey, "outbox")
-
-   def getSessionKey():
-      return '1234567890123456'
-
-# Both Authenticator and Authenticatee for the time being act as pass thorugh 
-
-class Authenticator(Axon.Component.component):
-   Inboxes = {"inbox" : "pass through",
-              "keyin" : "authentication key" 
-             }
-
-   Outboxes = {"signal" : "publishing successful authentication to the keymanagement",
-               "outbox" : "pass through encrypted content" }
+   Inboxes = {"userevent" : "new user event"}
+   Outboxes = {"outbox" : "encrypted session key packets",
+                "notifykey" : "notify key"}
 
    def main(self):
-    while 1:
-      yield 1
-
-      while self.dataReady("keyin"):
-         data = self.recv("keyin")
-         self.send(data,"signal")
-         yield 1
-
-      while self.dataReady("inbox"):
-	 data = self.recv("inbox")
-         #print "Authenticator sending ",data
-	 self.send(data,"outbox")
-         yield 1
-
-
-class Authenticatee(Axon.Component.component):
-   Inboxes = {"inbox" : "encrypted data pass through"}
-
-   Outboxes = {"outbox" : "encrypted data pass through",
-              "keyout" : "authentication information"
-              }
-
-   def main(self):
-     yield 1
-     self.send("1234567890123456","keyout")
-
-     while 1:
-       yield 1
-       while self.dataReady("inbox"):
-          data = self.recv("inbox")
-          #print "authenticatee sending ",data
-          self.send(data,"outbox")
-          yield 1
-
-class Client(Axon.Component.component):
-
-   Outboxes = {"outbox" : "for encrypted data",
-             "signal" : "for key updates"
-            }
-   def main(self):
-      while 1:
-         yield 1
-         while self.dataReady("inbox"):
-            data = self.recv("inbox")
-            header = data[0:3]
-            #print "in client header",header
-            body = data[3:len(data)]
-            print "body",body
-            if(header == 'KEY'):
-               self.send(body,"signal")
-            elif(header == 'DAT'):
-               self.send(body,"outbox")
-            #else:
-               #print "invalid packet"
-
-
-class echoer(Axon.Component.component):
-    def main(self):
-        while 1:
-            self.pause()
-            yield 1
-            while self.dataReady("inbox"):
-                data = self.recv("inbox")
-                print  "echoer",data
+       index = 0
+       while 1:
+           while not self.dataReady("userevent"):
+               yield 1
+           print "SC sending a key"
+           self.recv("userevent")# need to integrate with tree
+           self.send('AAAAAAAAAAAAAAAA', "notifykey")
+           self.send('AAAAAAAAAAAAAAAA', "outbox")
+           yield 1
                 
+                 
 
-class MyReader(Axon.Component.component):
-    def main(self):
-        while 1:
- #           line = raw_input(self.prompt)
-            line = "hello678"
-            self.send(line, "outbox")
-            yield 1
+class DataTx(Axon.Component.component):
+   Inboxes = {"inbox" : "data to be encrypted",
+              "keyIn" : "key updates"}
+
+   def __init__(self):
+      super(DataTx,self).__init__()
+
+   def main(self):
+       while 1:
+           while self.dataReady("keyIn"):
+               data = "KEY" + self.recv("keyIn")
+               print "DataTx", data
+               self.send(data, "outbox")
+           yield 1
+           if self.dataReady("inbox"):
+               data = "DAT" + self.recv("inbox")
+               print "DataTx", data               
+               self.send(data, "outbox")
+           yield 1
+          
 
 
-# create a back plane by name server talk
-Backplane("DataManagement").activate()
-Backplane("KeyManagement").activate()
-
-def EncDec():
-    # Server side code
+#client side
+def client(ID):
+    authenticatee = Authenticatee(KPIUser(userid=ID))
     Graphline(
-        rcfr = RateControlledFileReader("Chekov.txt",readmode="bytes",rate=100000,chunksize=8),
-        mr = MyReader(),
-        kg = KeyGen(),
-        enc = Encryptor(),
-        dtx = DataTransmitter(),
-        pub = publishTo("DataManagement"),
-        sub = subscribeTo("KeyManagement"),
-        ses = SessionKeyController(),
-
+        authee = authenticatee,
+        dec = Decryptor(),
         linkages = {
-                      #("mr","outbox") : ("enc","inbox"),
-                     ("rcfr","outbox") : ("enc","inbox"),
-                     ("enc","outbox") : ("dtx","inbox"),
-                     ("dtx","outbox") : ("pub","inbox"),
-                     ("sub","outbox") : ("ses","control"),
-                     ("ses","outbox") : ("dtx","keyin"),
-                     ("ses","signal") : ("enc","control"),
-                     #("dec","outbox") : ("ech","inbox"),
-                     #("kg","outbox") : ("enc","control"),
-                   }
+            ("authee","encout") : ("dec","inbox"),
+            ("authee","notifykey") : ("dec","keyevent"),
+        }
     ).activate()
+    return authenticatee
+    
 
-#client 1
-
-    authenticatee = Authenticatee()
+#server side client connector
+def clientconnector():
     authenticator = Authenticator()
-    #Server side authentication component
     Graphline(
-       auth = authenticator,
-       notifier = publishTo("KeyManagement"),
-       sub = subscribeTo("DataManagement"),
-       linkages = {
-                   ("sub","outbox") : ("auth","inbox"),
-                   ("auth","signal") : ("notifier","inbox"),
-                  }
-    ).activate()
-    
-   # Client side code
-    Graphline(
-       auth = authenticatee,
-       cli = Client(),
-       dec = Decryptor(),
-       ech = Echoer(),
-       sfw = SimpleFileWriter("Khochev-1.txt"),
-       kg1 = KeyGen(),
-       linkages = {
-                   #("kg1","outbox") : ("dec","control"), #change
-                   ("auth","outbox") : ("cli","inbox"),
-                   ("cli","outbox") : ("dec","inbox"),
-                   ("cli","signal") : ("dec","control"),
-                   ("dec","outbox") : ("sfw","inbox"),
-                   #("dec","outbox") : ("ech","inbox"),
-                  }
-       ).activate()
-   
-    # Simulation. To be replaced by networked components. Authenticator and authenticatee communicate over a socket etc ..
-    Graphline(
-        authCator = authenticator,
-        authCatee = authenticatee,
+        author = authenticator,
+        notifier = publishTo("KeyManagement"),
         linkages = {
-                   ("authCator","outbox") : ("authCatee","inbox"),
-                   ("authCatee","keyout") : ("authCator","keyin"),
-                  }
+            ("author","notifyuser") : ("notifier","inbox"),
+        }
     ).activate()
+    return authenticator    
 
-#client 2
 
-    authenticatee1 = Authenticatee()
-    authenticator1 = Authenticator()
-    #Server side authentication component
+#KPI Session management and streaming backend
+def KPIServer(datasource):
+    Backplane("DataManagement").activate()
+    Backplane("KeyManagement").activate()
     Graphline(
-       auth = authenticator1,
-       notifier = publishTo("KeyManagement"),
-       sub = subscribeTo("DataManagement"),
-       linkages = {
-                   ("sub","outbox") : ("auth","inbox"),
-                   ("auth","signal") : ("notifier","inbox"),
-                  }
-    ).activate()
-    
-   # Client side code
-    Graphline(
-       auth = authenticatee1,
-       cli = Client(),
-       dec = Decryptor(),
-       ech = Echoer(),
-       sfw = SimpleFileWriter("Khochev-2.txt"),
-       
-       linkages = {
-                   #("kg1","outbox") : ("dec","control"), #change
-                   ("auth","outbox") : ("cli","inbox"),
-                   ("cli","outbox") : ("dec","inbox"),
-                   ("cli","signal") : ("dec","control"),
-                   ("dec","outbox") : ("sfw","inbox"),
-                   #("dec","outbox") : ("ech","inbox"),
-                  }
-       ).activate()
-   
-    # Simulation. To be replaced by networked components. Authenticator and authenticatee communicate over a socket etc ..
-    Graphline(
-        authCator = authenticator1,
-        authCatee = authenticatee1,
+        ds = datasource, 
+        sc = SessionKeyController(),
+        keyRx = subscribeTo("KeyManagement"),
+        enc = Encryptor(),
+        sender = publishTo("DataManagement"),
+        pz = DataTx(),
         linkages = {
-                   ("authCator","outbox") : ("authCatee","inbox"),
-                   ("authCatee","keyout") : ("authCator","keyin"),
-                  }
-    ).run()
+            ("ds","outbox") : ("enc","inbox"),
+            ("keyRx","outbox") : ("sc","userevent"),        
+            ("sc","notifykey") : ("enc","keyevent"),
+            ("sc","outbox") : ("pz","keyIn"),   
+            ("enc","outbox") : ("pz","inbox"),
+            ("pz","outbox") : ("sender","inbox"),
+        }
+    ).activate()
 
 
+#client simulation
+KPIServer(datasource=MyDataSource())
+Graphline(
+    c=client(ID=6),
+    cc = clientconnector(),    
+    linkages = {
+        ("c","outbox") : ("cc","inbox"),
+        ("cc","outbox") : ("c","inbox"),        
+    }
+).activate()
 
-EncDec()
+
+Graphline(
+    c=client(ID=7),
+    cc = clientconnector(),    
+    linkages = {
+        ("c","outbox") : ("cc","inbox"),
+        ("cc","outbox") : ("c","inbox"),        
+    }
+).run()
