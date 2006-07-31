@@ -51,13 +51,13 @@ class CheckersPiece(OpenGLComponent):
         
         
     def draw(self):
-        glColor(0,0,0)
-        gluCylinder(self.quadric,0.4,0.4,0.3,32,32);        
-        glColor(0.6,0,0)
-        gluDisk(self.quadric,0,0.4,32,32);
+        glColor(0.2,0.2,0.2)
+        gluCylinder(self.quadric,0.4,0.4,0.3,16,1);        
+        glColor(*self.colour)
+        gluDisk(self.quadric,0,0.4,16,1);
         glTranslate(0,0,0.3)
-        glColor(0.6,0,0)
-        gluDisk(self.quadric,0,0.4,32,32);
+        glColor(*self.colour)
+        gluDisk(self.quadric,0,0.4,16,1);
         
         
 if __name__=='__main__':
