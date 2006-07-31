@@ -98,16 +98,16 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):#(Axon
             self.transform.applyTranslation(self.pos)
 
             if self.oldscaling != self.scaling:
-                self.send(self.scaling, "scaling")
-                self.oldscaling = self.scaling.copy()
+                self.send(self.scaling.toTuple(), "scaling")
+                self.oldscaling = self.scaling
 
             if self.oldrot != self.rot:
-                self.send(self.rot, "rotation")
-                self.oldrot = self.rot.copy()
+                self.send(self.rot.toTuple(), "rotation")
+                self.oldrot = self.rot
 
             if self.oldpos != self.pos:
-                self.send(self.pos, "position")
-                self.oldpos = self.pos.copy()
+                self.send(self.pos.toTuple(), "position")
+                self.oldpos = self.pos
                 
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
