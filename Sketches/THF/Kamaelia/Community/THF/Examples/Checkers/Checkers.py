@@ -107,8 +107,9 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     intcomms = self.addOutbox("interactor_comms")
                     self.interactor_comms[id(interactor)] = intcomms
                     self.link( (self, intcomms), (interactor, "inbox"))
-                    self.board[i][j] = 'W'
+                    self.link( (interactor, "outbox"), (self, "inbox"))
 
+                    self.board[i][j] = 'W'
 
         return 1
         
