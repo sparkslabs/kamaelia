@@ -32,9 +32,9 @@ from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.Fanout import fanout
 from Kamaelia.File.Writing import SimpleFileWriter
 
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 
 from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
 from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
@@ -73,15 +73,16 @@ class StreamReconstructor(component):
                     
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
                     print msg.torrentid
-                    if msg.torrentid == torrents[0][0]:
+                    if len(torrents) > 0 and msg.torrentid == torrents[0][0]:
                         print msg.statsdictionary
                         if msg.statsdictionary.get("fractionDone",0) == 1:
                             self.send(torrents[0][1], "outbox")                        
                             torrents.pop(0)
             self.pause()
-
+			
 if __name__ == '__main__':
-    partslist = "http://192.168.1.15/torrentlist.txt"
+    partslist = "http://ronline.no-ip.info/torrentlist.txt"
+    torrenturlsuffix = "http://ronline.no-ip.info/"
     resourcefetcher = SimpleHTTPClient #SimpleHTTPClient
     
     pipeline(
@@ -91,6 +92,8 @@ if __name__ == '__main__':
         LineSplit(),
         UnseenOnly(),
         PureTransformer(lambda x: x or None), #eradicate blank lines
+        PureTransformer(lambda x: torrenturlsuffix + x),
+        #ConsoleEchoer(forwarder=True),
         resourcefetcher(),
         TorrentPatron(),
         StreamReconstructor(),
