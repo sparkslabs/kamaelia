@@ -43,7 +43,7 @@ class CheckersInteractor(Interactor):
 
         self.addInbox("position")
 
-        self.liftheight = argd.get("liftheight", 2)
+        self.liftheight = argd.get("liftheight", 0.2)
                                          
         self.grabbed = False
         self.position = None
