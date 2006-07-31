@@ -28,6 +28,18 @@ import xtea
 import random
 import struct
 
+
+class MyDataSource(Axon.Component.component):
+   def main(self):
+       index = 0
+       while 1:
+           data = str(index) + "helloknr"
+           self.send(data[:8], "outbox")
+           index = index + 1
+           yield 1           
+
+#todo
+#this is just a dummy tree interface
 class KPIDB(object):
     def __init__(self):
       super(KPIDB,self).__init__()
@@ -47,10 +59,14 @@ class KPIDB(object):
             return True
         return False
 
-#    def getCommonKeys(self, userid):
-#        return self.tree[1]
+    def getCommonKeys(self, users):
+        if (len(users) >= 2):
+            return self.tree[3]
+        else:
+            return self.tree[users[0]]
 
-
+#todo
+#this is just a user interface
 class KPIUser(object):
     def __init__(self, config="", userid=0):
       super(KPIUser,self).__init__()
@@ -167,7 +183,8 @@ class Authenticator(Axon.Component.component):
             print "authenication failure"
             return # shutdown
 
-        self.send("new user change the key please", "notifyuser")
+        #new user added 
+        self.send(userid, "notifyuser")
 
         #subscribe to data Management back plane
         subscriber = subscribeTo("DataManagement")
@@ -179,16 +196,6 @@ class Authenticator(Axon.Component.component):
             yield 1
         
         
-
-class MyDataSource(Axon.Component.component):
-   def main(self):
-       index = 0
-       while 1:
-           data = str(index) + "helloknr"
-           self.send(data[:8], "outbox")
-           index = index + 1
-           yield 1           
-
 
 class Encryptor(Axon.Component.component):
    Inboxes = {"inbox" : "data packets", "keyevent": "key for encryption"}
@@ -237,21 +244,31 @@ class Decryptor(Axon.Component.component):
                 self.send(dec, "outbox")
 	    
 
-#counter based - every 10 packets sends a new key
+# need to integrate with tree database
+#todo need to send the session keys encrypted with common keys
 class SessionKeyController(Axon.Component.component):
    Inboxes = {"userevent" : "new user event"}
    Outboxes = {"outbox" : "encrypted session key packets",
                 "notifykey" : "notify key"}
 
    def main(self):
-       index = 0
+       kpidb = KPIDB()
+       users = []
        while 1:
            while not self.dataReady("userevent"):
                yield 1
            print "SC sending a key"
-           self.recv("userevent")# need to integrate with tree
-           self.send('AAAAAAAAAAAAAAAA', "notifykey")
-           self.send('AAAAAAAAAAAAAAAA', "outbox")
+           userid = self.recv("userevent")
+           #to avoid duplicate entries
+           try:
+               users.index(userid)
+           except ValueError:
+               users.append(userid)
+               users.sort()
+           #todo to send in a format
+           key = kpidb.getCommonKeys(users)
+           self.send(key, "notifykey")
+           self.send(key, "outbox")
            yield 1
                 
                  
