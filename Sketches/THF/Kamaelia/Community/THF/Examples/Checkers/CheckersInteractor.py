@@ -42,12 +42,15 @@ class CheckersInteractor(Interactor):
         super(CheckersInteractor, self).__init__(**argd)
 
         self.addInbox("position")
+        self.addOutbox("movement")
 
         self.liftheight = argd.get("liftheight", 0.2)
+        self.colour = argd.get("colour")
                                          
         self.grabbed = False
         self.position = None
         self.oldpoint = None
+        self.lastValidPos = None
             
 
     def setup(self):
@@ -70,23 +73,31 @@ class CheckersInteractor(Interactor):
                 if event.type == pygame.MOUSEBUTTONDOWN and self.identifier in event.hitobjects:
                     if event.button == 1:
                         self.grabbed = True
-                        self.send((0,0,self.liftheight), "outbox")
+                        self.send((0,0,self.liftheight), "movement")
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1 and self.grabbed:
                         self.grabbed = False
-                        # place piece in the middle of a field
+                        # place piece in the middle of a black field
                         alignedpos = self.position.copy()
                         alignedpos.x = floor(alignedpos.x)+0.5
                         alignedpos.y = floor(alignedpos.y)+0.5
+
+
                         diff = alignedpos - self.position
+                        self.send((diff.x,diff.y,-self.liftheight), "movement")
                         
-                        self.send((diff.x,diff.y,-self.liftheight), "outbox")
+                        self.position = alignedpos
+
+                        fr = (floor(self.lastValidPos.x)+4, floor(self.lastValidPos.y)+4)
+                        to = (floor(alignedpos.x)+4, floor(alignedpos.y)+4 )
+                        self.send( {"PLACEMENT":True, "from":fr, "to":to, "colour":self.colour  ,"objectid": id(self)}, "outbox")
+
                 if event.type == pygame.MOUSEMOTION:
                     if self.grabbed == True:
                         if self.oldpoint is not None:
                             diff = newpoint-self.oldpoint
                             diff.z = 0
-                            self.send(diff.toTuple(), "outbox")
+                            self.send(diff.toTuple(), "movement")
 
                 try:
                     self.oldpoint = newpoint
@@ -96,6 +107,18 @@ class CheckersInteractor(Interactor):
     def frame(self):
         while self.dataReady("position"):
             self.position = Vector(*self.recv("position"))
+            if self.lastValidPos is None:
+                self.lastValidPos = self.position.copy()
+            
+        while self.dataReady("inbox"):
+        
+            msg = self.recv("inbox")
+            if msg == "ACK":
+                self.lastValidPos = self.position.copy()
+            elif msg == "INVALID":
+                diff = self.lastValidPos - self.position
+                diff.z = 0
+                self.send(diff.toTuple(), "movement")
 
 
 if __name__=='__main__':
