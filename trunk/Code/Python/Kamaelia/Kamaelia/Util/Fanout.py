@@ -96,15 +96,17 @@ class fanout(component):
    def main(self):
       """Main loop."""
       while 1:
-         if self.dataReady("inbox"):
+         while self.dataReady("inbox"):
             data = self.recv("inbox")
             for boxname in self.Outboxes:
                self.send(data, boxname)
-         if self.dataReady("control"):
+         while self.dataReady("control"):
             data = self.recv("control")
             if isinstance(data, shutdownMicroprocess) or isinstance(data,producerFinished):
                self.send(data, "signal")
                return
+         if not self.anyReady(): # This should be the case here.
+             self.pause()
          yield 1
 
 __kamaelia_components__  = ( fanout, )
