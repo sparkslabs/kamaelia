@@ -82,7 +82,7 @@ class MatchedTranslationInteractor(Interactor):
 
     def frame(self):
         while self.dataReady("inbox"):
-            self.position = self.recv("inbox")
+            self.position = Vector(*self.recv("inbox"))
 
 
 if __name__=='__main__':
