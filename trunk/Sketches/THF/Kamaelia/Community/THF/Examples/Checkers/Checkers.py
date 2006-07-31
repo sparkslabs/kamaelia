@@ -54,7 +54,15 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         OpenGLDisplay.setDisplayService(display)
     
         # create board
-        self.board = CheckersBoard(position=(0,0,-15)).activate()
+        self.boardvis = CheckersBoard(position=(0,0,-15)).activate()
+        
+        self.interactor_comms = {}
+
+        self.board = {}                
+        for i in range(8):
+            self.board[i] = {}
+            for j in range(8):
+                self.board[i][j] = None
         
         # create black pieces
         self.blackPieces = []
@@ -67,10 +75,17 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     piece = CheckersPiece(position=(x, y, -15), colour=(0.6,0,0)).activate()
                     self.blackPieces.append(piece)
 
-                    interactor = CheckersInteractor(victim=piece).activate()
+                    interactor = CheckersInteractor(victim=piece, colour='B').activate()
                     piece.link( (piece, "position"), (interactor, "position"))
-                    interactor.link( (interactor, "outbox"), (piece, "rel_position"))
+                    interactor.link( (interactor, "movement"), (piece, "rel_position"))
                     self.blackInteractors.append(interactor)
+
+                    intcomms = self.addOutbox("interactor_comms")
+                    self.interactor_comms[id(interactor)] = intcomms
+                    self.link( (self, intcomms), (interactor, "inbox"))
+                    self.link( (interactor, "outbox"), (self, "inbox"))
+                    
+                    self.board[i][j] = 'B'
 
                     
         # create white pieces
@@ -84,17 +99,37 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     piece = CheckersPiece(position=(x, y, -15), colour=(0,0,0.6)).activate()
                     self.whitePieces.append(piece)
 
-                    interactor = CheckersInteractor(victim=piece).activate()
+                    interactor = CheckersInteractor(victim=piece, colour='B').activate()
                     piece.link( (piece, "position"), (interactor, "position"))
-                    interactor.link( (interactor, "outbox"), (piece, "rel_position"))
+                    interactor.link( (interactor, "movement"), (piece, "rel_position"))
                     self.whiteInteractors.append(interactor)
+
+                    intcomms = self.addOutbox("interactor_comms")
+                    self.interactor_comms[id(interactor)] = intcomms
+                    self.link( (self, intcomms), (interactor, "inbox"))
+                    self.board[i][j] = 'W'
 
 
         return 1
         
         
     def mainBody(self):
-        
+        while self.dataReady("inbox"):
+            msg = self.recv("inbox")
+            
+            if msg.get("PLACEMENT", None):
+                objectid = msg.get("objectid")
+                fr = msg.get("from")
+                to = msg.get("to")
+                colour = msg.get("colour")
+                
+                if (to[0] + to[1]) % 2 != 0 or self.board[to[0]][to[1]] is not None:
+                    self.send("INVALID", self.interactor_comms[objectid])
+                else:
+                    self.board[fr[0]][fr[1]] = None
+                    self.board[to[0]][to[1]] = colour
+                    self.send("ACK", self.interactor_comms[objectid])
+                    
         return 1
         
 if __name__=='__main__':
