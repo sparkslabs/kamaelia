@@ -41,12 +41,6 @@ from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
 import Queue
-try:   
-    from ctypes import *   
-    libc = cdll.LoadLibrary("/lib/libc.so.6")   
-    sched_yield = libc.sched_yield   
-except ImportError:   
-    def sched_yield(): pass
 
 def _sort(somelist):
    a=[ x for x in somelist]
@@ -150,7 +144,6 @@ class scheduler(microprocess):
        running = True
        
        while running:
-           sched_yield()
            
            # slowmo
            now = time.time()
