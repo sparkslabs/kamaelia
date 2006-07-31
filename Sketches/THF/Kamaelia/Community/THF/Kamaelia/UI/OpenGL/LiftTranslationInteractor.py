@@ -21,13 +21,8 @@
 # -------------------------------------------------------------------------
 """\
 =====================
-General 3D Object
+Lift Translation Interactos
 =====================
-Methods to be overridden:
-    draw()
-    handleEvents()
-    setup()
-    frame()
 """
 
 
@@ -93,7 +88,7 @@ class LiftTranslationInteractor(Interactor):
 
     def frame(self):
         while self.dataReady("position"):
-            self.position = self.recv("position")
+            self.position = Vector(*self.recv("position"))
 
 
 if __name__=='__main__':
