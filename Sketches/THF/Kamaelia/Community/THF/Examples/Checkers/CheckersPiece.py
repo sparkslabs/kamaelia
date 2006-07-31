@@ -64,12 +64,13 @@ if __name__=='__main__':
     
     from LiftTranslationInteractor import *
     from CheckersBoard import *
+    from CheckersInteractor import *
     
     display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
     OpenGLDisplay.setDisplayService(display)
 
     o1 = CheckersPiece(position=(0,0,-15)).activate()
-    i1 = LiftTranslationInteractor(victim=o1, liftheight=0.2).activate()
+    i1 = CheckersInteractor(victim=o1, liftheight=0.2).activate()
     board = CheckersBoard(position=(0,0,-15)).activate()
 
     o1.link( (o1, "position"), (i1, "position"))
