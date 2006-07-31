@@ -123,7 +123,7 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 to = msg.get("to")
                 colour = msg.get("colour")
                 
-                if (to[0] + to[1]) % 2 != 0 or self.board[to[0]][to[1]] is not None:
+                if (to[0]<0 or to[0]>7 or to[1]<0 or to[1]>7 or to[0] + to[1]) % 2 != 0 or self.board[to[0]][to[1]] is not None:
                     self.send("INVALID", self.interactor_comms[objectid])
                 else:
                     self.board[fr[0]][fr[1]] = None
