@@ -191,7 +191,7 @@ class Graphline(component):
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
 
-      self.addChildren(*self.components)
+      self.addChildren(*self.components.values())
 
       for child in self.children:
           child.activate()
