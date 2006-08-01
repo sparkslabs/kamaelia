@@ -13,6 +13,10 @@
 # Original code written by Bram Cohen, Uoti Urpala, John Hoffman, and David Harrison
 # Kamaelia-ized by Ryan Lothian
 
+# Modified parts of code:
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+
 from __future__ import division
 
 from BitTorrent.translation import _
@@ -253,13 +257,16 @@ class TorrentClient(threadedcomponent):
         #    self.d.display(status)
 
 
+def BasicTorrentExplainer():
+    """BasicTorrentExplainer is component useful for debugging
+    TorrentClient/TorrentPatron. It converts each torrent IPC
+    messages it receives into human readable lines of text."""
+    
+    return PureTransformer(lambda x : str(x) + "\n")
 
-BasicTorrentExplainer = lambda : PureTransformer(lambda x : str(x) + "\n")
-# BasicTorrentExplainer is component useful for debugging TorrentClient/TorrentPatron
-# it converts each torrent IPC messages it receives into human readable lines of text.
-           
+
 if __name__ == '__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader

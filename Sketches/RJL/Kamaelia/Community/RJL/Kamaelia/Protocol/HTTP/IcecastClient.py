@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -53,11 +53,13 @@ import string, time
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
+
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import *
+from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Community.RJL.Kamaelia.IPC.BaseIPC import IPC
 
 def intval(mystring):
     try:
@@ -68,32 +70,24 @@ def intval(mystring):
         retval = None    
     return retval
 
-def removeTrailingCr(line):
-    if len(line) == 0:
-        return ""
-    elif line[-1] == "\r":
-        return line[0:-1]
-    else:
-        return line
+class IceIPCHeader(IPC):
+    "Icecast header - content type: %(contenttype)s"
+    Parameters = ["contenttype"]
 
-class IceIPCHeader(object):
-    def __init__(self, contenttype):
-        self.contenttype = contenttype
+class IceIPCMetadata(IPC):
+    "Icecast stream metadata"
+    Parameters = ["metadata"]
 
-class IceIPCMetadata(object):
-    def __init__(self, metadata):
-        self.metadata = metadata
+class IceIPCDataChunk(IPC):
+    "An audio/video stream data chunk (typically MP3)"
+    Parameters = ["data"]
 
-class IceIPCDataChunk(object):
-    def __init__(self, data):
-        self.data = data
-
-class IceIPCDisconnected(object):
-    pass
-
+class IceIPCDisconnected(IPC):
+    "Icecast stream disconnected"
+    Parameters = []
 
 class IcecastDemux(component):
-    """Splits an Icecast stream into A/V data and metadata"""
+    """Splits a raw Icecast stream into A/V data and metadata"""
     def dictizeMetadata(self, metadata):    
         "Convert metadata that was embedded in the stream into a dictionary."
         #print "IcecastClient.dictizeMetadata()"    
@@ -201,16 +195,14 @@ class IcecastClient(SingleShotHTTPClient):
             while self.mainBody():
                 yield 1
 
-class IcecastStreamRemoveMetadata(component):
-    def main(self):
-        while 1:
-            yield 1
-            while self.dataReady("inbox"):
-                msg = self.recv("inbox")
-                if isinstance(msg, IceIPCDataChunk):
-                    self.send(msg.data, "outbox")
-            self.pause()
+def IcecastStreamRemoveMetadata():
+    def extraDataChunks(msg):
+        if isinstance(msg, IceIPCDataChunk):
+            return msg.data
+        else:
+            return None
 
+    return PureTransformer(extraDataChunks)
 
 class IcecastStreamWriter(component):
     Inboxes = {
@@ -235,9 +227,11 @@ class IcecastStreamWriter(component):
                     f.write(msg.data)
 
             self.pause()
-    
+
+__kamaelia_components__  = ( IcecastDemux, IcecastClient, IcecastStreamRemoveMetadata, IcecastStreamWriter )
+
 if __name__ == '__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     
     # Save a SHOUTcast/Icecast stream to disk
     # (you can then use an MP3 player program to listen to it while it downloads).

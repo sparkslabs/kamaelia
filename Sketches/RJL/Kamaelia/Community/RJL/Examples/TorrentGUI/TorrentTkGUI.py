@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -25,7 +25,7 @@ Torrent Tk Window - a basic GUI for BitTorrent
 =================
 
 This component supports downloading from multiple torrents simultaneously
-but no deletion or statistics other than percentage completuion so far.
+but no deletion or statistics other than percentage completion so far.
 
 How does it work?
 -----------------
@@ -70,7 +70,7 @@ class TorrentTkWindow(TkWindow):
         "outbox"  : "To TorrentPatron backend",
         "fetcher" : "To TorrentPatron backend via a resource fetcher, e.g. file reader or HTTP client",
         "fetchersignal" : "Shutdown resource fetcher",
-        "signal" : "When I've shutdown"
+        "signal"  : "When I've shutdown"
     }
         
     def __init__(self):

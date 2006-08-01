@@ -50,7 +50,7 @@ from BitTorrent.parseargs import parseargs, printHelp
 from BitTorrent import BTFailure
 
 from Axon.ThreadedComponent import threadedcomponent
-from TorrentIPC import *
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 import time
 import os
 import tempfile
@@ -130,7 +130,7 @@ class TorrentMaker(threadedcomponent):
                 time.sleep(2.0)
                 
 if __name__ == '__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,14 +24,6 @@
 # modifying Kamaelia's BitTorrent functionality. It's sole purpose is as a
 # dependency of TorrentPatron!
 
-import Axon.CoordinatingAssistantTracker as cat
-
-from Axon.Ipc import shutdown, producerFinished
-from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
-
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
-                
 """\
 =================
 TorrentService - a service that co-ordinates the sharing of a single BitTorrent Client
@@ -45,8 +37,23 @@ may crash Python (see the effects of creating two TorrentClient components in
 TorrentClient.py)
 
 The shutting down of this component (when not in use) is very ugly.
+
+How does it work?
+-----------------
+TorrentClient handles new torrent requests sequentially, so as long as we keep a 
+record of what order the requests of TorrentPatrons were forwarded, we can work
+out who to send TorrentClient's response to. Then, since all further messages are
+assigned a torrentid by TorrentClient, we can route all messages labelled with a
+particular id to to the TorrentPatron that started that torrent.
 """
 
+import Axon.CoordinatingAssistantTracker as cat
+
+from Axon.Ipc import shutdown, producerFinished
+from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
+
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 class TorrentService(AdaptiveCommsComponent):
     """\

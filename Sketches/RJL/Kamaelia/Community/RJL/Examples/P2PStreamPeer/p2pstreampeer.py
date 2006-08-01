@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,14 +20,36 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+Peer-to-Peer Streaming System (client part)
+===========================================
+This example demonstrates the use of BitTorrent and HTTP to download, share
+reconstruct a data stream in real-time.
+It expects a webserver hosting a folder that contains:
+
+- meta.txt (a file containing the number of torrents in the stream 
+            so far as a decimal, ASCII string)
+            
+- 1.torrent
+- 2.torrent
+-    ...
+- 100.torrent (if meta.txt contained "100")
+
+Only this metainfo is downloaded using HTTP. The stream itself is downloaded
+(and uploaded to other downloaders) using BitTorrent.
+Other users must upload the stream's chunks using BitTorrent for this demo
+to work.
+To listen to/view the stream, just point your favourite media player
+(say, XMMS) at the reconstructed file after it's been downloading for a minute
+or so.
 """
+
 import time
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
-from Kamaelia.Util.PipelineComponent import pipeline
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.Fanout import fanout
 from Kamaelia.File.Writing import SimpleFileWriter
@@ -67,7 +89,7 @@ class StreamReconstructor(component):
             yield 1
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
-                print msg
+                #print msg
                 if isinstance(msg, TIPCNewTorrentCreated):
                     torrents.append([msg.torrentid, msg.savefolder])
                     
@@ -78,26 +100,64 @@ class StreamReconstructor(component):
                         if msg.statsdictionary.get("fractionDone",0) == 1:
                             self.send(torrents[0][1], "outbox")                        
                             torrents.pop(0)
+            
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdown) or isinstance(msg, producerFinished):
+                    return
+            
             self.pause()
-			
-if __name__ == '__main__':
-    partslist = "http://ronline.no-ip.info/torrentlist.txt"
-    torrenturlsuffix = "http://ronline.no-ip.info/"
-    resourcefetcher = SimpleHTTPClient #SimpleHTTPClient
+
+class PartsFilenameGenerator(component):
+    def __init__(self, prefix, suffix)
+        self.prefix = prefix
+        self.suffix = suffix
+        super(self, PartsFilenameGenerator).__init__()
+        
+    def main(self):
+        highestseensofar = 0
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                msg = int(self.recv("inbox"))
+                
+                while highestsofar < msg:
+                    highestsofar += 1
+                    self.send(self.prefix + str(highestsofar) + self.suffix, "outbox")
+            
+            while self.dataReady("control"):
+                msg = self.recv("control"):
+                if isinstance(msg, shutdown) or isinstance(msg, producerFinished):
+                    return
+            
+            self.pause()
+
+def P2PStreamer(torrentsfolder, metafilename = "meta.txt", resourcefetcher = SimpleHTTPClient):
+    """\
+    Arguments:
+    - torrentsfolder, e.g. "http://my.server.example.org/radioFoo/"
+    - metafilename - the name of the file in torrentsfolder that gives P2P stream metainfo, e.g. "meta.php"
+    - resourcefetcher - component class used to resolve URLs and fetch their associated file data
+    """
     
-    pipeline(
-        CheapAndCheerfulClock(30.0),
-        TriggeredSource(partslist),
+    streamer = pipeline(
+        CheapAndCheerfulClock(60.0),
+        TriggeredSource(torrentsfolder  + metafilename),
         resourcefetcher(),
-        LineSplit(),
-        UnseenOnly(),
-        PureTransformer(lambda x: x or None), #eradicate blank lines
-        PureTransformer(lambda x: torrenturlsuffix + x),
-        #ConsoleEchoer(forwarder=True),
+        PartsFilenameGenerator(torrentsfolder, ".torrent"),
+        ConsoleEchoer(forwarder=True),
         resourcefetcher(),
         TorrentPatron(),
         StreamReconstructor(),
         TriggeredFileReader(),
-        SimpleFileWriter("myreconstructedstream.mp3")
+    )
+    return streamer
+    
+if __name__ == '__main__':
+    torrentsfolder = raw_input("P2P-stream meta folder (URL): ") # e.g. "http://my.server.example.org/radioFoo/"
+    saveas = raw_input("Save stream as: ") # e.g. "myreconstructedstream.mp3"
+    pipeline(
+        streamer = P2PStreamer(torrentsfolder),
+        SimpleFileWriter(saveas)
     ).run()
     

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,9 @@
 Pure Transformer component
 =================
 
-This component applies a function specified at its creation to messages received (a filter).
+This component applies a function specified at its creation to messages
+received (a filter). If the function returns None, no message is sent,
+otherwise the result of the function is sent to "outbox".
 
 Example Usage
 -------------
@@ -61,3 +63,16 @@ class PureTransformer(component):
                     self.send(producerFinished(self), "signal")
                     return
             self.pause()
+
+__kamaelia_components__  = ( PureTransformer, )
+
+if __name__ == "__main__":
+    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+    # Example - display the contents of files whose names are entered
+    pipeline(
+        ConsoleReader(eol=""),
+        PureTransformer(lambda x : "foo" + x + "bar!\n"),
+        ConsoleEchoer()
+    ).run()

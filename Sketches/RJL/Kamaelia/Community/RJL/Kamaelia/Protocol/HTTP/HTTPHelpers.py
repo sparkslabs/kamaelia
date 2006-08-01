@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -22,6 +22,7 @@
 """Helper classes and components for HTTP"""
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdown
 
 class HTTPMakePostRequest(component):
     """\
@@ -40,4 +41,23 @@ class HTTPMakePostRequest(component):
                 msg = { "url" : self.uploadurl, "postbody" : msg }
                 self.send(msg, "outbox")
             
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    self.send(producerFinished(self), "signal")
+                    return
+
             self.pause()
+
+if __name__ == "__main__":
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    
+    postscript = raw_input("Post Script URL: ") # e.g. "http://www.example.com/upload.php"
+    
+    pipeline(
+        ConsoleReader(eol=""),
+        HTTPMakePostRequest(postscript),
+        SimpleHTTPClient()
+    ).run()

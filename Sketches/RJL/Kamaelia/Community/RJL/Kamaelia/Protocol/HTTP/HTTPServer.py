@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -117,14 +117,16 @@ What may need work?
     upload to the remote host
 """
 
+import string, time, array
+
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
-from Kamaelia.Util.PipelineComponent import pipeline
+from Axon.Ipc import producerFinished, shutdown
+
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Util.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.SimpleServerComponent import SimpleServer
-import string, time, array
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
@@ -191,7 +193,7 @@ class HTTPServer(component):
                 temp = self.recv("control")
                 if isinstance(temp, producerFinished):
                     self.send(temp, "mime-control")
-                elif isinstance(temp, shutdownMicroprocess) or isinstance(temp, shutdown):
+                elif isinstance(temp, shutdown):
                     self.send(shutdown(), "mime-control")
                     self.send(shutdown(), "http-control")
                     #print "HTTPServer received shutdown"
@@ -513,7 +515,7 @@ __kamaelia_components__  = ( HTTPServer, HTTPRequestHandler, )
 
 if __name__ == '__main__':
     from Axon.Component import scheduler
-    import HTTPResourceGlue # this works out what the correct response to a request is
+    import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue # this works out what the correct response to a request is
     
     import socket
     SimpleServer(protocol=lambda : HTTPServer(HTTPResourceGlue.createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
