@@ -52,6 +52,10 @@ class CheckersInteractor(Interactor):
         self.oldpoint = None
         self.lastValidPos = None
             
+        if self.nolink == False:
+            self.link( (self, "movement"), (self.victim, "rel_position") )
+            self.link( (self.victim, "position"), (self, "position") )
+
 
     def setup(self):
         self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
@@ -90,7 +94,7 @@ class CheckersInteractor(Interactor):
 
                         fr = (floor(self.lastValidPos.x)+4, floor(self.lastValidPos.y)+4)
                         to = (floor(alignedpos.x)+4, floor(alignedpos.y)+4 )
-                        self.send( {"PLACEMENT":True, "from":fr, "to":to, "colour":self.colour  ,"objectid": id(self)}, "outbox")
+                        self.send( {"PLACEMENT":True, "from":fr, "to":to, "colour":self.colour, "objectid": id(self)}, "outbox")
 
                 if event.type == pygame.MOUSEMOTION:
                     if self.grabbed == True:

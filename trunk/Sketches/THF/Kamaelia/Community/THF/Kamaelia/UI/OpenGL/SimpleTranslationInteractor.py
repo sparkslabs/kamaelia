@@ -42,7 +42,10 @@ class SimpleTranslationInteractor(Interactor):
         self.translationfactor = argd.get("translationfactor", 10.0)
         
         self.grabbed = False
-            
+
+        if self.nolink == False:
+            self.link( (self, "outbox"), (self.victim, "rel_position") )
+
 
     def setup(self):
         self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
@@ -78,13 +81,5 @@ if __name__=='__main__':
 
     o4 = SimpleCube(position=(15, 0,-40), name="center").activate()
     i4 = SimpleTranslationInteractor(victim=o4).activate()
-    
-    i1.link( (i1, "outbox"), (o1, "rel_position"))
-
-    i2.link( (i2, "outbox"), (o2, "rel_position"))
-
-    i3.link( (i3, "outbox"), (o3, "rel_position"))
-
-    i4.link( (i4, "outbox"), (o4, "rel_position"))
     
     Axon.Scheduler.scheduler.run.runThreads()  
