@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+# """DEPRECATED"""
+#
+# ought to be completely removed - nothing in the core codebase seems to use it!
+
 opendir(IN, 'Support/wav') ||die "$!?";
 while($A = readdir(IN)) {
    next if ($A =~ /^\.\.?$/);
