@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -113,6 +113,9 @@ class ParsedHTTPEnd(object):
     pass
     
 class HTTPParser(component):
+    """Component that transforms HTTP requests or responses from a
+    single TCP connection into multiple easy-to-use dictionary objects."""
+    
     Inboxes =  {
         "inbox"         : "Raw HTTP requests/responses",
         "control"       : "UNUSED"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,8 +26,6 @@ Chunk Namer
 
 A component that labels each message with a unique filename for that message.
 e.g. "A" ... "B" ... --> ["chunk1", "A"] ... ["chunk2", "B"] ...
-
-This component does not terminate.
 """
 
 from Axon.Component import component
@@ -76,7 +74,7 @@ class ChunkNamer(component):
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
-                    self.send(msg, "signal")
+                    self.send(producerFinished(self), "signal")
                     return
 
             self.pause()

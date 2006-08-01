@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -320,12 +320,12 @@ class SingleShotHTTPClient(component):
 
 def makeSSHTTPClient(paramdict):
     """Creates a SingleShotHTTPClient for the given URL. Needed for Carousel."""
-    
-    return SingleShotHTTPClient(paramdict.get("url",""), paramdict.get("postbody",""))
+    # get the "url" and "postbody" keys from paramdict to use as the arguments of SingleShotHTTPClient
+    return SingleShotHTTPClient(paramdict.get("url", ""), paramdict.get("postbody", ""))
 
 class SimpleHTTPClient(component):
     Inboxes = {
-        "inbox"           : "URLs to download",
+        "inbox"           : "URLs to download - a dict {'url':'x', 'postbody':'y'} or a just the URL as a string ",
         "control"         : "Shut me down",
         "_carouselready"  : "Receive NEXT when carousel has completed a request",
         "_carouselinbox"  : "Data from SingleShotHTTPClient via Carousel"
@@ -344,6 +344,7 @@ class SimpleHTTPClient(component):
         #AttachConsoleToDebug(self)
         self.debug("SimpleHTTPClient.__init__()")    
         
+        # now create our Carousel subcomponent
         self.carousel = Carousel(componentFactory=makeSSHTTPClient)
         self.addChildren(self.carousel)
         self.link((self, "_carouselnext"),        (self.carousel, "next"))
@@ -367,27 +368,38 @@ class SimpleHTTPClient(component):
         """Main loop."""
         self.debug("SimpleHTTPClient.main()\n")
         finished = False
+
         while not finished:
             yield 1
-            self.debug("SimpleHTTPClient.main1")
+            self.debug("SimpleHTTPClient.main1\n")
+
             while self.dataReady("inbox"):
                 paramdict = self.recv("inbox")
+                
+                # we accept either string or dict messages - if it's a string then
+                # we assume you mean that's the URL you want fecthed
+                
                 if isinstance(paramdict, str):
                     paramdict = { "url": paramdict }
                     
                 self.debug("SimpleHTTPClient received url " + paramdict.get("url","") + "\n")
+                
+                # request creation of a new SingleShotHTTPClient by Carousel
                 self.send(paramdict, "_carouselnext")
                 
-                filebody = ""
+                # store as a list of strnigs then join at the 
+                # end to avoid O(n^2) time string cat'ing behaviour
+                filebody = []
+                     
                 carouselbusy = True
                 
                 while carouselbusy:
                     yield 1
-                    #print "SimpleHTTPClient.main2"
+
                     while self.dataReady("_carouselinbox"):
                         msg = self.recv("_carouselinbox")
                         if isinstance(msg, ParsedHTTPBodyChunk):
-                            filebody += msg.bodychunk
+                            filebody.append(msg.bodychunk)
                             
                     while self.dataReady("control"):
                         msg = self.recv("control")
@@ -402,8 +414,8 @@ class SimpleHTTPClient(component):
                         carouselbusy = False
 
                     self.pause()
-                self.send(filebody, "outbox")
-                filebody = ""
+                self.send(string.join(filebody, ""), "outbox")
+                filebody = [] # free up some memory used by the now unneeded list
             
             while self.dataReady("control"):
                 msg = self.recv("control")
@@ -415,11 +427,13 @@ class SimpleHTTPClient(component):
                     
             self.pause()
         
-        self.debug("eoml in SimpleHTTPClient")
+        self.debug("eoml in SimpleHTTPClient\n")
         self.cleanup()
         yield 1
         return
-        
+
+__kamaelia_components__  = ( SimpleHTTPClient, SingleShotHTTPClient)
+
 if __name__ == '__main__':
     from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
