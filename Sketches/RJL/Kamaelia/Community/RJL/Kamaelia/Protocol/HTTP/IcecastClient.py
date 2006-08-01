@@ -54,8 +54,6 @@ import string, time
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.Internet.TCPClient import TCPClient
-
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import *
 from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
@@ -88,21 +86,21 @@ class IceIPCDisconnected(IPC):
 
 class IcecastDemux(component):
     """Splits a raw Icecast stream into A/V data and metadata"""
+
     def dictizeMetadata(self, metadata):    
         "Convert metadata that was embedded in the stream into a dictionary."
-        #print "IcecastClient.dictizeMetadata()"    
-        #format:
-        #StreamUrl='www.example.com';
-        #StreamTitle='singer, title';
+        
+        #format of metadata:
+        #"StreamUrl='www.example.com';StreamTitle='singer, title';"
         lines = metadata.split(";")
         metadict = {}
         for line in lines:
-            splitline = line.split("=",1)
+            splitline = line.split("=", 1)
             if len(splitline) > 1:
                 key = splitline[0]
                 val = splitline[1]
-                if val[:1] == "\n":
-                    val = val[1:]
+                if key[:1] == "\n":
+                    key = key[1:]
                 if val[0:1] == "'" and val[-1:] == "'":
                     val = val[1:-1] 
                 metadict[key] = val

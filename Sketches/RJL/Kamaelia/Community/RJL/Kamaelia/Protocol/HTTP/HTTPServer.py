@@ -119,14 +119,9 @@ What may need work?
 
 import string, time, array
 
+from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdown
-
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Chassis.Pipeline import pipeline
-from Kamaelia.Util.Introspector import Introspector
-from Kamaelia.Internet.TCPClient import TCPClient
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
@@ -346,7 +341,7 @@ class HTTPRequestHandler(component):
     def waitingOnNetworkToSend(self):
         """Will be used in future to prevent MBs of data piling up at a network bottleneck.
         Uncommenting the following line will cause connections to hang unless Axon unpauses
-        us when our messages are sent (using TCPClient)."""
+        us when our messages are sent (using TCPServer)."""
         
         #return len(self.outboxes["outbox"]) > 5
         return False
@@ -514,14 +509,10 @@ class HTTPRequestHandler(component):
 __kamaelia_components__  = ( HTTPServer, HTTPRequestHandler, )
 
 if __name__ == '__main__':
-    from Axon.Component import scheduler
-    import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue # this works out what the correct response to a request is
+    from Kamaelia.Chassis.ConnectedServer import SimpleServer
+    
+    # this works out what the correct response to a request is
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
     
     import socket
-    SimpleServer(protocol=lambda : HTTPServer(HTTPResourceGlue.createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).activate()
-    #pipeline(
-    #    Introspector(),
-    #    TCPClient("127.0.0.1", 1500),
-    #).activate()
-    #Lagger().activate()
-    scheduler.run.runThreads(slowmo=0)
+    SimpleServer(protocol=lambda : HTTPServer(createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()
