@@ -40,14 +40,16 @@ class LiftTranslationInteractor(Interactor):
     def __init__(self, **argd):
         super(LiftTranslationInteractor, self).__init__(**argd)
 
-        self.addInbox("position")
-
         self.liftheight = argd.get("liftheight", 2)
                                          
         self.grabbed = False
         self.position = None
         self.oldpoint = None
-            
+
+        if self.nolink == False:
+            self.link( (self, "outbox"), (self.victim, "rel_position") )
+            self.link( (self.victim, "position"), (self, "inbox") )
+
 
     def setup(self):
         self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
@@ -87,8 +89,8 @@ class LiftTranslationInteractor(Interactor):
 
 
     def frame(self):
-        while self.dataReady("position"):
-            self.position = Vector(*self.recv("position"))
+        while self.dataReady("inbox"):
+            self.position = Vector(*self.recv("inbox"))
 
 
 if __name__=='__main__':
@@ -105,17 +107,5 @@ if __name__=='__main__':
 
     o4 = SimpleCube(position=(15, 0,-30), name="center").activate()
     i4 = LiftTranslationInteractor(victim=o4).activate()
-    
-    o1.link( (o1, "position"), (i1, "position"))
-    i1.link( (i1, "outbox"), (o1, "rel_position"))
-
-    o2.link( (o2, "position"), (i2, "position"))
-    i2.link( (i2, "outbox"), (o2, "rel_position"))
-
-    o3.link( (o3, "position"), (i3, "position"))
-    i3.link( (i3, "outbox"), (o3, "rel_position"))
-
-    o4.link( (o4, "position"), (i4, "position"))
-    i4.link( (i4, "outbox"), (o4, "rel_position"))
     
     Axon.Scheduler.scheduler.run.runThreads()  

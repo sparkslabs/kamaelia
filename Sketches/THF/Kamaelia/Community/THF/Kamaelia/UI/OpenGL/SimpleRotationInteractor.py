@@ -42,7 +42,10 @@ class SimpleRotationInteractor(Interactor):
         self.rotationfactor = argd.get("rotationfactor", 1.0)
         
         self.grabbed = False
-                    
+
+        if self.nolink == False:
+            self.link( (self, "outbox"), (self.victim, "rel_rotation") )
+
 
     def setup(self):
         self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
@@ -77,13 +80,5 @@ if __name__=='__main__':
 
     o4 = SimpleCube(position=(15, 0,-40), name="center").activate()
     i4 = SimpleRotationInteractor(victim=o4).activate()
-    
-    i1.link( (i1, "outbox"), (o1, "rel_rotation"))
-
-    i2.link( (i2, "outbox"), (o2, "rel_rotation"))
-
-    i3.link( (i3, "outbox"), (o3, "rel_rotation"))
-
-    i4.link( (i4, "outbox"), (o4, "rel_rotation"))
     
     Axon.Scheduler.scheduler.run.runThreads()  

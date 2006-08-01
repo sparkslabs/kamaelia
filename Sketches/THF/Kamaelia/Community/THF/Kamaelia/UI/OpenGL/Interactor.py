@@ -38,15 +38,15 @@ import Axon
 
 class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {
-       "inbox": "not used",
-       "control": "ignored",
-       "events": "Input events",
-       "callback": "for the response after a displayrequest",
+        "inbox"      : "not used",
+        "control"    : "ignored",
+        "events"     : "Input events",
+        "callback"   : "for the response after a displayrequest",
     }
     
     Outboxes = {
-        "outbox": "used for sending relative tranlational movement",
-        "display_signal" : "Outbox used for communicating to the display surface",
+        "outbox"        : "used for sending relative tranlational movement",
+        "display_signal": "Outbox used for communicating to the display surface",
     }
     
     def __init__(self, **argd):
@@ -57,14 +57,16 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # link display_signal to displayservice
         self.link((self,"display_signal"), displayservice)
        
-        self.victim = id(argd.get("victim"))
+        self.victim = argd.get("victim")
+        
+        self.nolink = argd.get("nolink", False)
                     
             
     def main(self):
         # create eventspy request
         self.eventspyrequest = { "EVENTSPYREQUEST" : True,
                                                    "objectid" : id(self),
-                                                   "victim": self.victim,
+                                                   "victim": id(self.victim),
                                                    "callback" : (self,"callback"),
                                                    "events" : (self, "events")  }
     
@@ -101,6 +103,9 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     ##
     # Method stubs to be overridden by derived objects
     ##
+    def makeInteractorLinkages(self):
+        """ Method stub """
+        pass
 
 
     def handleEvents(self):
