@@ -33,7 +33,7 @@ Example Usage
 -------------
 Using a lossy connector to drop excess data::
     src = fastProducer().activate()
-    lsy = lossyConnector().activate()
+    lsy = LossyConnector().activate()
     dst = slowConsumer().activate()
 
     src.link( (src,"outbox"), (lsy,"inbox") )
@@ -62,9 +62,9 @@ from Axon.Component import component
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class lossyConnector(component):
+class LossyConnector(component):
     """\
-    lossyConnector() -> new lossyConnector component
+    LossyConnector() -> new LossyConnector component
 
     Component that forwards data from inbox to outbox, but discards data if
     destination is full.
@@ -90,4 +90,9 @@ class lossyConnector(component):
                 return 0
         return 1
 
-__kamaelia_components__  = ( lossyConnector, )
+__kamaelia_components__  = ( LossyConnector, )
+
+class lossyConnector(LossyConnector):
+    """DEPRECATED"""
+    pass
+
