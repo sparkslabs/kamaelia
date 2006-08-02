@@ -27,6 +27,8 @@ from Kamaelia.Util.Graphline import *
 import xtea
 import random
 import struct
+import md5
+import btree
 
 
 class MyDataSource(Axon.Component.component):
@@ -38,55 +40,66 @@ class MyDataSource(Axon.Component.component):
            index = index + 1
            yield 1           
 
-#todo
-#this is just a dummy tree interface
-class KPIDB(object):
-    def __init__(self):
-      super(KPIDB,self).__init__()
-      self.tree = ['0000000000000000', '1111111111111111', 'AAAAAAAAAAAAAAAA',
-                   'BBBBBBBBBBBBBBBB', 'CCCCCCCCCCCCCCCC', 'DDDDDDDDDDDDDDDD',
-                   'EEEEEEEEEEEEEEEE', 'FFFFFFFFFFFFFFFF']
-    
 
+class KPIDB(object):
+    
+    def __init__(self, dbfile):
+      super(KPIDB,self).__init__()
+      self.dbfile = dbfile
+      self.rootKey = btree.getKey(dbfile, 1)
+      info = btree.getInfo(self.dbfile)
+      self.max_user_id = info.max_user_id
+    
     def getKey(self, userid):
-        return self.tree[userid]
+        return btree.getUserKey(self.dbfile, userid)
 
     def getRootKey(self):
-        return self.tree[1]
+        return self.rootKey
 
     def isValidUser(self, userid):
-        if userid >= len(self.tree)/2 or userid < len(self.tree):
+        if (userid >= self.max_user_id/2 or userid < self.max_user_id):
             return True
         return False
 
     def getCommonKeys(self, users):
-        if (len(users) >= 2):
-            return self.tree[3]
-        else:
-            return self.tree[users[0]]
+        return btree.getCommonKeys(self.dbfile, users)
+        
 
-#todo
-#this is just a user interface
 class KPIUser(object):
-    def __init__(self, config="", userid=0):
+    def __init__(self, configfile):
       super(KPIUser,self).__init__()
-      self.config = config
-      self.userid = userid
-      self.tree = ['0000000000000000', '1111111111111111', 'AAAAAAAAAAAAAAAA',
-                   'BBBBBBBBBBBBBBBB', 'CCCCCCCCCCCCCCCC', 'DDDDDDDDDDDDDDDD',
-                   'EEEEEEEEEEEEEEEE', 'FFFFFFFFFFFFFFFF']
+      self.idkeymap = {}
+      self.user_id = 0
+      self.key_len = 0
+      #load config file
+      fconfig = open(configfile,'r')
+      for line in fconfig.readlines():
+          line = line.strip()
+          if (not line.startswith('#')) and (line.count('=') == 1):
+              list = line.split('=')
+              if list[0] == 'user_id':
+                  self.user_id = long(list[1])
+              elif list[0].strip() == 'key_len':
+                  self.key_len = long(list[1])
+              else:
+                  id = long(list[0])
+                  self.idkeymap[id] =  list[1].strip()
+
+      print self.user_id, self.key_len, self.idkeymap
+      fconfig.close()
+
 
     def getID(self):
-        return self.userid
+        return self.user_id
 
-    def getKey(self):
-        return self.tree[self.userid]
+    def getUserKey(self):
+        return self.idkeymap[self.user_id]
 
     def getRootKey(self):
-        return self.tree[1]
-    
+        return self.idkeymap[1]
 
-
+    def getKey(self, ID):
+        return self.idkeymap[ID]
     
 
 class Authenticatee(Axon.Component.component):
@@ -111,12 +124,12 @@ class Authenticatee(Axon.Component.component):
         while not self.dataReady("inbox"):
             yield 1
         data = self.recv("inbox")
-        temp = xtea.xtea_decrypt(self.kpiuser.getKey(), data)
+        temp = xtea.xtea_decrypt(self.kpiuser.getUserKey(), data)
         padding, challenge = struct.unpack('!2L',temp)
         response = challenge+1
         print "received challenge",challenge
         print "sending response", response
-        data = xtea.xtea_encrypt(self.kpiuser.getKey(),
+        data = xtea.xtea_encrypt(self.kpiuser.getUserKey(),
                                  struct.pack('!2L',0, response))
         
         
@@ -137,9 +150,23 @@ class Authenticatee(Axon.Component.component):
                 data = self.recv("inbox")
                 print "decoder", data
                 if data.startswith("KEY"):
-                    data = data[len("KEY"):len(data)]
-                    print "decoded key", data
-                    self.send(data, "notifykey")
+                    index = len("KEY")
+                    #get the ID
+                    padding,ID = struct.unpack("!2L", data[index:index+8])
+                    print "****ID****", ID
+                    key = ""
+                    try:
+                        key = self.kpiuser.getKey(ID)
+                    except KeyError:
+                        pass #the key is not for me
+
+                    if key != "":
+                        enckey = data[index+8:len(data)]
+                        part1 = xtea.xtea_decrypt(key, enckey[:8])
+                        part2 = xtea.xtea_decrypt(key, enckey[8:16])
+                        sessionkey = part1 + part2
+                        print "decoded key", sessionkey
+                        self.send(sessionkey, "notifykey")
                 else:
                     data = data[len("DAT"):len(data)]
                     print "decoded data", data
@@ -151,9 +178,14 @@ class Authenticator(Axon.Component.component):
     Inboxes = {"inbox" : "authentication and data packets"}
     Outboxes = {"outbox" : "authentication",
                 "notifyuser" : "user notification"}
+
+    def __init__(self, kpidb):
+      super(Authenticator,self).__init__()
+      self.kpidb = kpidb
+
     
     def main(self):
-        kpidb = KPIDB()
+        kpidb = self.kpidb
         while not self.dataReady("inbox"):
             yield 1
         data = self.recv("inbox")
@@ -251,9 +283,15 @@ class SessionKeyController(Axon.Component.component):
    Outboxes = {"outbox" : "encrypted session key packets",
                 "notifykey" : "notify key"}
 
+   def __init__(self, kpidb):
+       super(SessionKeyController,self).__init__()
+       self.kpidb = kpidb
+
+
    def main(self):
-       kpidb = KPIDB()
+       kpidb = self.kpidb
        users = []
+       
        while 1:
            while not self.dataReady("userevent"):
                yield 1
@@ -266,10 +304,30 @@ class SessionKeyController(Axon.Component.component):
                users.append(userid)
                users.sort()
            #todo to send in a format
-           key = kpidb.getCommonKeys(users)
-           self.send(key, "notifykey")
-           self.send(key, "outbox")
+           idkeymap = kpidb.getCommonKeys(users)
+           sessionKey = self.getSessionKey()
+           print "idkeymap", idkeymap
+
+           #encrypt the the session key with common keys
+           for ID, key in idkeymap.iteritems():
+               idstr = struct.pack("!2L", 0, ID)
+               print "id,key", ID,len(key)
+               cipher = xtea.xtea_encrypt(key, sessionKey[:8])
+               cipher = cipher + xtea.xtea_encrypt(key, sessionKey[8:16])
+               data = idstr + cipher
+               self.send(data, "outbox")
+
+           self.send(sessionKey, "notifykey")
            yield 1
+
+   def getSessionKey(self):
+       r1 = random.getrandbits(32)
+       r2 = random.getrandbits(32)
+       r3 = random.getrandbits(32)
+       r4 = random.getrandbits(32)
+       m = md5.new()
+       m.update(struct.pack("!4L", r1, r3, r4, r2))
+       return m.digest()        
                 
                  
 
@@ -296,8 +354,8 @@ class DataTx(Axon.Component.component):
 
 
 #client side
-def client(ID):
-    authenticatee = Authenticatee(KPIUser(userid=ID))
+def client(config):
+    authenticatee = Authenticatee(KPIUser(configfile=config))
     Graphline(
         authee = authenticatee,
         dec = Decryptor(),
@@ -311,7 +369,7 @@ def client(ID):
 
 #server side client connector
 def clientconnector():
-    authenticator = Authenticator()
+    authenticator = Authenticator(KPIDB("mytree"))
     Graphline(
         author = authenticator,
         notifier = publishTo("KeyManagement"),
@@ -328,7 +386,7 @@ def KPIServer(datasource):
     Backplane("KeyManagement").activate()
     Graphline(
         ds = datasource, 
-        sc = SessionKeyController(),
+        sc = SessionKeyController(KPIDB("mytree")),
         keyRx = subscribeTo("KeyManagement"),
         enc = Encryptor(),
         sender = publishTo("DataManagement"),
@@ -347,7 +405,7 @@ def KPIServer(datasource):
 #client simulation
 KPIServer(datasource=MyDataSource())
 Graphline(
-    c=client(ID=6),
+    c=client("user1"),
     cc = clientconnector(),    
     linkages = {
         ("c","outbox") : ("cc","inbox"),
@@ -357,7 +415,7 @@ Graphline(
 
 
 Graphline(
-    c=client(ID=7),
+    c=client("user3"),
     cc = clientconnector(),    
     linkages = {
         ("c","outbox") : ("cc","inbox"),
