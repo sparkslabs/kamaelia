@@ -24,7 +24,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
-class passThrough(component):
+class PassThrough(component):
    """\
    """
    Inboxes= {
@@ -63,7 +63,11 @@ class passThrough(component):
       self.pause()
       return forwarded
 
-__kamaelia_components__  = ( passThrough, )
+__kamaelia_components__  = ( PassThrough, )
+
+class passThrough(PassThrough):
+    """DEPRECATED"""
+    pass
 
       
 if __name__=="__main__":
@@ -91,7 +95,7 @@ if __name__=="__main__":
             self.__super.__init__()
             
             self.source = fruitSource()
-            self.passT   = passThrough()
+            self.passT   = PassThrough()
             self.dest   = consoleEchoer()
             self.addChildren(self.source, self.passT, self.dest)
             
