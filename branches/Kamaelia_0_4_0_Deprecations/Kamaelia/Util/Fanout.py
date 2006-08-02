@@ -34,7 +34,7 @@ Example Usage
 -------------
 Output data source both to a file and to the console::
     Graphline( source  = MyDataSource(...),
-               split   = fanout(["toConsole","toFile"]),
+               split   = Fanout(["toConsole","toFile"]),
                file    = SimpleFileWriter(filename="outfile"),
                console = ConsoleEchoer(),
                linkages = {
@@ -62,15 +62,15 @@ If a shutdownMicroprocess or producerFinished message is received on the
 "control" inbox, then it is sent on to the "signal" outbox and the component
 terminates.
 
-There is no corresponding 'fanout' of data flowing into the "control" inbox.
+There is no corresponding 'Fanout' of data flowing into the "control" inbox.
 """
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class fanout(component):
+class Fanout(component):
    """\
-   fanout(boxnames) -> new fanout component.
+   Fanout(boxnames) -> new Fanout component.
 
    A component that copies anything received on its "inbox" inbox to the named
    list of outboxes.
@@ -91,7 +91,7 @@ class fanout(component):
       self.Outboxes = dict(self.__class__.Outboxes) # Copy the class outboxes into the instance outboxes
       for boxname in boxnames:
           self.Outboxes[boxname] = "Copy of data received at 'inbox' inbox"
-      super(fanout, self).__init__()
+      super(Fanout, self).__init__()
       
    def main(self):
       """Main loop."""
@@ -109,4 +109,9 @@ class fanout(component):
              self.pause()
          yield 1
 
-__kamaelia_components__  = ( fanout, )
+__kamaelia_components__  = ( Fanout, )
+
+
+class fanout(Fanout):
+    """DEPRECATED"""
+    pass
