@@ -40,27 +40,30 @@ All the key bytes are stored with no delimiters (as we know the key len)
 
 There are three tree management functions
 
-build_tree, create_user, get_user_config
+createDB, createUser, getUserConfig, getInfo
 
-build tree creates all the user keys and metadata in the file whose 
+createDB writes all the metadata and user keys in a file whose
 structure is described above
 
-create_user creates a user config file. This user config must be distributed
+createUser creates a user config file. This user config must be distributed
 to user in a secure manner. The user and its parent keys are stored.
-userid=decimal number
-keylen=size in bytes
-keyid=key hex format
-keyid=key hex format
+userid=number
+keylen=number
+keyid=key
+keyid=key
 ..
 ..
 
-get_user_config function prints the user configuration
+getUserConfig function prints the user configuration
 
 Session key management
-get_common_keys(list of userids)
+getCommonKeys(list of userids)
 this function is used to determine the common set of keys for a group of active users
 """
-def get_key(key_len):
+
+
+
+def create_key(key_len):
         try:
             frand = open("/dev/random", "r")
             data = frand.read(key_len/2)
@@ -90,7 +93,6 @@ def get_depth(count):
 
 
 HEADER_SIZE = 32 # 32 bytes of header
-
 def createDB(db_file, key_len, num_users):
     header_part = HEADER_SIZE/4
     buf = ""
@@ -117,7 +119,7 @@ def createDB(db_file, key_len, num_users):
 
     #tree starts from the 2nd key
     for l  in range(max_user_id):
-	ftree.write(get_key(key_len))
+	ftree.write(create_key(key_len))
 	
     ftree.close()
 
@@ -170,15 +172,168 @@ def createUser(dbfile, user_file):
 	fuser.write(str(user_id) + "=" + key + "\n")
         user_id = user_id >> 1
 
-
     fuser.close()
     ftree.close()
 
 
+def getCommonKeys(db_file, ids):
+    header_part = HEADER_SIZE/4
+    ftree = open(db_file, "r")
 
-createDB("mytree.txt", 16, 4) #builds tree with 16byte keys and 4 users
-createUser("mytree.txt", "user1.txt") #create user cfg user 1
-createUser("mytree.txt", "user2.txt")
-createUser("mytree.txt", "user3.txt")
-createUser("mytree.txt", "user4.txt")
-createUser("mytree.txt", "user5.txt") # failure test case. user5 cannot be created.
+    ftree.seek(header_part)
+    buf = ftree.read(header_part)
+
+    key_len = struct.unpack("!L", buf.decode('hex'))[0]
+
+    idkeymap = {}
+    common_ids = getCommonIds(ids)
+
+    for ID in common_ids:
+        ftree.seek(HEADER_SIZE + ID * key_len)
+        idkeymap[ID] = ftree.read(key_len)
+
+    ftree.close()
+    return idkeymap
+
+
+def getCommonIds(ids):
+    #if there N active users, best case is all of them have a common parent
+    common_ids = []
+    count = len(ids)
+    depth  = get_depth(count)
+
+    #make a copy of IDs
+    for ID in ids:
+        common_ids.append(ID)
+
+    for i in range( 1, depth+1):
+        temp = []
+        for ID in ids:
+            temp.append(ID >> i)
+
+        #count number of common keys
+	k = 0
+	while ( k < count):
+            num = 1
+            for j in range(k+1, count):
+                if(temp[k] == temp[j]):
+                    num = num + 1
+
+	    if(num == 1<<i):
+                for u in range(k, k + (1<<i)):
+                    if((ids[u]>>i) == (ids[k]>>i)):
+                        common_ids[u] = ids[k]>>i
+            #since numbers are sorted, we can skip the comparision
+            k += num
+
+
+    #remove duplicate ids
+    id_list = []
+    for ID in common_ids:
+        if(id_list.count(ID) == 0) :
+            id_list.append(ID)
+
+
+    return id_list
+    
+
+def getUserConfig(dbfile, user_id):
+    header_part = HEADER_SIZE/4
+    ftree = open(dbfile, "r")
+    ftree.seek(header_part)
+    buf = ftree.read(header_part)
+    key_len = struct.unpack("!L", buf.decode('hex'))[0]
+
+    buf = ftree.read(header_part)
+    max_user_id = struct.unpack("!L", buf.decode('hex'))[0]
+
+    if( (user_id < max_user_id/2) or (user_id > max_user_id -1)):
+        print "user id ", user_id, " not found"
+        return
+
+    print "#user key configuration"
+    print "user_id=", user_id
+    print "key_len=", key_len
+    while(user_id != 0):
+        ftree.seek(HEADER_SIZE + (user_id * key_len))
+        key = ftree.read(key_len)
+        print user_id, "=", key
+        user_id = user_id >> 1
+
+
+    ftree.close()
+
+
+def getUserKey(dbfile, user_id):
+    header_part = HEADER_SIZE/4
+    ftree = open(dbfile, "r")
+    ftree.seek(header_part)
+    buf = ftree.read(header_part)
+    key_len = struct.unpack("!L", buf.decode('hex'))[0]
+
+    buf = ftree.read(header_part)
+    max_user_id = struct.unpack("!L", buf.decode('hex'))[0]
+
+    if( (user_id < max_user_id/2) or (user_id > max_user_id -1)):
+        raise LookupError("user id " + str(user_id) + " not found")
+
+    ftree.seek(HEADER_SIZE + (user_id * key_len))
+    key = ftree.read(key_len)
+    ftree.close()
+    return key
+
+def getKey(dbfile, ID):
+    header_part = HEADER_SIZE/4
+    ftree = open(dbfile, "r")
+    ftree.seek(header_part)
+    buf = ftree.read(header_part)
+    key_len = struct.unpack("!L", buf.decode('hex'))[0]
+
+    buf = ftree.read(header_part)
+    max_user_id = struct.unpack("!L", buf.decode('hex'))[0]
+
+    if( (ID < 1) or (ID > max_user_id-1)):
+        raise LookupError("id " + str(ID) + " not found")
+
+    ftree.seek(HEADER_SIZE + (ID * key_len))
+    key = ftree.read(key_len)
+    ftree.close()
+    return key
+
+
+class DBInfo:
+    key_len = 0
+    current_user_id = 0
+    max_user_id = 0
+
+
+
+def getInfo(dbfile):
+    header_part = HEADER_SIZE/4
+    ftree = open(dbfile, "r")
+
+    ftree.seek(header_part)
+    buf = ftree.read(header_part)
+
+    key_len = struct.unpack("!L", buf.decode('hex'))[0]
+
+    buf = ftree.read(header_part)
+    max_user_id = struct.unpack("!L", buf.decode('hex'))[0]
+
+    buf = ftree.read(header_part)
+    next_user_id = struct.unpack("!L", buf.decode('hex'))[0]
+
+    info = DBInfo()
+
+    info.key_len = key_len
+    info.max_user_id = max_user_id
+    info.min_user_id = max_user_id>>1
+    if(next_user_id == info.min_user_id):
+        info.current_user_id = 0 # no new user exists
+    else:
+        info.current_user_id = next_user_id-1
+
+    ftree.close()
+    return info
+
+
