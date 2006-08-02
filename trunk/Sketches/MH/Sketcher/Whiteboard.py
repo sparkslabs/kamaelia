@@ -287,4 +287,22 @@ if __name__=="__main__":
     if rhost and rport:
         EventServerClients(rhost, rport, "WHITEBOARD").activate()
 
-    Backplane("WHITEBOARD").run()
+    Backplane("WHITEBOARD").activate()
+
+    # really rubbishy initial test - just checking audio capture, encode, decode, output works
+    import sys
+    sys.path.append("../pymedia/")
+    sys.path.append("../")
+    from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
+    from Speex import SpeexEncode,SpeexDecode
+    
+    
+    
+    pipeline( SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
+              ExtractData(),
+              SpeexEncode(3),
+              SpeexDecode(3),
+              PackageData(channels=1,sample_rate=8000,format="S16_LE"),
+              SoundOutput()
+            ).run()
+    
