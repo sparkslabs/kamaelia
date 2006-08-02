@@ -104,9 +104,11 @@ on to the "signal" outbox and the component will terminate.
 """
 
 
-import Axon
+import Component
+import Scheduler
+import Ipc
 
-class Introspector(Axon.Component.component):
+class Introspector(Component.component):
     """\
     Introspector() -> new Introspector component.
 
@@ -140,11 +142,11 @@ class Introspector(Axon.Component.component):
             # shutdown if requested
             if self.dataReady("control"):
                 data = self.recv("control")
-                if isinstance(data, Axon.Ipc.shutdownMicroprocess):
+                if isinstance(data, Ipc.shutdownMicroprocess):
                     self.send(data, "signal")
                     return
         
-            if isinstance(self.scheduler, Axon.Scheduler.scheduler):
+            if isinstance(self.scheduler, Scheduler.scheduler):
                 oldNodes    = nodes
                 oldLinkages = linkages
                 
@@ -234,7 +236,7 @@ class Introspector(Axon.Component.component):
         # (note that this is not necessarily all components - as they may have only just been 
         #  activated, in which case they may not register yet)
         threads = self.scheduler.listAllThreads()
-        components = dict([ (p,(p.id,p.name)) for p in threads if isinstance(p, Axon.Component.component) ])
+        components = dict([ (p,(p.id,p.name)) for p in threads if isinstance(p, Component.component) ])
         
         # go through all components' postoffices and find all linkages
         linkages = {}
@@ -284,4 +286,4 @@ if __name__ == '__main__':
    print "We both have inbox, control, signal and outbox postboxes"
    print "The Introspector's outbox is linked to the consoleEchoer's inbox"
    print
-   Axon.Scheduler.scheduler.run.runThreads(slowmo=0)
+   Scheduler.scheduler.run.runThreads(slowmo=0)
