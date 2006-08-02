@@ -155,9 +155,42 @@ class ExtractData(component):
                     shutdown=True
                 self.send(msg,"signal")
                 
-#            if not shutdown:
-#                self.pause()
+            if not shutdown:
+                self.pause()
             yield 1
+
+class PackageData(component):
+    def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
+        super(PackageData,self).__init__()
+            
+        pformat = mapping_format_to_pymedia[format]
+        self.sample_rate = sample_rate
+        self.channels = channels
+        self.format = format
+
+    def main(self):
+        shutdown=False
+        while self.anyReady() or not shutdown:
+            while self.dataReady("inbox"):
+                audio = self.recv("inbox")
+                data = {}
+                data['type'] = 'audio'
+                data['audio'] = audio
+                data['channels'] = self.channels
+                data['sample_rate'] = self.sample_rate
+                data['format'] = self.format
+                self.send(data,"outbox")
+            
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
+            yield 1
+    
 
 class RawSoundOutput(threadedcomponent):
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
