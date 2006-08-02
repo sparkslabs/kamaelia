@@ -119,7 +119,7 @@ class IcecastDemux(component):
                     if metadatainterval == None:
                         metadatainterval = 0
                     bytesUntilMetadata = metadatainterval
-                    self.send(IceIPCHeader(msg.header["headers"].get("content-type")), "outbox")
+                    self.send(IceIPCHeader(contenttype=msg.header["headers"].get("content-type")), "outbox")
                     
                     print "Metadata interval is " + str(metadatainterval)
                     
@@ -131,20 +131,20 @@ class IcecastDemux(component):
                 
             while len(readbuffer) > 0:       
                 if metadatainterval == 0: #if no metadata
-                    self.send(IceIPCDataChunk(readbuffer), "outbox")
+                    self.send(IceIPCDataChunk(data=readbuffer), "outbox")
                     readbuffer = ""
                 else:
                     chunkdata = readbuffer[0:bytesUntilMetadata]
                     if len(chunkdata) > 0:
-                        self.send(IceIPCDataChunk(chunkdata), "outbox")
+                        self.send(IceIPCDataChunk(data=chunkdata), "outbox")
                                                 
                     readbuffer = readbuffer[bytesUntilMetadata:]
                     bytesUntilMetadata -= len(chunkdata)
                     if len(readbuffer) > 0: #we must have some metadata (perhaps only partially complete) at the start
                         metadatalength = ord(readbuffer[0]) * 16 # they encode it as bytes / 16
                         if len(readbuffer) >= metadatalength + 1: # +1 for the length byte we just read. if we have all the metadata chunk
-                            metadata = self.dictizeMetadata(readbuffer[1:metadatalength + 1])
-                            self.send(IceIPCMetadata(metadata), "outbox")
+                            metadictionary = self.dictizeMetadata(readbuffer[1:metadatalength + 1])
+                            self.send(IceIPCMetadata(metadata=metadictionary), "outbox")
                                                             
                             bytesUntilMetadata = metadatainterval
                             readbuffer = readbuffer[metadatalength + 1:]

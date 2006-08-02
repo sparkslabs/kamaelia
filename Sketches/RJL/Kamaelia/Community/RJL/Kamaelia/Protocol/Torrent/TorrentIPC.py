@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 
 """(Bit)Torrent IPC messages"""
-from Kamaelia.Community.RJL.Kamaelia.BaseIPC import IPC
+from Kamaelia.Community.RJL.Kamaelia.IPC.BaseIPC import IPC
 
 # ====================== Messages to send to TorrentMaker =======================
 class TIPCMakeTorrent(IPC):

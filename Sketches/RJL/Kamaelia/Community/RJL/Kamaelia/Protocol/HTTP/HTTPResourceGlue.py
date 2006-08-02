@@ -39,6 +39,7 @@ import types
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteMinimal import websiteMinimal
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteSessionExample import websiteSessionExample
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteTorrentUpload import websiteTorrentUpload
 
 import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 
@@ -46,6 +47,7 @@ import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 # i.e. put more specific URL handlers first
 URLHandlers = [
     ["/session/"               , websiteSessionExample],
+    ["/torrentupload"          , websiteTorrentUpload],
     ["/"                       , websiteMinimal] # "/" should always be last as it catches all
 ]
 # the second item should be a component class that takes one parameter (the request)
