@@ -49,6 +49,14 @@ from Whiteboard.SingleShot import OneShot
 from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
 
+# stuff for doing audio
+import sys
+sys.path.append("../pymedia/")
+sys.path.append("../")
+from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
+from Speex import SpeexEncode,SpeexDecode
+
+
 colours = { "black" :  (0,0,0), 
             "red" :    (192,0,0),
             "orange" : (192,96,0),
@@ -115,7 +123,7 @@ def LocalEventServer(backplane="WHITEBOARD", port=1500):
                 tokenlists_to_lines(),
                 )
 
-        return SimpleServer(protocol=clientconnector, port=serveport)
+        return SimpleServer(protocol=clientconnector, port=port)
 
 def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
         # plug a TCPClient into the backplae
@@ -144,6 +152,31 @@ def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
                          ),
                          publishTo(backplane),
                        ) #.activate()
+
+#-----AUDIO STUFF-------
+
+# very simple audio client; doesn't cope with more than one audio stream in the backplane
+
+def AudioServerClients(rhost, rport, backplane="AUDIO"):
+        from Kamaelia.Internet.TCPClient import TCPClient
+
+        return pipeline( subscribeTo(backplane),
+                         TagAndFilterWrapper(
+                             pipeline(
+                                 tokenlists_to_lines(),
+                                 TCPClient(host=rhost,port=rport),
+                                 chunks_to_lines(),
+                                 lines_to_tokenlists(),
+                             ),
+                         ),
+                         publishTo(backplane),
+                       )
+
+# very simple audio server; doesn't cope with more than one audio stream in teh backplane
+
+# can use LocalEventServer for the moment
+
+#-----------------------
 
 def parseCommands():
     from Kamaelia.Util.Marshalling import Marshaller
@@ -268,13 +301,31 @@ mainsketcher = \
                           }
                  )
 
-# primary whiteboard
-pipeline( subscribeTo("WHITEBOARD"),
-          TagAndFilterWrapper(mainsketcher),
-          publishTo("WHITEBOARD")
-        ).activate()
 
 if __name__=="__main__":
+    
+    # primary whiteboard
+    pipeline( subscribeTo("WHITEBOARD"),
+            TagAndFilterWrapper(mainsketcher),
+            publishTo("WHITEBOARD")
+            ).activate()
+            
+    # primary sound IO - tagged and filtered, so can't hear self
+    pipeline( subscribeTo("AUDIO"),
+              TagAndFilterWrapper(
+                  pipeline(
+                      SpeexDecode(3),
+                      PackageData(channels=1,sample_rate=8000,format="S16_LE"),
+                      SoundOutput(),
+                      ######
+                      SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
+                      ExtractData(),
+                      SpeexEncode(3),
+                  ),
+              ),
+              publishTo("AUDIO"),
+            ).activate()
+            
     import sys, getopt, re
 
     rhost, rport, serveport = parseOptions()
@@ -282,27 +333,14 @@ if __name__=="__main__":
     # setup a server, if requested
     if serveport:
         LocalEventServer("WHITEBOARD", port=serveport).activate()
+        LocalEventServer("AUDIO",      port=serveport+1).activate()
+
 
     # connect to remote host & port, if requested
     if rhost and rport:
         EventServerClients(rhost, rport, "WHITEBOARD").activate()
+        AudioServerClients(rhost, rport+1, "AUDIO").activate()
 
     Backplane("WHITEBOARD").activate()
-
-    # really rubbishy initial test - just checking audio capture, encode, decode, output works
-    import sys
-    sys.path.append("../pymedia/")
-    sys.path.append("../")
-    from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
-    from Speex import SpeexEncode,SpeexDecode
-    
-    
-    
-    pipeline( SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
-              ExtractData(),
-              SpeexEncode(3),
-              SpeexDecode(3),
-              PackageData(channels=1,sample_rate=8000,format="S16_LE"),
-              SoundOutput()
-            ).run()
+    Backplane("AUDIO").run()
     
