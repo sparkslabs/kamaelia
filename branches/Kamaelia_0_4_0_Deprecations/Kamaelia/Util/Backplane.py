@@ -98,6 +98,9 @@ class SubscribeTo(Axon.Component.component):
             self.pause()
             yield 1            
 
+
+__kamaelia_components__  = ( Backplane, PublishTo, SubscribeTo, )
+
 # DEPRECATED - now stubs
 
 class publishTo(PublishTo):
@@ -107,5 +110,7 @@ class publishTo(PublishTo):
 class subscribeTo(SubscribeTo):
     """DEPRECATED"""
     pass
+
+
 
 # RELEASE: MH, MPS
