@@ -41,9 +41,10 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, feparams={}):
+    def __init__(self, freq, feparams={},card=0):
         self.freq = freq
         self.feparams = feparams
+        self.card = card
         super(DVB_Multiplex, self).__init__()
         
     
@@ -57,7 +58,7 @@ class DVB_Multiplex(threadedcomponent):
 
     def main(self):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
-        self.fe = dvb3.frontend.Frontend(0, blocking=0)
+        self.fe = dvb3.frontend.Frontend(self.card, blocking=0)
         self.tune_DVBT(self.freq, self.feparams)
         
         while self.notLocked():
@@ -68,7 +69,7 @@ class DVB_Multiplex(threadedcomponent):
         
         # This is then a file reader, actually.
         # Should be a little more system friendly really
-        fd = os.open("/dev/dvb/adapter0/dvr0", os.O_RDONLY | os.O_NONBLOCK)
+        fd = os.open("/dev/dvb/adapter"+str(self.card)+"/dvr0", os.O_RDONLY | os.O_NONBLOCK)
         while not self.shutdown():
             
             while self.dataReady("inbox"):
@@ -110,7 +111,7 @@ class DVB_Multiplex(threadedcomponent):
         Adds the given PID to the transport stream that will be available
         in "/dev/dvb/adapter0/dvr0"
         """
-        demuxer = dvb3.dmx.Demux(0, blocking = 0)
+        demuxer = dvb3.dmx.Demux(self.card, blocking = 0)
         demuxer.set_pes_filter( pid,
                                 dvb3.dmx.DMX_IN_FRONTEND,
                                 dvb3.dmx.DMX_OUT_TS_TAP,
@@ -125,7 +126,7 @@ class DVB_Multiplex(threadedcomponent):
             
             for pid in pidlist:
                 if pid not in demuxers:
-                    demuxers[pid] = self.addPID(pid)
+                    demuxers[pid] = self.addPID(self.card, pid)
                     
             return demuxers
             
@@ -140,8 +141,8 @@ class DVB_Multiplex(threadedcomponent):
             return demuxers
 
 
-def DVB_Receiver(frequency, feparams):
-    return Graphline( MUX   = DVB_Multiplex(frequency, feparams),
+def DVB_Receiver(frequency, feparams, card=0):
+    return Graphline( MUX   = DVB_Multiplex(frequency, feparams, card),
                       DEMUX = DVB_Demuxer(),
                       linkages = {
                           ("self", "inbox")       : ("DEMUX","request"),
