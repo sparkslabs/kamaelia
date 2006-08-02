@@ -78,7 +78,7 @@ class TIPCTorrentStartFail(object):
 class TIPCTorrentStatusUpdate(IPC):
     "Current status of a single torrent"
     def __init__(self, torrentid, statsdictionary):
-        super(IPCTorrentStatusUpdate, self).__init__()    
+        super(TIPCTorrentStatusUpdate, self).__init__()    
         self.torrentid = torrentid
         self.statsdictionary = statsdictionary
     

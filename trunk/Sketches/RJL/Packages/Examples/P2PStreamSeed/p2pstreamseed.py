@@ -23,7 +23,8 @@
 Peer-to-Peer Streaming System (server part)
 ===========================================
 This example demonstrates the use of BitTorrent and HTTP to distribute
-a data stream in real-time.
+a data stream in real-time. Specifically, this example redistributes
+a SHOUTcast or Icecast audio/video stream of the user's choice.
 It expects a webserver hosting a script which saves data POST'd to it
 as N.torrent where N is the number of POST requests it has seen before
 this one + 1. This script should also write this value N as a decimal,
@@ -41,6 +42,42 @@ i.e. the script should produce:
 
 Only this metainfo is downloaded using HTTP. The stream itself is transmitted
 using the BitTorrent protocol.
+
+Usage
+==============
+- Choose an Icecast/SHOUTcast stream that you are legally permitted
+  to redistribute and allow others to redistribute.
+
+- Setup a BitTorrent tracker.
+
+- Setup an HTTP server to host the .torrent files.
+
+- Put an upload script on the HTTP server to save .torrent files sent to it.
+  (e.g. the PHP script torrentupload.php in this directory)
+  
+- Run this example.
+
+- Enter the URL of the stream.
+
+- Enter the 'announce' URL of your BitTorrent tracker, which is typically
+  "http://yourtrackerhostname:trackerportnumber/announce".
+  e.g. "http://www.example.org:6969/announce"
+  
+- Enter the URL of your upload script.
+
+- Give others the URL of folder on your webserver to which .torrent files
+  are saved.
+  
+- Have them run the example in ../P2PStreamPeer/ on their computer.
+
+- Have them open "myreconstructedstream.mp3" with an MP3 player program.
+
+- They will download and reshare (upload) your stream automatically.
+
+Note: A sensible bitrate for the stream is just under the average upload speed
+in the swarm (i.e. of you and all peers downloading your stream).
+Typically for broadband this would be 180 kilobits/s = 22.5 kilobytes/s
+Your upload speed MUST be larger than this.
 """
 
 from Kamaelia.Chassis.Pipeline import pipeline
@@ -58,38 +95,90 @@ from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.IcecastClient import IcecastC
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 
-from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
-
 if __name__ == '__main__':
-    streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
-    trackerannounceurl = raw_input("Tracker Announce URL: ") # e.g. "http://192.168.1.5:6969/announce"
-    trackerpostuploader = raw_input("Tracker Upload Script: ") # e.g. "http://192.168.1.5/torrentupload.php"
+
+    # The URL of an Icecast/SHOUTcast stream
+    # e.g. "http://a.stream.url.example.com:1234/"
+    streamurl = raw_input("Stream URL: ")
     
-    chunksize = 2**22 # 4 megabytes
+    # The 'announce' URL of the BitTorrent tracker to use
+    # e.g. "http://192.168.1.5:6969/announce"
+    trackerannounceurl = raw_input("Tracker Announce URL: ")
+    
+    # The URL of the .torrent upload script mentioned at the top of this fle
+    # e.g. "http://192.168.1.5/torrentupload.php"
+    trackerpostuploader = raw_input("Tracker Upload Script: ")
+    
+    chunksize = 2**22 # (2 to the power 22) bytes = 4 megabytes
     
     Graphline(
+        # Streamin pulls in a stream from an SHOUTcast/Icecast server
+        # splits it into chunks of a fixed size, writes these chunks
+        # to disk, creates a .torrent (BitTorrent metadata) file for
+        # each chunk and then shares the chunks with clients using
+        # the BitTorrent protocol (it 'seeds' each chunk)
         streamin = pipeline(
-            IcecastClient(streamurl), # a stream's address
+            # Icecast client that connects to a stream and outputs the raw stream data
+            IcecastClient(streamurl),
+            
+            # Split the raw data into audio/visual data and stream metadata
+            # example of such metadata would be song title and artist name
             IcecastDemux(),
+            
+            # Strip the metadata from the stream outputting only the a/v data
             IcecastStreamRemoveMetadata(),
+            
+            # Split the data stream into discrete chunks of a fixed size
             Chunkifier(chunksize),
+            
+            # Give each chunk a distinct filename to save it under
+            # in the current directory ("./" means this directory)
+            # (e.g. the first chunk's filename would be "./chunk1"
+            # and the second "./chunk2" etc.)
             ChunkNamer("./"),
+            
+            # Write each chunk to disc under this name
             WholeFileWriter(),
+            
+            # Make a .torrent (BitTorrent metadata) file from each chunk file
             TorrentMaker(trackerannounceurl),
         ),
         
-        split = fanout(["toMetaUploader", "toSharer"]),
+        # send the .torrent file to the website that will host them and to
+        # a TorrentPatron which will then upload the associated chunks
+        # to peers (users that want to download the stream)
+        split = fanout(["toHTTP-POSTer", "toTorrentPatron"]),
         
+        # fileupload uploads each message it receives to a script on a webserver.
         fileupload = pipeline(
+            # convert messages received to HTTP POST requests
+            # for the URL trackerpostuploader
+            # (with the contents of the message as the payload/request body)
             HTTPMakePostRequest(trackerpostuploader),
+            
+            # SimpleHTTPClient then makes these requests
+            # (connecting to the server given in the URL and sending the
+            # POST request in an HTTP request format)
+            # the result of which is (assuming a suitable upload script on the
+            # webserver) .torrent files sent to this pipeline as messages
+            # are uploaded to the webserver
             SimpleHTTPClient()
         ),
 
-        bt = TorrentPatron(),
+        # TorrentPatron is a BitTorrent client which will automatically
+        # upload chunks of the stream to users that request them
+        bittorrentpatron = TorrentPatron(),
+        
         linkages = {
-            ("streamin", "outbox") : ("split", "inbox"),
-            ("split", "toMetaUploader") : ("fileupload", "inbox"),
-            ("split", "toSharer") : ("bt", "inbox"),            
+            ("streamin", "outbox")       : ("split", "inbox"),
+            ("split", "toHTTP-POSTer")   : ("fileupload", "inbox"),
+            ("split", "toTorrentPatron") : ("bittorrentpatron", "inbox"),            
         }
     ).run()
     
+    #         BASIC TOPOLOGY
+    # -------------------------------
+    #
+    # streamin --->split----> fileupload
+    #                 \
+    #                  '----> bittorrentpatron
