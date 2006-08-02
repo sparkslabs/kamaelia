@@ -147,7 +147,7 @@ class ExtractData(component):
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                self.send(data['data'],"outbox")
+                self.send(data['audio'],"outbox")
             
             while self.dataReady("control"):
                 msg=self.recv("control")
