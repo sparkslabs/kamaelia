@@ -238,7 +238,8 @@ class HTTPRequestHandler(component):
         "outbox"  : "HTTP responses",
         "debug"   : "Information to aid debugging",
         "signal"  : "Signal connection to close",
-        "_handleroutbox" : "POST data etc. for the request handler"
+        "_handleroutbox" : "POST data etc. for the request handler",
+        "_handlersignal" : "Signals for the request handler"
     }
 
     MapStatusCodeToText = {
@@ -297,6 +298,7 @@ class HTTPRequestHandler(component):
         super(HTTPRequestHandler, self).__init__()
         self.ssCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
         self.createRequestHandler = createRequestHandler
+
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
             resource["statuscode"] = str(resource["statuscode"])
@@ -349,15 +351,18 @@ class HTTPRequestHandler(component):
     def connectResourceHandler(self):
         "Link to the resource handler we've created so we can receive its output"
         self.link((self.handler, "outbox"), (self, "_handlerinbox"))
-        self.link((self.handler, "signal"), (self, "_handlercontrol"))        
+        self.link((self.handler, "signal"), (self, "_handlercontrol"))
         self.link((self, "_handleroutbox"), (self.handler, "inbox"))
+        self.link((self, "_handlersignal"), (self.handler, "control"))
         self.addChildren(self.handler) 
         self.handler.activate()
 
     def disconnectResourceHandler(self):
         "Disconnect the now finished resource handler"
         self.unlink((self.handler, "outbox"), (self, "_handlerinbox"))
-        self.unlink((self, "_handleroutbox"), (self.handler, "inbox"))        
+        self.unlink((self.handler, "signal"), (self, "_handlercontrol"))
+        self.unlink((self, "_handleroutbox"), (self.handler, "inbox"))
+        self.unlink((self, "_handlersignal"), (self.handler, "control"))
         self.removeChild(self.handler) 
 
     def sendChunkExplicit(self, resource):
@@ -476,6 +481,7 @@ class HTTPRequestHandler(component):
                         request = self.recv("inbox")
                         if isinstance(request, ParsedHTTPEnd):
                             requestEndReached = True
+                            self.send(producerFinished(self), "_handlersignal")
                         else:
                             assert(isinstance(request, ParsedHTTPBodyChunk))
                             self.send(request.bodychunk, "_handleroutbox")

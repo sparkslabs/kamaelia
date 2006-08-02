@@ -83,14 +83,14 @@ SingleShotHTTPClient component for every URL requested. As URLs are
 handled sequentially, it has only one SSHC child at anyone time.
 """
 
+import string, time
+
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.Internet.TCPClient import TCPClient
-
-import string, time
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
@@ -432,10 +432,10 @@ class SimpleHTTPClient(component):
         yield 1
         return
 
-__kamaelia_components__  = ( SimpleHTTPClient, SingleShotHTTPClient)
+__kamaelia_components__  = (SimpleHTTPClient, SingleShotHTTPClient)
 
 if __name__ == '__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     
