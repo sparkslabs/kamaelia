@@ -61,9 +61,9 @@ class Backplane(Axon.Component.component):
             yield 1
 
 
-class publishTo(Axon.Component.component):
+class PublishTo(Axon.Component.component):
     def __init__(self, destination):
-        super(publishTo, self).__init__()
+        super(PublishTo, self).__init__()
         self.destination = destination
     def main(self):
         cat = CAT.getcat()
@@ -78,9 +78,9 @@ class publishTo(Axon.Component.component):
             yield 1            
             
             
-class subscribeTo(Axon.Component.component):
+class SubscribeTo(Axon.Component.component):
     def __init__(self, source):
-        super(subscribeTo, self).__init__()
+        super(SubscribeTo, self).__init__()
         self.source = source
     def main(self):
         cat = CAT.getcat()
@@ -97,5 +97,15 @@ class subscribeTo(Axon.Component.component):
         while 1:
             self.pause()
             yield 1            
+
+# DEPRECATED - now stubs
+
+class publishTo(PublishTo):
+    """DEPRECATED"""
+    pass
+            
+class subscribeTo(SubscribeTo):
+    """DEPRECATED"""
+    pass
 
 # RELEASE: MH, MPS
