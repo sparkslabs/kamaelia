@@ -32,7 +32,7 @@ Example Usage
 -------------
 ::
     pipeline( sourceOfNonStrings(),
-              ToStringComponent(),
+              Stringify(),
               consumerThatWantsStrings(),
             ).activate()
             
@@ -51,9 +51,9 @@ This component does not terminate.
 
 from Axon.Component import component, scheduler
 
-class ToStringComponent(component):
+class Stringify(component):
    """\
-   ToStringComponent() -> new ToStringComponent.
+   Stringify() -> new Stringify.
    
    A component that converts data items received on its "inbox" inbox to
    strings and sends them on out of its "outbox" outbox.
@@ -68,7 +68,7 @@ class ToStringComponent(component):
               
    def __init__(self):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
+      super(Stringify, self).__init__() # !!!! Must happen, if this method exists
       self.activate()
 
 
@@ -79,7 +79,12 @@ class ToStringComponent(component):
          self.send(str(theData), "outbox")
       return 1
 
-__kamaelia_components__  = ( ToStringComponent, )
+__kamaelia_components__  = ( Stringify, )
+
+
+class ToStringComponent(Stringify):
+    """DEPRECATED"""
+    pass
 
 
 if __name__ =="__main__":
