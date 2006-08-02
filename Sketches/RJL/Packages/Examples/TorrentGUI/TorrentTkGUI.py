@@ -52,16 +52,41 @@ GUI and then downloaded with progress information for each torrent.
             ("backend", "outbox"): ("gui", "inbox")
         }
     ).run()
+    
+Detailed Explanation
+--------------------
+The TorrentTkGUI component accepts the following Torrent IPC messages on "inbox":
+
+- TIPCNewTorrentCreated
+- TIPCTorrentStartFail
+- TIPCTorrentAlreadyDownloading
+- TIPCTorrentStatusUpdate
+
+It uses these messages to build and update a list of torrents and their
+percentage completion.
+See TorrentPatron, TorrentClient and TorrentIPC in
+Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent
+for more details on how the BitTorrent components function and the
+messages they send/accept.
+
+This component requests the addition of new torrents by sending the URL of
+a .torrent file to its "fetcher" outbox, which generally will connect to
+a SimpleHTTPClient or alternatively, a TriggeredFileReader.
+This 'fetcher' component will then forward on the contents of the .torrent file
+to a TorrentPatron (it should be connected up to do so).
 """
+
+import Tkinter, time
 
 from Kamaelia.UI.Tk.TkWindow import TkWindow
 from Axon.Ipc import producerFinished, shutdown
-import Tkinter, time
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStartFail, TIPCTorrentAlreadyDownloading, TIPCTorrentStatusUpdate
 
 class TorrentTkWindow(TkWindow):
+    """Tkinter BitTorrent client GUI"""
+
     Inboxes = { 
         "inbox"   : "From TorrentPatron backend",
         "control" : "Tell me to shutdown",
@@ -74,60 +99,120 @@ class TorrentTkWindow(TkWindow):
     }
         
     def __init__(self):
-        self.pendingtorrents = []
-        self.torrents = {}
         super(TorrentTkWindow, self).__init__()
+            
+        # torrents that the user has requested be downloaded,
+        # but which TorrentPatron has not yet confirmed
+        self.pendingtorrents = []
+        
+        # torrents that have been started by TorrentPatron
+        # (an associative array of torrentid -> (torrentname, label, labeltext) )
+        self.torrents = {}
+
         
     def setupWindow(self):
         "Create the GUI controls and window for this application"
+        # THIS FUNCTION IS CALLED BY THE PARENT CLASS - TorrentTkWindow during __init__
+        
+        # Create the URL entry text box
         self.entry = Tkinter.Entry(self.window)
-        self.addtorrentbutton = Tkinter.Button(self.window, text="Add Torrent", command=self.addTorrent)
+        
+        # Create a button labelled "Add Torrent" which causes self.requestNewTorrent
+        # to be called when clicked (a callback function)
+        self.addtorrentbutton = Tkinter.Button(self.window, text="Add Torrent", command=self.requestNewTorrent)
+        
+        # Set the caption of our window
         self.window.title("Kamaelia BitTorrent Client")
         
+        # Layout the window like a table so it resizes
+        # the widgets automatically when it resizes
+        # it will look something like: (without the grid lines)
+        # +---------------------------------------+--------------+
+        # | ENTRY (75% width)                     | BUTTON (25%) |
+        # +---------------------------------------+--------------+
+        
+        # set the position of the text box in the 'table'
         self.entry.grid(row=0, column=0, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+        
+        # set the button of the text box in the 'table'
         self.addtorrentbutton.grid(row=0, column=1, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)        
+        
+        # setup the row they are both in
         self.window.rowconfigure(0, weight=1)
-        self.window.columnconfigure(0, weight=3)
+        
+        # make the left-most column three times the width of the right-most one
+        self.window.columnconfigure(0, weight=3) 
         self.window.columnconfigure(1, weight=1)
 
-    def addTorrent(self):
+    def requestNewTorrent(self):
         "Request the addition of a new torrent"
+        
+        # get the contents of the text box (which should be a URL of a .torrent)
         torrenturl = self.entry.get()
+        
+        # add it to our list of torrents pending confirmation from Torrent Patron
         self.pendingtorrents.append(torrenturl.rsplit("/", 1)[-1])
-        self.send(torrenturl, "fetcher") # forward on the torrent URL/path to the fetcher
+        
+        # send this the URL of this .torrent to the fetcher
+        self.send(torrenturl, "fetcher")
+        
+        # clear the text box - make its contents ""
         self.entry.delete(0, Tkinter.END)
 
+    def addTorrentToList(self, msg):
+        # this torrent is the oldest one we requested that has not yet been added
+        torrentname = self.pendingtorrents.pop(0)
+                    
+        # using a StringVar allows us to change the label's text on the fly
+        labeltext = Tkinter.StringVar()
+
+        # create a new label for this torrent
+        newlabel = Tkinter.Label(self.window, textvariable=labeltext)                    
+        self.torrents[msg.torrentid] = (torrentname, newlabel, labeltext)
+        labeltext.set(torrentname + " - 0%")
+
+        # setup the layout 'table' so that the label spans
+        # the entire width of the window
+        newlabel.grid(row=len(self.torrents), column=0, columnspan=2, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
+        self.window.rowconfigure(len(self.torrents), weight=1)
+                    
     def main(self):
         while not self.isDestroyed():
-            time.sleep(0.05) # reduces CPU usage but a timer component would be better
+            time.sleep(0.05) # reduces CPU usage but a separate timer component would be better
             yield 1
-            if self.dataReady("control"):
+            
+            while self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
-                    self.send(msg, "signal")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):                    
+                    # close this window, causing us to exit the main loop
+                    # (it makes self.isDestroyed() == True)
                     self.window.destroy()
-            if self.dataReady("inbox"):
+            
+            while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 if isinstance(msg, TIPCNewTorrentCreated):
-                    torrentname = self.pendingtorrents.pop(0)
-                    labeltext = Tkinter.StringVar() # allow us to change the label's text on the fly
-                    newlabel = Tkinter.Label(self.window, textvariable=labeltext)                    
-                    self.torrents[msg.torrentid] = (torrentname, newlabel, labeltext)
-                    labeltext.set(torrentname + " - 0%")
-                    
-                    newlabel.grid(row=len(self.torrents), column=0, columnspan=2, sticky=Tkinter.N+Tkinter.E+Tkinter.W+Tkinter.S)
-                    self.window.rowconfigure(len(self.torrents), weight=1)
+                    self.addTorrentToList(msg)
                     
                 elif isinstance(msg, TIPCTorrentStartFail) or isinstance(msg, TIPCTorrentAlreadyDownloading):
-                    self.pendingtorrents.pop(0) # the oldest torrent not yet started failed so remove it from the list of pending torrents
+                    # the oldest torrent not yet started failed to start so
+                    # remove it from the list of pending torrents
+                    self.pendingtorrents.pop(0)
                 
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
-                    # print msg.statsdictionary.get("fractionDone","-1")
-                    self.torrents[msg.torrentid][2].set(self.torrents[msg.torrentid][0] + " - " + str(int(msg.statsdictionary.get("fractionDone","0") * 100)) + "%")
+                    # change the label for that torrent to show the new percentage completion
+                    # newlabelcaption = "{the torrent name} - {the percentage completion of the download}%"
+                    newlabelcaption = self.torrents[msg.torrentid][0] + " - " + str(int(msg.statsdictionary.get("fractionDone","0") * 100)) + "%"
+                    self.torrents[msg.torrentid][2].set(newlabelcaption)
             
+            # update the screen
             self.tkupdate()
-        self.send(shutdown(), "signal") 
-        self.send(shutdown(), "fetchersignal")
+        
+        # shutdown the TorrentPatron
+        self.send(shutdown(), "signal")
+        
+        # and tell the HTTP client that we've finished which should cause
+        # it to terminate gracefully, of its own accord 
+        self.send(producerFinished(self), "fetchersignal")
 
 __kamaelia_components__  = ( TorrentTkWindow, )
 
@@ -136,16 +221,23 @@ if __name__ == "__main__":
     from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     
     Graphline(
-        gui=TorrentTkWindow(),
-        httpclient=SimpleHTTPClient(),
-        backend=TorrentPatron(),
+        gui = TorrentTkWindow(), # our GUI
+        httpclient = SimpleHTTPClient(), # used to download .torrent files
+        backend = TorrentPatron(), # our BitTorrent client backend
         linkages = {
+            ("backend", "outbox"): ("gui", "inbox"),
             ("gui", "outbox") : ("backend", "inbox"),
-            ("gui", "fetchersignal") : ("httpclient", "control"),
             ("gui", "signal") : ("backend", "control"),
+            
+            ("gui", "fetchersignal") : ("httpclient", "control"),
             ("gui", "fetcher") : ("httpclient", "inbox"),
             ("httpclient", "outbox") : ("backend", "inbox"),
-            ("backend", "outbox"): ("gui", "inbox")
         }
     ).run()
 
+    #         BASIC TOPOLOGY
+    # -------------------------------
+    #
+    # httpclient <-- gui <--> backend
+    #      \                    /
+    #       '--->---->---->--->'
