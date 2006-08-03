@@ -20,9 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=================
+==============================================
 Torrent Tk Window - a basic GUI for BitTorrent
-=================
+==============================================
 
 This component supports downloading from multiple torrents simultaneously
 but no deletion or statistics other than percentage completion so far.

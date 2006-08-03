@@ -20,6 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+===========================================
 Peer-to-Peer Streaming System (server part)
 ===========================================
 This example demonstrates the use of BitTorrent and HTTP to distribute
