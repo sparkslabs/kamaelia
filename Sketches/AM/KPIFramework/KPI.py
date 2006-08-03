@@ -35,8 +35,8 @@ class MyDataSource(Axon.Component.component):
    def main(self):
        index = 0
        while 1:
-           data = str(index) + "helloknr"
-           self.send(data[:8], "outbox")
+           data = str(index) + "-helloknr"
+           self.send(data, "outbox")
            index = index + 1
            yield 1           
 
@@ -237,19 +237,22 @@ class Encryptor(Axon.Component.component):
       self.key = "\0"
 
    def main(self):
+    blocksize = 8 # to do generalize padding and breaking in to blocks
     while 1:
       yield 1
       if self.dataReady("keyevent"):
 	    self.key = self.recv("keyevent")
 	    print "key recieved at the encryptor",self.key
-      if self.dataReady("inbox"):
+      if self.dataReady("inbox") and self.key != "\0":
             data = self.recv("inbox")
-	    if len(data) < 8:
-	       data = '88888888'#FIXME: pad with null's the last bytes that are < 8
-	    if self.key != "\0":
-               print "data to be encrypted", data
-               enc = xtea.xtea_encrypt(self.key,data)
-	       self.send(enc, "outbox")
+            enc = ''
+            for i in range(0, len(data), blocksize):
+                #do padding if less than block size
+                #Pad with 0x80 followed by zero (null) bytes
+                block = struct.pack('!8s', data[i:i+blocksize]+ chr(0x80))
+                print "data block for encryption", block
+                enc = enc + xtea.xtea_encrypt(self.key,block)
+            self.send(enc, "outbox")
 
 	    
 class Decryptor(Axon.Component.component):
@@ -261,19 +264,25 @@ class Decryptor(Axon.Component.component):
       self.key = "\0"
 
    def main(self):
+      blocksize = 8 
       while 1:
          yield 1
 	 if self.dataReady("keyevent"):
 	    self.key = self.recv("keyevent")
             print "key recieved at the decryptor",self.key
 
-         if self.dataReady("inbox"):
-            data = self.recv("inbox")
-            print "decryptor data received ",data
-            if self.key != "\0":
-                dec = xtea.xtea_decrypt(self.key,data)
-                print "decrypted data ",dec
-                self.send(dec, "outbox")
+         if self.dataReady("inbox") and self.key != "\0":
+             data = self.recv("inbox")
+             dec = ''
+             print "decryptor data received ",data
+             for i in range(0, len(data), blocksize):
+                 #do unpadding if less than block size
+                 #unpad any 0x80 followed by zero (null) bytes
+                 block = xtea.xtea_decrypt(self.key,data[i:i+blocksize]).rstrip(chr(0x80)+chr(0x00))
+                 print "decrypted block", block
+                 dec = dec + block
+             print "decrypted data ",dec
+             self.send(dec, "outbox")
 	    
 
 # need to integrate with tree database
