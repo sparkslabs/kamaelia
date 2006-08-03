@@ -58,7 +58,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 import string
 
-#modify to handle %20 style encoding
+#TODO: modify to handle %20 style encoding
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
     splituri = string.split(requestobject["raw-uri"], "://")
@@ -129,8 +129,7 @@ class HTTPParser(component):
     def __init__(self, mode="request"):
         super(HTTPParser, self).__init__()
         self.mode = mode
-        #print "Parser init"
-        self.requeststate = 1 # awaiting request line
+
         self.lines = []
         self.readbuffer = ""
         
@@ -213,7 +212,7 @@ class HTTPParser(component):
             splitline = string.split(currentline, " ")
             
             if self.mode == "request":
-                #e.g. GET / HTTP/1.0
+                # e.g. GET / HTTP/1.0
                 if len(splitline) < 2:
                     requestobject["bad"] = True
                 elif len(splitline) == 2:
@@ -342,8 +341,8 @@ class HTTPParser(component):
                                 break
                     elif requestobject["headers"].has_key("content-length"):
                         if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
-                            #we're supposed to say continue, but this is a pain
-                            #and everything still works if we don't just with a few secs delay
+                            # we're supposed to say continue, but this is a pain
+                            # and everything still works if we don't just with a few secs delay
                             pass
                         self.debug("HTTPParser::main - stage 3.length-known start")
                         
@@ -371,7 +370,7 @@ class HTTPParser(component):
                         self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
                     else: #we'll assume it's a connection: close jobby
                         #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
-                        self.debug("HTTPParser::main - stage 3.connection-close start")
+                        self.debug("HTTPParser::main - stage 3.connection-close start\n")
                         connectionopen = True
                         while connectionopen:
                             #print "HTTPParser::main - stage 3.connection close.1"
@@ -403,14 +402,14 @@ class HTTPParser(component):
                     #    #print "HTTPParser::main - stage 3.bad"
 
                 #state 4 - request complete, send it on
-            self.debug("HTTPParser::main - request sent on")
+            self.debug("HTTPParser::main - request sent on\n")
             #print requestobject
             
                     
             self.send(ParsedHTTPEnd(), "outbox")
             if string.lower(requestobject["headers"].get("connection", "")) == "close":
-                #print "HTTPParser connection close"
-                self.send(producerFinished(), "signal") #this functionality is semi-complete
+                self.debug("HTTPParser connection close\n")
+                self.send(producerFinished(self), "signal") #this functionality is semi-complete
                 return
 
 __kamaelia_components__  = ( HTTPParser, )

@@ -22,23 +22,25 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia",
-      version = "0.4.0",
-      description = "Kamaelia - Multimedia & Server Development Kit",
-      author = "Michael & Kamaelia Contributors",
-      author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/",
-      packages = ["Kamaelia",
-                  "Kamaelia.Community",
-                  "Kamaelia.Community.RJL",
-                  "Kamaelia.Community.RJL.Kamaelia",
-                  "Kamaelia.Community.RJL.Kamaelia.Protocol",
-                  "Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP",
-                  "Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent",
-                  "Kamaelia.Community.RJL.Kamaelia.Util",
-                  "Kamaelia.Community.RJL.Kamaelia.IPC",
-                  "Kamaelia.Community.RJL.Kamaelia.File"
-                  ""],
-      long_description = """
+setup(
+    name = "Kamaelia.Community.RJL",
+    version = "0.1.0",
+    description = "Kamaelia - Multimedia & Server Development Kit",
+    author = "Ryan Lothian",
+    author_email = "celestialryan@users.sourceforge.net",
+    url = "http://kamaelia.sourceforge.net/",
+    packages = [
+        "Kamaelia",
+        "Kamaelia.Community",
+        "Kamaelia.Community.RJL",
+        "Kamaelia.Community.RJL.Kamaelia",
+        "Kamaelia.Community.RJL.Kamaelia.Protocol",
+        "Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP",
+        "Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent",
+        "Kamaelia.Community.RJL.Kamaelia.Util",
+        "Kamaelia.Community.RJL.Kamaelia.IPC",
+        "Kamaelia.Community.RJL.Kamaelia.File"
+    ],
+    long_description = """
 """
 )
