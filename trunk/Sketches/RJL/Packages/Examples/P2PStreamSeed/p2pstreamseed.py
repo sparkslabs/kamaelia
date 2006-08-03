@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # e.g. "http://192.168.1.5/torrentupload.php"
     trackerpostuploader = raw_input("Tracker Upload Script: ")
     
-    chunksize = 2**22 # (2 to the power 22) bytes = 4 megabytes
+    chunksize = 4 * 1024 * 1024 # 4194304 bytes = 4 megabytes - a sensible size
     
     Graphline(
         # Streamin pulls in a stream from an SHOUTcast/Icecast server
