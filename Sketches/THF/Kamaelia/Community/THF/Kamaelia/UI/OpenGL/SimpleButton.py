@@ -30,8 +30,16 @@ Could be used to inherit differently shaped buttons from. The colours of the fro
 
 Example Usage
 -------------
-
-Button(size=(1,1,0.3), position=(0,0,-10)).activate()
+    Graphline(
+        button1 = SimpleButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
+        button2 = SimpleButton(size=(2,2,1), position=(5,0,-15), msg="BRAIN"),
+        echo = ConsoleEchoer(),
+        linkages = {
+            ("button1", "outbox") : ("echo", "inbox"),
+            ("button2", "outbox") : ("echo", "inbox")
+        }
+    ).run()
+        
 
 How does it work?
 -----------------
@@ -140,14 +148,16 @@ class SimpleButton(OpenGLComponent):
 
 
 if __name__=='__main__':
-    from SkyGrassBackground import *
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Chassis.Graphline import Graphline
 
-    BUTTON1 = SimpleButton(msg="Previous", position=(-3,0,-10)).activate()
-    BUTTON2 = SimpleButton(msg="Next", position=(3,0,-10)).activate()
-    BUTTON3 = SimpleButton(msg="Play", position=(-1,0,-10)).activate()
-    BUTTON4 = SimpleButton(msg="Stop", position=(1,0,-10)).activate()
-    bg = SkyGrassBackground(size=(5000,5000,0), position=(0, 0, -100)).activate()
-
-
-    Axon.Scheduler.scheduler.run.runThreads()
+    Graphline(
+        button1 = SimpleButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
+        button2 = SimpleButton(size=(2,2,1), position=(5,0,-15), msg="BRAIN"),
+        echo = ConsoleEchoer(),
+        linkages = {
+            ("button1", "outbox") : ("echo", "inbox"),
+            ("button2", "outbox") : ("echo", "inbox")
+        }
+    ).run()
     
