@@ -140,3 +140,20 @@ class TorrentPatron(component):
         self.send(producerFinished(self), "signal")
         
 __kamaelia_components__  = ( TorrentPatron, )
+
+if __name__ == '__main__':
+    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+    from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
+    
+    # Download a .torrent file with your web browser then enter its file path
+    # to the console to have TorrentPatron download it for you
+    pipeline(
+        ConsoleReader(">>> ", ""),
+        TriggeredFileReader(),
+        TorrentPatron(),
+        BasicTorrentExplainer(),
+        ConsoleEchoer(),    
+    ).run()
