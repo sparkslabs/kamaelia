@@ -301,6 +301,24 @@ mainsketcher = \
                           }
                  )
 
+from Kamaelia.Util.Detuple import SimpleDetupler
+from Axon.Component import component
+
+class Entuple(component):
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                return True
+        return False
+        
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+               self.send( (self.recv("inbox"),) , "outbox" )
+            self.pause()
+            yield 1
 
 if __name__=="__main__":
     
@@ -314,6 +332,7 @@ if __name__=="__main__":
     pipeline( subscribeTo("AUDIO"),
               TagAndFilterWrapper(
                   pipeline(
+                      SimpleDetupler(0),
                       SpeexDecode(3),
                       PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
@@ -321,6 +340,7 @@ if __name__=="__main__":
                       SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
                       ExtractData(),
                       SpeexEncode(3),
+                      Entuple(),
                   ),
               ),
               publishTo("AUDIO"),
