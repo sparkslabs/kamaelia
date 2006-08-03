@@ -67,7 +67,6 @@ class TriggeredFileReader(component):
 
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
-                #print "Read file " + command
                 self.send(self.readFile(command), "outbox")				
             
             while self.dataReady("control"):

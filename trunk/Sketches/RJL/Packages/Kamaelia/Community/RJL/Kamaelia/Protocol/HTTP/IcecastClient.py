@@ -91,7 +91,7 @@ class IcecastDemux(component):
         "Convert metadata that was embedded in the stream into a dictionary."
         
         #format of metadata:
-        #"StreamUrl='www.example.com';StreamTitle='singer, title';"
+        #"StreamUrl='www.example.com';\nStreamTitle='singer, title';"
         lines = metadata.split(";")
         metadict = {}
         for line in lines:
@@ -115,6 +115,8 @@ class IcecastDemux(component):
                 msg = self.recv("inbox")
 
                 if isinstance(msg, ParsedHTTPHeader):
+                    # metadata is inserted into the stream data every metadatainterval bytes
+                    # if an icy-metaint header was in the response
                     metadatainterval = intval(msg.header["headers"].get("icy-metaint", 0))
                     if metadatainterval == None:
                         metadatainterval = 0
@@ -124,13 +126,14 @@ class IcecastDemux(component):
                     print "Metadata interval is " + str(metadatainterval)
                     
                 elif isinstance(msg, ParsedHTTPBodyChunk):
-                    readbuffer += msg.bodychunk
+                    readbuffer += msg.bodychunk # NOTE: this is inefficient, consider using a character queue instead
                     
                 elif isinstance(msg, ParsedHTTPEnd):
                     self.send(IceIPCDisconnected(), "outbox")
                 
             while len(readbuffer) > 0:       
-                if metadatainterval == 0: #if no metadata
+                if metadatainterval == 0: # if the stream does not include metadata
+                    # send all the data we have on
                     self.send(IceIPCDataChunk(data=readbuffer), "outbox")
                     readbuffer = ""
                 else:
@@ -154,6 +157,7 @@ class IcecastDemux(component):
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    self.send(producerFinished(self), "signal")
                     return
                                                 
             self.pause()
@@ -188,7 +192,7 @@ class IcecastClient(SingleShotHTTPClient):
         return splituri
     
     def main(self):
-        while 1: #keep reconnecting
+        while 1: # keep reconnecting
             self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
             while self.mainBody():
                 yield 1

@@ -439,7 +439,7 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     
-    # type in a URL e.g. http://www.google.co.uk and have that page saved to disk
+    # Example - type in a URL e.g. http://www.google.co.uk and have that page saved to disk
     pipeline(
         ConsoleReader(">>> ", ""),
         SimpleHTTPClient(),

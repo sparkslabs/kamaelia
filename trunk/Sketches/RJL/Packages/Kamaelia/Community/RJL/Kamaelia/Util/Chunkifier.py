@@ -107,6 +107,8 @@ class Chunkifier(component):
     
     Keyword arguments:
     - chunksize  -- Chunk size in bytes
+    - nodelay    -- if set to True, partial chunks will be output rather
+                    than buffering up data while waiting for more to arrive.
     """
     
     Inboxes = { "inbox" : "Data stream to be split into chunks",
@@ -132,11 +134,15 @@ class Chunkifier(component):
             yield 1
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
+                
+                # add this string to our character queue
                 self.forwardqueue.push(msg)
             
+            # while there is enough data to send another chunk
             while len(self.forwardqueue) >= self.chunksize:
                 self.sendChunk()
-                
+            
+            # if nodelay then send any data not yet sent rather than waiting for more
             if self.nodelay:
                 self.sendPartialChunk()
                 
@@ -144,10 +150,10 @@ class Chunkifier(component):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished):
                     self.sendPartialChunk()
-                    self.send(msg, "signal")
+                    self.send(producerFinished(self), "signal")
                     return
                 elif isinstance(msg, shutdown):
-                    self.send(msg, "signal")
+                    self.send(producerFinished(self), "signal")
                     return
             self.pause()
 
@@ -157,8 +163,9 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 
+    # Example - spit out text enter by the user in chunks of 10 characters
     pipeline(
         ConsoleReader(eol=""),
-        Chunkifier(20),
+        Chunkifier(10),
         ConsoleEchoer()
     ).run()
