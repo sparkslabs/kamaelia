@@ -23,18 +23,34 @@
 =====================
 Simple Button component
 =====================
-TODO
-"""
 
+A simple cuboid shaped button without caption. Implements responsive button behavoir.
+
+Could be used to inherit differently shaped buttons from. The colours of the front/back and the side faces can be specified.
+
+Example Usage
+-------------
+
+Button(size=(1,1,0.3), position=(0,0,-10)).activate()
+
+How does it work?
+-----------------
+
+SimpleButton is inherited from OpenGLComponent.
+
+It draws a simple cuboid. It is activated on mouse button release over the object
+and on key down if a key is assigned. On mouse button down it is shrunk by a small
+amount until the button is released.
+
+"""
 
 import Axon
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
-from OpenGL.GLU import *
 
 from Util3D import *
-from OpenGLComponent import *
+from OpenGLComponent import OpenGLComponent
 
 
 class SimpleButton(OpenGLComponent):
@@ -47,15 +63,11 @@ class SimpleButton(OpenGLComponent):
 
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.sideColour = argd.get("sidecolour", (200,200,244))
-        self.margin = argd.get("margin", 8)
         self.key = argd.get("key", None)
-
-        self.fontsize = argd.get("fontsize", 50)
-        self.pixelscaling = argd.get("pixelscaling", 100)
 
         self.eventMsg = argd.get("msg", "CLICK")
         
-        self.size = argd.get("size", Vector(1,1,1))
+        self.size = Vector(*argd.get("size", (1,1,1)))
 
         self.grabbed = 0
 
@@ -69,43 +81,40 @@ class SimpleButton(OpenGLComponent):
         # draw faces
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
-
+        # right face
         glVertex3f(hs.x,hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,-hs.z)
         glVertex3f(hs.x,hs.y,-hs.z)
-
+        # left face
         glVertex3f(-hs.x,hs.y,hs.z)
         glVertex3f(-hs.x,-hs.y,hs.z)
         glVertex3f(-hs.x,-hs.y,-hs.z)
         glVertex3f(-hs.x,hs.y,-hs.z)
-
+        # top face
         glVertex3f(hs.x,hs.y,hs.z)
         glVertex3f(-hs.x,hs.y,hs.z)
         glVertex3f(-hs.x,hs.y,-hs.z)
         glVertex3f(hs.x,hs.y,-hs.z)
-
+        # bottom face
         glVertex3f(hs.x,-hs.y,hs.z)
         glVertex3f(-hs.x,-hs.y,hs.z)
         glVertex3f(-hs.x,-hs.y,-hs.z)
         glVertex3f(hs.x,-hs.y,-hs.z)
 
         glColor4f(self.backgroundColour[0]/256.0, self.backgroundColour[1]/256.0, self.backgroundColour[2]/256.0, 0.5)
-
-        # back plane
+        # back face
         glVertex3f(hs.x,hs.y,-hs.z)
         glVertex3f(-hs.x,hs.y,-hs.z)
         glVertex3f(-hs.x,-hs.y,-hs.z)
         glVertex3f(hs.x,-hs.y,-hs.z)
-        # front plane
+        # front face
         glVertex3f(-hs.x,-hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,hs.z)
         glVertex3f(hs.x,hs.y,hs.z)
         glVertex3f(-hs.x,hs.y,hs.z)
         glEnd()
         
-        glDisable(GL_TEXTURE_2D)
-
 
     def handleEvents(self):
         while self.dataReady("events"):
