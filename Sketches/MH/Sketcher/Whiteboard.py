@@ -61,8 +61,8 @@ from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagW
 
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
-                           readThreshold  = 0.25,
-                           bufferingLimit = 1.0,
+                           readThreshold  = 0.1,
+                           bufferingLimit = 0.2,
                            readInterval   = 0.05,
                          )
 
