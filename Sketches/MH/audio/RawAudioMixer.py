@@ -61,14 +61,15 @@ class AudioBuffer(object):
 
 
     def drop(self,amount):
+        self.size -= amount
         while amount > 0:
             fragment = self.buffer[0]
             if len(fragment) <= amount:
                 amount -= len(fragment)
                 del self.buffer[0]
             else:
-                amount = 0
                 self.buffer[0] = fragment[amount:]
+                amount = 0
 
     def pop(self, amount):
         if not self.active:
@@ -91,8 +92,8 @@ class AudioBuffer(object):
                 del self.buffer[0]
             else:
                 data.append(fragment[:amount])
-                amount = 0
                 self.buffer[0] = fragment[amount:]
+                amount = 0
 
         data.append(padding_silence)
         
@@ -135,7 +136,7 @@ class RawAudioMixer(threadedcomponent):
             anyActive=False
             while not anyActive and not shutdown:
             
-                while self.dataReady("inbox"):
+                while self.dataReady("inbox") and not anyActive:
                     activated = self.fillBuffer(buffers, self.recv("inbox"))
                     anyActive = anyActive or activated
 
@@ -152,11 +153,11 @@ class RawAudioMixer(threadedcomponent):
             # dump out audio until all buffers are empty
             while len(buffers) and not shutdown:
                 
-                while self.dataReady("inbox"):
+                while self.dataReady("inbox") and time.time() < nextReadTime:
                     reading = self.fillBuffer(buffers, self.recv("inbox"))
                 
                 now = time.time()
-                if now >= nextReadTime-0.05:
+                if now >= nextReadTime:
                     
                     # read from all buffers (only active ones output samples)
                     audios = []
@@ -179,7 +180,7 @@ class RawAudioMixer(threadedcomponent):
                 if shutdown:
                     break
                 
-                if len(buffers):
+                if len(buffers) and not self.dataReady("inbox"):
                     self.pause( nextReadTime - time.time() )
                 
             # now there are no active buffers, go back to reading mode
