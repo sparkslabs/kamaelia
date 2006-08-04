@@ -200,16 +200,27 @@ class RawSoundOutput(threadedcomponent):
         self.snd = sound.Output(sample_rate, channels, pformat)
         
         self.chunksize = sample_rate/40    # no idea why, but it seems we need to pass to pymedia chunks of a sufficiently short duration to prevent playback artefacts
+        mask = 2*channels-1
+        self.chunksize = self.chunksize - (self.chunksize & mask) # ensure whole number of samples
         
     def main(self):
         CHUNKSIZE=self.chunksize #2048
         shutdown=False
+        chunk=""
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
-                chunk = self.recv("inbox")
+                if chunk != "":
+                    chunk += self.recv("inbox")
+                else:
+                    chunk = self.recv("inbox")
                 
-                for i in xrange(0,len(chunk),CHUNKSIZE):
-                    self.snd.play(chunk[i:i+CHUNKSIZE])
+                i=0
+                while len(chunk)>=i+CHUNKSIZE:
+                    frag=chunk[i:i+CHUNKSIZE]
+                    self.snd.play(frag)
+                    i+=CHUNKSIZE
+                if i<len(chunk):
+                    chunk=chunk[i:]
             
             while self.dataReady("control"):
                 msg=self.recv("control")
@@ -439,7 +450,7 @@ if __name__ == "__main__":
     
     extension = filename.split(".")[-1]
         
-    test = 4
+    test = 3
     
     if test == 1:
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
