@@ -163,10 +163,14 @@ def AudioServerClients(rhost, rport, backplane="AUDIO"):
         return pipeline( subscribeTo(backplane),
                          TagAndFilterWrapper(
                              pipeline(
+                                 SpeexEncode(3),
+                                 Entuple(),
                                  tokenlists_to_lines(),
                                  TCPClient(host=rhost,port=rport),
                                  chunks_to_lines(),
                                  lines_to_tokenlists(),
+                                 SimpleDetupler(0),
+                                 SpeexDecode(3),
                              ),
                          ),
                          publishTo(backplane),
@@ -174,7 +178,29 @@ def AudioServerClients(rhost, rport, backplane="AUDIO"):
 
 # very simple audio server; doesn't cope with more than one audio stream in teh backplane
 
-# can use LocalEventServer for the moment
+def LocalAudioServer(backplane="AUDIO", port=1501):
+        from Kamaelia.Chassis.ConnectedServer import SimpleServer
+        from Kamaelia.Util.Console import ConsoleEchoer
+
+        def clientconnector():
+            return pipeline(
+                chunks_to_lines(),
+                lines_to_tokenlists(),
+                SimpleDetupler(0),
+                SpeexDecode(3),
+                FilterAndTagWrapper(
+                    pipeline( publishTo(backplane),
+                                # well, should be to separate pipelines, this is lazier!
+                              subscribeTo(backplane),
+                            ),
+                    ),
+                SpeexEncode(3),
+                Entuple(),
+                tokenlists_to_lines(),
+                )
+
+        return SimpleServer(protocol=clientconnector, port=port)
+
 
 #-----------------------
 
@@ -332,15 +358,11 @@ if __name__=="__main__":
     pipeline( subscribeTo("AUDIO"),
               TagAndFilterWrapper(
                   pipeline(
-                      SimpleDetupler(0),
-                      SpeexDecode(3),
                       PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
                       ######
                       SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
                       ExtractData(),
-                      SpeexEncode(3),
-                      Entuple(),
                   ),
               ),
               publishTo("AUDIO"),
@@ -353,7 +375,7 @@ if __name__=="__main__":
     # setup a server, if requested
     if serveport:
         LocalEventServer("WHITEBOARD", port=serveport).activate()
-        LocalEventServer("AUDIO",      port=serveport+1).activate()
+        LocalAudioServer("AUDIO",      port=serveport+1).activate()
 
 
     # connect to remote host & port, if requested
