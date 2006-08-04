@@ -53,7 +53,7 @@ class AudioDecoder(component):
 
     def main(self):
         
-        dm = muxer.Demuxer(extension)
+        dm = muxer.Demuxer(self.extension)
         
         shutdown=False
         decoder=None
