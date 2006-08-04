@@ -24,7 +24,7 @@ import ThreadedComponent
 #     def encode(self,data):
 #         return data
 
-class SpeexEncode(component): #ThreadedComponent.threadedcomponent):
+class SpeexEncode(ThreadedComponent.threadedcomponent):
 
     def __init__(self, quality=8):
 
@@ -47,7 +47,7 @@ class SpeexEncode(component): #ThreadedComponent.threadedcomponent):
 
                  if ret is not "":           # Speex objects use internal buffering
                    self.send(ret, "outbox")
-                   yield 1
+#                   yield 1
             
             while self.dataReady("control"):
                 msg = self.recv("control")
@@ -57,9 +57,9 @@ class SpeexEncode(component): #ThreadedComponent.threadedcomponent):
             
             if not shutdown:
                 self.pause()
-            yield 1
+#            yield 1
 
-class SpeexDecode(component): #ThreadedComponent.threadedcomponent):
+class SpeexDecode(ThreadedComponent.threadedcomponent):
 
 
     def __init__(self, quality=8):
@@ -75,11 +75,12 @@ class SpeexDecode(component): #ThreadedComponent.threadedcomponent):
         while self.dataReady("inbox") or not shutdown:
             while self.dataReady("inbox"):
 
-                ret = speexobj.decode(self.recv("inbox"))
+                data = self.recv("inbox")
+                ret = speexobj.decode(data)
                 
                 if ret:
                     self.send(ret, "outbox")
-                    yield 1
+#                    yield 1
 
             while self.dataReady("control"):
                 msg = self.recv("control")
@@ -89,4 +90,4 @@ class SpeexDecode(component): #ThreadedComponent.threadedcomponent):
             
             if not shutdown:
                 self.pause()
-            yield 1
+#            yield 1
