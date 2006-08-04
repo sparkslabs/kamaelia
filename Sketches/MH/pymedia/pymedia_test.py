@@ -199,8 +199,10 @@ class RawSoundOutput(threadedcomponent):
         pformat = mapping_format_to_pymedia[format]
         self.snd = sound.Output(sample_rate, channels, pformat)
         
+        self.chunksize = sample_rate/40    # no idea why, but it seems we need to pass to pymedia chunks of a sufficiently short duration to prevent playback artefacts
+        
     def main(self):
-        CHUNKSIZE=2048
+        CHUNKSIZE=self.chunksize #2048
         shutdown=False
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
