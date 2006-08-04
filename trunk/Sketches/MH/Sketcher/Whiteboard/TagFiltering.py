@@ -189,7 +189,7 @@ def FilterAndTagWrapper(target, dontRemoveTag=False):
                     )
 
 def TagAndFilterWrapperKeepingTag(target):
-    return TagAndFilterWrapper(target, dontRemoveTag=True):
+    return TagAndFilterWrapper(target, dontRemoveTag=True)
 
 def FilterAndTagWrapperKeepingTag(target):
     return FilterAndTagWrapper(target, dontRemoveTag=True)
