@@ -20,7 +20,7 @@ import time
 
 # want pausing capability in threadedcomponent
 import sys
-sys.path.append("../../Timer/")
+sys.path.append("../Timer/")
 from ThreadedComponent import threadedcomponent
 
 
@@ -81,6 +81,8 @@ class AudioBuffer(object):
             padding_silence = chr(0) * (amount-self.size)
             amount = self.size
 
+        self.size -= amount
+        
         while amount > 0:
             fragment = self.buffer[0]
             if len(fragment) <= amount:
@@ -92,7 +94,6 @@ class AudioBuffer(object):
                 amount = 0
                 self.buffer[0] = fragment[amount:]
 
-        self.size -= amount
         data.append(padding_silence)
         
         if self.size==0:
@@ -105,11 +106,20 @@ class AudioBuffer(object):
 class RawAudioMixer(threadedcomponent):
     """Assuming mono signed 16 bit Little endian audio"""
     def __init__(self, sample_rate=8000, readThreshold=1.0, bufferingLimit=2.0, readInterval=0.1):
+        super(RawAudioMixer,self).__init__()
         self.sample_rate = sample_rate
         self.bufferingLimit = bufferingLimit
         self.readThreshold = readThreshold
         self.readInterval = readInterval
 
+    def checkForShutdown(self):
+        while self.dataReady("control"):
+            msg=self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                return True
+        return False
+        
     def main(self):
         buffers = {}
         
@@ -117,17 +127,22 @@ class RawAudioMixer(threadedcomponent):
         self.BUFTHRESHOLD = int(self.sample_rate*self.readThreshold*2)   # 2 = bytes per sample
         
         READCHUNKSIZE = int(self.sample_rate*self.readInterval)*2
-        
-        while 1:
+
+        shutdown = False
+        while not shutdown:
             
             # whilst none of the buffers are active (ie. full enough to start reading out data)
-            anyActive:
-            while not anyActive:
+            anyActive=False
+            while not anyActive and not shutdown:
             
                 while self.dataReady("inbox"):
                     activated = self.fillBuffer(buffers, self.recv("inbox"))
                     anyActive = anyActive or activated
-                    
+
+                shutdown = shutdown or self.checkForShutdown()
+                if shutdown:
+                    break
+                
                 if not anyActive:
                     self.pause()
                     
@@ -135,7 +150,7 @@ class RawAudioMixer(threadedcomponent):
             nextReadTime = time.time()
             
             # dump out audio until all buffers are empty
-            while len(buffers):
+            while len(buffers) and not shutdown:
                 
                 while self.dataReady("inbox"):
                     reading = self.fillBuffer(buffers, self.recv("inbox"))
@@ -145,7 +160,7 @@ class RawAudioMixer(threadedcomponent):
                     
                     # read from all buffers (only active ones output samples)
                     audios = []
-                    for buf in buffers:
+                    for buf in buffers.keys():
                         audio = buffers[buf].pop(READCHUNKSIZE)
                         if audio:
                             audios.append(audio)
@@ -156,16 +171,20 @@ class RawAudioMixer(threadedcomponent):
                             
                     # assuming we've got something, mix it and output it
                     if audios:
-                        self.send(self.mixAudio(audios), "outbox")
+                        self.send(self.mixAudio(audios, READCHUNKSIZE), "outbox")
                 
-                    nextReadTime += READ_INTERVAL
+                    nextReadTime += self.readInterval
                     
+                shutdown = shutdown or self.checkForShutdown()
+                if shutdown:
+                    break
+                
                 if len(buffers):
-                    self.pause( nextReadTime() - time.time() )
+                    self.pause( nextReadTime - time.time() )
                 
             # now there are no active buffers, go back to reading mode
             
-    def fillBuffer(buffers, data):
+    def fillBuffer(self, buffers, data):
         srcId, audio = data
         
         try:
@@ -179,9 +198,9 @@ class RawAudioMixer(threadedcomponent):
         return buf.active
         
     
-    def mixAudio(self,sources):
+    def mixAudio(self,sources, amount):
         output = []
-        for i in xrange(0,numSamples,2):
+        for i in xrange(0,amount,2):
             sum=0
             for src in sources:
                 value = ord(src[i]) + (ord(src[i+1]) << 8)
@@ -191,4 +210,169 @@ class RawAudioMixer(threadedcomponent):
                     sum -= 65536
             output.append(chr(sum & 255)+chr(sum>>8))
         return "".join(output)
+
+
+if __name__ == "__main__":
+    from Kamaelia.Chassis.Graphline import Graphline
+    
+    # test audio
+
+    SAMPLE_RATE = 10     * 5
+    READ_THRESH = 5.0    / 5
+    READ_INTERV = 1.0    / 5
+    BUFFER_LIM  = 10.0   / 5
+
+    THRESH_SIZE = int(SAMPLE_RATE * READ_THRESH)
+    CHUNK_SIZE = int(THRESH_SIZE / 10)
+    READ_SIZE = SAMPLE_RATE * READ_INTERV
+
+    class Tester(threadedcomponent):
+        def checkNoOutput(self, duration, error=""):
+            try:
+                now = time.time()
+                until = now + duration
+                assert(not self.dataReady("inbox"))
+                while now < until:
+                    self.pause(until-now)
+                    assert(not self.dataReady("inbox"))
+                    now = time.time()
+            except AssertionError, e:
+                e.args=(error,)
+                raise e
+
+        def collectOutput(self, duration):
+            # collect and timestamp output over a given duration
+            start = time.time()
+            until = start + duration
+            output=[]
+            while time.time() <= until:
+                while self.dataReady("inbox"):
+                    timestamp = time.time() - start
+                    data = self.recv("inbox")
+                    output.append( (timestamp,data) )
+                self.pause(until-time.time())
+            return output
+
+        def mustContain(self, data, *elements):
+            # assert must contain all of, and only, elements in elements
+
+            # combine the elements, so we know what we're expecting
+            expecting = 0
+            for e in elements:
+                val = ord(e[0]) + ord(e[1])*256
+                if val >=0x8000:
+                    val=val-65536
+                expecting = expecting + val
+            expecting = chr(expecting & 0xff) + chr((expecting>>8) & 0xff)
+            
+            for i in range(0,len(data),2):
+                assert( data[i:i+2] == expecting )
                 
+        def main(self):
+            try:
+                fragA = chr( 4)+chr(0)
+                fragB = chr(16)+chr(0)
+                fragC = chr(64)+chr(0)
+                fragD = chr( 1)+chr(1)
+
+                # TEST: No input, no output
+                print "Testing: Nothing in, nothing out"
+                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for no input")
+                print "Passed test 1"
+                    
+                # TEST: single source
+                print "Testing: Single source"
+                # nearly fill to threshold, check no leakage
+                for i in range(0,(THRESH_SIZE-CHUNK_SIZE)/CHUNK_SIZE, 1):
+                    self.send(("A",fragA*CHUNK_SIZE), "outbox")
+
+                # nothing shoudl be coming out yet (not reached thresh)
+                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for sub threshold input")
+                print "Passed test 2a"
+
+                # bring up to threshold, expect full output
+                self.send(("A",fragA*CHUNK_SIZE), "outbox")
+
+                output=self.collectOutput(READ_THRESH*1.5)
+                # verify regularity of output
+                for i in range(0,len(output)):
+                    expected_t = READ_INTERV*i
+                    tolerance = READ_INTERV*0.4
+                    (t, _) = output[i]
+                    assert(t>=expected_t)
+                    assert(t<=expected_t + tolerance)
+                print "Passed test 2b"
+
+                # verify contents of output, and its size
+                amount =0
+                for (_, data) in output:
+                    assert(len(data) == 2*READ_SIZE)
+                    amount += len(data)
+                    self.mustContain(data, fragA)
+#                assert(amount == THRESH_SIZE*2)
+                print "Passed test 2c"
+                
+                # TEST: no more output
+                self.checkNoOutput(READ_THRESH*0.5, "Expected no output")
+                print "Passed test 2d"
+
+                # TEST: 3 inputs mix
+                print "Testing: Multi source"
+                # nearly fill to threshold check no leakage
+                for i in range(0,(THRESH_SIZE-CHUNK_SIZE)/CHUNK_SIZE, 1):
+                    self.send(("A",fragA*CHUNK_SIZE), "outbox")
+                    self.send(("B",fragB*CHUNK_SIZE), "outbox")
+                    self.send(("C",fragC*CHUNK_SIZE), "outbox")
+                    self.send(("D",fragC*CHUNK_SIZE), "outbox")
+                
+                # nothing shoudl be coming out yet (not reached thresh)
+                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for sub threshold input")
+                print "Passed test 3a"
+                
+                # bring up to threshold, expect full output
+                self.send(("A",fragA*CHUNK_SIZE), "outbox")
+                self.send(("B",fragB*CHUNK_SIZE), "outbox")
+                self.send(("C",fragC*CHUNK_SIZE), "outbox")
+
+                output=self.collectOutput(READ_THRESH*1.5)
+                # verify regularity of output
+                for i in range(0,len(output)):
+                    expected_t = READ_INTERV*i
+                    tolerance = READ_INTERV*0.4
+                    (t, _) = output[i]
+                    assert(t>=expected_t)
+                    assert(t<=expected_t + tolerance)
+                print "Passed test 3b"
+                
+                # verify contents of output, and its size
+                amount =0
+                for (_, data) in output:
+                    assert(len(data) == 2*READ_SIZE)
+                    amount += len(data)
+                    self.mustContain(data, fragA, fragB, fragC)
+#                assert(amount == THRESH_SIZE*2)
+                print "Passed test 3c"
+                
+                
+                # END OF TESTS
+                self.send(producerFinished(),"signal")
+
+            except AssertionError, e:
+                self.send(producerFinished(),"signal")
+                print "Failed:"
+                print str(e)
+            except:
+                self.send(producerFinished(),"signal")
+                raise
+    
+    Graphline(
+        mixer = RawAudioMixer(SAMPLE_RATE, READ_THRESH, BUFFER_LIM, READ_INTERV),
+        tester = Tester(),
+        linkages = {
+                ("tester", "outbox") : ("mixer", "inbox"),
+                ("mixer",  "outbox") : ("tester", "inbox"),
+                
+                ("tester", "signal") : ("mixer", "control"),
+            }
+        ).run()
+
