@@ -208,7 +208,7 @@ class RawAudioMixer(threadedcomponent):
                 sum += value
                 if value & 0x8000:
                     sum -= 65536
-            output.append(chr(sum & 255)+chr(sum>>8))
+            output.append( chr(sum & 255)+chr((sum>>8) & 255) )
         return "".join(output)
 
 
