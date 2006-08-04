@@ -53,8 +53,18 @@ from Whiteboard.CheckpointSequencer import CheckpointSequencer
 import sys
 sys.path.append("../pymedia/")
 sys.path.append("../")
+sys.path.append("../audio")
 from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
 from Speex import SpeexEncode,SpeexDecode
+from RawAudioMixer import RawAudioMixer as _RawAudioMixer
+from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
+
+def RawAudioMixer():
+    return _RawAudioMixer( sample_rate    = 8000,
+                           readThreshold  = 1.0,
+                           bufferingLimit = 2.0,
+                           readInterval   = 0.01,
+                         )
 
 
 colours = { "black" :  (0,0,0), 
@@ -161,8 +171,9 @@ def AudioServerClients(rhost, rport, backplane="AUDIO"):
         from Kamaelia.Internet.TCPClient import TCPClient
 
         return pipeline( subscribeTo(backplane),
-                         TagAndFilterWrapper(
+                         TagAndFilterWrapperKeepingTag(
                              pipeline(
+                                 RawAudioMixer(),
                                  SpeexEncode(3),
                                  Entuple(),
                                  tokenlists_to_lines(),
@@ -188,12 +199,13 @@ def LocalAudioServer(backplane="AUDIO", port=1501):
                 lines_to_tokenlists(),
                 SimpleDetupler(0),
                 SpeexDecode(3),
-                FilterAndTagWrapper(
+                FilterAndTagWrapperKeepingTag(
                     pipeline( publishTo(backplane),
                                 # well, should be to separate pipelines, this is lazier!
                               subscribeTo(backplane),
                             ),
                     ),
+                RawAudioMixer(),
                 SpeexEncode(3),
                 Entuple(),
                 tokenlists_to_lines(),
@@ -356,8 +368,9 @@ if __name__=="__main__":
             
     # primary sound IO - tagged and filtered, so can't hear self
     pipeline( subscribeTo("AUDIO"),
-              TagAndFilterWrapper(
+              TagAndFilterWrapperKeepingTag(
                   pipeline(
+                      RawAudioMixer(),
                       PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
                       ######
