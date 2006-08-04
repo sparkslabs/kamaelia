@@ -136,8 +136,8 @@ class SoundOutput(component):
 
         if outputter:
             self.send(producerFinished(), "_ctrl")
-            self.unlink(thelinkage=datalinkage)
-            self.unlink(thelinkage=ctrllinkage)
+            for linkage in linkages:
+                self.unlink(thelinkage=linkage)
 
 class ExtractData(component):
     def main(self):
@@ -312,6 +312,101 @@ class AudioEncoder(component):
             self.send(data,"outbox")
         
 
+class ResampleTo(component):
+    Inboxes  = { "inbox" : "",
+                 "control" : "",
+                 "_resampled" : "",
+               }
+    Outboxes = { "outbox" : "",
+                 "signal" : "",
+                 "_data"  : "raw audio samples going to resampler",
+                 "_ctrl"  : "for shutting down an resampler",
+               }
+    def __init__(self, sample_rate, channels):
+        super(ResampleTo,self).__init__()
+        self.params = (sample_rate, channels)
+
+                
+    def main(self):
+        resampler = None
+        format = None
+        shutdown = False
+        while self.anyReady() or not shutdown:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                
+                if data['type'] == "audio":
+                    newformat = (data['sample_rate'], data['channels'], data['format'])
+                    if newformat != format:
+                        format=newformat
+                        # need new audio playback component
+                        # first remove any old one
+                        if resampler:
+                            self.removeChild(resampler)
+                            self.send(producerFinished(), "_ctrl")
+                            for l in linkages:
+                                self.unlink(thelinkage=l)
+                        # now make and wire in a new one
+                        resampler = RawResampleTo(format[0],format[1], *self.params).activate()
+                        self.addChildren(resampler)
+                        linkages = [ self.link( (self,"_data"), (resampler, "inbox") ),
+                                     self.link( (self,"_ctrl"), (resampler, "control") ),
+                                     self.link( (resampler,"outbox"), (self, "_resampled") ),
+                                   ]
+                
+                    self.send(data['audio'], "_data")
+            
+            while self.dataReady("_resampled"):
+                audio = self.recv("_resampled")
+                data = {}
+                data['type'] = 'audio'
+                data['sample_rate'] = self.params[0]
+                data['channels'] = self.params[1]
+                data['format'] =  format[2]
+                data['audio'] = audio
+                self.send(data,"outbox")
+            
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
+            yield 1
+
+        if resampler:
+            self.send(producerFinished(), "_ctrl")
+            for linkage in linkages:
+                self.unlink(thelinkage=linkage)
+
+class RawResampleTo(component):
+    def __init__(self, from_sample_rate, from_channels, to_sample_rate, to_channels):
+        super(RawResampleTo,self).__init__()
+        
+        self.resampler = sound.Resampler( (from_sample_rate, from_channels), (to_sample_rate, to_channels) )
+        
+    def main(self):
+        shutdown=False
+        data=""
+        while self.anyReady() or not shutdown:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                resampled = str(self.resampler.resample(data))
+                self.send(resampled, "outbox")
+        
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                self.send(msg,"signal")
+                
+            if not shutdown:
+                self.pause()
+            yield 1
+        
+
 
 class SimpleDelay(component):
     def main(self):
@@ -342,7 +437,7 @@ if __name__ == "__main__":
     
     extension = filename.split(".")[-1]
         
-    test = 3
+    test = 4
     
     if test == 1:
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
@@ -362,6 +457,13 @@ if __name__ == "__main__":
                   AudioEncoder(codec="mp3", bitrate=128000, sample_rate=44100, channels=2),
                   AudioDecoder("mp3"),
 #                  SimpleDelay(),
+                  SoundOutput(),
+                ).run()
+
+    elif test == 4:
+        pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
+                  AudioDecoder("mp3"),
+                  ResampleTo(sample_rate=8000,channels=1),
                   SoundOutput(),
                 ).run()
 
