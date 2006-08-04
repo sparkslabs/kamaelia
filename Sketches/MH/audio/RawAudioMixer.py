@@ -156,7 +156,7 @@ class RawAudioMixer(threadedcomponent):
                     reading = self.fillBuffer(buffers, self.recv("inbox"))
                 
                 now = time.time()
-                if now >= nextReadTime:
+                if now >= nextReadTime-0.05:
                     
                     # read from all buffers (only active ones output samples)
                     audios = []
