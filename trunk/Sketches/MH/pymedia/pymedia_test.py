@@ -206,21 +206,12 @@ class RawSoundOutput(threadedcomponent):
     def main(self):
         CHUNKSIZE=self.chunksize #2048
         shutdown=False
-        chunk=""
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
-                if chunk != "":
-                    chunk += self.recv("inbox")
-                else:
-                    chunk = self.recv("inbox")
+                chunk = self.recv("inbox")
                 
-                i=0
-                while len(chunk)>=i+CHUNKSIZE:
-                    frag=chunk[i:i+CHUNKSIZE]
-                    self.snd.play(frag)
-                    i+=CHUNKSIZE
-                if i<len(chunk):
-                    chunk=chunk[i:]
+                for i in range(0,len(chunk),CHUNKSIZE):
+                    self.snd.play(chunk[i:i+CHUNKSIZE])
             
             while self.dataReady("control"):
                 msg=self.recv("control")
