@@ -42,43 +42,50 @@ class SimpleCube(OpenGLComponent):
         super(SimpleCube, self).__init__(**argd)
         
     def draw(self):
+        hs = self.size/2.0
         # draw faces 
         glBegin(GL_QUADS)
         glColor4f(1.0,0.75,0.75,0.5)
-        glVertex3f(1.0,1.0,1.0)
-        glVertex3f(-1.0,1.0,1.0)
-        glVertex3f(-1.0,-1.0,1.0)
-        glVertex3f(1.0,-1.0,1.0)
+        # right face
+        glVertex3f(hs.x,hs.y,hs.z)
+        glVertex3f(hs.x,-hs.y,hs.z)
+        glVertex3f(hs.x,-hs.y,-hs.z)
+        glVertex3f(hs.x,hs.y,-hs.z)
 
         glColor4f(0.75,1.0,0.75, 0.5)
-        glVertex3f(1.0,1.0,-1.0)
-        glVertex3f(1.0,-1.0,-1.0)
-        glVertex3f(-1.0,-1.0,-1.0)
-        glVertex3f(-1.0,1.0,-1.0)
+        # left face
+        glVertex3f(-hs.x,hs.y,hs.z)
+        glVertex3f(-hs.x,-hs.y,hs.z)
+        glVertex3f(-hs.x,-hs.y,-hs.z)
+        glVertex3f(-hs.x,hs.y,-hs.z)
         
         glColor4f(0.75,0.75,1.0, 0.5)
-        glVertex3f(1.0,1.0,1.0)
-        glVertex3f(1.0,-1.0,1.0)
-        glVertex3f(1.0,-1.0,-1.0)
-        glVertex3f(1.0,1.0,-1.0)
+        # top face
+        glVertex3f(hs.x,hs.y,hs.z)
+        glVertex3f(-hs.x,hs.y,hs.z)
+        glVertex3f(-hs.x,hs.y,-hs.z)
+        glVertex3f(hs.x,hs.y,-hs.z)
 
         glColor4f(1.0,0.75,1.0, 0.5)
-        glVertex3f(-1.0,1.0,1.0)
-        glVertex3f(-1.0,-1.0,1.0)
-        glVertex3f(-1.0,-1.0,-1.0)
-        glVertex3f(-1.0,1.0,-1.0)
+        # bottom face
+        glVertex3f(hs.x,-hs.y,hs.z)
+        glVertex3f(-hs.x,-hs.y,hs.z)
+        glVertex3f(-hs.x,-hs.y,-hs.z)
+        glVertex3f(hs.x,-hs.y,-hs.z)
 
         glColor4f(0.75,1.0,1.0, 0.5)
-        glVertex3f(1.0,1.0,1.0)
-        glVertex3f(-1.0,1.0,1.0)
-        glVertex3f(-1.0,1.0,-1.0)
-        glVertex3f(1.0,1.0,-1.0)
+        # back face
+        glVertex3f(hs.x,hs.y,-hs.z)
+        glVertex3f(-hs.x,hs.y,-hs.z)
+        glVertex3f(-hs.x,-hs.y,-hs.z)
+        glVertex3f(hs.x,-hs.y,-hs.z)
 
         glColor4f(1.0,1.0,0.75, 0.5)
-        glVertex3f(1.0,-1.0,1.0)
-        glVertex3f(-1.0,-1.0,1.0)
-        glVertex3f(-1.0,-1.0,-1.0)
-        glVertex3f(1.0,-1.0,-1.0)
+        # front face
+        glVertex3f(-hs.x,-hs.y,hs.z)
+        glVertex3f(hs.x,-hs.y,hs.z)
+        glVertex3f(hs.x,hs.y,hs.z)
+        glVertex3f(-hs.x,hs.y,hs.z)
         glEnd()
     
     
