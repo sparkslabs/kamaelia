@@ -23,7 +23,9 @@
 =====================
 Container component
 =====================
-TODO
+
+A container to control several OpenGLComponents.
+
 """
 
 
@@ -34,77 +36,173 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 from Util3D import *
-from OpenGLComponent import *
 
-class Container(OpenGLComponent):
+
+class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+
+    Inboxes = {
+        "inbox": "",
+        "control": "",
+        "position" : "receive position triple (x,y,z)",
+        "rotation": "receive rotation triple (x,y,z)",
+        "scaling": "receive scaling triple (x,y,z)",
+        "rel_position" : "receive position triple (x,y,z)",
+        "rel_rotation": "receive rotation triple (x,y,z)",
+        "rel_scaling": "receive scaling triple (x,y,z)",
+    }
+    
+    Outboxes = {
+        "outbox": "",
+        "signal": ""
+    }
 
     def __init__(self, **argd):
-        super(Container, self).__init__(**argd)
+        super(Container, self).__init__()
         
-        self.contents = argd.get("contents")
+        # get transformation data and convert to vectors
+        self.size = Vector( *argd.get("size", (0,0,0)) )
+        self.position = Vector( *argd.get("position", (0,0,0)) )
+        self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
+        self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
         
-        self.oldTransform = None
+        # for detection of changes
+        self.oldrot = Vector()
+        self.oldpos = Vector()
+        self.oldscaling = Vector()
+
+        # inital apply trasformations
+        self.transform = Transform()
+
         self.components = []
-        self.rel_pos = {}
+
+        self.rel_positions = {}
+        self.rel_rotations = {}
+        self.rel_scalings = {}
+
         self.poscomms = {}
         self.rotcomms = {}
         self.scacomms = {}
         
-        for (comp, pos) in self.contents.items():
-            self.components.append(comp)
-            self.rel_pos[comp] = Vector(*pos)
-            
-            self.poscomms[comp] = self.addOutbox("pos")
-            self.link( (self, self.poscomms[comp]), (comp, "position") )
-            self.rotcomms[comp] = self.addOutbox("rot")
-            self.link( (self, self.rotcomms[comp]), (comp, "rotation") )
-            self.scacomms[comp] = self.addOutbox("sca")
-            self.link( (self, self.scacomms[comp]), (comp, "scaling") )
-            
-            abspos = self.position+self.transform.transformVector(self.rel_pos[comp])
-            self.send(abspos.toTuple(), self.poscomms[comp])
-            self.send(self.rotation.toTuple(), self.rotcomms[comp])
-            self.send(self.scaling.toTuple(), self.scacomms[comp])
         
+        contents = argd.get("contents", None)
+        if contents is not None:
+            for (comp, params) in contents.items():
+                self.addElement(comp, **params)
+
+
+    def main(self):
+        while 1:
+            yield 1
+            self.handleMovement()
+            self.applyTransforms()
+
            
-    def frame(self):
-        if self.oldTransform != self.transform:
-            for comp in self.components:
-                trans = self.transform.transformVector(self.rel_pos[comp])
-                self.send((trans+self.position).toTuple(), self.poscomms[comp])
-                self.send(self.rotation.toTuple(), self.rotcomms[comp])
-                self.send(self.scaling.toTuple(), self.scacomms[comp])
-            self.oldTransform = self.transform
+    def handleMovement(self):
+        """ Handle movement commands received by corresponding inboxes. """
+        while self.dataReady("position"):
+            pos = self.recv("position")
+            self.position = Vector(*pos)
+        
+        while self.dataReady("rotation"):
+            rot = self.recv("rotation")
+            self.rotation = Vector(*rot)
+            
+        while self.dataReady("scaling"):
+            scaling = self.recv("scaling")
+            self.scaling = Vector(*scaling)
+            
+        while self.dataReady("rel_position"):
+            self.position += Vector(*self.recv("rel_position"))
+            
+        while self.dataReady("rel_rotation"):
+            self.rotation += Vector(*self.recv("rel_rotation"))
+            
+        while self.dataReady("rel_scaling"):
+            self.scaling = Vector(*self.recv("rel_scaling"))
+
+
+    def applyTransforms(self):
+        """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
+        # generate new transformation matrix if needed
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.position:
+            self.transform = Transform()
+            self.transform.applyScaling(self.scaling)
+            self.transform.applyRotation(self.rotation)
+            self.transform.applyTranslation(self.position)
+            
+            self.rearangeElements()
+
+
+    def rearangeElements(self):
+        for comp in self.components:
+            trans = self.transform.transformVector(self.rel_positions[comp])
+            self.send(trans.toTuple(), self.poscomms[comp])
+#                self.send(self.rotation.toTuple(), self.rotcomms[comp])
+#                self.send(self.scaling.toTuple(), self.scacomms[comp])
+
+            
+    def addElement(self, comp, position=(0,0,0), rotation=(0,0,0), scaling=(1,1,1) ):
+        self.components.append(comp)
+        self.rel_positions[comp] = Vector( *position )
+        self.rel_rotations[comp] = Vector( *rotation )
+        self.rel_scalings[comp] = Vector( *scaling )
+        
+        self.poscomms[comp] = self.addOutbox("pos")
+        self.link( (self, self.poscomms[comp]), (comp, "position") )
+#        self.rotcomms[comp] = self.addOutbox("rot")
+#        self.link( (self, self.rotcomms[comp]), (comp, "rotation") )
+#        self.scacomms[comp] = self.addOutbox("sca")
+#        self.link( (self, self.scacomms[comp]), (comp, "scaling") )
+
+        self.rearangeElements()
+        
+        
+    def removeElement(self, comp):
+        self.components.remove(comp)
+        self.rel_positions.pop(comp)
+        self.rel_rotations.pop(comp)
+        self.rel_scalings.pop(comp)
+        
+        # todo: unlink
+        
+        self.poscomms.pop(comp)
+        self.rotcomms.pop(comp)
+        self.scacomms.pop(comp)
+
+        self.rearangeElements()
         
 
 if __name__=='__main__':
-    from SimpleButton import *
+    from SimpleButton import SimpleButton
+    from SimpleCube import SimpleCube
+    from ArrowButton import ArrowButton
 
     class Rotator(Axon.Component.component):
         def main(self):
             while 1:
                 yield 1
-                self.send( (0.1, 0.1, 0.1), "outbox")
+                self.send( (0.1, 0.1, 0.0), "outbox")
     
-    class Buzzer(Axon.Component.component):
-        def main(self):
-            r = 1.00
-            f = 0.03
-            while 1:
-                yield 1
-                if  r>1.0: f -= 0.0001
-                else: f += 0.0001
-                r += f
-            
-                self.send( (r, r, r), "outbox")
     
-    b1 = SimpleButton(size=(1,1,1)).activate()
-    b2 = SimpleButton(size=(1,1,1)).activate()
-    r = Rotator().activate()
-    b = Buzzer().activate()
-    c = Container(contents = {b1:(-2,0,0), b2:(2,0,0)}, position=(0,0,-7) ).activate()
-    
-    r.link( (r, "outbox"), (c, "rel_rotation") )
-    b.link( (b, "outbox"), (c, "scaling") )
-    
-    Axon.Scheduler.scheduler.run.runThreads()  
+    from Kamaelia.Chassis.Graphline import Graphline
+
+    o1 = SimpleButton(size=(1,1,1)).activate()
+    o2 = SimpleCube(size=(1,1,1)).activate()
+    o3 = ArrowButton(size=(1,1,1)).activate()
+
+    containercontents = {
+        o1: {"position":(0,1,0)},
+        o2: {"position":(1,-1,0)},
+        o3: {"position":(-1,-1,0)},
+    }
+
+    Graphline(
+        OBJ1=o1,
+        OBJ2=o2,
+        OBJ3=o3,
+        CONTAINER=Container(contents=containercontents, position=(0,0,-10)),
+        ROTATOR= Rotator(),
+        linkages = {
+            ("ROTATOR", "outbox") : ("CONTAINER","rel_rotation")
+        }
+    ).run()
