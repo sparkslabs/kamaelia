@@ -221,7 +221,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - height             -- pixels height (default=600)
     - background_colour  -- (r,g,b) background colour (default=(255,255,255))
     - fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)
-    - showFPS			-- show frames per second in window title (default=True)
+    - FPS			-- show frames per second in window title (default=True)
     Projection parameters
     - near				-- distance to near plane (default=1.0)
     - far				-- distance to far plane (default=100.0)
@@ -287,12 +287,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.height = argd.get("height",600)
         self.background_colour = argd.get("background_colour", (255,255,255))
         self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
-        self.showFPS = argd.get("showFPS", True)
+        self.FPS = argd.get("FPS", True)
         
         # data for FPS measurement
         self.lastTime = 0
-        self.fps = 0
-        self.fpscounter = 0
+        self.FPS = 0
+        self.FPScounter = 0
 
         # 3D component handling
         self.ogl_objects = []
@@ -347,7 +347,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         pygame.display.set_caption(self.caption)
         pygame.mixer.quit()
         
-        glClearColor(1.0,1.0,1.0,0.0)
+        glClearColor(self.background_colour[0],self.background_colour[1],self.background_colour[2],1)
         glClearDepth(1.0)
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LEQUAL)
@@ -358,55 +358,26 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glLoadIdentity()
         self.setProjection()
     
-        
-    def handleRequest(self):
+
+    def main(self):
+        """Main loop."""
+        while 1:
+            self.handleRequests()
+            self.handleEvents()
+            self.updateDisplay()
+            yield 1
+
+    
+    def handleRequests(self):
         """ Handles service requests. """
         while self.dataReady("notify"):
             message = self.recv("notify")
 
             if message.get("OGL_DISPLAYREQUEST", False):
-                # store object
-                ident = message.get("objectid")
-                self.ogl_objects.append(ident)
-                self.ogl_sizes[ident] = message.get("size")
-                # generate and store an ogl name for the requesting object
-                ogl_name = self.ogl_nextName
-                self.ogl_nextName += 1
-                self.ogl_names[ident] = ogl_name
-                # link to eventcallback
-                eventservice = message.get("events", None)
-                if eventservice is not None:
-                    eventcomms = self.addOutbox("eventsfeedback")
-                    self.eventcomms[ident] = eventcomms
-                    self.link((self,eventcomms), eventservice)
-                    self.eventswanted[ident] = {}
-                # link callback service                    
-                callbackservice = message.get("callback")
-                callbackcomms = self.addOutbox("displayerfeedback")
-                self.link((self, callbackcomms), callbackservice)
-                # send response (generated name)
-                self.send(ogl_name, callbackcomms)
-                                
+                self.handleRequest_OGL_DISPLAYREQUEST(message)
+                
             elif message.get("EVENTSPYREQUEST", False):
-                # store object id
-                ident = message.get("objectid")
-                self.eventspies.append(ident)
-                # determine victim to spy out
-                victim = message.get("victim")
-                # link eventservice
-                eventservice = message.get("events", None)
-                if eventservice is not None:
-                    eventcomms = self.addOutbox("eventsfeedback")
-                    self.eventcomms[ident] = eventcomms
-                    self.link((self,eventcomms), eventservice)
-                    self.eventswanted[ident] = {}
-                # link callbackservice
-                callbackservice = message.get("callback")
-                callbackcomms = self.addOutbox("displayerfeedback")
-                self.link((self, callbackcomms), callbackservice)
-                # send response
-                ogl_name = self.ogl_names[victim]                    
-                self.send(ogl_name, callbackcomms)
+                self.handleRequest_EVENTSPYREQUEST(message)
 
             elif message.get("DISPLAYLIST_UPDATE", False):
                 ident = message.get("objectid")
@@ -440,93 +411,29 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.eventswanted[ident][message.get("REMOVELISTENEVENT")] = False
 
             elif message.get("DISPLAYREQUEST", False):
-                # get communication services
-                callbackservice = message["callback"]
-                eventservice = message.get("events", None)
-                # create surface
-                size  = message["size"]
-                surface = pygame.Surface(size)
-                self.pygame_surfaces.append(surface)
-                self.pygame_sizes[id(surface)] = size
-                #create another surface, with dimensions a power of two
-                # this is needed because otherwise texturing is REALLY slow
-                pow2size = (int(2**(ceil(log(size[0], 2)))), int(2**(ceil(log(size[1], 2)))))
-                pow2surface = pygame.Surface(pow2size)
-                self.pygame_pow2surfaces[id(surface)] = pow2surface
-                # handle transparency
-                alpha = message.get("alpha", 255)
-                surface.set_alpha(alpha)
-                if message.get("transparency", None):
-                    surface.set_colorkey(message["transparency"])
-                # get or generate position
-                position = message.get("position", self.surfacePosition(surface))
-                self.pygame_positions[id(surface)] = position
-                # handle event comms
-                if eventservice is not None:
-                    # save eventservice for later use
-                    self.eventservices[id(surface)] = eventservice
-                    # link eventservice
-                    eventcomms = self.addOutbox("eventsfeedback")
-                    self.eventswanted[id(surface)] = {}
-                    self.link((self,eventcomms), eventservice)
-                    self.eventcomms[id(surface)] = eventcomms
-                # generate texture name
-                texname = glGenTextures(1)
-                self.pygame_texnames[id(surface)] = texname
-                # link callback communications
-                callbackcomms = self.addOutbox("displayerfeedback")
-                self.link((self, callbackcomms), callbackservice)
-                # send response
-                self.send(surface, callbackcomms)
+                self.handleRequest_DISPLAYREQUEST(message)
 
             elif message.get("REDRAW", False):
                 surface = message["surface"]
                 self.updatePygameTexture(surface, self.pygame_pow2surfaces[id(surface)], self.pygame_texnames[id(surface)])
 
             elif message.get("WRAPPERREQUEST", False):
-                # get and store surface to wrap
-                surface = message.get("surface")
-                self.wrappedsurfaces.append(id(surface))
-                # get and link callback comms
-                callbackservice = message["wrapcallback"]
-                callbackcomms = self.addOutbox("wrapfeedback")
-                self.link((self,callbackcomms), callbackservice)
-                # get and link eventrequest comms
-                eventrequestservice = message["eventrequests"]
-                eventrequestcomms = self.addOutbox("eventrequests")
-                self.link((self,eventrequestcomms), eventrequestservice)
-                self.wrapper_requestcomms[id(surface)] = eventrequestcomms
-                # find corresponding pow2surface
-                pow2surface = self.pygame_pow2surfaces[id(surface)]
-                #determine texture coordinate lengths
-                tex_w = float(surface.get_width())/float(pow2surface.get_width())
-                tex_h = float(surface.get_height())/float(pow2surface.get_height())
-                # generate response
-                response = { "texname": self.pygame_texnames[id(surface)],
-                                        "texsize": (tex_w, tex_h),
-                                        "size": self.pygame_sizes[id(surface)] }
-                try:
-                    response["eventservice"] = self.eventservices[id(surface)]
-                    response["eventswanted"] = self.eventswanted[id(surface)]
-                except KeyError:
-                    response["eventservice"] = None
-                    response["eventswanted"] = None
-                # send response
-                self.send(response, callbackcomms)
-        
+                self.handleRequest_WRAPPERREQUEST(message)
 
+                    
     def handleEvents(self):
         """ Handles pygame input events. """
         # pre-fetch all waiting events in one go
         events = [ event for event in pygame.event.get() ]
 
         self.handleOGLComponentEvents(events)
-
         self.handlePygameComponentEvents(events)
     
 
     def updateDisplay(self):
         """ Draws all components, updates screen, clears the backbuffer and depthbuffer . """
+        
+        self.showFPS()
         self.drawOpenGLComponents()
         self.drawPygameSurfaces()
 
@@ -536,28 +443,150 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         # clear drawing buffer
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
         
 
-    def main(self):
-        """Main loop."""
-        while 1:
-            #show fps
-            if self.showFPS:
-                self.fpscounter += 1
-                if self.fpscounter > 100:
-                    # determine fps
-                    currentTime = time.time()
-                    self.fps = 100/(currentTime-self.lastTime)
-                    self.lastTime = currentTime
-                    pygame.display.set_caption("%s FPS:%d" % (self.caption, self.fps) )
-                    self.fpscounter = 0
+    def showFPS(self):
+        """ Shows the FPS in the window title if activated. """
+        #show fps
+        if self.FPS:
+            self.FPScounter += 1
+            if self.FPScounter > 100:
+                # determine fps
+                currentTime = time.time()
+                self.FPS = 100/(currentTime-self.lastTime)
+                self.lastTime = currentTime
+                pygame.display.set_caption("%s FPS:%d" % (self.caption, self.FPS) )
+                self.FPScounter = 0
+    
+    
+    def genIdentifier(self):
+        """ Returns a unique number. """
+        ogl_name = self.ogl_nextName
+        self.ogl_nextName += 1
+        return ogl_name
+        
+    
+    def handleRequest_OGL_DISPLAYREQUEST(self, message):
+        ident = message.get("objectid")
+        eventservice = message.get("events", None)
+        callbackservice = message.get("callback")
+        # store object
+        self.ogl_objects.append(ident)
+        self.ogl_sizes[ident] = message.get("size")
+        # generate and store an ogl name for the requesting object
+        ogl_name = self.genIdentifier()
+        self.ogl_names[ident] = ogl_name
+        # link to eventcallback
+        if eventservice is not None:
+            eventcomms = self.addOutbox("eventsfeedback")
+            self.eventcomms[ident] = eventcomms
+            self.eventswanted[ident] = {}
+            self.link((self,eventcomms), eventservice)
+        # link callback service                    
+        callbackcomms = self.addOutbox("displayerfeedback")
+        self.link((self, callbackcomms), callbackservice)
+        # send response (generated name)
+        self.send(ogl_name, callbackcomms)
 
-            self.handleRequest()
-            self.handleEvents()
-            self.updateDisplay()
-            yield 1
+        
+    def handleRequest_EVENTSPYREQUEST(self, message):
+        ident = message.get("objectid")
+        victim = message.get("victim")
+        eventservice = message.get("events", None)
+        callbackservice = message.get("callback")
+        # store object id
+        self.eventspies.append(ident)
+        # link eventservice
+        if eventservice is not None:
+            eventcomms = self.addOutbox("eventsfeedback")
+            self.eventcomms[ident] = eventcomms
+            self.eventswanted[ident] = {}
+            self.link((self,eventcomms), eventservice)
+        # link callbackservice
+        callbackcomms = self.addOutbox("displayerfeedback")
+        self.link((self, callbackcomms), callbackservice)
+        # send response
+        ogl_name = self.ogl_names[victim]                    
+        self.send(ogl_name, callbackcomms)
 
+    
+    def calcPow2Size(self, size):
+        """ Calculates the power of 2 dimensions for a given size. """
+        pow2size = (int(2**(ceil(log(size[0], 2)))), int(2**(ceil(log(size[1], 2)))))
+        return pow2size
+        
+    def handleRequest_DISPLAYREQUEST(self, message):
+        callbackservice = message["callback"]
+        eventservice = message.get("events", None)
+        size  = message["size"]
+        alpha = message.get("alpha", 255)
+        transparency = message.get("transparency", None)
+        # create surface
+        surface = pygame.Surface(size)
+        self.pygame_surfaces.append(surface)
+        self.pygame_sizes[id(surface)] = size
+        position = message.get("position", self.surfacePosition(surface))
+        # create another surface, with dimensions a power of two
+        # this is needed because otherwise texturing is REALLY slow
+        pow2size = self.calcPow2Size(size)
+        pow2surface = pygame.Surface(pow2size)
+        self.pygame_pow2surfaces[id(surface)] = pow2surface
+        # handle transparency
+        surface.set_alpha(alpha)
+        if transparency:
+            surface.set_colorkey(transparency)
+        # save position
+        self.pygame_positions[id(surface)] = position
+        # handle event comms
+        if eventservice is not None:
+            # save eventservice for later use
+            self.eventservices[id(surface)] = eventservice
+            # link eventservice
+            eventcomms = self.addOutbox("eventsfeedback")
+            self.eventswanted[id(surface)] = {}
+            self.link((self,eventcomms), eventservice)
+            self.eventcomms[id(surface)] = eventcomms
+        # generate texture name
+        texname = glGenTextures(1)
+        self.pygame_texnames[id(surface)] = texname
+        # link callback communications
+        callbackcomms = self.addOutbox("displayerfeedback")
+        self.link((self, callbackcomms), callbackservice)
+        # send response
+        self.send(surface, callbackcomms)
+
+    
+    def handleRequest_WRAPPERREQUEST(self, message):
+        surface = message.get("surface")
+        callbackservice = message["wrapcallback"]
+        eventrequestservice = message["eventrequests"]
+        # store surface to wrap
+        self.wrappedsurfaces.append(id(surface))
+        # get and link callback comms
+        callbackcomms = self.addOutbox("wrapfeedback")
+        self.link((self,callbackcomms), callbackservice)
+        # get and link eventrequest comms
+        eventrequestcomms = self.addOutbox("eventrequests")
+        self.link((self,eventrequestcomms), eventrequestservice)
+        self.wrapper_requestcomms[id(surface)] = eventrequestcomms
+        # find corresponding pow2surface
+        pow2surface = self.pygame_pow2surfaces[id(surface)]
+        #determine texture coordinate lengths
+        tex_w = float(surface.get_width())/float(pow2surface.get_width())
+        tex_h = float(surface.get_height())/float(pow2surface.get_height())
+        # generate response
+        response = { "texname": self.pygame_texnames[id(surface)],
+                     "texsize": (tex_w, tex_h),
+                     "size": self.pygame_sizes[id(surface)] }
+        try:
+            response["eventservice"] = self.eventservices[id(surface)]
+            response["eventswanted"] = self.eventswanted[id(surface)]
+        except KeyError:
+            response["eventservice"] = None
+            response["eventswanted"] = None
+        # send response
+        self.send(response, callbackcomms)
+    
 
     def setProjection(self):
         """ Sets projection matrix. """
