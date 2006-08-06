@@ -152,7 +152,7 @@ class Button(OpenGLComponent):
         font = pygame.font.Font(None, self.fontsize)
         self.image = font.render(self.caption,True, self.foregroundColour, )
         # create power of 2 dimensioned surface
-        pow2size = (int(2**(ceil(log(self.image.get_width(), 2)))), int(2**(ceil(log(self.image.get_height(), 2)))))
+        pow2size = (int(2**(ceil(log(self.image.get_width()+2*self.margin, 2)))), int(2**(ceil(log(self.image.get_height()+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
         textureSurface.fill( self.backgroundColour )
         # determine texture coordinates
@@ -182,7 +182,7 @@ class Button(OpenGLComponent):
 
     def activationMovement(self):
         if self.activated:
-            self.rot += Vector(3,0,0)%360
+            self.rotation += Vector(3,0,0)%360
             self.actrot += 3
             if self.actrot >= 360:
                 self.actrot = 0
