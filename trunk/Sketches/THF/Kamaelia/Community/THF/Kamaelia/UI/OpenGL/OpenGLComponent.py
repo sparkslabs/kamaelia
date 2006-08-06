@@ -160,6 +160,7 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     Outboxes = {
         "outbox": "not used",
+        "signal": "not used",
         "display_signal" : "Outbox used for communicating to the display surface",
         "position" : "send position status when updated",
         "rotation": "send rotation status when updated",
@@ -180,6 +181,8 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.oldpos = Vector()
         self.oldscaling = Vector()
 
+        self.transform = Transform()
+
         # name (mostly for debugging)
         self.name = argd.get("name", "nameless")
 
@@ -188,7 +191,36 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # link display_signal to displayservice
         self.link((self,"display_signal"), displayservice)
         
-        self.transform = Transform()
+            
+            
+    def main(self):
+        # create display request
+        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
+                             "objectid" : id(self),
+                             "callback" : (self,"callback"),
+                             "events" : (self, "events"),
+                             "size": self.size
+                           }
+        # send display request
+        self.send(self.disprequest, "display_signal")
+        # inital apply trasformations
+        self.applyTransforms()
+        # setup function from derived objects
+        self.setup()        
+        # initial draw to display list
+        self.redraw()
+
+        # wait for response on displayrequest
+        while not self.dataReady("callback"):  yield 1
+        self.identifier = self.recv("callback")
+        
+        while 1:
+            yield 1
+            self.handleMovement()
+            self.handleEvents()
+            self.applyTransforms()
+            # frame function from derived objects
+            self.frame()
 
                                           
     def applyTransforms(self):
@@ -214,8 +246,9 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
-                                                 "objectid": id(self),
-                                                 "transform": self.transform }
+                                 "objectid": id(self),
+                                 "transform": self.transform
+                               }
             self.send(transform_update, "display_signal")
 
 
@@ -241,36 +274,6 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
         while self.dataReady("rel_scaling"):
             self.scaling = Vector(*self.recv("rel_scaling"))
-            
-            
-    def main(self):
-        # create display request
-        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
-                                          "objectid" : id(self),
-                                          "callback" : (self,"callback"),
-                                          "events" : (self, "events"),
-                                          "size": self.size,
-                                          }
-        # send display request
-        self.send(self.disprequest, "display_signal")
-        # setup function from derived objects
-        self.setup()        
-        # inital apply trasformations
-        self.applyTransforms()
-        # initial draw to display list
-        self.redraw()
-
-        # wait for response on displayrequest
-        while not self.dataReady("callback"):  yield 1
-        self.identifier = self.recv("callback")
-        
-        while 1:
-            yield 1
-            self.applyTransforms()
-            self.handleMovement()
-            self.handleEvents()
-            # frame function from derived objects
-            self.frame()
 
     ##
     # Methods to be used by derived objects
@@ -310,8 +313,9 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         
         dl_update = { "DISPLAYLIST_UPDATE": True,
-                                                "objectid": id(self),
-                                                "displaylist": displaylist }
+                      "objectid": id(self),
+                      "displaylist": displaylist
+                    }
         self.send(dl_update, "display_signal")
         
 
