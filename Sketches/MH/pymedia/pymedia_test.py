@@ -11,7 +11,10 @@ import pymedia.audio.sound as sound
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
-from Axon.ThreadedComponent import threadedcomponent
+import sys
+sys.path.append("../Timer")
+#from Axon.ThreadedComponent import threadedcomponent
+from ThreadedComponent import threadedcomponent
 
 mapping_format_to_pymedia = {
     'AC3'       : sound.AFMT_AC3,
@@ -441,7 +444,7 @@ if __name__ == "__main__":
     
     extension = filename.split(".")[-1]
         
-    test = 3
+    test = 5
     
     if test == 1:
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
@@ -468,6 +471,15 @@ if __name__ == "__main__":
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
                   AudioDecoder("mp3"),
                   ResampleTo(sample_rate=8000,channels=1),
+                  SoundOutput(),
+                ).activate()
+    elif test == 5:
+        pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
+                  AudioDecoder("mp3"),
+                  SoundOutput(),
+                ).activate()
+        pipeline( RateControlledFileReader("/home/matteh/music/Muse/Absolution/03 - Time Is Running Out.mp3",readmode="bytes",rate=999999,chunksize=1024),
+                  AudioDecoder("mp3"),
                   SoundOutput(),
                 ).run()
 
