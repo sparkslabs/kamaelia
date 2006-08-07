@@ -27,7 +27,7 @@ Pygame Sprite Scheduling
 A component that manages updating and blitting a collection of pygame sprites
 and also uses a configurable event dispatch mechanism.
 
-Probably cannot coexist with a PygameDisplay service at runtime.
+Probably cannot coexist with a Pygame Display service at runtime.
 
 
 
@@ -89,7 +89,7 @@ specified arguments being passed to the initialiser. This is used to respond to
 events from pygame such as mouse clicks.
 
 Because this component effectively forms a pygame main loop, it cannot coexist
-with a PygameDisplay service.
+with a Pygame Display service.
 
 This component ignores any incoming messages on any of its inboxes. It does not
 send anything out of any of its outboxes.
@@ -99,10 +99,10 @@ This component does not terminate.
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX VOMIT : Does not interoperate with PygameDisplay component
+# XXX VOMIT : Does not interoperate with Pygame Display component
 #
 #             - in particular the event dispatch mechanism will need to be
-#               tied to the PygameDisplay one.
+#               tied to the Pygame Display one.
 #
 #             - interaction with BasicSprite compoennt (if used) will need
 #               improvement as this component calls methods on BasicSprite.

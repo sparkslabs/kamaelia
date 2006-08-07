@@ -24,7 +24,7 @@
 Pygame image display
 ====================
 
-Component for displaying an image on a pygame display. Uses the PygameDisplay
+Component for displaying an image on a pygame display. Uses the Pygame Display
 service component.
 
 The image can be changed at any time.
@@ -60,7 +60,7 @@ Display that rotates rapidly through a set of images::
 How does it work?
 -----------------
 
-This component requests a display surface from the PygameDisplay service
+This component requests a display surface from the Pygame Display service
 component and renders the specified image to it.
 
 The image, and other properties can be changed later by sending messages to its
@@ -83,7 +83,7 @@ the component will then terminate.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import Display
 
 class Image(Axon.Component.component):
    """\
@@ -96,13 +96,13 @@ class Image(Axon.Component.component):
    - position      -- (x,y) pixels position of top left corner (default=(0,0))
    - bgcolour      -- (r,g,b) background colour (behind the image if size>image size)
    - size          -- (width,height) pixels size of the area to render the iamge in (default=image size or (240,192) if no image specified)
-   - displayExtra  -- dictionary of any additional args to pass in request to PygameDisplay service
+   - displayExtra  -- dictionary of any additional args to pass in request to Pygame Display service
    - maxpect       -- (xscale,yscale) scaling to apply to image (default=no scaling)
    """
    
    Inboxes = { "inbox"    : "Filename of (new) image",
                "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
-               "callback" : "Receive callbacks from PygameDisplay",
+               "callback" : "Receive callbacks from Pygame Display",
                "bgcolour" : "Set the background colour",
                "events"   : "Place where we recieve events from the outside world",
                "alphacontrol" : "Alpha (transparency) of the image (value 0..255)",
@@ -133,7 +133,7 @@ class Image(Axon.Component.component):
       if self.size is None:
          self.size = (240,192)
 
-      # build the initial request to send to PygameDisplay to obtain a surface
+      # build the initial request to send to Pygame Display to obtain a surface
       # but store it away until main() main loop is activated.
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
@@ -157,7 +157,7 @@ class Image(Axon.Component.component):
    def main(self):
       """Main loop."""
       
-      displayservice = PygameDisplay.getDisplayService()
+      displayservice = Display.getDisplayService()
       self.link((self,"display_signal"), displayservice)
       
       # request a surface
@@ -245,8 +245,8 @@ __kamaelia_components__  = ( Image, )
              
 if __name__ == "__main__":
    
-   testImageFile0 = "../../../../../../Sketches/OptimisationTest/pictures/cat.gif"
-   testImageFile1 = "../../../../../../Sketches/OptimisationTest/pictures/thumb.10063680.jpg.gif"
+   testImageFile0 = "../../../../../../Sketches/MPS/Experiments/OptimisationTest/pictures/cat.gif"
+   testImageFile1 = "../../../../../../Sketches/MPS/Experiments/OptimisationTest/pictures/thumb.10063680.jpg.gif"
 
    class IChange(Axon.Component.component):
       Outboxes = [ "outcolour", "outimage" ]

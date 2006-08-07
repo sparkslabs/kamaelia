@@ -44,7 +44,7 @@ Ticker displaying text from a file::
 How does it work?
 -----------------
 
-The component requests a display surface from the PygameDisplay service
+The component requests a display surface from the Pygame Display service
 component. This is used as the ticker.
 
 Send strings containing *lines of text* to the Ticker component. Do not send
@@ -94,12 +94,12 @@ sending a message to its "unpausebox" inbox.
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX VOMIT : "control" inbox used for communication with PygameDisplay service.
+# XXX VOMIT : "control" inbox used for communication with Pygame Display service.
 #             This should be changed, so "control" can be used for shutdown
 #             signalling.
 #
 #             similarly the "signal" outbox is used to send stuff to the
-#             PygameDisplay service. Also must be changed (for the same reasons)
+#             Pygame Display service. Also must be changed (for the same reasons)
 #
 #         __init__ args:
 #             render_left, render_right, render_top, render_bottom are a bit
@@ -120,7 +120,7 @@ sending a message to its "unpausebox" inbox.
 
 import pygame
 import Axon
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import Display
 from Axon.Ipc import WaitComplete
 import time
 
@@ -147,13 +147,13 @@ class Ticker(Axon.Component.component):
    """
     
    Inboxes = { "inbox"        : "Specify (new) filename",
-               "control"      : "Shutdown messages & feedback from PygameDisplay service",
+               "control"      : "Shutdown messages & feedback from Pygame Display service",
                "alphacontrol" : "Transparency of the ticker (0=fully transparent, 255=fully opaque)",
                "pausebox"     : "Any message pauses the ticker",
                "unpausebox"   : "Any message unpauses the ticker",
              }
    Outboxes = { "outbox" : "NOT USED",
-                "signal" : "Shutdown signalling & sending requests to PygameDisplay service",
+                "signal" : "Shutdown signalling & sending requests to Pygame Display service",
               }
 
    def __init__(self, **argd):
@@ -203,11 +203,11 @@ class Ticker(Axon.Component.component):
 
    def requestDisplay(self, **argd):
       """\
-      Generator. Gets a display surface from the PygameDisplay service.
+      Generator. Gets a display surface from the Pygame Display service.
 
       Makes the request, then yields 1 until a display surface is returned.
       """
-      displayservice = PygameDisplay.getDisplayService()
+      displayservice = Display.getDisplayService()
       self.link((self,"signal"), displayservice)
       self.send(argd, "signal")
       for _ in self.waitBox("control"): yield 1
