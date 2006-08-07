@@ -134,7 +134,7 @@ def _f2r(v, depth):
         whole = int(v - frac)
 
         if frac > 0:
-            fracdenominator, fracnumerator = f2r(1.0/frac, depth)
+            fracdenominator, fracnumerator = _f2r(1.0/frac, depth)
             numerator = whole * fracdenominator + fracnumerator
             denominator = fracdenominator
         else:
