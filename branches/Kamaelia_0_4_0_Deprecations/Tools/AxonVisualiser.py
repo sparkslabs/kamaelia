@@ -82,10 +82,10 @@ if __name__=="__main__":
                     ).activate()
 
         resolution = dictArgs.get("screensize",(800,600))
-        from Kamaelia.UI.PygameDisplay import PygameDisplay
+        from Kamaelia.UI.Pygame.Display import Display
         
-        pgd = PygameDisplay(width=resolution[0],height=resolution[1]).activate()
-        PygameDisplay.setDisplayService(pgd)
+        pgd = Display(width=resolution[0],height=resolution[1]).activate()
+        Display.setDisplayService(pgd)
 
         app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser", **dictArgs)
 
