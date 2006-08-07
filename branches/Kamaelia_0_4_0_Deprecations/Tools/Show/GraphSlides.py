@@ -2,8 +2,8 @@
 
 import Axon
 from xml.sax import make_parser, handler
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.RateFilter import OnDemandLimit
 
 class GraphSlideXMLParser(handler.ContentHandler):
@@ -78,10 +78,10 @@ __kamaelia_prefab__ = ( onDemandGraphFileParser_Prefab, )
 
 
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     import sys
-    pipeline(
+    Pipeline(
         ReadFileAdaptor(sys.argv[1]),
         GraphSlideComponent(),
         consoleEchoer()

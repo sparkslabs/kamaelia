@@ -31,11 +31,11 @@ from Kamaelia.UI.Pygame.Multiclick import Multiclick
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.PipelineComponent import pipeline
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 
 # We should start thinking about how we handle the lines below better:
@@ -147,13 +147,13 @@ Graphline(
                      displayExtra={ "transparency" : (255,255,255) },
                     ),
 
-     GRAPHSLIDES = pipeline(
+     GRAPHSLIDES = Pipeline(
          onDemandGraphFileParser_Prefab(GraphsFile),
          chunks_to_lines(),
          lines_to_tokenlists(),
      ),
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
-     GRAPHVIEWER = TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
+     GRAPHVIEWER = TopologyViewer(transparency = (255,255,255), showGrid = False, position=(0,0)),
 
      linkages = {
          ("MOUSECLICKS","outbox"): ("PRIMARYSLIDES","inbox"),
