@@ -36,7 +36,7 @@ Example Usage
 A simple console driven topology viewer::
     pipeline( ConsoleReader(),
               lines_to_tokenlists(),
-              TopologyViewerComponent(),
+              TopologyViewer(),
             ).run()
 
 Then at runtime try typing these commands to change the topology in real time::
@@ -55,7 +55,7 @@ Then at runtime try typing these commands to change the topology in real time::
 User Interface
 --------------
 
-TopologyViewerComponent manifests as a pygame display surface. As it is sent
+TopologyViewer manifests as a pygame display surface. As it is sent
 topology information nodes and links between them will appear.
 
 You can click a node with the mouse to select it. Depending on the application,
@@ -78,7 +78,7 @@ Press the 'f' key to toggle between windowed and fullscreen modes.
 How does it work?
 -----------------
 
-TopologyViewerComponent is a specialisation of the Kamaeila.UI.MH.PyGameApp
+TopologyViewer is a specialisation of the Kamaeila.UI.MH.PyGameApp
 component. See documentation for that component to understand how it obtains
 and handles events for a pygame display surface.
 
@@ -88,7 +88,7 @@ You can specify an initial topology by providing a list of instantiated
 particles and another list of pairs of those particles to show how they are 
 linked.
 
-TopologyViewerComponent reponds to commands arriving at its "inbox" inbox
+TopologyViewer reponds to commands arriving at its "inbox" inbox
 instructing it on how to change the topology. A command is a list/tuple.
 
 Commands recognised are:
@@ -135,7 +135,7 @@ handling of commands.
 However, there is a 1 second timeout, so at least one update of the visual
 output is guaranteed per second.
 
-TopologyViewerComponent sends any output to its "outbox" outbox in the same
+TopologyViewer sends any output to its "outbox" outbox in the same
 list/tuple format as used for commands sent to its "inbox" inbox. The following
 may be output:
 
@@ -222,7 +222,7 @@ more information.
 The render(...) method should return a generator that will render the particle
 itself and its links/bonds to other particles.
 
-Rendering by the TopologyViewerComponent is multi-pass. This is done so that
+Rendering by the TopologyViewer is multi-pass. This is done so that
 irrespective of the order in which particles are chosen to be rendered,
 things that need to be rendered before (underneath) other things can be done
 consistently.
@@ -269,9 +269,9 @@ from GridRenderer import GridRenderer
 from ParticleDragger import ParticleDragger
 from RenderingParticle import RenderingParticle
                   
-class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
+class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     """\
-    TopologyViewerComponent(...) -> new TopologyViewerComponent component.
+    TopologyViewer(...) -> new TopologyViewer component.
     
     A component that takes incoming topology (change) data and displays it live
     using pygame. A simple physics model assists with visual layout. Particle
@@ -319,7 +319,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                        position           = None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
 
-        super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
+        super(TopologyViewer, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
         pygame.mixer.quit()
         
@@ -656,7 +656,7 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
     
     def quit(self, event=None):
         """Cause termination."""
-        super(TopologyViewerComponent,self).quit(event)
+        super(TopologyViewer,self).quit(event)
         raise "QUITTING"           ### XXX VOMIT : need better shutdown than this!
         
     def scroll( self, (dx, dy) ):
@@ -680,5 +680,5 @@ class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component)
                 nodeid = self.selected.ID
             self.send( ("SELECT","NODE", nodeid), "outbox" )
 
-__kamaelia_components__  = ( TopologyViewerComponent, )
+__kamaelia_components__  = ( TopologyViewer, )
         
