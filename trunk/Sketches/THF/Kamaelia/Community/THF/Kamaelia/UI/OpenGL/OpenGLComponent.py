@@ -118,7 +118,7 @@ The following methods are provided to be used by inherited objects:
 - addListenEvents()
 - removeListenEvents()        
 
-The are inteded to simplify component handling. For their functionality see their docstrings.
+The are inteded to simplify component handling. For their functionality see their description.
 """
 
 

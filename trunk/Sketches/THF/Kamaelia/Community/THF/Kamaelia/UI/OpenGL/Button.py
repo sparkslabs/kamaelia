@@ -21,9 +21,44 @@
 # -------------------------------------------------------------------------
 """\
 =====================
-Button component
+OpenGL Button Widget
 =====================
-TODO
+
+A button widget for the OpenGL display service. Sends a message when clicked or an assigned key is pressed.
+
+This component is a subclass of OpenGLComponent.
+
+Example Usage
+-------------
+4 Buttons which could be used for playback control (output to the console):
+
+    Graphline(
+        BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
+        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
+        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
+        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
+        ECHO = ConsoleEchoer(),
+        linkages = {
+            (BUTTON1, "outbox") : (ECHO, "inbox"),
+            (BUTTON2, "outbox") : (ECHO, "inbox"),
+            (BUTTON3, "outbox") : (ECHO, "inbox"),
+            (BUTTON4, "outbox") : (ECHO, "inbox"),            
+        }
+    ).run()
+    
+How does it work?
+-----------------
+
+This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw(), handleEvents() and frame().
+
+In setup() it requests to receive mouse events and calls buildCaption() where the set caption is rendered on a pygame surface. This surface is then set as OpenGL texture.
+
+In draw() a flat cuboid is drawn (if size is not specified) with the caption texture on both the front and the back surface.
+
+In handleEvents() the component reacts to mouse events and, if a key is assigned, to the keydown event. If a mouse click happens when the mouse pointer is over the button it gets "grabbed", which is visualised by shrinking the button by a little amount, until the button is released again. Only if the mouse button is released over the button widget it gets activated. On activation the button gets rotated by 360 degrees around the X axis.
+
+In frame() the button gets rotated when it has been activated.
+
 """
 
 
@@ -38,25 +73,37 @@ from OpenGLComponent import *
 
 
 class Button(OpenGLComponent):
-
+    """
+    Button specific constructor keyword arguments:
+    -caption      -- Button caption (default="Button")
+    -bgcolour     -- Colour of surfaces behind caption (default=(244,244,244))
+    -fgcolour     -- Colour of the caption text (default=(0,0,0)
+    -sidecolour   -- Colour of side planes (default=(200,200,244))
+    -margin       -- Margin size in pixels (default=8)
+    -key          -- Key to activate button (default=None)
+    -fontsize     -- Font size for caption text (default=50)
+    -pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
+    -thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
+    -msg          -- Message which gets sent when button is activated (default="CLICK")
+        
+    """
     def __init__(self, **argd):
         super(Button, self).__init__(**argd)
 
         self.grabbed = 0
 
         # Button initialisation
-        caption = argd.get("caption", "Button")
+        self.caption = argd.get("caption", "Button")
 
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
         self.sideColour = argd.get("sidecolour", (200,200,244))
         self.margin = argd.get("margin", 8)
         self.key = argd.get("key", None)
-        self.caption = argd.get("caption", "Button")
 
         self.fontsize = argd.get("fontsize", 50)
         self.pixelscaling = argd.get("pixelscaling", 100)
-        self.thickness = argd.get("thickness", 0.2)
+        self.thickness = argd.get("thickness", 0.3)
 
         self.eventMsg = argd.get("msg", "CLICK")
 
@@ -65,11 +112,13 @@ class Button(OpenGLComponent):
 
 
     def setup(self):
+        """ Build caption and request reception of events."""
         self.buildCaption()
-        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP ])
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN ])
 
 
     def draw(self):
+        """ Draw button cuboid."""
         hs = self.size/2.0
         # draw faces
         glBegin(GL_QUADS)
@@ -123,8 +172,14 @@ class Button(OpenGLComponent):
         
         glDisable(GL_TEXTURE_2D)
 
+        
+    def frame(self):
+        """ Rotate button if it has been activated. """
+        self.activationMovement()
 
+        
     def handleEvents(self):
+        """ Handle events. """
         while self.dataReady("events"):
             event = self.recv("events")
             if event.type == pygame.KEYDOWN:
@@ -181,6 +236,7 @@ class Button(OpenGLComponent):
 
 
     def activationMovement(self):
+        """ Rotate button stepwise by 360 degrees when it has been activated. """
         if self.activated:
             self.rotation += Vector(3,0,0)%360
             self.actrot += 3
@@ -189,17 +245,22 @@ class Button(OpenGLComponent):
                 self.activated = False
 
 
-    def frame(self):
-        self.activationMovement()
 
 
 if __name__=='__main__':
-    from SkyGrassBackground import *
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Chassis.Graphline import Graphline
 
-    BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)).activate()
-    BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)).activate()
-    BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)).activate()
-    BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)).activate()
-    bg = SkyGrassBackground(size=(5000,5000,0), position = (0, 0, -100)).activate()
-
-    Axon.Scheduler.scheduler.run.runThreads()
+    Graphline(
+        BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
+        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
+        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
+        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
+        ECHO = ConsoleEchoer(),
+        linkages = {
+            ("BUTTON1", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON4", "outbox") : ("ECHO", "inbox"),            
+        }
+    ).run()
