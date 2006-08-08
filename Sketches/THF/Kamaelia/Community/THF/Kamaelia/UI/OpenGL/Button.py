@@ -26,10 +26,11 @@ OpenGL Button Widget
 
 A button widget for the OpenGL display service. Sends a message when clicked or an assigned key is pressed.
 
-This component is a subclass of OpenGLComponent.
+This component is a subclass of OpenGLComponent and therefore uses the OpenGL display service.
 
 Example Usage
 -------------
+
 4 Buttons which could be used for playback control (output to the console):
 
     Graphline(
@@ -258,9 +259,9 @@ if __name__=='__main__':
         BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
-            ("BUTTON1", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON4", "outbox") : ("ECHO", "inbox"),            
+            (BUTTON1, "outbox") : (ECHO, "inbox"),
+            (BUTTON2, "outbox") : (ECHO, "inbox"),
+            (BUTTON3, "outbox") : (ECHO, "inbox"),
+            (BUTTON4, "outbox") : (ECHO, "inbox"),            
         }
     ).run()
