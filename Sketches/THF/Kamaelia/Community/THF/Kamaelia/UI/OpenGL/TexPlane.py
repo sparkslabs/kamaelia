@@ -23,7 +23,29 @@
 =====================
 Textured Plane
 =====================
-TODO
+
+A plane showing a texture loaded from an image file.
+
+This component is a subclass of OpenGLComponent and therefore uses the OpenGL display service.
+
+Example Usage
+-------------
+
+A plane showing an image loaded from the file "nemo.jpeg":
+
+    PLANE = TexPlane(position=(0, 0,-6), texture="nemo.jpeg").activate()
+        
+    Axon.Scheduler.scheduler.run.runThreads()
+    
+How does it work?
+-----------------
+
+This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw().
+
+In setup() the method loadTexture() get called which loads the texure from the image file specified. If the image in the file has dimensions which are not equal a power of two, the texture dimensions get enlarged (this is needed because of OpenGL texturing limitations).
+
+In draw() a simple plane is drawn whith the loaded texture on it.
+
 """
 
 
@@ -38,16 +60,22 @@ from OpenGLComponent import *
 
 
 class TexPlane(OpenGLComponent):
-    
+    """\
+    TexPlane specific constructor keyword arguments:
+    - tex           -- image file name
+    - pixelscaling  -- factor for translation from pixels to units in 3D space (default=100.0)
+    """
     def __init__(self, **argd):
         super(TexPlane, self).__init__(**argd)
 
-        self.pixelscaling = argd.get("pixelscaling", 100.0)
-        self.tex = argd.get("texture", None)
+        self.tex = argd.get("texture")
         self.texID = 0
+
+        self.pixelscaling = argd.get("pixelscaling", 100.0)
                                           
 
     def draw(self):
+        """ Draws textured plane. """
         # set texure
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -67,6 +95,7 @@ class TexPlane(OpenGLComponent):
 
 
     def loadTexture(self):
+        """ Loads texture from specified image file. """
         if self.tex is not None:
             # load image
             image = pygame.image.load(self.tex)
@@ -100,6 +129,7 @@ class TexPlane(OpenGLComponent):
         
     
     def setup(self):
+        """ Load texture. """
         self.loadTexture()
 
 
