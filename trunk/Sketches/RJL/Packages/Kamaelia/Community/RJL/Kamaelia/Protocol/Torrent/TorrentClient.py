@@ -72,13 +72,13 @@ unfortunately is not thread-safe (at least with the latest version - 4.20).
 If you run two instances of this client simultaneously, Python will die
 with an exception, or if you're really unlucky, a segfault.
 
-But despair not! There is a solution - use TorrentHandler instead.
-TorrentHandlers will organise the sharing of a single TorrentClient amongst
+But despair not! There is a solution - use TorrentPatron instead.
+TorrentPatrons will organise the sharing of a single TorrentClient amongst
 themselves and expose exactly the same interface (except that the
 tickInterval optional argument cannot be set) with the key advantage
 that you can run as many of them as you want.
 
-For a description of the interfaces of TorrentClient see TorrentHandler.py.
+For a description of the interfaces of TorrentClient see TorrentPatron.py.
 
 How does it work?
 -----------------
@@ -111,17 +111,17 @@ class TorrentClient(threadedcomponent):
     Arguments:
     - [tickInterval=5] -- the interval in seconds at which TorrentClient checks inboxes
     
-    Using threadedcomponent so we don't have to worry about blocking I/O or making
-    mainline yield periodically
+    Uses threadedcomponent so it doesn't have to worry about blocking I/O or making
+    Mainline yield periodically.
     """
     
     Inboxes = {
         "inbox"   : "Torrent IPC - add a torrent, stop a torrent etc.",
-        "control" : "NOT USED"
+        "control" : "Shut me down"
     }
     Outboxes = {
         "outbox"  : "Torrent IPC - status updates, completion, new torrent added etc.",
-        "signal"  : "NOT USED"
+        "signal"  : "Say when I've shutdown"
     }
 
     def __init__(self, tickInterval = 5):
@@ -133,7 +133,7 @@ class TorrentClient(threadedcomponent):
         
     def main(self):
         """\
-        Start the Mainline client and block forever listening for connectons
+        Start the Mainline client and block indefinitely, listening for connectons.
         """
       
         uiname = "bittorrent-console"
@@ -157,7 +157,7 @@ class TorrentClient(threadedcomponent):
                         
     def startTorrent(self, metainfo, save_incomplete_as, save_as, torrentid):
         """startTorrent causes MultiTorrent to begin downloading a torrent eventually.
-        Use it instead of _start_torrent."""
+        Use it instead of _start_torrent as it retries repeatedly if Mainline is busy."""
         
         self._create_torrent(metainfo, save_incomplete_as, save_as)
         self.multitorrent.rawserver.add_task(1, self._start_torrent, metainfo, torrentid)
