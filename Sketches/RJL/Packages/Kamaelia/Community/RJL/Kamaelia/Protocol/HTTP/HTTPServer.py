@@ -28,11 +28,14 @@ handler/response generator. One instance of this component can handle one
 TCP connection. Use a SimpleServer or similar component to allow several
 concurrent HTTP connections to the server.
 
+HTTPServer creates 2 subcomponents - HTTPParser and HTTPRequestHandler which
+handle the processing of requests and the creation of responses respectively.
+
 Example Usage
 -------------
 
-SimpleServer(protocol=lambda : HTTPServer(
-             HTTPResourceGlue.createRequestHandler, port=80).run()
+createhttpserver = lambda : HTTPServer(HTTPResourceGlue.createRequestHandler, port=80)
+SimpleServer(protocol=createhttpserver).run()
 
 "lambda : HTTPServer(HTTPResourceGlue.createRequestHandler)" is the
 definition of function which creates a HTTPServer instance with 

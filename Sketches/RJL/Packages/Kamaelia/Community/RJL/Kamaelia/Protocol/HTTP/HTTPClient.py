@@ -32,7 +32,10 @@ Example Usage
 Generally you should use SimpleHTTPClient in preference to this.
 If you want to use it directly, note that it doesn't output strings
 but ParsedHTTPHeader, ParsedHTTPBodyChunk and ParsedHTTPEnd like
-HTTPParser.
+HTTPParser. This makes has the advantage of not buffering huge
+files in memory but outputting them as a stream of chunks.
+(with plain strings you would not know the contents of the
+headers or at what point that response had ended!)
 
 pipeline(
     SingleShotHTTPClient("http://www.google.co.uk/"),
@@ -42,9 +45,12 @@ pipeline(
 
 How does it work?
 -----------------
-SingleShotHTTPClient creates an HTTPParser instance and then connects
-to the HTTP server using a TCPClient component. It sends an HTTP request
-and then any response from the server is received by the HTTPParser.
+SingleShotHTTPClient accepts a URL parameter at its creation (to __init__).
+When activated it creates an HTTPParser instance and then connects
+to the webserver specified in the URL using a TCPClient component.
+It sends an HTTP request and then any response from the server is received
+by the HTTPParser.
+
 HTTPParser processes the response and outputs it in parts as:
 
 ParsedHTTPHeader,
@@ -57,7 +63,7 @@ ParsedHTTPEnd
 If SingleShotHTTPClient detects that the requested URL is a redirect page
 (using the Location header) then it begins this cycle anew with the URL
 of the new page, otherwise the parts of the page output by HTTPParser are
-sent on through "outbox". 
+sent on to "outbox". 
 
 =================
 Simple HTTP Client
@@ -65,7 +71,7 @@ Simple HTTP Client
 
 This component downloads the pages corresponding to HTTP URLs received
 on "inbox" and outputs their contents (file data) as a message, one per
-URL, in the order they were received.
+URL, to "outbox" in the order they were received.
 
 Example Usage
 -------------

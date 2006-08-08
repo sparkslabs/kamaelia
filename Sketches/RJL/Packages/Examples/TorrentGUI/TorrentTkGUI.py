@@ -49,7 +49,7 @@ GUI and then downloaded with progress information for each torrent.
             ("gui", "signal") : ("backend", "control"),
             ("gui", "fetcher") : ("httpclient", "inbox"),
             ("httpclient", "outbox") : ("backend", "inbox"),
-            ("backend", "outbox"): ("gui", "inbox")
+            ("backend", "outbox") : ("gui", "inbox")
         }
     ).run()
     
@@ -160,6 +160,7 @@ class TorrentTkWindow(TkWindow):
         self.entry.delete(0, Tkinter.END)
 
     def addTorrentToList(self, msg):
+        "Add a new torrent to the list onscreen"
         # this torrent is the oldest one we requested that has not yet been added
         torrentname = self.pendingtorrents.pop(0)
                     
@@ -196,6 +197,7 @@ class TorrentTkWindow(TkWindow):
                 elif isinstance(msg, TIPCTorrentStartFail) or isinstance(msg, TIPCTorrentAlreadyDownloading):
                     # the oldest torrent not yet started failed to start so
                     # remove it from the list of pending torrents
+                    print "Oops - torrent start failed!\n"
                     self.pendingtorrents.pop(0)
                 
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
@@ -225,7 +227,7 @@ if __name__ == "__main__":
         httpclient = SimpleHTTPClient(), # used to download .torrent files
         backend = TorrentPatron(), # our BitTorrent client backend
         linkages = {
-            ("backend", "outbox"): ("gui", "inbox"),
+            ("backend", "outbox") : ("gui", "inbox"),
             ("gui", "outbox") : ("backend", "inbox"),
             ("gui", "signal") : ("backend", "control"),
             

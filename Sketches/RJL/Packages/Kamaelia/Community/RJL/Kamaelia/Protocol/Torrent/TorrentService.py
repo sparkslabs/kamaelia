@@ -36,10 +36,14 @@ be created by TorrentPatron. If a TorrentService already exists, creating one yo
 may crash Python (see the effects of creating two TorrentClient components in
 TorrentClient.py)
 
-The shutting down of this component (when not in use) is very ugly.
+The shutting down of this component (when it is no longer in use) is very ugly.
 
 How does it work?
 -----------------
+This component forwards messages from TorrentPatrons to a single TorrentClient
+it creates and also delivers responses from TorrentClient to the TorrentPatron
+appropriate to the response content.
+
 TorrentClient handles new torrent requests sequentially, so as long as we keep a 
 record of what order the requests of TorrentPatrons were forwarded, we can work
 out who to send TorrentClient's response to. Then, since all further messages are
