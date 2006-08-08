@@ -39,7 +39,7 @@ def ComponentMeta(File):
     F = open(File)
     contents = F.readlines()
     F.close()
-    meta = [ X for X in contents if "__kamaelia_components__" in X ]
+    meta = [ X for X in contents if "__kamaelia_components__" in X and X.strip()[0] != "#"]
     if meta != []:
         if len(meta)>1:
             print "WARNING: 2 component lines(!)"
