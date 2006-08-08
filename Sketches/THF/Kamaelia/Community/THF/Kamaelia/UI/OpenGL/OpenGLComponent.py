@@ -24,7 +24,10 @@
 General OpenGL component
 =====================
 
-This components implements the interaction with the OpenGLDisplay service that is needed to setup, draw and move OpenGL components. It is recommended to use it as base class for new 3D components. It provides methods to be overridden for adding functionality.
+This components implements the interaction with the OpenGLDisplay service that
+is needed to setup, draw and move OpenGL components. It is recommended to use it
+as base class for new 3D components. It provides methods to be overridden for
+adding functionality.
 
 Example Usage
 -------------
@@ -38,7 +41,10 @@ class Point(OpenGLComponent):
 		glVertex(0,0,0)
 		glEnd()
 
-The only thing it does is to draw a point in its origin. But despite its simplicity it can be translated, rotated and scaled using its provided inboxes. Using Interactors (see Interactor.py) it can for example even be controlled by mouse events.
+The only thing it does is to draw a point in its origin. But despite its
+simplicity it can be translated, rotated and scaled using its provided inboxes.
+Using Interactors (see Interactor.py) it can for example even be controlled by
+mouse events.
 
 A more complex component could look like this:
 
@@ -68,7 +74,10 @@ A more complex component could look like this:
                 self.colour = self.recv("colour")
                 self.redraw()
 
-It represents a coloured quad which can change its colour when a corresponing message is sent to its "colour" inbox. When this happens it gets redrawn. Additionally it reacts to mouseclicks by rotation the quad by one degree around the z axis.
+It represents a coloured quad which can change its colour when a corresponing
+message is sent to its "colour" inbox. When this happens it gets redrawn.
+Additionally it reacts to mouseclicks by rotation the quad by one degree around
+the z axis.
 		
 
 How does it work?
@@ -80,7 +89,9 @@ The following methods are provided to be overridden:
 - handleEvents()	-- handle input events ("events" inbox)
 - frame()			-- called every frame, to add additional functionality
 
-Stubs method are provided, so missing these out does not result in broken code. The methods get called from the main method, the following code shows in which order:
+Stubs method are provided, so missing these out does not result in broken code.
+The methods get called from the main method, the following code shows in which
+order:
 
     def main(self):
         # create and send display request
@@ -103,9 +114,16 @@ Stubs method are provided, so missing these out does not result in broken code. 
             # frame function from derived objects
             self.frame()
 
-As can be seen here, there is no invocation of draw in the main loop. It is only called once to generate a displaylist which then gets send to the display service. This is the normal situation with static 3D objects. If you want to create a dynamic object, e.g. which changes e.g. its geometry or colour (see second example above), you need to call the redraw() method whenever changes happen.
+As can be seen here, there is no invocation of draw in the main loop. It is only
+called once to generate a displaylist which then gets send to the display
+service. This is the normal situation with static 3D objects. If you want to
+create a dynamic object, e.g. which changes e.g. its geometry or colour (see
+second example above), you need to call the redraw() method whenever changes
+happen.
 
-If you need to override the __init__() method, e.g. to get initialisation parameters, make sure to call the __init__() method of the parent class in the following way:
+If you need to override the __init__() method, e.g. to get initialisation
+parameters, make sure to call the __init__() method of the parent class in the
+following way:
 
     def __init__(self, **argd):
         super(ClassName, self).__init__(**argd)
@@ -118,7 +136,8 @@ The following methods are provided to be used by inherited objects:
 - addListenEvents()
 - removeListenEvents()        
 
-The are inteded to simplify component handling. For their functionality see their description.
+The are inteded to simplify component handling. For their functionality see
+their description.
 """
 
 
