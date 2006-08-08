@@ -12,23 +12,39 @@ This is a deprecation stub, due for later removal.
 See Kamaelia.Chassis.Pipeline instead.
 """
 
+# from Kamaelia.Chassis.Pipeline import Pipeline as __Pipeline
+#
+# class pipeline(__Pipeline):
+#     def __init__(self, *larg, **darg):
+#         import sys, traceback
+#         sys.stderr.write('***DEPRECATION WARNING***\n')
+#         sys.stderr.write('Use "Kamaelia.Chassis.Pipeline.Pipeline" instead of "Kamaelia.Util.Pipeline.pipeline"\n')
+#         sys.stderr.write(''.join(traceback.format_list(traceback.extract_stack()[:-1])))
+#         super(pipeline,self).__init__(*larg,**darg)
+# 
+# class Pipeline(__Pipeline):
+#     def __init__(self, *larg, **darg):
+#         import sys, traceback
+#         sys.stderr.write('***DEPRECATION WARNING***\n')
+#         sys.stderr.write('Use "Kamaelia.Chassis.Pipeline.Pipeline" instead of "Kamaelia.Util.Pipeline.Pipeline"\n')
+#         sys.stderr.write(''.join(traceback.format_list(traceback.extract_stack()[:-1])))
+#         super(Pipeline,self).__init__(*larg,**darg)
+# 
+# if __name__=="__main__":
+#     raise DeprecationWarning("This is a stub. See Kamaelia.Chassis.Pipeline instead.")
+
+
+def foo(*larg, **darg):
+    return __Pipeline(*larg,**darg)
+
+
+# ---------
+import Deprecate
 from Kamaelia.Chassis.Pipeline import Pipeline as __Pipeline
+__foo = foo
 
-class pipeline(__Pipeline):
-    def __init__(self, *larg, **darg):
-        import sys, traceback
-        sys.stderr.write('***DEPRECATION WARNING***\n')
-        sys.stderr.write('Use "Kamaelia.Chassis.Pipeline.Pipeline" instead of "Kamaelia.Util.Pipeline.pipeline"\n')
-        sys.stderr.write(''.join(traceback.format_list(traceback.extract_stack()[:-1])))
-        super(pipeline,self).__init__(*larg,**darg)
+Deprecate.deprecationWarning("I warned you!")
 
-class Pipeline(__Pipeline):
-    def __init__(self, *larg, **darg):
-        import sys, traceback
-        sys.stderr.write('***DEPRECATION WARNING***\n')
-        sys.stderr.write('Use "Kamaelia.Chassis.Pipeline.Pipeline" instead of "Kamaelia.Util.Pipeline.Pipeline"\n')
-        sys.stderr.write(''.join(traceback.format_list(traceback.extract_stack()[:-1])))
-        super(Pipeline,self).__init__(*larg,**darg)
+pipeline = Deprecate.makeClassStub(target = __Pipeline, message="flurble")
 
-if __name__=="__main__":
-    raise DeprecationWarning("This is a stub. See Kamaelia.Chassis.Pipeline instead.")
+foo = Deprecate.makeFuncStub(target = __foo, message="blob")
