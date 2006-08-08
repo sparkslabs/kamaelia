@@ -46,7 +46,7 @@ from SimpleButton import SimpleButton
 from ProgressBar import ProgressBar
 from Container import Container
 from SkyGrassBackground import SkyGrassBackground
-from Movement import CircleMover
+from Movement import WheelMover
 
 
 class TorrentOpenGLGUI(Axon.Component.component):
@@ -71,7 +71,7 @@ class TorrentOpenGLGUI(Axon.Component.component):
         
         
     def main(self):
-        self.mover = CircleMover(radius=15, center=(0,0,-25), steps=2000, slots=40).activate()
+        self.mover = WheelMover(radius=15, center=(0,0,-25), steps=500, slots=40).activate()
         self.link( (self, "mover_signal"), (self.mover, "notify") )
         self.link( (self, "mover_switch"), (self.mover, "switch") )
 
