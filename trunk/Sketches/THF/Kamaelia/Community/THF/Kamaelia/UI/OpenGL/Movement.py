@@ -154,21 +154,21 @@ class PathMover(Axon.Component.component):
 
 
 
-class CircleMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """ . """
     Inboxes = {
-       "inbox": "Commands are received here",
+       "inbox": "not used",
        "control": "ignored",
-       "notify":"",
-       "switch":"",
+       "notify": "For appending and removing components",
+       "switch": "For reception of switching commands",
     }
     
     Outboxes = {
-        "outbox" : "Outbox for sending Control3D commands",
+        "outbox" : "Outbox for sending position updates",
     }
     
-    def __init__(self, steps=1000, center=(0,0,-13), radius=5, slots=20):
-        super(CircleMover, self).__init__()
+    def __init__(self, steps=400, center=(0,0,-13), radius=5, slots=20):
+        super(WheelMover, self).__init__()
     
         self.distance = steps/slots
         
@@ -210,29 +210,34 @@ class CircleMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.send(self.points[ self.current_positions[objectid] ], self.comms[objectid])
                     
                     self.nextpos += self.distance
+                    
                 elif msg.get("REMOVE_CONTROL", None):
                     objectid = msg.get("objectid")
                     service = msg.get("control")
-                    # todo
+                    
+                    self.objects.remove(objectid)
+                    self.unlink(self,self.comms[objectid])
+                    self.comms.popitem(objectid)
+                    self.current_position.popitem(objectid)
+                    deleted_pos = self.target_position.popitem(objectid)
+                    
+                    for o in self.objects:
+                        if self.target_position[o] > deleted_pos:
+                            self.target_position[0] -= self.distance
                 
             while self.dataReady("switch"):
                 msg = self.recv("switch")
-                maxpos = 0
-                print msg
                 if msg == "NEXT" and self.currentobject < 0:
                     for objectid in self.objects:
                         self.target_positions[objectid] += self.distance
-                        if self.target_positions[objectid] > maxpos:
-                            maxpos = self.target_positions[objectid]
                     self.currentobject += 1
+                    self.nextpos += self.distance
+                    
                 if msg == "PREVIOUS" and self.currentobject > -len(self.objects)+1:
                     for objectid in self.objects:
                         self.target_positions[objectid] -= self.distance
-                        if self.target_positions[objectid] > maxpos:
-                            maxpos = self.target_positions[objectid]
                     self.currentobject -= 1
-                if maxpos != 0:
-                    self.nextpos = maxpos + self.distance
+                    self.nextpos -= self.distance
 
             for objectid in self.objects:
                 if self.current_positions[objectid]>self.target_positions[objectid]:
