@@ -221,7 +221,8 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - height             -- pixels height (default=600)
     - background_colour  -- (r,g,b) background colour (default=(255,255,255))
     - fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)
-    - FPS			-- show frames per second in window title (default=True)
+    - show_fps			-- show frames per second in window title (default=True)
+    - max_fps           -- maximum frame rate (default=40)
     Projection parameters
     - near				-- distance to near plane (default=1.0)
     - far				-- distance to far plane (default=100.0)
@@ -287,12 +288,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.height = argd.get("height",600)
         self.background_colour = argd.get("background_colour", (255,255,255))
         self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
-        self.FPS = argd.get("FPS", True)
         
-        # data for FPS measurement
-        self.lastTime = 0
-        self.FPS = 0
-        self.FPScounter = 0
+        self.show_fps = argd.get("show_fps", True)
+        self.max_fps = argd.get("max_fps", 40)
+        
+        # for framerate limitation
+        self.clock = pygame.time.Clock()
 
         # 3D component handling
         self.ogl_objects = []
@@ -362,6 +363,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         """Main loop."""
         while 1:
+            self.clock.tick(self.max_fps)
             self.handleRequests()
             self.handleEvents()
             self.updateDisplay()
@@ -433,7 +435,10 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def updateDisplay(self):
         """ Draws all components, updates screen, clears the backbuffer and depthbuffer . """
         
-        self.showFPS()
+        #show fps
+        if self.show_fps:
+            pygame.display.set_caption("%s FPS:%d" % (self.caption, self.clock.get_fps()) )
+            
         self.drawOpenGLComponents()
         self.drawPygameSurfaces()
 
@@ -445,20 +450,6 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         
 
-    def showFPS(self):
-        """ Shows the FPS in the window title if activated. """
-        #show fps
-        if self.FPS:
-            self.FPScounter += 1
-            if self.FPScounter > 100:
-                # determine fps
-                currentTime = time.time()
-                self.FPS = 100/(currentTime-self.lastTime)
-                self.lastTime = currentTime
-                pygame.display.set_caption("%s FPS:%d" % (self.caption, self.FPS) )
-                self.FPScounter = 0
-    
-    
     def genIdentifier(self):
         """ Returns a unique number. """
         ogl_name = self.ogl_nextName
