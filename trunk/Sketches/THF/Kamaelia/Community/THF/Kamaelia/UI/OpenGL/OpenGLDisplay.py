@@ -222,7 +222,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - background_colour  -- (r,g,b) background colour (default=(255,255,255))
     - fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)
     - show_fps			-- show frames per second in window title (default=True)
-    - max_fps           -- maximum frame rate (default=40)
+    - limit_fps           -- maximum frame rate (default=60)
     Projection parameters
     - near				-- distance to near plane (default=1.0)
     - far				-- distance to far plane (default=100.0)
@@ -290,7 +290,8 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
         
         self.show_fps = argd.get("show_fps", True)
-        self.max_fps = argd.get("max_fps", 40)
+        self.limit_fps = argd.get("limit_fps", 0)
+        self.fps_delay = 0.0
         
         # for framerate limitation
         self.clock = pygame.time.Clock()
@@ -363,7 +364,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         """Main loop."""
         while 1:
-            self.clock.tick(self.max_fps)
+            # limit and show fps (if enabled)
+            self.fps_delay += self.clock.tick(self.limit_fps)
+            if self.show_fps and self.fps_delay > 1000.0:
+                pygame.display.set_caption("%s FPS:%d" % (self.caption, self.clock.get_fps()) )
+                self.fps_delay = 0
+                
             self.handleRequests()
             self.handleEvents()
             self.updateDisplay()
@@ -435,9 +441,6 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def updateDisplay(self):
         """ Draws all components, updates screen, clears the backbuffer and depthbuffer . """
         
-        #show fps
-        if self.show_fps:
-            pygame.display.set_caption("%s FPS:%d" % (self.caption, self.clock.get_fps()) )
             
         self.drawOpenGLComponents()
         self.drawPygameSurfaces()
