@@ -70,7 +70,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
-    # Example - display the contents of files whose names are entered
+    # Example - prepend "foo" and append "bar" to lines entered.
     pipeline(
         ConsoleReader(eol=""),
         PureTransformer(lambda x : "foo" + x + "bar!\n"),
