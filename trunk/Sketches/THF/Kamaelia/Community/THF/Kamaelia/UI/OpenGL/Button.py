@@ -202,22 +202,30 @@ class Button(OpenGLComponent):
     
 
     def buildCaption(self):
-        """Pre-render the text to go on the button label."""
+        """Pre-render the text to go on the label."""
         # Text is rendered to self.image
         pygame.font.init()
         font = pygame.font.Font(None, self.fontsize)
         self.image = font.render(self.caption,True, self.foregroundColour, )
+        
+        if self.size != Vector(0,0,0):
+            texsize = (self.size.x*self.pixelscaling, self.size.y*self.pixelscaling)
+        else:
+            texsize = ( self.image.get_width()+2*self.margin, self.image.get_height()+2*self.margin )
+            self.size=Vector(texsize[0]/float(self.pixelscaling), texsize[1]/float(self.pixelscaling), self.thickness)
+
         # create power of 2 dimensioned surface
-        pow2size = (int(2**(ceil(log(self.image.get_width()+2*self.margin, 2)))), int(2**(ceil(log(self.image.get_height()+2*self.margin, 2)))))
+        pow2size = (int(2**(ceil(log(texsize[0]+2*self.margin, 2)))), int(2**(ceil(log(texsize[1]+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
         textureSurface.fill( self.backgroundColour )
         # determine texture coordinates
-        self.tex_w = float(self.image.get_width()+2*self.margin)/pow2size[0]
-        self.tex_h = float(self.image.get_height()+2*self.margin)/pow2size[1]
+        self.tex_w = float(texsize[0])/pow2size[0]
+        self.tex_h = float(texsize[1])/pow2size[1]
         # copy image data to pow2surface
-        textureSurface.blit(self.image, (self.margin,self.margin))
- #       textureSurface.set_alpha(128)
-#        textureSurface = textureSurface.convert_alpha()
+        dest = ( max((texsize[0]-self.image.get_width())/2, 0), max((texsize[1]-self.image.get_height())/2, 0) )
+        textureSurface.blit(self.image, dest)
+#        textureSurface.set_alpha(128)
+        textureSurface = textureSurface.convert_alpha()
 
         # read pixel data
         textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
@@ -226,14 +234,11 @@ class Button(OpenGLComponent):
         # create texture
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
         glDisable(GL_TEXTURE_2D)
-
-        if self.size == Vector(0,0,0):
-            self.size=Vector(self.image.get_width()/float(self.pixelscaling), self.image.get_height()/float(self.pixelscaling), self.thickness)
 
 
     def activationMovement(self):
@@ -259,9 +264,9 @@ if __name__=='__main__':
         BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
-            (BUTTON1, "outbox") : (ECHO, "inbox"),
-            (BUTTON2, "outbox") : (ECHO, "inbox"),
-            (BUTTON3, "outbox") : (ECHO, "inbox"),
-            (BUTTON4, "outbox") : (ECHO, "inbox"),            
+            ("BUTTON1", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
+            ("BUTTON4", "outbox") : ("ECHO", "inbox"),            
         }
     ).run()
