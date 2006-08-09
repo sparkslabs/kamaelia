@@ -47,6 +47,10 @@ from ProgressBar import ProgressBar
 from Container import Container
 from SkyGrassBackground import SkyGrassBackground
 from Movement import WheelMover
+from Label import Label
+
+import random
+import os
 
 
 class TorrentOpenGLGUI(Axon.Component.component):
@@ -54,6 +58,7 @@ class TorrentOpenGLGUI(Axon.Component.component):
         "inbox":"not used",
         "control":"not used",
         "button":"To receive commands from buttons",
+        "torrent_delivery": "for reception of torrent files",
     }
     
     Outboxes = {
@@ -79,16 +84,11 @@ class TorrentOpenGLGUI(Axon.Component.component):
         
         self.up_button = ArrowButton(size=(1,1,0.3), position=(7,5,-15), msg="UP").activate()
         self.down_button = ArrowButton(size=(1,1,0.3), position=(7,-5,-15), rotation=(0,0,180), msg="DOWN").activate()
-        self.add_button = SimpleButton(size=(1,1,0.3), position=(7,0,-15), msg="ADD").activate()
         
         self.link( (self.up_button, "outbox"), (self, "button") )
         self.link( (self.down_button, "outbox"), (self, "button") )
-        self.link( (self.add_button, "outbox"), (self, "button") )
         
-        self.addTorrent("Test")
-        self.addTorrent("Test")
-        self.addTorrent("Test")
-        self.addTorrent("Test")
+        self.loadLocalTorrentFiles()
         
         while 1:
             
@@ -101,18 +101,38 @@ class TorrentOpenGLGUI(Axon.Component.component):
                 if msg == "ADD":
                     self.addTorrent("Test")
                     
+            if self.dataReady("torrent_delivery"):
+                torrent = self.recv("torrent_delivery")
+                
+                    
             yield 1
 
 
-    def addTorrent(self, torrent):
-        start = Button(size=(0.9,0.5,0.3), caption="Start", msg="Start").activate()
+    def loadLocalTorrentFiles(self):
+        print "Loading local torrent files..."
+        cwd = os.getcwd()
+        files = os.listdir(cwd)
+        for f in files:
+            if f.endswith(".torrent"):
+                print "- ",f
+                fobj = open(f)
+                torrent = fobj.read() 
+                fobj.close()
+                self.addTorrent(f, torrent)
+                
+
+    def addTorrent(self, title, torrent):
+        start = Button(size=(0.9,0.5,0.3), caption="Start", msg=torrent).activate()
         info  = Button(size=(0.9,0.5,0.3), caption="Info", msg="Info").activate()
         progress = ProgressBar(size=(3,0.5,0.3)).activate()
+        colour = [int(random.randint(100,255)) for i in range(3) ]
+        label = Label( size=(5.4, 0.3, 0.3), caption=title, fontsize=26, bgcolour=colour).activate()
         
         container_elements = {
-            progress : { "position":(-1,0,0) },
-            start : { "position":(1.3,0,0) },
-            info : { "position":(2.5,0,0) },
+            progress : { "position":(-1.2,-0.3,0) },
+            start : { "position":(1.1,-0.3,0) },
+            info : { "position":(2.3,-0.3,0) },
+            label : { "position":(0, 0.3, 0) },
         }
     
         container = Container(contents=container_elements, position=(0,0,-10)).activate()
@@ -124,28 +144,38 @@ class TorrentOpenGLGUI(Axon.Component.component):
         self.send(req, "mover_signal")
         
         
+    def getTorrentName(self, torrent):
+        if torrent.find("name") != -1:
+            pass
+        else:
+            return "Unknown Name"
+        
+        
 if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     import sys
     sys.path.append("../HTTP")
 
-#    from HTTPClient import SimpleHTTPClient
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    from Kamaelia.Util.Console import ConsoleReader
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+    from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStartFail, TIPCTorrentAlreadyDownloading, TIPCTorrentStatusUpdate
     
-    #Graphline(
-        #gui=TorrentOpenGLGUI(),
-        #httpclient=SimpleHTTPClient(),
-        #backend=TorrentPatron(),
-        #linkages = {
-            #("gui", "outbox") : ("backend", "inbox"),
-            #("gui", "fetchersignal") : ("httpclient", "control"),
-            #("gui", "signal") : ("backend", "control"),
-            #("gui", "fetcher") : ("httpclient", "inbox"),
-            #("httpclient", "outbox") : ("backend", "inbox"),
-            #("backend", "outbox"): ("gui", "inbox")
-        #}
-    #).run()
+    Graphline(
+        reader = ConsoleReader(prompt="Enter torrent location:"),
+        gui = TorrentOpenGLGUI(),
+        httpclient = SimpleHTTPClient(),
+        backend = TorrentPatron(),
+        linkages = {
+            ("gui", "outbox") : ("backend", "inbox"),
+            ("gui", "fetchersignal") : ("httpclient", "control"),
+            ("gui", "signal") : ("backend", "control"),
+            ("reader", "outbox") : ("httpclient", "inbox"),
+            ("httpclient", "outbox") : ("gui", "torrent_delivery"),
+            ("backend", "outbox"): ("gui", "inbox")
+        }
+    ).run()
         
-    TorrentOpenGLGUI().activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  
 
