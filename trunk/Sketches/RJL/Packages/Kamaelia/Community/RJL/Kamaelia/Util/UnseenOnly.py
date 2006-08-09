@@ -35,8 +35,8 @@ Lines entered into this setup will only be duplicated on screen the
 first time they are entered.
 
 pipeline(
-    ConsoleReader()
-    UnseenOnly()
+    ConsoleReader(),
+    UnseenOnly(),
     ConsoleEchoer()
 ).run()
 

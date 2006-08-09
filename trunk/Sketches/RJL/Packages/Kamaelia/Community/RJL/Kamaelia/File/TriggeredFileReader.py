@@ -38,7 +38,7 @@ from Axon.Ipc import producerFinished, shutdown
 
 class TriggeredFileReader(component):
     """\
-    TriggeredFileReader() -> component that creates and writes files 
+    TriggeredFileReader() -> component that reads arbitrary files 
     """
     Inboxes = {
         "inbox"   : "filepaths to read",

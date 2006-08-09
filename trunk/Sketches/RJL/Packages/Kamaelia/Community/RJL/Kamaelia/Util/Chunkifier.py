@@ -57,7 +57,7 @@ from Axon.Ipc import producerFinished, shutdown
 import string
 
 class CharacterFIFO(object):
-    """An efficient character queue type"""
+    """An efficient character queue type (designed to work in O(n) time for n characters)."""
     def __init__(self):
         self.queuearray = []
         self.length = 0
@@ -111,10 +111,14 @@ class Chunkifier(component):
                     than buffering up data while waiting for more to arrive.
     """
     
-    Inboxes = { "inbox" : "Data stream to be split into chunks",
-                "control": "UNUSED" }
-    Outboxes = { "outbox" : "Each message is a chunk",
-                "signal": "UNUSED" }
+    Inboxes = {
+        "inbox" : "Data stream to be split into chunks",
+        "control": "Shut me down"
+    }
+    Outboxes = {
+        "outbox" : "Each message is a chunk",
+        "signal": "I've shut down"
+    }
 
     def __init__(self, chunksize = 1048576, nodelay = False):
         super(Chunkifier, self).__init__()
@@ -163,7 +167,7 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 
-    # Example - spit out text enter by the user in chunks of 10 characters
+    # Example - spit out text entered by the user in chunks of 10 characters
     pipeline(
         ConsoleReader(eol=""),
         Chunkifier(10),

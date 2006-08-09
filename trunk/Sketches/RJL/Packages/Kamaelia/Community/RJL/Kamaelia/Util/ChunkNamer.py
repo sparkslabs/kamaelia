@@ -26,6 +26,16 @@ Chunk Namer
 
 A component that labels each message with a unique filename for that message.
 e.g. "A" ... "B" ... --> ["chunk1", "A"] ... ["chunk2", "B"] ...
+
+Example Usage
+-------------
+Save each line entered to the console to a separate file:
+
+pipeline(
+    ConsoleReader(),
+    ChunkNamer("test", ".txt"),
+    WholeFileWriter()
+).run()
 """
 
 from Axon.Component import component
@@ -80,3 +90,13 @@ class ChunkNamer(component):
             self.pause()
 
 __kamaelia_components__  = ( ChunkNamer, )
+
+if __name__ == "__main__":
+    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
+    from Kamaelia.Util.Console import ConsoleReader
+    pipeline(
+        ConsoleReader(),
+        ChunkNamer("test", ".txt"),
+        WholeFileWriter()
+    ).run()
