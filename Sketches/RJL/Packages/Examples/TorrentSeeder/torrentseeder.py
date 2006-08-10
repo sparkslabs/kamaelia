@@ -80,12 +80,11 @@ class TwoSourceListifier(component):
 
 if __name__ == '__main__':
     # seed a file
-    Graphline
-    (
+    Graphline(
         filenamereader = ConsoleReader(">>> ", ""),
         filenamesplitter = fanout(["toNamer", "toTorrentMaker"]),
         torrentmaker = TorrentMaker("http://localhost:6969/announce"),
-        filewriter = WholeFileWriter().
+        filewriter = WholeFileWriter(),
         torrentpatron = TorrentPatron(),
         torrentnamer = TwoSourceListifier(),
         torrentmetasplitter = fanout(["toTorrentPatron", "toNamer"]),
@@ -94,13 +93,13 @@ if __name__ == '__main__':
             ConsoleEchoer()
         ),
         linkages = {
-            ("filenamereader", "outbox") : ("filenamesplitter" : "inbox"),
-            ("filenamesplitter", "toNamer") : ("torrentnamer" : "a"),
-            ("filenamesplitter", "toTorrentMaker") : ("torrentmaker" : "inbox"),
-            ("torrentmaker", "outbox") : ("torrentmetasplitter" : "inbox"),
-            ("torrentmetasplitter", "toTorrentPatron") : ("torrentpatron" : "inbox"),
-            ("torrentmetasplitter", "toNamer") : ("torrentnamer" : "b"),            
-            ("torrentnamer", "outbox") : ("filewriter" : "inbox"),
-            ("torrentpatron", "outbox") : ("explainer" : "inbox"),
+            ("filenamereader", "outbox") : ("filenamesplitter", "inbox"),
+            ("filenamesplitter", "toNamer") : ("torrentnamer", "a"),
+            ("filenamesplitter", "toTorrentMaker") : ("torrentmaker", "inbox"),
+            ("torrentmaker", "outbox") : ("torrentmetasplitter", "inbox"),
+            ("torrentmetasplitter", "toTorrentPatron") : ("torrentpatron", "inbox"),
+            ("torrentmetasplitter", "toNamer") : ("torrentnamer", "b"),            
+            ("torrentnamer", "outbox") : ("filewriter", "inbox"),
+            ("torrentpatron", "outbox") : ("explainer", "inbox"),
         }
     ).run()
