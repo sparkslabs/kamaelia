@@ -28,6 +28,12 @@ The user specifies a file to which they own the copyright that they wish
 to share using BitTorrent. This example creates a .torrent
 (BitTorrent metadata) file for that file and seeds it.
 
+Enter a filename to the console, e.g.
+>>> mycreativecommonssong.ogg
+
+NOTE: The file whose name you give MUST be in the local directory
+otherwise it will not be found for seeding.
+
 How does it work?
 -----------------
 TorrentMaker reads the contents of the file whose path is entered by the user.
@@ -43,18 +49,58 @@ your file to others.
 """
 
 from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Util.Fanout import fanout
 
-from TorrentClient import TorrentClient, BasicTorrentExplainer
-from TorrentMaker import TorrentMaker
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
+from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
+
+from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdown
+
+class TwoSourceListifier(component):
+    Inboxes = ["a", "b", "control"]
+    def main(self):
+        while 1:
+            yield 1
+            
+            while self.dataReady("a") and self.dataReady("b"):
+                self.send([self.recv("a"), self.recv("b")], "outbox")
+                
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                    self.send(producerFinished(self), "signal")
+                    return
+            
+            self.pause()
 
 if __name__ == '__main__':
     # seed a file
-    pipeline(
-        ConsoleReader(">>> ", ""),
-        TorrentMaker("http://localhost:6969/announce"),
-        WholeFileWriter()
-        TorrentPatron(),
-        BasicTorrentExplainer(),
-        ConsoleEchoer()
+    Graphline
+    (
+        filenamereader = ConsoleReader(">>> ", ""),
+        filenamesplitter = fanout(["toNamer", "toTorrentMaker"]),
+        torrentmaker = TorrentMaker("http://localhost:6969/announce"),
+        filewriter = WholeFileWriter().
+        torrentpatron = TorrentPatron(),
+        torrentnamer = TwoSourceListifier(),
+        torrentmetasplitter = fanout(["toTorrentPatron", "toNamer"]),
+        explainer = pipeline(
+            BasicTorrentExplainer(),
+            ConsoleEchoer()
+        ),
+        linkages = {
+            ("filenamereader", "outbox") : ("filenamesplitter" : "inbox"),
+            ("filenamesplitter", "toNamer") : ("torrentnamer" : "a"),
+            ("filenamesplitter", "toTorrentMaker") : ("torrentmaker" : "inbox"),
+            ("torrentmaker", "outbox") : ("torrentmetasplitter" : "inbox"),
+            ("torrentmetasplitter", "toTorrentPatron") : ("torrentpatron" : "inbox"),
+            ("torrentmetasplitter", "toNamer") : ("torrentnamer" : "b"),            
+            ("torrentnamer", "outbox") : ("filewriter" : "inbox"),
+            ("torrentpatron", "outbox") : ("explainer" : "inbox"),
+        }
     ).run()
