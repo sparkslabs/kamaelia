@@ -159,9 +159,7 @@ class Minimal(component):
         self.link((self.filereader, "outbox"), (self, "_fileread"))
         self.link((self.filereader, "signal"), (self, "_filecontrol"))
         self.addChildren(self.filereader)
-        self.filereader.activate()A simple HTTP request handler for HTTPServer.
-Minimal serves files within a given directory, guessing their
-MIME-type from their file extension.
+        self.filereader.activate()
         yield 1        
         
         done = False
