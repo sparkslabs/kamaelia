@@ -57,6 +57,7 @@ from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import Basic
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
 from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
+from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
@@ -88,13 +89,15 @@ if __name__ == '__main__':
         torrentpatron = TorrentPatron(),
         torrentnamer = TwoSourceListifier(),
         torrentmetasplitter = fanout(["toTorrentPatron", "toNamer"]),
+        suffixtorrent = PureTransformer(lambda x : x + ".torrent"),
         explainer = pipeline(
             BasicTorrentExplainer(),
             ConsoleEchoer()
         ),
         linkages = {
             ("filenamereader", "outbox") : ("filenamesplitter", "inbox"),
-            ("filenamesplitter", "toNamer") : ("torrentnamer", "a"),
+            ("filenamesplitter", "toNamer") : ("suffixtorrent", "inbox"),
+            ("suffixtorrent", "outbox")  :("torrentnamer", "a"),
             ("filenamesplitter", "toTorrentMaker") : ("torrentmaker", "inbox"),
             ("torrentmaker", "outbox") : ("torrentmetasplitter", "inbox"),
             ("torrentmetasplitter", "toTorrentPatron") : ("torrentpatron", "inbox"),

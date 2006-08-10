@@ -28,8 +28,10 @@ You MUST have the Mainline (official) BitTorrent client installed for any
 BitTorrent stuff to work in Kamaelia.
 See http://download.bittorrent.com/dl/?M=D
 
-Known quirks: Clear out your ~/.bittorrent/ directory if you get errors
-about torrents including files that are part of other torrents.
+Known quirks:
+* Clear out your ~/.bittorrent/ directory if you get errors
+  about torrents including files that are part of other torrents.
+* Files can only be downloaded to/uploaded from within the current directory
 
 This component is for downloading and uploading data using the peer-to-peer
 BitTorrent protocol.

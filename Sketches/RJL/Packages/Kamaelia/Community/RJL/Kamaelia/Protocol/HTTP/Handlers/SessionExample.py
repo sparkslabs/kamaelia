@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 """\
 ========================
-websiteSessionExample
+Session Example
 ========================
 A simple persistent request handler component.
 Each time a URL that is handled by this component is requested, the page's
@@ -35,7 +35,7 @@ import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 
 Sessions = {}
 
-def websiteSessionExample(request):
+def SessionExampleWrapper(request):
     sessionid = request["uri-suffix"]
     if Sessions.has_key(sessionid):
         session = Sessions[sessionid]
@@ -44,14 +44,14 @@ def websiteSessionExample(request):
         else:
             return session["handler"]
     else:
-        session = { "busy": True, "handler": websiteSessionExampleComponent(sessionid) }
+        session = { "busy" : True, "handler" : SessionExample(sessionid) }
         Sessions[sessionid] = session
         return session["handler"]
 
         
-class websiteSessionExampleComponent(component):
+class SessionExample(component):
     def __init__(self, sessionid):
-        super(websiteSessionExampleComponent, self).__init__()
+        super(SessionExample, self).__init__()
         self.sessionid = sessionid
         
     def main(self):
@@ -70,4 +70,4 @@ class websiteSessionExampleComponent(component):
             self.pause()
             yield 1
             
-__kamaelia_components__  = ( websiteSessionExampleComponent, )
+__kamaelia_components__  = ( SessionExample, )

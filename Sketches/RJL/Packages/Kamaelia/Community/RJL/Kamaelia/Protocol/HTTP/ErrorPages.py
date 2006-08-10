@@ -19,17 +19,12 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""\
-========================
-websiteErrorPage
-========================
-A simple HTTP request handler for HTTPServer.
-websiteErrorPage generates basic HTML error pages for an HTTP server.
-"""
-
-from Axon.Component import component
 
 def getErrorPage(errorcode, msg = ""):
+    """\
+    Get the HTML associated with an (integer) error code.
+    """
+    
     if errorcode == 400:
         return {
             "statuscode" : "400",
@@ -65,16 +60,3 @@ def getErrorPage(errorcode, msg = ""):
             "type"       : "text/html"
         }
                  
-class websiteErrorPage(component):
-    def __init__(self, errorcode, msg = ""):
-        super(websiteErrorPage, self).__init__()
-        self.errorcode = errorcode
-        self.msg = msg
-
-    def main(self):
-        resource = getErrorPage(self.errorcode, self.msg) # get the error page
-        resource["incomplete"] = False # mark its data as being complete (i.e. no more chunks to come)
-        self.send(resource, "outbox") # send it on to HTTPRequestHandler
-        self.send(producerFinished(self), "signal") # and signal that this component has terminated
-
-__kamaelia_components__  = ( websiteErrorPage, )

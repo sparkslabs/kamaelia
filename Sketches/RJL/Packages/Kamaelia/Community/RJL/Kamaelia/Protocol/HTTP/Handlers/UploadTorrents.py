@@ -21,10 +21,10 @@
 # -------------------------------------------------------------------------
 """\
 ========================
-websiteTorrentUpload
+Upload Torrents
 ========================
-A simple HTTP request handler for HTTPServer.
-websiteTorrentUpload saves .torrent files that are uploaded to it as POST
+A session-based HTTP request handler for HTTPServer.
+UploadTorrents saves .torrent files that are uploaded to it as POST
 data and stores the number of .torrent files save to a file "meta.txt".
 """
 
@@ -35,7 +35,9 @@ import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 
 Sessions = {}
 
-def websiteSessionTorrentUpload(request):
+def UploadTorrentsWrapper(request):
+    """Returns an UploadTorrents component, manages that components lifetime and access."""
+    
     sessionid = request["uri-suffix"]
     if Sessions.has_key(sessionid):
         session = Sessions[sessionid]
@@ -49,9 +51,9 @@ def websiteSessionTorrentUpload(request):
         return session["handler"]
 
         
-class websiteSessionTorrentUploadComponent(component):
+class UploadTorrents(component):
     def __init__(self, sessionid):
-        super(websiteSessionTorrentUploadComponent, self).__init__()
+        super(UploadTorrents, self).__init__()
         self.sessionid = sessionid
         
     def main(self):
@@ -90,4 +92,4 @@ class websiteSessionTorrentUploadComponent(component):
             self.pause()
             yield 1
             
-__kamaelia_components__  = ( websiteSessionTorrentUploadComponent, )
+__kamaelia_components__  = ( UploadTorrents, )
