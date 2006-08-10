@@ -32,23 +32,26 @@ their own predetermined request handler class (a component class).
 
 HTTPResourceGlue also creates an instance of the handler component,
 allowing complete control over its __init__ parameters.
+Feel free to write your own for your webserver configuration.
 """
 
 # import the modules that you want for your website
 import types
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteMinimal import websiteMinimal
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteSessionExample import websiteSessionExample
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.websiteTorrentUpload import websiteTorrentUpload
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.SessionExample import SessionExampleWrapper
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.TorrentUpload import UploadTorrentsWrapper
 
 import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 
 # then define what paths should trigger those modules, in order of priority
 # i.e. put more specific URL handlers first
 URLHandlers = [
-    ["/session/"               , websiteSessionExample],
-    ["/torrentupload"          , websiteTorrentUpload],
-    ["/"                       , websiteMinimal] # "/" should always be last as it catches all
+    ["/session/"               , SessionExample],
+    ["/torrentupload"          , SessionExampleWrapper],
+    ["/"                       , lambda r : Minimal(request=r, homedirectory="htdocs/", indexfilename="index.html")],
+    
+    # "/" should always be last as it catches all
 ]
 # the second item should be a component class that takes one parameter (the request)
 # OR some other function that takes one parameter returns a component instance

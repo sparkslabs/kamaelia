@@ -28,19 +28,18 @@ handler/response generator. One instance of this component can handle one
 TCP connection. Use a SimpleServer or similar component to allow several
 concurrent HTTP connections to the server.
 
-HTTPServer creates 2 subcomponents - HTTPParser and HTTPRequestHandler which
-handle the processing of requests and the creation of responses respectively.
-
 Example Usage
 -------------
 
-createhttpserver = lambda : HTTPServer(HTTPResourceGlue.createRequestHandler, port=80)
-SimpleServer(protocol=createhttpserver).run()
+    def createhttpserver():
+        return HTTPServer(HTTPResourceGlue.createRequestHandler)
 
-"lambda : HTTPServer(HTTPResourceGlue.createRequestHandler)" is the
-definition of function which creates a HTTPServer instance with 
+    SimpleServer(protocol=createhttpserver, port=80).run()
+
+This defines a function which creates a HTTPServer instance with 
 HTTPResourceGlue.createRequestHandler as the request handler component
-creator function.
+creator function. This function is then called by SimpleServer for every
+new TCP connection.
 
 How does it work?
 -----------------
@@ -64,6 +63,9 @@ appropriate responses to those requests.
 
 How does it work?
 -----------------
+HTTPServer creates 2 subcomponents - HTTPParser and HTTPRequestHandler which
+handle the processing of requests and the creation of responses respectively.
+
 Both requests and responses are handled in a stepwise manner (as opposed to processing a
 whole request or response in one go) to reduce latency and cope well with bottlenecks.
 
@@ -98,17 +100,18 @@ This method is prefered for any response whose length is known in advance.
 
 Connection: close
 *************************
-This method closes (or half-closes) the TCP connection when the response is complete.
-This is highly inefficient when the client wishes to download several resources as a new
-TCP connection must be created and destroyed for each resource. This method is retained for
-HTTP/1.0 compatibility.
-It is however preferred for responses that do not have a true end, e.g. a continuous stream
-over HTTP as the alternative, chunked transfer encoding, has poorer performance.
+This method closes (or half-closes) the TCP connection when the response is
+complete. This is highly inefficient when the client wishes to download several
+resources as a new TCP connection must be created and destroyed for each
+resource. This method is retained for HTTP/1.0 compatibility.
+It is however preferred for responses that do not have a true end,
+e.g. a continuous stream over HTTP as the alternative, chunked transfer
+encoding, has poorer performance.
 
-
-The choice of these three methods is determined at runtime by the characteristics of the
-first response part produced by the request handler and the version of HTTP that the client
-supports (chunked requires 1.1 or higher).
+The choice of these three methods is determined at runtime by the
+characteristics of the first response part produced by the request handler
+and the version of HTTP that the client supports
+(chunked requires 1.1 or higher).
 
 What may need work?
 ========================
@@ -518,10 +521,18 @@ class HTTPRequestHandler(component):
 __kamaelia_components__  = ( HTTPServer, HTTPRequestHandler, )
 
 if __name__ == '__main__':
+    import socket
+    
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
     
     # this works out what the correct response to a request is
     from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
     
-    import socket
-    SimpleServer(protocol=lambda : HTTPServer(createRequestHandler), port=8082, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()
+    def createhttpserver():
+        return HTTPServer(HTTPResourceGlue.createRequestHandler)
+
+    SimpleServer(
+        protocol=createhttpserver,
+        port=8082,
+        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    ).run()

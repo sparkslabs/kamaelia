@@ -205,16 +205,8 @@ class TorrentClient(threadedcomponent):
         except Exception, e:
             pass
         return metainfo
-        
-    def tick(self):
-        """\
-        Called periodically... by itself (gets rawserver to call it back after a delay of
-        tickInterval seconds). Checks inboxes and sends a status-update message for every
-        active torrent.
-        """
-
-        self.multitorrent.rawserver.add_task(self.tickInterval, self.tick)
-        #print "Tick"
+    
+    def handleMessages(self):
         while self.dataReady("inbox"):
             temp = self.recv("inbox")
             if isinstance(temp, TIPCCreateNewTorrent) or isinstance(temp, str):
@@ -241,10 +233,6 @@ class TorrentClient(threadedcomponent):
                     self.torrentinfohashes.erase(torrent.metainfo.infohash)
                     self.torrents.erase(temp.torrentid)
                     
-        for torrentid, torrent in self.torrents.items():
-            if not isinstance(torrent, MakeshiftTorrent):
-                self.send(TIPCTorrentStatusUpdate(torrentid=torrentid, statsdictionary=torrent.get_status()), "outbox")
-        
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdown):
@@ -252,6 +240,26 @@ class TorrentClient(threadedcomponent):
                 #cause us to shutdown
                 self.rawserver_doneflag.set()
                 self.core_doneflag.set()
+                
+    def sendStatusUpdates(self):
+        "Send a TIPCTorrentStatusUpdate for each running torrent."
+        for torrentid, torrent in self.torrents.items():
+            if not isinstance(torrent, MakeshiftTorrent):
+                self.send(TIPCTorrentStatusUpdate(torrentid=torrentid, statsdictionary=torrent.get_status()), "outbox")
+        
+    def tick(self):
+        """\
+        Called periodically... by itself (gets rawserver to call it back after a delay of
+        tickInterval seconds). Checks inboxes and sends a status-update message for every
+        active torrent.
+        """
+
+        self.multitorrent.rawserver.add_task(self.tickInterval, self.tick)
+        #print "Tick"
+        self.handleMessages()
+        self.sendStatusUpdates()
+
+        
         #if self.torrent is not None:
         #    status = self.torrent.get_status(self.config['spew'])
         #    self.d.display(status)

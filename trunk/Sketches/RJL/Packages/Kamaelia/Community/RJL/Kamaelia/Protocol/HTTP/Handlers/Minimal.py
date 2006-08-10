@@ -21,11 +21,15 @@
 # -------------------------------------------------------------------------
 """\
 ========================
-websiteMinimal
+Minimal
 ========================
 A simple HTTP request handler for HTTPServer.
-websiteMinimal serves files within a given directory, guessing their
+Minimal serves files within a given directory, guessing their
 MIME-type from their file extension.
+
+Example Usage
+-------------
+See HTTPResourceGlue.py for how to use request handlers.
 """
 
 import string, time, dircache, os
@@ -64,23 +68,35 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
-def websiteListFilesPage(directory):
-    files = dircache.listdir(homedirectory + directory)
-    data = u"<html>\n<title>" + directory + u"</title>\n<body style='background-color: black; color: white;'>\n<h2>" + directory + u"</h2>\n<p>Files</p><ul>"
-    
-    
-    for entry in files:
-        data += u"<li><a href=\"" + directory + entry + u"\">" + entry + u"</a></li>\n"
-    data += u"</ul></body>\n</html>\n\n"
-    
-    return {
-        "statuscode" : "200",
-        "data"       : data,
-        "type"       : "text/html"
-    }
+# old setup used functions - this needs to be converted to work with
+# the new component-based handler system
+#def websiteListFilesPage(directory):
+#    files = dircache.listdir(homedirectory + directory)
+#    data = u"<html>\n<title>" + directory + u"</title>\n<body style='background-color: black; color: white;'>\n<h2>" + #directory + u"</h2>\n<p>Files</p><ul>"
+#    
+#    
+#    for entry in files:
+#        data += u"<li><a href=\"" + directory + entry + u"\">" + entry + u"</a></li>\n"
+#    data += u"</ul></body>\n</html>\n\n"
+#    
+#    return {
+#        "statuscode" : "200",
+#        "data"       : data,
+#        "type"       : "text/html"
+#    }
 
 # a one shot request handler
-class websiteMinimal(component):
+class Minimal(component):
+    """\
+    A simple HTTP request handler for HTTPServer which serves files within a
+    given directory, guessing their MIME-type from their file extension.
+    
+    Arguments:
+    -- request - the request dictionary object that spawned this component
+    -- homedirectory - the path to prepend to paths requested
+    -- indexfilename - if a directory is requested, this file is checked for
+                       inside it, and sent if found
+    """
     Inboxes = {
         "inbox"        : "UNUSED",
         "control"      : "UNUSED",
@@ -95,16 +111,18 @@ class websiteMinimal(component):
 	}
     
     
-    def __init__(self, request):
+    def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
 	    self.request = request
-	    super(websiteMinimal, self).__init__()
+	    self.indexfilename = indexfilename
+	    self.homedirectory = homedirectory
+	    super(Minimal, self).__init__()
         
     def main(self):
-        print "websiteMinimal.handler"
+        """Produce the appropriate response then terminate."""
         filename = sanitizePath(self.request["raw-uri"])
         #if os.path.isdir(homedirectory + filename):
         #    if filename[-1:] != "/": filename += "/"
-        #    if os.path.isfile(homedirectory + filename + indexfilename):
+        #    if os.path.isfile(self.homedirectory + filename + self.indexfilename):
         #        filename += indexfilename
         #    else:
         #        yield websiteListFilesPage(filename)
@@ -114,7 +132,7 @@ class websiteMinimal(component):
         
         error = None
         try:
-            if os.path.exists(homedirectory + filename) and not os.path.isdir(homedirectory + filename):
+            if os.path.exists(self.homedirectory + filename) and not os.path.isdir(self.homedirectory + filename):
                 resource = {
                     "type"           : filetype,
                     "statuscode"     : "200",
@@ -122,7 +140,7 @@ class websiteMinimal(component):
                 }
                 self.send(resource, "outbox")
             else:
-                print "Error 404, " + homedirectory + filename + " is not a file"
+                print "Error 404, " + filename + " is not a file"
                 error = 404
                 
         except OSError, e:
@@ -135,13 +153,15 @@ class websiteMinimal(component):
             self.send(producerFinished(self), "signal")
             return
             
-        self.filereader = IntelligentFileReader(homedirectory + filename, 50000, 10)
+        self.filereader = IntelligentFileReader(self.homedirectory + filename, 50000, 10)
         self.link((self, "_fileprompt"), (self.filereader, "inbox"))
         self.link((self, "_filesignal"), (self.filereader, "control"))
         self.link((self.filereader, "outbox"), (self, "_fileread"))
         self.link((self.filereader, "signal"), (self, "_filecontrol"))
         self.addChildren(self.filereader)
-        self.filereader.activate()
+        self.filereader.activate()A simple HTTP request handler for HTTPServer.
+Minimal serves files within a given directory, guessing their
+MIME-type from their file extension.
         yield 1        
         
         done = False
@@ -153,7 +173,7 @@ class websiteMinimal(component):
                 self.send(resource, "outbox")
                 
             if len(self.outboxes["outbox"]) < 3:
-                self.send("GARBAGE", "_fileprompt")
+                self.send("GARBAGE", "_fileprompt") # we use this to wakeup the filereader
                         
             while self.dataReady("_filecontrol") and not self.dataReady("_fileread"):
                 msg = self.recv("_filecontrol")
@@ -163,9 +183,5 @@ class websiteMinimal(component):
             self.pause()
         
         self.send(producerFinished(self), "signal")
-        #print "websiteMinimal terminated"
 
-__kamaelia_components__  = ( websiteMinimal, )
-
-indexfilename = "index.html"
-homedirectory = "htdocs/"
+__kamaelia_components__  = ( Minimal, )
