@@ -25,10 +25,10 @@ from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 import os
 
 graph = ["\n","""DEL ALL
@@ -168,11 +168,11 @@ Graphline(
      }
 ).activate()
 
-pipeline(
+Pipeline(
      Button(caption="dink", msg="NEXT", position=(136,0), transparent=True),
      Chooser(items = graph),
      chunks_to_lines(),
      lines_to_tokenlists(),
-     TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
+     TopologyViewer(transparency = (255,255,255), showGrid = False, position=(0,0)),
 ).run()
 

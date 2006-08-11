@@ -23,17 +23,17 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-from Kamaelia.Chassis.Pipeline import pipeline
-from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
-import Kamaelia.ReadFileAdaptor
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 clientServerTestPort=1500
 
 def AdHocFileProtocolHandler(filename):
-    class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
+    class klass(ReadFileAdaptor):
         def __init__(self,*argv,**argd):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=128000)
     return klass
@@ -41,7 +41,7 @@ def AdHocFileProtocolHandler(filename):
 server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
                     port=clientServerTestPort).activate()
 
-pipeline(
+Pipeline(
    TCPClient("127.0.0.1",clientServerTestPort),
    VorbisDecode(),
    AOAudioPlaybackAdaptor() 

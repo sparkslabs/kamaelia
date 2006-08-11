@@ -4,22 +4,22 @@
 # components.
 #
 
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Detuple import SimpleDetupler
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 # Server
-pipeline(
+Pipeline(
     ReadFileAdaptor(file_to_stream, readmode="bitrate", bitrate=400000, chunkrate=50),
     Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
 ).activate()
 
 # Client
-pipeline(
+Pipeline(
     Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
     SimpleDetupler(1),
     VorbisDecode(),

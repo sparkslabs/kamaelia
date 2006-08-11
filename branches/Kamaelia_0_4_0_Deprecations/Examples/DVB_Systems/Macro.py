@@ -7,7 +7,7 @@
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.File.UnixPipe import Pipethrough
+from Kamaelia.File.PipeThrough import PipeThrough
 import Axon
 import struct
 import dvb3
@@ -15,7 +15,7 @@ import dvb3
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor, EITPacketParser, NowNextServiceFilter, NowNextChanges, TimeAndDatePacketParser
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 import time, os
 
 class EITDemux(Axon.Component.component):
@@ -124,7 +124,7 @@ class ProgrammeTranscoder(Axon.Component.component):
 
 
 def EITParsing(*service_ids):
-    return pipeline(
+    return Pipeline(
         PSIPacketReconstructor(),
         EITPacketParser(),
         NowNextServiceFilter(*service_ids),
@@ -168,7 +168,7 @@ elif location == "manchester": # WinterHill
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Util.Console import ConsoleEchoer
 

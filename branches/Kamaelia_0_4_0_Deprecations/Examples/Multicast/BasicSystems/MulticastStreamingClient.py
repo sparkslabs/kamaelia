@@ -9,8 +9,7 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 
 def tests():
    from Axon.Scheduler import scheduler
-   import Kamaelia.ReadFileAdaptor
-   from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+   from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 
    from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
 

@@ -28,13 +28,13 @@
 #
 
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 outputfile = "/tmp/received.raw"
 clientServerTestPort=1500
 
-pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          SimpleFileWriter(outputfile)
         ).run()
 

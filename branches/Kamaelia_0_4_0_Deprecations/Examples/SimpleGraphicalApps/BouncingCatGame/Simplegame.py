@@ -46,7 +46,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
 from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
-from Kamaelia.Util.Fanout import fanout
+from Kamaelia.Util.Fanout import Fanout
 from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
 
 banner_location = "banner.gif"
@@ -107,7 +107,7 @@ def make_cat(cat_location, screensize, border ):
     # Get the cat again!
     files = list()
     for x in os.listdir("pictures"):
-        if x not in ("README","CVS"):
+        if x not in ("README","CVS",".svn"):
             files.append(x)
 
     image_location = files[random.randint(0,len(files)-1)]
@@ -129,7 +129,7 @@ def make_cat(cat_location, screensize, border ):
        translation = cartesianPingPong(position,screensize[0],screensize[1],border),
        scaler = bouncingFloat(scale_speed),
        imaging = continuousIdentity(cat),
-       shutdown_fanout = fanout(["rotator","translation","scaler", "imaging","self_shutdown"]),
+       shutdown_fanout = Fanout(["rotator","translation","scaler", "imaging","self_shutdown"]),
        linkages = {
            ("rotator","outbox" ) : ("newCat", "rotator"),
            ("translation","outbox" ) : ("newCat", "translation"),

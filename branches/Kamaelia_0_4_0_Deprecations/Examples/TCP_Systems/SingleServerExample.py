@@ -3,9 +3,9 @@
 import Axon
 from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Internet.SingleServer import SingleServer
  
 class Cat(Axon.Component.component):
     def __init__(self, messages):
@@ -19,7 +19,7 @@ class Cat(Axon.Component.component):
             yield 1
 
 port = 1602
-pipeline(
+Pipeline(
      Cat([
          "Hello World", "Hello World", "Hello World", "Hello World",
          "Hello World", "Hello World", "Hello World", "Hello World",
@@ -29,7 +29,7 @@ pipeline(
      SingleServer(port=port),
 ).activate()
 
-pipeline(
+Pipeline(
     TCPClient("127.0.0.1", port),
     ConsoleEchoer(),
 ).run()
