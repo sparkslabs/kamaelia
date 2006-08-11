@@ -36,7 +36,7 @@ Example Usage
 Introspect and display whats going on inside the system::
     MyComplexSystem().activate()
     
-    pipeline( Introspector(),
+    Pipeline( Introspector(),
               AxonVisualiserServer(noServer=True),
             )
 
@@ -113,11 +113,12 @@ __kamaelia_components__  = ( Introspector, )
 
 
 if __name__ == '__main__':
+   import Axon
 
    i = Introspector()
    i.activate()
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
-   e = consoleEchoer()
+   from Kamaelia.Util.Console import ConsoleEchoer
+   e = ConsoleEchoer()
    e.activate()
    i.link((i,"outbox"), (e, "inbox"))
    

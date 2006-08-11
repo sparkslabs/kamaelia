@@ -112,7 +112,7 @@ occurred.
 import Axon
 from Axon.Ipc import shutdown
 import select, socket
-from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
+from Kamaelia.IPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 import Axon.CoordinatingAssistantTracker as cat
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 import time

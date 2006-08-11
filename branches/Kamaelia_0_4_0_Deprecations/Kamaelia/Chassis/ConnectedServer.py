@@ -101,7 +101,7 @@ shutdownMicroprocess messages.
 import Axon as _Axon
 from Axon import AxonObject as _AxonObject
 import Kamaelia.Internet.TCPServer as _ic
-import Kamaelia.KamaeliaIPC as _ki
+import Kamaelia.IPC as _ki
 import time as _time
 
 class simpleServerProtocol(_Axon.Component.component):

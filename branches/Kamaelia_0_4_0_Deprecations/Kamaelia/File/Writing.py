@@ -35,7 +35,7 @@ Copying a file::
 
     from Kamaelia.File.Writing import SimpleFileWriter
 
-    pipeline(RateControlledFileReader("sourcefile",rate=1000000),
+    Pipeline(RateControlledFileReader("sourcefile",rate=1000000),
              SimpleFileWriter("destinationfile")
             ).activate()
 
@@ -127,12 +127,11 @@ class SimpleFileWriter(component):
 
 __kamaelia_components__  = ( SimpleFileWriter, )
       
-if 0:
-    print "Temporarily disabled tests since they rely on code in /Sketches"
+if 1:
     if __name__ == "__main__":
-        from Kamaelia.Util.PipelineComponent import pipeline
-        from ReadMultiFileAdapter import RateControlledReadFileAdapter
+        from Kamaelia.Chassis.Pipeline import Pipeline
+        from Kamaelia.File.Reading import RateControlledFileReader
 
-        pipeline( RateControlledReadFileAdapter("WriteFileAdapter.py"),
-                  SimpleWriter("/tmp/tmp_WriteFileAdapter.py")
+        Pipeline( RateControlledFileReader("Writing.py"),
+                  SimpleFileWriter("/tmp/tmp_Writing.py")
                 ).run()

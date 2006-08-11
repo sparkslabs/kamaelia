@@ -333,7 +333,7 @@ __kamaelia_components__  = ( Ticker, )
 
 
 if __name__ == "__main__":
-   from Kamaelia.Util.PipelineComponent import pipeline
+   from Kamaelia.Chassis.Pipeline import Pipeline
    # Excerpt from Tennyson's Ulysses
    text = """\
 The lights begin to twinkle from the rocks;
@@ -360,10 +360,9 @@ To strive, to seek, to find, and not to yield.
             yield 1
 
    for _ in range(6):
-      pipeline(datasource(),
+      Pipeline(datasource(),
                Ticker()
-              ).activate()
-   Axon.Scheduler.scheduler.run.runThreads()
+              ).run()
 
 
 

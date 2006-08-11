@@ -146,8 +146,8 @@ __kamaelia_components__  = ( Pipeline, )
                   
 if __name__=="__main__":
     from Axon.Component import scheduler
-    from ConsoleEcho import consoleEchoer
-    from passThrough import passThrough
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.PassThrough import PassThrough
     
     from Axon.Ipc import producerFinished, shutdownMicroprocess
     
@@ -172,8 +172,8 @@ if __name__=="__main__":
             self.__super.__init__()
             
             self.source = fruitSource()
-            self.pipe   = Pipeline(passThrough([]))
-            self.dest   = consoleEchoer()
+            self.pipe   = Pipeline(PassThrough([]))
+            self.dest   = ConsoleEchoer()
             self.addChildren(self.source, self.pipe, self.dest)
             
             self.link((self.source, "outbox"),  (self.pipe, "inbox"))

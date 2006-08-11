@@ -33,7 +33,7 @@ only.
 Example Usage
 -------------
 ::
-    pipeline( source(), testResultComponent() ).activate()
+    Pipeline( source(), TestResult() ).activate()
     
 Raises an assertion error if source() generates a value that doesn't test
 true.
@@ -72,9 +72,9 @@ class StopSystemException(AxonException):
     pass
 
 
-class testResultComponent(component):
+class TestResult(component):
     """\
-    testResultComponent() -> new testResultComponent.
+    TestResult() -> new TestResult component.
     
     Component that raises an AssertionError if it receives data on its "inbox"
     inbox that does not test true. Or raises a StopSystemException if a
@@ -98,4 +98,4 @@ class testResultComponent(component):
                 raise StopSystemException("StopSystem request raised from TestResultComponent")
         return 1
     
-__kamaelia_components__  = ( testResultComponent, )
+__kamaelia_components__  = ( TestResult, )

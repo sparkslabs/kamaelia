@@ -34,9 +34,9 @@ Example Usage
 -------------
 A topology viewer where particles of type "-" are rendered by RenderingParticle
 instances::
-    TopologyViewerComponent( particleTypes = {"-":RenderingParticle},
-                             laws = Kamaelia.Support.Particles.SimpleLaws(),
-                           ).run()
+    TopologyViewer( particleTypes = {"-":RenderingParticle},
+                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                  ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
 types.
@@ -59,7 +59,7 @@ simple lines.
 
 Rendering is performed by a generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewerComponent.
+that is used by TopologyViewer.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -70,7 +70,7 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewerComponent for more details.
+See TopologyViewer for more details.
 
 """
 

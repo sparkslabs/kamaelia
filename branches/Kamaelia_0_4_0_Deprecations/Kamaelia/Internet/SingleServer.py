@@ -34,7 +34,7 @@ TCPServer.
 
 import Axon as _Axon
 from Kamaelia.Internet.TCPServer import TCPServer
-import Kamaelia.KamaeliaIPC as _ki
+import Kamaelia.IPC as _ki
 from Axon.Ipc import producerFinished
 
 class echo(_Axon.Component.component):

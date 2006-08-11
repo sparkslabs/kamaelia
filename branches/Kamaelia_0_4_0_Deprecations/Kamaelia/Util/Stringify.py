@@ -31,7 +31,7 @@ A simple component that takes data items and converts them to strings.
 Example Usage
 -------------
 ::
-    pipeline( sourceOfNonStrings(),
+    Pipeline( sourceOfNonStrings(),
               Stringify(),
               consumerThatWantsStrings(),
             ).activate()

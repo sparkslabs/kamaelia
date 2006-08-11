@@ -40,7 +40,7 @@ Example Usage
 
 Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
 
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               ThreadedTCPClient("1.2.3.4", 1000),
             ).activate()
 
@@ -80,7 +80,7 @@ import socket
 import errno
 import Axon
 from Axon.Component import component
-from Kamaelia.KamaeliaIPC import socketShutdown
+from Kamaelia.IPC import socketShutdown
 from Queue import Empty
 import Axon.ThreadedComponent
 

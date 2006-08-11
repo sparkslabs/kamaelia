@@ -41,12 +41,12 @@ Example Usage
 -------------
 Instantiate a topology viewer using rendering code for each particle type, and the
 appropriate laws to govern their interactions::
-    visualiser = TopologyViewerComponent( particleTypes={ "component" : PComponent,
-                                                          "inbox"     : PPostbox.Inbox,
-                                                          "outbox"    : PPostbox.Outbox
-                                                        }
-                                          laws = AxonLaws(),
-                                        ).activate()
+    visualiser = TopologyViewer( particleTypes={ "component" : PComponent,
+                                                 "inbox"     : PPostbox.Inbox,
+                                                 "outbox"    : PPostbox.Outbox
+                                               }
+                                 laws = AxonLaws(),
+                               ).activate()
 
 
 

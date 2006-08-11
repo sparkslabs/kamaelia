@@ -27,7 +27,7 @@ from Kamaelia.Util.Splitter import PlugSplitter as Splitter
 from Kamaelia.Util.Splitter import Plug
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
-from Kamaelia.Util.passThrough import passThrough
+from Kamaelia.Util.PassThrough import PassThrough
 
 class Backplane(Axon.Component.component):
     def __init__(self, name):
@@ -85,7 +85,7 @@ class SubscribeTo(Axon.Component.component):
     def main(self):
         cat = CAT.getcat()
         splitter,configbox = cat.retrieveService("Backplane_O_"+self.source)
-        p = passThrough()
+        p = PassThrough()
         plug = Plug(splitter, p)
         self.link( (p,"outbox"), (self,"outbox"), passthrough=2)
         self.addChildren(plug)
@@ -101,7 +101,7 @@ class SubscribeTo(Axon.Component.component):
 
 __kamaelia_components__  = ( Backplane, PublishTo, SubscribeTo, )
 
-# DEPRECATED - now stubs
+DEPRECATED - now stubs
 
 class publishTo(PublishTo):
     """DEPRECATED"""

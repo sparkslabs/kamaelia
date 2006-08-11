@@ -34,7 +34,7 @@ indefinitely out of its "outbox" outbox.
 Example Usage
 -------------
 ::
-    >>> pipeline( Chargen(), consoleEchoer() ).run()
+    >>> Pipeline( Chargen(), consoleEchoer() ).run()
     Hello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHel
     lo WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello
     WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello Wor
@@ -83,12 +83,12 @@ class Chargen(Axon.Component.component):
 
 def tests():
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
 
    class testComponent(Axon.Component.component):
       def main(self):
         chargen= Chargen()
-        display = consoleEchoer()
+        display = ConsoleEchoer()
 
         self.link((chargen,"outbox"), (display,"inbox"))
         self.addChildren(chargen, display)

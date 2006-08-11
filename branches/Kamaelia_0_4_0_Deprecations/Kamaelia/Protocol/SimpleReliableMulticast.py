@@ -35,7 +35,7 @@ duplicates are removed. However it cannot recover lost data.
 Example Usage
 -------------
 Reliably transporting a file over multicast (assuming no packets are lost)::
-    pipeline(RateControlledFileReader("myfile"),
+    Pipeline(RateControlledFileReader("myfile"),
              SRM_Sender(),
              Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
@@ -48,7 +48,7 @@ On the client::
                     (_, data) = self.recv("inbox")
                     self.send(data,"outbox")
     
-    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
               SRM_Receiver(),
               discardSeqnum(),
               consoleEchoer()
@@ -86,7 +86,7 @@ behaviour.
 """
 
 import Axon
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 from Kamaelia.Protocol.Framing import Framer as _Framer
 from Kamaelia.Protocol.Framing import DeFramer as _DeFramer
@@ -162,7 +162,7 @@ def SRM_Sender():
 
     This is a pipeline of components.
     """
-    return pipeline(
+    return Pipeline(
         Annotator(),
         _Framer(),
         _DataChunker()
@@ -179,7 +179,7 @@ def SRM_Receiver():
 
     This is a pipeline of components.
     """
-    return pipeline(
+    return Pipeline(
         _DataDeChunker(),
         _DeFramer(),
         RecoverOrder()
@@ -189,7 +189,7 @@ __kamaelia_components__  = ( Annotator, RecoverOrder, )
 __kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
     
 if __name__ == "__main__":
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Internet.Simulate.BrokenNetwork import Duplicate, Throwaway, Reorder
     
     import time
@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 self.send(str(i), "outbox")
                 t = time.time()
 
-    pipeline(Source(),
+    Pipeline(Source(),
              SRM_Sender(),
              Duplicate(),
              Throwaway(),

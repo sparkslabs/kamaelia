@@ -159,18 +159,18 @@ if __name__=="__main__":
     def SimplePeer_tests():
         from Axon.Scheduler import scheduler
         from Kamaelia.Util.Console import ConsoleEchoer
-        from Kamaelia.Util.PipelineComponent import pipeline
+        from Kamaelia.Chassis.Pipeline import Pipeline
         from Kamaelia.Util.Chargen import Chargen
 
         server_addr = "127.0.0.1"
         server_port = 1600
 
-        pipeline(
+        Pipeline(
             Chargen(),
             SimplePeer(receiver_addr=server_addr, receiver_port=server_port),
         ).activate()
 
-        pipeline(
+        Pipeline(
             SimplePeer(localaddr=server_addr, localport=server_port),
             DevNull(),
 #            ConsoleEchoer()
@@ -179,9 +179,9 @@ if __name__=="__main__":
     def TargettedPeer_tests():
         from Axon.Scheduler import scheduler
         from Kamaelia.Util.Console import ConsoleEchoer
-        from Kamaelia.Util.PipelineComponent import pipeline
+        from Kamaelia.Chassis.Pipeline import Pipeline
         from Kamaelia.Util.Chargen import Chargen
-        from Kamaelia.Util.Graphline import Graphline
+        from Kamaelia.Chassis.Graphline import Graphline
 
         server_addrs = [ 
                          ("127.0.0.1", 1600),
@@ -191,7 +191,7 @@ if __name__=="__main__":
                        ]
 
         for server_addr, server_port in server_addrs:
-            pipeline(
+            Pipeline(
                 SimplePeer(localaddr=server_addr, localport=server_port), # Simple Servers
                 LineSepFilter("SERVER:"+server_addr+" :: "),
                 ConsoleEchoer()
@@ -223,9 +223,9 @@ if __name__=="__main__":
     def PostboxPeer_tests():
         from Axon.Scheduler import scheduler
         from Kamaelia.Util.Console import ConsoleEchoer
-        from Kamaelia.Util.PipelineComponent import pipeline
+        from Kamaelia.Chassis.Pipeline import Pipeline
         from Kamaelia.Util.Chargen import Chargen
-        from Kamaelia.Util.Graphline import Graphline
+        from Kamaelia.Chassis.Graphline import Graphline
         import random
 
         server_addrs = [ 
@@ -236,7 +236,7 @@ if __name__=="__main__":
                        ]
 
         for server_addr, server_port in server_addrs:
-            pipeline(
+            Pipeline(
                 SimplePeer(localaddr=server_addr, localport=server_port), # Simple Servers
                 LineSepFilter("SERVER:"+server_addr+" :: "),
                 ConsoleEchoer()
@@ -256,7 +256,7 @@ if __name__=="__main__":
 
                     self.send( message, "outbox")
 
-        pipeline(
+        Pipeline(
             PostboxPeerSource(server_addrs),
             PostboxPeer(localaddr="127.0.0.1"),
         ).run()

@@ -99,6 +99,6 @@ __kamaelia_components__  = ( EchoProtocol, )
 
 
 if __name__ == '__main__':
-   from Kamaelia.SimpleServerComponent import SimpleServer
+   from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
    SimpleServer(protocol=EchoProtocol, port=1501).run()

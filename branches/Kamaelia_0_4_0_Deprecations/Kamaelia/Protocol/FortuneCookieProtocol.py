@@ -65,7 +65,7 @@ import sys
 
 from Axon.Component import component
 from Axon.Ipc import newComponent
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 
 class FortuneCookieProtocol(component):
    """\
@@ -120,6 +120,6 @@ __kamaelia_components__  = ( FortuneCookieProtocol, )
 
    
 if __name__ == '__main__':
-   from Kamaelia.SimpleServerComponent import SimpleServer
+   from Kamaelia.Chassis.ConnectedServer import SimpleServer
    
    SimpleServer(protocol=FortuneCookieProtocol, port=1500).run()

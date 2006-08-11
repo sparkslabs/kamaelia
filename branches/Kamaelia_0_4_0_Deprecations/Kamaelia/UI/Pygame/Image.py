@@ -53,7 +53,7 @@ Display that rotates rapidly through a set of images::
     image = Image(image=None, bgcolour=(0,192,0))
     ic    = ChangeImage(imagefiles)
     
-    pipeline(ic, image).run()
+    Pipeline(ic, image).run()
 
 
 

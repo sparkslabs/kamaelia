@@ -34,7 +34,7 @@ Example usage
 -------------
 A system that connects to a server and receives fragmented text data, but then
 displays it a whole line at a time::
-	    pipeline( TCPClient(host=..., port=...),
+    Pipeline( TCPClient(host=..., port=...),
               chunks_to_lines(),
               consoleEcho()
             ).run()

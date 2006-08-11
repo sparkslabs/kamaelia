@@ -37,12 +37,11 @@ from Kamaelia.UI.MH import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
-from Kamaelia.Util.PipelineComponent import pipeline
 
 # from GridRenderer import GridRenderer
 # from RenderingParticle import RenderingParticle
 # from ParticleDragger import ParticleDragger
-# from TopologyViewerComponent import TopologyViewerComponent
+# from TopologyViewer import TopologyViewer
 # from lines_to_tokenlists import lines_to_tokenlists
 # from chunks_to_lines import chunks_to_lines
 from TopologyViewerServer import TopologyViewerServer

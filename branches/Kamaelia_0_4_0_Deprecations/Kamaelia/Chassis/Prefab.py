@@ -90,7 +90,7 @@ JOINCHOOSERTOCAROUSEL
     what its for.
 """
 
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 
 def JoinChooserToCarousel(chooser, carousel):  # CHASSIS

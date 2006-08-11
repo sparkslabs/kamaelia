@@ -37,7 +37,7 @@ Example Usage
 Receiving multicast packets from group address 1.2.3.4 port 1000 and displaying
 them on the console::
 
-    pipeline( Multicast_receiver("1.2.3.4", 1000),
+    Pipeline( Multicast_receiver("1.2.3.4", 1000),
               consoleEchoer()
             ).activate()
 
@@ -111,12 +111,12 @@ class Multicast_receiver(Axon.Component.component):
 
 def tests():
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
 
    class testComponent(Axon.Component.component):
       def main(self):
         receiver = Multicast_receiver("224.168.2.9", 1600)
-        display = consoleEchoer()
+        display = ConsoleEchoer()
 
         self.link((receiver,"outbox"), (display,"inbox"))
         self.addChildren(receiver, display)

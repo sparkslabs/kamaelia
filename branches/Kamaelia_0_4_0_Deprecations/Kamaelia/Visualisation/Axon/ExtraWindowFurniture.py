@@ -34,9 +34,9 @@ Example Usage
 -------------
 Create a topology viewer component that also renders 'ExtraWindowFurniture' to the
 display surface::
-   TopologyViewerComponent( extraDrawing = ExtraWindowFurniture(),
-                            ...
-                          ).activate()
+   TopologyViewer( extraDrawing = ExtraWindowFurniture(),
+                   ...
+                 ).activate()
 
                           
 How does it work?
@@ -47,7 +47,7 @@ so its longest dimension (width or height) is 64 pixels.
 
 Rendering is performed by the generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewerComponent.
+that is used by TopologyViewer.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -58,7 +58,7 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewerComponent for more details.
+See TopologyViewer for more details.
 """
 
 import pygame

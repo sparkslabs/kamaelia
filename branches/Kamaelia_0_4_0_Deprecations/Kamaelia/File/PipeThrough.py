@@ -2,7 +2,7 @@
 """
 The purpose behind this component is to allow the following to occur:
 
-pipeline(
+Pipeline(
    dataSource(),
    ExternalPipeThrough("command", *args),
    dataSink(),
@@ -29,13 +29,13 @@ stay that way.
 """
 
 import Axon
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 
-import Kamaelia.KamaeliaIPC as _ki
+import Kamaelia.IPC as _ki
 from Axon.Ipc import shutdown
-from Kamaelia.KamaeliaIPC import newReader, newWriter
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import removeReader, removeWriter
 
 from Kamaelia.Internet.Selector import Selector
 
@@ -276,7 +276,7 @@ class PipeThrough(Axon.Component.component):
 __kamaelia_components__ = ( PipeThrough, )
 
 if __name__=="__main__":
-    pipeline(
+    Pipeline(
        ChargenComponent(),
        PipeThrough("wc"),
        ConsoleEchoer(forwarder=True)

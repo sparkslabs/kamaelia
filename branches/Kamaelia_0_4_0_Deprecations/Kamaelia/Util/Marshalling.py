@@ -46,12 +46,12 @@ Example usage
             return int(string)
         demarshall = staticmethod(demarshall)
 
-    pipeline( producer(...),
+    Pipeline( producer(...),
               Marshaller(SerialiseInt),
               sender(...)
             ).activate()
 
-    pipeline( receiver(...),
+    Pipeline( receiver(...),
               DeMarshaller(SerialiseInt),
               consumer(...)
             ).activate()

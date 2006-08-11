@@ -35,7 +35,7 @@ Example Usage
 -------------
 A simple video player::
 
-    pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
+    Pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
              DiracDecoder(),
              RateLimit(framerate),
              VideoOverlay()
@@ -81,7 +81,7 @@ Raw video file encoder::
 
     imagesize = (352, 288)      # "CIF" size video
     
-    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              DiracEncoder(preset="CIF"),
              WriteFileAdapter("diracvideo.drc")

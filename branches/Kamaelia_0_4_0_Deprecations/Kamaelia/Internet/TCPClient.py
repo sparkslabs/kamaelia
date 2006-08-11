@@ -39,7 +39,7 @@ Example Usage
 
 Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
 
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               TCPClient("1.2.3.4", 1000),
             ).activate()
 
@@ -83,10 +83,10 @@ import Axon
 from Axon.util import Finality
 
 from Axon.Ipc import newComponent, status
-from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+from Kamaelia.IPC import socketShutdown, newCSA
 
-from Kamaelia.KamaeliaIPC import newReader, newWriter
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import removeReader, removeWriter
 
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
@@ -249,9 +249,9 @@ __kamaelia_components__  = ( TCPClient, )
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
-   from Kamaelia.SimpleServerComponent import SimpleServer
+   from Kamaelia.Chassis.ConnectedServer import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
-   from Kamaelia.Util.ConsoleEcho import  consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from Axon.Component import component
 
 
@@ -262,7 +262,7 @@ if __name__ =="__main__":
          self.serverport = random.randint(4000,8000)
          self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
          self.client = None
-         self.display = consoleEchoer()
+         self.display = ConsoleEchoer()
 
       def initialiseComponent(self):
          self.client = TCPClient("127.0.0.1",self.serverport, delay=1)

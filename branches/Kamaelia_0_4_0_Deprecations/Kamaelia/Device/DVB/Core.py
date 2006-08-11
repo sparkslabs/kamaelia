@@ -203,10 +203,10 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                           pass
 
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
-    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
-    from Kamaelia.Util.Graphline import Graphline
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Chassis.Graphline import Graphline
 
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -226,7 +226,7 @@ if __name__ == "__main__":
            "TMF": (810, [201,202])
     }
     if 1:
-        pipeline(
+        Pipeline(
            DVB_Multiplex(508, [640, 641, 620, 621, 622, 610, 611, 612, 600, 601, 602, 18],feparams),
            SimpleFileWriter("multiplex_new.data")
         ).run()

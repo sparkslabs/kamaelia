@@ -26,13 +26,13 @@ Drag handler for Topology Viewer
 ================================
 
 A subclass of Kamaelia.UI.MH.DragHandler that implements "click and hold"
-dragging of particles for the TopologyViewerComponent.
+dragging of particles for the TopologyViewer.
 
 
 
 Example Usage
 -------------
-See source for TopologyViewerComponent.
+See source for TopologyViewer.
 
 
 

@@ -34,7 +34,7 @@ applications.
 Example Usage
 -------------
 A simple console driven topology viewer::
-    pipeline( ConsoleReader(),
+    Pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               TopologyViewer(),
             ).run()
@@ -296,12 +296,12 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 "control"        : "Shutdown signalling",
                 "alphacontrol"   : "Alpha (transparency) of the image (value 0..255)",
                 "events"         : "Place where we recieve events from the outside world",
-                "displaycontrol" : "Replies from PygameDisplay service",
+                "displaycontrol" : "Replies from Pygame Display service",
               }
               
     Outboxes = { "signal"        : "NOT USED",
                  "outbox"        : "Notification and topology output",
-                 "displaysignal" : "Requests to PygameDisplay service",
+                 "displaysignal" : "Requests to Pygame Display service",
                }
                                                      
     

@@ -50,7 +50,7 @@ Example Usage
 
 Reading 1000 bytes per second in 10 byte chunks from 'myfile'::
 
-    pipeline(ByteRate_RequestControl(rate=1000,chunksize=10)
+    Pipeline(ByteRate_RequestControl(rate=1000,chunksize=10)
              PromptedFileReader("myfile", readmode="bytes")
             ).activate()
 
@@ -89,7 +89,7 @@ Example Usage
 
 Read 10 lines per second, in 2 chunks of 5 lines, and output them to the console::
 
-    pipeline(RateControlledFileReader("myfile", "lines", rate=10, chunksize=5),
+    Pipeline(RateControlledFileReader("myfile", "lines", rate=10, chunksize=5),
              consoleEchoer()
             ).activate()
 
@@ -134,7 +134,7 @@ Read data from a sequence of files, at 1024 bytes/second in 16 byte chunks::
     playlist.link( (reader, "requestNext"), (playlist,"inbox") )
     playlist.link( (playlist,"outbox"), (reader, "next") )
     
-    pipeline(ratecontrol, reader).activate()
+    Pipeline(ratecontrol, reader).activate()
 
     
 Or, with the Control-Signal path linked up properly, using the
@@ -146,7 +146,7 @@ JoinChooserToCarousel prefab::
 
     playlistreader = JoinChooserToCarousel(playlist, reader)
     
-    pipeline(ratecontrol, playlistreader).activate()
+    Pipeline(ratecontrol, playlistreader).activate()
 
     
 
@@ -282,7 +282,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 class PromptedFileReader(component):
     """\

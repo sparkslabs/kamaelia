@@ -59,7 +59,7 @@ not terminate, event when its shutdown() method is called (see below).
 The "signal" outbox is used to output status message strings: "unpause",
 "togglepause" and "shutdown".
 
-This component does not register with the PygameDisplay service and does not
+This component does not register with the Pygame Display service and does not
 actually blit its sprite onto the display itself. It relies on a parent
 SpriteScheduler component - to which this component should be passed.
 
