@@ -32,6 +32,7 @@ Examples
 TorrentGUI - a minimal Tkinter GUI for BitTorrent
 P2PStreamSeed - streaming over BitTorrent, source/uploader/seed
 P2PStreamPeer - streaming over BitTorrent, sink/downloader/peer
+TorrentSeeder - a console .torrent maker and file seeder
 
 Components
 ==========

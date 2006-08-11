@@ -46,6 +46,14 @@ i.e. it uploads it to any clients that request it.
 Send others your .torrent file so they can download from you and later upload
 your file to others.
 
+Usage
+-----
+First enter the announce URL of your BitTorrent tracker,
+e.g. http://myserver.example.org:6969/announce
+Then enter the names of files you wish to seed (they must be
+in the local directory). For each of these, a .torrent file
+will be created. With a copy of this file, other users
+can download from you. 
 """
 
 from Kamaelia.Chassis.Pipeline import pipeline
@@ -63,6 +71,10 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
 class TwoSourceListifier(component):
+    """Wait until inboxes "a" and "b" have messages, then
+    take the first from each and combine them into a new list
+    of the form [a,b]. Repeat."""
+    
     Inboxes = ["a", "b", "control"]
     def main(self):
         while 1:
@@ -80,20 +92,42 @@ class TwoSourceListifier(component):
             self.pause()
 
 if __name__ == '__main__':
-    # seed a file
+    # The 'announce' URL of the BitTorrent tracker to use
+    # e.g. "http://192.168.1.5:6969/announce"
+    trackerannounceurl = raw_input("Tracker Announce URL: ")
+    
     Graphline(
         filenamereader = ConsoleReader(">>> ", ""),
+        
+        # send the filename entered by the user to both the .torrent
+        # maker and to the file writer to use as part of the filename
+        # (so that it knows what to save the metadata as)
         filenamesplitter = fanout(["toNamer", "toTorrentMaker"]),
-        torrentmaker = TorrentMaker("http://localhost:6969/announce"),
+        
+        # makes the .torrent file (BitTorrent metadata)
+        torrentmaker = TorrentMaker(trackerannounceurl), 
+        
+        # saves the .torrent file
         filewriter = WholeFileWriter(),
+        
+        # does the seeding (uploading) of the file
         torrentpatron = TorrentPatron(),
+        
+        # puts a name to the .torrent file
         torrentnamer = TwoSourceListifier(),
+        
+        # send the .torrent file data to both the seeder and the saver
         torrentmetasplitter = fanout(["toTorrentPatron", "toNamer"]),
+
+        # appends ".torrent" to the filename to give the .torrent filename
         suffixtorrent = PureTransformer(lambda x : x + ".torrent"),
+        
+        # output debugging messages, e.g. download progress
         explainer = pipeline(
             BasicTorrentExplainer(),
             ConsoleEchoer()
         ),
+        
         linkages = {
             ("filenamereader", "outbox") : ("filenamesplitter", "inbox"),
             ("filenamesplitter", "toNamer") : ("suffixtorrent", "inbox"),

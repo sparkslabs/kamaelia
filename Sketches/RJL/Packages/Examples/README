@@ -27,6 +27,10 @@ example.
                       downloading, the original stream is reconstructed.
    
    * TorrentGUI/    : Contains a Tkinter BitTorrent client GUI.
+   
+   * TorrentSeeder/ : Creates a .torrent file for each filename entered
+                      and seeds the file data (uploads it to peers that
+                      request it).
 
 
 For examples of the usage of my components, see the bottom of each source code file.
