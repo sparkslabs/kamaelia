@@ -115,7 +115,7 @@ class TorrentClient(threadedcomponent):
     Mainline yield periodically.
     """
     
-    Inboxes = {
+    Inboxes = {t
         "inbox"   : "Torrent IPC - add a torrent, stop a torrent etc.",
         "control" : "Shut me down"
     }

@@ -40,15 +40,15 @@ import types
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.SessionExample import SessionExampleWrapper
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.TorrentUpload import UploadTorrentsWrapper
+from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.UploadTorrents import UploadTorrentsWrapper
 
 import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
 
 # then define what paths should trigger those modules, in order of priority
 # i.e. put more specific URL handlers first
 URLHandlers = [
-    ["/session/"               , SessionExample],
-    ["/torrentupload"          , SessionExampleWrapper],
+    ["/session/"               , SessionExampleWrapper],
+    ["/torrentupload"          , UploadTorrentsWrapper],
     ["/"                       , lambda r : Minimal(request=r, homedirectory="htdocs/", indexfilename="index.html")],
     
     # "/" should always be last as it catches all

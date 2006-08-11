@@ -46,7 +46,7 @@ def UploadTorrentsWrapper(request):
         else:
             return session["handler"]
     else:
-        session = { "busy": True, "handler": websiteSessionTorrentUploadComponent(sessionid) }
+        session = { "busy": True, "handler": UploadTorrents(sessionid) }
         Sessions[sessionid] = session
         return session["handler"]
 
