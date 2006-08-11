@@ -35,9 +35,9 @@ setup(
         "Kamaelia.Community.RJL",
         "Kamaelia.Community.RJL.Kamaelia",
         "Kamaelia.Community.RJL.Kamaelia.Protocol",
+        "Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent",        
         "Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP",
-        "Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers",        
-        "Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent",
+        "Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers",
         "Kamaelia.Community.RJL.Kamaelia.Util",
         "Kamaelia.Community.RJL.Kamaelia.IPC",
         "Kamaelia.Community.RJL.Kamaelia.File"

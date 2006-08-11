@@ -529,7 +529,7 @@ if __name__ == '__main__':
     from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
     
     def createhttpserver():
-        return HTTPServer(HTTPResourceGlue.createRequestHandler)
+        return HTTPServer(createRequestHandler)
 
     SimpleServer(
         protocol=createhttpserver,

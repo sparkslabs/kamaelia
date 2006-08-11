@@ -421,6 +421,7 @@ class SimpleHTTPClient(component):
 
                     self.pause()
                 self.send(string.join(filebody, ""), "outbox")
+                
                 filebody = [] # free up some memory used by the now unneeded list
             
             while self.dataReady("control"):
