@@ -24,7 +24,7 @@
 import Axon
 import zlib
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import Display
 import pygame
 
 try:
@@ -39,12 +39,12 @@ class Canvas(Axon.Component.component):
 
     Inboxes =  { "inbox"   : "Receives drawing instructions",
                  "control" : "",
-                 "fromDisplay"  : "For receiving replies from PygameDisplay service",
-                 "eventsIn" : "For receiving PygameDisplay events",
+                 "fromDisplay"  : "For receiving replies from Pygame Display service",
+                 "eventsIn" : "For receiving Pygame Display events",
                }
     Outboxes = { "outbox" : "Issues drawing instructions",
                  "signal" : "",
-                 "toDisplay" : "For sending requests to PygameDisplay service",
+                 "toDisplay" : "For sending requests to Pygame Display service",
                  "eventsOut" : "Events forwarded out of here",
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                }
@@ -70,7 +70,7 @@ class Canvas(Axon.Component.component):
                 yield 1
 
     def requestDisplay(self, **argd):
-        displayservice = PygameDisplay.getDisplayService()
+        displayservice = Display.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
         self.send(argd, "toDisplay")
         for _ in self.waitBox("fromDisplay"):

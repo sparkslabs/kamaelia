@@ -28,9 +28,9 @@ from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
@@ -103,13 +103,13 @@ def LocalEventServer(backplane="WHITEBOARD", port=1500):
         from Kamaelia.Util.Console import ConsoleEchoer
 
         def clientconnector():
-            return pipeline(
+            return Pipeline(
                 chunks_to_lines(),
                 lines_to_tokenlists(),
                 FilterAndTagWrapper(
-                    pipeline( publishTo(backplane),
-                                # well, should be to separate pipelines, this is lazier!
-                              subscribeTo(backplane),
+                    Pipeline( PublishTo(backplane),
+                                # well, should be to separate Pipelines, this is lazier!
+                              SubscribeTo(backplane),
                             )
                     ),
                 tokenlists_to_lines(),
@@ -123,10 +123,10 @@ def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
 
         loadingmsg = "Fetching sketch from server..."
 
-        return pipeline( subscribeTo(backplane),
+        return Pipeline( SubscribeTo(backplane),
                          TagAndFilterWrapper(
                          Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
-                                    PIPE = pipeline(
+                                    PIPE = Pipeline(
                                             tokenlists_to_lines(),
                                             TCPClient(host=rhost,port=rport),
                                             chunks_to_lines(),
@@ -142,7 +142,7 @@ def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
                                                },
                                   )
                          ),
-                         publishTo(backplane),
+                         PublishTo(backplane),
                        ) #.activate()
 
 def parseCommands():
@@ -260,7 +260,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
 mainsketcher = \
     Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
-               CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
+               CONSOLE = Pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
 
                linkages = { ('self','inbox'):('SKETCHER','inbox'),
                             ('SKETCHER','outbox'):('self','outbox'),
@@ -269,9 +269,9 @@ mainsketcher = \
                  )
 
 # primary whiteboard
-pipeline( subscribeTo("WHITEBOARD"),
+Pipeline( SubscribeTo("WHITEBOARD"),
           TagAndFilterWrapper(mainsketcher),
-          publishTo("WHITEBOARD")
+          PublishTo("WHITEBOARD")
         ).activate()
 
 if __name__=="__main__":
