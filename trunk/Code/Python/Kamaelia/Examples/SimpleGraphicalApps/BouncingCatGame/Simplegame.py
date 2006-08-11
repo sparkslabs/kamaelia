@@ -107,7 +107,7 @@ def make_cat(cat_location, screensize, border ):
     # Get the cat again!
     files = list()
     for x in os.listdir("pictures"):
-        if x not in ("README","CVS"):
+        if x not in ("README","CVS",".svn"):
             files.append(x)
 
     image_location = files[random.randint(0,len(files)-1)]
