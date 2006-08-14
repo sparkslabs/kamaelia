@@ -23,26 +23,32 @@
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-import re, base64
+#import re, base64
+from Kamaelia.Support.Data.Escape import escape, unescape
+
+# we need escaping to substitute for tabs, newlines (either CRs and LFs), 
+# spaces, and the symbols we might use for opening and closing lists
+substitutions="\09\x0a\x0d\x20[]"
 
 from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
 def tokenlists_to_lines():
-    return Marshaller(Base64ListMarshalling)
+    return Marshaller(EscapedListMarshalling)
 
 def lines_to_tokenlists():
-    return DeMarshaller(Base64ListMarshalling)
+    return DeMarshaller(EscapedListMarshalling)
 
 
-class Base64ListMarshalling:
+class EscapedListMarshalling:
     
     def marshall(lst,term="\n"):
         out = ""
         for item in lst:
             if isinstance(item,(list,tuple)):
-                out = out + "[ " + Base64ListMarshalling.marshall(item,term="] ")
+                out = out + "[ " + EscapedListMarshalling.marshall(item,term="] ")
             else:
-                out = out + re.sub("\\n","",base64.encodestring(item)) + " "
+#                out = out + re.sub("\\n","",base64.encodestring(item)) + " "
+                out = out + escape(item, substitutions) + " "
         return out + term
         
     marshall = staticmethod(marshall)
@@ -61,7 +67,8 @@ class Base64ListMarshalling:
                 elif item=="]":
                     out = outstack.pop(-1)
                 else:
-                    out.append( base64.decodestring(item) )
+#                    out.append( base64.decodestring(item) )
+                    out.append( unescape(item, substitutions) )
         return out
     
     demarshall = staticmethod(demarshall)
@@ -80,8 +87,8 @@ if __name__=="__main__":
     ]
     
     for test in tests:
-        marshalled = Base64ListMarshalling.marshall(test)
-        demarshalled = Base64ListMarshalling.demarshall(marshalled)
+        marshalled = EscapedListMarshalling.marshall(test)
+        demarshalled = EscapedListMarshalling.demarshall(marshalled)
         if test == demarshalled:
             for char in marshalled[:-1]:
                 if ord(char) < 32:
@@ -90,5 +97,5 @@ if __name__=="__main__":
                 raise "\nFAILED (ENDTERM) : "+str(test)
             print "."
         else:
-            raise "\nFAILED (MISMATCH) : "+str(test)
+            raise "\nFAILED (MISMATCH) : "+str(test)+"\nIt was : "+str(demarshalled)+"\n"
             
