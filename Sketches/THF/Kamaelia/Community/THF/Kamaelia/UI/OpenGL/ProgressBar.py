@@ -58,44 +58,7 @@ class ProgressBar(OpenGLComponent):
 
         progw = self.size.x * self.progress
         
-        # draw progress
-        glBegin(GL_QUADS)
-        glColor4f(self.barcolour[0]/256.0, self.barcolour[1]/256.0, self.barcolour[2]/256.0, 0.5)
-        
-        # front
-        glVertex3f(-hs.x+progw,hs.y,hs.z)
-        glVertex3f(-hs.x+progw,-hs.y,hs.z)
-        glVertex3f(-hs.x,-hs.y,hs.z)
-        glVertex3f(-hs.x,hs.y,hs.z)
-        # back
-        glVertex3f(-hs.x+progw,hs.y,-hs.z)
-        glVertex3f(-hs.x+progw,-hs.y,-hs.z)
-        glVertex3f(-hs.x,-hs.y,-hs.z)
-        glVertex3f(-hs.x,hs.y,-hs.z)
-        # right
-        glVertex3f(-hs.x+progw,hs.y,hs.z)
-        glVertex3f(-hs.x+progw,-hs.y,hs.z)
-        glVertex3f(-hs.x+progw,-hs.y,-hs.z)
-        glVertex3f(-hs.x+progw,hs.y,-hs.z)
-        # left
-        glVertex3f(-hs.x,hs.y,hs.z)
-        glVertex3f(-hs.x,-hs.y,hs.z)
-        glVertex3f(-hs.x,-hs.y,-hs.z)
-        glVertex3f(-hs.x,hs.y,-hs.z)
-        # top
-        glVertex3f(-hs.x+progw,hs.y,hs.z)
-        glVertex3f(-hs.x,hs.y,hs.z)
-        glVertex3f(-hs.x,hs.y,-hs.z)
-        glVertex3f(-hs.x+progw,hs.y,-hs.z)
-        # bottom
-        glVertex3f(-hs.x+progw,-hs.y,hs.z)
-        glVertex3f(-hs.x,-hs.y,hs.z)
-        glVertex3f(-hs.x,-hs.y,-hs.z)
-        glVertex3f(-hs.x+progw,-hs.y,-hs.z)
-        glEnd()
-   
         # draw envelope
-        glDisable(GL_DEPTH_TEST)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glBegin(GL_QUADS)
         glColor4f(self.edgecolour[0]/256.0, self.edgecolour[1]/256.0, self.edgecolour[2]/256.0, 0.8)
@@ -121,7 +84,48 @@ class ProgressBar(OpenGLComponent):
         glVertex3f(hs.x,-hs.y,-hs.z)
         glEnd()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-        glEnable(GL_DEPTH_TEST)
+
+        if self.progress > 0.0:
+            # draw progress
+            glEnable(GL_BLEND)
+            glDepthMask(GL_FALSE)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glBegin(GL_QUADS)
+            glColor4f(self.barcolour[0]/256.0, self.barcolour[1]/256.0, self.barcolour[2]/256.0, 0.5)
+            
+            # front
+            glVertex3f(-hs.x+progw,hs.y,hs.z)
+            glVertex3f(-hs.x+progw,-hs.y,hs.z)
+            glVertex3f(-hs.x,-hs.y,hs.z)
+            glVertex3f(-hs.x,hs.y,hs.z)
+            # back
+            glVertex3f(-hs.x+progw,hs.y,-hs.z)
+            glVertex3f(-hs.x+progw,-hs.y,-hs.z)
+            glVertex3f(-hs.x,-hs.y,-hs.z)
+            glVertex3f(-hs.x,hs.y,-hs.z)
+            # right
+            glVertex3f(-hs.x+progw,hs.y,hs.z)
+            glVertex3f(-hs.x+progw,-hs.y,hs.z)
+            glVertex3f(-hs.x+progw,-hs.y,-hs.z)
+            glVertex3f(-hs.x+progw,hs.y,-hs.z)
+            # left
+            glVertex3f(-hs.x,hs.y,hs.z)
+            glVertex3f(-hs.x,-hs.y,hs.z)
+            glVertex3f(-hs.x,-hs.y,-hs.z)
+            glVertex3f(-hs.x,hs.y,-hs.z)
+            # top
+            glVertex3f(-hs.x+progw,hs.y,hs.z)
+            glVertex3f(-hs.x,hs.y,hs.z)
+            glVertex3f(-hs.x,hs.y,-hs.z)
+            glVertex3f(-hs.x+progw,hs.y,-hs.z)
+            # bottom
+            glVertex3f(-hs.x+progw,-hs.y,hs.z)
+            glVertex3f(-hs.x,-hs.y,hs.z)
+            glVertex3f(-hs.x,-hs.y,-hs.z)
+            glVertex3f(-hs.x+progw,-hs.y,-hs.z)
+            glEnd()
+            glDepthMask(GL_TRUE)
+            glEnable(GL_BLEND)
 
         
     
