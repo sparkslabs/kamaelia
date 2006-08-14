@@ -116,7 +116,7 @@ def parseOptions():
 
     return rhost, rport, serveport
 
-def LocalEventServer(backplane="WHITEBOARD", port=1500):
+def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", port=1500):
         from Kamaelia.Chassis.ConnectedServer import SimpleServer
         from Kamaelia.Util.Console import ConsoleEchoer
 
@@ -124,95 +124,115 @@ def LocalEventServer(backplane="WHITEBOARD", port=1500):
             return pipeline(
                 chunks_to_lines(),
                 lines_to_tokenlists(),
-                FilterAndTagWrapper(
-                    pipeline( publishTo(backplane),
-                                # well, should be to separate pipelines, this is lazier!
-                              subscribeTo(backplane),
-                            )
+                Graphline(
+                    WHITEBOARD = FilterAndTagWrapper(
+                        pipeline( publishTo(whiteboardBackplane),
+                                  # well, should be to separate pipelines, this is lazier!
+                                  subscribeTo(whiteboardBackplane),
+                                )),
+                    AUDIO = pipeline(
+                        SimpleDetupler(1),     # remove 'SOUND' tag
+                        SpeexDecode(3),
+                        FilterAndTagWrapperKeepingTag(
+                            pipeline( publishTo(audioBackplane),
+                                        # well, should be to separate pipelines, this is lazier!
+                                    subscribeTo(audioBackplane),
+                                    ),
+                            ),
+                        RawAudioMixer(),
+                        SpeexEncode(3),
+                        Entuple(prefix=["SOUND"],postfix=[]),
+                        ),
+                    ROUTER = Router( ((lambda tuple : tuple[0]=="SOUND"), "audio"),
+                                     ((lambda tuple : tuple[0]!="SOUND"), "whiteboard"),
+                                   ),
+                    linkages = {
+                        # incoming messages go to a router
+                        ("", "inbox") : ("ROUTER", "inbox"),
+                        
+                        # distribute messages to appropriate destinations
+                        ("ROUTER",      "audio") : ("AUDIO",      "inbox"),
+                        ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
+                        
+                        # aggregate all output
+                        ("AUDIO",      "outbox") : ("", "outbox"),
+                        ("WHITEBOARD", "outbox") : ("", "outbox"),
+                        
+                        # shutdown routing, not sure if this will actually work, but hey!
+                        ("", "control") : ("ROUTER", "control"),
+                        ("ROUTER", "signal") : ("AUDIO", "control"),
+                        ("AUDIO", "signal") : ("WHITEBOARD", "control"),
+                        ("WHITEBOARD", "signal") : ("", "signal")
+                        },
                     ),
                 tokenlists_to_lines(),
                 )
+        
 
         return SimpleServer(protocol=clientconnector, port=port)
 
-def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
+def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO"):
         # plug a TCPClient into the backplae
         from Kamaelia.Internet.TCPClient import TCPClient
 
         loadingmsg = "Fetching sketch from server..."
 
-        return pipeline( subscribeTo(backplane),
-                         TagAndFilterWrapper(
-                         Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
-                                    PIPE = pipeline(
-                                            tokenlists_to_lines(),
-                                            TCPClient(host=rhost,port=rport),
-                                            chunks_to_lines(),
-                                            lines_to_tokenlists(),
-                                        ),
-                                    BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
-                                    linkages = { ("self","inbox") : ("PIPE","inbox"),
-                                                 ("self","control") : ("PIPE","control"),
-                                                 ("PIPE","outbox") : ("self","outbox"),
-                                                 ("PIPE","signal") : ("self","signal"),
-                                                 ("GETIMG","outbox") : ("PIPE","inbox"),
-                                                 ("BLACKOUT","outbox") : ("self","outbox"),
-                                               },
-                                  )
-                         ),
-                         publishTo(backplane),
-                       ) #.activate()
-
-#-----AUDIO STUFF-------
-
-# very simple audio client; doesn't cope with more than one audio stream in the backplane
-
-def AudioServerClients(rhost, rport, backplane="AUDIO"):
-        from Kamaelia.Internet.TCPClient import TCPClient
-
-        return pipeline( subscribeTo(backplane),
-                         TagAndFilterWrapperKeepingTag(
-                             pipeline(
-                                 RawAudioMixer(),
-                                 SpeexEncode(3),
-                                 Entuple(),
-                                 tokenlists_to_lines(),
-                                 TCPClient(host=rhost,port=rport),
-                                 chunks_to_lines(),
-                                 lines_to_tokenlists(),
-                                 SimpleDetupler(0),
-                                 SpeexDecode(3),
-                             ),
-                         ),
-                         publishTo(backplane),
-                       )
-
-# very simple audio server; doesn't cope with more than one audio stream in teh backplane
-
-def LocalAudioServer(backplane="AUDIO", port=1501):
-        from Kamaelia.Chassis.ConnectedServer import SimpleServer
-        from Kamaelia.Util.Console import ConsoleEchoer
-
-        def clientconnector():
-            return pipeline(
-                chunks_to_lines(),
-                lines_to_tokenlists(),
-                SimpleDetupler(0),
-                SpeexDecode(3),
-                FilterAndTagWrapperKeepingTag(
-                    pipeline( publishTo(backplane),
-                                # well, should be to separate pipelines, this is lazier!
-                              subscribeTo(backplane),
-                            ),
+        return Graphline(
+                NETWORK = pipeline(
+                    tokenlists_to_lines(),
+                    TCPClient(host=rhost,port=rport),
+                    chunks_to_lines(),
+                    lines_to_tokenlists(),
+                ),
+                ROUTER = Router( ((lambda tuple : tuple[0]=="SOUND"), "audio"),
+                                 ((lambda tuple : tuple[0]!="SOUND"), "whiteboard"),
+                               ),
+                WHITEBOARD = FilterAndTagWrapper(
+                    pipeline(
+                        publishTo(whiteboardBackplane),
+                        #
+                        subscribeTo(whiteboardBackplane),
+                    )
+                ),
+                AUDIO = pipeline(
+                    SimpleDetupler(1),     # remove 'SOUND' tag
+                    SpeexDecode(3),
+                    FilterAndTagWrapperKeepingTag(
+                        pipeline(
+                            publishTo(audioBackplane),
+                            #
+                            subscribeTo(audioBackplane),
+                        ),
                     ),
-                RawAudioMixer(),
-                SpeexEncode(3),
-                Entuple(),
-                tokenlists_to_lines(),
-                )
-
-        return SimpleServer(protocol=clientconnector, port=port)
-
+                    RawAudioMixer(),
+                    SpeexEncode(3),
+                    Entuple(prefix=["SOUND"],postfix=[]),
+                ),
+                GETIMG = OneShot(msg=[["GETIMG"]]),
+                BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
+                linkages = {
+                    # incoming messages from network connection go to a router
+                    ("NETWORK", "outbox") : ("ROUTER", "inbox"),
+                    
+                    # distribute messages to appropriate destinations
+                    ("ROUTER", "audio")      : ("AUDIO",      "inbox"),
+                    ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
+                    
+                    # aggregate all output, and send across the network connection
+                    ("AUDIO",      "outbox") : ("NETWORK", "inbox"),
+                    ("WHITEBOARD", "outbox") : ("NETWORK", "inbox"),
+                    
+                    # initial messages sent to the server, and the local whiteboard
+                    ("GETIMG",   "outbox") : ("NETWORK",    "inbox"),
+                    ("BLACKOUT", "outbox") : ("WHITEBOARD", "inbox"),
+                    
+                    # shutdown routing, not sure if this will actually work, but hey!
+                    ("NETWORK",    "signal") : ("ROUTER",     "control"),
+                    ("ROUTER",     "signal") : ("AUDIO",      "control"),
+                    ("AUDIO",      "signal") : ("WHITEBOARD", "control"),
+                    ("WHITEBOARD", "signal") : ("",           "signal"),
+                }
+            )
 
 #-----------------------
 
@@ -343,6 +363,11 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 from Axon.Component import component
 
 class Entuple(component):
+    def __init__(self, prefix=[], postfix=[]):
+        super(Entuple,self).__init__()
+        self.prefix = prefix
+        self.postfix = postfix
+    
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -354,7 +379,41 @@ class Entuple(component):
     def main(self):
         while not self.shutdown():
             while self.dataReady("inbox"):
-               self.send( (self.recv("inbox"),) , "outbox" )
+                data = self.recv("inbox")
+                entupled = self.prefix + [data] + self.postfix
+                self.send( entupled, "outbox" )
+            self.pause()
+            yield 1
+
+class Router(component):
+    """\
+    Router([(rule,dest)][,(rule,dest)]...) -> new Router component.
+    
+    Component that routes incoming messages to destination outboxes according to
+    whether or not they pass the specified rules.
+    """
+    def __init__(self, *routing):
+        for (rule,destination) in routing:
+            self.Outboxes[destination] = "Routing destination"
+        
+        super(Router,self).__init__()
+        self.routing = routing
+        
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                return True
+        return False
+        
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                for (rule,destination) in self.routing:
+                    if rule(data):
+                        self.send(data,destination)
             self.pause()
             yield 1
 
@@ -387,14 +446,19 @@ if __name__=="__main__":
 
     # setup a server, if requested
     if serveport:
-        LocalEventServer("WHITEBOARD", port=serveport).activate()
-        LocalAudioServer("AUDIO",      port=serveport+1).activate()
+        LocalEventServer("WHITEBOARD", "AUDIO", port=serveport).activate()
 
 
     # connect to remote host & port, if requested
     if rhost and rport:
-        EventServerClients(rhost, rport, "WHITEBOARD").activate()
-        AudioServerClients(rhost, rport+1, "AUDIO").activate()
+        EventServerClients(rhost, rport, "WHITEBOARD", "AUDIO").activate()
+
+#    sys.path.append("../Introspection")
+#    from Profiling import FormattedProfiler
+#    
+#    pipeline(FormattedProfiler( 20.0, 1.0),
+#             ConsoleEchoer()
+#            ).activate()
 
     Backplane("WHITEBOARD").activate()
     Backplane("AUDIO").run()
