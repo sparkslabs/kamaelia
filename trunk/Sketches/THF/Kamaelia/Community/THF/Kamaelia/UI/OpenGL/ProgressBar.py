@@ -125,7 +125,7 @@ class ProgressBar(OpenGLComponent):
             glVertex3f(-hs.x+progw,-hs.y,-hs.z)
             glEnd()
             glDepthMask(GL_TRUE)
-            glEnable(GL_BLEND)
+            glDisable(GL_BLEND)
 
         
     
