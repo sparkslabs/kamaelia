@@ -60,7 +60,7 @@ class ProgressBar(OpenGLComponent):
         
         # draw progress
         glBegin(GL_QUADS)
-        glColor4f(self.barcolour[0]/256.0, self.barcolour[1]/256.0, self.barcolour[2]/256.0, 0.8)
+        glColor4f(self.barcolour[0]/256.0, self.barcolour[1]/256.0, self.barcolour[2]/256.0, 0.5)
         
         # front
         glVertex3f(-hs.x+progw,hs.y,hs.z)
@@ -94,8 +94,9 @@ class ProgressBar(OpenGLComponent):
         glVertex3f(-hs.x+progw,-hs.y,-hs.z)
         glEnd()
    
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         # draw envelope
+        glDisable(GL_DEPTH_TEST)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glBegin(GL_QUADS)
         glColor4f(self.edgecolour[0]/256.0, self.edgecolour[1]/256.0, self.edgecolour[2]/256.0, 0.8)
         # right
@@ -120,6 +121,7 @@ class ProgressBar(OpenGLComponent):
         glVertex3f(hs.x,-hs.y,-hs.z)
         glEnd()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+        glEnable(GL_DEPTH_TEST)
 
         
     
@@ -132,6 +134,7 @@ class ProgressBar(OpenGLComponent):
             self.progress = self.recv("progress")
             if self.progress < 0.0: self.progress = 0.0
             if self.progress > 1.0: self.progress = 1.0
+            self.redraw()
             
 
 from MatchedTranslationInteractor import *
@@ -141,7 +144,4 @@ if __name__=='__main__':
     PROGRESS = ProgressBar(size = (3, 0.5, 0.2), position=(0,0,-10), progress=0.5).activate()    
     INT = MatchedTranslationInteractor(victim=PROGRESS).activate()
     
-    PROGRESS.link( (PROGRESS, "position"), (INT, "inbox"))
-    INT.link( (INT, "outbox"), (PROGRESS, "rel_position"))
-            
     Axon.Scheduler.scheduler.run.runThreads()  
