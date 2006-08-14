@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 
 import Axon
+from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class SimpleDetupler(Axon.Component.component):
     """
@@ -51,12 +52,18 @@ pipeline(
         super(SimpleDetupler, self).__init__()
         self.index = index
     def main(self):
-        while 1:
+        shutdown=False
+        while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
                 tuple=self.recv("inbox")
                 self.send(tuple[self.index], "outbox")
             if not self.anyReady():
                 self.pause()
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
             yield 1
 
 __kamaelia_components__  = ( SimpleDetupler, )

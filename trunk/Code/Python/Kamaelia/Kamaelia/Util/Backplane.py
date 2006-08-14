@@ -22,7 +22,7 @@
 #
 # MPS's experimental backplane code
 import Axon
-from Axon.Ipc import newComponent
+from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
 from Kamaelia.Util.Splitter import PlugSplitter as Splitter
 from Kamaelia.Util.Splitter import Plug
 from Axon.AxonExceptions import ServiceAlreadyExists
@@ -73,9 +73,17 @@ class publishTo(Axon.Component.component):
         # FIXME: then this while loop here would be irrelevent, which would be cool.
         # FIXME: especially if we could exec in such a way that passthrough linkages
         # FIXME: still operated as you'd expect.
-        while 1:
-            self.pause()
-            yield 1            
+        shutdown=False
+        while not shutdown:
+            while self.dataReady("control"):
+                msg=self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    shutdown=True
+                    
+            if not shutdown:
+                self.pause()
+                yield 1            
             
             
 class subscribeTo(Axon.Component.component):
@@ -87,7 +95,8 @@ class subscribeTo(Axon.Component.component):
         splitter,configbox = cat.retrieveService("Backplane_O_"+self.source)
         p = passThrough()
         plug = Plug(splitter, p)
-        self.link( (p,"outbox"), (self,"outbox"), passthrough=2)
+        self.link( (plug,"outbox"), (self,"outbox"), passthrough=2)
+        self.link( (plug,"signal"), (self,"signal"), passthrough=2)
         self.addChildren(plug)
         yield newComponent(plug)
         # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
