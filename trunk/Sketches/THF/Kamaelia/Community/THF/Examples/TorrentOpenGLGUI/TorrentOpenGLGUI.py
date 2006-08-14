@@ -96,10 +96,7 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.torrents = []
         self.torrent_from_id = {}
         self.torrent_to_id = {}
-        self.torrent_containers = {}
-        self.torrent_info = {}
         self.torrent_progress_comms = {}
-        self.torrent_filename = {}
         
         self.requested_files = []
         self.started_torrents = []
@@ -114,7 +111,7 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
-                print str(msg)
+#                print str(msg)
                 
                 if isinstance(msg, TIPCNewTorrentCreated):
                     torrent = self.started_torrents.pop(0)
@@ -127,13 +124,6 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
                     self.send(msg.statsdictionary.get("fractionDone","0"), self.torrent_progress_comms[ self.torrent_from_id[msg.torrentid]] )
 
-            while self.dataReady("nav"):
-                msg = self.recv("nav")
-                if msg == "UP":
-                    self.send("NEXT", "mover_switch")
-                if msg == "DOWN":
-                    self.send("PREVIOUS", "mover_switch")
-
             while self.dataReady("torrent_url"):
                 url = self.recv("torrent_url")
                 filename = os.path.basename(url)
@@ -144,22 +134,28 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 torrentfile = self.recv("torrent_file")
                 # save received file
                 filename = self.requested_files.pop()
-                fobj = open(getcwd()+filename, 'w')
+                fobj = open(os.getcwd()+"/"+filename, 'w')
                 fobj.write(torrentfile)
                 fobj.close()
-                print "RECEIVED TORRENT", filename
                 # add torrent
                 self.addTorrent(filename, torrentfile)                
+
+            while self.dataReady("nav"):
+                msg = self.recv("nav")
+                if msg == "UP":
+                    self.send("NEXT", "mover_switch")
+                if msg == "DOWN":
+                    self.send("PREVIOUS", "mover_switch")
                 
             while self.dataReady("start"):
                 torrent = self.recv("start")
-                print "START TORRENT", self.torrent_filename[torrent]
                 self.send(torrent)
                 self.started_torrents.append(torrent)
                 
             while self.dataReady("stop"):
                 torrent = self.recv("stop")
                 try:
+                    print "stop torrent", self.torrent_to_id[torrent]
                     self.send( TIPCCloseTorrent(torrentid=self.torrent_to_id[torrent]) )
                 except KeyError:
                     pass
@@ -187,17 +183,17 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.link( (self.down_button, "outbox"), (self, "nav") )
         
         # init info display
-        self.infoticker = Ticker(text_height=20).activate()
-        self.tickerwrapper = PygameWrapperPlane(wrap=self.infoticker, size=(2.5,2.5,0.3)).activate()
+        self.infoticker = Ticker(text_height=21, render_right=250, render_bottom=500, background_colour=(200,200,200), text_colour=(0,0,0), outline_colour=(255,255,255)).activate()
+        self.tickerwrapper = PygameWrapperPlane(wrap=self.infoticker, size=(1.2,2.0,0.3)).activate()
         self.hideinfo_button = Button(caption="Hide", fontsize=30).activate()
         
         infocontents = {
-            self.tickerwrapper : { "position":(0,.5,0) },
+            self.tickerwrapper : { "position":(0,0.0,0) },
             self.hideinfo_button : { "position":(0,-2.3,0) },
         }
         
-        self.infocontainer = Container(contents=infocontents, position=(0,8,-8)).activate()
-        infopath = LinearPath([(0, 8, -8), (0,0,-8)], 200)
+        self.infocontainer = Container(contents=infocontents, position=(-10, 10, -16)).activate()
+        infopath = LinearPath([(-10, 10, -16), (-3,0,-8)], 200)
         
         self.infomover = PathMover(infopath, False).activate()
         
@@ -224,7 +220,6 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def addTorrent(self, title, torrent):
         self.torrents.append(torrent)
-        self.torrent_filename[torrent] = title
     
         start = Button(size=(0.8,0.5,0.3), caption="Start", fontsize=35, msg=torrent).activate()
         info  = Button(size=(0.8,0.5,0.3), caption="Info", fontsize=35, msg=torrent).activate()
@@ -238,15 +233,14 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.link( (info, "outbox"), (self, "show_info") )
         
         container_elements = {
-            progress : { "position":(-1.4,-0.3,0) },
-            start : { "position":(0.8,-0.3,0) },
-            stop : { "position":(1.7,-0.3,0) },
-            info : { "position":(2.6,-0.3,0) },
-            label : { "position":(0, 0.3, 0) },
+            progress : { "position":(-0.4,-0.3,0) },
+            start : { "position":(1.8,-0.3,0) },
+            stop : { "position":(2.7,-0.3,0) },
+            info : { "position":(3.6,-0.3,0) },
+            label : { "position":(1, 0.3, 0) },
         }
     
         container = Container(contents=container_elements, position=(0,0,-10)).activate()
-        self.torrent_containers[torrent] = id(container)
         
         req = { "APPEND_CONTROL":True,
                 "objectid": id(container),
@@ -261,26 +255,22 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def showInfo(self, torrent):
-        try:
-            decoded = self.torrent_info[torrent]
-        except KeyError:
-            self.torrent_info[torrent] = bdecode(torrent)
-            decoded = self.torrent_info[torrent]
+        decoded = bdecode(torrent)
         
         info = decoded.get("info", None)
         if info is not None:
-            name = info.get("name", "?")
-            length = info.get("length", "?")
+            name = info.get("name", "??")
+            length = info.get("length", "??")
 
-        date = decoded.get("creation date", "?")
-        creator = decoded.get("created by", "?")
-        announce = decoded.get("announce", "?")
-        comment = decoded.get("comment", "")
+        date = decoded.get("creation date", "??")
+        creator = decoded.get("created by", "??")
+        announce = decoded.get("announce", "??")
+        comment = decoded.get("comment", "??")
             
-        infotuple = (name, comment, length, date, creator, announce)
+        infotuple = (name, comment, length, date, creator)
         
-        infostring = "Name:%s\nComment:%s\nLength:%s\nCreation Date:%s\nCreated by:%s\nAnnounce:%s\n" % infotuple
-        print "INFO\n", infostring
+        infostring = "Name:%s\nComment:%s\nLength:%s\nCreation_Date:%s\nCreated_by:%s\n ----- \n" % infotuple
+#        print infostring
         
         # move info container in front of everthig
         self.send("Forward", "infomover_commands")
@@ -308,9 +298,9 @@ if __name__ == "__main__":
     
     print "TEST"
     Graphline(
-        reader = ConsoleReader(),#(prompt="Enter torrent location:"),
+        reader = ConsoleReader(prompt="Enter torrent location:", eol=""),
         httpclient = SimpleHTTPClient(),
-        echo = ConsoleEchoer(),
+#        echo = ConsoleEchoer(),
         gui = TorrentOpenGLGUI(),
         backend = TorrentPatron(),
         linkages = {
@@ -320,7 +310,7 @@ if __name__ == "__main__":
             ("reader", "outbox") : ("gui", "torrent_url"),
             ("gui", "fetcher") : ("httpclient", "inbox"),
             ("httpclient", "outbox") : ("gui", "torrent_file"),
-            ("httpclient", "debug") : ("echo", "inbox"),
+#            ("httpclient", "debug") : ("echo", "inbox"),
             ("backend", "outbox"): ("gui", "inbox")
         }
     ).run()
