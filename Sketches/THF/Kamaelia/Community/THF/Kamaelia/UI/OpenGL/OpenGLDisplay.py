@@ -231,6 +231,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - viewerposition		-- position of viewer (default=(0,0,0))
     - lookat				-- look at point (default= (0,0,-self.farPlaneDist))
     - up					-- up vector (default(0,1,0))
+    Fog
+    - fog           -- tuple of fog distances (start, end). if not set, fog is disabled (default)
+    - fog_colour    -- (r,g,b) fog colour (default=(255,255,255) )
+    - fog_density   -- fog density (default=0.35)
+    Event processing
+    - hitall        -- boolean, if false, only the nearest object gets activated (default=False)
             
     """
 
@@ -324,6 +330,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.eventcomms = {}
         self.eventservices = {}
         self.eventswanted = {}
+        self.hitall = argd.get("hitall", False)
         
         # determine projection parameters
         self.nearPlaneDist = argd.get("near", 1.0)
@@ -354,6 +361,19 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LEQUAL)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+        
+        # make fog settings if enabled
+        fog_dists = argd.get("fog", None)
+        if fog_dists is not None:
+            glEnable(GL_FOG)
+            glFog(GL_FOG_MODE, GL_LINEAR)
+            glHint(GL_FOG_HINT, GL_NICEST)
+            glFog(GL_FOG_START, fog_dists[0])
+            glFog(GL_FOG_END, fog_dists[1])
+            glFog(GL_FOG_DENSITY, argd.get("fog_density", 1.0) )
+            fog_colour = argd.get("fog_colour", (255,255,255))
+            fog_colour = [float(x)/255.0 for x in fog_colour]
+            glFog(GL_FOG_COLOR, fog_colour)
         
         # set projection matrix
         glMatrixMode(GL_PROJECTION)                 
@@ -625,9 +645,18 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # process hits                
         hits = glRenderMode(GL_RENDER)
-        
-        # return list of hit objects
-        return [hit[2][0] for hit in hits]
+        hitlist = []
+        if self.hitall:
+            # list of hit objects
+            hitlist = [hit[2][0] for hit in hits]
+        else:
+            nearest = 4294967295
+            for hit in hits:
+                if hit[0] < nearest:
+                    nearest = hit[0]
+                    hitlist = [hit[2][0]]
+                    
+        return hitlist
 
 
     def drawPygameSurfaces(self):
