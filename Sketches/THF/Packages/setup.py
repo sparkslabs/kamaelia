@@ -35,7 +35,7 @@ setup(name = "Kamaelia.Community.THF",
                   "Kamaelia.Community.THF.Kamaelia.UI",
                   "Kamaelia.Community.THF.Kamaelia.UI.OpenGL",
                   "Kamaelia.Community.THF.Kamaelia.UI.Pygame",
-                 ]
-      long_description = """
+                 ],
+      long_description = """\
 """
       )
