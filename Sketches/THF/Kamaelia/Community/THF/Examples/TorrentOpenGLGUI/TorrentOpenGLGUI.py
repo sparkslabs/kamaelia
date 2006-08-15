@@ -49,8 +49,8 @@ from SkyGrassBackground import SkyGrassBackground
 from Movement import WheelMover, PathMover, LinearPath
 from Label import Label
 from PygameWrapperPlane import PygameWrapperPlane
-from Kamaelia.UI.Pygame.Ticker import Ticker
 
+from Kamaelia.UI.Pygame.Ticker import Ticker
 from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 from BitTorrent.bencode import bdecode
@@ -111,7 +111,6 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
-#                print str(msg)
                 
                 if isinstance(msg, TIPCNewTorrentCreated):
                     torrent = self.started_torrents.pop(0)
@@ -119,7 +118,7 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.torrent_to_id[torrent] = msg.torrentid
                                         
                 elif isinstance(msg, TIPCTorrentStartFail) or isinstance(msg, TIPCTorrentAlreadyDownloading):
-                    self.started_torrents.pop()
+                    self.started_torrents.pop(0)
                 
                 elif isinstance(msg, TIPCTorrentStatusUpdate):
                     self.send(msg.statsdictionary.get("fractionDone","0"), self.torrent_progress_comms[ self.torrent_from_id[msg.torrentid]] )
@@ -155,8 +154,8 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             while self.dataReady("stop"):
                 torrent = self.recv("stop")
                 try:
-                    print "stop torrent", self.torrent_to_id[torrent]
                     self.send( TIPCCloseTorrent(torrentid=self.torrent_to_id[torrent]) )
+                    self.send(0.0, self.torrent_progress_comms[torrent])
                 except KeyError:
                     pass
                 
@@ -224,8 +223,8 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         start = Button(size=(0.8,0.5,0.3), caption="Start", fontsize=35, msg=torrent).activate()
         info  = Button(size=(0.8,0.5,0.3), caption="Info", fontsize=35, msg=torrent).activate()
         stop = Button(size=(0.8,0.5,0.3), caption="Stop", fontsize=35, msg=torrent).activate()
-        progress = ProgressBar(size=(3.2,0.5,0.3), barcolour=(100,255,100)).activate()
         colour = [ int(random.randint(100,255)) for i in range(3) ]
+        progress = ProgressBar(size=(3.2,0.5,0.3), barcolour=colour).activate()
         label = Label( size=(6.0, 0.3, 0.3), caption=title, fontsize=26, bgcolour=colour).activate()
 
         self.link( (start, "outbox"), (self, "start") )
@@ -270,7 +269,6 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         infotuple = (name, comment, length, date, creator)
         
         infostring = "Name:%s\nComment:%s\nLength:%s\nCreation_Date:%s\nCreated_by:%s\n ----- \n" % infotuple
-#        print infostring
         
         # move info container in front of everthig
         self.send("Forward", "infomover_commands")
@@ -292,25 +290,22 @@ if __name__ == "__main__":
     from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
     from Kamaelia.UI.PygameDisplay import PygameDisplay
     
+    ogl_display = OpenGLDisplay().activate()  
+    OpenGLDisplay.setDisplayService(ogl_display)
     # override pygame display service
-    ogl_display = OpenGLDisplay.getDisplayService()
-    PygameDisplay.setDisplayService(ogl_display[0])
+    PygameDisplay.setDisplayService(ogl_display)
     
     print "TEST"
     Graphline(
         reader = ConsoleReader(prompt="Enter torrent location:", eol=""),
         httpclient = SimpleHTTPClient(),
-#        echo = ConsoleEchoer(),
         gui = TorrentOpenGLGUI(),
         backend = TorrentPatron(),
         linkages = {
             ("gui", "outbox") : ("backend", "inbox"),
-#            ("gui", "fetchersignal") : ("httpclient", "control"),
-#            ("gui", "signal") : ("backend", "control"),
             ("reader", "outbox") : ("gui", "torrent_url"),
             ("gui", "fetcher") : ("httpclient", "inbox"),
             ("httpclient", "outbox") : ("gui", "torrent_file"),
-#            ("httpclient", "debug") : ("echo", "inbox"),
             ("backend", "outbox"): ("gui", "inbox")
         }
     ).run()
