@@ -43,6 +43,11 @@ class Timestamp(component):
             
 
 class DeTimestamp(component):
+    Outboxes = { "outbox" : "Detimestamped string data",
+                 "signal" : "Shutdown signalling",
+                 "next"   : "Requests for more timestamped data (number of items needed)",
+               }
+                
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -52,50 +57,61 @@ class DeTimestamp(component):
         
     def main(self):
         import time
-        start=time.time()
+        start=None
         waiting = []
         shuttingdown=False
+        BUFFERSIZE=10
+        
+        self.send(BUFFERSIZE, "next")
         
         while not shuttingdown or waiting or self.dataReady("inbox"):
             shuttingdown = shuttingdown or self.shutdown()
             
+            
             if self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 when, data = msg.split(" ",1)
+                if start==None:
+                    start=time.time()
                 when = start+ float(when)
                 waiting.append( (when,data) )
                 
+            sentcount=0
             while waiting and waiting[0][0] <= time.time():
                 when, data = waiting.pop(0)
                 self.send(data,"outbox")
-                
+                sentcount+=1
+            if sentcount:
+                self.send(sentcount, "next")
+
+            if not waiting and not shuttingdown and not self.dataReady("inbox"):
+                self.pause()
             yield 1
-            
         self.send(shuttingdown,"signal")
 
-class IntersperseNewlines(component):
-    def shutdown(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg,"signal")
-            if isinstance(msg, (producerFinished, shutdownMicroprocess)):
-                return True
-        return False
-        
-    def main(self):
-        while not self.shutdown():
-            while self.dataReady("inbox"):
-                data = self.recv("inbox")
-                self.send( data, "outbox" )
-                self.send("\n", "outbox" )
-            self.pause()
-            yield 1
-
+# class IntersperseNewlines(component):
+#     def shutdown(self):
+#         while self.dataReady("control"):
+#             msg = self.recv("control")
+#             self.send(msg,"signal")
+#             if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+#                 return True
+#         return False
+#         
+#     def main(self):
+#         while not self.shutdown():
+#             while self.dataReady("inbox"):
+#                 data = self.recv("inbox")
+#                 self.send( data, "outbox" )
+#                 self.send("\n", "outbox" )
+#             self.pause()
+#             yield 1
+# 
 
 if __name__=="__main__":
     
     from Kamaelia.Internet.TCPClient import TCPClient
-    from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.File.Reading import PromptedFileReader
     from Kamaelia.File.Writing import SimpleFileWriter
     from Whiteboard.SingleShot import OneShot
 
@@ -127,14 +143,24 @@ if __name__=="__main__":
         
     elif mode == "play":
         print "Playing..."
-        sys.path.append("../../RJL/File")
-        from BetterReading import IntelligentFileReader
         pipeline(
-            IntelligentFileReader(filename, chunksize=1024, maxqueue=50),
-#            RateControlledFileReader(filename, readmode="bytes", rate=20000, chunksize=1000),
-            chunks_to_lines(),
-            DeTimestamp(),
-            IntersperseNewlines(),
+            Graphline(
+                FILEREADER  = PromptedFileReader(filename, "lines"),
+                DETIMESTAMP = DeTimestamp(),
+                linkages = {
+                    # data from file gets detimestamped and sent on
+                    ("FILEREADER",  "outbox") : ("DETIMESTAMP", "inbox"),
+                    ("DETIMESTAMP", "outbox") : ("",            "outbox"),
+                    
+                    # detimestamper asks for more data to be read from file
+                    ("DETIMESTAMP", "next")   : ("FILEREADER",  "inbox"),
+                    
+                    # shutdown wiring
+                    ("",            "control") : ("FILEREADER",  "control"),
+                    ("FILEREADER",  "signal")  : ("DETIMESTAMP", "control"),
+                    ("DETIMESTAMP", "signal")  : ("",            "signal"),
+                }
+            ),
             TCPClient(host=rhost, port=rport),
         ).run()
         
