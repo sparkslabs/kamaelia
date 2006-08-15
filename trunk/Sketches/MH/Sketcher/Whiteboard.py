@@ -66,8 +66,8 @@ from Whiteboard.Router import Router
 
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
-                           readThreshold  = 0.1,
-                           bufferingLimit = 0.2,
+                           readThreshold  = 0.2,
+                           bufferingLimit = 0.4,
                            readInterval   = 0.05,
                          )
 
