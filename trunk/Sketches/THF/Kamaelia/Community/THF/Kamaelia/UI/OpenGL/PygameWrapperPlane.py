@@ -23,7 +23,43 @@
 =====================
 Wrapper for pygame components
 =====================
-TODO
+
+A wrapper for two dimensional pygame components that allows to display them on a Plane in 3D using OpenGL.
+
+This component is a subclass of OpenGLComponent and therefore uses the OpenGL display service.
+
+Example Usage
+-------------
+
+The following example shows a wrapped Ticker and MagnaDoodle component:
+
+    # override pygame display service
+    ogl_display = OpenGL.Display.getDisplayService()
+    Pygame.Display.setDisplayService(ogl_display[0])
+
+    TICKER = Ticker(size = (150, 150)).activate()
+    TICKER_WRAPPER = PygameWrapperPlane(wrap=TICKER, position=(4, 1,-15)).activate()
+    MAGNADOODLE = MagnaDoodle(size=(200,200)).activate()
+    MAGNADOODLEWRAPPER = PygameWrapperPlane(wrap=MAGNADOODLE, position=(-2, -2,-15)).activate()
+    READER = ConsoleReader().activate()
+    
+    READER.link( (READER,"outbox"), (TICKER, "inbox") )
+    
+    Axon.Scheduler.scheduler.run.runThreads()  
+    
+How does it work?
+-----------------
+
+This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw(), handleEvents() and frame().
+
+In setup() the needed additional mailboxes are created. These are the "eventrequest" and "wrapcallback" inboxes and the "wrapped_events" outbox:
+- "eventrequest" is used for the reception of ADDLISTENEVENT and REMOVELISTENEVENT requests of the wrapped component.
+- "wrapcallback" is used to receive the response from the display service.
+- "wrapped_events" is where the input events get sent to.
+
+In frame(), first a WRAPPERREQUEST is sent to the OpenGL display service. This request has to include the surface of the wrapped component. The surface is dermined by simply accessing the object variable directly.  In return it gets the OpenGL texture name of the component that is to be wrapped. 
+
+
 """
 
 
@@ -48,31 +84,33 @@ class PygameWrapperPlane(OpenGLComponent):
         self.wrapped_comp = argd.get("wrap")
         self.name = argd.get("name")
 
-        # used to receive event requests from the wrapped components
-        self.addInbox("eventrequests")
-        # for response to wrapperrequest
-        self.addInbox("wrapcallback")
-        self.addOutbox("wrapped_events")
         self.texname = 0
         self.texsize = (0,0)
         self.wrappedsize = (0,0)
         self.eventswanted = {}
         self.vertices = []
 
-
-    def setup(self):
-        self.addListenEvents( [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP])
         self.sent = False
         self.received = False
 
+
+    def setup(self):
+        # used to receive event requests from the wrapped components
+        self.addInbox("eventrequests")
+        # for response to wrapperrequest
+        self.addInbox("wrapcallback")
+        self.addOutbox("wrapped_events")
+        
 
     def draw(self):
         # set texure
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texname)
 
-        w = self.wrappedsize[0]/self.pixelscaling
-        h = self.wrappedsize[1]/self.pixelscaling
+#        w = self.wrappedsize[0]/self.pixelscaling
+#        h = self.wrappedsize[1]/self.pixelscaling
+        w = self.size.x
+        h = self.size.y
         # draw faces 
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         glBegin(GL_QUADS)
@@ -133,6 +171,7 @@ class PygameWrapperPlane(OpenGLComponent):
                 self.wrappedsize = response["size"]
                 if response["eventswanted"] is not None:
                     self.eventswanted = response["eventswanted"]
+                    #todo: request events
                 if response["eventservice"] is not None:
                     self.link((self, "wrapped_events"), response["eventservice"])
                 #prepare vertices for intersection test
@@ -151,56 +190,26 @@ class PygameWrapperPlane(OpenGLComponent):
             message = self.recv("eventrequests")
 
             if message.get("ADDLISTENEVENT", None) is not None:
+                    #todo: request events
                 self.eventswanted[message["ADDLISTENEVENT"]] = True
 
             elif message.get("REMOVELISTENEVENT", None) is not None:
+                    #todo: request events
                 self.eventswanted[message["REMOVELISTENEVENT"]] = False
 
 
 if __name__=='__main__':
-    class Bunch: pass
-        
-    text = """\
-The size of these 2 Ticker components is (150,150).
-The wrapped button is now fully functional (assigned to SPACE).
-Bottom left there is a Magna Doodle (tm) component. You can draw 
-green lines on it by using your left mouse button. Use the right mouse
-button to erase your artwork.
-"""
-    class datasource(Axon.Component.component):
-        def main(self):
-            for x in text.split():
-                self.send(x,"outbox")
-                yield 1
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
-    from Kamaelia.Util.Graphline import Graphline
-    from Kamaelia.UI.Pygame.Ticker import Ticker
-    from Kamaelia.UI.Pygame.Button import Button
-    from SimpleCube import *
-    import sys;
-    sys.path.append("../Pygame/")
-    from MagnaDoodle import *
 
-    display = OpenGLDisplay.getDisplayService()
-    PygameDisplay.setDisplayService(display[0])
-   
-    TEXT = datasource().activate()
-    TICKER1 = Ticker(size = (150, 150), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
-    TICKER1WRAPPER = PygameWrapperPlane(wrap=TICKER1, position=(-4, 1,-15), name="1st Wrapper Plane").activate()
-    TICKER2 = Ticker(size = (150, 150), render_left = 0, render_right=350, render_top=0, render_bottom=250).activate()
-    TICKER2WRAPPER = PygameWrapperPlane(wrap=TICKER2, position=(4, 1,-15),  name="2nd Wrapper Plane").activate()
-    BUTTON = Button(caption="This button...",msg="...can be moved AND activated!", key=pygame.K_SPACE).activate()
-    BUTTONWRAPPER = PygameWrapperPlane(wrap=BUTTON, position=(0, 0,-10),  name="Button Wrapper Plane").activate()
-    BUTTON1 = Button(caption="This button...",msg="...also!", key=pygame.K_LCTRL).activate()
-    BUTTONWRAPPER1 = PygameWrapperPlane(wrap=BUTTON1, position=(0, 0.4,-10),  name="Button1 Wrapper Plane").activate()
+    # override pygame display service
+    ogl_display = OpenGL.Display.getDisplayService()
+    Pygame.Display.setDisplayService(ogl_display[0])
+
+    TICKER = Ticker(size = (150, 150)).activate()
+    TICKER_WRAPPER = PygameWrapperPlane(wrap=TICKER, position=(4, 1,-15)).activate()
     MAGNADOODLE = MagnaDoodle(size=(200,200)).activate()
-    MAGNADOODLEWRAPPER = PygameWrapperPlane(wrap=MAGNADOODLE, position=(-2, -2,-15),  name="Magna Doodle Wrapper Plane").activate() 
-    ECHO = consoleEchoer().activate()
-    CUBE = SimpleCube(position = (2,-2,-10)).activate()
-    TICKER1WRAPPER.link((TICKER1WRAPPER, "outbox"), (TICKER2, "inbox"))
-    TICKER2WRAPPER.link((TICKER2WRAPPER, "outbox"), (TICKER2, "inbox"))
-    BUTTON.link((BUTTON, "outbox"), (TICKER2, "inbox"))
-    BUTTON1.link((BUTTON1, "outbox"), (TICKER2, "inbox"))
-    TEXT.link((TEXT, "outbox"), (TICKER1, "inbox"))
-        
+    MAGNADOODLEWRAPPER = PygameWrapperPlane(wrap=MAGNADOODLE, position=(-2, -2,-15)).activate()
+    READER = ConsoleReader().activate()
+    
+    READER.link( (READER,"outbox"), (TICKER, "inbox") )
+    
     Axon.Scheduler.scheduler.run.runThreads()  
