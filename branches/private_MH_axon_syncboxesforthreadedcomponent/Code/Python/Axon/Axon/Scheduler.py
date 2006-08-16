@@ -41,12 +41,6 @@ from Microprocess import microprocess
 from Axon import AxonObject as _AxonObject
 from Ipc import *
 import Queue
-try:   
-    from ctypes import *   
-    libc = cdll.LoadLibrary("/lib/libc.so.6")   
-    sched_yield = libc.sched_yield   
-except ImportError:   
-    def sched_yield(): pass
 
 def _sort(somelist):
    a=[ x for x in somelist]
@@ -150,7 +144,6 @@ class scheduler(microprocess):
        running = True
        
        while running:
-           sched_yield()
            
            # slowmo
            now = time.time()
@@ -202,7 +195,10 @@ class scheduler(microprocess):
            # wakeup requests second - safer to leave a thread awake than asleep
            while not self.pauseRequests.empty():
                mprocess = self.pauseRequests.get()
-               self.threads[mprocess] = _GOINGTOSLEEP
+               # only sleep if we're actually in the set of threads(!)
+               # otherwise it inadvertently gets added!
+               if self.threads.has_key(mprocess):
+                   self.threads[mprocess] = _GOINGTOSLEEP
                # marked as going to sleep, rather than asleep since mprocess
                # is still in runqueue (more efficient to leave it to be
                # removed when we iterate through the runqueue)

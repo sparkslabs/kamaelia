@@ -40,8 +40,6 @@ class nullsink(object):
         return 0
     def pop(self,index):
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
-    def isFull(self):
-        return False
     
     
 class realsink(list):
@@ -62,8 +60,6 @@ class realsink(list):
     def setShowTransit(self,showtransit, tag):
         self.showtransit = showtransit
         self.tag = tag
-    def isFull(self):
-        return (self.size != None) and (len(self) >= self.size)
 
 
 class postbox(object):
@@ -80,10 +76,10 @@ class postbox(object):
         self.storage = storage
         self.sources = []
         self._retarget()
-        self.local_len = storage.__len__
+        self.local_len = storage.__len__    # so compoent can specifically query local storage
     
     def __len__(self):
-        return self.__len__()
+        return self.__target_len__()
 
     def addsource(self,newsource):
         """\
@@ -117,10 +113,9 @@ class postbox(object):
                 self.sink.append(self.storage.pop(0))
         
         # make calling these methods go direct to the sink
-        self.append  = self.sink.append
-        self.pop     = self.sink.pop
-        self.__len__ = self.sink.__len__
-        self.isFull  = self.sink.isFull
+        self.append         = self.sink.append
+        self.pop            = self.sink.pop
+        self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
             source._retarget(newtarget=self.sink)
