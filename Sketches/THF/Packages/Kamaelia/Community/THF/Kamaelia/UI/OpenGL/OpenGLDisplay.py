@@ -168,12 +168,12 @@ The wrapper request is a dictionary with the following keys:
 	"WRAPPERREQUEST" : True,					# wrap a pygame component
     "wrapcallback" : (object, "inboxname"),		# send response here
     "eventrequests" : (object, "inboxname"),	# to receive event requests by the wrapped component
-    "surface": surface							# surface of the component to be wrapped
+    "wrap_objectid": id(wrapped_component)      # object id of the component to be wrapped
 }
 
-Having to send the surface of the component that is to be wrapped is
-rather an ugly than a good solution. This is likely to be changed at a
-later point in time.
+When a WRAPPERREQUEST is received for a component which is not
+registered yet, it is stored until the component to be wrapped gets
+registered.
 
 When a wrapper request was received, the OpenGL display service returns
 a dictionary to the box specified by "wrapcallback" containing the
@@ -234,7 +234,7 @@ components. They are registered by sending an EVENSPYREQUEST:
     "events" : (object, "inboxname")	# for reception of events
 }
 
-In return you get the identifier of the victim component that can be
+In return you get the identifier of the victim component that can be 
 used to determine if the victim component has been hit. An evenspy can
 request reception of event types like usual (using ADDLISTENEVENT and
 REMOVELISTENEVENT).
@@ -295,8 +295,8 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes =  {
         "inbox"    : "Default inbox, not currently used",
         "control"  : "NOT USED",
-        "notify"   : "Receive requests for surfaces, overlays and events",
-        "events"   : "Receive pygame events",
+        "notify"   : "For reception of requests for surfaces, overlays and events",
+        "events"   : "For reception of pygame events",
     }
                
     Outboxes = {
