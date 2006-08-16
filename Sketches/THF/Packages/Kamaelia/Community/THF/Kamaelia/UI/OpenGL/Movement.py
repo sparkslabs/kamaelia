@@ -30,25 +30,35 @@ The following example show the usage of most of the components in this
 file. For an example how to use the WheelMover, see the TorrentOpenGLGUI
 example.
 
-path = LinearPath([(3,3,-20), (4,0,-20), (3,-3,-20), (0,-4,-20), (-3,-3,-20), (-4,0,-20), (-3,3,-20), (0,4,-20), (3,3,-20)], 1000)
+    points = [(3,3,-20),
+              (4,0,-20),
+              (3,-3,-20),
+              (0,-4,-20),
+              (-3,-3,-20),
+              (-4,0,-20),
+              (-3,3,-20),
+              (0,4,-20),
+              (3,3,-20),
+             ]
+    path = LinearPath(points, 1000)
 
-cube1 = SimpleCube(size=(1,1,1)).activate()
-pathmover = PathMover(path).activate()
-pathmover.link((pathmover,"outbox"), (cube1,"position"))
+    cube1 = SimpleCube(size=(1,1,1)).activate()
+    pathmover = PathMover(path).activate()
+    pathmover.link((pathmover,"outbox"), (cube1,"position"))
 
-cube2 = SimpleCube(size=(1,1,1)).activate()
-simplemover = SimpleMover().activate()
-simplemover.link((simplemover,"outbox"), (cube2,"position"))
+    cube2 = SimpleCube(size=(1,1,1)).activate()
+    simplemover = SimpleMover().activate()
+    simplemover.link((simplemover,"outbox"), (cube2,"position"))
 
-cube3 = SimpleCube(size=(1,1,1), position=(-1,0,-15)).activate()
-rotator = SimpleRotator().activate()
-rotator.link((rotator,"outbox"), (cube3,"rel_rotation"))
+    cube3 = SimpleCube(size=(1,1,1), position=(-1,0,-15)).activate()
+    rotator = SimpleRotator().activate()
+    rotator.link((rotator,"outbox"), (cube3,"rel_rotation"))
 
-cube4 = SimpleCube(size=(1,1,1), position=(1,0,-15)).activate()
-buzzer = SimpleBuzzer().activate()
-buzzer.link((buzzer,"outbox"), (cube4,"scaling"))
+    cube4 = SimpleCube(size=(1,1,1), position=(1,0,-15)).activate()
+    buzzer = SimpleBuzzer().activate()
+    buzzer.link((buzzer,"outbox"), (cube4,"scaling"))
 
-Axon.Scheduler.scheduler.run.runThreads()  
+    Axon.Scheduler.scheduler.run.runThreads()  
 
 """
 
@@ -402,7 +412,17 @@ class SimpleBuzzer(Axon.Component.component):
 if __name__=='__main__':
     from SimpleCube import SimpleCube
 
-    path = LinearPath([(3,3,-20), (4,0,-20), (3,-3,-20), (0,-4,-20), (-3,-3,-20), (-4,0,-20), (-3,3,-20), (0,4,-20), (3,3,-20)], 1000)
+    points = [(3,3,-20),
+              (4,0,-20),
+              (3,-3,-20),
+              (0,-4,-20),
+              (-3,-3,-20),
+              (-4,0,-20),
+              (-3,3,-20),
+              (0,4,-20),
+              (3,3,-20),
+             ]
+    path = LinearPath(points, 1000)
 
     cube1 = SimpleCube(size=(1,1,1)).activate()
     pathmover = PathMover(path).activate()
