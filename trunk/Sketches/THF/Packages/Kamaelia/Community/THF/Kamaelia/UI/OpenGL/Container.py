@@ -26,6 +26,63 @@ Container component
 
 A container to control several OpenGLComponents.
 
+Example Usage
+-------------
+In the following example, three components are put into a container and
+get moved by a SimpleMover and rotated around the Y axis by a
+SimpleRotator:
+
+    o1 = SimpleButton(size=(1,1,1)).activate()
+    o2 = SimpleCube(size=(1,1,1)).activate()
+    o3 = ArrowButton(size=(1,1,1)).activate()
+
+    containercontents = {
+        o1: {"position":(0,1,0)},
+        o2: {"position":(1,-1,0)},
+        o3: {"position":(-1,-1,0)},
+    }
+    
+    Graphline(
+        OBJ1=o1,
+        OBJ2=o2,
+        OBJ3=o3,
+        CONTAINER=Container(contents=containercontents, position=(0,0,-10)),
+        MOVER=SimpleMover(amount=(0.01,0.02,0.03)),
+        ROTATOR=SimpleRotator(amount=(0,0.1,0)),
+        linkages = {
+            ("MOVER", "outbox") : ("CONTAINER","position"),
+            ("ROTATOR", "outbox") : ("CONTAINER","rel_rotation")
+        }
+    ).run()
+
+How does it work?
+-----------------
+
+The Container component provides the same inboxes for absolute and
+relative movement as a OpenGLComponent. These are "position",
+"rotation", "scaling", "rel_position", "rel_rotation", "rel_scaling",
+their names are self explanatory. When the container receives a tuple in
+one of those inboxes, it does update its own transform and uses it to
+translate the movement to its content components. This is done in the
+method rearangeContents(). Currently only translation and scaling is
+supported. This means though components change their position with
+respect to the rotation of the container and their relative position,
+the components rotation does not change.
+
+The contents have to be provided as constructor keyword in form of a
+nested dictionary of the following form:
+
+{
+    component1 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
+    component2 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
+    ...
+}
+
+Each of the "position", "rotation" and "scaling" arguments specify the
+amount relative to the container. They are all optional. As stated
+earlier, rotation is not supported yet so setting the rotation has no
+effect.
+
 """
 
 
@@ -130,16 +187,20 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rotation)
             self.transform.applyTranslation(self.position)
+
+            self.oldpos = self.position.copy()
+            self.oldrot = self.rotation.copy()
+            self.oldscaling = self.scaling.copy()
             
-            self.rearangeElements()
+            self.rearangeContents()
 
 
-    def rearangeElements(self):
+    def rearangeContents(self):
         for comp in self.components:
             trans = self.transform.transformVector(self.rel_positions[comp])
             self.send(trans.toTuple(), self.poscomms[comp])
 #                self.send(self.rotation.toTuple(), self.rotcomms[comp])
-#                self.send(self.scaling.toTuple(), self.scacomms[comp])
+            self.send(self.scaling.toTuple(), self.scacomms[comp])
 
             
     def addElement(self, comp, position=(0,0,0), rotation=(0,0,0), scaling=(1,1,1) ):
@@ -152,10 +213,10 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.link( (self, self.poscomms[comp]), (comp, "position") )
 #        self.rotcomms[comp] = self.addOutbox("rot")
 #        self.link( (self, self.rotcomms[comp]), (comp, "rotation") )
-#        self.scacomms[comp] = self.addOutbox("sca")
-#        self.link( (self, self.scacomms[comp]), (comp, "scaling") )
+        self.scacomms[comp] = self.addOutbox("sca")
+        self.link( (self, self.scacomms[comp]), (comp, "scaling") )
 
-        self.rearangeElements()
+        self.rearangeContents()
         
         
     def removeElement(self, comp):
@@ -170,21 +231,14 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.rotcomms.pop(comp)
         self.scacomms.pop(comp)
 
-        self.rearangeElements()
+        self.rearangeContents()
         
 
 if __name__=='__main__':
     from SimpleButton import SimpleButton
     from SimpleCube import SimpleCube
     from ArrowButton import ArrowButton
-
-    class Rotator(Axon.Component.component):
-        def main(self):
-            while 1:
-                yield 1
-                self.send( (0.1, 0.1, 0.0), "outbox")
-    
-    
+    from Movement import SimpleRotator, SimpleMover
     from Kamaelia.Chassis.Graphline import Graphline
 
     o1 = SimpleButton(size=(1,1,1)).activate()
@@ -196,14 +250,16 @@ if __name__=='__main__':
         o2: {"position":(1,-1,0)},
         o3: {"position":(-1,-1,0)},
     }
-
+    
     Graphline(
         OBJ1=o1,
         OBJ2=o2,
         OBJ3=o3,
         CONTAINER=Container(contents=containercontents, position=(0,0,-10)),
-        ROTATOR= Rotator(),
+        MOVER=SimpleMover(amount=(0.01,0.02,0.03)),
+        ROTATOR=SimpleRotator(amount=(0,0.1,0)),
         linkages = {
+            ("MOVER", "outbox") : ("CONTAINER","position"),
             ("ROTATOR", "outbox") : ("CONTAINER","rel_rotation")
         }
     ).run()
