@@ -19,6 +19,38 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=====================
+A collection of movement components and classes
+=====================
+
+Example Usage
+-------------
+The following example show the usage of most of the components in this
+file. For an example how to use the WheelMover, see the TorrentOpenGLGUI
+example.
+
+path = LinearPath([(3,3,-20), (4,0,-20), (3,-3,-20), (0,-4,-20), (-3,-3,-20), (-4,0,-20), (-3,3,-20), (0,4,-20), (3,3,-20)], 1000)
+
+cube1 = SimpleCube(size=(1,1,1)).activate()
+pathmover = PathMover(path).activate()
+pathmover.link((pathmover,"outbox"), (cube1,"position"))
+
+cube2 = SimpleCube(size=(1,1,1)).activate()
+simplemover = SimpleMover().activate()
+simplemover.link((simplemover,"outbox"), (cube2,"position"))
+
+cube3 = SimpleCube(size=(1,1,1), position=(-1,0,-15)).activate()
+rotator = SimpleRotator().activate()
+rotator.link((rotator,"outbox"), (cube3,"rel_rotation"))
+
+cube4 = SimpleCube(size=(1,1,1), position=(1,0,-15)).activate()
+buzzer = SimpleBuzzer().activate()
+buzzer.link((buzzer,"outbox"), (cube4,"scaling"))
+
+Axon.Scheduler.scheduler.run.runThreads()  
+
+"""
 
 import Axon
 from Vector import Vector
@@ -26,10 +58,18 @@ from math import *
 
 
 class LinearPath:
-    """ LineatPath generates a linear interpolated Path. """
-    def __init__(self, points = [], steps = 0):
-        self.nextpoint = 0
+    """\
+    LinearPath generates a linearly interpolated Path which can be used
+    by the Pathmover component to control component movement.
     
+    It provides basic list functionality by providing a __getitem__() as
+    well as a __len__() method for accessing the path elements.
+    
+    Keyword arguments:
+    - points    -- a list of points in the path
+    - steps     -- number of steps to generate between the path endpoints (default=1000)
+    """
+    def __init__(self, points = [], steps = 1000):
         if steps == 0:
             steps = len(points)
         
@@ -73,17 +113,26 @@ class LinearPath:
         
     def __len__(self):
         return len(self.points)
-        
-    def next(self):
-        v = self.points[self.nextpoint]
-        self.nextpoint += 1
-        if self.nextpoint == len(self.points): self.nextpoint = 0
-        return v.toTuple()
-    
 
 
 class PathMover(Axon.Component.component):
-    """ PathMover moves a 3d object along a path. """
+    """\
+    PathMover can be used to move a 3d object along a path.
+    
+    It can be controlled by sending commands to its inbox. These
+    commands can be one of "Play", "Stop", "Next", "Previous", "Rewind", 
+    "Forward" and "Backward".
+    
+    If the pathmover reaches the beginning or the end of a path it
+    generates a status message which is sent to the "status" outbox. This
+    message can be "Finish" or "Start".
+    
+    Keyword arguments:
+    - path   -- A path object (e.g. LinearPath) or a list of points
+    - repeat -- Boolean indication if the Pathmover should repeat the
+                path if it reaches an end (default=True)
+    """
+    
     Inboxes = {
        "inbox": "Commands are received here",
        "control": "ignored",
@@ -154,7 +203,42 @@ class PathMover(Axon.Component.component):
 
 
 class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
-    """ . """
+    """\
+    A component to arrange several OpenGlComponents in the style of a
+    big wheel rotating around the X axis. Can be used to switch between
+    components.
+    
+    Components can be added and removed during operation using the
+    "notify" inbox. Messages sent to it are expected to be a dictionary of
+    the following form:
+    
+    {
+        "APPEND_CONTROL" :True,
+        "objectid": id(object),
+        "control": (object,"position")
+    }
+
+    for adding components and:
+
+    {
+        "REMOVE_CONTROL" :True,
+        "objectid": id(object),
+    }
+    
+    for removing components.
+    
+    If components are added when the wheel is already full (number of
+    slots exhausted) they are simply     ignored.
+
+    The whole wheel can be controlles by sending messages to the
+    "switch" inbox. The commands can be either "NEXT" or "PREVIOUS".
+
+    Keyword arguments:
+    - steps     -- number of steps the wheel is subdivided in (default=400)
+    - center    -- center of the wheel (default=(0,0,-13))
+    - radius    -- radius of the wheel (default=5)
+    - slots     -- number of components which can be handled (default=20)
+    """
     Inboxes = {
        "inbox": "not used",
        "control": "ignored",
@@ -169,6 +253,7 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def __init__(self, steps=400, center=(0,0,-13), radius=5, slots=20):
         super(WheelMover, self).__init__()
     
+        self.slots = slots
         self.distance = steps/slots
         
         stepangle = 2*pi/steps
@@ -194,8 +279,7 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         while 1:
             while self.dataReady("notify"):
                 msg = self.recv("notify")
-#                print "msg", msg
-                if msg.get("APPEND_CONTROL", None):
+                if msg.get("APPEND_CONTROL", None) and len(self.objects) < self.slots:
                     objectid = msg.get("objectid")
                     service = msg.get("control")
                     
@@ -212,7 +296,6 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
                 elif msg.get("REMOVE_CONTROL", None):
                     objectid = msg.get("objectid")
-                    service = msg.get("control")
                     
                     self.objects.remove(objectid)
                     self.unlink(self,self.comms[objectid])
@@ -249,33 +332,61 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1
 
 
-class Rotator(Axon.Component.component):
+class SimpleRotator(Axon.Component.component):
+    """\
+    A simple rotator component mostly for testing. Rotates
+    OpenGLComponents by the amount specified if connected to their
+    "rel_rotation" boxes.
+    
+    Keyword arguments:
+    - amount    -- amount of relative rotation sent (default=(0.1,0.1,0.1))
+    """    
+    def __init__(self, amount=(0.1,0.1,0.1)):
+        super(SimpleRotator, self).__init__()
+        self.amount = amount
+        
     def main(self):
         while 1:
             yield 1
-            self.send( Control3D(Control3D.REL_ROTATION, Vector(0.1, 0.1, 0.1)), "outbox")
+            self.send(self.amount, "outbox")
 
 
-class Mover(Axon.Component.component):
+class SimpleMover(Axon.Component.component):
+    """\
+    A simple mover component mostly for testing. Moves OpenGLComponents
+    between the specified borders if connected to their "position" boxes.
+    The amount of movement every frame and the origin can also be specified.
+    
+    Keyword arguments:
+    - amount    -- amount of movement every frame sent (default=(0.03,0.03,0.03))
+    - borders   -- borders of every dimension (default=(5,5,5))
+    - origin    -- origin of movement (default=(0,0,-20))
+    """
+    def __init__(self, amount=(0.03,0.03,0.03), borders=(5,5,5), origin=(0.0,0.0,-20.0)):
+        super(SimpleMover, self).__init__()
+        self.borders = borders
+        self.amount = amount
+        self.origin = origin
+
     def main(self):
-        x,y,z = 3.0, 3.0, -20.0
-        dx = -0.03
-        dy = -0.03
-        dz = -0.03
+        (x,y,z) = self.origin
+        (dx,dy,dz) = self.amount
         while 1:
             yield 1
-            self.send( Control3D(Control3D.POSITION, Vector(x, y, z)), "outbox")
-            x +=dx
-            y +=dy
-            z +=dz
-            if abs(x)>5: dx = -dx
-            if abs(y)>5: dy = -dy
-            if abs(z+20)>10: dz = -dz
+            self.send( (x, y, z), "outbox")
+            x += dx
+            y += dy
+            z += dz
+            if abs(x)> self.borders[0]: dx = -dx
+            if abs(y)> self.borders[1]: dy = -dy
+            if (abs(z-self.origin[2]))> self.borders[2]: dz = -dz
 
 
-import random
-
-class Buzzer(Axon.Component.component):
+class SimpleBuzzer(Axon.Component.component):
+    """\
+    A simple buzzer component mostly for testing. Changes the scaling of
+    OpenGLComponents it connected to their "scaling" boxes.
+    """
     def main(self):
         r = 1.00
         f = 0.01
@@ -285,18 +396,28 @@ class Buzzer(Axon.Component.component):
             else: f += 0.001
             r += f
             
-            self.send( Control3D(Control3D.SCALING, Vector(r, r, r)), "outbox")
+            self.send( (r, r, r), "outbox")
     
         
 if __name__=='__main__':
     from SimpleCube import SimpleCube
 
-    path1 = LinearPath([(3,3,-20), (4,0,-20), (3,-3,-20), (0,-4,-20), (-3,-3,-20), (-4,0,-20), (-3,3,-20), (0,4,-20), (3,3,-20)], 1000)
-#    path2 = Path3D([Vector(1,0,0), Vector(0,0,0), Vector(0,1,0)], 9)
+    path = LinearPath([(3,3,-20), (4,0,-20), (3,-3,-20), (0,-4,-20), (-3,-3,-20), (-4,0,-20), (-3,3,-20), (0,4,-20), (3,3,-20)], 1000)
 
-    cube = SimpleCube(size=(1,1,1)).activate()
-    mover = PathMover(path1).activate()
+    cube1 = SimpleCube(size=(1,1,1)).activate()
+    pathmover = PathMover(path).activate()
+    pathmover.link((pathmover,"outbox"), (cube1,"position"))
     
-    mover.link((mover,"outbox"), (cube,"position"))
+    cube2 = SimpleCube(size=(1,1,1)).activate()
+    simplemover = SimpleMover(borders=(3,5,7)).activate()
+    simplemover.link((simplemover,"outbox"), (cube2,"position"))
+
+    cube3 = SimpleCube(size=(1,1,1), position=(-1,0,-15)).activate()
+    rotator = SimpleRotator().activate()
+    rotator.link((rotator,"outbox"), (cube3,"rel_rotation"))
     
+    cube4 = SimpleCube(size=(1,1,1), position=(1,0,-15)).activate()
+    buzzer = SimpleBuzzer().activate()
+    buzzer.link((buzzer,"outbox"), (cube4,"scaling"))
+
     Axon.Scheduler.scheduler.run.runThreads()  
