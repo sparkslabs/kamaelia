@@ -23,6 +23,40 @@
 =====================
 Simple Translation Interactor
 =====================
+A simple interactor for moving OpenGLComponents along th X,Y plane.
+
+SimpleTranslationInteractor is a subclass of Interactor.
+
+Example Usage
+-------------
+
+The following example shows four SimpleCubes which can be moved by
+dragging your mouse over them:
+
+    o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
+    i1 = SimpleTranslationInteractor(victim=o1).activate()
+
+    o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1)).activate()
+    i2 = SimpleTranslationInteractor(victim=o2).activate()
+
+    o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1)).activate()
+    i3 = SimpleTranslationInteractor(victim=o3).activate()
+
+    o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1)).activate()
+    i4 = SimpleTranslationInteractor(victim=o4).activate()
+    
+    Axon.Scheduler.scheduler.run.runThreads()  
+
+How does it work?
+-----------------
+
+SimpleTranslationInteractor is a subclass of Interactor. It overrides
+the __init__(), setup() and handleEvents() methods.
+
+The amount of movement is determined using the relative 2d movement
+which is included in every mouse event and multiplying it by a factor.
+This factor must be specified on creation of the component.
+
 """
 
 
@@ -35,6 +69,10 @@ import Axon
 from Interactor import *
 
 class SimpleTranslationInteractor(Interactor):
+    """\
+    Keyword arguments:
+    - translationfactor -- factor to translate between 2d and 3d movement (default=10.0)
+    """
     
     def __init__(self, **argd):
         super(SimpleTranslationInteractor, self).__init__(**argd)

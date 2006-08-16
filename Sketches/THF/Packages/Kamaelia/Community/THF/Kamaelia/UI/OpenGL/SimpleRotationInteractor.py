@@ -23,6 +23,39 @@
 =====================
 Simple Rotation Interactor
 =====================
+A simple interactor for rotating OpenGLComponents around the X,Y axes.
+
+SimpleRotationInteractor is a subclass of Interactor.
+
+Example Usage
+-------------
+
+The following example shows four SimpleCubes which can be rotated by
+dragging your mouse over them:
+
+    o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
+    i1 = SimpleRotationInteractor(victim=o1).activate()
+
+    o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1)).activate()
+    i2 = SimpleRotationInteractor(victim=o2).activate()
+
+    o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1)).activate()
+    i3 = SimpleRotationInteractor(victim=o3).activate()
+
+    o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1)).activate()
+    i4 = SimpleRotationInteractor(victim=o4).activate()
+    
+    Axon.Scheduler.scheduler.run.runThreads()  
+
+How does it work?
+-----------------
+
+SimpleTranslationInteractor is a subclass of Interactor. It overrides
+the __init__(), setup() and handleEvents() methods.
+
+The amount of rotation is determined using the relative 2d movement
+which is included in every mouse event and multiplying it by a factor.
+This factor must be specified on creation of the component.
 """
 
 
@@ -35,6 +68,10 @@ import Axon
 from Interactor import *
 
 class SimpleRotationInteractor(Interactor):
+    """\
+    Keyword arguments:
+    - rotationfactor -- factor to translate between 2d movment and 3d rotation (default=10.0)
+    """
     
     def __init__(self, **argd):
         super(SimpleRotationInteractor, self).__init__(**argd)
