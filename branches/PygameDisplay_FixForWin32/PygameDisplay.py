@@ -230,7 +230,16 @@ class _PygameEventSource(threadedcomponent):
     Outboxes = { "outbox" : "Pygame event objects, bundled into lists",
                  "signal" : "Not used",
                }
+    def __init__(self, *displayOpts):
+        super(_PygameEventSource,self).__init__()
+        self.displayOpts = displayOpts
+
     def main(self):
+        pygame.init()
+        pygame.mixer.quit()
+        display = pygame.display.set_mode(*self.displayOpts)
+        self.send(display,"outbox")
+
         while 1:
             time.sleep(0.01)
             eventlist = pygame.event.get()  # and get any others waiting
@@ -534,13 +543,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
    def main(self):
       """Main loop."""
-      pygame.init()
-      pygame.mixer.quit()
-      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
-      
-      eventsource = _PygameEventSource().activate()
+      displayOpts = [(self.width, self.height), self.fullscreen|pygame.DOUBLEBUF]
+      eventsource = _PygameEventSource(*displayOpts).activate()
       self.addChildren(eventsource)
       self.link( (eventsource,"outbox"), (self,"events") )
+
+      while not self.dataReady("events"):
+         yield 1
+      display = self.recv("events")
       
       while 1:
          self.needsRedrawing = False
