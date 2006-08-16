@@ -23,7 +23,42 @@
 =====================
 Progress Bar
 =====================
-TODO
+
+A progress bar widget for the OpenGL display service.
+
+This component is a subclass of OpenGLComponent and therefore uses the
+OpenGL display service.
+
+Example Usage
+-------------
+A progress bar with changing value::
+
+    Graphline(
+        BOUNCE = bouncingFloat(0.5),
+        PROGRESS = ProgressBar(size = (3, 0.5, 0.2), position=(0,0,-10), progress=0.5),
+        linkages = {
+            ("BOUNCE", "outbox"):("PROGRESS", "progress"),
+        }
+    ).run()
+
+How does it work?
+-----------------
+
+ProgressBar is a subclass of OpenGLComponent (for OpenGLComponent
+functionality see its documentation). It overrides __init__(), draw(),
+handleEvents() and frame().
+
+This component basically draws a cuboid shaped cage and inside of it a
+transparent bar indicating a percentage.
+
+The percentage values are received at the "progress" inbox. The values
+must be in the range [0,1]. If the value is 0.0, the bar is not drawn at
+all, if 1.0 the bar has its maximum length. Received values which lie
+outside of this range are clamped to it.
+
+Because the progress bar is transparent, the widget has to be drawn in a
+special order. First, the cage is drawn normally. Then the depth buffer
+is made read only and the transparent bar is drawn.
 """
 
 
@@ -38,7 +73,17 @@ from OpenGLComponent import *
 
 
 class ProgressBar(OpenGLComponent):
+    """\
+    ProgressBar(...) -> new ProgressBar component.
+
+    Create a progress bar widget using the OpenGLDisplay service. Shows
+    a tranparent bar indicating a percentage.
     
+    Keyword arguments:
+    - cagecolour  -- Cage colour (default=(0,0,0))
+    - barcolour   -- Bar colour (default=(200,200,244))
+    - progress    -- Initial progress value (default=0.0)
+    """
     def __init__(self, **argd):
         super(ProgressBar, self).__init__(**argd)
         
@@ -88,6 +133,7 @@ class ProgressBar(OpenGLComponent):
         if self.progress > 0.0:
             # draw progress
             glEnable(GL_BLEND)
+            # make depth buffer read only
             glDepthMask(GL_FALSE)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
             glBegin(GL_QUADS)
@@ -128,7 +174,6 @@ class ProgressBar(OpenGLComponent):
             glDisable(GL_BLEND)
 
         
-    
     def frame(self):
         self.handleProgress()
 
@@ -136,16 +181,21 @@ class ProgressBar(OpenGLComponent):
     def handleProgress(self):
          while self.dataReady("progress"):
             self.progress = self.recv("progress")
+            print self.progress
             if self.progress < 0.0: self.progress = 0.0
             if self.progress > 1.0: self.progress = 1.0
             self.redraw()
             
 
-from MatchedTranslationInteractor import *
 
 if __name__=='__main__':
+    from Kamaelia.Automata.Behaviours import bouncingFloat
+    from Kamaelia.Chassis.Graphline import Graphline
 
-    PROGRESS = ProgressBar(size = (3, 0.5, 0.2), position=(0,0,-10), progress=0.5).activate()    
-    INT = MatchedTranslationInteractor(victim=PROGRESS).activate()
-    
-    Axon.Scheduler.scheduler.run.runThreads()  
+    Graphline(
+        BOUNCE = bouncingFloat(0.5),
+        PROGRESS = ProgressBar(size = (3, 0.5, 0.2), position=(0,0,-10), progress=0.5),
+        linkages = {
+            ("BOUNCE", "outbox"):("PROGRESS", "progress"),
+        }
+    ).run()
