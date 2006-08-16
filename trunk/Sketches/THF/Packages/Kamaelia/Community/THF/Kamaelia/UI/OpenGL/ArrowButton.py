@@ -24,6 +24,23 @@
 Simple Arrow Button component
 =====================
 
+A simple arrow shaped button without caption. Implements responsive
+button behavoir.
+
+ArrowButton is a subclass of SimpleButton. It only overrides the draw()
+method, i.e. it only changes its appearance.
+
+Example Usage
+-------------
+    Graphline(
+        button1 = ArrowButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
+        button2 = ArrowButton(size=(2,2,1), position=(5,0,-15), rotation=(0,0,90), msg="BRAIN"),
+        echo = ConsoleEchoer(),
+        linkages = {
+            ("button1", "outbox") : ("echo", "inbox"),
+            ("button2", "outbox") : ("echo", "inbox")
+        }
+    ).run()
 
 """
 
@@ -79,7 +96,7 @@ if __name__=='__main__':
 
     Graphline(
         button1 = ArrowButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
-        button2 = ArrowButton(size=(2,2,1), position=(5,0,-15), msg="BRAIN"),
+        button2 = ArrowButton(size=(2,2,1), position=(5,0,-15), rotation=(0,0,90), msg="BRAIN"),
         echo = ConsoleEchoer(),
         linkages = {
             ("button1", "outbox") : ("echo", "inbox"),
