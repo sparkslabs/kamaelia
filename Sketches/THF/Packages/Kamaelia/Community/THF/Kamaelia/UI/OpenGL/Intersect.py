@@ -20,24 +20,31 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""\
+==================================
+Intersect3D: provides a set of static 3D intersection functions
+==================================
+"""
+
 from math import *
 
-# ==================================
-# Intersect3D: provides a set of static 3D intersection functions
-# ==================================
 class Intersect3D:
     """ Collection of intersection functions, """
     # very small value
-    epsilon = 0.000000001
+    epsilon = 0.00000001
     
     def ray_OBB(r_origin, r_dir, b_pos, b_orientation, b_halflengths):
-        """ Intersects a ray with an oriented bounding box. 
-            r_origin = origin of the ray
-            r_dir = normalized direction of the ray
-            b_pos = position of the box
-            b_orientation = list of normalised half length vectors of the box
-            b_halflengths = list of positive half lengths of the box
-            returns the distance from r_origin to the point of intersection
+        """\
+        Intersects a ray with an oriented bounding box.
+        
+        Arguments:
+        - r_origin -- origin of the ray
+        - r_dir -- normalized direction of the ray
+        - b_pos -- position of the box
+        - b_orientation -- list of normalised half length vectors of the box
+        - b_halflengths -- list of positive half lengths of the box
+        
+        returns the distance from r_origin to the point of intersection
         """
         tmin = -10000
         tmax = 10000
@@ -74,11 +81,15 @@ class Intersect3D:
     ray_OBB = staticmethod(ray_OBB)
 
     def ray_Plane(r_origin, r_dir, p_points):
-        """ Intersects a ray with a plane.
-            r_origin = origin of the ray
-            r_dir = normalized direction of the ray
-            points = list of 3 Vectors that represent non collinear points on the plane
-            returns the distance from r_origin to the point of intersection
+        """\
+        Intersects a ray with a plane.
+
+        Arguments:
+        - r_origin -- origin of the ray
+        - r_dir -- normalized direction of the ray
+        - points -- list of 3 Vectors that represent non collinear points on the plane
+
+        returns the distance from r_origin to the point of intersection
         """
         #determine the implicit equation of the plane
         p = p_points[0]
@@ -97,11 +108,15 @@ class Intersect3D:
     
     
     def ray_Polygon(r_origin, r_dir, p_points):
-        """ Intersects a ray with a polygon.
-            r_origin = origin of the ray
-            r_dir = normalized direction of the ray
-            points = list of Vectors that represent the points of the polygon
-            returns the distance from r_origin to the point of intersection
+        """\
+        Intersects a ray with a polygon.
+        
+        Arguments:
+        - r_origin -- origin of the ray
+        - r_dir -- normalized direction of the ray
+        - points -- list of Vectors that represent the points of the polygon
+        
+        returns the distance from r_origin to the point of intersection
         """
         #determine the implicit equation of the corresponding plane
         p = p_points[0]
@@ -158,10 +173,19 @@ class Intersect3D:
 
     
     def ray_Sphere():
+        """\
+        NOT IMPLEMENTED YET
+        """
         pass
     
     def plane_OOB():    
+        """\
+        NOT IMPLEMENTED YET
+        """
         pass
     
     def OOB_OOB():
+        """\
+        NOT IMPLEMENTED YET
+        """
         pass
