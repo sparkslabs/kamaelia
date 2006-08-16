@@ -23,7 +23,10 @@
 =====================
 3D Transform class
 =====================
-TODO
+
+A class containing a transformation matrix and providing several methods
+to use/alter it. Transform uses Vector objects for most of its methods
+arguments.
 """
 
 from math import *
@@ -33,6 +36,12 @@ from Vector import Vector
 # Transform: for generating transformation matrices
 # =============================
 class Transform:
+    """\
+    Transform([matrix]) -> new Transform object.
+    
+    Keyword arguments:
+    - m   -- A matrix containing values to be initially set
+    """
     def __init__(self, m = None):
         # load identity
         if m is not None:
@@ -40,18 +49,21 @@ class Transform:
         else:
             self.m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
 
-    # return transformation matrix
     def getMatrix(self):
+    """ Returns the transformation matrix. """
         return self.m
     
-    # reset to identity matrix
     def reset(self):    
+    """ Resets to identity matrix. """
         self.m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
     
-#    def copy(self):
-#        return Transform(self.m)
-    
     def applyRotation(self, xyzangle):
+        """\
+        Apply a rotation.
+
+        Arguments:
+        - xyzangle -- A Vector containing the amount of rotation around each axis.
+        """
         global pi
         t = Transform()
         # convert degrees to radiant
@@ -81,6 +93,12 @@ class Transform:
             self.m = (self*t).m
     
     def applyTranslation(self, vector):
+        """\
+        Apply a translation.
+
+        Arguments:
+        - vector -- A Vector containing the amount of translation.
+        """
         t = Transform()
         if (vector.x != 0 or vector.y != 0 or vector.z != 0):
             t.m[12] = vector.x
@@ -89,6 +107,12 @@ class Transform:
             self.m = (self*t).m
         
     def applyScaling(self, vector):
+        """\
+        Apply scaling.
+
+        Arguments:
+        - vector -- A Vector containing the amount of scaling for each axis.
+        """
         t = Transform()
         if (vector.x != 0 or vector.y != 0 or vector.z != 0):
             t.m[0] = vector.x
@@ -97,6 +121,15 @@ class Transform:
             self.m = (self*t).m
             
     def setLookAtRotation(self, eye, center, up):
+        """\
+        Generates a "look at" transform.
+
+        Arguments:
+        - eye       -- A Vector with viewer origin.
+        - center    -- A Vector with point the viewer looks at.
+        - up        -- The viewers up Vector.
+        """
+
         # apply rotation
         z = -(center-eye).norm()
         x = up.cross(z).norm()
@@ -128,6 +161,11 @@ class Transform:
         
     # Vector multiplication
     def transformVector(self, v):
+        """\
+        Transforms a Vector v.
+        
+        Returns the transformed Vector.
+        """
         return Vector(self.m[0]*v.x + self.m[4]*v.y + self.m[8]*v.z + self.m[12],
                                 self.m[1]*v.x + self.m[5]*v.y + self.m[9]*v.z + self.m[13],
                                 self.m[2]*v.x + self.m[6]*v.y + self.m[10]*v.z + self.m[14])
