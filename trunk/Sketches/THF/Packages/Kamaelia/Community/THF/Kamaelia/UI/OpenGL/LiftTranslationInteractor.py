@@ -65,7 +65,7 @@ class LiftTranslationInteractor(Interactor):
                     p1.x += 10
                     p2 = self.position.copy()
                     p2.y += 10
-                    z = Intersect3D.ray_Plane(event.viewerposition, event.direction, [self.position, p1, p2])
+                    z = Intersect.ray_Plane(event.viewerposition, event.direction, [self.position, p1, p2])
                     newpoint = event.direction * z
                     
                 if event.type == pygame.MOUSEBUTTONDOWN and self.identifier in event.hitobjects:

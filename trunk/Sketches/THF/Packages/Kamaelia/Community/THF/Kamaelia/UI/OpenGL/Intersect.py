@@ -22,13 +22,13 @@
 
 """\
 ==================================
-Intersect3D: provides a set of static 3D intersection functions
+Intersect: provides a set of static 3D intersection functions
 ==================================
 """
 
 from math import *
 
-class Intersect3D:
+class Intersect:
     """ Collection of intersection functions, """
     # very small value
     epsilon = 0.00000001
@@ -60,7 +60,7 @@ class Intersect3D:
             print "e", e
             f = a.dot(r_dir)
             print "f", f
-            if abs(f)>Intersect3D.epsilon:
+            if abs(f)>Intersect.epsilon:
                 t1 = (e+h)/f
                 t2 = (e-h)/f
                 if t1 > t2:
@@ -98,7 +98,7 @@ class Intersect3D:
         
         # test if the ray is parallel
         den = n.dot(r_dir)
-        if abs(den)<Intersect3D.epsilon:
+        if abs(den)<Intersect.epsilon:
             return 0
         
         # calc distance to point of intersection
@@ -125,7 +125,7 @@ class Intersect3D:
         
         # test if the ray is parallel
         den = n.dot(r_dir)
-        if abs(den)<Intersect3D.epsilon:
+        if abs(den)<Intersect.epsilon:
             t = 0
         else:        
             # calc distance to point of intersection

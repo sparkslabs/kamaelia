@@ -200,7 +200,7 @@ class PygameWrapper(OpenGLComponent):
                     # transform vertices for intersection test
                     self.transformedVertices = [self.transform.transformVector(v) for v in self.vertices]    
                     # calculate distance of intersection
-                    t = Intersect3D.ray_Polygon(Vector(0,0,0), event.direction, self.transformedVertices);
+                    t = Intersect.ray_Polygon(Vector(0,0,0), event.direction, self.transformedVertices);
                     # point of intersection
                     p = event.direction*t
                     Ap = p-self.transformedVertices[0]
