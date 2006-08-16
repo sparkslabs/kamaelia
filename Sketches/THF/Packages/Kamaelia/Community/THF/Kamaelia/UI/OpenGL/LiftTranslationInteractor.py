@@ -23,6 +23,56 @@
 =====================
 Lift Translation Interactor
 =====================
+An interactor for moving OpenGLComponents corresponding to mouse
+movement along the X,Y plane. When "grabbing" an object it is lifted by
+a specified amount.
+
+LiftTranslationInteractor is a subclass of Interactor.
+
+Example Usage
+-------------
+
+The following example shows four SimpleCubes which can be moved by
+dragging your mouse:
+
+    o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
+    i1 = LiftTranslationInteractor(victim=o1).activate()
+
+    o2 = SimpleCube(position=(0, 0,-30), size=(1,1,1), name="center").activate()
+    i2 = LiftTranslationInteractor(victim=o2).activate()
+
+    o3 = SimpleCube(position=(-3, 0,-30), size=(1,1,1), name="center").activate()
+    i3 = LiftTranslationInteractor(victim=o3).activate()
+
+    o4 = SimpleCube(position=(15, 0,-30), size=(1,1,1), name="center").activate()
+    i4 = LiftTranslationInteractor(victim=o4).activate()
+
+    Axon.Scheduler.scheduler.run.runThreads()  
+
+How does it work?
+-----------------
+
+LiftTranslationInteractor is a subclass of Interactor. It overrides
+the __ini__(), setup(), handleEvents() and frame() methods.
+
+The matched movement works by using the position of the controlled
+object and determine its X,Y-aligned plane. The amount of mouse movement
+is then calculated as if it was on this plane. This is done by
+intersecting the direction vector which is included in the mouse event
+with the plane to get the point of intersection. Then the distance
+between the newly generated point and the last point is calculated. The result
+is the actual amount of movement along the X and the Y axis.
+
+The interactor makes all the linkages it needs during initialisation.
+Because the interactor needs the actual position of the controlled
+component to be accurate all the time, it uses the components "position"
+outbox by default. If you don't want the interactor to make the
+linkages, you can set nolink=True as constructor argument. The following
+linkages are needed for the interactor to work (from the interactors
+point of view):
+
+    self.link( (self, "outbox"), (self.victim, "rel_position") )
+    self.link( (self.victim, "position"), (self, "inbox") )
 """
 
 
@@ -36,6 +86,10 @@ from Intersect import *
 from Interactor import *
 
 class LiftTranslationInteractor(Interactor):
+    """\
+    Keyword arguments:
+    - liftheight    -- height by which the controlled object is lifted (default=2)
+    """
     
     def __init__(self, **argd):
         super(LiftTranslationInteractor, self).__init__(**argd)
