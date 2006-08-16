@@ -23,7 +23,30 @@
 =====================
 Simple Cube component
 =====================
-TODO
+A simple cube for the OpenGL display service.
+
+This component is a subclass of OpenGLComponent and therefore uses the
+OpenGL display service.
+
+Example Usage
+-------------
+Three cubes in different positions with various rotation and sizes::
+
+    Graphline(    
+        CUBEC = SimpleCube(position=(0, 0,-12), rotation=(40,90,0), size=(1,1,1)).activate(),
+        CUBER = SimpleCube(position=(4,0,-22), size=(2,2,2)).activate(),
+        CUBEB = SimpleCube(position=(0,-4,-18), rotation=(0,180,20), size=(1,3,2)).activate(),
+        linkages = {}
+    ).run()
+
+How does it work?
+-----------------
+
+SimpleButton is a subclass of OpenGLComponent (for OpenGLComponent
+functionality see its documentation). It overrides draw().
+
+In draw() a simple cube made of 6 quads with different colours is drawn.
+
 """
 
 
@@ -37,10 +60,10 @@ from Vector import Vector
 from OpenGLComponent import *
 
 class SimpleCube(OpenGLComponent):
+    """\
+    SimpleCube(...) -> new SimpleCube component.
+    """
 
-    def __init__(self, **argd):
-        super(SimpleCube, self).__init__(**argd)
-        
     def draw(self):
         hs = self.size/2.0
         # draw faces 
@@ -91,22 +114,11 @@ class SimpleCube(OpenGLComponent):
     
 
 if __name__=='__main__':
-    class Bunch: pass
-        
-    class CubeRotator(Axon.Component.component):
-        def main(self):
-            while 1:
-                yield 1
-                self.send( (0.1, 0.1, 0.1), "outbox")
-
-    
     from Kamaelia.Util.Graphline import Graphline
-    
-    CUBEC = SimpleCube(position=(0, 0,-12), size=(1,1,1), name="Center cube").activate()
-    CUBER = SimpleCube(position=(4,0,-22), size=(1,1,1), name="Right cube").activate()
-    CUBEB = SimpleCube(position=(0,-4,-18), size=(1,1,1), name="Bottom cube").activate()
-    ROTATOR = CubeRotator().activate()
-    
-    ROTATOR.link((ROTATOR, "outbox"), (CUBEC, "rel_rotation"))
-        
-    Axon.Scheduler.scheduler.run.runThreads()  
+
+    Graphline(    
+        CUBEC = SimpleCube(position=(0, 0,-12), rotation=(40,90,0), size=(1,1,1)).activate(),
+        CUBER = SimpleCube(position=(4,0,-22), size=(2,2,2)).activate(),
+        CUBEB = SimpleCube(position=(0,-4,-18), rotation=(0,180,20), size=(1,3,2)).activate(),
+        linkages = {}
+    ).run()
