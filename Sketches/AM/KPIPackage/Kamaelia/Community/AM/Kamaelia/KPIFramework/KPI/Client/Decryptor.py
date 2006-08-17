@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -33,13 +33,13 @@ from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Crypto import xtea
 class Decryptor(Axon.Component.component):
     Inboxes = {"inbox" : "encrypted data packets",
                "keyevent": "key for decryption",
-               "control": "shutdown handling"}
+               "control": "receive shutdown messages"}
     Outboxes = {"outbox" : "decrypted data packets",
-                "signal": "shutdown handling"}
+                "signal" : "pass shutdown messages"}
 
-    def __init__(self):
+    def __init__(self, key="\0"):
         super(Decryptor,self).__init__()
-        self.key = "\0"
+        self.key = key
 
     def main(self):
         blocksize = 8
@@ -80,7 +80,7 @@ class Decryptor(Axon.Component.component):
                         tmp = block[rindex:len(block)]
                         pad = chr(0x80) + (len(block)-rindex-1)*chr(0x00)
                         if(pad == tmp):
-                            print "remove padding", pad, "padlen", len(pad)
+                            #print "remove padding", pad, "padlen", len(pad)
                             block = block[:rindex]
                     dec = dec + block
                 #print "decrypted data ",dec
