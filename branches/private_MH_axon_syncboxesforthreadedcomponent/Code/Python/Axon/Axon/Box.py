@@ -40,7 +40,7 @@ class nullsink(object):
         return 0
     def pop(self,index):
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
-    
+
     
 class realsink(list):
     def __init__(self, notify, size=None):
@@ -128,6 +128,9 @@ class postbox(object):
 
     def setShowTransit(self, showtransit=False, tag=None):
         self.storage.setShowTransit(showtransit, tag)
+    
+    def isFull(self):
+        return (self.sink.size != None) and (len(self) >= self.sink.size)
 
 thenullsink = nullsink()
 
