@@ -38,7 +38,7 @@ if __name__=="__main__":
     if len(sys.argv) != 3:
         print "Usage:", sys.argv[0], "dbfile port"
         print "default values used: dbfile=mytree and port=1256"
-        dbfile = mytree
+        dbfile = "mytree"
         tcpport = 1256
     else:
         dbfile = sys.argv[1]
