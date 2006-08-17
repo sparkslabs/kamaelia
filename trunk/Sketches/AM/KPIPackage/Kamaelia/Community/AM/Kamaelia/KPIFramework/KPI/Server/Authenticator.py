@@ -92,8 +92,12 @@ class Authenticator(Axon.Component.component):
             #print "authenication failure"
             return # shutdown
 
-        #new user added
-        self.send(userid, "notifyuser")
+        while not self.dataReady("inbox"):
+            yield 1
+        data = self.recv("inbox")
+        if data == "OK":
+            #new user added 
+            self.send(userid, "notifyuser")
 
         #subscribe to data Management back plane
         subscriber = subscribeTo("DataManagement")
