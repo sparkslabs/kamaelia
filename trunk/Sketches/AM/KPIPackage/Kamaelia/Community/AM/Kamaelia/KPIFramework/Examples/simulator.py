@@ -26,33 +26,23 @@ Simulator program shows two users connected to KPIServer
 
 
 import Axon
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Graphline import *
+
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Server.KPIServer import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Client.KPIClient import KPIClient
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
 
-class MyDataSource(Axon.Component.component):
-    def main(self):
-        index = 0
-        while 1:
-            data = str(index) + "-helloknr"
-            self.send(data, "outbox")
-            index = index + 1
-            yield 1
-
-class MyDataSink(Axon.Component.component):
-    def main(self):
-        while 1:
-            yield 1
-            while self.dataReady("inbox"):
-                print "datasink received:", self.recv("inbox")
-           
-       
-
+from TextStream import *
 
 #client simulation
 kpidb = KPIDBI.getDB("mytree")
+
+#start the KPI server
 KPIServer(MyDataSource(), kpidb.getKPIKeys())
+
+
+#client representing user1 connects to the KPI server
 Graphline(
     c=KPIClient("user1", MyDataSink()),
     cc = clientconnector(),
@@ -62,7 +52,7 @@ Graphline(
     }
 ).activate()
 
-
+#client representing user3 connects to the KPI server
 Graphline(
     c=KPIClient("user3", MyDataSink()),
     cc = clientconnector(),    
