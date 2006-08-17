@@ -138,12 +138,17 @@ class threadedcomponent(Component.component):
           # before the command
           msgcount = self.threadtoaxonqueue.qsize()
           
+          stuffWaiting = False
+          
           for box in self.inboxes:
               while self._nonthread_dataReady(box):
-                  msg = self._nonthread_recv(box)
-                  self.inqueues[box].put(msg)
+                  if not self.inqueues[box].full():
+                      msg = self._nonthread_recv(box)
+                      self.inqueues[box].put(msg)
+                  else:
+                      stuffWaiting = True
+                      break
                   
-          stuffWaiting = False
           for box in self.outboxes:
               
               while not self.outqueues[box].empty():
@@ -302,7 +307,7 @@ if __name__ == "__main__":
             box,linkage = [(box,linkage) for (box,(d,linkage)) in self.destinations.items() if d==dst][0]
             del self.destinations[box]
             self.send("DEL SRC", box)
-            self.unlink(linkage)
+            self.unlink(thelinkage=linkage)
             self.deleteOutbox(box)
             
         def main(self):
@@ -378,6 +383,8 @@ if __name__ == "__main__":
     c = Container().run()
     
     print "-----Synchronous inbox delivered to by a threaded component-----"
+    print "Sender              Middle man          Slow receiver"
+    print "------------------------------------------------------------"
 
     class SynchronousSlowReceiver(Component.component):
         def main(self):
@@ -393,29 +400,71 @@ if __name__ == "__main__":
                 while time.time() < t:
                     yield 1
                 
-                sys.stdout.write("SynchronousSlowReceiver: received "+str(r)+"\n")
+                sys.stdout.write("                                        received "+str(r)+"\n")
                 sys.stdout.flush()
                 
                 if not r: break
                 
+    class ThreadedMiddleMan(threadedcomponent):
+        def __init__(self):
+            super(ThreadedMiddleMan,self).__init__(queuelengths=2)
+
+        def main(self):
+            self.inboxes['inbox'].setSize(2)
+            while 1:
+                while not self.dataReady("inbox"):
+                    self.pause()
+                    
+                r = self.recv("inbox")
+                sys.stdout.write("                    received "+str(r)+"\n")
+                sys.stdout.flush()
+
+                try:
+                    self.send(r,"outbox")
+                    sys.stdout.write("                    sent "+str(r)+"\n")
+                    sys.stdout.flush()
+                except noSpaceInBox:
+                        sys.stdout.write("                    held up sending\n")
+                        sys.stdout.flush()
+                        while 1:
+                            try:
+                                self.send(r,"outbox")
+                                sys.stdout.write("                    sent\n")
+                                sys.stdout.flush()
+                                break
+                            except noSpaceInBox:
+                                time.sleep(0.1)
+
+                if not r:
+                    break
+
+
     class ThreadedSender(threadedcomponent):
+        def __init__(self):
+            super(ThreadedSender,self).__init__(queuelengths=2)
+        
         def main(self):
             for i in range(20,-1,-1):
-#                yield 1
-                while 1:
-#                    yield 1
-                    try:
-                        sys.stdout.write("                                      ThreadedSender: sending "+str(i)+"\n")
-                        sys.stdout.flush()
-                        self.send(i,"outbox")
-                        break;
-                    except noSpaceInBox:
-                        sys.stdout.write("                                      ThreadedSender: held up, sending "+str(i)+"\n")
-                        sys.stdout.flush()
-                        time.sleep(0.1)
+                try:
+                    self.send(i,"outbox")
+                    sys.stdout.write("sent "+str(i)+"\n")
+                    sys.stdout.flush()
+                except noSpaceInBox:
+                    sys.stdout.write("held up sending "+str(i)+"\n")
+                    sys.stdout.flush()
+                    while 1:
+                        try:
+                            self.send(i,"outbox")
+                            sys.stdout.write("sent\n")
+                            sys.stdout.flush()
+                            break
+                        except noSpaceInBox:
+                            time.sleep(0.1)
     
     t = ThreadedSender().activate()
+    m = ThreadedMiddleMan().activate()
     r = SynchronousSlowReceiver()
-    r.link( (t,"outbox"), (r,"inbox") )
+    r.link( (t,"outbox"), (m,"inbox") )
+    r.link( (m,"outbox"), (r,"inbox") )
     
     r.run()
