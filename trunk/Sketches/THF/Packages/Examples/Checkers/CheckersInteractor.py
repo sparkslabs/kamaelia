@@ -53,8 +53,8 @@ class CheckersInteractor(Interactor):
         self.lastValidPos = None
             
         if self.nolink == False:
-            self.link( (self, "movement"), (self.victim, "rel_position") )
-            self.link( (self.victim, "position"), (self, "position") )
+            self.link( (self, "movement"), (self.target, "rel_position") )
+            self.link( (self.target, "position"), (self, "position") )
 
 
     def setup(self):
