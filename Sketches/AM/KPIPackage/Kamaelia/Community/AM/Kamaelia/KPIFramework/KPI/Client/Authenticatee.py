@@ -80,8 +80,9 @@ class Authenticatee(Axon.Component.component):
             yield 1
         data = self.recv("inbox")
         if data == "SUCCESS":
-            #print "authentication success"
-            pass
+            print "authentication success"
+            self.send("OK","outbox")
+            yield 1
         else:
             #print "authenication failure"
             return
