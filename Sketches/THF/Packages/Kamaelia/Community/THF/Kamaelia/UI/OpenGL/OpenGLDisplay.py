@@ -44,10 +44,10 @@ you first have to create an OpenGLDisplay object and then register it.
 The following would show a simple cube from a slightly changed viewer
 position:
 
-	display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
-	OpenGLDisplay.setDisplayService(display)
+    display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
+    OpenGLDisplay.setDisplayService(display)
 
-	SimpleCube(position=(0,0,-15)).activate()
+    SimpleCube(position=(0,0,-15)).activate()
 
 If you want to use pygame components, you have to override the
 PygameDisplay service before creating any pygame components.
@@ -96,12 +96,12 @@ OpenGL components
 OpenGL components get registered by an OGL_DISPLAYREQUEST. Such a
 request is a dictionary with the following keys:
 {
-	"OGL_DISPLAYREQUEST": True,		# OpenGL Display request
-    "objectid" : id(object),			# id of requesting object (for identification)
-    "callback" : (component,"inboxname"),	# to send the generated event id to
-	
-    "events" : (component, "inboxname"),	# to send event notification (optional)
-    "size": (x,y,z),				# size of object (not yet used)
+    "OGL_DISPLAYREQUEST": True,     # OpenGL Display request
+    "objectid" : id(object),            # id of requesting object (for identification)
+    "callback" : (component,"inboxname"),   # to send the generated event id to
+    
+    "events" : (component, "inboxname"),    # to send event notification (optional)
+    "size": (x,y,z),                # size of object (not yet used)
 }
 
 When OpenGLDisplay received such a request it generates an identifier
@@ -115,9 +115,9 @@ displaylist- and transform-updates. These requests are dictionaries of
 the following form:
 
 {
-	"DISPLAYLIST_UPDATE": True, # update displaylist
-    "objectid": id(object),		# id of requesting object
-    "displaylist": displaylist	# new displaylist
+    "DISPLAYLIST_UPDATE": True, # update displaylist
+    "objectid": id(object),     # id of requesting object
+    "displaylist": displaylist  # new displaylist
 }
 
 If an object is static, i.e. does not change its geometry, it only needs
@@ -125,7 +125,7 @@ to send this update one time. Dynamic objects can provide new
 displaylists as often as they need to.
 
 {
-	"TRANSFORM_UPDATE": True,
+    "TRANSFORM_UPDATE": True,
     "objectid": id(self),
     "transform": self.transform
 }
@@ -165,9 +165,9 @@ events is then also relinked to be done by the wrapper.
 The wrapper request is a dictionary with the following keys:
 
 {
-	"WRAPPERREQUEST" : True,					# wrap a pygame component
-    "wrapcallback" : (object, "inboxname"),		# send response here
-    "eventrequests" : (object, "inboxname"),	# to receive event requests by the wrapped component
+    "WRAPPERREQUEST" : True,                    # wrap a pygame component
+    "wrapcallback" : (object, "inboxname"),     # send response here
+    "eventrequests" : (object, "inboxname"),    # to receive event requests by the wrapped component
     "wrap_objectid": id(wrapped_component)      # object id of the component to be wrapped
 }
 
@@ -180,9 +180,9 @@ a dictionary to the box specified by "wrapcallback" containing the
 following keys:
 
 {
-	"texname": texname,				# OpenGL texture name
-    "texsize": (width, height),		# texture coordinate size
-    "size": (width, height)			# size of pygame surface in pixels
+    "texname": texname,             # OpenGL texture name
+    "texsize": (width, height),     # texture coordinate size
+    "size": (width, height)         # size of pygame surface in pixels
 }
 
 See PygameWrapperPlane.py for an example implementation of a wrapper.
@@ -197,15 +197,15 @@ To request to listen to a given event, send a dictionary to the "notify" inbox,
 containing the following::
     {
         "ADDLISTENEVENT" : pygame_eventtype,    # example: pygame.KEYDOWN
-        "surface" : your_surface,				# for pygame components
-		"objectid" : id(object),				# for OpenGL components
+        "surface" : your_surface,               # for pygame components
+        "objectid" : id(object),                # for OpenGL components
     }
 
 To unsubscribe from a given event, send a dictionary containing::
     {
         "REMOVELISTENEVENT" : pygame_eventtype,
-        "surface" : your_surface,				# for pygame components
-		"objectid" : id(object),				# for OpenGL components
+        "surface" : your_surface,               # for pygame components
+        "objectid" : id(object),                # for OpenGL components
     }
     
 Events will be sent to the inbox specified in the "events" key of the
@@ -227,11 +227,11 @@ Eventspies are components that basically listen to events for other
 components. They are registered by sending an EVENSPYREQUEST:
 
 {
-	"EVENTSPYREQUEST" : True,
-    "objectid" : id(object),			# id of requesting object
-    "victim": id(victim),				# id of object to be spied
-    "callback" : (object,"inboxname"),	# for sending event identifier
-    "events" : (object, "inboxname")	# for reception of events
+    "EVENTSPYREQUEST" : True,
+    "objectid" : id(object),            # id of requesting object
+    "victim": id(victim),               # id of object to be spied
+    "callback" : (object,"inboxname"),  # for sending event identifier
+    "events" : (object, "inboxname")    # for reception of events
 }
 
 In return you get the identifier of the victim component that can be 
@@ -268,21 +268,21 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Or create your own and register it with setDisplayService(...)
 
     Keyword arguments (all optional):
-    - title				-- caption of window (default=http://kamaelia.sourceforge.net)
+    - title             -- caption of window (default=http://kamaelia.sourceforge.net)
     - width              -- pixels width (default=800)
     - height             -- pixels height (default=600)
     - background_colour  -- (r,g,b) background colour (default=(255,255,255))
     - fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)
-    - show_fps			-- show frames per second in window title (default=True)
+    - show_fps          -- show frames per second in window title (default=True)
     - limit_fps           -- maximum frame rate (default=60)
     Projection parameters
-    - near				-- distance to near plane (default=1.0)
-    - far				-- distance to far plane (default=100.0)
-    - perspective		-- perspective angle (default=45.0)
+    - near              -- distance to near plane (default=1.0)
+    - far               -- distance to far plane (default=100.0)
+    - perspective       -- perspective angle (default=45.0)
     Viewer position and orientation
-    - viewerposition		-- position of viewer (default=(0,0,0))
-    - lookat				-- look at point (default= (0,0,-self.farPlaneDist))
-    - up					-- up vector (default(0,1,0))
+    - viewerposition        -- position of viewer (default=(0,0,0))
+    - lookat                -- look at point (default= (0,0,-self.farPlaneDist))
+    - up                    -- up vector (default(0,1,0))
     Fog
     - fog           -- tuple of fog distances (start, end). if not set, fog is disabled (default)
     - fog_colour    -- (r,g,b) fog colour (default=(255,255,255) )
@@ -704,11 +704,11 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # apply viewer transforms
         gluLookAt( *(self.viewerposition.toTuple() + self.lookat.toTuple() + self.up.toTuple() ) )
 
-		
+        
     def doPicking(self, pos):
         """\
-		Uses OpenGL picking to determine objects that have been hit by mouse pointer.
-		see e.g. OpenGL Redbook
+        Uses OpenGL picking to determine objects that have been hit by mouse pointer.
+        see e.g. OpenGL Redbook
         """
         # object picking
         glSelectBuffer(512)
@@ -920,4 +920,4 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
 if __name__=='__main__':
-	pass
+    pass

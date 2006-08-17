@@ -64,9 +64,9 @@ How does it work?
 -----------------
 The following methods are provided to be overridden:
 - makeInteractorLinkages() -- make linkages to and from victims needed
-- setup()			       -- set up the component
-- handleEvents()	       -- handle input events ("events" inbox)
-- frame()			       -- called every frame, to add additional functionality
+- setup()                  -- set up the component
+- handleEvents()           -- handle input events ("events" inbox)
+- frame()                  -- called every frame, to add additional functionality
 
 Stubs method are provided, so missing these out does not result in
 broken code. The methods get called from the main method, the following
@@ -80,7 +80,7 @@ code shows in which order:
         ...
         while 1:
             yield 1
-			# handle events function from derived objects
+            # handle events function from derived objects
             self.handleEvents()
             # frame function from derived objects
             self.frame()
@@ -167,7 +167,7 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         while 1:
             yield 1
-			# handle events function from derived objects
+            # handle events function from derived objects
             self.handleEvents()
             # frame function from derived objects
             self.frame()

@@ -36,11 +36,11 @@ One of the simplest possible reasonable component would like something
 like this::
 
 class Point(OpenGLComponent):
-	def draw(self):
-		glBegin(GL_POINTS)
-		glColor(1,0,0)
-		glVertex(0,0,0)
-		glEnd()
+    def draw(self):
+        glBegin(GL_POINTS)
+        glColor(1,0,0)
+        glVertex(0,0,0)
+        glEnd()
 
 The only thing it does is to draw a point in its origin. But despite its
 simplicity it can be translated, rotated and scaled using its provided
@@ -79,16 +79,16 @@ It represents a coloured quad which can change its colour when a
 corresponing message is sent to its "colour" inbox. When this happens it
 gets redrawn. Additionally it reacts to mouseclicks by rotation the quad
 by one degree around the z axis.
-		
+        
 
 How does it work?
 -----------------
 
 The following methods are provided to be overridden:
-- setup()			-- set up the component
-- draw()			-- draw content using OpenGL
-- handleEvents()	-- handle input events ("events" inbox)
-- frame()			-- called every frame, to add additional functionality
+- setup()           -- set up the component
+- draw()            -- draw content using OpenGL
+- handleEvents()    -- handle input events ("events" inbox)
+- frame()           -- called every frame, to add additional functionality
 
 Stubs method are provided, so missing these out does not result in
 broken code. The methods get called from the main method, the following
@@ -96,21 +96,21 @@ code shows in which order:
 
     def main(self):
         # create and send display request
-		...
+        ...
         # setup function from derived objects
         self.setup()        
-		...
+        ...
         # inital apply trasformations
         self.applyTransforms() # generates and sends a Transform object
         # initial draw to display list
         self.redraw() # calls draw and saves it to a displaylist
 
-		...
+        ...
         while 1:
             yield 1
             self.applyTransforms()
             self.handleMovement()
-			# handle events function from derived objects
+            # handle events function from derived objects
             self.handleEvents()
             # frame function from derived objects
             self.frame()
