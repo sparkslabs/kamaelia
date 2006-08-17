@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+======================
 Simple Button component
-=====================
+======================
 
 A simple cuboid shaped button without caption. Implements responsive
 button behavoir.
@@ -47,7 +48,6 @@ Two simple buttons which send messages to the console::
 
 How does it work?
 -----------------
-
 This component is a subclass of OpenGLComponent (for OpenGLComponent
 functionality see its documentation). It overrides __init__(), setup(),
 draw() and handleEvents().

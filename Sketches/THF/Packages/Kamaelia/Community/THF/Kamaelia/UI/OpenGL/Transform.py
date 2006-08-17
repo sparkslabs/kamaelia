@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+==================
 3D Transform class
-=====================
+==================
 
 A class containing a transformation matrix and providing several methods
 to use/alter it. Transform uses Vector objects for most of its methods

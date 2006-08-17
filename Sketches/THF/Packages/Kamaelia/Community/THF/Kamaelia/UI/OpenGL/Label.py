@@ -19,14 +19,16 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+===================
 OpenGL Label Widget
-=====================
+===================
 
 A Label widget for the OpenGL display service.
 
-This component is a subclass of OpenGLComponent and therefore uses the OpenGL display service.
+This component is a subclass of OpenGLComponent and therefore uses the
+OpenGL display service.
 
 Example Usage
 -------------
@@ -48,11 +50,15 @@ Example Usage
     
 How does it work?
 -----------------
-This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw(), handleEvents() and frame().
+This component is a subclass of OpenGLComponent. It overrides
+__init__(), setup(), draw(), handleEvents() and frame().
 
-In setup() only buildCaption() gets called where the set caption is rendered on a pygame surface. This surface is then set as OpenGL texture.
+In setup() only buildCaption() gets called where the set caption is
+rendered on a pygame surface. This surface is then set as OpenGL
+texture.
 
-In draw() a flat cuboid is drawn (if size is not specified) with the caption texture on both the front and the back surface.
+In draw() a flat cuboid is drawn (if size is not specified) with the
+caption texture on both the front and the back surface.
 
 """
 

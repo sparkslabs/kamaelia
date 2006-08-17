@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+======================
 OpenGL Display Service
-=====================
+======================
 
 This component provides an OpenGL window and manages input events,
 positioning and drawing of other components. It handles both OpenGL and
@@ -58,11 +59,12 @@ OpenGLDisplay is a service. obtain it by calling the
 OpenGLDisplay.getDisplayService(...) static method. Any existing instance
 will be returned, otherwise a new one is automatically created.
 
-Alternatively, if you wish to configure OpenGLDisplay with options other than
-the defaults, create your own instance, then register it as a service by
-calling the PygameDisplay.setDisplayService(...) static method. NOTE that it
-is only advisable to do this at the top level of your system, as other
-components may have already requested and created a OpenGLDisplay component!
+Alternatively, if you wish to configure OpenGLDisplay with options other
+than the defaults, create your own instance, then register it as a
+service by calling the PygameDisplay.setDisplayService(...) static
+method. NOTE that it is only advisable to do this at the top level of
+your system, as other components may have already requested and created
+a OpenGLDisplay component!
 
 When using only OpenGL components and no special display settings have
 to be made, you won't see OpenGLDisplay as it is registered
@@ -79,6 +81,7 @@ one OpenGLDisplay component.
 
 OpenGLDisplay listens for requests arriving at its "notify" inbox. A request can
 currently be to:
+
 - register an OpenGL component (OGL_DISPLAYREQUEST)
 - register a pygame component (DISPLAYREQUEST)
 - register a pygame wrapper  (WRAPPERREQUEST)
@@ -92,16 +95,16 @@ OpenGL components
 ^^^^^^^^^^^^^^^^^
 
 OpenGL components get registered by an OGL_DISPLAYREQUEST. Such a
-request is a dictionary with the following keys:
+request is a dictionary with the following keys::
 
-{
-    "OGL_DISPLAYREQUEST": True,     # OpenGL Display request
-    "objectid" : id(object),            # id of requesting object (for identification)
-    "callback" : (component,"inboxname"),   # to send the generated event id to
-    
-    "events" : (component, "inboxname"),    # to send event notification (optional)
-    "size": (x,y,z),                # size of object (not yet used)
-}
+    {
+        "OGL_DISPLAYREQUEST": True,     # OpenGL Display request
+        "objectid" : id(object),            # id of requesting object (for identification)
+        "callback" : (component,"inboxname"),   # to send the generated event id to
+            
+        "events" : (component, "inboxname"),    # to send event notification (optional)
+        "size": (x,y,z),                # size of object (not yet used)
+    }
 
 When OpenGLDisplay received such a request it generates an identifier
 and returns it to the box you specify by "callback". This identifier can
@@ -111,23 +114,23 @@ It is important to note that OpenGL don't draw and transform themselves
 directly but only hand displaylists and Transform objects to the display
 service. After an OpenGL component has been registered, it can send
 displaylist- and transform-updates. These requests are dictionaries of
-the following form:
+the following form::
 
-{
-    "DISPLAYLIST_UPDATE": True, # update displaylist
-    "objectid": id(object),     # id of requesting object
-    "displaylist": displaylist  # new displaylist
-}
+    {
+        "DISPLAYLIST_UPDATE": True, # update displaylist
+        "objectid": id(object),     # id of requesting object
+        "displaylist": displaylist  # new displaylist
+    }
 
 If an object is static, i.e. does not change its geometry, it only needs
 to send this update one time. Dynamic objects can provide new
-displaylists as often as they need to.
+displaylists as often as they need to.::
 
-{
-    "TRANSFORM_UPDATE": True,
-    "objectid": id(self),
-    "transform": self.transform
-}
+    {
+        "TRANSFORM_UPDATE": True,   # update transform
+        "objectid": id(self),       # id of requesting object
+        "transform": self.transform # new transform
+    }
 
 A transform update should be sent every time the object transform
 changes, i.e. it is moved.
@@ -161,14 +164,14 @@ responsibility is handed to the requesting component by giving it the
 texture name corresponding to the surface. The event processing of mouse
 events is then also relinked to be done by the wrapper.
 
-The wrapper request is a dictionary with the following keys:
+The wrapper request is a dictionary with the following keys::
 
-{
-    "WRAPPERREQUEST" : True,                    # wrap a pygame component
-    "wrapcallback" : (object, "inboxname"),     # send response here
-    "eventrequests" : (object, "inboxname"),    # to receive event requests by the wrapped component
-    "wrap_objectid": id(wrapped_component)      # object id of the component to be wrapped
-}
+    {
+        "WRAPPERREQUEST" : True,                    # wrap a pygame component
+        "wrapcallback" : (object, "inboxname"),     # send response here
+        "eventrequests" : (object, "inboxname"),    # to receive event requests by the wrapped component
+        "wrap_objectid": id(wrapped_component)      # object id of the component to be wrapped
+    }
 
 When a WRAPPERREQUEST is received for a component which is not
 registered yet, it is stored until the component to be wrapped gets
@@ -176,13 +179,13 @@ registered.
 
 When a wrapper request was received, the OpenGL display service returns
 a dictionary to the box specified by "wrapcallback" containing the
-following keys:
+following keys::
 
-{
-    "texname": texname,             # OpenGL texture name
-    "texsize": (width, height),     # texture coordinate size
-    "size": (width, height)         # size of pygame surface in pixels
-}
+    {
+        "texname": texname,             # OpenGL texture name
+        "texsize": (width, height),     # texture coordinate size
+        "size": (width, height)         # size of pygame surface in pixels
+    }
 
 See PygameWrapperPlane.py for an example implementation of a wrapper.
 
@@ -193,8 +196,9 @@ Once your component has been registered, it can request to be notified
 of specific pygame events. The same requests are used for Pygame and
 OpenGL components, only the keys are slightly different.
 
-To request to listen to a given event, send a dictionary to the "notify" inbox,
-containing the following::
+To request to listen to a given event, send a dictionary to the "notify"
+inbox, containing the following::
+
     {
         "ADDLISTENEVENT" : pygame_eventtype,    # example: pygame.KEYDOWN
         "surface" : your_surface,               # for pygame components
@@ -202,6 +206,7 @@ containing the following::
     }
 
 To unsubscribe from a given event, send a dictionary containing::
+
     {
         "REMOVELISTENEVENT" : pygame_eventtype,
         "surface" : your_surface,               # for pygame components
@@ -213,16 +218,25 @@ Events will be sent to the inbox specified in the "events" key of the
 of pygame event objects.
 
 The events objects of type Bunch with the following variables:
+
 - type      -- Pygame event type
-(pygame.KEYDOWN, pygame.KEYUP:)
+
+ For events of type pygame.KEYDOWN, pygame.KEYUP:
+
 - key       -- Pressed or released key
-(pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP:)
+
+ For events of type pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP:
+
 - pos       -- Mouse position
 - button    -- Pressed or released mouse button number
-(pygame.MOUSEMOTION:)
+
+ For events of type pygame.MOUSEMOTION:
+
 - rel       -- Relative mouse motion.
 - buttons   -- Buttons pressed while mousemotion
-(pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION when sent to OpenGL components:)
+
+ For events of type pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION when sent to OpenGL components:
+
 - viewerposition    -- Position of viewer
 - dir               -- Direction vector of generated from mouse position
 - hitobjects        -- List of hit objects
@@ -245,21 +259,28 @@ Eventspies
 ^^^^^^^^^^
 
 Eventspies are components that basically listen to events for other
-components. They are registered by sending an EVENSPYREQUEST:
+components. They are registered by sending an EVENSPYREQUEST::
 
-{
-    "EVENTSPYREQUEST" : True,
-    "objectid" : id(object),            # id of requesting object
-    "victim": id(victim),               # id of object to be spied
-    "callback" : (object,"inboxname"),  # for sending event identifier
-    "events" : (object, "inboxname")    # for reception of events
-}
+    {
+        "EVENTSPYREQUEST" : True,
+        "objectid" : id(object),            # id of requesting object
+        "target": id(target),               # id of object to be spied
+        "callback" : (object,"inboxname"),  # for sending event identifier
+        "events" : (object, "inboxname")    # for reception of events
+    }
 
-In return you get the identifier of the victim component that can be
-used to determine if the victim component has been hit. An evenspy can
+In return you get the identifier of the target component that can be
+used to determine if the target component has been hit. An evenspy can
 request reception of event types like usual (using ADDLISTENEVENT and
 REMOVELISTENEVENT).  When events are spied this does not affect normal
 event processing.
+
+Shutdown
+^^^^^^^^
+
+Upon reception of a pygame.QUIT event, OpenGLDisplay sends an
+Axon.Ipc.shutdownMicroprocess object out of its signal outbox. The
+service itself does not terminate.
 
 """
 
@@ -460,6 +481,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         """Main loop."""
         while 1:
+        
             # limit and show fps (if enabled)
             self.fps_delay += self.clock.tick(self.limit_fps)
             if self.show_fps and self.fps_delay > 1000.0:
@@ -527,8 +549,15 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
     def handleEvents(self):
         """ Handles pygame input events. """
+        
         # pre-fetch all waiting events in one go
-        events = [ event for event in pygame.event.get() ]
+        events = []
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # On pygame.QUIT send shutdownMicroprocess to signal
+                self.send(Axon.Ipc.shutdownMicroprocess(), "signal")
+            else:
+                events.append(event)
 
         self.handleOGLComponentEvents(events)
         self.handlePygameComponentEvents(events)
@@ -536,8 +565,6 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def updateDisplay(self):
         """ Draws all components, updates screen, clears the backbuffer and depthbuffer . """
-        
-            
         self.drawOpenGLComponents()
         self.drawPygameSurfaces()
 
@@ -586,7 +613,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
     def handleRequest_EVENTSPYREQUEST(self, message):
         ident = message.get("objectid")
-        victim = message.get("victim")
+        target = message.get("target")
         eventservice = message.get("events", None)
         callbackservice = message.get("callback")
  
@@ -605,7 +632,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.link((self, callbackcomms), callbackservice)
  
         # send response
-        ogl_name = self.ogl_names[victim]                    
+        ogl_name = self.ogl_names[target]                    
         self.send(ogl_name, callbackcomms)
 
     

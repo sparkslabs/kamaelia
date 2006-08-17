@@ -19,6 +19,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
 =====================
 Sky & Grass background
@@ -35,7 +36,8 @@ Example Usage
 Only a background::
 
     SkyGrassBackground(size=(5000,5000,0), position=(0,0,-100)).activate()
-    Axon.Scheduler.scheduler.run.runThreads()  
+    Axon.Scheduler.scheduler.run.runThreads()
+
 """
 
 

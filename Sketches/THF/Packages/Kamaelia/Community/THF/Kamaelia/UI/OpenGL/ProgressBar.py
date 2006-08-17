@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+============
 Progress Bar
-=====================
+============
 
 A progress bar widget for the OpenGL display service.
 
@@ -43,7 +44,6 @@ A progress bar with changing value::
 
 How does it work?
 -----------------
-
 ProgressBar is a subclass of OpenGLComponent (for OpenGLComponent
 functionality see its documentation). It overrides __init__(), draw(),
 handleEvents() and frame().

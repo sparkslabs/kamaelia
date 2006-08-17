@@ -20,9 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=====================
+===============================================
 A collection of movement components and classes
-=====================
+===============================================
 
 Example Usage
 -------------
@@ -169,6 +169,12 @@ class PathMover(Axon.Component.component):
     def main(self):
         while 1:
             yield 1
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 if msg == "Play":
@@ -293,6 +299,12 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.nextpos = 0
         
         while 1:
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             while self.dataReady("notify"):
                 msg = self.recv("notify")
                 if msg.get("APPEND_CONTROL", None) and len(self.objects) < self.slots:
@@ -364,8 +376,15 @@ class SimpleRotator(Axon.Component.component):
         self.amount = amount
         
     def main(self):
+
         while 1:
             yield 1
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+                    
             self.send(self.amount, "outbox")
 
 
@@ -393,6 +412,12 @@ class SimpleMover(Axon.Component.component):
         (dx,dy,dz) = self.amount
         while 1:
             yield 1
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             self.send( (x, y, z), "outbox")
             x += dx
             y += dy
@@ -414,6 +439,12 @@ class SimpleBuzzer(Axon.Component.component):
         f = 0.01
         while 1:
             yield 1
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             if  r>1.0: f -= 0.001
             else: f += 0.001
             r += f
