@@ -32,6 +32,8 @@ method, i.e. it only changes its appearance.
 
 Example Usage
 -------------
+Two arrow buttons printing to the console::
+
     Graphline(
         button1 = ArrowButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
         button2 = ArrowButton(size=(2,2,1), position=(5,0,-15), rotation=(0,0,90), msg="BRAIN"),
@@ -54,6 +56,12 @@ from SimpleButton import SimpleButton
 
 
 class ArrowButton(SimpleButton):
+    """\
+    ArrowButton(...) -> A new ArrowButton component.
+
+    A simple arrow shaped button without caption. Implements responsive
+    button behavoir.
+    """
 
     def draw(self):    
         hs = self.size/2.0

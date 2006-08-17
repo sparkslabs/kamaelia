@@ -29,7 +29,7 @@ Intersect: provides a set of static 3D intersection functions
 from math import *
 
 class Intersect:
-    """ Collection of intersection functions, """
+    """ A collection of static intersection functions. """
     # very small value
     epsilon = 0.00000001
     
@@ -177,15 +177,18 @@ class Intersect:
         NOT IMPLEMENTED YET
         """
         pass
+    ray_Sphere = staticmethod(ray_Sphere)
     
     def plane_OOB():    
         """\
         NOT IMPLEMENTED YET
         """
         pass
+    plane_OOB = staticmethod(plane_OOB)
     
     def OOB_OOB():
         """\
         NOT IMPLEMENTED YET
         """
         pass
+    OOB_OOB = staticmethod(OOB_OOB)

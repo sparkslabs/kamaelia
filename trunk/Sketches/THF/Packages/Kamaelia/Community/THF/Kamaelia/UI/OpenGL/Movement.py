@@ -27,8 +27,8 @@ A collection of movement components and classes
 Example Usage
 -------------
 The following example show the usage of most of the components in this
-file. For an example how to use the WheelMover, see the TorrentOpenGLGUI
-example.
+file (for an example how to use the WheelMover, see the TorrentOpenGLGUI
+example)::
 
     points = [(3,3,-20),
               (4,0,-20),
@@ -69,6 +69,8 @@ from math import *
 
 class LinearPath:
     """\
+    LinearPath(...) -> A new LinearPath object.
+    
     LinearPath generates a linearly interpolated Path which can be used
     by the Pathmover component to control component movement.
     
@@ -127,6 +129,8 @@ class LinearPath:
 
 class PathMover(Axon.Component.component):
     """\
+    PathMover(...) -> A new PathMover object.
+
     PathMover can be used to move a 3d object along a path.
     
     It can be controlled by sending commands to its inbox. These
@@ -214,6 +218,8 @@ class PathMover(Axon.Component.component):
 
 class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
+    WheelMover(...) -> A new WheelMover component.
+    
     A component to arrange several OpenGlComponents in the style of a
     big wheel rotating around the X axis. Can be used to switch between
     components.
@@ -344,6 +350,8 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 class SimpleRotator(Axon.Component.component):
     """\
+    SimpleRotator(...) -> A new SimpleRotator component.
+    
     A simple rotator component mostly for testing. Rotates
     OpenGLComponents by the amount specified if connected to their
     "rel_rotation" boxes.
@@ -363,6 +371,8 @@ class SimpleRotator(Axon.Component.component):
 
 class SimpleMover(Axon.Component.component):
     """\
+    SimpleMover(...) -> A new SimpleMover component.
+
     A simple mover component mostly for testing. Moves OpenGLComponents
     between the specified borders if connected to their "position" boxes.
     The amount of movement every frame and the origin can also be specified.
@@ -394,6 +404,8 @@ class SimpleMover(Axon.Component.component):
 
 class SimpleBuzzer(Axon.Component.component):
     """\
+    SimpleBuzzer(...) -> A new SimpleBuzzer component.
+
     A simple buzzer component mostly for testing. Changes the scaling of
     OpenGLComponents it connected to their "scaling" boxes.
     """

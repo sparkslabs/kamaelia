@@ -33,7 +33,7 @@ Example Usage
 -------------
 
 One of the simplest possible reasonable component would like something
-like this:
+like this::
 
 class Point(OpenGLComponent):
 	def draw(self):
@@ -47,7 +47,7 @@ simplicity it can be translated, rotated and scaled using its provided
 inboxes. Using Interactors (see Interactor.py) it can for example even
 be controlled by mouse events.
 
-A more complex component could look like this:
+A more complex component could look like this::
 
     def ChangingColourQuad(OpenGLComponent):
         def setup(self):

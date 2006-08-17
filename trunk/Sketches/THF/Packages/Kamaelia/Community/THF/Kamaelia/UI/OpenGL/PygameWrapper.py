@@ -33,7 +33,7 @@ OpenGL display service.
 Example Usage
 -------------
 
-The following example shows a wrapped Ticker and MagnaDoodle component:
+The following example shows a wrapped Ticker and MagnaDoodle component::
 
     # override pygame display service
     ogl_display = OpenGLDisplay.getDisplayService()
@@ -105,6 +105,18 @@ from Intersect import *
 import copy
 
 class PygameWrapper(OpenGLComponent):
+    """\
+    PygameWrapper(...) -> A new PygameWrapper component.
+    
+    A wrapper for two dimensional pygame components that allows to display
+    them on a Plane in 3D using OpenGL.
+    
+    Keyword arguments:
+    - wrap          -- Pygame component to wrap
+    - pixelscaling  -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
+    - sidecolour    -- Colour of side and back planes (default=(200,200,244))
+    - thickness     -- Thickness of wrapper, ignored if size is specified (default=0.3)
+    """
     
     def __init__(self, **argd):
         super(PygameWrapper, self).__init__(**argd)
@@ -112,7 +124,6 @@ class PygameWrapper(OpenGLComponent):
         self.pixelscaling = argd.get("pixelscaling", 100.0)
         self.sideColour = argd.get("sidecolour", (200,200,244))
         self.wrapped_comp = argd.get("wrap")
-        self.name = argd.get("name")
         self.thickness = argd.get("thickness", 0.3)
 
         self.texname = 0
@@ -139,7 +150,7 @@ class PygameWrapper(OpenGLComponent):
         
 
     def draw(self):
-        """ Draw button cuboid."""
+        """ Draw cuboid."""
         hs = self.size/2.0
         
         if hs.z != 0:

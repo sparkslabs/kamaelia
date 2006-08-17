@@ -31,7 +31,7 @@ Example Usage
 -------------
 
 The following example shows four SimpleCubes which can be rotated by
-dragging your mouse over them:
+dragging your mouse over them::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
     i1 = SimpleRotationInteractor(victim=o1).activate()
@@ -50,8 +50,9 @@ dragging your mouse over them:
 How does it work?
 -----------------
 
-SimpleTranslationInteractor is a subclass of Interactor. It overrides
-the __init__(), setup() and handleEvents() methods.
+SimpleTranslationInteractor is a subclass of Interactor (for Interactor
+functionality see its documentation). It overrides the __init__(),
+setup() and handleEvents() methods.
 
 The amount of rotation is determined using the relative 2d movement
 which is included in every mouse event and multiplying it by a factor.
@@ -69,6 +70,10 @@ from Interactor import *
 
 class SimpleRotationInteractor(Interactor):
     """\
+    SimpleRotationInteractor(...) -> A new SimpleRotationInteractor component.
+    
+    A simple interactor for rotating OpenGLComponents around the X,Y axes.
+    
     Keyword arguments:
     - rotationfactor -- factor to translate between 2d movment and 3d rotation (default=10.0)
     """

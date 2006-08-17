@@ -31,9 +31,8 @@ MatchedTranslationInteractor is a subclass of Interactor.
 
 Example Usage
 -------------
-
 The following example shows four SimpleCubes which can be moved by
-dragging your mouse:
+dragging your mouse::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
     i1 = MatchedTranslationInteractor(victim=o1).activate()
@@ -51,7 +50,6 @@ dragging your mouse:
 
 How does it work?
 -----------------
-
 MatchedTranslationInteractor is a subclass of Interactor. It overrides
 the __ini__(), setup(), handleEvents() and frame() methods.
 
@@ -88,7 +86,10 @@ from Interactor import *
 
 class MatchedTranslationInteractor(Interactor):
     """\
-    The components has no special keyword arguments.
+    MatchedTranslationInteractor(...) -> A new MatchedTranslationInteractor component.
+    
+    An interactor for moving OpenGLComponents corresponding to mouse
+    movement along the X,Y plane.
     """
     
     def __init__(self, **argd):

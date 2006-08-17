@@ -31,7 +31,6 @@ methods to be overridden for adding functionality.
 
 Example Usage
 -------------
-
 A very simple Interactor could look like this:
 
 class VerySimpleInteractor(Interactor):
@@ -63,7 +62,6 @@ SimpleCube:
 
 How does it work?
 -----------------
-
 The following methods are provided to be overridden:
 - makeInteractorLinkages() -- make linkages to and from victims needed
 - setup()			       -- set up the component

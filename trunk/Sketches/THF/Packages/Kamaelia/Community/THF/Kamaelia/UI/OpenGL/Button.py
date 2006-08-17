@@ -33,7 +33,7 @@ OpenGL display service.
 Example Usage
 -------------
 
-4 Buttons which could be used for playback control (output to the console):
+4 Buttons which could be used for playback control (output to the console)::
 
     Graphline(
         BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
@@ -52,8 +52,9 @@ Example Usage
 How does it work?
 -----------------
 
-This component is a subclass of OpenGLComponent. It overrides
-__init__(), setup(), draw(), handleEvents() and frame().
+This component is a subclass of OpenGLComponent (for OpenGLComponent
+functionality see its documentation). It overrides __init__(), setup(),
+draw(), handleEvents() and frame().
 
 In setup() it requests to receive mouse events and calls buildCaption()
 where the set caption is rendered on a pygame surface. This surface is
@@ -88,6 +89,11 @@ from math import *
 
 class Button(OpenGLComponent):
     """
+    Button(...) -> A new Button component.
+
+    A button widget for the OpenGL display service. Sends a message when
+    clicked or an assigned key is pressed.
+
     Button specific constructor keyword arguments:
     -caption      -- Button caption (default="Button")
     -bgcolour     -- Colour of surfaces behind caption (default=(244,244,244))

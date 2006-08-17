@@ -32,6 +32,8 @@ of the front/back and the side faces can be specified.
 
 Example Usage
 -------------
+Two simple buttons which send messages to the console::
+
     Graphline(
         button1 = SimpleButton(size=(1,1,0.3), position=(-2,0,-10), msg="PINKY"),
         button2 = SimpleButton(size=(2,2,1), position=(5,0,-15), msg="BRAIN"),
@@ -46,7 +48,9 @@ Example Usage
 How does it work?
 -----------------
 
-SimpleButton is inherited from OpenGLComponent.
+This component is a subclass of OpenGLComponent (for OpenGLComponent
+functionality see its documentation). It overrides __init__(), setup(),
+draw() and handleEvents().
 
 It draws a simple cuboid. It is activated on mouse button release over
 the object and on key down if a key is assigned. On mouse button down it
@@ -64,12 +68,21 @@ from OpenGLComponent import OpenGLComponent
 
 
 class SimpleButton(OpenGLComponent):
+    """\
+    SimpleButton(...) -> A new SimpleButton component.
+    
+    A simple cuboid shaped button without caption. Implements responsive
+    button behavoir.
 
+    Keyword arguments:
+    - bgcolour      -- Background colour (default=(244,244,244))
+    - sidecolour    -- Colour of side planes (default=(200,200,244))
+    - key           -- Activation key, pygame identifier (optional)
+    - msg           -- Message that gets sent to the outbox when the button is activated (default="CLICK")
+    """
+    
     def __init__(self, **argd):
         super(SimpleButton, self).__init__(**argd)
-
-        # Button initialisation
-        caption = argd.get("caption", "Button")
 
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.sideColour = argd.get("sidecolour", (200,200,244))

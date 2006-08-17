@@ -31,7 +31,7 @@ Example Usage
 -------------
 
 The following example shows four SimpleCubes which can be moved by
-dragging your mouse over them:
+dragging your mouse over them::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
     i1 = SimpleTranslationInteractor(victim=o1).activate()
@@ -50,8 +50,9 @@ dragging your mouse over them:
 How does it work?
 -----------------
 
-SimpleTranslationInteractor is a subclass of Interactor. It overrides
-the __init__(), setup() and handleEvents() methods.
+SimpleTranslationInteractor is a subclass of Interactor (for Interactor
+functionality see its documentation). It overrides the __init__(),
+setup() and handleEvents() methods.
 
 The amount of movement is determined using the relative 2d movement
 which is included in every mouse event and multiplying it by a factor.
@@ -70,7 +71,10 @@ from Interactor import *
 
 class SimpleTranslationInteractor(Interactor):
     """\
-    Keyword arguments:
+    SimpleTranslationInteractor(...) -> A new SimpleTranslationInteractor component.
+    
+    A simple interactor for moving OpenGLComponents along th X,Y plane.
+
     - translationfactor -- factor to translate between 2d and 3d movement (default=10.0)
     """
     
