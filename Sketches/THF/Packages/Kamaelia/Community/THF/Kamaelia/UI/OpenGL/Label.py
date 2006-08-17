@@ -30,19 +30,19 @@ This component is a subclass of OpenGLComponent and therefore uses the OpenGL di
 
 Example Usage
 -------------
-4 Labels which could be used for playback control (output to the console)::
+4 Labels with various sizes, colours, captions and positions::
 
     Graphline(
-        Label1 = Label(caption="<<", msg="Previous", position=(-3,0,-10)),
-        Label2 = Label(caption=">>", msg="Next", position=(3,0,-10)),
-        Label3 = Label(caption="Play", msg="Play", position=(-1,0,-10)),
-        Label4 = Label(caption="Stop", msg="Stop", position=(1,0,-10)),
+        Label1 = Label(caption="That", size=(2,2,1), sidecolour=(0,200,0), position=(-3,0,-10)),
+        Label2 = Label(caption="Boy", bgcolour=(200,100,0), position=(3,0,-10)),
+        Label3 = Label(caption="Needs", margin=15, position=(-1,0,-10), rotation=(30,0,10)),
+        Label4 = Label(caption="Therapy!", fontsize=20, size=(0.3,0.3,1), position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
-            (Label1, "outbox") : (ECHO, "inbox"),
-            (Label2, "outbox") : (ECHO, "inbox"),
-            (Label3, "outbox") : (ECHO, "inbox"),
-            (Label4, "outbox") : (ECHO, "inbox"),            
+            ("Label1", "outbox") : ("ECHO", "inbox"),
+            ("Label2", "outbox") : ("ECHO", "inbox"),
+            ("Label3", "outbox") : ("ECHO", "inbox"),
+            ("Label4", "outbox") : ("ECHO", "inbox"),            
         }
     ).run()
     
@@ -80,11 +80,9 @@ class Label(OpenGLComponent):
     -fgcolour     -- Colour of the caption text (default=(0,0,0)
     -sidecolour   -- Colour of side planes (default=(200,200,244))
     -margin       -- Margin size in pixels (default=8)
-    -key          -- Key to activate Label (default=None)
     -fontsize     -- Font size for caption text (default=50)
     -pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     -thickness    -- Thickness of Label widget, ignored if size is specified (default=0.3)
-    -msg          -- Message which gets sent when Label is activated (default="CLICK")
         
     """
     def __init__(self, **argd):
@@ -209,10 +207,10 @@ if __name__=='__main__':
     from Kamaelia.Chassis.Graphline import Graphline
 
     Graphline(
-        Label1 = Label(caption="Label1", msg="Previous", size=(2,2,1), position=(-3,0,-10)),
-        Label2 = Label(caption="Hello", msg="Next", position=(3,0,-10)),
-        Label3 = Label(caption="Label2", msg="Play", position=(-1,0,-10)),
-        Label4 = Label(caption="Test", msg="Stop", size=(0.3,0.3,1), position=(1,0,-10)),
+        Label1 = Label(caption="That", size=(2,2,1), sidecolour=(0,200,0), position=(-3,0,-10)),
+        Label2 = Label(caption="Boy", bgcolour=(200,100,0), position=(3,0,-10)),
+        Label3 = Label(caption="Needs", margin=15, position=(-1,0,-10), rotation=(30,0,10)),
+        Label4 = Label(caption="Therapy!", fontsize=20, size=(1.3,0.3,1), position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
             ("Label1", "outbox") : ("ECHO", "inbox"),
