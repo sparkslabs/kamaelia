@@ -31,8 +31,7 @@ OpenGL display service.
 
 Example Usage
 -------------
-
-A plane showing an image loaded from the file "nemo.jpeg":
+A plane showing an image loaded from the file "nemo.jpeg"::
 
     PLANE = TexPlane(position=(0, 0,-6), texture="nemo.jpeg").activate()
         
@@ -40,8 +39,8 @@ A plane showing an image loaded from the file "nemo.jpeg":
     
 How does it work?
 -----------------
-
-This component is a subclass of OpenGLComponent. It overrides
+This component is a subclass of OpenGLComponent (for OpenGLComponent
+functionality see its documentation). It overrides
 __init__(), setup(), draw().
 
 In setup() the method loadTexture() get called which loads the texure
@@ -68,7 +67,11 @@ from math import *
 
 class TexPlane(OpenGLComponent):
     """\
-    TexPlane specific constructor keyword arguments:
+    TexPlane(...) -> A new TexPlane component.
+    
+    A plane showing a texture loaded from an image file.
+
+    Keyword arguments:
     - tex           -- image file name
     - pixelscaling  -- factor for translation from pixels to units in 3D space (default=100.0)
     """

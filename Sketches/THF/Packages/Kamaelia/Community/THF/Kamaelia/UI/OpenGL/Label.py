@@ -30,8 +30,7 @@ This component is a subclass of OpenGLComponent and therefore uses the OpenGL di
 
 Example Usage
 -------------
-
-4 Labels which could be used for playback control (output to the console):
+4 Labels which could be used for playback control (output to the console)::
 
     Graphline(
         Label1 = Label(caption="<<", msg="Previous", position=(-3,0,-10)),
@@ -49,7 +48,6 @@ Example Usage
     
 How does it work?
 -----------------
-
 This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw(), handleEvents() and frame().
 
 In setup() only buildCaption() gets called where the set caption is rendered on a pygame surface. This surface is then set as OpenGL texture.
@@ -72,7 +70,11 @@ from math import *
 
 class Label(OpenGLComponent):
     """
-    Label specific constructor keyword arguments:
+    Label(...) -> A new Label component.
+    
+    A Label widget for the OpenGL display service.
+
+    Keyword arguments:
     -caption      -- Label caption (default="Label")
     -bgcolour     -- Colour of surfaces behind caption (default=(200,200,200))
     -fgcolour     -- Colour of the caption text (default=(0,0,0)

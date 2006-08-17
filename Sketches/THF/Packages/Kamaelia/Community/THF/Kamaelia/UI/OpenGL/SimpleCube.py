@@ -41,7 +41,6 @@ Three cubes in different positions with various rotation and sizes::
 
 How does it work?
 -----------------
-
 SimpleButton is a subclass of OpenGLComponent (for OpenGLComponent
 functionality see its documentation). It overrides draw().
 
@@ -62,6 +61,8 @@ from OpenGLComponent import *
 class SimpleCube(OpenGLComponent):
     """\
     SimpleCube(...) -> new SimpleCube component.
+    
+    A simple cube for the OpenGL display service.
     """
 
     def draw(self):

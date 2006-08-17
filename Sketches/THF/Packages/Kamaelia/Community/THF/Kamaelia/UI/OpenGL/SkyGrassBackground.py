@@ -23,7 +23,19 @@
 =====================
 Sky & Grass background
 =====================
-TODO
+
+A very simple component showing a plane with the upper half coloured light blue and the lower half green. Can be used for a background.
+
+This component is a subclass of OpenGLComponent and therefore uses the
+OpenGL display service.
+
+
+Example Usage
+-------------
+Only a background::
+
+    SkyGrassBackground(size=(5000,5000,0), position=(0,0,-100)).activate()
+    Axon.Scheduler.scheduler.run.runThreads()  
 """
 
 
@@ -36,6 +48,12 @@ from OpenGL.GLU import *
 from OpenGLComponent import *
 
 class SkyGrassBackground(OpenGLComponent):
+    """\
+    SkyGrassBackground(...) -> A new SkyGrassBackground component.
+    
+    A very simple component showing a plane with the upper half coloured
+    light blue and the lower half green. Can be used for a background.
+    """
         
     def setup(self):
         self.w = self.size.x/2.0
@@ -56,4 +74,5 @@ class SkyGrassBackground(OpenGLComponent):
         glEnd()
 
 if __name__=='__main__':
-    pass
+    SkyGrassBackground(size=(5000,5000,0), position=(0,0,-100)).activate()
+    Axon.Scheduler.scheduler.run.runThreads()  

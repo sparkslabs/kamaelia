@@ -31,9 +31,8 @@ LiftTranslationInteractor is a subclass of Interactor.
 
 Example Usage
 -------------
-
 The following example shows four SimpleCubes which can be moved by
-dragging your mouse:
+dragging your mouse::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
     i1 = LiftTranslationInteractor(victim=o1).activate()
@@ -51,7 +50,6 @@ dragging your mouse:
 
 How does it work?
 -----------------
-
 LiftTranslationInteractor is a subclass of Interactor. It overrides
 the __ini__(), setup(), handleEvents() and frame() methods.
 
@@ -87,6 +85,12 @@ from Interactor import *
 
 class LiftTranslationInteractor(Interactor):
     """\
+    LiftTranslationInteractor(...) -> A new LiftTranslationInteractor component.
+    
+    An interactor for moving OpenGLComponents corresponding to mouse
+    movement along the X,Y plane. When "grabbing" an object it is lifted by
+    a specified amount.
+    
     Keyword arguments:
     - liftheight    -- height by which the controlled object is lifted (default=2)
     """

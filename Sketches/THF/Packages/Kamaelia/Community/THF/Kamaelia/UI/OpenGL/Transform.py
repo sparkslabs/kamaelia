@@ -42,6 +42,7 @@ class Transform:
     Keyword arguments:
     - m   -- A matrix containing values to be initially set
     """
+
     def __init__(self, m = None):
         # load identity
         if m is not None:
@@ -50,11 +51,11 @@ class Transform:
             self.m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
 
     def getMatrix(self):
-    """ Returns the transformation matrix. """
+        """ Returns the transformation matrix. """
         return self.m
     
     def reset(self):    
-    """ Resets to identity matrix. """
+        """ Resets to identity matrix. """
         self.m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
     
     def applyRotation(self, xyzangle):

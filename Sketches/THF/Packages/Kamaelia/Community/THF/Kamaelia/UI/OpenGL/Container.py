@@ -30,7 +30,7 @@ Example Usage
 -------------
 In the following example, three components are put into a container and
 get moved by a SimpleMover and rotated around the Y axis by a
-SimpleRotator:
+SimpleRotator::
 
     o1 = SimpleButton(size=(1,1,1)).activate()
     o2 = SimpleCube(size=(1,1,1)).activate()
@@ -57,7 +57,6 @@ SimpleRotator:
 
 How does it work?
 -----------------
-
 The Container component provides the same inboxes for absolute and
 relative movement as a OpenGLComponent. These are "position",
 "rotation", "scaling", "rel_position", "rel_rotation", "rel_scaling",
@@ -97,6 +96,17 @@ from Transform import Transform
 
 
 class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    """\
+    Container(...) -> A new Container component.
+    
+    A container to control several OpenGLComponents.
+
+    Keyword arguments:
+    - position  -- Initial container position (default=(0,0,0)).
+    - rotation  -- Initial container rotation (default=(0,0,0)).
+    - scaling   -- Initial container scaling (default=(1,1,1)).
+    - contents  -- Nested dictionary of contained components.
+    """
 
     Inboxes = {
         "inbox": "",
@@ -118,7 +128,6 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         super(Container, self).__init__()
         
         # get transformation data and convert to vectors
-        self.size = Vector( *argd.get("size", (0,0,0)) )
         self.position = Vector( *argd.get("position", (0,0,0)) )
         self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )

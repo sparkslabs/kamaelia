@@ -78,7 +78,7 @@ class Vector:
         
     def cross(self, other):
         """ Returns the cross product between self and other. """
-         return Vector(self.y*other.z - self.z*other.y, self.z*other.x - self.x*other.z, self.x*other.y - self.y*other.x)
+        return Vector(self.y*other.z - self.z*other.y, self.z*other.x - self.x*other.z, self.x*other.y - self.y*other.x)
          
     def norm(self):
         """ Returns a normalised version of the vector. """
