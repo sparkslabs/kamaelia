@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+====================
 OpenGL Button Widget
-=====================
+====================
 
 A button widget for the OpenGL display service. Sends a message when
 clicked or an assigned key is pressed.
@@ -32,7 +33,6 @@ OpenGL display service.
 
 Example Usage
 -------------
-
 4 Buttons which could be used for playback control (output to the console)::
 
     Graphline(
@@ -51,7 +51,6 @@ Example Usage
     
 How does it work?
 -----------------
-
 This component is a subclass of OpenGLComponent (for OpenGLComponent
 functionality see its documentation). It overrides __init__(), setup(),
 draw(), handleEvents() and frame().

@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+===============
 3D Vector class
-=====================
+===============
 
 A class for 3 dimensional vectors providing several methods for common
 vector operations.

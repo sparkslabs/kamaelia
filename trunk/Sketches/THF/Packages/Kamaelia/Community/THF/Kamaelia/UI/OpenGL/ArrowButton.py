@@ -20,9 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=====================
+=============================
 Simple Arrow Button component
-=====================
+=============================
 
 A simple arrow shaped button without caption. Implements responsive
 button behavoir.

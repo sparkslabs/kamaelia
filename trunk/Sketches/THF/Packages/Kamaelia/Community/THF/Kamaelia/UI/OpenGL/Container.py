@@ -19,6 +19,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
 =====================
 Container component
@@ -69,18 +70,24 @@ respect to the rotation of the container and their relative position,
 the components rotation does not change.
 
 The contents have to be provided as constructor keyword in form of a
-nested dictionary of the following form:
+nested dictionary of the following form::
 
-{
-    component1 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
-    component2 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
-    ...
-}
+    {
+        component1 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
+        component2 : { "position":(x,y,z), "rotation":(x,y,z), "scaling":(x,y,z) },
+        ...
+    }
 
 Each of the "position", "rotation" and "scaling" arguments specify the
 amount relative to the container. They are all optional. As stated
 earlier, rotation is not supported yet so setting the rotation has no
 effect.
+
+Container components terminate if a producerFinished or
+shutdownMicroprocess message is received on their "control" inbox. The
+received message is also forwarded to the "signal" outbox. Upon
+termination, this component does *not* unbind itself from the
+OpenGLDisplay service and does not free any requested resources.
 
 """
 
@@ -110,7 +117,7 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     Inboxes = {
         "inbox": "",
-        "control": "",
+        "control": "For shutdown messages",
         "position" : "receive position triple (x,y,z)",
         "rotation": "receive rotation triple (x,y,z)",
         "scaling": "receive scaling triple (x,y,z)",
@@ -121,7 +128,7 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     Outboxes = {
         "outbox": "",
-        "signal": ""
+        "signal": "For shutdown messages"
     }
 
     def __init__(self, **argd):
@@ -159,6 +166,13 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def main(self):
         while 1:
+
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             self.handleMovement()
             self.applyTransforms()
             yield 1

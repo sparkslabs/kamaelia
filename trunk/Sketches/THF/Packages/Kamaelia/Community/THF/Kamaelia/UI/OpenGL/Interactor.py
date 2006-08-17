@@ -19,58 +19,62 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+==================
 General Interactor
-=====================
+==================
 
 This component implements the basic functionality of an Interactor. An
 Interactor listens to events of another component and tranlates them
-into movement which is applied to the victim component. It provides
+into movement which is applied to the target component. It provides
 methods to be overridden for adding functionality.
 
 Example Usage
 -------------
-A very simple Interactor could look like this:
+A very simple Interactor could look like this::
 
-class VerySimpleInteractor(Interactor):
-    def makeInteractorLinkages(self):
-        self.link( (self,"outbox"), (self.victim, "rel_rotation") )
-    
-    def setup(self):
-        self.addListenEvents([pygame.MOUSEBUTTONDOWN])
-    
-    def handleEvents(self):
-        while self.dataReady("events"):
-            event = self.recv("events")
-            if self.identifier in event.hitobjects:
-                self.send((0,90,0))
+    class VerySimpleInteractor(Interactor):
+        def makeInteractorLinkages(self):
+            self.link( (self,"outbox"), (self.target, "rel_rotation") )
+        
+        def setup(self):
+            self.addListenEvents([pygame.MOUSEBUTTONDOWN])
+        
+        def handleEvents(self):
+            while self.dataReady("events"):
+                event = self.recv("events")
+                if self.identifier in event.hitobjects:
+                    self.send((0,90,0))
             
 
 For examples of how to create Interactors have a look at the files
 *Interactor.py.
 
 A MatchedInteractor and a RotationInteractor each interacting with a
-SimpleCube:
+SimpleCube::
 
     CUBE1 = SimpleCube(size=(1,1,1), position=(1,0,0)).activate()
     CUBE2 = SimpleCube(size=(1,1,1), position=(-1,0,0)).activate()
-    INTERACTOR1 = MatchedTranslationInteractor(victim=CUBE1).activate()
-    INTERACTOR2 = SimpleRotationInteractor(victim=CUBE2).activate()
+    INTERACTOR1 = MatchedTranslationInteractor(target=CUBE1).activate()
+    INTERACTOR2 = SimpleRotationInteractor(target=CUBE2).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  
 
 How does it work?
 -----------------
+Interactor provides functionality for interaction with the OpenGL
+display service and OpenGL components. It is designed to be subclassed.
 The following methods are provided to be overridden:
-- makeInteractorLinkages() -- make linkages to and from victims needed
+
+- makeInteractorLinkages() -- make linkages to and from targets needed
 - setup()                  -- set up the component
 - handleEvents()           -- handle input events ("events" inbox)
 - frame()                  -- called every frame, to add additional functionality
 
 Stubs method are provided, so missing these out does not result in
 broken code. The methods get called from the main method, the following
-code shows in which order:
+code shows in which order::
 
     def main(self):
         # create and send eventspy request
@@ -86,8 +90,8 @@ code shows in which order:
             self.frame()
 
 If you need to override the __init__() method, e.g. to get
-initialisation parameters, make sure to call the __init__() method of
-the parent class in the following way:
+initialisation parameters, make sure to pass on all keyword arguments to
+__init__(...) of the superclass, e.g.::
 
     def __init__(self, **argd):
         super(ClassName, self).__init__(**argd)
@@ -96,15 +100,21 @@ the parent class in the following way:
         
 The following methods are provided to be used by inherited objects:
 
-- addListenEvents()
-- removeListenEvents()        
+- addListenEvents(list of events) -- Request reception of a list of events
+- removeListenEvents(list of events) -- Stop reveiving events
 
 The are inteded to simplify component handling. For their functionality
 see their description.
 
-The event identifier of the victim component gets saved in
+The event identifier of the target component gets saved in
 self.identifier. Use this variable in event handling to determine if the
-victim component has been hit.
+target component has been hit.
+
+Interactor components terminate if a producerFinished or
+shutdownMicroprocess message is received on their "control" inbox. The
+received message is also forwarded to the "signal" outbox. Upon
+termination, this component does *not* unbind itself from the
+OpenGLDisplay service and does not free any requested resources.
 
 """
 
@@ -117,20 +127,27 @@ import Axon
 
 class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
-    Interactor specific constructor keyword arguments:
-    - victim    -- OpenGL component to interact with
+    Interactor(...) -> A new Interactor object (not very useful, designed to be subclassed)
+    
+    This component implements the basic functionality of an Interactor. An
+    Interactor listens to events of another component and tranlates them
+    into movement which is applied to the target component. It provides
+    methods to be overridden for adding functionality.    Keyword arguments:
+
+    - target    -- OpenGL component to interact with
     - nolink    -- if True, no linkages are made (default=False)
     """
     
     Inboxes = {
         "inbox"      : "not used",
-        "control"    : "ignored",
+        "control"    : "For shutdown messages",
         "events"     : "Input events",
         "callback"   : "for the response after a displayrequest",
     }
     
     Outboxes = {
         "outbox"        : "used for sending relative tranlational movement",
+        "signal"        : "For shutdown messages",
         "display_signal": "Outbox used for communicating to the display surface",
     }
     
@@ -142,7 +159,7 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # link display_signal to displayservice
         self.link((self,"display_signal"), displayservice)
        
-        self.victim = argd.get("victim")
+        self.target = argd.get("target")
         
         self.nolink = argd.get("nolink", False)
                     
@@ -151,7 +168,7 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # create eventspy request
         self.eventspyrequest = { "EVENTSPYREQUEST" : True,
                                                    "objectid" : id(self),
-                                                   "victim": id(self.victim),
+                                                   "target": id(self.target),
                                                    "callback" : (self,"callback"),
                                                    "events" : (self, "events")  }
     
@@ -167,6 +184,13 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         while 1:
             yield 1
+
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+                    self.send(cmsg, "signal")
+                    return
+
             # handle events function from derived objects
             self.handleEvents()
             # frame function from derived objects
@@ -178,8 +202,8 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def addListenEvents(self, events):
         """\
-            Sends listening request for pygame events to the display service.
-            The events parameter is expected to be a list of pygame event constants.
+        Sends listening request for pygame events to the display service.
+        The events parameter is expected to be a list of pygame event constants.
         """
         for event in events:
             self.send({"ADDLISTENEVENT":event, "objectid":id(self)}, "display_signal")
@@ -187,8 +211,8 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     def removeListenEvents(self, events):
         """\
-            Sends stop listening request for pygame events to the display service.
-            The events parameter is expected to be a list of pygame event constants.
+        Sends stop listening request for pygame events to the display service.
+        The events parameter is expected to be a list of pygame event constants.
         """
         for event in events:
             self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")

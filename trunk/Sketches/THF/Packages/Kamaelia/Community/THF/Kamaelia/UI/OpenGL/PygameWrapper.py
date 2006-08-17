@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+=============================
 Wrapper for pygame components
-=====================
+=============================
 
 A wrapper for two dimensional pygame components that allows to display
 them on a Plane in 3D using OpenGL.
@@ -32,7 +33,6 @@ OpenGL display service.
 
 Example Usage
 -------------
-
 The following example shows a wrapped Ticker and MagnaDoodle component::
 
     # override pygame display service
@@ -51,7 +51,6 @@ The following example shows a wrapped Ticker and MagnaDoodle component::
     
 How does it work?
 -----------------
-
 This component is a subclass of OpenGLComponent. It overrides
 __init__(), setup(), draw(), handleEvents() and frame().
 
@@ -59,10 +58,9 @@ In setup() first the needed additional mailboxes are created. These are
 the "eventrequest" and "wrapcallback" inboxes and the "wrapped_events"
 outbox:
 
-- " eventrequest" is used for the reception of ADDLISTENEVENT and
-- " REMOVELISTENEVENT requests of the wrapped component. wrapcallback"
-- " is used to receive the response from the display service.
-- " wrapped_events" is where the input events get sent to.
+- "eventrequest" is used for the reception of ADDLISTENEVENT and REMOVELISTENEVENT requests of the wrapped component.
+- "wrapcallback" is used to receive the response from the display service.
+- "wrapped_events" is where the input events get sent to.
 
 Additionally, a WRAPPERREQUEST is sent to the OpenGL display service. It
 contains the objectid of the wrapped component as well as the comms for
@@ -88,6 +86,7 @@ the edge vectors.
 In draw() a cuboid gets drawn with the texture of the pygame component
 on its front plane. If the z component of the size is set to zero, only
 the front plane is drawn.
+
 """
 
 

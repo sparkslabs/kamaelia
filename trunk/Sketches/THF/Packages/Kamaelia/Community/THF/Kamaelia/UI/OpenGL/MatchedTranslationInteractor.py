@@ -35,23 +35,23 @@ The following example shows four SimpleCubes which can be moved by
 dragging your mouse::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
-    i1 = MatchedTranslationInteractor(victim=o1).activate()
+    i1 = MatchedTranslationInteractor(target=o1).activate()
 
     o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1)).activate()
-    i2 = MatchedTranslationInteractor(victim=o2).activate()
+    i2 = MatchedTranslationInteractor(target=o2).activate()
 
     o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1)).activate()
-    i3 = MatchedTranslationInteractor(victim=o3).activate()
+    i3 = MatchedTranslationInteractor(target=o3).activate()
 
     o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1)).activate()
-    i4 = MatchedTranslationInteractor(victim=o4).activate()
+    i4 = MatchedTranslationInteractor(target=o4).activate()
 
     Axon.Scheduler.scheduler.run.runThreads()  
 
 How does it work?
 -----------------
 MatchedTranslationInteractor is a subclass of Interactor. It overrides
-the __ini__(), setup(), handleEvents() and frame() methods.
+the __init__(), setup(), handleEvents() and frame() methods.
 
 The matched movement works by using the position of the controlled
 object and determine its X,Y-aligned plane. The amount of mouse movement
@@ -67,10 +67,10 @@ component to be accurate all the time, it uses the components "position"
 outbox by default. If you don't want the interactor to make the
 linkages, you can set nolink=True as constructor argument. The following
 linkages are needed for the interactor to work (from the interactors
-point of view):
+point of view)::
 
-    self.link( (self, "outbox"), (self.victim, "rel_position") )
-    self.link( (self.victim, "position"), (self, "inbox") )
+    self.link( (self, "outbox"), (self.target, "rel_position") )
+    self.link( (self.target, "position"), (self, "inbox") )
 
 """
 
@@ -100,8 +100,8 @@ class MatchedTranslationInteractor(Interactor):
         self.oldpoint = None
             
         if self.nolink == False:
-            self.link( (self, "outbox"), (self.victim, "rel_position") )
-            self.link( (self.victim, "position"), (self, "inbox") )
+            self.link( (self, "outbox"), (self.target, "rel_position") )
+            self.link( (self.target, "position"), (self, "inbox") )
 
 
     def setup(self):
@@ -150,15 +150,15 @@ if __name__=='__main__':
     from SimpleCube import *
     
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
-    i1 = MatchedTranslationInteractor(victim=o1).activate()
+    i1 = MatchedTranslationInteractor(target=o1).activate()
 
     o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1), name="center").activate()
-    i2 = MatchedTranslationInteractor(victim=o2).activate()
+    i2 = MatchedTranslationInteractor(target=o2).activate()
 
     o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1), name="center").activate()
-    i3 = MatchedTranslationInteractor(victim=o3).activate()
+    i3 = MatchedTranslationInteractor(target=o3).activate()
 
     o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1), name="center").activate()
-    i4 = MatchedTranslationInteractor(victim=o4).activate()
+    i4 = MatchedTranslationInteractor(target=o4).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  

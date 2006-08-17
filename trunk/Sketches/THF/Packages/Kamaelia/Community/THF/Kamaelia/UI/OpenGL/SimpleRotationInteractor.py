@@ -19,37 +19,37 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+==========================
 Simple Rotation Interactor
-=====================
+==========================
+
 A simple interactor for rotating OpenGLComponents around the X,Y axes.
 
 SimpleRotationInteractor is a subclass of Interactor.
 
 Example Usage
 -------------
-
 The following example shows four SimpleCubes which can be rotated by
 dragging your mouse over them::
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1)).activate()
-    i1 = SimpleRotationInteractor(victim=o1).activate()
+    i1 = SimpleRotationInteractor(target=o1).activate()
 
     o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1)).activate()
-    i2 = SimpleRotationInteractor(victim=o2).activate()
+    i2 = SimpleRotationInteractor(target=o2).activate()
 
     o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1)).activate()
-    i3 = SimpleRotationInteractor(victim=o3).activate()
+    i3 = SimpleRotationInteractor(target=o3).activate()
 
     o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1)).activate()
-    i4 = SimpleRotationInteractor(victim=o4).activate()
+    i4 = SimpleRotationInteractor(target=o4).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  
 
 How does it work?
 -----------------
-
 SimpleTranslationInteractor is a subclass of Interactor (for Interactor
 functionality see its documentation). It overrides the __init__(),
 setup() and handleEvents() methods.
@@ -86,7 +86,7 @@ class SimpleRotationInteractor(Interactor):
         self.grabbed = False
 
         if self.nolink == False:
-            self.link( (self, "outbox"), (self.victim, "rel_rotation") )
+            self.link( (self, "outbox"), (self.target, "rel_rotation") )
 
 
     def setup(self):
@@ -112,15 +112,15 @@ if __name__=='__main__':
     from SimpleCube import *
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
-    i1 = SimpleRotationInteractor(victim=o1).activate()
+    i1 = SimpleRotationInteractor(target=o1).activate()
 
     o2 = SimpleCube(position=(0, 0,-20), size=(1,1,1), name="center").activate()
-    i2 = SimpleRotationInteractor(victim=o2).activate()
+    i2 = SimpleRotationInteractor(target=o2).activate()
 
     o3 = SimpleCube(position=(-3, 0,-10), size=(1,1,1), name="center").activate()
-    i3 = SimpleRotationInteractor(victim=o3).activate()
+    i3 = SimpleRotationInteractor(target=o3).activate()
 
     o4 = SimpleCube(position=(15, 0,-40), size=(1,1,1), name="center").activate()
-    i4 = SimpleRotationInteractor(victim=o4).activate()
+    i4 = SimpleRotationInteractor(target=o4).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  

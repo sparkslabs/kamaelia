@@ -19,10 +19,12 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
 =====================
 Simple Cube component
 =====================
+
 A simple cube for the OpenGL display service.
 
 This component is a subclass of OpenGLComponent and therefore uses the
