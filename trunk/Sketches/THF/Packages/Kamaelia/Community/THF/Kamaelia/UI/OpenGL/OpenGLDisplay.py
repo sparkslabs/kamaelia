@@ -33,16 +33,10 @@ Assistant Tracker (CAT).
 
 Example Usage
 -------------
-
-When using only OpenGL components and no special display settings have
-to be made, you won't see OpenGLDisplay as it is registered
-automatically when it is first requested (by invoking the
-getDisplayService(...) static method).
-
 If you want to change some of the default parameters, like the viewport,
 you first have to create an OpenGLDisplay object and then register it.
 The following would show a simple cube from a slightly changed viewer
-position:
+position::
 
     display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
     OpenGLDisplay.setDisplayService(display)
@@ -50,7 +44,7 @@ position:
     SimpleCube(position=(0,0,-15)).activate()
 
 If you want to use pygame components, you have to override the
-PygameDisplay service before creating any pygame components.
+PygameDisplay service before creating any pygame components::
 
     display = OpenGLDisplay.getDisplayService()
     PygameDisplay.setDisplayService(display[0])
@@ -60,7 +54,6 @@ please have a look at OpenGLComponent.py and Interactor.py.
 
 How does it work?
 -----------------
-
 OpenGLDisplay is a service. obtain it by calling the
 OpenGLDisplay.getDisplayService(...) static method. Any existing instance
 will be returned, otherwise a new one is automatically created.
@@ -69,7 +62,12 @@ Alternatively, if you wish to configure OpenGLDisplay with options other than
 the defaults, create your own instance, then register it as a service by
 calling the PygameDisplay.setDisplayService(...) static method. NOTE that it
 is only advisable to do this at the top level of your system, as other
-components may have already requested and created a PygameDisplay component!
+components may have already requested and created a OpenGLDisplay component!
+
+When using only OpenGL components and no special display settings have
+to be made, you won't see OpenGLDisplay as it is registered
+automatically when it is first requested (by invoking the
+getDisplayService(...) static method).
 
 You can also use an instance of OpenGLDisplay to override the
 PygameDisplay service as it implements most of the functionality of
@@ -95,6 +93,7 @@ OpenGL components
 
 OpenGL components get registered by an OGL_DISPLAYREQUEST. Such a
 request is a dictionary with the following keys:
+
 {
     "OGL_DISPLAYREQUEST": True,     # OpenGL Display request
     "objectid" : id(object),            # id of requesting object (for identification)
@@ -189,6 +188,7 @@ See PygameWrapperPlane.py for an example implementation of a wrapper.
 
 Listening to events
 ^^^^^^^^^^^^^^^^^^^
+
 Once your component has been registered, it can request to be notified
 of specific pygame events. The same requests are used for Pygame and
 OpenGL components, only the keys are slightly different.
@@ -212,6 +212,21 @@ Events will be sent to the inbox specified in the "events" key of the
 "DISPLAYREQUEST" or "OGL_DISPLAYREQUEST" message. They arrive as a list
 of pygame event objects.
 
+The events objects of type Bunch with the following variables:
+- type      -- Pygame event type
+(pygame.KEYDOWN, pygame.KEYUP:)
+- key       -- Pressed or released key
+(pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP:)
+- pos       -- Mouse position
+- button    -- Pressed or released mouse button number
+(pygame.MOUSEMOTION:)
+- rel       -- Relative mouse motion.
+- buttons   -- Buttons pressed while mousemotion
+(pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION when sent to OpenGL components:)
+- viewerposition    -- Position of viewer
+- dir               -- Direction vector of generated from mouse position
+- hitobjects        -- List of hit objects
+    
 NOTE: If the event is MOUSEMOTION, MOUSEBUTTONUP or MOUSEBUTTONDOWN then
 you will instead receive a replacement object, with the same attributes
 as the pygame event. But for pygame components, the 'pos' attribute
@@ -220,6 +235,12 @@ OpenGL components the origin and direction of the intersection vector
 determined using the mouse position and viewport will be added as well
 as a list of identfiers of objects that has been hit.
 
+If a component has requested reception of an event type, it gets every
+event that happens of that type, regardless if it is of any concern to
+the component. In the case of mouse events there is a list of hit
+objects included which are determined by using OpenGL picking.
+
+    
 Eventspies
 ^^^^^^^^^^
 
@@ -234,10 +255,11 @@ components. They are registered by sending an EVENSPYREQUEST:
     "events" : (object, "inboxname")    # for reception of events
 }
 
-In return you get the identifier of the victim component that can be 
+In return you get the identifier of the victim component that can be
 used to determine if the victim component has been hit. An evenspy can
 request reception of event types like usual (using ADDLISTENEVENT and
-REMOVELISTENEVENT).
+REMOVELISTENEVENT).  When events are spied this does not affect normal
+event processing.
 
 """
 
