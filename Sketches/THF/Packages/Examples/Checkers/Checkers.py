@@ -47,7 +47,7 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def initialiseComponent(self):
         # initialise display
-        display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
+        display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15), limit_fps=100).activate()
         OpenGLDisplay.setDisplayService(display)
     
         # create board
@@ -72,7 +72,7 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     piece = CheckersPiece(position=(x, y, -15), colour=(0.6,0,0)).activate()
                     self.blackPieces.append(piece)
 
-                    interactor = CheckersInteractor(victim=piece, colour='B').activate()
+                    interactor = CheckersInteractor(target=piece, colour='B').activate()
                     self.blackInteractors.append(interactor)
 
                     intcomms = self.addOutbox("interactor_comms")
@@ -94,7 +94,7 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     piece = CheckersPiece(position=(x, y, -15), colour=(0,0,0.6)).activate()
                     self.whitePieces.append(piece)
 
-                    interactor = CheckersInteractor(victim=piece, colour='B').activate()
+                    interactor = CheckersInteractor(target=piece, colour='B').activate()
                     self.whiteInteractors.append(interactor)
 
                     intcomms = self.addOutbox("interactor_comms")
@@ -126,6 +126,6 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
         return 1
         
-if __name__=='__main__':
+if __name__=='__main__': 
     Checkers().activate()
     Axon.Scheduler.scheduler.run.runThreads()
