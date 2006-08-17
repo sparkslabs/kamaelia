@@ -32,12 +32,15 @@ import struct
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Crypto import xtea
 
 class Encryptor(Axon.Component.component):
-    Inboxes = {"inbox" : "data packets", "keyevent": "key for encryption", "control": "shutdown handling"}
-    Outboxes = {"outbox" : "encrypted data packets", "signal": "shut handling"}
+    Inboxes = {"inbox" : "data packets",
+               "keyevent": "key for encryption",
+               "control" : "receive shutdown messages"}
+    Outboxes = {"outbox" : "encrypted data packets",
+                "signal" : "pass shutdown messages"}
 
-    def __init__(self):
+    def __init__(self,key="\0"):
         super(Encryptor,self).__init__()
-        self.key = "\0"
+        self.key = key
 
 
     def main(self):
@@ -46,19 +49,15 @@ class Encryptor(Axon.Component.component):
         MAGIC_STRING = blocksize * chr(0x80)
         while 1:
             yield 1
-            if self.dataReady("control"):
-                data = self.recv("control")
-                if data == "SHUTDOWN":
-                    self.send(data, "signal")
-                    print "encryptor shutdown"
-                    break
 
             if self.dataReady("keyevent"):
                 self.key = self.recv("keyevent")
                 #print "key recieved at the encryptor",self.key
 
-            if self.dataReady("inbox") and self.key != "\0":
+            if self.dataReady("inbox"):
                 data = self.recv("inbox")
+                if self.key == "\0":
+                    continue
                 enc = ''
                 i = 0
                 #do padding if less than block size

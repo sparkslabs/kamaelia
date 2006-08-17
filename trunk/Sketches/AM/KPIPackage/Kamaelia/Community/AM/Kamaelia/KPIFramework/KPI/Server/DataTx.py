@@ -31,7 +31,10 @@ import struct
 
 class DataTx(Axon.Component.component):
     Inboxes = {"inbox" : "data to be encrypted",
-               "keyIn" : "key updates"}
+               "keyIn" : "key updates",
+               "control" : "receive shutdown messages"}
+    Outboxes = {"outbox" : "add header and send encrypted key and data packets",
+                "signal" : "pass shutdown messages"}
 
     def __init__(self):
         super(DataTx,self).__init__()
@@ -44,7 +47,7 @@ class DataTx(Axon.Component.component):
                 data = self.recv("keyIn")
                 header = struct.pack("!2L", KEY, len(data))
                 packet = header + data
-                print "DataTx", packet
+                #print "DataTx", packet
                 self.send(packet, "outbox")
             yield 1
 
@@ -52,6 +55,6 @@ class DataTx(Axon.Component.component):
                 data = self.recv("inbox")
                 header = struct.pack("!2L", DATA, len(data))
                 packet = header + data
-                print "DataTx", packet
+                #print "DataTx", packet
                 self.send(packet, "outbox")
             yield 1
