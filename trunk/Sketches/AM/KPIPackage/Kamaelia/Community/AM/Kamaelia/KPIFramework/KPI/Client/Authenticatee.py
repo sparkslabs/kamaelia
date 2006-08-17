@@ -43,10 +43,12 @@ from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Crypto import xtea
 
 
 class Authenticatee(Axon.Component.component):
-    Inboxes = {"inbox" : "authentication and data packets"}
+    Inboxes = {"inbox" : "authentication and data packets",
+               "control" : "receive shutdown messages"}
     Outboxes = {"outbox" : "authentication",
                 "encout" : "encrypted data packets",
-                "notifykey" : "notify key"}
+                "notifykey" : "notify key",
+               "signal" : "pass shutdown messages"}
 
     def __init__(self, kpiuser):
         super(Authenticatee,self).__init__()
@@ -56,7 +58,7 @@ class Authenticatee(Axon.Component.component):
         userid = self.kpiuser.getID()
         data = xtea.xtea_encrypt(self.kpiuser.getRootKey(),
                                  struct.pack('!2L',0, userid))
-        print "encrypting user id with user key", self.kpiuser.getID(), self.kpiuser.getRootKey()
+        #print "encrypting user id with user key", self.kpiuser.getID(), self.kpiuser.getRootKey()
         self.send(data, "outbox")
         yield 1
 
@@ -66,8 +68,8 @@ class Authenticatee(Axon.Component.component):
         temp = xtea.xtea_decrypt(self.kpiuser.getUserKey(), data)
         padding, challenge = struct.unpack('!2L',temp)
         response = challenge+1
-        print "received challenge",challenge
-        print "sending response", response
+        #print "received challenge",challenge
+        #print "sending response", response
         data = xtea.xtea_encrypt(self.kpiuser.getUserKey(),
                                  struct.pack('!2L',0, response))
         
@@ -78,9 +80,10 @@ class Authenticatee(Axon.Component.component):
             yield 1
         data = self.recv("inbox")
         if data == "SUCCESS":
-            print "authentication success"
+            #print "authentication success"
+            pass
         else:
-            print "authenication failure"
+            #print "authenication failure"
             return
 
         #decode data
@@ -95,7 +98,7 @@ class Authenticatee(Axon.Component.component):
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                print "decoder", data
+                #print "decoder", data
 
                 buffer = buffer + data
                 if mode == READ_HEADER :
@@ -104,27 +107,27 @@ class Authenticatee(Axon.Component.component):
                         header = buffer[:HEADER_SIZE]
                         packetType, data2read = struct.unpack("!2L", header)
                         body = buffer[HEADER_SIZE:data2read]
-                        print "packet type->", hex(packetType)
-                        print "data 2 read", data2read
+                        #print "packet type->", hex(packetType)
+                        #print "data 2 read", data2read
                         #read all the data
                         if data2read <= len(body):
                             mode = READ_HEADER
                             if packetType == KEY:
                                 padding,ID = struct.unpack("!2L", body[:8])
-                                print "****ID****", ID
+                                #print "****ID****", ID
                                 try:
                                     key = self.kpiuser.getKey(ID)
                                     enckey = body[8:data2read]
-                                    print "size of enckey", len(enckey)
+                                    #print "size of enckey", len(enckey)
                                     part1 = xtea.xtea_decrypt(key, enckey[:8])
                                     part2 = xtea.xtea_decrypt(key, enckey[8:16])
                                     sessionkey = part1 + part2
-                                    print "decoded key", sessionkey
+                                    #print "decoded key", sessionkey
                                     self.send(sessionkey, "notifykey")
                                 except KeyError:
                                     pass #the key is not for me
                             elif packetType == DATA:
-                                print "decoded data", body
+                                #print "decoded data", body
                                 self.send(body, "encout")
                             # remove the header + data read
                             buffer = buffer[(data2read+HEADER_SIZE):len(buffer)]
@@ -139,19 +142,19 @@ class Authenticatee(Axon.Component.component):
                         mode = READ_HEADER
                         if packetType == KEY:
                             padding,ID = struct.unpack("!2L", body[:8])
-                            print "****ID****", ID
+                            #print "****ID****", ID
                             try:
                                 key = self.kpiuser.getKey(ID)
                                 enckey = body[8:data2read]
                                 part1 = xtea.xtea_decrypt(key, enckey[:8])
                                 part2 = xtea.xtea_decrypt(key, enckey[8:16])
                                 sessionkey = part1 + part2
-                                print "decoded key", sessionkey
+                                #print "decoded key", sessionkey
                                 self.send(sessionkey, "notifykey")
                             except KeyError:
                                 pass #the key is not for me
                         elif packetType == DATA:
-                            print "decoded data", body
+                            #print "decoded data", body
                             self.send(body, "encout")
                         # remove the data read
                         buffer = buffer[data2read:len(buffer)]
