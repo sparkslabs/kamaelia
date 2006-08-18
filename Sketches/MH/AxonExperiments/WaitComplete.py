@@ -10,8 +10,8 @@ class Microprocess(object):
     def __init__(self):
         super(Microprocess,self).__init__()
 
-    def next(self):
-        return self.__thread.next()
+#     def next(self):
+#         return self.__thread.next()
 
     def _microprocessGenerator(self,main,continuation=None):
         pc = main
@@ -21,10 +21,12 @@ class Microprocess(object):
                 if isinstance(v,WaitComplete):
                     newMain = v.args[0]
                     self.__thread = self._microprocessGenerator(newMain,self.__thread)
+                    self.next = self.__thread.next
                 yield v
             except StopIteration:
                 if continuation:
                     self.__thread = continuation
+                    self.next = self.__thread.next
                     yield 1
                     # replace this generator with the continuation
                     # this generator will not be executed
@@ -40,6 +42,7 @@ class Microprocess(object):
         self.scheduler = scheduler
         main = self.__getattribute__(mainmethod)()
         self.__thread = self._microprocessGenerator(main)
+        self.next = self.__thread.next
         self.scheduler.activateThread(self)
         return self
 
