@@ -80,12 +80,15 @@ class Authenticatee(Axon.Component.component):
             yield 1
         data = self.recv("inbox")
         if data == "SUCCESS":
-            print "authentication success"
-            self.send("OK","outbox")
-            yield 1
+            #print "authentication success"
+            pass
         else:
             #print "authenication failure"
-            return
+            return #shutdown
+
+        """Send ack to server from client to Server"""
+        self.send("OK", "outbox")
+        yield 1
 
         #decode data
         buffer = ''
@@ -107,7 +110,10 @@ class Authenticatee(Axon.Component.component):
                         mode = READ_BODY
                         header = buffer[:HEADER_SIZE]
                         packetType, data2read = struct.unpack("!2L", header)
-                        body = buffer[HEADER_SIZE:data2read]
+                        #Bug fix - previously was reading less
+                        #data from buffer -> body = buffer[HEADER_SIZE:data2read]
+                        #this caused the client to be slower in receiving data
+                        body = buffer[HEADER_SIZE:HEADER_SIZE+data2read]
                         #print "packet type->", hex(packetType)
                         #print "data 2 read", data2read
                         #read all the data
