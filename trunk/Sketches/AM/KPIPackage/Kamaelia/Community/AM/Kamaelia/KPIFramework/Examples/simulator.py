@@ -32,8 +32,30 @@ from Kamaelia.Util.Graphline import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Server.KPIServer import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Client.KPIClient import KPIClient
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
+#from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
-from TextStream import *
+#A text streaming source
+class MyDataSource(Axon.Component.component):
+    def main(self):
+        index = 0
+        while 1:
+            yield 1
+            if index % 1000 == 0:
+                data = str(index) + "-helloknr"
+                self.send(data, "outbox")
+                print "data source sent", data
+            else:
+                yield 1
+            index = index + 1
+
+
+#prints received text 
+class MyDataSink(Axon.Component.component):
+    def main(self):
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                print "datasink received:", self.recv("inbox")
 
 #client simulation
 kpidb = KPIDBI.getDB("mytree")
@@ -44,6 +66,7 @@ KPIServer(MyDataSource(), kpidb.getKPIKeys())
 
 #client representing user1 connects to the KPI server
 Graphline(
+    #c=KPIClient("user1", consoleEchoer()),
     c=KPIClient("user1", MyDataSink()),
     cc = clientconnector(),
     linkages = {
@@ -54,7 +77,8 @@ Graphline(
 
 #client representing user3 connects to the KPI server
 Graphline(
-    c=KPIClient("user3", MyDataSink()),
+    #c=KPIClient("user3", consoleEchoer()),
+    c=KPIClient("user3", MyDataSink()),    
     cc = clientconnector(),    
     linkages = {
         ("c","outbox") : ("cc","inbox"),
