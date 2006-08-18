@@ -27,7 +27,16 @@ from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Client.KPIClient import KPI
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
 from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
 
-from TextStream import MyDataSink
+#from Kamaelia.Util.ConsoleEcho import consoleEchoer
+
+
+#prints received text 
+class MyDataSink(Axon.Component.component):
+    def main(self):
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                print "datasink received:", self.recv("inbox")
 
 import sys
 if __name__=="__main__":
@@ -43,6 +52,7 @@ if __name__=="__main__":
         usercfg = sys.argv[3]
 
     Graphline(
+        #c=KPIClient(usercfg, consoleEchoer()),
         c=KPIClient(usercfg, MyDataSink()),
         cc = _TCPClient(server,port),
         linkages = {
