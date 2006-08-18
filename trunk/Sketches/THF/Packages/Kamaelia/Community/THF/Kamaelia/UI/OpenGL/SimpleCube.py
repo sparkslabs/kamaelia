@@ -114,7 +114,7 @@ class SimpleCube(OpenGLComponent):
         glVertex3f(-hs.x,hs.y,hs.z)
         glEnd()
     
-    
+__kamaelia_components__ = (SimpleCube,)    
 
 if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline

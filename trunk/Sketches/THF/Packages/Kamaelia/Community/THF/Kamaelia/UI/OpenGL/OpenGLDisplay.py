@@ -311,6 +311,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Or create your own and register it with setDisplayService(...)
 
     Keyword arguments (all optional):
+    
     - title             -- caption of window (default=http://kamaelia.sourceforge.net)
     - width              -- pixels width (default=800)
     - height             -- pixels height (default=600)
@@ -318,21 +319,22 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)
     - show_fps          -- show frames per second in window title (default=True)
     - limit_fps           -- maximum frame rate (default=60)
-    Projection parameters
+        Projection parameters
     - near              -- distance to near plane (default=1.0)
     - far               -- distance to far plane (default=100.0)
     - perspective       -- perspective angle (default=45.0)
-    Viewer position and orientation
+        Viewer position and orientation
     - viewerposition        -- position of viewer (default=(0,0,0))
     - lookat                -- look at point (default= (0,0,-self.farPlaneDist))
     - up                    -- up vector (default(0,1,0))
-    Fog
+        Fog
     - fog           -- tuple of fog distances (start, end). if not set, fog is disabled (default)
     - fog_colour    -- (r,g,b) fog colour (default=(255,255,255) )
     - fog_density   -- fog density (default=0.35)
-    Event processing
+        Event processing
     - hitall        -- boolean, if false, only the nearest object under the cursor gets activated (default=False)
-            
+    
+
     """
 
     Inboxes =  {
@@ -967,6 +969,8 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         self.send(bundle, eventcomms)
             except KeyError: pass
 
+
+__kamaelia_components__ = (OpenGLDisplay,)
 
 if __name__=='__main__':
     pass

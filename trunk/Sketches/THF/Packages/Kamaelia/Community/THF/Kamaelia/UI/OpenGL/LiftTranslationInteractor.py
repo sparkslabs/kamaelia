@@ -95,6 +95,7 @@ class LiftTranslationInteractor(Interactor):
     a specified amount.
     
     Keyword arguments:
+    
     - liftheight    -- height by which the controlled object is lifted (default=2)
     """
     
@@ -153,6 +154,8 @@ class LiftTranslationInteractor(Interactor):
         while self.dataReady("inbox"):
             self.position = Vector(*self.recv("inbox"))
 
+
+__kamaelia_components__ = ( LiftTranslationInteractor, )
 
 if __name__=='__main__':
     from SimpleCube import *

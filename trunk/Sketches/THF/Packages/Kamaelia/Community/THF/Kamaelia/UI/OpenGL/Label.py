@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 #
 # (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -81,14 +81,15 @@ class Label(OpenGLComponent):
     A Label widget for the OpenGL display service.
 
     Keyword arguments:
-    -caption      -- Label caption (default="Label")
-    -bgcolour     -- Colour of surfaces behind caption (default=(200,200,200))
-    -fgcolour     -- Colour of the caption text (default=(0,0,0)
-    -sidecolour   -- Colour of side planes (default=(200,200,244))
-    -margin       -- Margin size in pixels (default=8)
-    -fontsize     -- Font size for caption text (default=50)
-    -pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
-    -thickness    -- Thickness of Label widget, ignored if size is specified (default=0.3)
+    
+    - caption      -- Label caption (default="Label")
+    - bgcolour     -- Colour of surfaces behind caption (default=(200,200,200))
+    - fgcolour     -- Colour of the caption text (default=(0,0,0)
+    - sidecolour   -- Colour of side planes (default=(200,200,244))
+    - margin       -- Margin size in pixels (default=8)
+    - fontsize     -- Font size for caption text (default=50)
+    - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
+    - thickness    -- Thickness of Label widget, ignored if size is specified (default=0.3)
         
     """
     def __init__(self, **argd):
@@ -207,6 +208,7 @@ class Label(OpenGLComponent):
         glDisable(GL_TEXTURE_2D)
  
  
+__kamaelia_components__ = ( Label, )
 
 if __name__=='__main__':
     from Kamaelia.Util.Console import ConsoleEchoer

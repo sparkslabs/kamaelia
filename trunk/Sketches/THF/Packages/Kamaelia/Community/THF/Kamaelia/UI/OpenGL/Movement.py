@@ -19,10 +19,13 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
 ===============================================
 A collection of movement components and classes
 ===============================================
+
+LinearPath, PathMover, WheelMover, SimpleRotator, SimpleBuzzer
 
 Example Usage
 -------------
@@ -78,6 +81,7 @@ class LinearPath:
     well as a __len__() method for accessing the path elements.
     
     Keyword arguments:
+    
     - points    -- a list of points in the path
     - steps     -- number of steps to generate between the path endpoints (default=1000)
     """
@@ -142,9 +146,9 @@ class PathMover(Axon.Component.component):
     message can be "Finish" or "Start".
     
     Keyword arguments:
+    
     - path   -- A path object (e.g. LinearPath) or a list of points
-    - repeat -- Boolean indication if the Pathmover should repeat the
-                path if it reaches an end (default=True)
+    - repeat -- Boolean indication if the Pathmover should repeat the path if it reaches an end (default=True)
     """
     
     Inboxes = {
@@ -232,35 +236,37 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     Components can be added and removed during operation using the
     "notify" inbox. Messages sent to it are expected to be a dictionary of
-    the following form:
+    the following form::
     
-    {
-        "APPEND_CONTROL" :True,
-        "objectid": id(object),
-        "control": (object,"position")
-    }
+        {
+            "APPEND_CONTROL" :True,
+            "objectid": id(object),
+            "control": (object,"position")
+        }
 
-    for adding components and:
+    for adding components and::
 
-    {
-        "REMOVE_CONTROL" :True,
-        "objectid": id(object),
-    }
+        {
+            "REMOVE_CONTROL" :True,
+            "objectid": id(object),
+        }
     
     for removing components.
     
     If components are added when the wheel is already full (number of
-    slots exhausted) they are simply     ignored.
+    slots exhausted) they are simply ignored.
 
     The whole wheel can be controlles by sending messages to the
     "switch" inbox. The commands can be either "NEXT" or "PREVIOUS".
 
     Keyword arguments:
+    
     - steps     -- number of steps the wheel is subdivided in (default=400)
     - center    -- center of the wheel (default=(0,0,-13))
     - radius    -- radius of the wheel (default=5)
     - slots     -- number of components which can be handled (default=20)
     """
+    
     Inboxes = {
        "inbox": "not used",
        "control": "ignored",
@@ -369,6 +375,7 @@ class SimpleRotator(Axon.Component.component):
     "rel_rotation" boxes.
     
     Keyword arguments:
+    
     - amount    -- amount of relative rotation sent (default=(0.1,0.1,0.1))
     """    
     def __init__(self, amount=(0.1,0.1,0.1)):
@@ -397,6 +404,7 @@ class SimpleMover(Axon.Component.component):
     The amount of movement every frame and the origin can also be specified.
     
     Keyword arguments:
+    
     - amount    -- amount of movement every frame sent (default=(0.03,0.03,0.03))
     - borders   -- borders of every dimension (default=(5,5,5))
     - origin    -- origin of movement (default=(0,0,-20))
@@ -450,6 +458,9 @@ class SimpleBuzzer(Axon.Component.component):
             r += f
             
             self.send( (r, r, r), "outbox")
+
+
+__kamaelia_components__ = (PathMover, WheelMover, SimpleRotator, SimpleBuzzer, )
     
         
 if __name__=='__main__':

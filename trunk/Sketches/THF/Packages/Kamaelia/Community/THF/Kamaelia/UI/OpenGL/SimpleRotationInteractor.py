@@ -75,6 +75,7 @@ class SimpleRotationInteractor(Interactor):
     A simple interactor for rotating OpenGLComponents around the X,Y axes.
     
     Keyword arguments:
+    
     - rotationfactor -- factor to translate between 2d movment and 3d rotation (default=10.0)
     """
     
@@ -107,6 +108,8 @@ class SimpleRotationInteractor(Interactor):
                     amount = (float(event.rel[1])/self.rotationfactor, float(event.rel[0])/self.rotationfactor, 0)
                     self.send(amount, "outbox")
 
+
+__kamaelia_components__ = (SimpleRotationInteractor,)
 
 if __name__=='__main__':
     from SimpleCube import *

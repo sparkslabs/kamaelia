@@ -49,7 +49,7 @@ A very simple Interactor could look like this::
             
 
 For examples of how to create Interactors have a look at the files
-*Interactor.py.
+XXXInteractor.py.
 
 A MatchedInteractor and a RotationInteractor each interacting with a
 SimpleCube::
@@ -132,8 +132,10 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     This component implements the basic functionality of an Interactor. An
     Interactor listens to events of another component and tranlates them
     into movement which is applied to the target component. It provides
-    methods to be overridden for adding functionality.    Keyword arguments:
-
+    methods to be overridden for adding functionality.
+    
+    Keyword arguments:
+    
     - target    -- OpenGL component to interact with
     - nolink    -- if True, no linkages are made (default=False)
     """
@@ -231,11 +233,12 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Method stub
         
         Override this method to do event handling inside.
-        Should look like this:
+        Should look like this::
+
             while self.dataReady("events"):
                 event = self.recv("events")
                 # handle event ...
-
+        
         """
         pass        
     
@@ -258,4 +261,7 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         gets called.
         """
         pass
+
+__kamaelia_components__ = ( Interactor, )
+
 

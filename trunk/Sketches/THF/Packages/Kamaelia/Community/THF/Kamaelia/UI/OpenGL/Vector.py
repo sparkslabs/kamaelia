@@ -40,6 +40,7 @@ class Vector:
     Vector([x][,y][,z]) -> A new Vector object.
     
     Keyword arguments:
+    
     - x,y,z -- Initial values.
     """
     def __init__(self, x=0.0, y=0.0, z=0.0):

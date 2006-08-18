@@ -19,10 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
+==============================
 Matched Translation Interactor
-=====================
+==============================
 
 An interactor for moving OpenGLComponents corresponding to mouse
 movement along the X,Y plane.
@@ -145,6 +146,7 @@ class MatchedTranslationInteractor(Interactor):
         while self.dataReady("inbox"):
             self.position = Vector(*self.recv("inbox"))
 
+__kamaelia_components__ = ( MatchedTranslationInteractor, )
 
 if __name__=='__main__':
     from SimpleCube import *

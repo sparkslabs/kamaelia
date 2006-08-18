@@ -109,6 +109,7 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     A container to control several OpenGLComponents.
 
     Keyword arguments:
+    
     - position  -- Initial container position (default=(0,0,0)).
     - rotation  -- Initial container rotation (default=(0,0,0)).
     - scaling   -- Initial container scaling (default=(1,1,1)).
@@ -256,6 +257,9 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         self.rearangeContents()
         
+
+__kamaelia_components__ = ( Container, )
+
 
 if __name__=='__main__':
     from SimpleButton import SimpleButton
