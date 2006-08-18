@@ -19,14 +19,22 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
-=====================
-Checkers game component
-=====================
+===================
+Checkers board game
+===================
+
+A 3D version of the checkers (draughts) boardgame.
+
+Only basic game rules are implemented (pieces can't be put on top of
+another and only on black fields). The implementation of more advanced
+game rules is left up to the reader :) .
 """
 
 
 import Axon
+import sys
 
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
@@ -38,7 +46,7 @@ from CheckersInteractor import CheckersInteractor
 class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {
        "inbox": "not used",
-       "control": "ignored",
+       "control": "receive shutdown messages",
     }
     
     Outboxes = {
@@ -46,9 +54,9 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     }
 
     def initialiseComponent(self):
-        # initialise display
-        display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15), limit_fps=100).activate()
-        OpenGLDisplay.setDisplayService(display)
+        # listen to shutdown events
+        ogl_display = OpenGLDisplay.getDisplayService()[0]
+        self.link( (ogl_display, "signal"), (self, "control") )
     
         # create board
         self.boardvis = CheckersBoard(position=(0,0,-15)).activate()
@@ -124,8 +132,19 @@ class Checkers(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.board[to[0]][to[1]] = colour
                     self.send("ACK", self.interactor_comms[objectid])
                     
+        while self.dataReady("control"):
+            cmsg = self.recv("control")
+            if isinstance(cmsg, Axon.Ipc.shutdownMicroprocess):
+                # dirty way to terminate program
+                sys.exit(0)
+                
         return 1
         
 if __name__=='__main__': 
+    # initialise display, change point of view
+    ogl_display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15), limit_fps=100)
+    ogl_display.activate()
+    OpenGLDisplay.setDisplayService(ogl_display)
+ 
     Checkers().activate()
     Axon.Scheduler.scheduler.run.runThreads()

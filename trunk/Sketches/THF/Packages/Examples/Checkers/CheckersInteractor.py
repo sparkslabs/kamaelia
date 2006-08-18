@@ -78,6 +78,7 @@ class CheckersInteractor(Interactor):
                     if event.button == 1:
                         self.grabbed = True
                         self.send((0,0,self.liftheight), "movement")
+                        
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1 and self.grabbed:
                         self.grabbed = False
@@ -85,7 +86,6 @@ class CheckersInteractor(Interactor):
                         alignedpos = self.position.copy()
                         alignedpos.x = floor(alignedpos.x)+0.5
                         alignedpos.y = floor(alignedpos.y)+0.5
-
 
                         diff = alignedpos - self.position
                         self.send((diff.x,diff.y,-self.liftheight), "movement")
