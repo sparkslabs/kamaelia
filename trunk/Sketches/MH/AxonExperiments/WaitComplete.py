@@ -4,6 +4,8 @@
 # implemented again in the current optimised axon and, preferably making the
 # scheduler a little simpler in the process
 
+from Axon.Ipc import WaitComplete,reactivate
+
 class Microprocess(object):
     def __init__(self):
         super(Microprocess,self).__init__()
@@ -11,12 +13,23 @@ class Microprocess(object):
     def next(self):
         return self.__thread.next()
 
-    def _microprocessGenerator(self,someobject, mainmethod="main"):
-       pc = someobject.__getattribute__(mainmethod)()
-       while 1:
-           # Continually try to run the code, and then release control
-           v = pc.next()
-           yield v
+    def _microprocessGenerator(self,main,continuation=None):
+        pc = main
+        while 1:
+            try:
+                v = pc.next()
+                if isinstance(v,WaitComplete):
+                    newMain = v.args[0]
+                    self.__thread = self._microprocessGenerator(newMain,self.__thread)
+                yield v
+            except StopIteration:
+                if continuation:
+                    self.__thread = continuation
+                    yield 1
+                    # replace this generator with the continuation
+                    # this generator will not be executed
+                else:
+                    raise
 
     def main(self):
         """STUB"""
@@ -25,7 +38,8 @@ class Microprocess(object):
 
     def activate(self, scheduler, mainmethod="main"):
         self.scheduler = scheduler
-        self.__thread = self._microprocessGenerator(self,mainmethod)
+        main = self.__getattribute__(mainmethod)()
+        self.__thread = self._microprocessGenerator(main)
         self.scheduler.activateThread(self)
         return self
 
@@ -94,11 +108,14 @@ class Component(Microprocess):
 import time,sys
 
 class Source(Component):
+    def waitALittle(self):
+        t=time.time()
+        while time.time() < t+0.5:
+            yield 1
+        
     def main(self):
         for i in range(10,-1,-1):
-            t=time.time()
-            while time.time() < t+1.0:
-                yield 1
+            yield WaitComplete(self.waitALittle())
                 
             self.send(i,"outbox")
 
