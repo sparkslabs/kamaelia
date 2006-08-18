@@ -20,18 +20,39 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""\
+===========================
+Simple Pygame drawing board
+===========================
+
+"""
+
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class MagnaDoodle(Axon.Component.component):
+   """\
+   MagnaDoodle(...) -> A new MagnaDoodle component.
+
+   Keyword arguments:
+   
+   - caption      -- text (default="Button <component id>")
+   - position     -- (x,y) position of top left corner in pixels
+   - margin       -- pixels margin between caption and button edge (default=8)
+   - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
+   - fgcolour     -- (r,g,b) text colour (default=(0,0,0))
+   - transparent  -- draw background transparent if True (default=False)
+   - size         -- None or (w,h) in pixels (default=None)
+   
+   """
    
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay"
              }
-   Outboxes = { "outbox" : "button click events emitted here",
+   Outboxes = { "outbox" : "not used",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
