@@ -111,6 +111,7 @@ class PygameWrapper(OpenGLComponent):
     them on a Plane in 3D using OpenGL.
     
     Keyword arguments:
+    
     - wrap          -- Pygame component to wrap
     - pixelscaling  -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     - sidecolour    -- Colour of side and back planes (default=(200,200,244))
@@ -274,6 +275,8 @@ class PygameWrapper(OpenGLComponent):
                 self.eventswanted[message["REMOVELISTENEVENT"]] = False
                 self.removeListenEvents([message["REMOVELISTENEVENT"]])
 
+
+__kamaelia_components__ = (PygameWrapper,)
 
 if __name__=='__main__':
     from Kamaelia.Util.Console import ConsoleReader

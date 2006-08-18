@@ -93,7 +93,8 @@ class Button(OpenGLComponent):
     A button widget for the OpenGL display service. Sends a message when
     clicked or an assigned key is pressed.
 
-    Button specific constructor keyword arguments:
+    Keyword arguments:
+
     -caption      -- Button caption (default="Button")
     -bgcolour     -- Colour of surfaces behind caption (default=(244,244,244))
     -fgcolour     -- Colour of the caption text (default=(0,0,0)

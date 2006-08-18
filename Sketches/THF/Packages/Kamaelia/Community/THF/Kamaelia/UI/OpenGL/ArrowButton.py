@@ -19,6 +19,7 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
 """\
 =============================
 Simple Arrow Button component
@@ -97,6 +98,7 @@ class ArrowButton(SimpleButton):
         glVertex3f(0,hs.y,hs.z)
         glEnd()
 
+__kamaelia_components__ = ( ArrowButton, )
 
 if __name__=='__main__':
     from Kamaelia.Util.Console import ConsoleEchoer

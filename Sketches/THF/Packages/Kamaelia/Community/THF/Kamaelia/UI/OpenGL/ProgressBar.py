@@ -80,6 +80,7 @@ class ProgressBar(OpenGLComponent):
     a tranparent bar indicating a percentage.
     
     Keyword arguments:
+    
     - cagecolour  -- Cage colour (default=(0,0,0))
     - barcolour   -- Bar colour (default=(200,200,244))
     - progress    -- Initial progress value (default=0.0)
@@ -181,12 +182,12 @@ class ProgressBar(OpenGLComponent):
     def handleProgress(self):
          while self.dataReady("progress"):
             self.progress = self.recv("progress")
-            print self.progress
             if self.progress < 0.0: self.progress = 0.0
             if self.progress > 1.0: self.progress = 1.0
             self.redraw()
             
 
+__kamaelia_components__ = (ProgressBar,)
 
 if __name__=='__main__':
     from Kamaelia.Automata.Behaviours import bouncingFloat

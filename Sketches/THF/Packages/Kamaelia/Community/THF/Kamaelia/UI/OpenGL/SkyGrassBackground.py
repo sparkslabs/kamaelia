@@ -21,9 +21,9 @@
 # -------------------------------------------------------------------------
 
 """\
-=====================
+======================
 Sky & Grass background
-=====================
+======================
 
 A very simple component showing a plane with the upper half coloured light blue and the lower half green. Can be used for a background.
 
@@ -74,6 +74,8 @@ class SkyGrassBackground(OpenGLComponent):
         glVertex3f(self.w, -self.h, -0)
         glVertex3f(-self.w, -self.h, -0)
         glEnd()
+
+__kamaelia_components__ = (SkyGrassBackground,)
 
 if __name__=='__main__':
     SkyGrassBackground(size=(5000,5000,0), position=(0,0,-100)).activate()

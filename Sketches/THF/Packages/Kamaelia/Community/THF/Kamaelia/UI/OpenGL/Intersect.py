@@ -38,6 +38,7 @@ class Intersect:
         Intersects a ray with an oriented bounding box.
         
         Arguments:
+        
         - r_origin -- origin of the ray
         - r_dir -- normalized direction of the ray
         - b_pos -- position of the box

@@ -202,6 +202,7 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     service that is needed to setup, draw and move an object using OpenGL.
 
     Keyword arguments:
+    
     - size      -- three dimensional size of component (default=(0,0,0))
     - rotation  -- rotation of component around (x,y,z) axis (defaul=(0,0,0))
     - scaling   -- scaling along the (x,y,z) axis (default=(1,1,1))
@@ -405,11 +406,12 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Method stub
         
         Override this method to do event handling inside.
-        Should look like this:
+        Should look like this::
+        
             while self.dataReady("events"):
                 event = self.recv("events")
                 # handle event ...
-
+        
         """
         pass        
 
@@ -446,7 +448,7 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """
         pass
 
-
+__kamaelia_components__ = (OpenGLComponent,)
 
 if __name__=='__main__':
     class Point(OpenGLComponent):

@@ -75,6 +75,8 @@ class SimpleTranslationInteractor(Interactor):
     
     A simple interactor for moving OpenGLComponents along th X,Y plane.
 
+    Keyword arguments:
+
     - translationfactor -- factor to translate between 2d and 3d movement (default=10.0)
     """
     
@@ -107,7 +109,7 @@ class SimpleTranslationInteractor(Interactor):
                     amount = (float(event.rel[0])/self.translationfactor, -float(event.rel[1])/self.translationfactor)
                     self.send(amount, "outbox")
 
-
+__kamaelia_components__ = (SimpleTranslationInteractor)
 
 if __name__=='__main__':
     from SimpleCube import *

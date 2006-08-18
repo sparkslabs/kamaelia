@@ -73,6 +73,7 @@ class TexPlane(OpenGLComponent):
     A plane showing a texture loaded from an image file.
 
     Keyword arguments:
+    
     - tex           -- image file name
     - pixelscaling  -- factor for translation from pixels to units in 3D space (default=100.0)
     """
@@ -143,6 +144,7 @@ class TexPlane(OpenGLComponent):
         """ Load texture. """
         self.loadTexture()
 
+__kamaelia_components__ = (TexPlane,)
 
 if __name__=='__main__':
     PLANE = TexPlane(position=(0, 0,-6), texture="nemo.jpeg").activate()

@@ -21,9 +21,9 @@
 # -------------------------------------------------------------------------
 
 """\
-======================
+=======================
 Simple Button component
-======================
+=======================
 
 A simple cuboid shaped button without caption. Implements responsive
 button behavoir.
@@ -75,6 +75,7 @@ class SimpleButton(OpenGLComponent):
     button behavoir.
 
     Keyword arguments:
+    
     - bgcolour      -- Background colour (default=(244,244,244))
     - sidecolour    -- Colour of side planes (default=(200,200,244))
     - key           -- Activation key, pygame identifier (optional)
@@ -161,6 +162,8 @@ class SimpleButton(OpenGLComponent):
             if activate:
                 self.send( self.eventMsg, "outbox" )
 
+
+__kamaelia_components__ = (SimpleButton,)
 
 if __name__=='__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
