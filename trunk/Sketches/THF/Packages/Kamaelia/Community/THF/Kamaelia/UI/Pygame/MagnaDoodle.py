@@ -25,6 +25,11 @@
 Simple Pygame drawing board
 ===========================
 
+A simple drawing board for the pygame display service.
+
+Use your left mouse button to draw to the board and the
+right to erase your artwork.
+
 """
 
 import pygame
@@ -36,9 +41,12 @@ class MagnaDoodle(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
 
+   A simple drawing board for the pygame display service.
+
+   (this component and its documentation is heaviliy based on Kamaelia.UI.Pygame.Button)
+
    Keyword arguments:
    
-   - caption      -- text (default="Button <component id>")
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)
    - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
