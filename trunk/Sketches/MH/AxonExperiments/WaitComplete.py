@@ -124,16 +124,27 @@ class Source(Component):
 
 
 class Sink(Component):
+    def waitForData(self):
+        paused=False
+        while not self.dataReady("inbox"):
+            paused=True
+            self.pause()
+            yield 1
+            assert(self.dataReady("inbox"))
+        assert(paused)
+            
     def main(self):
         done=False
         while not done:
+            yield WaitComplete(self.waitForData())
+            
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 sys.stdout.write(str(data)+"\n")
                 sys.stdout.flush()
                 done = data==0
+                
             yield 1
-            
             
             
 scheduler = Scheduler()
