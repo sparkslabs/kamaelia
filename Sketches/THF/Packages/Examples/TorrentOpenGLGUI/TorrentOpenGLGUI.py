@@ -21,10 +21,16 @@
 # -------------------------------------------------------------------------
 
 """\
-=====================
-GUI for Ryans Bittorrent Package
-=====================
-TODO
+=========================================
+GUI for Ryans Lothians Bittorrent Package
+=========================================
+
+A 3D GUI for bittorrent downloading using Ryan Lothians Kamaelia
+Bittorrent package. Features torrent fetching from URLs,
+starting/stopping of torrents and showing torrent information.
+
+To work properly, an installation of Bittorrent 4.20.8 or higher is
+required.
 """
 
 import Axon
@@ -51,11 +57,12 @@ from BitTorrent.bencode import bdecode
 import random
 import os
 import time
+import sys
 
 class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {
         "inbox":"Receive messages from TorrentPatron",
-        "control":"not used",
+        "control":"receive shutdown messages",
         
         "nav":"To receive commands from navigation buttons",
 
@@ -104,6 +111,7 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
+                print msg
                 
                 if isinstance(msg, TIPCNewTorrentCreated):
                     torrent = self.started_torrents.pop(0)
@@ -159,9 +167,20 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             while self.dataReady("hide_info"):
                 msg = self.recv("hide_info")
                 self.hideInfo()
+            
+            while self.dataReady("control"):
+                cmsg = self.recv("control")
+                if isinstance(cmsg, Axon.Ipc.shutdownMicroprocess):
+                    # dirty way to terminate program
+                    sys.exit(0)
 
 
     def initUIComponents(self):
+        # listen to shutdown events
+        ogl_display = OpenGLDisplay().getDisplayService()[0]
+        self.link( (ogl_display, "signal"), (self, "control") )
+        
+        # init mover
         self.mover = WheelMover(radius=15, center=(0,0,-25), steps=500, slots=40).activate()
         self.link( (self, "mover_signal"), (self.mover, "notify") )
         self.link( (self, "mover_switch"), (self.mover, "switch") )
@@ -278,9 +297,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleReader
     from Kamaelia.UI.PygameDisplay import PygameDisplay
-
     from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
-    
     from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
     
