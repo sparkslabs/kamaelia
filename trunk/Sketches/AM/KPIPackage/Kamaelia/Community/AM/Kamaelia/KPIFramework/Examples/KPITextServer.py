@@ -26,12 +26,25 @@ from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Server.KPIServer import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Client.KPIClient import KPIClient
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
 
-from TextStream import MyDataSource
 
-import random
 from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
 from Axon.Scheduler import scheduler as _scheduler
+
+#A text streaming source
+class MyDataSource(Axon.Component.component):
+    def main(self):
+        index = 0
+        while 1:
+            yield 1
+            if index % 1000 == 0:
+                data = str(index) + "-helloknr"
+                self.send(data, "outbox")
+                print "data source sent", data
+            else:
+                yield 1
+            index = index + 1
+
 
 import sys
 if __name__=="__main__":
