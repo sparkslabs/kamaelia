@@ -22,7 +22,11 @@
 #
 
 """
-A set of functions that implement Logical Key Hierarchy(LKH) scheme.
+===============================
+Logical Key Hierarchy Module
+================================
+A set of functions that implement Logical Key Hierarchy(LKH) scheme for
+multicast transmission.
 The Logical Key Hierarchy (LKH) scheme is a balanced binary tree based
 scheme. The binary tree is persisted in one file.
 In an LKH tree, there is a leaf node corresponding to each group member.
@@ -34,9 +38,13 @@ its corresponding leaf node to the root of the tree. Hence, the key
 corresponding to the root node is shared by all members, and serves
 as the group key.
 
-All KPI keys are stored in a binary tree. The user key are stored in the 
-leaf and parent keys are nodes. The binary tree is persisted in a file.
+How it works?
+----------------
+There are three tree management functions
 
+createDB, createUser, getUserConfig, getInfo
+
+createDB writes all the metadata and user keys in a file .
 The file structure:
 header size-8 bytes for storing 4 bytes in hex format
 key_length-8 bytes for storing 4 bytes in hex format
@@ -44,14 +52,6 @@ max_user_id-8 bytes for storing 4 bytes in hex format
 next_user_id-8 bytes for storing 4 bytes in hex format
 All the key bytes are stored with no delimiters (as we know the key len)
 [rootkey][child1 key][chid2 key]...[user1 key][user2key]
-
-
-There are three tree management functions
-
-createDB, createUser, getUserConfig, getInfo
-
-createDB writes all the metadata and user keys in a file whose
-structure is described above
 
 createUser creates a user config file. This user config must be distributed
 to user in a secure manner. The user and its parent keys are stored.
@@ -72,7 +72,11 @@ active users
 
 import struct, random, array
 def create_key(key_len):
+    """ Generates key using random device if present
+    - key_len    -- length of key
+    """
     try:
+        #generates truly random numbers
         frand = open("/dev/random", "r")
         data = frand.read(key_len/2)
         frand.close()
@@ -80,6 +84,7 @@ def create_key(key_len):
     except IOError:
         buf =''
         length = key_len/4
+        #generates truly pusedo random numbers
         for i in range(length):
             #read one byte at a time
             buf  = buf + struct.pack("!L", random.getrandbits(32)).encode('hex')
@@ -87,6 +92,10 @@ def create_key(key_len):
   
 
 def get_depth(count):
+    """ returns the depth of the tree
+    - count    -- 32 bit value
+    eg: If any number between 9 and 16 is passed the function returns 4
+    """
     l = count
     depth = 0
     l = l>> 1
@@ -102,6 +111,12 @@ def get_depth(count):
 
 HEADER_SIZE = 32 # 32 bytes of header
 def createDB(db_file, key_len, num_users):
+    """ creates DB file with all keys and meta data
+    - db_file    -- db file name
+    - key_len    -- length of the key
+    - num_users  -- number of users
+    eg: createDB("mytree", 16, 4)
+    """
     header_part = HEADER_SIZE/4
     buf = ""
     next_user_id = 0
@@ -109,23 +124,28 @@ def createDB(db_file, key_len, num_users):
     l = 0
 
     ftree = open(db_file, "w");
-
+    
+    #calculate max user id and next user id
     next_user_id = 1 << get_depth(num_users)
     max_user_id = next_user_id << 1
 
+    #4 bytes to store the header size 
     buf = struct.pack("!L", HEADER_SIZE).encode('hex')
     ftree.write(buf)
 
+    #4 bytes to store the key length
     buf = struct.pack("!L", key_len).encode('hex')
     ftree.write(buf)
 
+    #4 bytes to store the max user id
     buf = struct.pack("!L", max_user_id).encode('hex')
     ftree.write(buf)
 
+    #4 bytes to store the next user id
     buf = struct.pack("!L", next_user_id).encode('hex')
     ftree.write(buf)
 
-    #tree starts from the 2nd key
+    #generates keys and write into DB file
     for l  in range(max_user_id):
         ftree.write(create_key(key_len))
 
@@ -134,24 +154,30 @@ def createDB(db_file, key_len, num_users):
 
 
 def createUser(dbfile, user_file):
+    """ creates a User and creates config file with user keys
+    - db_file    -- db file name
+    - user_file  -- User configuration file
+    eg: createUser("mytree", "user1")
+    """    
     header_part = HEADER_SIZE/4
 
     ftree = open(dbfile, "r+");
 
     ftree.seek(header_part);
 
+    #read key len by unpacking 4 bytes 
     buf = ftree.read(header_part)
     key_len = struct.unpack("!L", buf.decode('hex'))[0]
-    #print "key length", key_len
 
+    #read max user id by unpacking 4 bytes 
     buf = ftree.read(header_part)
     max_user_id = struct.unpack("!L", buf.decode('hex'))[0]
-    #print "max user id", max_user_id
 
+    #read next user id by unpacking 4 bytes
     buf = ftree.read(header_part)
     next_user_id = struct.unpack("!L", buf.decode('hex'))[0]
-    #print "next user id", next_user_id
 
+    #create a new user and update the next_user_id 
     if (next_user_id < max_user_id):
         user_id = next_user_id
         next_user_id = next_user_id+1
@@ -163,6 +189,7 @@ def createUser(dbfile, user_file):
         ftree.close()
         return
 
+    #create user config file
     fuser = open(user_file, "w")
 
     fuser.write("#user key configuration\n")
@@ -174,6 +201,7 @@ def createUser(dbfile, user_file):
 
     fuser.write(str(user_id) + "=" + str(key) + "\n")
     user_id = user_id >> 1
+    #get all the user's parent keys and write to config file
     while( user_id != 0) :
         ftree.seek(HEADER_SIZE + user_id * key_len)
         key = ftree.read(key_len)
@@ -185,17 +213,26 @@ def createUser(dbfile, user_file):
 
 
 def getCommonKeys(db_file, ids):
+    """ returns a table of common ids and keys given a list of ids
+    - db_file  -- tree db file
+    - ids    -- list of userids
+    eg: getCommonKeys("mytree", [4,6,7])
+    """    
+   
     header_part = HEADER_SIZE/4
     ftree = open(db_file, "r")
 
     ftree.seek(header_part)
     buf = ftree.read(header_part)
 
+    #read key len by unpacking 4 bytes 
     key_len = struct.unpack("!L", buf.decode('hex'))[0]
 
-    idkeymap = {}
+    idkeymap = {} #holds common id:keys pairs
+    #get common set ids
     common_ids = getCommonIds(ids)
 
+    #get common keys
     for ID in common_ids:
         ftree.seek(HEADER_SIZE + ID * key_len)
         idkeymap[ID] = ftree.read(key_len)
@@ -205,7 +242,10 @@ def getCommonKeys(db_file, ids):
 
 
 def getCommonIds(ids):
-    #if there N active users, best case is all of them have a common parent
+    """ returns a list of common ids/parent ids and given a list of user ids
+    - ids    -- list of userids
+    eg: getCommonIds([4,6,7])
+    """ 
     common_ids = []
     count = len(ids)
     depth  = get_depth(count)
@@ -246,6 +286,12 @@ def getCommonIds(ids):
     
 
 def getUserConfig(dbfile, user_id):
+    """ prints user config given user id
+    used for troubleshooting
+    - dbfile    -- tree database file
+    - userid    -- user id
+    eg: getUserConfig("mytree", 7)
+    """            
     header_part = HEADER_SIZE/4
     ftree = open(dbfile, "r")
     ftree.seek(header_part)
@@ -273,6 +319,11 @@ def getUserConfig(dbfile, user_id):
 
 
 def getUserKey(dbfile, user_id):
+    """ return user key given user id
+    - dbfile    -- tree database file
+    - userid    -- user id
+    eg: getUserKey("mytree", 7)
+    """    
     header_part = HEADER_SIZE/4
     ftree = open(dbfile, "r")
     ftree.seek(header_part)
@@ -291,6 +342,11 @@ def getUserKey(dbfile, user_id):
     return key
 
 def getKey(dbfile, ID):
+    """ return user key given user id
+    - dbfile    -- tree database file
+    - userid    -- user id
+    eg: getUserKey("mytree", 7)
+    """    
     header_part = HEADER_SIZE/4
     ftree = open(dbfile, "r")
     ftree.seek(header_part)
@@ -310,6 +366,7 @@ def getKey(dbfile, ID):
 
 
 class DBInfo:
+    """ meta data class that contains header"""
     key_len = 0
     current_user_id = 0
     max_user_id = 0
@@ -317,6 +374,11 @@ class DBInfo:
 
 
 def getInfo(dbfile):
+    """ return DBInfo instance given dbfile
+    - dbfile    -- tree database file
+    used for diagnostic purpose
+    eg: getInfo("mytree")
+    """    
     header_part = HEADER_SIZE/4
     ftree = open(dbfile, "r")
 
