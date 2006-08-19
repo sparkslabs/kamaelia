@@ -111,7 +111,7 @@ class TorrentOpenGLGUI(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
-                print msg
+#                print msg
                 
                 if isinstance(msg, TIPCNewTorrentCreated):
                     torrent = self.started_torrents.pop(0)
