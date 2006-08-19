@@ -21,7 +21,16 @@
 # -------------------------------------------------------------------------
 #
 """
-Simulator program shows two users connected to KPIServer
+=========================================
+Example Showing Usage of the KPIFramework
+========================================
+This is a simulator program shows two users connected to KPIServer.
+
+How does it work ?
+------------------
+The Client and the Client Connector communicate through the KPIFramework. 
+In this example, they are directly connected (without a network)
+Prerequisite: The dbfile and sample users have to be created.
 """
 
 
@@ -34,8 +43,10 @@ from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Client.KPIClient import KPI
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
 #from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
-#A text streaming source
 class MyDataSource(Axon.Component.component):
+    """ A text streaming source that generates sequence
+    of numbered hello strings
+    """
     def main(self):
         index = 0
         while 1:
@@ -49,22 +60,25 @@ class MyDataSource(Axon.Component.component):
             index = index + 1
 
 
-#prints received text 
 class MyDataSink(Axon.Component.component):
+    """ prints received text
+    """    
     def main(self):
         while 1:
             yield 1
             while self.dataReady("inbox"):
                 print "datasink received:", self.recv("inbox")
 
-#client simulation
-kpidb = KPIDBI.getDB("mytree")
 
-#start the KPI server
+""" client simulation """
+
+"""Create KPIDB instance"""
+kpidb = KPIDBI.getDB("mytree")
+""" start the KPI server """
 KPIServer(MyDataSource(), kpidb.getKPIKeys())
 
 
-#client representing user1 connects to the KPI server
+""" client representing user1 connects to the KPI server"""
 Graphline(
     #c=KPIClient("user1", consoleEchoer()),
     c=KPIClient("user1", MyDataSink()),
@@ -75,7 +89,7 @@ Graphline(
     }
 ).activate()
 
-#client representing user3 connects to the KPI server
+""" client representing user3 connects to the KPI server """
 Graphline(
     #c=KPIClient("user3", consoleEchoer()),
     c=KPIClient("user3", MyDataSink()),    

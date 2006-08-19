@@ -20,6 +20,18 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
+"""
+====================================
+KPI Server that transmits text data
+====================================
+
+How does it work?
+-----------------
+The KPITextServer listens on a TCP port, authenticates users and upon
+successful authenticates encrypts and streams the text data provided
+MyDataSink
+"""
+
 import Axon
 from Kamaelia.Util.Graphline import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Server.KPIServer import *
@@ -31,8 +43,10 @@ from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
 from Axon.Scheduler import scheduler as _scheduler
 
-#A text streaming source
 class MyDataSource(Axon.Component.component):
+    """ A text streaming source that generates sequence
+    of numbered hello strings
+    """    
     def main(self):
         index = 0
         while 1:

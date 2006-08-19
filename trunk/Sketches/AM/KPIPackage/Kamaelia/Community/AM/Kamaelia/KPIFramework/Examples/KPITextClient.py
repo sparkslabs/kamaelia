@@ -20,6 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
+
+"""
+====================================
+KPI Client that recieves and prints text data
+====================================
+
+How does it work?
+-----------------
+The KPITextClient establishes TCP connection with the
+KPITextServer. Upon successful authentication,
+receives session key and uses session key decrypt the
+encrypted stream. The decrypted stream is printed by
+MyDataSink component
+"""
+
 import Axon
 from Kamaelia.Util.Graphline import *
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Server.KPIServer import *
@@ -30,8 +45,9 @@ from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
 #from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
 
-#prints received text 
 class MyDataSink(Axon.Component.component):
+    """ prints received text
+    """     
     def main(self):
         while 1:
             yield 1
