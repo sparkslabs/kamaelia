@@ -21,8 +21,20 @@
 # -------------------------------------------------------------------------
 #
 """
-There is one client connector on the server side for each client that connects.
-Sequence of events
+This Module consists of KPIServer and clientconnector 
+
+How does it work ?
+-------------------
+
+There is one clientconnector per client connection. The clientconnector
+is server side subsystem embeds authenticator, notifier to KeyManagement
+backplane
+
+KPIServer is server subsystems that has two back planes - keymanagement
+and datamanagement. It encapsulates DataTx, SessionKeyController,
+Encryptor, DataSink
+
+Framework Description
 When the client initiates a connection, 
 1. The authenticatee and the authenticator perform a challenge response sequence 
 2. If authentication is successful, the authenticator publishes the user-id to
@@ -33,9 +45,8 @@ When the client initiates a connection,
 3. The session key controller subscribes to the Key management backplane and
    is thus aware of new client join events.
 4. For each key change trigger, the session key controller generates a new
-   session key and computes the keys to use to transmit the session key,
-   encrypts the session key with all the required keys and sends it to the
-   data transmitter.
+   session key and computes the common keys used to encrypt the session key
+   with and sends the encrypted key packets to data transmitter.
 5. The session key controller also passes the session key to the encryptor
    component so that data can be encrypted using it.
 6. The encrypted data is also packetised by the data transmitter and
@@ -50,8 +61,11 @@ from DataTx import DataTx
 from Encryptor import Encryptor
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.DB import KPIDBI
 
-#server side client connector
 def clientconnector():
+    """\   clientconnector() -> returns Graphline
+    clientconnector is the peer to KPIClient
+    Keyword arguments: None
+    """ 
     return Graphline(
         authenticator = Authenticator(KPIDBI.getDB("mytree")),
         notifier = publishTo("KeyManagement"),
@@ -64,8 +78,14 @@ def clientconnector():
 
 
 
-#KPI Session management and Data transmission backend
 def KPIServer(datasource, kpidb):
+    """\   KPIServer(datasource, kpidb) -> activates KPISever
+    KPIServer is Session rekeying and Data transmission backend 
+    Keyword arguments:
+    - datasource -- any component with an outbox. the datasource
+                    sends data to encryptor's inbox
+    - kpidb    -- KPIDB instance for key lookup
+    """    
     Backplane("DataManagement").activate()
     Backplane("KeyManagement").activate()
     Graphline(

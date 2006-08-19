@@ -21,11 +21,24 @@
 # -------------------------------------------------------------------------
 #
 """
-SessionKeyController accepts key change triggers, generates a new session key
-and communicates it to all the clients using common keys it shares with the
-selected recipients. The actual keys that will be used are determined by the
-Logical Key Hierarchy algorithm.
+=======================
+Session Key Controller
+=======================
+SessionKeyController is the core component of KPIFramework that handles
+rekeying. SessionKeyController accepts key change triggers, generates a
+new session key and communicates it to all the clients using common keys
+shared by the active recipients. The commonkeys are determined by
+the Logical Key Hierarchy algorithm.
+
+How it works?
+-------------
+The component recieves the userid of the new user on the "userevent" inbox.
+It generates a new session key. The new session key is encrypted with the
+common keys and sent on the outbox to be transmitted to all the clients.
+It is sent as clear text on  "notifykey" outbox so that the encryptor
+can encrypt the plaintext content with it.
 """
+
 import Axon
 import random
 import md5
@@ -33,6 +46,11 @@ import struct
 from Kamaelia.Community.AM.Kamaelia.KPIFramework.KPI.Crypto import xtea
 
 class SessionKeyController(Axon.Component.component):
+    """\   SessionKeyController(kpikeys) -> new SessionKeyController component
+    Generates session keys and notifies all authenticated users
+    Keyword arguments:
+    - kpikeys    -- DB instance for obtaining common keys
+    """    
     Inboxes = {"userevent" : "new user event",
                "control" : "receive shutdown messages"}
     Outboxes = {"outbox" : "encrypted session key packets",
@@ -41,6 +59,7 @@ class SessionKeyController(Axon.Component.component):
 
 
     def __init__(self, kpikeys):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SessionKeyController,self).__init__()
         self.kpikeys = kpikeys
 
@@ -52,7 +71,7 @@ class SessionKeyController(Axon.Component.component):
         while 1:
             while not self.dataReady("userevent"):
                 yield 1
-            #print "SC sending a key"
+
             userid = self.recv("userevent")
             #to avoid duplicate entries
             try:
@@ -61,18 +80,18 @@ class SessionKeyController(Axon.Component.component):
                 users.append(userid)
                 users.sort()
 
-            #todo to send in a format
+            #obtain common keys
             idkeymap = kpikeys.getCommonKeys(users)
             sessionKey = self.getSessionKey()
-            #print "SC->sessionkey", sessionKey
 
             #notify the session key
             self.send(sessionKey, "notifykey")
 
-            #encrypt the the session key with common keys
+            #encrypt the session key with common keys
             for ID, key in idkeymap.iteritems():
+                #packet structure - 8 bytes of ID and
+                #16 bytes of encrypted session key
                 idstr = struct.pack("!2L", 0, ID)
-                #print "id,key", ID,len(key)
                 cipher = xtea.xtea_encrypt(key, sessionKey[:8])
                 cipher = cipher + xtea.xtea_encrypt(key, sessionKey[8:16])
                 data = idstr + cipher
@@ -80,6 +99,7 @@ class SessionKeyController(Axon.Component.component):
             yield 1
 
 
+    #sessionkey is a MD5 hash of four random numbers
     def getSessionKey(self):
         r1 = random.getrandbits(32)
         r2 = random.getrandbits(32)

@@ -21,17 +21,32 @@
 # -------------------------------------------------------------------------
 #
 """
-The Data Transmitter packetises the data. The data being transmitted could be
-encrypted data packets or key packets encrypted with common keys. The DataTx
-adds a header specifying key type and packet length
+====================
+DataTx
+====================
+The DataTx packetises the data. It adds packet header to the
+
+
+How it works?
+---------------------
+The DataTx adds a header to the data received on its inboxes "keyin" and
+"inbox". The packet header contains packet type and packet length.
+It is necessary to distinguish between encrypted data to be sent and
+encrypted session keys because the client needs to be able to
+distinguish between the two.
 """
 
 import Axon
 import struct
 
 class DataTx(Axon.Component.component):
-    Inboxes = {"inbox" : "data to be encrypted",
-               "keyIn" : "key updates",
+    """\   DataTx() -> new DataTx component
+    Handles packetizing
+    Keyword arguments: None
+    """
+    
+    Inboxes = {"inbox" : "encrypted data",
+               "keyIn" : "encrypted session key",
                "control" : "receive shutdown messages"}
     Outboxes = {"outbox" : "add header and send encrypted key and data packets",
                 "signal" : "pass shutdown messages"}
@@ -43,11 +58,11 @@ class DataTx(Axon.Component.component):
         KEY = 0x20
         DATA = 0x30
         while 1:
+            #add header - packet type=4 bytes and packet length = 4 bytes
             while self.dataReady("keyIn"):
                 data = self.recv("keyIn")
                 header = struct.pack("!2L", KEY, len(data))
                 packet = header + data
-                #print "DataTx", packet
                 self.send(packet, "outbox")
             yield 1
 
@@ -55,6 +70,5 @@ class DataTx(Axon.Component.component):
                 data = self.recv("inbox")
                 header = struct.pack("!2L", DATA, len(data))
                 packet = header + data
-                #print "DataTx", packet
                 self.send(packet, "outbox")
             yield 1
