@@ -1,12 +1,15 @@
 import LKH
-
+"""
+This module consists of KPI tree database interface classes
+"""
 
 def getDB(dbfile):
+    """ returns KPIDB instance"""
     return KPIDB(dbfile)
   
-#DB Access classes
 class KPIDB(object):
-    
+    """DB Access classes"""
+
     def __init__(self, dbfile):
       super(KPIDB,self).__init__()
       self.dbfile = dbfile
@@ -25,17 +28,17 @@ class KPIDB(object):
     def getKPIKeys(self):
         return KPIKeys(self.dbfile)
 
-    
-
-#returns user key and list of common keys given a list of users
 class KPIKeys(object):
-    
+    """ Provides common keys and user key functionality"""
+   
     def __init__(self, dbfile):
       super(KPIKeys,self).__init__()
       self.dbfile = dbfile
     
     def getKey(self, userid):
+        """Get the key of corresponding to a user-id """
         return LKH.getUserKey(self.dbfile, userid)
 
     def getCommonKeys(self, users):
+        """ get common keys of a list of users """
         return LKH.getCommonKeys(self.dbfile, users)

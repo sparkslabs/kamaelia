@@ -20,8 +20,15 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
+"""
+========
+KPI User
+=========
+This class loads the User configuration data from the config file. Interfaces
+are provided to return the id and key of the self node, key of root node and 
+the also all keys that the user knows.
 
-
+"""
 #loads keys from user configuration file
 class KPIUser(object):
     def __init__(self, configfile):
