@@ -25,7 +25,19 @@
 A collection of movement components and classes
 ===============================================
 
-LinearPath, PathMover, WheelMover, SimpleRotator, SimpleBuzzer
+Contained components:
+
+- PathMover
+- WheelMover
+- SimpleRotator
+- SimpleBuzzer
+
+Contained classes:
+
+- LinearPath
+
+For a description of these classes have a look at their class
+documentation.
 
 Example Usage
 -------------
