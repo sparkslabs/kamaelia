@@ -83,6 +83,7 @@ class SimpleButton(OpenGLComponent):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleButton, self).__init__(**argd)
 
         self.backgroundColour = argd.get("bgcolour", (244,244,244))

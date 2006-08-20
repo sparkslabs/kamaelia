@@ -98,6 +98,7 @@ class LinearPath:
     - steps     -- number of steps to generate between the path endpoints (default=1000)
     """
     def __init__(self, points = [], steps = 1000):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         if steps == 0:
             steps = len(points)
         
@@ -173,6 +174,7 @@ class PathMover(Axon.Component.component):
         "status": "Used to send status messages",
     }
     def __init__(self, path, repeat=True):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PathMover, self).__init__()
         self.path = path
         self.repeat = repeat
@@ -291,6 +293,7 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     }
     
     def __init__(self, steps=400, center=(0,0,-13), radius=5, slots=20):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(WheelMover, self).__init__()
     
         self.slots = slots
@@ -391,6 +394,7 @@ class SimpleRotator(Axon.Component.component):
     - amount    -- amount of relative rotation sent (default=(0.1,0.1,0.1))
     """    
     def __init__(self, amount=(0.1,0.1,0.1)):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleRotator, self).__init__()
         self.amount = amount
         
@@ -422,6 +426,7 @@ class SimpleMover(Axon.Component.component):
     - origin    -- origin of movement (default=(0,0,-20))
     """
     def __init__(self, amount=(0.03,0.03,0.03), borders=(5,5,5), origin=(0.0,0.0,-20.0)):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleMover, self).__init__()
         self.borders = borders
         self.amount = amount

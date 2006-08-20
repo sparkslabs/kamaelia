@@ -46,6 +46,7 @@ class Transform:
     """
 
     def __init__(self, m = None):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         # load identity
         if m is not None:
             self.m = m

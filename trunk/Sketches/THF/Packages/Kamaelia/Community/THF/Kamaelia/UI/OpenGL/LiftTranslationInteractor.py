@@ -100,6 +100,7 @@ class LiftTranslationInteractor(Interactor):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(LiftTranslationInteractor, self).__init__(**argd)
 
         self.liftheight = argd.get("liftheight", 2)

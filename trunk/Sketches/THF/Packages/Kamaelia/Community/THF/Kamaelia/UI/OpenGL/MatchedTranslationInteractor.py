@@ -94,6 +94,7 @@ class MatchedTranslationInteractor(Interactor):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(MatchedTranslationInteractor, self).__init__(**argd)
 
         self.grabbed = False

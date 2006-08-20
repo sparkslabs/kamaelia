@@ -80,6 +80,7 @@ class SimpleRotationInteractor(Interactor):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleRotationInteractor, self).__init__(**argd)
 
         self.rotationfactor = argd.get("rotationfactor", 1.0)

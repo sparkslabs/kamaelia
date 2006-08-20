@@ -44,6 +44,7 @@ class Vector:
     - x,y,z -- Initial values.
     """
     def __init__(self, x=0.0, y=0.0, z=0.0):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)

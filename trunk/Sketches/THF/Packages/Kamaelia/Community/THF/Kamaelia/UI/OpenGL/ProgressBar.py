@@ -86,6 +86,7 @@ class ProgressBar(OpenGLComponent):
     - progress    -- Initial progress value (default=0.0)
     """
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ProgressBar, self).__init__(**argd)
         
         # add progress Inbox, used for reception of progress values in the range (0,1)

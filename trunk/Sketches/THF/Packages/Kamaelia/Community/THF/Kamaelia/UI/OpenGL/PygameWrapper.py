@@ -119,6 +119,7 @@ class PygameWrapper(OpenGLComponent):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PygameWrapper, self).__init__(**argd)
 
         self.pixelscaling = argd.get("pixelscaling", 100.0)
