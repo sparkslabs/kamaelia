@@ -93,6 +93,7 @@ class Label(OpenGLComponent):
         
     """
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Label, self).__init__(**argd)
 
         self.caption = argd.get("caption", "Label")

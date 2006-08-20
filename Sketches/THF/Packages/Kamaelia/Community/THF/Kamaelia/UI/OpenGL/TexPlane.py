@@ -78,6 +78,7 @@ class TexPlane(OpenGLComponent):
     - pixelscaling  -- factor for translation from pixels to units in 3D space (default=100.0)
     """
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(TexPlane, self).__init__(**argd)
 
         self.tex = argd.get("texture")

@@ -133,6 +133,7 @@ class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     }
 
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Container, self).__init__()
         
         # get transformation data and convert to vectors
