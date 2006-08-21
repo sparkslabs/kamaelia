@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-# loadTexture function based on code from THF
+# loadTexture function and event handling based on code from THF
 
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Transform import Transform
+from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Intersect import Intersect
 
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 
@@ -17,12 +18,12 @@ from OpenGL.GLU import *
 import time,math
 
 class Simple3dFold(OpenGLComponent):
-    
+
     def __init__(self, **argd):
         super(Simple3dFold, self).__init__(**argd)
         self.radius = max(0.001, argd.get("radius", 1.0))
         self.segments = max(2, argd.get("segments", 15))
-    
+
     def setup(self):
         self.tex = "../../CE/characters/OLIVIA.jpg"
         self.loadTexture()
@@ -32,7 +33,7 @@ class Simple3dFold(OpenGLComponent):
             self.size.x = self.size.x * self.tex_w/self.tex_h
         else:
             self.size.y = self.size.y * self.tex_h/self.tex_w
-        
+
         size = self.size/2.0
         #              vertex coord        texture coord
         self.poly = [ ((-size.x, -size.y), (0.0,        1.0-self.tex_h)),
@@ -40,20 +41,23 @@ class Simple3dFold(OpenGLComponent):
                       ((+size.x, +size.y), (self.tex_w, 1.0           )),
                       ((+size.x, -size.y), (self.tex_w, 1.0-self.tex_h)),
                     ]
-        
+
         self.starttime = time.time()
-        self.foldpoint = (size.x*+0.8, size.y*-0.8)
-        self.folddelta = (0.5, 1.0)
-        
+        self.foldpoint = (0.0, 0.0)
+        self.folddelta = (0.0, 0.0)
+
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP ])
+        self.pulling = False
+
 
     def draw(self):
 
         polys3d = curl(self.poly, (self.foldpoint, self.folddelta), self.radius, self.segments)
-        
+
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-        
+
         val=0
         for poly in polys3d:
             glBegin(GL_POLYGON)
@@ -63,18 +67,20 @@ class Simple3dFold(OpenGLComponent):
                 glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
             glEnd()
-                
+
         glDisable(GL_TEXTURE_2D)
-        
+
     def frame(self):
         size = self.size/2.0
-        
+
         angle = (time.time()-self.starttime) / 2.0
-        self.folddelta = math.cos(angle), math.sin(angle)
+#        self.folddelta = math.cos(angle), math.sin(angle)
 
 #        self.radius = math.cos(angle)+1.0
-#        self.foldpoint, self.folddelta = calcFoldLine(self.poly[1][0], (0.0,0.0), self.radius)
-        
+        cossquared = (math.cos(angle)**2)
+#        moveto = interpolate(self.poly[1][0],self.poly[3][0],2.0*cossquared)
+#        self.foldpoint, self.folddelta = calcFoldLine(self.poly[1][0], moveto, self.radius)
+
         self.redraw()
 
     def loadTexture(self):
@@ -109,6 +115,76 @@ class Simple3dFold(OpenGLComponent):
                             GL_RGBA, GL_UNSIGNED_BYTE, textureData );
             glDisable(GL_TEXTURE_2D)
 
+    def handleEvents(self):
+        while self.dataReady("events"):
+            setPullPoint=False
+            event = self.recv("events")
+            if (event.type == pygame.MOUSEBUTTONDOWN and event.button==1 and self.identifier in event.hitobjects):
+                self.pulling=True
+                setPullPoint=True
+
+            if (event.type == pygame.MOUSEBUTTONUP and self.pulling):
+                self.pulling=False
+                self.foldpoint, self.folddelta = calcFoldLine((0.0, 0.0), (0.0, 0.0), self.radius)
+
+            if self.pulling:
+
+                # transform vertices for intersection test
+                transformedPoly = [ self.transform.transformVector(Vector(x,y,0.0))
+                                    for ((x,y),_) in self.poly ]
+                # calculate distance of intersection
+                t = Intersect.ray_Plane(Vector(0,0,0), event.direction, transformedPoly[0:3]);
+                # point of intersection
+                p = event.direction*t
+
+                point = mapPlaneToPoly( transformedPoly[0].toTuple(),
+                                        transformedPoly[1].toTuple(),
+                                        transformedPoly[2].toTuple(),
+                                        self.poly[0][0],
+                                        self.poly[1][0],
+                                        self.poly[2][0],
+                                        p.toTuple(),
+                                        )
+                if setPullPoint:
+                    self.pullpoint = point[0], point[1]
+                self.foldpoint, self.folddelta = calcFoldLine(self.pullpoint, point, self.radius)
+
+
+
+def mapPlaneToPoly(A,B,C,AA,BB,CC,P):
+    # A, B, C are points on the poly as (x,y,z) tuples
+    # P is a point in the plane as (x,y,z) tuple
+    # AA,BB,CC are the corresponding (x,y) tuple points for A,B,C
+
+    # we'll calculate p and q where P = A + pAB + qAC
+
+    AB = B[0]-A[0], B[1]-A[1], B[2]-A[2]
+    AC = C[0]-A[0], C[1]-A[1], C[2]-A[2]
+
+    components = [ (0,1), (0,2), (1,2) ]  # different choices of component pairs to use
+    for x,y in components:
+
+        # check we're not going to get division by zero errors
+        # otherwise move onto a different pair of components
+        if AC[y] == 0:
+            continue
+        divisor = AB[y]*AC[x] - AB[x]*AC[y]
+        if divisor == 0:
+            continue
+
+        # p = (xA*yAC - xD*yAC + yD*xAC - yA*xAC) / (yAB*xAC - xAB*yAC)
+        p = ( AC[y]*(A[x]-P[x]) + AC[x]*(P[y]-A[y]) ) / divisor
+
+        # q = (yD - yA - p*yAB)/yAC
+        q = (P[y] - A[y] - p*AB[y]) / AC[y]
+
+        # now we have p and q, we can do P = A + pAB + qAC in the AA,BB,CC domain
+        AABB = BB[0]-AA[0], BB[1]-AA[1]
+        AACC = CC[0]-AA[0], CC[1]-AA[1]
+
+        return ( AA[0] + p*AABB[0] + q*AACC[0],
+                 AA[1] + p*AABB[1] + q*AACC[1] )
+
 
 def calcFoldLine(oldPos, newPos, foldradius):
     # calculate what fold line is needed to move the specified point to the specified new location
@@ -117,14 +193,18 @@ def calcFoldLine(oldPos, newPos, foldradius):
     nx,ny = newPos
 
     delta = (nx-ox, ny-oy)
+
+    if delta == (0.0, 0.0):
+        return (0.0, 0.0), (0.0, 0.0)
+
     folddelta = right90(delta)
     foldpoint = ( (ox+nx)/2.0, (oy+ny)/2.0 )
     adjust = normalise(left90(folddelta), foldradius*(math.pi/2.0 - 1.0))
     foldpoint = ( foldpoint[0] + adjust[0],
                   foldpoint[1] + adjust[1] )
-    
+
     return (foldpoint,folddelta)
-            
+
 def curl(poly, foldline, radius, segments):
     # curls a 2d convex polygon in an X-Y plane about a foldline, giving a pageturn/peel effect
     # poly = list of points, of the form ((X,Y),(textureX,textureY))
@@ -141,11 +221,15 @@ def curl(poly, foldline, radius, segments):
 
     foldpoint, folddelta = foldline
 
+    if folddelta == (0.0, 0.0):
+        return [ [ ((x,y,0.0),texP,1.0) for ((x,y),texP) in poly ] ]
+
+
     # we're going the transform the foldline from being on the midpoint of the fold
     # to where the curl starts
     foldpoint = (foldpoint[0] + normalise(left90(folddelta), radius)[0],
                  foldpoint[1] + normalise(left90(folddelta), radius)[1] )
-    
+
     # generate the set of lines through the polygon with which we need to slice
     # it up in order to make the polygons for each segment of the curl
     slicelines = []
@@ -159,7 +243,7 @@ def curl(poly, foldline, radius, segments):
 
     # slice the polygon into segments using the slicelines we defined
     slices = segmentIntoSlices(poly, slicelines)
-    
+
     # tag each point with vector-from-start-of-folding
     # first part (non folded part) will be zero distance
     polys=[]
@@ -200,7 +284,7 @@ def curl(poly, foldline, radius, segments):
         curledpolys.append(curledpoly)
 
     return curledpolys
-            
+
 
 def segmentIntoSlices(poly, slicelines):
     # slices a polygon into a set of polygons, by slicing it using, in order
@@ -210,7 +294,7 @@ def segmentIntoSlices(poly, slicelines):
 
     # slices the polygon using the first line; then slices what is left using the next
     # and then what is left again using the next, etc...
-    
+
     for sliceline in slicelines:
         if len(oldpoly):
             oldpoly, newpoly = slicepoly(oldpoly, sliceline)
@@ -221,7 +305,7 @@ def segmentIntoSlices(poly, slicelines):
 
         slices.append(newpoly)
     return slices
-    
+
 def slicepoly(poly, foldline):
     """\
     Slice a 2d poly CONVEX (not concave) across a line.
@@ -232,20 +316,20 @@ def slicepoly(poly, foldline):
     """
     foldpoint = foldline[0]
     folddelta = foldline[1]
-    
+
     (prev, prevtex) = poly[-1]
-    
+
     normpoly = []
     foldpoly = []
-    
+
     subpoly = []
     currentside = whichSide(prev, foldline)
-    
+
     for (point,texpoint) in poly:
-        
+
         intersect = bisect(prev, point, foldline)
         pointside = whichSide(point, foldline)
-        
+
         if intersect>=0.0 and intersect<=1.0:
             ipoint = interpolate(prev,point,intersect)
             itexpoint = interpolate(prevtex,texpoint,intersect)
@@ -253,47 +337,47 @@ def slicepoly(poly, foldline):
             ipoint = tuple(point)
             itexpoint = tuple(texpoint)
         subpoly.append( (ipoint,itexpoint) )
-        
+
         if currentside==0:
             currentside = pointside
-        
+
         if pointside * currentside < 0.0:  # different signs, we've switched sides
             if currentside<0.0:
                 normpoly.extend(subpoly)
             else:
                 foldpoly.extend(subpoly)
-                
+
             subpoly = [(ipoint,itexpoint),(point,texpoint)]
             currentside = pointside
-        
+
         prev,prevtex = point,texpoint
 
     if currentside<0.0:
         normpoly.extend(subpoly)
     else:
         foldpoly.extend(subpoly)
-    
+
     return normpoly,foldpoly
 
 
 def whichSide(point,line):
     """Returns -ve, 0, +ve if point is on LHS, ontop, or RHS of line"""
-    
+
     linepoint, linedelta = line
-    
+
     # determine which side of the fold line this initial point is on
     # which side of the line is it on? right hand side, or left?
     pdx = point[0]-linepoint[0]
     pdy = point[1]-linepoint[1]
-    
+
     if linedelta[0]==0:
         return pdx
     elif linedelta[0]>0:
         return (linedelta[1]/linedelta[0])*pdx - pdy
     elif linedelta[0]<0:
         return pdy - (linedelta[1]/linedelta[0])*pdx
-    
-    
+
+
 
 
 def bisect(start,end,line):
@@ -306,22 +390,22 @@ def bisect(start,end,line):
     None = lines are parallel
     """
     point,delta = line
-    
+
     divisor = ( (end[1]-start[1])*delta[0] - (end[0]-start[0])*delta[1] )
     if divisor != 0.0:
         intersect = ( (point[1]-start[1])*delta[0] - (point[0]-start[0])*delta[1] ) / divisor
     else:
         return None
-                
+
     return intersect
-    
+
 def interpolate(start,end,val):
     return [ start*(1.0-val) + end*val for (start,end) in zip(start,end) ]
-    
+
 def reflect(point,foldline):
     foldpoint = foldline[0]
     dx,dy = foldline[1]
-    
+
     # move line (and therefore the point) so the line passes through (0,0)
     px = point[0]-foldpoint[0]
     py = point[1]-foldpoint[1]
@@ -336,7 +420,7 @@ def reflect(point,foldline):
     else:
         cx = (py + px*dx/dy)/(dy/dx + dx/dy)
         cy = py + (dx/dy)*(px-cx)
-        
+
     # reflect
     rx = point[0] - 2.0*(px-cx)
     ry = point[1] - 2.0*(py-cy)
@@ -347,7 +431,7 @@ def vector_from_line(point,line):
     """returns the shortest vector from the line to the point"""
     linepoint = line[0]
     dx,dy = line[1]
-    
+
     # move line (and therefore the point) so the line passes through (0,0)
     px = point[0] - linepoint[0]
     py = point[1] - linepoint[1]
@@ -362,7 +446,7 @@ def vector_from_line(point,line):
     else:
         cx = (py + px*dx/dy)/(dy/dx + dx/dy)
         cy = py + (dx/dy)*(px-cx)
-        
+
     return px-cx,py-cy
 
 def normalise(vector, toLen=1.0):
@@ -381,15 +465,16 @@ def dist(vector):
 
 if __name__ == '__main__':
     import Axon
-    
+
     from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
     from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.SimpleRotationInteractor import SimpleRotationInteractor
 
     display = OpenGLDisplay(background_colour=(0.75, 0.75, 1.0)).activate()
     OpenGLDisplay.setDisplayService(display)
 
-    FOLD = Simple3dFold(position=(0,0,-22), size=(10,10,2), rotation=(-45,0,0),radius=1.0,segments=15).activate()
-    SimpleRotationInteractor(target=FOLD).activate()
-    
+    FOLD = Simple3dFold(position=(0,0,-22), size=(15,15,2), rotation=(-30,0,0),radius=1.0,segments=15).activate()
+#    SimpleRotationInteractor(target=FOLD).activate()
+
+    print "Grab close to a corner and drag!"
+
     Axon.Scheduler.scheduler.run.runThreads()
-    
