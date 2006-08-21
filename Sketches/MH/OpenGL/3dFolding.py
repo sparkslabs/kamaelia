@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# loadTexture function based on code from THF
+
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Transform import Transform
 
@@ -18,8 +20,8 @@ class Simple3dFold(OpenGLComponent):
     
     def __init__(self, **argd):
         super(Simple3dFold, self).__init__(**argd)
-        self.radius = argd.get("radius", 1.0)
-        self.segments = argd.get("segments", 15)
+        self.radius = max(0.001, argd.get("radius", 1.0))
+        self.segments = max(2, argd.get("segments", 15))
     
     def setup(self):
         self.tex = "../../CE/characters/OLIVIA.jpg"
@@ -46,7 +48,7 @@ class Simple3dFold(OpenGLComponent):
 
     def draw(self):
 
-        polys3d = curl(self.poly, self.foldpoint, self.folddelta, self.radius, self.segments)
+        polys3d = curl(self.poly, (self.foldpoint, self.folddelta), self.radius, self.segments)
         
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -69,6 +71,9 @@ class Simple3dFold(OpenGLComponent):
         
         angle = (time.time()-self.starttime) / 2.0
         self.folddelta = math.cos(angle), math.sin(angle)
+
+#        self.radius = math.cos(angle)+1.0
+#        self.foldpoint, self.folddelta = calcFoldLine(self.poly[1][0], (0.0,0.0), self.radius)
         
         self.redraw()
 
@@ -105,8 +110,42 @@ class Simple3dFold(OpenGLComponent):
             glDisable(GL_TEXTURE_2D)
 
 
-def curl(poly, foldpoint, folddelta, radius, segments):
+def calcFoldLine(oldPos, newPos, foldradius):
+    # calculate what fold line is needed to move the specified point to the specified new location
 
+    ox,oy = oldPos
+    nx,ny = newPos
+
+    delta = (nx-ox, ny-oy)
+    folddelta = right90(delta)
+    foldpoint = ( (ox+nx)/2.0, (oy+ny)/2.0 )
+    adjust = normalise(left90(folddelta), foldradius*(math.pi/2.0 - 1.0))
+    foldpoint = ( foldpoint[0] + adjust[0],
+                  foldpoint[1] + adjust[1] )
+    
+    return (foldpoint,folddelta)
+            
+def curl(poly, foldline, radius, segments):
+    # curls a 2d convex polygon in an X-Y plane about a foldline, giving a pageturn/peel effect
+    # poly = list of points, of the form ((X,Y),(textureX,textureY))
+    # foldline = ((x,y),(dx,dy)) defining a line
+    # radius and segments controls the shape and rendering quality of the curl
+    #
+    # returns list of polys
+    # each poly is a list of points, of the form ((X,Y,Z),(textureX,textureY),fade)
+    # Z=0 for uncurled parts of the polygon
+    # Z=2*radius for fully curled over parts
+    # fade=1.0 for fully uncurled or fully curled parts
+    # fade=0.0 for points on the midpoint of the curl
+    # (use fade to control shaing to darken the curled parts of the polygon)
+
+    foldpoint, folddelta = foldline
+
+    # we're going the transform the foldline from being on the midpoint of the fold
+    # to where the curl starts
+    foldpoint = (foldpoint[0] + normalise(left90(folddelta), radius)[0],
+                 foldpoint[1] + normalise(left90(folddelta), radius)[1] )
+    
     # generate the set of lines through the polygon with which we need to slice
     # it up in order to make the polygons for each segment of the curl
     slicelines = []
@@ -127,7 +166,7 @@ def curl(poly, foldpoint, folddelta, radius, segments):
     polys.append( [ (point,(0,0),texpoint) for point,texpoint in slices[0] ] )
     for slice in slices[1:]:
         polys.append( [ (point,
-                         vector_from_fold(point,(foldpoint, folddelta)),
+                         vector_from_line(point,(foldpoint, folddelta)),
                          texpoint)
                          for point,texpoint in slice ]
                     )
@@ -304,14 +343,14 @@ def reflect(point,foldline):
 
     return rx,ry
 
-def vector_from_fold(point,foldline):
-    """returns the shortest vector from the foldline to the point"""
-    foldpoint = foldline[0]
-    dx,dy = foldline[1]
+def vector_from_line(point,line):
+    """returns the shortest vector from the line to the point"""
+    linepoint = line[0]
+    dx,dy = line[1]
     
     # move line (and therefore the point) so the line passes through (0,0)
-    px = point[0] - foldpoint[0]
-    py = point[1] - foldpoint[1]
+    px = point[0] - linepoint[0]
+    py = point[1] - linepoint[1]
 
     # find closest point on the line
     if dx == 0.0:
@@ -349,7 +388,7 @@ if __name__ == '__main__':
     display = OpenGLDisplay(background_colour=(0.75, 0.75, 1.0)).activate()
     OpenGLDisplay.setDisplayService(display)
 
-    FOLD = Simple3dFold(position=(0,0,-22), size=(10,10,2), rotation=(-45,0,0)).activate()
+    FOLD = Simple3dFold(position=(0,0,-22), size=(10,10,2), rotation=(-45,0,0),radius=1.0,segments=15).activate()
     SimpleRotationInteractor(target=FOLD).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()
