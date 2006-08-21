@@ -41,6 +41,14 @@ class Simple3dFold(OpenGLComponent):
                       ((+size.x, +size.y), (self.tex_w, 1.0           )),
                       ((+size.x, -size.y), (self.tex_w, 1.0-self.tex_h)),
                     ]
+#         self.poly =  [ ((-size.x, -0.5*size.y), (0.0, 1.0-self.tex_h*0.75)),
+#                        ((0.0,     +size.y    ), (0.5, 1.0                )),
+#                        ((+size.x, -0.5*size.y), (1.0, 1.0-self.tex_h*0.75)),
+#                      ]
+#         self.poly2 = [ ((-size.x, +0.5*size.y), (0.0, 1.0-self.tex_h*0.25)),
+#                        ((0.0,     -size.y    ), (0.5, 1.0-self.tex_h     )),
+#                        ((+size.x, +0.5*size.y), (1.0, 1.0-self.tex_h*0.25)),
+#                      ]
 
         self.starttime = time.time()
         self.foldpoint = (0.0, 0.0)
@@ -53,6 +61,7 @@ class Simple3dFold(OpenGLComponent):
     def draw(self):
 
         polys3d = curl(self.poly, (self.foldpoint, self.folddelta), self.radius, self.segments)
+#         polys3d.extend( curl(self.poly2, (self.foldpoint, self.folddelta), self.radius, self.segments))
 
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -161,7 +170,7 @@ def mapPlaneToPoly(A,B,C,AA,BB,CC,P):
     AB = B[0]-A[0], B[1]-A[1], B[2]-A[2]
     AC = C[0]-A[0], C[1]-A[1], C[2]-A[2]
 
-    components = [ (0,1), (0,2), (1,2) ]  # different choices of component pairs to use
+    components = [ (0,1), (0,2), (1,2), (1,0), (2,0), (2,1) ]  # different choices of component pairs to use
     for x,y in components:
 
         # check we're not going to get division by zero errors
