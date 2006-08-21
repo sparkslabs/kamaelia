@@ -306,7 +306,6 @@ if __name__ == "__main__":
     # override pygame display service
     PygameDisplay.setDisplayService(ogl_display)
     
-    print "TEST"
     Graphline(
         reader = ConsoleReader(prompt="Enter torrent location:", eol=""),
         httpclient = SimpleHTTPClient(),
