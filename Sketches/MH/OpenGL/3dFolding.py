@@ -20,14 +20,18 @@ class Simple3dFold(OpenGLComponent):
         super(Simple3dFold, self).__init__(**argd)
         self.radius = argd.get("radius", 1.0)
         self.segments = argd.get("segments", 15)
-
+    
     def setup(self):
-        size = self.size/2.0
+        self.tex = "../../CE/characters/OLIVIA.jpg"
+        self.loadTexture()
         
-        self.poly = [ (-size.x, -size.y),
-                      (-size.x, +size.y),
-                      (+size.x, +size.y),
-                      (+size.x, -size.y),
+        size = self.size/2.0
+        print self.tex_w, self.tex_h
+        #              vertex coord        texture coord
+        self.poly = [ ((-size.x, -size.y), (0.0,        1.0-self.tex_h)),
+                      ((-size.x, +size.y), (0.0,        1.0           )),
+                      ((+size.x, +size.y), (self.tex_w, 1.0           )),
+                      ((+size.x, -size.y), (self.tex_w, 1.0-self.tex_h)),
                     ]
                     
         self.starttime = time.time()
@@ -60,17 +64,20 @@ class Simple3dFold(OpenGLComponent):
         
         # tag each point with vector-from-start-of-folding
         # first part (non folded part) will be zero distance
-        polys[0] = [ (point,(0,0)) for point in polys[0] ]
+        polys[0] = [ (point,(0,0),texpoint) for point,texpoint in polys[0] ]
         i=1
         while i<len(polys):
-            polys[i] = [ (point,vector_from_fold(point,(self.foldpoint,self.folddelta))) for point in polys[i] ]
+            polys[i] = [ (point,
+                          vector_from_fold(point,(self.foldpoint,self.folddelta)),
+                          texpoint)
+                         for point,texpoint in polys[i] ]
             i+=1
         
         # now curl the polys
         polys3d = []
         for poly in polys:
             poly3d = []
-            for (point,vec) in poly:
+            for (point,vec,texpoint) in poly:
                 if vec==(0,0):
                     x,y,z = (point[0],point[1], 0.0)
                 else:
@@ -88,9 +95,13 @@ class Simple3dFold(OpenGLComponent):
                         fpx = self.foldpoint[0] + fpv[0]
                         fpy = self.foldpoint[1] + fpv[1]
                         x,y = reflect(point, ((fpx,fpy), self.folddelta))
-                poly3d.append((x,y,z))
+                poly3d.append(((x,y,z),texpoint))
                     
             polys3d.append(poly3d)
+        
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
         
         val=0
         for poly in polys3d:
@@ -98,9 +109,12 @@ class Simple3dFold(OpenGLComponent):
             shade = interpolate( (1.0, 1.0, 1.0), (0.5, 0.5, 0.5), val/(len(polys)-1.0) )
             val += 1
             glColor3f(*shade)
-            for (x,y,z) in poly:
+            for ((x,y,z),(tx,ty)) in poly:
+                glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
             glEnd()
+                
+        glDisable(GL_TEXTURE_2D)
         
     def frame(self):
         size = self.size/2.0
@@ -110,6 +124,37 @@ class Simple3dFold(OpenGLComponent):
         
         self.redraw()
 
+    def loadTexture(self):
+        """ Loads texture from specified image file. """
+        from math import ceil, log
+        if self.tex is not None:
+            # load image
+            image = pygame.image.load(self.tex)
+            # create power of 2 dimensioned surface
+            pow2size = (int(2**(ceil(log(image.get_width(), 2)))), int(2**(ceil(log(image.get_height(), 2)))))
+            if pow2size != image.get_size():
+                textureSurface = pygame.Surface(pow2size, pygame.SRCALPHA, 32)
+                # determine texture coordinates
+                self.tex_w = float(image.get_width())/pow2size[0]
+                self.tex_h = float(image.get_height())/pow2size[1]
+                # copy image data to pow2surface
+                textureSurface.blit(image, (0,0))
+            else:
+                textureSurface = image
+                self.tex_w = 1.0
+                self.tex_h = 1.0
+            # read pixel data
+            textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
+            # gen tex name
+            self.texID = glGenTextures(1)
+            # create texture
+            glEnable(GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, self.texID)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+                            GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+            glDisable(GL_TEXTURE_2D)
 
 def slicepoly(poly, foldline):
     """\
@@ -122,7 +167,7 @@ def slicepoly(poly, foldline):
     foldpoint = foldline[0]
     folddelta = foldline[1]
     
-    prev = poly[-1]
+    (prev, prevtex) = poly[-1]
     
     normpoly = []
     foldpoly = []
@@ -130,16 +175,18 @@ def slicepoly(poly, foldline):
     subpoly = []
     currentside = whichSide(prev, foldline)
     
-    for point in poly:
+    for (point,texpoint) in poly:
         
         intersect = bisect(prev, point, foldline)
         pointside = whichSide(point, foldline)
         
         if intersect>=0.0 and intersect<=1.0:
             ipoint = interpolate(prev,point,intersect)
+            itexpoint = interpolate(prevtex,texpoint,intersect)
         else:
             ipoint = tuple(point)
-        subpoly.append( ipoint )
+            itexpoint = tuple(texpoint)
+        subpoly.append( (ipoint,itexpoint) )
         
         if currentside==0:
             currentside = pointside
@@ -150,10 +197,10 @@ def slicepoly(poly, foldline):
             else:
                 foldpoly.extend(subpoly)
                 
-            subpoly = [ipoint,point]
+            subpoly = [(ipoint,itexpoint),(point,texpoint)]
             currentside = pointside
         
-        prev=point
+        prev,prevtex = point,texpoint
 
     if currentside<0.0:
         normpoly.extend(subpoly)
