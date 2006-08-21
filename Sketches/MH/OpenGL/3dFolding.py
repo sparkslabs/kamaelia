@@ -32,78 +32,21 @@ class Simple3dFold(OpenGLComponent):
             self.size.y = self.size.y * self.tex_h/self.tex_w
         
         size = self.size/2.0
-        print self.tex_w, self.tex_h
         #              vertex coord        texture coord
         self.poly = [ ((-size.x, -size.y), (0.0,        1.0-self.tex_h)),
                       ((-size.x, +size.y), (0.0,        1.0           )),
                       ((+size.x, +size.y), (self.tex_w, 1.0           )),
                       ((+size.x, -size.y), (self.tex_w, 1.0-self.tex_h)),
                     ]
-                    
+        
         self.starttime = time.time()
         self.foldpoint = (size.x*+0.8, size.y*-0.8)
         self.folddelta = (0.5, 1.0)
-                    
+        
 
     def draw(self):
-        
-        polys = [ self.poly ]
-        oldpoly = self.poly[:]
-        
-        distance = self.radius*math.pi
-        for slicenum in range(0,self.segments):
-            
-            folddist = distance/self.segments*slicenum
-            slicepoint = right90(normalise(self.folddelta, folddist))
-            slicepoint = ( slicepoint[0] + self.foldpoint[0],
-                           slicepoint[1] + self.foldpoint[1] )
-            
-            if len(oldpoly):
-                oldpoly, newpoly = slicepoly(oldpoly, (slicepoint,self.folddelta))
-            else:
-                oldpoly, newpoly = oldpoly, []
-            polys[-1] = oldpoly
-            oldpoly = newpoly
-        
-            polys.append(newpoly)
 
-        
-        # tag each point with vector-from-start-of-folding
-        # first part (non folded part) will be zero distance
-        polys[0] = [ (point,(0,0),texpoint) for point,texpoint in polys[0] ]
-        i=1
-        while i<len(polys):
-            polys[i] = [ (point,
-                          vector_from_fold(point,(self.foldpoint,self.folddelta)),
-                          texpoint)
-                         for point,texpoint in polys[i] ]
-            i+=1
-        
-        # now curl the polys
-        polys3d = []
-        for poly in polys:
-            poly3d = []
-            for (point,vec,texpoint) in poly:
-                if vec==(0,0):
-                    x,y,z = (point[0],point[1], 0.0)
-                else:
-                    angle = dist(vec) / self.radius  # goes 0..pi over a half circle
-                    if angle <= math.pi:
-                        cos = math.cos(angle)
-                        sin = math.sin(angle)
-                        nvec = normalise(vec,self.radius)
-                        x = point[0]-vec[0] + sin*nvec[0]
-                        y = point[1]-vec[1] + sin*nvec[1]
-                        z = self.radius - self.radius*cos 
-                    else:
-                        z = 2.0*self.radius
-                        fpv = normalise(right90(self.folddelta), (math.pi*self.radius/2.0))
-                        fpx = self.foldpoint[0] + fpv[0]
-                        fpy = self.foldpoint[1] + fpv[1]
-                        x,y = reflect(point, ((fpx,fpy), self.folddelta))
-                poly3d.append(((x,y,z),texpoint))
-                    
-            polys3d.append(poly3d)
+        polys3d = curl(self.poly, self.foldpoint, self.folddelta, self.radius, self.segments)
         
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -112,9 +55,9 @@ class Simple3dFold(OpenGLComponent):
         val=0
         for poly in polys3d:
             glBegin(GL_POLYGON)
-            for ((x,y,z),(tx,ty)) in poly:
-                fade = (abs(self.radius-z)/self.radius)**2
-                glColor3f(fade,fade,fade)
+            for ((x,y,z),(tx,ty), fade) in poly:
+                shade = fade**2
+                glColor3f(shade,shade,shade)
                 glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
             glEnd()
@@ -161,6 +104,85 @@ class Simple3dFold(OpenGLComponent):
                             GL_RGBA, GL_UNSIGNED_BYTE, textureData );
             glDisable(GL_TEXTURE_2D)
 
+
+def curl(poly, foldpoint, folddelta, radius, segments):
+
+    # generate the set of lines through the polygon with which we need to slice
+    # it up in order to make the polygons for each segment of the curl
+    slicelines = []
+    distance = radius*math.pi
+    for slicenum in range(0,segments):
+        folddist = distance/segments*slicenum
+        slicepoint = right90(normalise(folddelta, folddist))
+        slicepoint = ( slicepoint[0] + foldpoint[0],
+                       slicepoint[1] + foldpoint[1] )
+        slicelines.append( (slicepoint, folddelta) )
+
+    # slice the polygon into segments using the slicelines we defined
+    slices = segmentIntoSlices(poly, slicelines)
+    
+    # tag each point with vector-from-start-of-folding
+    # first part (non folded part) will be zero distance
+    polys=[]
+    polys.append( [ (point,(0,0),texpoint) for point,texpoint in slices[0] ] )
+    for slice in slices[1:]:
+        polys.append( [ (point,
+                         vector_from_fold(point,(foldpoint, folddelta)),
+                         texpoint)
+                         for point,texpoint in slice ]
+                    )
+
+    # now curl the polys
+    curledpolys = []
+    foldpointoffset = normalise(right90(folddelta), (math.pi*radius/2.0))
+    reflectionpoint = ( foldpoint[0] + foldpointoffset[0],
+                        foldpoint[1] + foldpointoffset[1] )
+    for poly in polys:
+        curledpoly = []
+        for (point,vec,texpoint) in poly:
+            if vec==(0,0):
+                x,y,z = (point[0],point[1], 0.0)
+                fade = 1.0
+            else:
+                angle = dist(vec) / radius  # goes 0..pi over a half circle
+                if angle <= math.pi:
+                    cos = math.cos(angle)
+                    sin = math.sin(angle)
+                    nvec = normalise(vec, radius)
+                    x = point[0]-vec[0] + sin*nvec[0]
+                    y = point[1]-vec[1] + sin*nvec[1]
+                    z = radius - radius*cos
+                else:
+                    z = 2.0*radius
+                    x,y = reflect(point, (reflectionpoint, folddelta))
+                fade = abs(radius-z)/radius
+            curledpoly.append(((x,y,z),texpoint,fade))
+
+        curledpolys.append(curledpoly)
+
+    return curledpolys
+            
+
+def segmentIntoSlices(poly, slicelines):
+    # slices a polygon into a set of polygons, by slicing it using, in order
+    # the set of supplied lines.
+    slices = [ poly ]
+    oldpoly = poly[:]
+
+    # slices the polygon using the first line; then slices what is left using the next
+    # and then what is left again using the next, etc...
+    
+    for sliceline in slicelines:
+        if len(oldpoly):
+            oldpoly, newpoly = slicepoly(oldpoly, sliceline)
+        else:
+            break
+        slices[-1] = oldpoly
+        oldpoly = newpoly
+
+        slices.append(newpoly)
+    return slices
+    
 def slicepoly(poly, foldline):
     """\
     Slice a 2d poly CONVEX (not concave) across a line.
