@@ -1,0 +1,15 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p>Example 10: Simple dirac encoder/decoder. Shows how to read raw video frames from a file, encode them using dirac, decode them again, and then playback via a video overlay. <span style="font-weight:600">Components used: </span><a href="/Components/pydoc/Kamaelia.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a>, <a href="/Components/pydoc/Kamaelia.Codec.RawYUVFramer.RawYUVFramer.html">RawYUVFramer</a>, <a href="/Components/pydoc/Kamaelia.Codec.Dirac.DiracEncoder.html">DiracEncoder</a>, <a href="/Components/pydoc/Kamaelia.Codec.Dirac.DiracDecoder.html">DiracDecoder</a>, <a href="/Components/pydoc/Kamaelia.UI.Pygame.VideoOverlay.VideoOverlay.html">VideoOverlay</a> .</p>
+<p>Download and build dirac first!</p>
+<p>Get the source raw video file (in rgb format) from here, and gunzip it:</p>
+<p>http://sourceforge.net/project/showfiles.php?group_id=102564&amp;package_id=119507</p>
+<p>To convert RGB to YUV:</p>
+<ul type="disc"><div>RGBtoYUV420 snowboard-jum-352x288x75.rgb snowboard-jum-352x288x75.yuv 352 288 75</div></ul>
+<p>Alternatively, source your own AVI file and convert with:</p>
+<ul type="disc"><div>ffmpeg -i file_from_digital_camera.avi rawvideo.yuv</div></ul>
+<p>and alter the config below as required.</p>
+<ul type="disc"><div>[[pre]<span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><span style="font-weight:600">from</span> Kamaelia.ReadFileAdaptor <span style="font-weight:600">import</span> ReadFileAdaptor<br /><span style="font-weight:600">from</span> Kamaelia.Codec.RawYUVFramer <span style="font-weight:600">import</span> RawYUVFramer<br /><span style="font-weight:600">from</span> Kamaelia.Codec.Dirac <span style="font-weight:600">import</span> DiracEncoder, DiracDecoder<br /><span style="font-weight:600">from</span> Kamaelia.UI.Pygame.VideoOverlay <span style="font-weight:600">import</span> VideoOverlay<br /><br />FILENAME  = &quot;/data/dirac-video/snowboard-jum-352x288x75.yuv&quot;<br />SIZE = (352,288)<br />DIRACPRESET = &quot;CIF&quot;         # dirac resolution and encoder settings preset<br /><br /><span style="font-style:italic;font-weight:600"># encoder param sets it to iframe only (no motion based coding, faster)<br /># (overrides preset)<br /></span>ENCPARAMS = {&quot;num_L1&quot;:0}<br /><br />pipeline( ReadFileAdaptor(FILENAME, readmode=&quot;bitrate&quot;, bitrate= 1000000),<br />          RawYUVFramer( size=SIZE ),<br />          DiracEncoder(preset=DIRACPRESET, encParams=ENCPARAMS ),<br />          DiracDecoder(),<br />          VideoOverlay()<br />        ).run()<br />] <span style="font-weight:600">Source: </span>Examples/example10/SimpleDiracEncodeDecode.py</div></ul>
+<p></p>
+</body></html>
