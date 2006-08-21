@@ -101,14 +101,19 @@ class Simple3dFold(OpenGLComponent):
         
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
         
         val=0
         for poly in polys3d:
-            glBegin(GL_POLYGON)
-            shade = interpolate( (1.0, 1.0, 1.0), (0.5, 0.5, 0.5), val/(len(polys)-1.0) )
-            val += 1
+            fadeout = val/(len(polys)-1.0)
+            if fadeout <= 0.5:
+                fadeout=fadeout*2.0
+            else:
+                fadeout = (1.0-fadeout)*2.0
+            shade = interpolate( (1.0, 1.0, 1.0), (0.25, 0.25, 0.25), fadeout )
             glColor3f(*shade)
+            glBegin(GL_POLYGON)
+            val += 1
             for ((x,y,z),(tx,ty)) in poly:
                 glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
