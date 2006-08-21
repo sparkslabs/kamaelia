@@ -24,6 +24,12 @@ class Simple3dFold(OpenGLComponent):
     def setup(self):
         self.tex = "../../CE/characters/OLIVIA.jpg"
         self.loadTexture()
+
+        # adjust aspect ratio
+        if self.tex_w < self.tex_h:
+            self.size.x = self.size.x * self.tex_w/self.tex_h
+        else:
+            self.size.y = self.size.y * self.tex_h/self.tex_w
         
         size = self.size/2.0
         print self.tex_w, self.tex_h
