@@ -107,7 +107,7 @@ class Simple3dFold(OpenGLComponent):
         for poly in polys3d:
             glBegin(GL_POLYGON)
             for ((x,y,z),(tx,ty)) in poly:
-                fade = abs(self.radius-z)/self.radius
+                fade = (abs(self.radius-z)/self.radius)**2
                 glColor3f(fade,fade,fade)
                 glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
