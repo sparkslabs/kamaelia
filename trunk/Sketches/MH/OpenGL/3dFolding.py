@@ -105,16 +105,10 @@ class Simple3dFold(OpenGLComponent):
         
         val=0
         for poly in polys3d:
-            fadeout = val/(len(polys)-1.0)
-            if fadeout <= 0.5:
-                fadeout=fadeout*2.0
-            else:
-                fadeout = (1.0-fadeout)*2.0
-            shade = interpolate( (1.0, 1.0, 1.0), (0.25, 0.25, 0.25), fadeout )
-            glColor3f(*shade)
             glBegin(GL_POLYGON)
-            val += 1
             for ((x,y,z),(tx,ty)) in poly:
+                fade = abs(self.radius-z)/self.radius
+                glColor3f(fade,fade,fade)
                 glTexCoord2f(tx,ty)
                 glVertex3f(x, y, z)
             glEnd()
