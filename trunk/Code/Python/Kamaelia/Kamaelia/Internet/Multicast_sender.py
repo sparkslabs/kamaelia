@@ -37,7 +37,7 @@ Example Usage
 Multicasting a file to group address 1.2.3.4 on port 1000 (local address 0.0.0.0
 port 0)::
 
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_sender("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 

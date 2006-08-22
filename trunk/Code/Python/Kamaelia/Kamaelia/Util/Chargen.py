@@ -34,7 +34,7 @@ indefinitely out of its "outbox" outbox.
 Example Usage
 -------------
 ::
-    >>> pipeline( Chargen(), consoleEchoer() ).run()
+    >>> Pipeline( Chargen(), consoleEchoer() ).run()
     Hello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHel
     lo WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello
     WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello Wor

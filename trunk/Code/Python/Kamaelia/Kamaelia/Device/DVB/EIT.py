@@ -340,7 +340,7 @@ class TimeAndDatePacketParser(component):
 
 
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.Graphline import Graphline
@@ -357,13 +357,13 @@ if __name__ == "__main__":
     Graphline(
         SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20,600,601], feparams),
         DEMUX=DVB_Demuxer({ 18: ["_EIT_"], 20:["_DATETIME_"] }),
-        EIT = pipeline( PSIPacketReconstructor(),
+        EIT = Pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
                         NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO
                         NowNextChanges(),
                         ConsoleEchoer(),
                       ),
-        DATETIME = pipeline( PSIPacketReconstructor(),
+        DATETIME = Pipeline( PSIPacketReconstructor(),
                              TimeAndDatePacketParser(),
                              ConsoleEchoer(),
                            ),

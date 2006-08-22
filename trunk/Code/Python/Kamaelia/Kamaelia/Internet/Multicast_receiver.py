@@ -37,7 +37,7 @@ Example Usage
 Receiving multicast packets from group address 1.2.3.4 port 1000 and displaying
 them on the console::
 
-    pipeline( Multicast_receiver("1.2.3.4", 1000),
+    Pipeline( Multicast_receiver("1.2.3.4", 1000),
               consoleEchoer()
             ).activate()
 

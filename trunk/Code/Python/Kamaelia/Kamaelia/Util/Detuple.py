@@ -38,7 +38,7 @@ extracting a single field from a dictionary like object).
 
 Example usage:
 
-pipeline(
+Pipeline(
     Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
     detuple(1), # Extract data, through away sender
     SRM_Receiver(),
@@ -69,7 +69,7 @@ pipeline(
 __kamaelia_components__  = ( SimpleDetupler, )
 
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     class TupleSauce(Axon.Component.component):
         def main(self):
             while 1:
@@ -85,7 +85,7 @@ if __name__ == "__main__":
                         print "WARNING: expected", "hello", "received", data
                 yield 1
 
-    pipeline(
+    Pipeline(
         TupleSauce(),
         SimpleDetupler(1),
         CheckResultIsHello(),

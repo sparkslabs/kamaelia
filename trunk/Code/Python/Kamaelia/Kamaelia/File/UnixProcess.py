@@ -2,7 +2,7 @@
 """
 The purpose behind this component is to allow the following to occur:
 
-pipeline(
+Pipeline(
    dataSource(),
    UnixProcess("command", *args),
    dataSink(),
@@ -29,7 +29,7 @@ stay that way.
 """
 
 import Axon
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 
 import Kamaelia.KamaeliaIPC as _ki
@@ -280,7 +280,7 @@ def Pipethrough(*args):
     return UnixProcess(*args)
 
 if __name__=="__main__":
-    pipeline(
+    Pipeline(
        ChargenComponent(),
        UnixProcess("wc"),
        ConsoleEchoer(forwarder=True)

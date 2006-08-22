@@ -38,13 +38,13 @@ The DeChunker and DeFramer reverse the process.
 Example Usage
 -------------
 Framing messages for transport over a stream based connection (eg, TCP)::
-    pipeline(MessageSource(...),   # emits message
+    Pipeline(MessageSource(...),   # emits message
              DataChunker(),
              TCPClient("<server ip>", 1500),
             ).activate()
 
 And on the server::
-    pipeline(SingleServer(1500),
+    Pipeline(SingleServer(1500),
              DataDeChunker(),
              MessageReceiver(...)
             ).activate()
@@ -52,14 +52,14 @@ And on the server::
              
 
 Packing data for transport over a link that may loose packets::
-    pipeline(DataSource(...),     # emits (sequence_number, data) pairs
+    Pipeline(DataSource(...),     # emits (sequence_number, data) pairs
              Framer(),
              Chunker(),
              UnreliableTransportMechanismSender(),
             ).activate()
 
 At the receiver::
-    pipeline(UnreliableTransportMechanismReceiver(),
+    Pipeline(UnreliableTransportMechanismReceiver(),
              DeChunker(),
              DeFramer(),
              DataHandler()        # receives (sequence_number, data) pairs

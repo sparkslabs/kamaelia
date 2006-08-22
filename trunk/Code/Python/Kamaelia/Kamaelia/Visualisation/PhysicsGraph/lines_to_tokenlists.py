@@ -34,7 +34,7 @@ allowing spaces to appear within a token.
 Example Usage
 -------------
 ::
-    pipeline( ConsoleReader(),
+    Pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               ConsoleEchoer()
             ).run()

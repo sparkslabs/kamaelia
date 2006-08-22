@@ -36,17 +36,17 @@ Example Usage
 
 Send a file to, and receive data from multicast group address 1.2.3.4 port 1000::
 
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 
-    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
               consoleEchoer()
             ).activate()
 
 Or::
     
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 1000),
               consoleEchoer()
             ).activate()

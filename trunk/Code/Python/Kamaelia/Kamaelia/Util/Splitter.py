@@ -42,7 +42,7 @@ Component connecting to a Splitter::
              ... do stuff when data is received on "inbox" inbox
 
     mysplitter = Splitter()
-    pipeline( producer(), mysplitter ).activate()
+    Pipeline( producer(), mysplitter ).activate()
     
     myconsumer = Consumer().activate()
     myconsumer.link( (myconsumer, "splitter_config"), ("mysplitter", "configuration") )
@@ -108,10 +108,10 @@ consumers are encapsulated by PlugSplitter and Plug components respectively::
     
 The same, but the producer and consumers are not encapsulated::
     mysplitter = PlugSplitter()
-    pipeline( producer, mysplitter ).activate()
+    Pipeline( producer, mysplitter ).activate()
     
-    pipeline( Plug(mysplitter), consumer() ).activate()
-    pipeline( Plug(mysplitter), consumer() ).activate()
+    Pipeline( Plug(mysplitter), consumer() ).activate()
+    Pipeline( Plug(mysplitter), consumer() ).activate()
     
     
     

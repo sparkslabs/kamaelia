@@ -34,7 +34,7 @@ get discarded more easily over a certain size.
 
 Example usage:
 
-pipeline(
+Pipeline(
     ReadFileAdaptor(file_to_stream, readmode="bitrate", bitrate=400000,
                     chunkrate=50),
     SRM_Sender(),
@@ -72,7 +72,7 @@ __kamaelia_components__  = ( MaxSizePacketiser, )
 
 if __name__ == "__main__":
 
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     class packetSizeChecker(Axon.Component.component):
         def __init__(self, expectedSize=1000):
             super(packetSizeChecker, self).__init__()
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                 print "SENT", data
                 yield 1
 
-    pipeline(
+    Pipeline(
         BigPackets(),
         MaxSizePacketiser(1000),
         packetSizeChecker(1000),

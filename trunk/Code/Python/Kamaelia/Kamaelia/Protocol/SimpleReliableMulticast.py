@@ -24,7 +24,7 @@
 Simple Reliable Multicast
 =========================
 
-A pair of pipelines for encoding (and decoding again) a stream of data such that
+A pair of Pipelines for encoding (and decoding again) a stream of data such that
 is can be transported over an unreliable connection that may lose, duplicate or
 reorder data.
 
@@ -35,7 +35,7 @@ duplicates are removed. However it cannot recover lost data.
 Example Usage
 -------------
 Reliably transporting a file over multicast (assuming no packets are lost)::
-    pipeline(RateControlledFileReader("myfile"),
+    Pipeline(RateControlledFileReader("myfile"),
              SRM_Sender(),
              Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
@@ -48,7 +48,7 @@ On the client::
                     (_, data) = self.recv("inbox")
                     self.send(data,"outbox")
     
-    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
               SRM_Receiver(),
               discardSeqnum(),
               consoleEchoer()
@@ -59,12 +59,12 @@ On the client::
 How does it work?
 -----------------
 
-SRM_Sender is a pipeline of three components:
+SRM_Sender is a Pipeline of three components:
 - Annotator    -- annotates a data stream with sequence numbers
 - Framer       -- frames the data
 - DataChunker  -- inserts markers between frames
 
-SRM_Receiver is a pipeline of three components:
+SRM_Receiver is a Pipeline of three components:
 - DataDeChunker  -- recovers chunks based on markers
 - DeFramer       -- removes framing
 - RecoverOrder   -- sorts data by sequence numbers
@@ -86,7 +86,7 @@ behaviour.
 """
 
 import Axon
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 from Kamaelia.Protocol.Framing import Framer as _Framer
 from Kamaelia.Protocol.Framing import DeFramer as _DeFramer
@@ -160,9 +160,9 @@ def SRM_Sender():
     sending over an unreliable connection that may lose, reorder or duplicate
     data. Can be decoded by SRM_Receiver.
 
-    This is a pipeline of components.
+    This is a Pipeline of components.
     """
-    return pipeline(
+    return Pipeline(
         Annotator(),
         _Framer(),
         _DataChunker()
@@ -177,9 +177,9 @@ def SRM_Receiver():
 
     Final emitted data is (seqnum, data) pairs.
 
-    This is a pipeline of components.
+    This is a Pipeline of components.
     """
-    return pipeline(
+    return Pipeline(
         _DataDeChunker(),
         _DeFramer(),
         RecoverOrder()
@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 self.send(str(i), "outbox")
                 t = time.time()
 
-    pipeline(Source(),
+    Pipeline(Source(),
              SRM_Sender(),
              Duplicate(),
              Throwaway(),
