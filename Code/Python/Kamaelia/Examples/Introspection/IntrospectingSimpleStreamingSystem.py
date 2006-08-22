@@ -27,7 +27,7 @@ from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Introspector import Introspector
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
@@ -44,14 +44,14 @@ SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),
              port=clientServerTestPort).activate()
 
 # Start the client
-pipeline(
+Pipeline(
       TCPClient("127.0.0.1",clientServerTestPort),
       VorbisDecode(),
       AOAudioPlaybackAdaptor(),
 ).activate()
 
 # Start the introspector and connect to a local visualiser
-pipeline(
+Pipeline(
     Introspector(),
     TCPClient("127.0.0.1", 1500),
 ).run()

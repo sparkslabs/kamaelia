@@ -7,7 +7,7 @@
 # should be captured. NOT supported by all DVB-T tuner devices.
 
 from Kamaelia.Device.DVB.Core import DVB_Multiplex
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 import dvb3
@@ -20,7 +20,7 @@ feparams = {
     "coderate_LP" : dvb3.frontend.FEC_3_4,
 }
 
-pipeline(
+Pipeline(
    # FIXME: Hmm. Need to check whether 0x2000 is supported by freecom DVB-T stick
    # FIXME: If it isn't need to change this to grab the pids manually, as it used to.
    # FIXME: Though that could be a different example...

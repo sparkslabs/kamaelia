@@ -28,14 +28,14 @@ from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 import random
 
 clientServerTestPort=random.randint(1500,1599)
 
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
-pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          ConsoleEchoer()
         ).run()
 

@@ -23,7 +23,7 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
@@ -41,7 +41,7 @@ def AdHocFileProtocolHandler(filename):
 server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream), 
                     port=clientServerTestPort).activate()
 
-pipeline(
+Pipeline(
    TCPClient("127.0.0.1",clientServerTestPort),
    VorbisDecode(),
    AOAudioPlaybackAdaptor() 

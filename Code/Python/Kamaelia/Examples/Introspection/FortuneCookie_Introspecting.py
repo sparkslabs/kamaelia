@@ -29,12 +29,12 @@ from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 from Kamaelia.Util.Introspector import Introspector
 
 # Start the introspector and connect to a local visualiser
-pipeline(
+Pipeline(
     Introspector(),
     TCPClient("127.0.0.1", 1500),
 ).activate()
@@ -43,7 +43,7 @@ clientServerTestPort=random.randint(1501,1599)
 
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
-pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          ConsoleEchoer()
         ).run()
 
