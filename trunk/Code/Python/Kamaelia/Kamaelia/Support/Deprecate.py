@@ -44,7 +44,7 @@ Possible values of KAMAELIA_DEPRECATION_WARNINGS
 import os
 
 defaultWarningLevel = "QUIET"
-GLOBAL_WARNING_LEVEL = os.environ.get("KAMAELIA_DEBUG",defaultWarningLevel)
+GLOBAL_WARNING_LEVEL = os.environ.get("KAMAELIA_DEPRECATION_WARNINGS",defaultWarningLevel)
 
 import sys,traceback
 
