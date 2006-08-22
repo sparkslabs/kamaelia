@@ -21,18 +21,18 @@
 # -------------------------------------------------------------------------
 """\
 ==================================
-Wiring up components in a pipeline
+Wiring up components in a Pipeline
 ==================================
 
-The pipeline component wires up a set of components in a linear chain (a
-pipeline) and encapsulates them as a single component.
+The Pipeline component wires up a set of components in a linear chain (a
+Pipeline) and encapsulates them as a single component.
 
 
 
 Example Usage
 -------------
 ::
-    pipeline(MyDataSource(...),
+    Pipeline(MyDataSource(...),
              MyFirstStageOfProcessing(...),
              MySecondStageOfProcessing(...),
              MyDestination(...),
@@ -41,41 +41,41 @@ Example Usage
 
 How does it work?
 -----------------
-A pipeline component gives you a way of wiring up a system of components in a
+A Pipeline component gives you a way of wiring up a system of components in a
 chain and then encapsulating the whole as a single component. The inboxes of
 this component pass through to the inboxes of the first component in the
-pipeline, and the outboxes of the last component pass through to the outboxes
-of the pipeline component.
+Pipeline, and the outboxes of the last component pass through to the outboxes
+of the Pipeline component.
 
-The components you specify are registered as children of the pipeline
-component. When pipeline is activate, all children are wired up and activated.
+The components you specify are registered as children of the Pipeline
+component. When Pipeline is activate, all children are wired up and activated.
 
-For the components in the pipeline, "outbox" outboxes are wired to "inbox"
+For the components in the Pipeline, "outbox" outboxes are wired to "inbox"
 inboxes, and "signal" outboxes are wired to "control" inboxes. They are wired
 up in the order in which you specify them - data will flow through the chain
 from first component to last.
 
-The "inbox" and "control" inboxes of the pipeline component are wired to
+The "inbox" and "control" inboxes of the Pipeline component are wired to
 pass-through to the "inbox" and "control" inboxes (respectively) of the first
-component in the pipeline chain.
+component in the Pipeline chain.
 
-The "outbox" and "signal" outboxes of the last component in the pipeline chain
+The "outbox" and "signal" outboxes of the last component in the Pipeline chain
 are wired to pass-through to the "outbox" and "signal" outboxes (respectively)
-of the pipeline component.
+of the Pipeline component.
 
-During runtime, the pipeline component monitors the child components. It will
+During runtime, the Pipeline component monitors the child components. It will
 terminate if, and only if, *all* the child components have also terminated.
 
 NOTE that if your child components create additional components themselves, the
-pipeline component will not know about them. It only monitors the components it
+Pipeline component will not know about them. It only monitors the components it
 was originally told about.
 
-pipeline does not intercept any of its inboxes or outboxes. It ignores whatever
+Pipeline does not intercept any of its inboxes or outboxes. It ignores whatever
 traffic flows through them.
 """
 
-# component that creates and encapsulates a pipeline of components, connecting
-# their outbox to inbox, and signal to control to form the pipeline chain.
+# component that creates and encapsulates a Pipeline of components, connecting
+# their outbox to inbox, and signal to control to form the Pipeline chain.
 
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
@@ -83,30 +83,30 @@ import Axon as _Axon
 component = _Axon.Component.component
 
 
-class pipeline(component):
+class Pipeline(component):
    """\
-   pipeline(*components) -> new pipeline component.
+   Pipeline(*components) -> new Pipeline component.
 
    Encapsulates the specified set of components and wires them up in a chain
-   (a pipeline) in the order you provided them.
+   (a Pipeline) in the order you provided them.
    
    Arguments:
    - components - the components you want, in the order you want them wired up
    """
    def __init__(self, *components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(pipeline,self).__init__()
+      super(Pipeline,self).__init__()
       self.components = list(components)
 
    def main(self):
       """Main loop."""
       self.addChildren(*self.components)
-      pipeline = self.components[:]
-      source = pipeline[0]
-      del pipeline[0]
-      while len(pipeline)>0:
-         dest = pipeline[0]
-         del pipeline[0]
+      Pipeline = self.components[:]
+      source = Pipeline[0]
+      del Pipeline[0]
+      while len(Pipeline)>0:
+         dest = Pipeline[0]
+         del Pipeline[0]
          self.link((source,"outbox"), (dest,"inbox"))
          self.link((source,"signal"), (dest,"control"))
          source = dest
@@ -137,8 +137,15 @@ class pipeline(component):
 
        return 0==len(self.childComponents())
 
+import Kamaelia.Support.Deprecate as Deprecate
 
-__kamaelia_components__  = ( pipeline, )
+pipeline = Deprecate.makeClassStub(
+    Pipeline,
+    "Use Kamaelia.Chassis.Pipeline:Pipeline instead of Kamaelia.Chassis.Pipeline:pipeline",
+    "WARN"
+    )
+
+__kamaelia_components__  = ( Pipeline, )
                   
 if __name__=="__main__":
     from Axon.Component import scheduler
@@ -168,7 +175,7 @@ if __name__=="__main__":
             self.__super.__init__()
             
             self.source = fruitSource()
-            self.pipe   = pipeline(passThrough([]))
+            self.pipe   = Pipeline(passThrough([]))
             self.dest   = consoleEchoer()
             self.addChildren(self.source, self.pipe, self.dest)
             
