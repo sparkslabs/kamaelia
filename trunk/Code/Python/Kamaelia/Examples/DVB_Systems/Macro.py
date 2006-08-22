@@ -7,7 +7,7 @@
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.File.UnixPipe import Pipethrough
+from Kamaelia.File.UnixProcess import UnixProcess
 import Axon
 import struct
 import dvb3
@@ -62,7 +62,7 @@ class ProgrammeTranscoder(Axon.Component.component):
         finishedEIT  = "/data/finished"+self.dir_prefix+"/"+uid+".eit"
         
         print uid,"Starting transcoding into: "+encodingfile
-        transcoder = Pipethrough("mencoder -o "+encodingfile+" "+self.mencoder_options)
+        transcoder = UnixProcess("mencoder -o "+encodingfile+" "+self.mencoder_options)
         print uid,"Transcoder pipethough =",transcoder.name
         
         data_linkage = self.link( (self,"inbox"), (transcoder,"inbox"), passthrough=1 )
@@ -129,7 +129,7 @@ def EITParsing(*service_ids):
         EITPacketParser(),
         NowNextServiceFilter(*service_ids),
         NowNextChanges(),
-    )        
+    )
 
 
 def ChannelTranscoder(service_id, mencoder_options, dir_prefix): # BBC ONE

@@ -7,7 +7,6 @@
 from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.File.UnixPipe import Pipethrough
 
 pipeline(
    DVB_Multiplex(754, [640, 641]), # BBC NEWS 24
