@@ -40,7 +40,7 @@ Reading and encoding raw video::
 
     imagesize = (352, 288)        # "CIF" size video
     
-    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              DiracEncoder(preset="CIF"),
             ).activate()

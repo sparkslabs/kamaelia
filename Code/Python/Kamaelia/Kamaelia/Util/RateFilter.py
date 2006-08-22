@@ -36,7 +36,7 @@ Example Usage
 -------------
 Regulating video to a constant framerate, buffering 2 seconds of data before
 starting to emit frames::
-    pipeline( RateControlledFileReader(...),
+    Pipeline( RateControlledFileReader(...),
               DiracDecoder(),
               MessageRateLimit(messages_per_second=framerate, buffer=2*framerate),
               VideoOverlay(),

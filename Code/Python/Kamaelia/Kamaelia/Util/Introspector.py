@@ -36,7 +36,7 @@ Example Usage
 Introspect and display whats going on inside the system::
     MyComplexSystem().activate()
     
-    pipeline( Introspector(),
+    Pipeline( Introspector(),
               AxonVisualiserServer(noServer=True),
             )
 

@@ -34,7 +34,7 @@ applications.
 Example Usage
 -------------
 A simple console driven topology viewer::
-    pipeline( ConsoleReader(),
+    Pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               TopologyViewerComponent(),
             ).run()

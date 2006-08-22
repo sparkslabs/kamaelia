@@ -35,7 +35,7 @@ Example Usage
     imagesize = (352, 288)        # "CIF" size video
     fps = 15                      # framerate of video
     
-    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              MessageRateLimit(messages_per_second=fps, buffer=fps*2)
              VideoOverlay()
@@ -255,14 +255,14 @@ __kamaelia_components__  = ( VideoOverlay, )
             
         
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     
-    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
-#    pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
+    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+#    Pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
               RawYUVFramer(size=(352,288), pixformat = pygame.IYUV_OVERLAY),
-#    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
+#    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
 #              RawYUVFramer(size=(720,576), pixformat = pygame.IYUV_OVERLAY),
               VideoOverlay(),
             ).run()

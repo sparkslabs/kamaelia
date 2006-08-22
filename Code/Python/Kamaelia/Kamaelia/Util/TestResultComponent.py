@@ -33,7 +33,7 @@ only.
 Example Usage
 -------------
 ::
-    pipeline( source(), testResultComponent() ).activate()
+    Pipeline( source(), testResultComponent() ).activate()
     
 Raises an assertion error if source() generates a value that doesn't test
 true.

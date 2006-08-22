@@ -48,7 +48,7 @@ class AOAudioPlaybackAdaptor(component):
 
    A simple player::
 
-       pipeline(
+       Pipeline(
            ReadFileAdaptor("somefile.ogg"),
            VorbisDecode(),
            AOAudioPlaybackAdaptor(),
@@ -98,7 +98,7 @@ class VorbisDecode(component):
 
    A simple player::
 
-       pipeline(
+       Pipeline(
            ReadFileAdaptor("somefile.ogg"),
            VorbisDecode(),
            AOAudioPlaybackAdaptor(),

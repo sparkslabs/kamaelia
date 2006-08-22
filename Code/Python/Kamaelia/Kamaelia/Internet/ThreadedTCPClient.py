@@ -40,7 +40,7 @@ Example Usage
 
 Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
 
-    pipeline( RateControlledFileReader("myfile", rate=100000),
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
               ThreadedTCPClient("1.2.3.4", 1000),
             ).activate()
 

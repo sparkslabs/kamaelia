@@ -36,7 +36,7 @@ Example Usage
 
 Testing a forward-error correction scheme to cope with an unreliable network::
     
-    pipeline( RateControlledFileReader("sourcefile",rate=1000000),
+    Pipeline( RateControlledFileReader("sourcefile",rate=1000000),
               MyForwardErrorCorrector(),
               Duplicate(),
               Throwaway(),
@@ -137,7 +137,7 @@ __kamaelia_components__  = ( Duplicate, Throwaway, Reorder)
 
 if __name__ == "__main__":
     import time
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
     class Source(component):
@@ -194,7 +194,7 @@ if __name__ == "__main__":
                 del datasource[0]
 
 
-    pipeline(Source(),
+    Pipeline(Source(),
              Annotator(),
              Duplicate(),
              Throwaway(),

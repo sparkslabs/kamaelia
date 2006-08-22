@@ -37,7 +37,7 @@ it receives topology change data to render::
     TopologyViewerServer( serverPort = 1500 ).run()
     
 A simple client to drive the visualiser::
-    pipeline( ConsoleReader(),
+    Pipeline( ConsoleReader(),
               TCPClient( server=<address>, port=1500 ),
             ).run()
     
@@ -59,14 +59,14 @@ specialisation of this component.
 How does it work?
 -----------------
 
-TopologyViewerServer is a pipeline of the following components:
+TopologyViewerServer is a Pipeline of the following components:
 - Kamaelia.SingleServer
 - chunks_to_lines
 - lines_to_tokenlists
 - TopologyViewerComponent
 - consoleEchoer
 
-This pipeline serves to listen on the specified port (defaults to 1500) for
+This Pipeline serves to listen on the specified port (defaults to 1500) for
 clients. One client is allowed to connect at a time.
 
 That client can then send topology change commands formatted as lines of text.
@@ -74,7 +74,7 @@ The lines are parsed and tokenised for the TopologyViewerComponent.
 
 Any output from the TopologyViewerComponent is sent to the console.
 
-If the noServer option is used at initialisation, then the pipeline is built
+If the noServer option is used at initialisation, then the Pipeline is built
 without the SingleServer component. It then becomes a TopologyViewer
 capable of processing non-tokenised input and with diagnostic console output.
 
@@ -82,7 +82,7 @@ See TopologyViewerComponent for more detail on topology change data and
 its behaviour.
 """
 
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 from chunks_to_lines import chunks_to_lines
 from lines_to_tokenlists import lines_to_tokenlists
@@ -91,7 +91,7 @@ from Kamaelia.SingleServer import SingleServer
 from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
 
-class TopologyViewerServer(pipeline):
+class TopologyViewerServer(Pipeline):
     """\
     TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
 
