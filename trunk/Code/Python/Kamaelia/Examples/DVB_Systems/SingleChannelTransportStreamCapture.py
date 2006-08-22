@@ -5,10 +5,10 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Multiplex
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
-pipeline(
+Pipeline(
    DVB_Multiplex(754, [640, 641]), # BBC NEWS 24
    SimpleFileWriter("BBC_NEWS_24.ts")
 ).run()

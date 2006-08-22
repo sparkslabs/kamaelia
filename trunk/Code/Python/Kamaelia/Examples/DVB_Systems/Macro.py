@@ -15,7 +15,7 @@ import dvb3
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor, EITPacketParser, NowNextServiceFilter, NowNextChanges, TimeAndDatePacketParser
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 import time, os
 
 class EITDemux(Axon.Component.component):
@@ -124,7 +124,7 @@ class ProgrammeTranscoder(Axon.Component.component):
 
 
 def EITParsing(*service_ids):
-    return pipeline(
+    return Pipeline(
         PSIPacketReconstructor(),
         EITPacketParser(),
         NowNextServiceFilter(*service_ids),

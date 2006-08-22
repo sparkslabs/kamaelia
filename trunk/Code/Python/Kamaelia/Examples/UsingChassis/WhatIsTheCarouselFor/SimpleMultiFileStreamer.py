@@ -29,7 +29,7 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Chassis.Prefab import JoinChooserToCarousel
 from Kamaelia.File.Reading import FixedRateControlledReusableFileReader
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Chooser import ForwardIteratingChooser # InfiniteChooser import InfiniteChooser
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
    if 0:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
-        pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()
+        Pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()
    
    server     = SimpleServer( protocol = filereader, port = SERVERPORT ).run()
 

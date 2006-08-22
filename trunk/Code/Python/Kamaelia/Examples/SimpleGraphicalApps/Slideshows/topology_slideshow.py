@@ -28,18 +28,18 @@ from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 import os
 
 graph = ["\n","""DEL ALL
 ADD NODE This This auto -
 ADD NODE is is auto -
 ADD NODE a a auto -
-ADD NODE pipeline pipeline auto -
+ADD NODE Pipeline Pipeline auto -
 ADD LINK This is
 ADD LINK is a
-ADD LINK a pipeline
-""","""DEL NODE pipeline
+ADD LINK a Pipeline
+""","""DEL NODE Pipeline
 ADD NODE graphline graphline auto -
 ADD NODE because because auto -
 ADD NODE it it auto -
@@ -168,7 +168,7 @@ Graphline(
      }
 ).activate()
 
-pipeline(
+Pipeline(
      Button(caption="dink", msg="NEXT", position=(136,0), transparent=True),
      Chooser(items = graph),
      chunks_to_lines(),
