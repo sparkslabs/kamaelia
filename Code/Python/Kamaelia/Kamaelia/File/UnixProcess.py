@@ -4,13 +4,13 @@ The purpose behind this component is to allow the following to occur:
 
 pipeline(
    dataSource(),
-   ExternalPipeThrough("command", *args),
+   UnixProcess("command", *args),
    dataSink(),
 ).run()
 
 More specificaly, the longer term interface of this component will be:
 
-ExternalPipeThrough:
+UnixProcess:
    inbox - data recieved here is sent to the program's stdin
    outbox - data sent here is from the program's stdout
    control - at some point we'll define a mechanism for describing
@@ -76,7 +76,7 @@ def makeNonBlocking(fd):
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NDELAY)
 
-class Pipethrough(Axon.Component.component):
+class UnixProcess(Axon.Component.component):
     Inboxes = {
             "inbox" : "We receive data here to send to the sub process",
             "control" : "We receive shutdown messages here",
@@ -91,7 +91,7 @@ class Pipethrough(Axon.Component.component):
         "selectorsignal" : "To send control messages to the selector",
     }
     def __init__(self,command):
-        super(Pipethrough, self).__init__()
+        super(UnixProcess, self).__init__()
         self.command = command
 
     def openSubprocess(self):
@@ -273,12 +273,16 @@ class Pipethrough(Axon.Component.component):
 #print "...sent"
 #        self.send(shutdown(), "selectorsignal")
 
-__kamaelia_components__ = ( Pipethrough, )
+__kamaelia_components__ = ( UnixProcess, )
+
+def Pipethrough(*args):
+    print "DEPRECATION WARNING: Pipethrough is deprecated, please use Kamaelia.File.UnixProcess.UnixProcess instead"
+    return UnixProcess(*args)
 
 if __name__=="__main__":
     pipeline(
        ChargenComponent(),
-       Pipethrough("wc"),
+       UnixProcess("wc"),
        ConsoleEchoer(forwarder=True)
     ).run()
 
