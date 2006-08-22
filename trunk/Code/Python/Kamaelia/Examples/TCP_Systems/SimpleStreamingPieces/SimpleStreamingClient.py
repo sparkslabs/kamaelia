@@ -25,10 +25,10 @@
 
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 clientServerTestPort=1500
-pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          VorbisDecode(),
          AOAudioPlaybackAdaptor()
         ).run()
