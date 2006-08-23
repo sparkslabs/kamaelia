@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
 from Kamaelia.Codec.Dirac import DiracEncoder, DiracDecoder
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay

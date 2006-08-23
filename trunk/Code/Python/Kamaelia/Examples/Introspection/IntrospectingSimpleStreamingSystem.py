@@ -25,7 +25,7 @@
 
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
-import Kamaelia.ReadFileAdaptor
+import Kamaelia.File.ReadFileAdaptor
 from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Introspector import Introspector
@@ -34,7 +34,7 @@ file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 clientServerTestPort = 1501
 
 def AdHocFileProtocolHandler(filename):
-    class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
+    class klass(Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass

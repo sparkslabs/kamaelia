@@ -10,12 +10,12 @@ file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 def tests():
    from Axon.Scheduler import scheduler
-   import Kamaelia.ReadFileAdaptor
+   import Kamaelia.File.ReadFileAdaptor
    from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
 
    class testComponent(Axon.Component.component):
       def main(self):
-        source = Kamaelia.ReadFileAdaptor.ReadFileAdaptor(file_to_stream, 
+        source = Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor(file_to_stream, 
                                                           readmode="bitrate",
                                                           bitrate=400000,
                                                           chunkrate=50)

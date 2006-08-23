@@ -168,7 +168,7 @@ elif location == "manchester": # WinterHill
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Util.Console import ConsoleEchoer
 
