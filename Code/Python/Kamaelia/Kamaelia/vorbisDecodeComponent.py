@@ -161,7 +161,7 @@ if __name__ =="__main__":
    #
    # Simple Testing Spike
    #
-   from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+   from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
    class testHarness(component):
       def __init__(self):
          super(testHarness, self).__init__()

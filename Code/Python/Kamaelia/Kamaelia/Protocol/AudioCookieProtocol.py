@@ -77,7 +77,7 @@ import sys
 
 from Axon.Component import component
 from Axon.Ipc import newComponent
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 
 class AudioCookieProtocol(component):
    """\

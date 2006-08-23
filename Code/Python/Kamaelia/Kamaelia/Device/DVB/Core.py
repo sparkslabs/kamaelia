@@ -205,7 +205,7 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
-    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.Graphline import Graphline
 
     feparams = {
