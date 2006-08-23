@@ -343,7 +343,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-    from Kamaelia.Util.Graphline import Graphline
+    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
 
     import dvb3.frontend

@@ -181,7 +181,7 @@ if __name__=="__main__":
         from Kamaelia.Util.Console import ConsoleEchoer
         from Kamaelia.Chassis.Pipeline import Pipeline
         from Kamaelia.Util.Chargen import Chargen
-        from Kamaelia.Util.Graphline import Graphline
+        from Kamaelia.Chassis.Graphline import Graphline
 
         server_addrs = [ 
                          ("127.0.0.1", 1600),
@@ -225,7 +225,7 @@ if __name__=="__main__":
         from Kamaelia.Util.Console import ConsoleEchoer
         from Kamaelia.Chassis.Pipeline import Pipeline
         from Kamaelia.Util.Chargen import Chargen
-        from Kamaelia.Util.Graphline import Graphline
+        from Kamaelia.Chassis.Graphline import Graphline
         import random
 
         server_addrs = [ 

@@ -3,7 +3,7 @@
 import Axon
 from xml.sax import make_parser, handler
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.RateFilter import OnDemandLimit
 
 class GraphSlideXMLParser(handler.ContentHandler):

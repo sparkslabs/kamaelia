@@ -54,7 +54,7 @@ sent to the "demarshalled" outbox.
 
 """
 
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
 def BasicMarshallComponent(klass):
