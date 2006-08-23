@@ -2,7 +2,7 @@
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Codec.Dirac import DiracDecoder
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 

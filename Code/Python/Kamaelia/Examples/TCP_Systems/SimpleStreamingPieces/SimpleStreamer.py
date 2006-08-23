@@ -23,13 +23,13 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Kamaelia.ReadFileAdaptor
+import Kamaelia.File.ReadFileAdaptor
 from Kamaelia.SimpleServerComponent import SimpleServer
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 def AdHocFileProtocolHandler(filename):
-    class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
+    class klass(Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
