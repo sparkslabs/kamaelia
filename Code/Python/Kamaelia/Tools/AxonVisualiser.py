@@ -75,9 +75,9 @@ if __name__=="__main__":
             
             from Kamaelia.Util.Introspector import Introspector
             from Kamaelia.Internet.TCPClient import TCPClient
-            from Kamaelia.Util.PipelineComponent import pipeline
+            from Kamaelia.Chassis.Pipeline import Pipeline
             
-            pipeline( Introspector(), 
+            Pipeline( Introspector(), 
                       TCPClient(server, port) 
                     ).activate()
 

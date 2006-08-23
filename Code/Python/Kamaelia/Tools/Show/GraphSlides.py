@@ -78,10 +78,10 @@ __kamaelia_prefab__ = ( onDemandGraphFileParser_Prefab, )
 
 
 if __name__ == "__main__":
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.Pipeline import Pipeline
     from Kamaelia.Util.ConsoleEcho import consoleEchoer
     import sys
-    pipeline(
+    Pipeline(
         ReadFileAdaptor(sys.argv[1]),
         GraphSlideComponent(),
         consoleEchoer()
