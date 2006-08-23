@@ -28,7 +28,7 @@ from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
 from Kamaelia.Util.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
