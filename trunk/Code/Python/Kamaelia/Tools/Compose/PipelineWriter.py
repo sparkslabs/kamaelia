@@ -67,7 +67,7 @@ class PipelineWriter(component):
         yield "#!/usr/bin/env python\n\n"
 
         if len(pipeline):
-            imports = { "Kamaelia.Util.PipelineComponent":["pipeline"] }
+            imports = { "Kamaelia.Chassis.Pipeline":["Pipeline"] }
 
             # go through all module/classname stuff to build the imports list
             for component in pipeline:
@@ -87,7 +87,7 @@ class PipelineWriter(component):
                 yield "\n"
                         
             yield "\n"
-            indent = "pipeline( "
+            indent = "Pipeline( "
             for component in pipeline:
                 yield indent + component['name']+"( "+component['instantiation'] + " ),\n"
                 indent = " " * len(indent)

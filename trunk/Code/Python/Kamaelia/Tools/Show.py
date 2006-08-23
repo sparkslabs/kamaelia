@@ -34,7 +34,7 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Pipeline import Pipeline
 from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 
@@ -147,7 +147,7 @@ Graphline(
                      displayExtra={ "transparency" : (255,255,255) },
                     ),
 
-     GRAPHSLIDES = pipeline(
+     GRAPHSLIDES = Pipeline(
          onDemandGraphFileParser_Prefab(GraphsFile),
          chunks_to_lines(),
          lines_to_tokenlists(),

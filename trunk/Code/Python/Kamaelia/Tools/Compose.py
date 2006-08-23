@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     from Axon.Scheduler import scheduler
 
-    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.Pipeline import Pipeline
     from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 
     from Kamaelia.Util.Splitter import PlugSplitter as Splitter
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     items = list(getAllClasses( COMPONENTS ))
 
     
-    pipegen = Splitter(pipeline( BuilderControlsGUI(items),
+    pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
                                  PipeBuild()
                                )
                       )
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
     
     Plug(pipegen, viewer).activate()
-    Plug(pipegen, pipeline(PipelineWriter(),
+    Plug(pipegen, Pipeline(PipelineWriter(),
                            TextOutputGUI("Pipeline code")
                           )
         ).activate()
