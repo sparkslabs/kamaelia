@@ -26,7 +26,7 @@
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 import Kamaelia.File.ReadFileAdaptor
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"

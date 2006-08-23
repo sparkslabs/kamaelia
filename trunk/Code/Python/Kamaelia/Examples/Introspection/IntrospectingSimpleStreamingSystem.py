@@ -26,7 +26,7 @@
 from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.File.ReadFileAdaptor
-from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Introspector import Introspector
 

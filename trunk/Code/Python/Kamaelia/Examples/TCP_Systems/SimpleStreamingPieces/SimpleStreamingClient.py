@@ -24,7 +24,7 @@
 #
 
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 clientServerTestPort=1500
