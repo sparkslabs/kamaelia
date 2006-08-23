@@ -282,7 +282,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 class PromptedFileReader(component):
     """\

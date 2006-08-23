@@ -41,7 +41,7 @@ import pygame
 pygame.init()
 from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
 from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
 from Kamaelia.Physics.Behaviours import cartesianPingPong
 width, height = (800,600)
