@@ -65,7 +65,7 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
 if __name__ == "__main__":
-    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.Graphline import Graphline
     from Core import DVB_Demuxer
 

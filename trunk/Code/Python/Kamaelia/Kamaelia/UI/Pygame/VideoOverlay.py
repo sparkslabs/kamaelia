@@ -256,7 +256,7 @@ __kamaelia_components__  = ( VideoOverlay, )
         
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     
     Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
