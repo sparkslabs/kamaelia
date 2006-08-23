@@ -35,7 +35,7 @@ from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import Topology
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Pipeline import Pipeline
-from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 
 # We should start thinking about how we handle the lines below better:
