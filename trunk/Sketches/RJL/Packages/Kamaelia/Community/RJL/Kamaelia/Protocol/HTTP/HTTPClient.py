@@ -243,7 +243,7 @@ class SingleShotHTTPClient(component):
         """Check for a redirect response and queue the fetching the page it points to if it is such a response.
         Returns true if it was a redirect page and false otherwise."""
         
-        if header["responsecode"] == "302" or header["responsecode"] == "303" or header["responsecode"] == "307":
+        if header["responsecode"] in ["301", "302", "303", "307"]:
             # location header gives the redirect URL
             newurl = header["headers"].get("location", "")
             if newurl != "":
@@ -442,12 +442,12 @@ class SimpleHTTPClient(component):
 __kamaelia_components__  = (SimpleHTTPClient, SingleShotHTTPClient)
 
 if __name__ == '__main__':
-    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
     
     # Example - type in a URL e.g. http://www.google.co.uk and have that page saved to disk
-    pipeline(
+    Pipeline(
         ConsoleReader(">>> ", ""),
         SimpleHTTPClient(),
         SimpleFileWriter("downloadedfile.txt"),
