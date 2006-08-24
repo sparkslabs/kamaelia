@@ -115,7 +115,7 @@ class TorrentClient(threadedcomponent):
     Mainline yield periodically.
     """
     
-    Inboxes = {t
+    Inboxes = {
         "inbox"   : "Torrent IPC - add a torrent, stop a torrent etc.",
         "control" : "Shut me down"
     }
@@ -227,11 +227,13 @@ class TorrentClient(threadedcomponent):
                         self.startTorrent(metainfo, savefolder, savefolder, self.totaltorrents)
                         self.send(TIPCNewTorrentCreated(torrentid=self.totaltorrents, savefolder=savefolder), "outbox")
             elif isinstance(temp, TIPCCloseTorrent):
-                torrent = self.torrents.get(temp.torrentid, None)
-                if torrent != None:
+                try:
+                    torrent = self.torrents.get(temp.torrentid, None)
                     self.multitorrent.remove_torrent(torrent.metainfo.infohash)
-                    self.torrentinfohashes.erase(torrent.metainfo.infohash)
-                    self.torrents.erase(temp.torrentid)
+                    self.torrentinfohashes.pop(torrent.metainfo.infohash)
+                    self.torrents.pop(temp.torrentid)
+                except KeyError:
+                    pass
                     
         while self.dataReady("control"):
             temp = self.recv("control")
