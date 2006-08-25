@@ -23,7 +23,7 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 import Kamaelia.File.ReadFileAdaptor
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor

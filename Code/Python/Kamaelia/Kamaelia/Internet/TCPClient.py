@@ -249,7 +249,7 @@ __kamaelia_components__  = ( TCPClient, )
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
-   from Kamaelia.SimpleServerComponent import SimpleServer
+   from Kamaelia.Chassis.ConnectedServer import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
    from Kamaelia.Util.ConsoleEcho import  consoleEchoer
    from Axon.Component import component

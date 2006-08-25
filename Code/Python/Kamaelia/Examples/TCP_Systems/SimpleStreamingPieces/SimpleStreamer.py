@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,7 @@
 #
 
 import Kamaelia.File.ReadFileAdaptor
-from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
 file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
