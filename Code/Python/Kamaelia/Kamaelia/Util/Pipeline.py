@@ -33,10 +33,4 @@ pipeline = Deprecate.makeClassStub(
     "Use Kamaelia.Chassis.Pipeline:Pipeline instead of Kamaelia.Util.Pipeline:pipeline",
     "WARN"
     )
-
-Pipeline = Deprecate.makeClassStub(
-    __Pipeline,
-    "Use Kamaelia.Chassis.Pipeline:Pipeline instead of Kamaelia.Util.Pipeline:Pipeline",
-    "WARN"
-    )
    
