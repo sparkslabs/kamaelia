@@ -29,7 +29,7 @@ netcat <server ip> 1500 | plaympeg -2 -
 
 """
 
-from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
 from Axon.Component import component, scheduler, linkage, newComponent
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor

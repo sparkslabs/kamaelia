@@ -26,7 +26,7 @@
 
 import random
 from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
-from Kamaelia.SimpleServerComponent import SimpleServer
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
