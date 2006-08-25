@@ -5,7 +5,7 @@ from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Internet.SingleServer import SingleServer
  
 class Cat(Axon.Component.component):
     def __init__(self, messages):
