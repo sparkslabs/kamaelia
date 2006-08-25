@@ -60,7 +60,7 @@ How does it work?
 -----------------
 
 TopologyViewerServer is a Pipeline of the following components:
-- Kamaelia.SingleServer
+- Kamaelia.Internet.SingleServer
 - chunks_to_lines
 - lines_to_tokenlists
 - TopologyViewerComponent
@@ -87,7 +87,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from chunks_to_lines import chunks_to_lines
 from lines_to_tokenlists import lines_to_tokenlists
 from TopologyViewerComponent import TopologyViewerComponent
-from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Internet.SingleServer import SingleServer
 from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
 

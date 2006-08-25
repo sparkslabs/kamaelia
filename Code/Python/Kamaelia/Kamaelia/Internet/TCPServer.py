@@ -32,14 +32,14 @@ This component does not handle the instantiation of components to handle an
 accepted connection request. Another component is needed that responds to this
 component and actually does something with the newly established connection.
 If you require a more complete implementation that does this, see
-Kamaelia.SingleServer or Kamaelia.Chassis.ConnectedServer.
+Kamaelia.Internet.SingleServer or Kamaelia.Chassis.ConnectedServer.
 
 
 
 Example Usage
 -------------
 
-See Kamaelia.SingleServer or Kamaelia.Chassis.ConnectedServer for examples of how
+See Kamaelia.Internet.SingleServer or Kamaelia.Chassis.ConnectedServer for examples of how
 this component can be used.
 
 The process of using a TCPServer component can be summarised as:
