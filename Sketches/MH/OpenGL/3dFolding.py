@@ -35,20 +35,60 @@ class Simple3dFold(OpenGLComponent):
             self.size.y = self.size.y * self.tex_h/self.tex_w
 
         size = self.size/2.0
-        #              vertex coord        texture coord
-        self.poly = [ ((-size.x, -size.y), (0.0,        1.0-self.tex_h)),
-                      ((-size.x, +size.y), (0.0,        1.0           )),
-                      ((+size.x, +size.y), (self.tex_w, 1.0           )),
-                      ((+size.x, -size.y), (self.tex_w, 1.0-self.tex_h)),
-                    ]
-#         self.poly =  [ ((-size.x, -0.5*size.y), (0.0, 1.0-self.tex_h*0.75)),
-#                        ((0.0,     +size.y    ), (0.5, 1.0                )),
-#                        ((+size.x, -0.5*size.y), (1.0, 1.0-self.tex_h*0.75)),
-#                      ]
-#         self.poly2 = [ ((-size.x, +0.5*size.y), (0.0, 1.0-self.tex_h*0.25)),
-#                        ((0.0,     -size.y    ), (0.5, 1.0-self.tex_h     )),
-#                        ((+size.x, +0.5*size.y), (1.0, 1.0-self.tex_h*0.25)),
-#                      ]
+        
+        shape = "CONCENTRIC"
+        if shape == "SQUARE":
+            #                  vertex-x  vertex-y   texture-x   texture-y
+            self.polys = [
+                           [ ((-size.x,  -size.y), (0.0,        1.0-self.tex_h)),
+                             ((-size.x,  +size.y), (0.0,        1.0           )),
+                             ((+size.x,  +size.y), (self.tex_w, 1.0           )),
+                             ((+size.x,  -size.y), (self.tex_w, 1.0-self.tex_h)),
+                           ],
+                        ]
+        elif shape == "STAR":
+            #                  vertex-x  vertex-y      texture-x   texture-y
+            self.polys = [
+                           [ ((-size.x, -0.5*size.y), (0.0,        1.0-self.tex_h*0.75)),
+                             ((0.0,     +size.y    ), (0.5,        1.0                )),
+                             ((+size.x, -0.5*size.y), (1.0,        1.0-self.tex_h*0.75)),
+                           ],
+                           [ ((-size.x, +0.5*size.y), (0.0,        1.0-self.tex_h*0.25)),
+                             ((0.0,     -size.y    ), (0.5,        1.0-self.tex_h     )),
+                             ((+size.x, +0.5*size.y), (1.0,        1.0-self.tex_h*0.25)),
+                           ],
+                         ]
+        elif shape == "CONCENTRIC":
+            #                  vertex-x    vertex-y       texture-x         texture-y
+            self.polys = [
+                           [ ((-size.x,     -size.y    ), (0.0,             1.0-self.tex_h     )),
+                             ((-size.x,     -size.y*0.6), (0.0,             1.0-self.tex_h*0.80)),
+                             ((+size.x,     -size.y*0.6), (self.tex_w,      1.0-self.tex_h*0.80)),
+                             ((+size.x,     -size.y),     (self.tex_w,      1.0-self.tex_h     )),
+                           ],
+                           [ ((-size.x,     +size.y    ), (0.0,             1.0                )),
+                             ((-size.x,     +size.y*0.6), (0.0,             1.0-self.tex_h*0.20)),
+                             ((+size.x,     +size.y*0.6), (self.tex_w,      1.0-self.tex_h*0.20)),
+                             ((+size.x,     +size.y),     (self.tex_w,      1.0                )),
+                           ],
+                           [ ((-size.x,     -size.y    ), (0.0,             1.0-self.tex_h     )),
+                             ((-size.x,     +size.y    ), (0.0,             1.0                )),
+                             ((-size.x*0.6, +size.y    ), (self.tex_w*0.20, 1.0                )),
+                             ((-size.x*0.6, -size.y    ), (self.tex_w*0.20, 1.0-self.tex_h     )),
+                           ],
+                           [ ((+size.x,     -size.y    ), (self.tex_w,      1.0-self.tex_h     )),
+                             ((+size.x,     +size.y    ), (self.tex_w,      1.0                )),
+                             ((+size.x*0.6, +size.y    ), (self.tex_w*0.80, 1.0                )),
+                             ((+size.x*0.6, -size.y    ), (self.tex_w*0.80, 1.0-self.tex_h     )),
+                           ],
+                           [ ((-size.x*0.2, -size.y*0.2), (self.tex_w*0.40, 1.0-self.tex_h*0.60)),
+                             ((-size.x*0.2, +size.y*0.2), (self.tex_w*0.40, 1.0-self.tex_h*0.40)),
+                             ((+size.x*0.2, +size.y*0.2), (self.tex_w*0.60, 1.0-self.tex_h*0.40)),
+                             ((+size.x*0.2, -size.y*0.2), (self.tex_w*0.60, 1.0-self.tex_h*0.60)),
+                           ],
+                        ]
+        else:
+            raise "No shape"
 
         self.starttime = time.time()
         self.foldpoint = (0.0, 0.0)
@@ -60,8 +100,14 @@ class Simple3dFold(OpenGLComponent):
 
     def draw(self):
 
-        polys3d = curl(self.poly, (self.foldpoint, self.folddelta), self.radius, self.segments)
-#         polys3d.extend( curl(self.poly2, (self.foldpoint, self.folddelta), self.radius, self.segments))
+        polys3d = []
+        for poly in self.polys:
+            curledpoly = curl( poly,
+                               (self.foldpoint, self.folddelta), 
+                               self.radius,
+                               self.segments
+                             )
+            polys3d.extend(curledpoly)
 
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -83,12 +129,15 @@ class Simple3dFold(OpenGLComponent):
         size = self.size/2.0
 
         angle = (time.time()-self.starttime) / 2.0
-#        self.folddelta = math.cos(angle), math.sin(angle)
+#        self.folddelta = math.cos(angle*0.2), math.sin(angle*0.2)
 
-#        self.radius = math.cos(angle)+1.0
-        cossquared = (math.cos(angle)**2)
+#        self.radius = 2.0*math.cos(angle)+2.2
+#        cossquared = (math.cos(angle)**2)
 #        moveto = interpolate(self.poly[1][0],self.poly[3][0],2.0*cossquared)
-#        self.foldpoint, self.folddelta = calcFoldLine(self.poly[1][0], moveto, self.radius)
+#        movefrom = self.poly[1][0]
+#        moveto = rotate(angle*0.1, moveto)
+#        movefrom = rotate(angle*0.1, movefrom)
+#        self.foldpoint, self.folddelta = calcFoldLine(movefrom, moveto, self.radius)
 
         self.redraw()
 
@@ -140,7 +189,7 @@ class Simple3dFold(OpenGLComponent):
 
                 # transform vertices for intersection test
                 transformedPoly = [ self.transform.transformVector(Vector(x,y,0.0))
-                                    for ((x,y),_) in self.poly ]
+                                    for ((x,y),_) in self.polys[0] ]
                 # calculate distance of intersection
                 t = Intersect.ray_Plane(Vector(0,0,0), event.direction, transformedPoly[0:3]);
                 # point of intersection
@@ -149,9 +198,9 @@ class Simple3dFold(OpenGLComponent):
                 point = mapPlaneToPoly( transformedPoly[0].toTuple(),
                                         transformedPoly[1].toTuple(),
                                         transformedPoly[2].toTuple(),
-                                        self.poly[0][0],
-                                        self.poly[1][0],
-                                        self.poly[2][0],
+                                        self.polys[0][0][0],
+                                        self.polys[0][1][0],
+                                        self.polys[0][2][0],
                                         p.toTuple(),
                                         )
                 if setPullPoint:
@@ -468,6 +517,12 @@ def left90(vector):
 
 def right90(vector):
     return (vector[1],-vector[0])
+
+def rotate(angle, vector):
+    cos = math.cos(angle)
+    sin = math.sin(angle)
+    return ( cos*vector[0]+sin*vector[1],
+            -sin*vector[0]+cos*vector[1] )
 
 def dist(vector):
     return (vector[0]*vector[0] + vector[1]*vector[1])**0.5
