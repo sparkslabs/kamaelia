@@ -16,7 +16,7 @@
 
 
 from Axon.Ipc import shutdownMicroprocess, producerFinished
-import time
+import time as _time
 
 # want pausing capability in threadedcomponent
 import sys
@@ -70,6 +70,7 @@ class AudioBuffer(object):
             else:
                 self.buffer[0] = fragment[amount:]
                 amount = 0
+        self.size -= amount
 
     def pop(self, amount):
         if not self.active:
@@ -148,15 +149,15 @@ class RawAudioMixer(threadedcomponent):
                     self.pause()
                     
             # switch to reading from buffers (active) mode
-            nextReadTime = time.time()
+            nextReadTime = _time.time()
             
             # dump out audio until all buffers are empty
             while len(buffers) and not shutdown:
                 
-                while self.dataReady("inbox") and time.time() < nextReadTime:
+                while self.dataReady("inbox") and _time.time() < nextReadTime:
                     reading = self.fillBuffer(buffers, self.recv("inbox"))
                 
-                now = time.time()
+                now = _time.time()
                 if now >= nextReadTime:
                     
                     # read from all buffers (only active ones output samples)
@@ -181,7 +182,7 @@ class RawAudioMixer(threadedcomponent):
                     break
                 
                 if len(buffers) and not self.dataReady("inbox"):
-                    self.pause( nextReadTime - time.time() )
+                    self.pause( nextReadTime - _time.time() )
                 
             # now there are no active buffers, go back to reading mode
             
@@ -206,174 +207,10 @@ class RawAudioMixer(threadedcomponent):
             for src in sources:
                 value = ord(src[i]) + (ord(src[i+1]) << 8)
 #                sum += value - ((value&0x8000) and 65536)
-                sum += value
                 if value & 0x8000:
-                    sum -= 65536
+                    value -= 65536
+                sum += value
             output.append( chr(sum & 255)+chr((sum>>8) & 255) )
         return "".join(output)
 
-
-if __name__ == "__main__":
-    from Kamaelia.Chassis.Graphline import Graphline
-    
-    # test audio
-
-    SAMPLE_RATE = 10     * 5
-    READ_THRESH = 5.0    / 5
-    READ_INTERV = 1.0    / 5
-    BUFFER_LIM  = 10.0   / 5
-
-    THRESH_SIZE = int(SAMPLE_RATE * READ_THRESH)
-    CHUNK_SIZE = int(THRESH_SIZE / 10)
-    READ_SIZE = SAMPLE_RATE * READ_INTERV
-
-    class Tester(threadedcomponent):
-        def checkNoOutput(self, duration, error=""):
-            try:
-                now = time.time()
-                until = now + duration
-                assert(not self.dataReady("inbox"))
-                while now < until:
-                    self.pause(until-now)
-                    assert(not self.dataReady("inbox"))
-                    now = time.time()
-            except AssertionError, e:
-                e.args=(error,)
-                raise e
-
-        def collectOutput(self, duration):
-            # collect and timestamp output over a given duration
-            start = time.time()
-            until = start + duration
-            output=[]
-            while time.time() <= until:
-                while self.dataReady("inbox"):
-                    timestamp = time.time() - start
-                    data = self.recv("inbox")
-                    output.append( (timestamp,data) )
-                self.pause(until-time.time())
-            return output
-
-        def mustContain(self, data, *elements):
-            # assert must contain all of, and only, elements in elements
-
-            # combine the elements, so we know what we're expecting
-            expecting = 0
-            for e in elements:
-                val = ord(e[0]) + ord(e[1])*256
-                if val >=0x8000:
-                    val=val-65536
-                expecting = expecting + val
-            expecting = chr(expecting & 0xff) + chr((expecting>>8) & 0xff)
-            
-            for i in range(0,len(data),2):
-                assert( data[i:i+2] == expecting )
-                
-        def main(self):
-            try:
-                fragA = chr( 4)+chr(0)
-                fragB = chr(16)+chr(0)
-                fragC = chr(64)+chr(0)
-                fragD = chr( 1)+chr(1)
-
-                # TEST: No input, no output
-                print "Testing: Nothing in, nothing out"
-                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for no input")
-                print "Passed test 1"
-                    
-                # TEST: single source
-                print "Testing: Single source"
-                # nearly fill to threshold, check no leakage
-                for i in range(0,(THRESH_SIZE-CHUNK_SIZE)/CHUNK_SIZE, 1):
-                    self.send(("A",fragA*CHUNK_SIZE), "outbox")
-
-                # nothing shoudl be coming out yet (not reached thresh)
-                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for sub threshold input")
-                print "Passed test 2a"
-
-                # bring up to threshold, expect full output
-                self.send(("A",fragA*CHUNK_SIZE), "outbox")
-
-                output=self.collectOutput(READ_THRESH*1.5)
-                # verify regularity of output
-                for i in range(0,len(output)):
-                    expected_t = READ_INTERV*i
-                    tolerance = READ_INTERV*0.4
-                    (t, _) = output[i]
-                    assert(t>=expected_t)
-                    assert(t<=expected_t + tolerance)
-                print "Passed test 2b"
-
-                # verify contents of output, and its size
-                amount =0
-                for (_, data) in output:
-                    assert(len(data) == 2*READ_SIZE)
-                    amount += len(data)
-                    self.mustContain(data, fragA)
-#                assert(amount == THRESH_SIZE*2)
-                print "Passed test 2c"
-                
-                # TEST: no more output
-                self.checkNoOutput(READ_THRESH*0.5, "Expected no output")
-                print "Passed test 2d"
-
-                # TEST: 3 inputs mix
-                print "Testing: Multi source"
-                # nearly fill to threshold check no leakage
-                for i in range(0,(THRESH_SIZE-CHUNK_SIZE)/CHUNK_SIZE, 1):
-                    self.send(("A",fragA*CHUNK_SIZE), "outbox")
-                    self.send(("B",fragB*CHUNK_SIZE), "outbox")
-                    self.send(("C",fragC*CHUNK_SIZE), "outbox")
-                    self.send(("D",fragC*CHUNK_SIZE), "outbox")
-                
-                # nothing shoudl be coming out yet (not reached thresh)
-                self.checkNoOutput(READ_THRESH*1.5, "Expected no output for sub threshold input")
-                print "Passed test 3a"
-                
-                # bring up to threshold, expect full output
-                self.send(("A",fragA*CHUNK_SIZE), "outbox")
-                self.send(("B",fragB*CHUNK_SIZE), "outbox")
-                self.send(("C",fragC*CHUNK_SIZE), "outbox")
-
-                output=self.collectOutput(READ_THRESH*1.5)
-                # verify regularity of output
-                for i in range(0,len(output)):
-                    expected_t = READ_INTERV*i
-                    tolerance = READ_INTERV*0.4
-                    (t, _) = output[i]
-                    assert(t>=expected_t)
-                    assert(t<=expected_t + tolerance)
-                print "Passed test 3b"
-                
-                # verify contents of output, and its size
-                amount =0
-                for (_, data) in output:
-                    assert(len(data) == 2*READ_SIZE)
-                    amount += len(data)
-                    self.mustContain(data, fragA, fragB, fragC)
-#                assert(amount == THRESH_SIZE*2)
-                print "Passed test 3c"
-                
-                
-                # END OF TESTS
-                self.send(producerFinished(),"signal")
-
-            except AssertionError, e:
-                self.send(producerFinished(),"signal")
-                print "Failed:"
-                print str(e)
-            except:
-                self.send(producerFinished(),"signal")
-                raise
-    
-    Graphline(
-        mixer = RawAudioMixer(SAMPLE_RATE, READ_THRESH, BUFFER_LIM, READ_INTERV),
-        tester = Tester(),
-        linkages = {
-                ("tester", "outbox") : ("mixer", "inbox"),
-                ("mixer",  "outbox") : ("tester", "inbox"),
-                
-                ("tester", "signal") : ("mixer", "control"),
-            }
-        ).run()
 
