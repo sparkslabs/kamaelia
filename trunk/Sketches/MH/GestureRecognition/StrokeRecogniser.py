@@ -13,7 +13,7 @@
 import sys
 sys.path.append("../Sketcher")
 
-from sketcher import Canvas
+from Whiteboard.Canvas import Canvas
 import pygame
 
 from Pen import *

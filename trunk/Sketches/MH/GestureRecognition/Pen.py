@@ -1,9 +1,5 @@
 # Pygame based pen, drives a Sketcher canvas
 
-import sys
-sys.path.append("../Sketcher")
-
-from sketcher import Canvas
 import pygame
 from Axon.Component import component
 
