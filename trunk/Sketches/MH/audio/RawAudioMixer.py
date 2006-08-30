@@ -1,4 +1,75 @@
 #!/usr/bin/env python
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""/
+============================
+Multi-source Raw Audio Mixer
+============================
+
+A component that mixes raw audio data from an unknown number of sources, that
+can change at any time. Audio data from each source is buffered until a minimum
+threshold amount, before it is included in the mix. The mixing operation is a
+simple addition. Values are not scaled down.
+
+
+
+Example Usage
+-------------
+
+Mixing between 0 and 3 sources of audio (sometimes a source is active, sometimes
+it isn't)::
+
+    Graphline(
+        MIXER = RawAudioMixer( sample_rate=8000,
+                               channels=1,
+                               format="S16_LE",
+                               readThreshold=1.0,
+                               bufferingLimit=2.0,
+                               readInterval=0.1),
+                             ),
+        A = pipeline( SometimesOn_RawAudioSource(), Entuple(prefix="A") ),
+        B = pipeline( SometimesOn_RawAudioSource(), Entuple(prefix="B") ),
+        C = pipeline( SometimesOn_RawAudioSource(), Entuple(prefix="C") ),
+            
+        OUTPUT = RawSoundOutput( sample_rate=8000,
+                                 channels=1
+                                 format="S16_LE",
+                               ),
+               linkages = {
+                   (A, "outbox") : (MIXER, "inbox"),
+                   (B, "outbox") : (MIXER, "inbox"),
+                   (C, "outbox") : (MIXER, "inbox"),
+                   
+                   (MIXER, "outbox") : (OUTPUT, "inbox"),
+               },
+             ).run()
+
+
+
+TODO:
+
+    * Needs a timeout mechanism to discard very old data (otherwise this is
+      effectively a memory leak!)
+"""
+
 
 # dynamic audio downmixer
 
@@ -28,20 +99,22 @@ class AudioBuffer(object):
     """\
     AudioBuffer(activationThreshold, sizeLimit) -> new AudioBuffer component.
     
-    Doesn't 'activate' until threshold amount of data arrives
+    Doesn't 'activate' until threshold amount of data arrives. Until it does,
+    attempts to read data will just return nothing.
     
     
     Keyword arguments:
     -- activationThreshold  - Point at which the buffer is deemed activated
     -- sizeLimit            - Filling the buffer beyond this causes samples to be dropped
     """
-    def __init__(self, activationThreshold, sizeLimit):
+    def __init__(self, activationThreshold, sizeLimit, silence):
         super(AudioBuffer,self).__init__()
         self.size = 0
         self.sizeLimit = sizeLimit
         self.activationThreshold = activationThreshold
         self.buffer = []
         self.active = False
+        self.silence = silence
 
     def __len__(self):
         # return how much data there is
@@ -80,7 +153,7 @@ class AudioBuffer(object):
 
         padding_silence = ""
         if amount > self.size:
-            padding_silence = chr(0) * (amount-self.size)
+            padding_silence = self.silence * ((amount-self.size)/len(self.silence))
             amount = self.size
 
         self.size -= amount
@@ -107,12 +180,22 @@ class AudioBuffer(object):
 
 class RawAudioMixer(threadedcomponent):
     """Assuming mono signed 16 bit Little endian audio"""
-    def __init__(self, sample_rate=8000, readThreshold=1.0, bufferingLimit=2.0, readInterval=0.1):
+    
+    def __init__(self, sample_rate=8000, channels=1, format="S16_LE",
+                       readThreshold=1.0, bufferingLimit=2.0, readInterval=0.1):
         super(RawAudioMixer,self).__init__()
         self.sample_rate = sample_rate
         self.bufferingLimit = bufferingLimit
         self.readThreshold = readThreshold
         self.readInterval = readInterval
+
+        if format=="S16_LE":
+            self.mix     = self.mix_S16_LE
+            self.quanta  = channels*2 # bytes per sample
+            self.silence = "\0\0"
+        else:
+            raise "Format '"+str(format)+"' not (yet) supported. Sorry!"
+        
 
     def checkForShutdown(self):
         while self.dataReady("control"):
@@ -125,10 +208,10 @@ class RawAudioMixer(threadedcomponent):
     def main(self):
         buffers = {}
         
-        self.MAXBUFSIZE = int(self.sample_rate*self.bufferingLimit*2)    # 2 = bytes per sample
-        self.BUFTHRESHOLD = int(self.sample_rate*self.readThreshold*2)   # 2 = bytes per sample
+        self.MAXBUFSIZE = int(self.sample_rate*self.bufferingLimit*self.quanta)
+        self.BUFTHRESHOLD = int(self.sample_rate*self.readThreshold*self.quanta)
         
-        READCHUNKSIZE = int(self.sample_rate*self.readInterval)*2
+        READCHUNKSIZE = int(self.sample_rate*self.readInterval)*self.quanta
 
         shutdown = False
         while not shutdown:
@@ -173,7 +256,7 @@ class RawAudioMixer(threadedcomponent):
                             
                     # assuming we've got something, mix it and output it
                     if audios:
-                        self.send(self.mixAudio(audios, READCHUNKSIZE), "outbox")
+                        self.send(self.mix(audios, READCHUNKSIZE), "outbox")
                 
                     nextReadTime += self.readInterval
                     
@@ -192,7 +275,7 @@ class RawAudioMixer(threadedcomponent):
         try:
             buf = buffers[srcId]
         except KeyError:
-            buf = AudioBuffer(self.BUFTHRESHOLD,self.MAXBUFSIZE)
+            buf = AudioBuffer(self.BUFTHRESHOLD,self.MAXBUFSIZE, self.silence)
             buffers[srcId] = buf
             
         buf.append(audio)
@@ -200,7 +283,7 @@ class RawAudioMixer(threadedcomponent):
         return buf.active
         
     
-    def mixAudio(self,sources, amount):
+    def mix_S16_LE(self,sources, amount):
         output = []
         for i in xrange(0,amount,2):
             sum=0
