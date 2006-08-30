@@ -16,22 +16,8 @@ sys.path.append("../Timer")
 #from Axon.ThreadedComponent import threadedcomponent
 from ThreadedComponent import threadedcomponent
 
-mapping_format_to_pymedia = {
-    'AC3'       : sound.AFMT_AC3,
-    'A_LAW'     : sound.AFMT_A_LAW,
-    'IMA_ADPCM' : sound.AFMT_IMA_ADPCM,
-    'MPEG'      : sound.AFMT_MPEG,
-    'MU_LAW'    : sound.AFMT_MU_LAW,
-    'S16_BE'    : sound.AFMT_S16_BE,
-    'S16_LE'    : sound.AFMT_S16_LE,
-    'S16_NE'    : sound.AFMT_S16_NE,
-    'S8'        : sound.AFMT_S8,
-    'U16_BE'    : sound.AFMT_U16_BE,
-    'U16_LE'    : sound.AFMT_U16_LE,
-    'U8'        : sound.AFMT_U8,
-}
-
-mapping_format_from_pymedia = dict([(v,k) for (k,v) in mapping_format_to_pymedia.items() ])
+from Support.PyMedia.AudioFormats import mapping_format_to_pymedia
+from Support.PyMedia.AudioFormats import mapping_format_from_pymedia
 
 
 class AudioDecoder(component):
