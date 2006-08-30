@@ -45,6 +45,7 @@ class Test_RawAudioMixer(unittest.TestCase):
 
         self.read_interval = read_interval
         self.read_threshold = read_threshold
+        self.readintervalsize = int(sample_rate * read_interval)
 
         # make a fake timer, and plumb it in
         clock = FakeTime(0.0)
@@ -114,7 +115,7 @@ class Test_RawAudioMixer(unittest.TestCase):
         amounts = {}
         for e in elements:
             amounts[e] = 0
-            
+
         for i in range(0,len(data),2):
             dval = ord(data[i])+ord(data[i+1])*256
 
@@ -128,6 +129,39 @@ class Test_RawAudioMixer(unittest.TestCase):
             self.assert_(dval==0)
         return amounts
             
+    def contains(self, sample, element):
+        dval = ord(data[i])+ord(data[i+1])*256
+        e_val = ord(element[0])+ord(element[1])*256
+
+        return (dval & e_val == e_val)
+            
+    def separateOut(self, data, *elements):
+        # returns list of components
+        # component = (frag, starttime, duration)
+        found = []
+        current = {}
+        for pos in range(0,len(data),2):
+            dval = ord(data[pos]) + ord(data[pos+1])*256
+
+            for e in elements:
+                e_val = ord(e[0])+ord(e[1])*256
+
+                if dval & e_val == e_val:
+                    start, duration = current.get(e, (pos/2, 0) )
+                    duration += 1
+                    current[e] = (start,duration)
+                    dval -= e_val
+                else:
+                    if current.has_key(e):
+                        found.append( (e, current[e][0], current[e][1]) )
+                        del current[e]
+            self.assert_(dval==0, "Shouldn't have been extraneous values in the mixed output")
+        # dump any remaining stuff
+        for e in current:
+            found.append( (e, current[e][0], current[e][1]) )
+        return found
+        
+
     def deliver(self, data, boxname):
         self.rawaudiomixer._deliver(data,boxname)
         for i in range(0,100):
@@ -199,15 +233,17 @@ class Test_RawAudioMixer(unittest.TestCase):
             output, signaloutput=self.collectOutput(self.read_threshold*3.0)
                 
             # verify contents of output, and its size
-            amounts ={}
-            for data in output:
-                counted = self.containsHowMuch(data, fragA, fragB, fragC, fragD)
-                for (frag,count) in counted.items():
-                    amounts[frag] = amounts.get(frag,0) + count
-
-            for frag in [fragA,fragB,fragC]:
-                self.assert_((amounts[frag] == self.threshsize))
-            self.assert_((amounts[fragD] == 0))
+            breakdown = self.separateOut("".join(output), fragA, fragB, fragC, fragD)
+            
+            frags = [fragA,fragB,fragC]
+            for (frag, start, duration) in breakdown:
+                # verify fragment is one we expect
+                self.assert_(frag in frags, "Fragment is one expected")
+                del frags[frags.index(frag)]
+                # check it starts and ends where we expect
+                self.assert_(start >=0 and start <= self.readintervalsize, "All fragments should be mixed within 'read interval' distance of each other")
+                self.assert_(duration == self.threshsize, "All fragments are the same length as the data that came in")
+            self.assert_(frags == [], "Only the fragments we expected to find were present")
 
             # TEST: no more output
             self.checkNoOutput(self.read_threshold*2.0, "Expected no output")
