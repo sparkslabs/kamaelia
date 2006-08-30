@@ -52,7 +52,9 @@ class Test_RawAudioMixer(unittest.TestCase):
         RawAudioMixer._time = clock
         
         # make rawaudiomixer, and hack its pause() functionality, to have zero timeout
-        r = RawAudioMixer.RawAudioMixer(sample_rate, read_threshold, buffer_limit, read_interval)
+        r = RawAudioMixer.RawAudioMixer(
+                sample_rate, 1, "S16_LE",
+                read_threshold, buffer_limit, read_interval)
         r.pause = lambda timeout=0.0, oldpause=r.pause : oldpause(0.0)
 
         self.rawaudiomixer = r
