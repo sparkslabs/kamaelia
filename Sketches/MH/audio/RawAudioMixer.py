@@ -64,6 +64,17 @@ it isn't)::
 
 
 
+How does it work?
+-----------------
+
+If a shutdownMicroprocess or producerFinished message is received on this
+component's "control" inbox this component will cease reading in data from any
+audio sources. If it is currently outputting audio from any of its buffers, it
+will continue to do so until these are empty. The component will then forward
+on the shutdown message it was sent, out of its "signal" outbox and immediately
+terminate.
+
+
 TODO:
 
     * Needs a timeout mechanism to discard very old data (otherwise this is
@@ -199,10 +210,11 @@ class RawAudioMixer(threadedcomponent):
 
     def checkForShutdown(self):
         while self.dataReady("control"):
-            msg=self.recv("control")
-            self.send(msg,"signal")
+            msg = self.recv("control")
             if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return True
+                return msg
+            else:
+                self.send(msg,"signal")
         return False
         
     def main(self):
@@ -236,8 +248,10 @@ class RawAudioMixer(threadedcomponent):
             
             # dump out audio until all buffers are empty
             while len(buffers) and not shutdown:
-                
-                while self.dataReady("inbox") and _time.time() < nextReadTime:
+
+                # if we're not shutting down, and its not yet time to output audio
+                # then read in more data into the buffers
+                while not shutdown and self.dataReady("inbox") and _time.time() < nextReadTime:
                     reading = self.fillBuffer(buffers, self.recv("inbox"))
                 
                 now = _time.time()
@@ -268,6 +282,10 @@ class RawAudioMixer(threadedcomponent):
                     self.pause( nextReadTime - _time.time() )
                 
             # now there are no active buffers, go back to reading mode
+            # (or terminate!)
+            
+        if shutdown:
+            self.send(shutdown, "signal")
             
     def fillBuffer(self, buffers, data):
         srcId, audio = data
