@@ -25,7 +25,7 @@
 import pygame
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Support.Particles import SimpleLaws, Particle
 from Kamaelia.Visualisation.Axon.ExtraWindowFurniture import ExtraWindowFurniture
 
@@ -127,7 +127,7 @@ class ComponentParticle(Particle):
 
 def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):                                        
     laws = SimpleLaws(bondLength=100)
-    return TopologyViewerComponent( screensize=screensize,
+    return TopologyViewer( screensize=screensize,
                                     fullscreen=fullscreen,
                                     caption = "The pipeline",
                                     particleTypes = {"component":ComponentParticle},
