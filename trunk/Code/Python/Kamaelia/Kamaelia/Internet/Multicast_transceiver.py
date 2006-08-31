@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -41,17 +41,17 @@ Send a file to, and receive data from multicast group address 1.2.3.4 port 1000:
             ).activate()
 
     Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
-              consoleEchoer()
+              ConsoleEchoer()
             ).activate()
 
 Or::
     
     Pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 1000),
-              consoleEchoer()
+              ConsoleEchoer()
             ).activate()
 
-The data emitted by Multicast_transciever (and displayed by consoleEchoer) is of
+The data emitted by Multicast_transciever (and displayed by ConsoleEchoer) is of
 the form (source_address, data).
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -51,7 +51,7 @@ On the client::
     Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
               SRM_Receiver(),
               discardSeqnum(),
-              consoleEchoer()
+              ConsoleEchoer()
             ).activate()
 
 
@@ -189,7 +189,7 @@ __kamaelia_components__  = ( Annotator, RecoverOrder, )
 __kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
     
 if __name__ == "__main__":
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Internet.Simulate.BrokenNetwork import Duplicate, Throwaway, Reorder
     
     import time
@@ -215,5 +215,5 @@ if __name__ == "__main__":
              Throwaway(),
              Reorder(),
              SRM_Receiver(),
-             consoleEchoer()
+             ConsoleEchoer()
     ).run()

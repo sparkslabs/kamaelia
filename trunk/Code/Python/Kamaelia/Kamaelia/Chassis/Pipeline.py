@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -149,7 +149,7 @@ __kamaelia_components__  = ( Pipeline, )
                   
 if __name__=="__main__":
     from Axon.Component import scheduler
-    from ConsoleEcho import consoleEchoer
+    from Console import ConsoleEchoer
     from passThrough import passThrough
     
     from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -176,7 +176,7 @@ if __name__=="__main__":
             
             self.source = fruitSource()
             self.pipe   = Pipeline(passThrough([]))
-            self.dest   = consoleEchoer()
+            self.dest   = ConsoleEchoer()
             self.addChildren(self.source, self.pipe, self.dest)
             
             self.link((self.source, "outbox"),  (self.pipe, "inbox"))

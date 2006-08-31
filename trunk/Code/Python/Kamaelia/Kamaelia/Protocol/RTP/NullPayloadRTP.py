@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -243,7 +243,7 @@ __kamaelia_components__  = ( NullPayloadPreFramer, )
 
 
 if __name__ =="__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 
    class NullPayloadPreFramer_testHarness(component):
@@ -255,7 +255,7 @@ if __name__ =="__main__":
          super(NullPayloadPreFramer_testHarness,self).__init__() # !!!! Must happen, if this method exists
          self.source = ReadFileAdaptor("Support/BlankFile.txt", readsize="1450", steptime=0)
          self.transform = NullPayloadPreFramer("TestSource", 65536, chunksize=257)
-         self.sink = consoleEchoer()
+         self.sink = ConsoleEchoer()
 
       def initialiseComponent(self):
          self.link( (self.source, "outbox"), (self.transform, "recvsrc"))

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -64,7 +64,7 @@ TopologyViewerServer is a Pipeline of the following components:
 - chunks_to_lines
 - lines_to_tokenlists
 - TopologyViewerComponent
-- consoleEchoer
+- ConsoleEchoer
 
 This Pipeline serves to listen on the specified port (defaults to 1500) for
 clients. One client is allowed to connect at a time.
@@ -88,7 +88,7 @@ from chunks_to_lines import chunks_to_lines
 from lines_to_tokenlists import lines_to_tokenlists
 from TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Internet.SingleServer import SingleServer
-from Kamaelia.Util.ConsoleEcho import consoleEchoer
+from Kamaelia.Util.Console import ConsoleEchoer
 
 
 class TopologyViewerServer(Pipeline):
@@ -111,7 +111,7 @@ class TopologyViewerServer(Pipeline):
         pipe = [chunks_to_lines(),
                 lines_to_tokenlists(),
                 TopologyViewerComponent(**dictArgs),
-                consoleEchoer() ]
+                ConsoleEchoer() ]
                 
         if not noServer:
             if serverPort == None:

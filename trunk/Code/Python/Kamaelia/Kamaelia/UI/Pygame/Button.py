@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -38,7 +38,7 @@ Three buttons that output messages to the console::
     button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
     button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
     
-    ce = consoleEchoer().activate()
+    ce = ConsoleEchoer().activate()
     button1.link( (button1,"outbox"), (ce,"inbox") )
     button2.link( (button2,"outbox"), (ce,"inbox") )
     button3.link( (button3,"outbox"), (ce,"inbox") )
@@ -230,14 +230,14 @@ __kamaelia_components__  = ( Button, )
 
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from pygame.locals import *
    
    button1 = Button(caption="Press SPACE or click",key=K_SPACE).activate()
    button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
    button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
    
-   ce = consoleEchoer().activate()
+   ce = ConsoleEchoer().activate()
    button1.link( (button1,"outbox"), (ce,"inbox") )
    button2.link( (button2,"outbox"), (ce,"inbox") )
    button3.link( (button3,"outbox"), (ce,"inbox") )

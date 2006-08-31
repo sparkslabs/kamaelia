@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -44,7 +44,7 @@ Compares contents of two files and prints "MISMATCH!" whenever one is found::
                file2   = RateControlledFileReader(filename="file 2", ...),
                compare = comparator(),
                fdetect = DetectFalse(),
-               output  = consoleEchoer(),
+               output  = ConsoleEchoer(),
                linkages = {
                    ("file1","outbox") : ("compare","inA"),
                    ("file2","outbox") : ("compare","inB"),
