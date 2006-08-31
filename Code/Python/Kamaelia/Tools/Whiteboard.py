@@ -29,7 +29,7 @@ from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
@@ -107,9 +107,9 @@ def LocalEventServer(backplane="WHITEBOARD", port=1500):
                 chunks_to_lines(),
                 lines_to_tokenlists(),
                 FilterAndTagWrapper(
-                    Pipeline( publishTo(backplane),
+                    Pipeline( PublishTo(backplane),
                                 # well, should be to separate pipelines, this is lazier!
-                              subscribeTo(backplane),
+                              SubscribeTo(backplane),
                             )
                     ),
                 tokenlists_to_lines(),
@@ -123,7 +123,7 @@ def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
 
         loadingmsg = "Fetching sketch from server..."
 
-        return Pipeline( subscribeTo(backplane),
+        return Pipeline( SubscribeTo(backplane),
                          TagAndFilterWrapper(
                          Graphline( GETIMG = OneShot(msg=[["GETIMG"]]),
                                     PIPE = Pipeline(
@@ -142,7 +142,7 @@ def EventServerClients(rhost, rport, backplane="WHITEBOARD"):
                                                },
                                   )
                          ),
-                         publishTo(backplane),
+                         PublishTo(backplane),
                        ) #.activate()
 
 def parseCommands():
@@ -269,9 +269,9 @@ mainsketcher = \
                  )
 
 # primary whiteboard
-Pipeline( subscribeTo("WHITEBOARD"),
+Pipeline( SubscribeTo("WHITEBOARD"),
           TagAndFilterWrapper(mainsketcher),
-          publishTo("WHITEBOARD")
+          PublishTo("WHITEBOARD")
         ).activate()
 
 if __name__=="__main__":
