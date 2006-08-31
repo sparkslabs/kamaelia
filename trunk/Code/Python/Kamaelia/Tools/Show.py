@@ -31,7 +31,7 @@ from Kamaelia.UI.Pygame.Multiclick import Multiclick
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Pipeline import Pipeline
@@ -153,7 +153,7 @@ Graphline(
          lines_to_tokenlists(),
      ),
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
-     GRAPHVIEWER = TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
+     GRAPHVIEWER = TopologyViewer(transparency = (255,255,255), showGrid = False, position=(0,0)),
 
      linkages = {
          ("MOUSECLICKS","outbox"): ("PRIMARYSLIDES","inbox"),

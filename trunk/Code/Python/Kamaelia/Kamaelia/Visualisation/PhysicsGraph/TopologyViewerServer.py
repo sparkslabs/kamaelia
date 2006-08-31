@@ -63,22 +63,22 @@ TopologyViewerServer is a Pipeline of the following components:
 - Kamaelia.Internet.SingleServer
 - chunks_to_lines
 - lines_to_tokenlists
-- TopologyViewerComponent
+- TopologyViewer
 - ConsoleEchoer
 
 This Pipeline serves to listen on the specified port (defaults to 1500) for
 clients. One client is allowed to connect at a time.
 
 That client can then send topology change commands formatted as lines of text.
-The lines are parsed and tokenised for the TopologyViewerComponent.
+The lines are parsed and tokenised for the TopologyViewer.
 
-Any output from the TopologyViewerComponent is sent to the console.
+Any output from the TopologyViewer is sent to the console.
 
 If the noServer option is used at initialisation, then the Pipeline is built
 without the SingleServer component. It then becomes a TopologyViewer
 capable of processing non-tokenised input and with diagnostic console output.
 
-See TopologyViewerComponent for more detail on topology change data and
+See TopologyViewer for more detail on topology change data and
 its behaviour.
 """
 
@@ -86,7 +86,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 
 from chunks_to_lines import chunks_to_lines
 from lines_to_tokenlists import lines_to_tokenlists
-from TopologyViewerComponent import TopologyViewerComponent
+from TopologyViewer import TopologyViewer
 from Kamaelia.Internet.SingleServer import SingleServer
 from Kamaelia.Util.Console import ConsoleEchoer
 
@@ -97,12 +97,12 @@ class TopologyViewerServer(Pipeline):
 
     One-client-at-a-time TCP socket Topology viewer server. Connect on the
     specified port and send topology change data for display by a
-    TopologyViewerComponent.
+    TopologyViewer.
     
     Keywork arguments:
     - noServer    -- False, or True to not include the server component (default=False)
     - serverPort  -- None, or port number to listen on (default=1500)
-    - args        -- all remaining keyword arguments passed onto TopologyViewerComponent
+    - args        -- all remaining keyword arguments passed onto TopologyViewer
     """
 
     def __init__(self, noServer = False, serverPort = None, **dictArgs):
@@ -110,7 +110,7 @@ class TopologyViewerServer(Pipeline):
         
         pipe = [chunks_to_lines(),
                 lines_to_tokenlists(),
-                TopologyViewerComponent(**dictArgs),
+                TopologyViewer(**dictArgs),
                 ConsoleEchoer() ]
                 
         if not noServer:

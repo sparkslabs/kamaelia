@@ -32,7 +32,7 @@ gridlines on pass -1.
 
 Example Usage
 -------------
-Already used by Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent.
+Already used by Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.
 
 Rendering a grid in light grey with grid cell size of 100x100::
     grid = GridRenderer(size=100, colour=(200,200,200))
@@ -50,7 +50,7 @@ spacing of the grid lines are specified at initialisation.
 
 Rendering is performed by the generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewerComponent.
+that is used by TopologyViewer.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -61,7 +61,7 @@ A setOffset() method is also implemented to allow the rendering position to be
 offset. This therefore makes it possible to scroll the grid around the display
 surface.
 
-See TopologyViewerComponent for more details.
+See TopologyViewer for more details.
 
 """
 
