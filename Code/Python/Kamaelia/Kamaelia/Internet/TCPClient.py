@@ -83,10 +83,10 @@ import Axon
 from Axon.util import Finality
 
 from Axon.Ipc import newComponent, status
-from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
+from Kamaelia.IPC import socketShutdown, newCSA
 
-from Kamaelia.KamaeliaIPC import newReader, newWriter
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import removeReader, removeWriter
 
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
