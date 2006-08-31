@@ -86,9 +86,9 @@ import errno
 import Axon
 from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished
-from Kamaelia.KamaeliaIPC import socketShutdown,newCSA,shutdownCSA
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
-from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.IPC import socketShutdown,newCSA,shutdownCSA
+from Kamaelia.IPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
 
 from Kamaelia.KamaeliaExceptions import *
 import traceback

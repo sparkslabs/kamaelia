@@ -8,7 +8,7 @@ from Kamaelia.Internet.Selector import Selector
 
 import Axon
 from Axon.Ipc import shutdown
-from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
+from Kamaelia.IPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 
 class SmokeTests_Selector(unittest.TestCase):
     def test_SmokeTest(self):

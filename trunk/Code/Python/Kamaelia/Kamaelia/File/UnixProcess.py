@@ -32,10 +32,10 @@ import Axon
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 
-import Kamaelia.KamaeliaIPC as _ki
+import Kamaelia.IPC as _ki
 from Axon.Ipc import shutdown
-from Kamaelia.KamaeliaIPC import newReader, newWriter
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import removeReader, removeWriter
 
 from Kamaelia.Internet.Selector import Selector
 

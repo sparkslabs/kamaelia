@@ -82,14 +82,14 @@ This component does not terminate.
 """
 
 import socket, errno, random, Axon
-import Kamaelia.KamaeliaIPC as _ki
+import Kamaelia.IPC as _ki
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
 import time
 from Kamaelia.Internet.Selector import Selector
 
-from Kamaelia.KamaeliaIPC import newReader, newWriter
-from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import removeReader, removeWriter
 
 
 class TCPServer(Axon.Component.component):

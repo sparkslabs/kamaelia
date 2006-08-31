@@ -80,7 +80,7 @@ import socket
 import errno
 import Axon
 from Axon.Component import component
-from Kamaelia.KamaeliaIPC import socketShutdown
+from Kamaelia.IPC import socketShutdown
 from Queue import Empty
 import Axon.ThreadedComponent
 
