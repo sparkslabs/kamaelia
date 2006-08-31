@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -38,10 +38,10 @@ Receiving multicast packets from group address 1.2.3.4 port 1000 and displaying
 them on the console::
 
     Pipeline( Multicast_receiver("1.2.3.4", 1000),
-              consoleEchoer()
+              ConsoleEchoer()
             ).activate()
 
-The data emitted by Multicast_receiver (and displayed by consoleEchoer) is of
+The data emitted by Multicast_receiver (and displayed by ConsoleEchoer) is of
 the form (source_address, data).
 
 
@@ -111,12 +111,12 @@ class Multicast_receiver(Axon.Component.component):
 
 def tests():
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
 
    class testComponent(Axon.Component.component):
       def main(self):
         receiver = Multicast_receiver("224.168.2.9", 1600)
-        display = consoleEchoer()
+        display = ConsoleEchoer()
 
         self.link((receiver,"outbox"), (display,"inbox"))
         self.addChildren(receiver, display)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -68,7 +68,7 @@ __kamaelia_components__  = ( passThrough, )
       
 if __name__=="__main__":
     from Axon.Component import scheduler
-    from ConsoleEcho import consoleEchoer
+    from Console import ConsoleEchoer
     
     class fruitSource(component):
         def __init__(self):
@@ -92,7 +92,7 @@ if __name__=="__main__":
             
             self.source = fruitSource()
             self.passT   = passThrough()
-            self.dest   = consoleEchoer()
+            self.dest   = ConsoleEchoer()
             self.addChildren(self.source, self.passT, self.dest)
             
             self.link((self.source, "outbox"),  (self.passT, "inbox"))

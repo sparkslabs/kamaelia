@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -90,7 +90,7 @@ Example Usage
 Read 10 lines per second, in 2 chunks of 5 lines, and output them to the console::
 
     Pipeline(RateControlledFileReader("myfile", "lines", rate=10, chunksize=5),
-             consoleEchoer()
+             ConsoleEchoer()
             ).activate()
 
 

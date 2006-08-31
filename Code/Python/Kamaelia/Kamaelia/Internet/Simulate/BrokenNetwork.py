@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -138,7 +138,7 @@ __kamaelia_components__  = ( Duplicate, Throwaway, Reorder)
 if __name__ == "__main__":
     import time
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.ConsoleEcho import consoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer
 
     class Source(component):
        def __init__(self,  size=100):
@@ -200,5 +200,5 @@ if __name__ == "__main__":
              Throwaway(),
              Reorder(),
              RecoverOrder(),
-             consoleEchoer()
+             ConsoleEchoer()
     ).run()

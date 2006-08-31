@@ -38,7 +38,7 @@ Three buttons that output messages to the console::
     msgs = [ "button 1", "button 2", "button 3", "button 4", "button 5" ]
     button1 = Button(caption="Click different mouse buttons!",msgs=msgs).activate()
     
-    ce = consoleEchoer().activate()
+    ce = ConsoleEchoer().activate()
     button1.link( (button1,"outbox"), (ce,"inbox") )
     
 

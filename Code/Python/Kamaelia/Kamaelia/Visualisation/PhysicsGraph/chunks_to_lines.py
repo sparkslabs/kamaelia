@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,7 +36,7 @@ A system that connects to a server and receives fragmented text data, but then
 displays it a whole line at a time::
 	    Pipeline( TCPClient(host=..., port=...),
               chunks_to_lines(),
-              consoleEcho()
+              ConsoleEcho()
             ).run()
             
 

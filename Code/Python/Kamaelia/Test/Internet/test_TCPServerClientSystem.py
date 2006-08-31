@@ -28,7 +28,7 @@ from Axon.Scheduler import scheduler as _scheduler
 
 from Kamaelia.SimpleServerComponent import SimpleServer as _SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient as _TCPClient
-from Kamaelia.Util.ConsoleEcho import consoleEchoer as _consoleEchoer
+from Kamaelia.Util.Console import ConsoleEchoer as _ConsoleEchoer
 from Kamaelia.Util.Chargen import Chargen as _Chargen
 
 import Axon as _Axon
@@ -42,7 +42,7 @@ class InternetHandlingTest(component):
       self.server=server
       self.addChildren(server)
 
-      conecho = _consoleEchoer()
+      conecho = _ConsoleEchoer()
       self.addChildren(conecho)
 
       client=_TCPClient("127.0.0.1",clientServerTestPort)

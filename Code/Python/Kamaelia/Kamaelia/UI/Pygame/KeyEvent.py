@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,7 +34,7 @@ Example Usage
 -------------
 
 Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
-    Graphline( output = consoleEchoer(),
+    Graphline( output = ConsoleEchoer(),
                keys = KeyEvent( key_events={ K_1 : (1,"numbers"),
                                              K_2 : (2,"numbers"),
                                              K_3 : (3,"numbers"),

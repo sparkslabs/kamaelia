@@ -4,7 +4,7 @@
 #        selector service that its services are no longer required.
 #        This needs resolving.
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -251,7 +251,7 @@ if __name__ =="__main__":
    from Axon.Scheduler import scheduler
    from Kamaelia.Chassis.ConnectedServer import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
-   from Kamaelia.Util.ConsoleEcho import  consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from Axon.Component import component
 
 
@@ -262,7 +262,7 @@ if __name__ =="__main__":
          self.serverport = random.randint(4000,8000)
          self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
          self.client = None
-         self.display = consoleEchoer()
+         self.display = ConsoleEchoer()
 
       def initialiseComponent(self):
          self.client = TCPClient("127.0.0.1",self.serverport, delay=1)
