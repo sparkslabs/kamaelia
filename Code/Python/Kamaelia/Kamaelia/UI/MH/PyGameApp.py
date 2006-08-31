@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -85,7 +85,7 @@ is no specific 'quit' event handler.
 import pygame
 from pygame.locals import *
 import Axon as _Axon
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.Util.GraphicDisplay import PygameDisplay
 
 class PyGameApp(_Axon.Component.component):
     """\

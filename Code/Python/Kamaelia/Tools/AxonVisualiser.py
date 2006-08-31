@@ -82,7 +82,7 @@ if __name__=="__main__":
                     ).activate()
 
         resolution = dictArgs.get("screensize",(800,600))
-        from Kamaelia.UI.PygameDisplay import PygameDisplay
+        from Kamaelia.Util.GraphicDisplay import PygameDisplay
         
         pgd = PygameDisplay(width=resolution[0],height=resolution[1]).activate()
         PygameDisplay.setDisplayService(pgd)

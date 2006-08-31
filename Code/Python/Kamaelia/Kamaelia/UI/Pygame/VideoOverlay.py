@@ -118,7 +118,7 @@ the following entries::
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.Util.GraphicDisplay import PygameDisplay
 import pygame
 
 

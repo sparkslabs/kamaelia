@@ -120,7 +120,7 @@ sending a message to its "unpausebox" inbox.
 
 import pygame
 import Axon
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.Util.GraphicDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
 import time
 
