@@ -32,15 +32,15 @@ The default packet size is 1000 bytes.
 This component was created due to limitations of multicast meaning packets
 get discarded more easily over a certain size.
 
-Example usage:
+Example usage::
 
-Pipeline(
-    ReadFileAdaptor(file_to_stream, readmode="bitrate", bitrate=400000,
-                    chunkrate=50),
-    SRM_Sender(),
-    blockise(), # Ensure chunks small enough for multicasting!
-    Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
-).activate()
+    Pipeline(
+        ReadFileAdaptor(file_to_stream, readmode="bitrate", bitrate=400000,
+                        chunkrate=50),
+        SRM_Sender(),
+        blockise(), # Ensure chunks small enough for multicasting!
+        Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),
+    ).activate()
 
 This component acts as a simple filter - data is expected on inboxes
 and packets come out the outbox. 

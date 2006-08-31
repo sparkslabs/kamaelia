@@ -1,4 +1,4 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 
 # (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.

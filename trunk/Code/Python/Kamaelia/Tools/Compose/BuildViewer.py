@@ -128,9 +128,9 @@ class ComponentParticle(Particle):
 def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):                                        
     laws = SimpleLaws(bondLength=100)
     return TopologyViewer( screensize=screensize,
-                                    fullscreen=fullscreen,
-                                    caption = "The pipeline",
-                                    particleTypes = {"component":ComponentParticle},
-                                    extraDrawing = ExtraWindowFurniture(),
-                                    laws = laws
-                                  )
+                           fullscreen=fullscreen,
+                           caption = "The pipeline",
+                           particleTypes = {"component":ComponentParticle},
+                           extraDrawing = ExtraWindowFurniture(),
+                           laws = laws
+                         )

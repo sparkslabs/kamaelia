@@ -27,5 +27,5 @@ Pygame related components
 
 Components for displaying text/graphics/video using pygame.
 
-Most utilise the PygameDisplay service component.
+Most utilise the Pygame Display service component.
 """

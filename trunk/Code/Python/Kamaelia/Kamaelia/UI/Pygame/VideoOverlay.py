@@ -24,7 +24,7 @@
 Pygame Video Overlay
 ====================
 
-Displays uncompressed video data on a pygame 'overlay' using the PygameDisplay
+Displays uncompressed video data on a pygame 'overlay' using the Pygame Display
 service.
 
 
@@ -54,7 +54,7 @@ The frames must be encoded as dictionary objects in the format described below.
 
 When the first frame is received, the component notes the size and pixel format
 of the video data and requests an appropriate 'overlay' surface from the
-PygameDisplay service component, to which video can be rendered.
+Pygame Display service component, to which video can be rendered.
 
 NOTE: Currently the only supported pixelformat is "YUV420_planar".
 
@@ -62,13 +62,13 @@ NOTE: A fudge factor is currently applied to the video size (see below)
 
 Included in the request is a reference to an outbox through which the component
 will send the yuv video data for future frames of video. For video overlays,
-the video data must be sent direct to the PygameDisplay component rather than
+the video data must be sent direct to the Pygame Display component rather than
 be rendered onto an intermediate surface.
 
 Also included in the request is the data for the first frame of video.
 
 When subsequent frames of video are received the yuv data is sent to the
-"yuvdata" outbox, which by now is linked to the PygameDisplay component.
+"yuvdata" outbox, which by now is linked to the Pygame Display component.
 
 If the frame of video is of a different pixel format or size then VideoOverlay
 will re-request a new overlay.
@@ -151,11 +151,11 @@ OVERLAY_FUDGE_OFFSET_FACTOR = 2
 #
 # XXX VOMIT : does not get rid of an old overlay if a new one is requested
 #             (due to a change in video size/pixel format)
-#             resulting in overlays accumulating in PygameDisplay
+#             resulting in overlays accumulating in Pygame Display
 #
 #             Either the request for a new overlay must be suppressed, or the
 #             old overlay should be destroyed. The latter will require support
-#             for deallocating surfaces/overlays to be added to PygameDisplay
+#             for deallocating surfaces/overlays to be added to Pygame Display
 #             component
 #
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -166,7 +166,7 @@ class VideoOverlay(component):
     """\
     VideoOverlay() -> new VideoOverlay component
 
-    Displays a pygame video overlay using the PygameDisplay service component.
+    Displays a pygame video overlay using the Pygame Display service component.
     The overlay is sized and configured by the first frame of
     (uncompressed) video data is receives.
     
@@ -178,7 +178,7 @@ class VideoOverlay(component):
                }
     Outboxes = { "outbox"      : "NOT USED",
                  "signal"      : "Shutdown signalling",
-                 "displayctrl" : "Sending requests to the PygameDisplay service",
+                 "displayctrl" : "Sending requests to the Pygame Display service",
                  "yuvdata"     : "Sending yuv video data to overlay display service"
                }
 

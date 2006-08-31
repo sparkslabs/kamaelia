@@ -26,7 +26,7 @@ Pygame Button Widget
 
 A button widget for pygame display surfaces. Sends a message when clicked.
 
-Uses the PygameDisplay service.
+Uses the Pygame Display service.
 
 
 
@@ -48,7 +48,7 @@ Three buttons that output messages to the console::
 How does it work?
 -----------------
 
-The component requests a display surface from the PygameDisplay service
+The component requests a display surface from the Pygame Display service
 component. This is used as the surface of the button. It also binds event
 listeners to the service, as appropriate.
 
@@ -72,7 +72,7 @@ If a producerFinished or shutdownMicroprocess message is received on its
 "control" inbox. It is passed on out of its "signal" outbox and the component
 terminates.
 
-Upon termination, this component does *not* unbind itself from the PygameDisplay
+Upon termination, this component does *not* unbind itself from the Pygame Display
 service. It does not deregister event handlers and does not relinquish the
 display surface it requested.
 """
@@ -80,13 +80,13 @@ display surface it requested.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.Util.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Button(Axon.Component.component):
    """\
    Button(...) -> new Button component.
 
-   Create a button widget in pygame, using the PygameDisplay service. Sends a
+   Create a button widget in pygame, using the Pygame Display service. Sends a
    message out of its outbox when clicked.
 
    Keyword arguments (all optional):
@@ -101,9 +101,9 @@ class Button(Axon.Component.component):
    - size         -- None or (w,h) in pixels (default=None)
    """
    
-   Inboxes = { "inbox"    : "Receive events from PygameDisplay",
+   Inboxes = { "inbox"    : "Receive events from Pygame Display",
                "control"  : "For shutdown messages",
-               "callback" : "Receive callbacks from PygameDisplay"
+               "callback" : "Receive callbacks from Pygame Display"
              }
    Outboxes = { "outbox" : "button click events emitted here",
                 "signal" : "For shutdown messages",
