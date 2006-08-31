@@ -35,8 +35,8 @@ Example Usage
 Create a topology viewer component that also renders 'ExtraWindowFurniture' to the
 display surface::
    TopologyViewer( extraDrawing = ExtraWindowFurniture(),
-                            ...
-                          ).activate()
+                   ...
+                 ).activate()
 
                           
 How does it work?

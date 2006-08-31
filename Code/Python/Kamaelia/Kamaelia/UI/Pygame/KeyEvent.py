@@ -24,7 +24,7 @@
 Pygame keypress event handler
 =============================
 
-A component that registers with a PygameDisplay service component to receive
+A component that registers with a Pygame Display service component to receive
 key-up and key-down events from Pygame. You can set up this component to send
 out different messages from different outboxes depending on what key is pressed.
 
@@ -56,7 +56,7 @@ Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
 How does it work?
 -----------------
 
-This component requests a zero sized display surface from the PygameDisplay
+This component requests a zero sized display surface from the Pygame Display
 service component and registers to receive events from pygame.
 
 Whenever a KEYDOWN event is received, the pygame keycode is looked up in the
@@ -92,9 +92,9 @@ class KeyEvent(Axon.Component.component):
    - outboxes    -- dict of "outboxname":"description" key:value pairs (default={})
    """
    
-   Inboxes = { "inbox"    : "Receive events from PygameDisplay",
+   Inboxes = { "inbox"    : "Receive events from Pygame Display",
                "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
-               "callback" : "Receive callbacks from PygameDisplay"
+               "callback" : "Receive callbacks from Pygame Display"
              }
    Outboxes = { "outbox"         : "NOT USED",
                 "allkeys"        : "Outbox that receives *every* keystroke if enabled",

@@ -28,7 +28,7 @@ This component provides a pygame window. Other components can request to be
 notified of events, or ask for a pygame surface or video overlay that will be
 rendered onto the display.
 
-PygameDisplay is a service that registers with the Coordinating Assistant
+Pygame Display is a service that registers with the Coordinating Assistant
 Tracker (CAT).
 
 
@@ -37,27 +37,27 @@ Example Usage
 -------------
 
 See the Button component or VideoOverlay component for examples of how
-PygameDisplay can be used.
+Pygame Display can be used.
 
     
 
 How does it work?
 -----------------
 
-PygameDisplay is a service. obtain it by calling the
+Pygame Display is a service. obtain it by calling the
 PygameDisplay.getDisplayService(...) static method. Any existing instance
 will be returned, otherwise a new one is automatically created.
 
-Alternatively, if you wish to configure PygameDisplay with options other than
+Alternatively, if you wish to configure Pygame Display with options other than
 the defaults, create your own instance, then register it as a service by
 calling the PygameDisplay.setDisplayService(...) static method. NOTE that it
 is only advisable to do this at the top level of your system, as other
-components may have already requested and created a PygameDisplay component!
+components may have already requested and created a Pygame Display component!
 
 pygame only supports one display window at a time, you must not make more than
-one PygameDisplay component.
+one Pygame Display component.
 
-PygameDisplay listens for requests arriving at its "notify" inbox. A request can
+Pygame Display listens for requests arriving at its "notify" inbox. A request can
 be to:
 - create or destroy a surface,
 - listen or stop listening to events (you must have already requested a surface)
@@ -69,21 +69,21 @@ The requests are described in more detail below.
 
 Once your component has been given the requested surface, it is free to render
 onto it whenever it wishes. It should then immediately send a "REDRAW" request
-to notify PygameDisplay that the window needs redrawing.
+to notify Pygame Display that the window needs redrawing.
 
 
 NOTE that you must set the alpha value of the surface before rendering and
-restore its previous value before yielding. This is because PygameDisplay uses
+restore its previous value before yielding. This is because Pygame Display uses
 the alpha value to control the transparency with which it renders the surface.
 
 Overlays work differently: instead of being given something to render to, you
 must provide, in your initial request, an outbox to which you will send raw
 yuv (video) data, whenever you want to change the image on the overlay.
 
-PygameDisplay instantiates a private, threaded component to listen for pygame
-events. These are then forwarded onto PygameDisplay.
+Pygame Display instantiates a private, threaded component to listen for pygame
+events. These are then forwarded onto Pygame Display.
 
-PygameDisplay's main loop continuously renders the surfaces and video overlays
+Pygame Display's main loop continuously renders the surfaces and video overlays
 onto the display, and dispatches any pygame events to listeners. The rendering
 order is as follows:
 - background fill (default=white)
@@ -91,12 +91,12 @@ order is as follows:
 - video overlays (in the order they were requested and created)
 
 In summary, to use a surface, your component should:
-1. Obtain and wire up to the "notify" inbox of the PygameDisplay service
+1. Obtain and wire up to the "notify" inbox of the Pygame Display service
 2. Request a surface
 3. Render onto that surface in its main loop
 
 And to use overlays, your component should:
-1. Obtain and wire up to the "notify" inbox of the PygameDisplay service
+1. Obtain and wire up to the "notify" inbox of the Pygame Display service
 2. Request an overlay, providing an outbox
 3. Send yuv data to the outbox 
 
@@ -200,7 +200,7 @@ There is currently no mechanism to destroy an overlay.
 Redraw requests
 ^^^^^^^^^^^^^^^
 
-To notify PygameDisplay that it needs to redraw the display, send a dictionary
+To notify Pygame Display that it needs to redraw the display, send a dictionary
 containing the following keys to the "notify" inbox::
     {
         "REDRAW" : True,             # this is a redraw request
@@ -222,7 +222,7 @@ import time
  
 class _PygameEventSource(threadedcomponent):
     """\
-    Event source for PygameDisplay
+    Event source for Pygame Display
     """
     Inboxes = { "inbox" : "NOT USED",
                 "control" : "NOT USED",

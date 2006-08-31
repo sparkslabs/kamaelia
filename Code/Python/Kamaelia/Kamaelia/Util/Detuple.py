@@ -36,16 +36,16 @@ This component was originally created for use with the
 multicast component. (It could however be used for
 extracting a single field from a dictionary like object).
 
-Example usage:
+Example usage::
 
-Pipeline(
-    Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
-    detuple(1), # Extract data, through away sender
-    SRM_Receiver(),
-    detuple(1),
-    VorbisDecode(),
-    AOAudioPlaybackAdaptor(),
-).run()
+    Pipeline(
+        Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
+        detuple(1), # Extract data, through away sender
+        SRM_Receiver(),
+        detuple(1),
+        VorbisDecode(),
+        AOAudioPlaybackAdaptor(),
+    ).run()
 
 """
     def __init__(self, index):

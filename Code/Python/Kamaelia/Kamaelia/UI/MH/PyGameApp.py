@@ -26,7 +26,7 @@ Simple Pygame application framework
 A component that sets up a pygame display surface and provides a main loop and
 simple event dispatch framework.
 
-The rendering surface is requested from the PygameDisplay service component, so
+The rendering surface is requested from the Pygame Display service component, so
 this component can coexist with other components using pygame.
 
 
@@ -106,12 +106,12 @@ class PyGameApp(_Axon.Component.component):
     
     Inboxes  = { "inbox"          : "NOT USED",
                  "control"        : "NOT USED",
-                 "events"         : "Event notifications from PygameDisplay service",
-                 "displaycontrol" : "Replies from PygameDisplay service",
+                 "events"         : "Event notifications from Pygame Display service",
+                 "displaycontrol" : "Replies from Pygame Display service",
                }
     Outboxes = { "signal"        : "NOT USED",
                  "outbox"        : "NOT USED",
-                 "displaysignal" : "Requests to PygameDisplay service",
+                 "displaysignal" : "Requests to Pygame Display service",
                }
 
     def __init__(self, screensize, 

@@ -35,8 +35,8 @@ Example Usage
 A topology viewer where particles of type "-" are rendered by RenderingParticle
 instances::
     TopologyViewer( particleTypes = {"-":RenderingParticle},
-                             laws = Kamaelia.Support.Particles.SimpleLaws(),
-                           ).run()
+                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                  ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
 types.
