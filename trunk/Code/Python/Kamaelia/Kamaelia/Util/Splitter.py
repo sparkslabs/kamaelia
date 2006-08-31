@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 """\
 =========================
-Simple fanout of messages
+Simple Fanout of messages
 =========================
 
 A component that splits a data source, fanning it out to multiple destinations.
@@ -87,7 +87,7 @@ This component does not terminate.
 
 
 ============================
-Pluggable fanout of messages
+Pluggable Fanout of messages
 ============================
 
 The PlugSplitter component splits a data source, fanning it out to multiple
