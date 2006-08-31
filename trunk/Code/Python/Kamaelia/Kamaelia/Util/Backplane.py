@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -61,9 +61,9 @@ class Backplane(Axon.Component.component):
             yield 1
 
 
-class publishTo(Axon.Component.component):
+class PublishTo(Axon.Component.component):
     def __init__(self, destination):
-        super(publishTo, self).__init__()
+        super(PublishTo, self).__init__()
         self.destination = destination
     def main(self):
         cat = CAT.getcat()
@@ -86,9 +86,9 @@ class publishTo(Axon.Component.component):
                 yield 1            
             
             
-class subscribeTo(Axon.Component.component):
+class SubscribeTo(Axon.Component.component):
     def __init__(self, source):
-        super(subscribeTo, self).__init__()
+        super(SubscribeTo, self).__init__()
         self.source = source
     def main(self):
         cat = CAT.getcat()
@@ -107,4 +107,39 @@ class subscribeTo(Axon.Component.component):
             self.pause()
             yield 1            
 
-# RELEASE: MH, MPS
+
+# deprecation stubs
+
+import Kamaelia.Support.Deprecate as Deprecate
+
+publishTo = Deprecate.makeClassStub(
+    PublishTo,
+    "Use Kamaelia.Util.Backplane:PublishTo instead of Kamaelia.Util.Backplane:publishTo",
+    "WARN"
+    )
+
+subscribeTo = Deprecate.makeClassStub(
+    SubscribeTo,
+    "Use Kamaelia.Util.Backplane:SubscribeTo instead of Kamaelia.Util.Backplane:subscribeTo",
+    "WARN"
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
