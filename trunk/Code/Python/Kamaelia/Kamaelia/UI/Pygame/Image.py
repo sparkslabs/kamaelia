@@ -83,7 +83,7 @@ the component will then terminate.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.Util.GraphicDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
    """\

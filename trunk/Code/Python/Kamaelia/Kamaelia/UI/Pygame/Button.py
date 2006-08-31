@@ -80,7 +80,7 @@ display surface it requested.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.Util.GraphicDisplay import PygameDisplay
 
 class Button(Axon.Component.component):
    """\
