@@ -127,12 +127,11 @@ class SimpleFileWriter(component):
 
 __kamaelia_components__  = ( SimpleFileWriter, )
       
-if 0:
-    print "Temporarily disabled tests since they rely on code in /Sketches"
+if 1:
     if __name__ == "__main__":
         from Kamaelia.Chassis.Pipeline import Pipeline
-        from ReadMultiFileAdapter import RateControlledReadFileAdapter
+        from Kamaelia.File.Reading import RateControlledFileReader
 
-        Pipeline( RateControlledReadFileAdapter("WriteFileAdapter.py"),
-                  SimpleWriter("/tmp/tmp_WriteFileAdapter.py")
+        Pipeline( RateControlledFileReader("Writing.py"),
+                  SimpleFileWriter("/tmp/tmp_Writing.py")
                 ).run()
