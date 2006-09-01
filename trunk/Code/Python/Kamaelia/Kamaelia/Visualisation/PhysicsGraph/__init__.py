@@ -37,8 +37,6 @@ from Kamaelia.UI.MH import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
-from Kamaelia.Chassis.Pipeline import Pipeline
-
 # from GridRenderer import GridRenderer
 # from RenderingParticle import RenderingParticle
 # from ParticleDragger import ParticleDragger
