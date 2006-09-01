@@ -35,21 +35,16 @@ import pymedia.muxer as muxer
 import pymedia.audio.acodec as acodec
 import pymedia.audio.sound as sound
 
-from Support.PyMedia.AudioFormats import mapping_format_to_pymedia
-from Support.PyMedia.AudioFormats import mapping_format_from_pymedia
-
-sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia")
-from Audio.Output import Output as __Output
-
-def Output():
-    return __Output(RawOutput)
+from Support.PyMedia.AudioFormats import format2PyMediaFormat
+from Support.PyMedia.AudioFormats import pyMediaFormat2format
 
 
-class RawOutput(threadedcomponent):
+class Output(threadedcomponent):
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
-        super(RawOutput,self).__init__()
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(Output,self).__init__()
         
-        pformat = mapping_format_to_pymedia[format]
+        pformat = format2PyMediaFormat[format]
         self.snd = sound.Output(sample_rate, channels, pformat)
         
         self.chunksize = sample_rate/40    # no idea why, but it seems we need to pass to pymedia chunks of a sufficiently short duration to prevent playback artefacts

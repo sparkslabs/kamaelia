@@ -25,24 +25,6 @@ from Kamaelia.Chassis.Carousel import Carousel
 
 import sys
 sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia/")
-from Audio.Wrapping import Unwrap
 
-def Output(RawOutput):
+from Audio.PyMedia.Output import Output as PyMediaOutput
 
-    def outputFactory(format):
-        return RawOutput(**format)
-
-    return Graphline(
-        UNWRAP = Unwrap(),
-        OUTPUT = Carousel(outputFactory),
-        linkages = {
-                ("", "inbox") : ("UNWRAP", "inbox"),
-    
-                ("UNWRAP", "outbox") : ("OUTPUT", "inbox"),
-                ("UNWRAP", "format") : ("OUTPUT", "next"),
-    
-                ("",       "control") : ("UNWRAP", "control"),
-                ("UNWRAP", "signal")  : ("OUTPUT", "control"),
-                ("OUTPUT", "signal")  : ("",       "signal"),
-            },
-        )
