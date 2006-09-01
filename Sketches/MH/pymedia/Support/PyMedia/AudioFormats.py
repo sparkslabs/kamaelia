@@ -22,6 +22,7 @@
 
 import pymedia.audio.sound as sound
 
+
 format2PyMediaFormat = {
     'AC3'       : sound.AFMT_AC3,
     'A_LAW'     : sound.AFMT_A_LAW,
@@ -39,6 +40,17 @@ format2PyMediaFormat = {
 
 pyMediaFormat2format = dict([(v,k) for (k,v) in format2PyMediaFormat.items() ])
 
-codec_to_fileExt = {
+# mapping of codec names to file extensions (thats what pymedia wants to know
+# when decoding)
+codec2fileExt = {
    'MP3' : 'mp3',
+   'mp3' : 'mp3',
+   'Mp3' : 'mp3',
+}
+
+# mappings of codec names to ones that pymedia recognises for encoders
+codec2PyMediaCodec = {
+   'MP3' : 'mp3',
+   'mp3' : 'mp3',
+   'Mp3' : 'mp3',
 }
