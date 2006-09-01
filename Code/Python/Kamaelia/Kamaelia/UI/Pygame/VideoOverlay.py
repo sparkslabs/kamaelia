@@ -261,7 +261,7 @@ if __name__ == "__main__":
     
     Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
 #    Pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
-              RawYUVFramer(size=(352,288), pixformat = pygame.IYUV_OVERLAY),
+              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
 #    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
 #              RawYUVFramer(size=(720,576), pixformat = pygame.IYUV_OVERLAY),
               VideoOverlay(),
