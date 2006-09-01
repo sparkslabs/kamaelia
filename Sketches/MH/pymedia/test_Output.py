@@ -20,16 +20,12 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Audio.PyMedia.Output import Output,RawOutput
-from Audio.Wrapping import Wrap,Unwrap
+from Audio.PyMedia.Output import Output
 
 from Kamaelia.File.Reading import RateControlledFileReader
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 Pipeline( RateControlledFileReader("/home/matteh/music/Radiohead - Creep.wav", readmode="bytes", rate=44100*2*2, chunksize=1024),
-          Wrap(sample_rate=44100, channels=2, format="S16_LE"),
-          Unwrap(),
-          Wrap(sample_rate=44100, channels=2, format="S16_LE"),
-          Output(),
+          Output(sample_rate=44100, channels=2, format="S16_LE"),
         ).run()

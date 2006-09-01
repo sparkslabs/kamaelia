@@ -22,7 +22,7 @@
 
 import pymedia.audio.sound as sound
 
-mapping_format_to_pymedia = {
+format2PyMediaFormat = {
     'AC3'       : sound.AFMT_AC3,
     'A_LAW'     : sound.AFMT_A_LAW,
     'IMA_ADPCM' : sound.AFMT_IMA_ADPCM,
@@ -37,4 +37,8 @@ mapping_format_to_pymedia = {
     'U8'        : sound.AFMT_U8,
 }
 
-mapping_format_from_pymedia = dict([(v,k) for (k,v) in mapping_format_to_pymedia.items() ])
+pyMediaFormat2format = dict([(v,k) for (k,v) in format2PyMediaFormat.items() ])
+
+codec_to_fileExt = {
+   'MP3' : 'mp3',
+}
