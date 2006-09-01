@@ -36,7 +36,7 @@ a thin wrapper combining a Marshalling and DeMarshalling component.
 Example Usage
 -------------
 
-None. Please use Kamaelia.Util.Marshalling in preference.
+None at present.
 
 
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
    print """
 Probable usage:
 
-from Kamaelia.Data.MimeDict import MimeDict
+from Kamaelia.Support.Data.MimeDict import MimeDict
 
 class MimeDictMarshaller(Kamaelia.Util.MarshallComponent.MarshallComponent):
     def __init__(self,*argv,**argd):
