@@ -23,5 +23,5 @@
 import sys
 sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia/")
 
-from Audio.PyMedia.Output import Output as PyMediaOutput
+from Audio.PyMedia.Input import Input as PyMediaInput
 

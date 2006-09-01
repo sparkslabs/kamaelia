@@ -20,8 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import sys
-sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia/")
+from Audio.PyMedia.Input import Input
+from Audio.PyMedia.Output import Output
 
-from Audio.PyMedia.Output import Output as PyMediaOutput
+from Kamaelia.Chassis.Pipeline import Pipeline
 
+Pipeline( Input(sample_rate=44100, channels=1, format="S16_LE"),
+          Output(sample_rate=44100, channels=1, format="U8"),
+        ).run()
