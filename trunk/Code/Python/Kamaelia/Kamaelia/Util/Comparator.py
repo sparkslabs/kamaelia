@@ -24,7 +24,7 @@
 Comparing two data sources
 ==========================
 
-The comparator component tests two incoming streams to see if the items they
+The Comparator component tests two incoming streams to see if the items they
 contain match (pass an equality test).
 
 
@@ -42,7 +42,7 @@ Compares contents of two files and prints "MISMATCH!" whenever one is found::
 
     Graphline( file1   = RateControlledFileReader(filename="file 1", ...),
                file2   = RateControlledFileReader(filename="file 2", ...),
-               compare = comparator(),
+               compare = Comparator(),
                fdetect = DetectFalse(),
                output  = ConsoleEchoer(),
                linkages = {
@@ -80,9 +80,9 @@ perform different functions (for example, an 'adder').
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class comparator(component):
+class Comparator(component):
     """\
-    comparator() -> new comparator component.
+    Comparator() -> new Comparator component.
 
     Compares items received on "inA" inbox with items received on "inB" inbox.
     For each pair, outputs True if items compare equal, otherwise False.
@@ -117,5 +117,12 @@ class comparator(component):
                 return 0
         return 1
 
-__kamaelia_components__  = ( comparator, )
-            
+import Kamaelia.Support.Deprecate as Deprecate
+
+comparator = Deprecate.makeClassStub(
+    Comparator,
+    "Use Kamaelia.Util.Comparator:Comparator instead of Kamaelia.Util.Comparator:comparator",
+    "WARN"
+    )
+
+__kamaelia_components__  = ( Comparator, )
