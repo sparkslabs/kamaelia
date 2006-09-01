@@ -83,7 +83,7 @@ the component will then terminate.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.Util.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
    """\
@@ -245,8 +245,9 @@ __kamaelia_components__  = ( Image, )
              
 if __name__ == "__main__":
    
-   testImageFile0 = "../../../../../../Sketches/OptimisationTest/pictures/cat.gif"
-   testImageFile1 = "../../../../../../Sketches/OptimisationTest/pictures/thumb.10063680.jpg.gif"
+   filebase = "../../../Examples/SupportingMediaFiles/"
+   testImageFile0 = filebase + "cat.gif"
+   testImageFile1 = filebase + "thumb.10063680.jpg.gif"
 
    class IChange(Axon.Component.component):
       Outboxes = [ "outcolour", "outimage" ]
