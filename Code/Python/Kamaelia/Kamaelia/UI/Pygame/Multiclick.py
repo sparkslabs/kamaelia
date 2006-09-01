@@ -81,7 +81,7 @@ display surface it requested.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.Util.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Multiclick(Axon.Component.component):
    """\

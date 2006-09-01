@@ -78,7 +78,7 @@ the component will then terminate.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.Util.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class KeyEvent(Axon.Component.component):
    """\
