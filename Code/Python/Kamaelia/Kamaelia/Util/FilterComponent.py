@@ -24,12 +24,12 @@ This is a deprecation stub, due for later removal.
 """
 
 import Kamaelia.Support.Deprecate as Deprecate
-from Kamaelia.Util.Filter import FilterComponent as __FilterComponent
+from Kamaelia.Util.Filter import Filter as __FilterComponent
 
 Deprecate.deprecationWarning("Use Kamaelia.Util.Filter instead of Kamaelia.Util.FilterComponent")
 
 FilterComponent = Deprecate.makeClassStub(
     __FilterComponent,
-    "Use Kamaelia.Util.Filter:FilterComponent instead of Kamaelia.Util.FilterComponent:FilterComponent",
+    "Use Kamaelia.Util.Filter:Filter instead of Kamaelia.Util.FilterComponent:FilterComponent",
     "WARN"
     )
