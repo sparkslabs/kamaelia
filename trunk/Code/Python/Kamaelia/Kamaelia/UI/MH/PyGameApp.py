@@ -85,7 +85,7 @@ is no specific 'quit' event handler.
 import pygame
 from pygame.locals import *
 import Axon as _Axon
-from Kamaelia.Util.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class PyGameApp(_Axon.Component.component):
     """\
