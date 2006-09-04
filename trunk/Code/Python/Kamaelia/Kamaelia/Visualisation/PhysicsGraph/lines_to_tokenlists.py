@@ -77,6 +77,7 @@ still be buffered.
 import re
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
 class lines_to_tokenlists(component):
@@ -160,4 +161,3 @@ class lines_to_tokenlists(component):
         return False
 
 __kamaelia_components__  = ( lines_to_tokenlists, )
-                                                                     
