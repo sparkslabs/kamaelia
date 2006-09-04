@@ -5,7 +5,7 @@ from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.PipelineComponent import pipeline
 import time
-
+from Axon.Scheduler import _ACTIVE
 
 class Profiler(threadedcomponent):
     """\
@@ -44,6 +44,7 @@ class Profiler(threadedcomponent):
         now = time.time()
         nextsample = now
         nextoutput = now
+        cycles=0
         scheduler = self.scheduler
         
         while not self.shutdown():
@@ -54,22 +55,27 @@ class Profiler(threadedcomponent):
             now=time.time()
             if now >= nextsample:
                 nextsample = now+self.samplestep
+                cycles+=1
                 
                 for mprocess in scheduler.listAllThreads():
                     name=mprocess.name
-                    running,active = microprocesses.get(name, (0,0))
+                    running,active,shortactive = microprocesses.get(name, (0,0,0))
                     running+=1
-                    if not scheduler.isThreadPaused(mprocess):
+#                    if not scheduler.isThreadPaused(mprocess):
+                    if scheduler.threads[mprocess] == _ACTIVE:
                         active+=1
-                    microprocesses[name] = running,active
+                        shortactive+=1
+                    microprocesses[name] = running,active,shortactive
                 
             if now >= nextoutput:
                 nextoutput = now+self.outputstep
                 
-                print "-----Run----Active--Name-----------------"
-                for name,(running,active) in microprocesses.iteritems():
-                    print "%8d  %8d  %s" % (running,active,name)
+                print "-----Run----Active--%Usage--Name-----------------"
+                for name,(running,active,shortactive) in microprocesses.iteritems():
+                    print "%8d  %8d  %6.2f  %s" % (running,active,100.0*shortactive/cycles,name)
+                    microprocesses[name] = (running,active,0)
                 print "------------------------------------------"
+                cycles=0
 
 
 class ProfilerOutputFormatter(component):
