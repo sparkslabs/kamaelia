@@ -38,10 +38,11 @@ import pymedia.audio.sound as sound
 
 from Support.PyMedia.AudioFormats import format2PyMediaFormat
 from Support.PyMedia.AudioFormats import pyMediaFormat2format
+from Support.PyMedia.AudioFormats import format2BytesPerSample
 
 
 class Output(threadedcomponent):
-    def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
+    def __init__(self, sample_rate=44100, channels=2, format="S16_LE", maximumLag = 0.0):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Output,self).__init__()
         
@@ -53,13 +54,29 @@ class Output(threadedcomponent):
         # round to nearest power of 2
         self.chunksize = 2**int(log(self.chunksize)/log(2))
         
+        self.maxLag = int(maximumLag * sample_rate * channels * format2BytesPerSample[format])
+        
     def main(self):
+        
         CHUNKSIZE=self.chunksize
         shutdown=False
         while self.anyReady() or not shutdown:
+            buffer = []
+            buffersize = 0
+            
             while self.dataReady("inbox"):
                 chunk = self.recv("inbox")
+                buffer.append(chunk)
+                buffersize += len(chunk)
                 
+            if self.maxLag > 0:
+                while buffersize > self.maxLag:
+                    print "reducing",buffersize
+                    buffersize -= len(buffer[0])
+                    del buffer[0]
+                print buffersize
+                
+            for chunk in buffer:
                 for i in range(0,len(chunk),CHUNKSIZE):
                     self.snd.play(chunk[i:i+CHUNKSIZE])
             
