@@ -40,6 +40,21 @@ format2PyMediaFormat = {
 
 pyMediaFormat2format = dict([(v,k) for (k,v) in format2PyMediaFormat.items() ])
 
+format2BytesPerSample = {
+    'AC3'       : None,    # not recognised by alsa, so I dunno!
+    'A_LAW'     : 1,
+    'IMA_ADPCM' : 0.5,
+    'MPEG'      : None,    # not applicable
+    'MU_LAW'    : 1,
+    'S16_BE'    : 2,
+    'S16_LE'    : 2,
+    'S16_NE'    : 2,
+    'S8'        : 1,
+    'U16_BE'    : 2,
+    'U16_LE'    : 2,
+    'U8'        : 1,
+}
+
 # mapping of codec names to file extensions (thats what pymedia wants to know
 # when decoding)
 codec2fileExt = {
