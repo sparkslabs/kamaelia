@@ -54,7 +54,11 @@ import sys
 sys.path.append("../pymedia/")
 sys.path.append("../")
 sys.path.append("../audio")
-from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
+#from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
+
+from Audio.PyMedia.Input  import Input  as _SoundInput
+from Audio.PyMedia.Output import Output as _SoundOutput
+
 from Speex import SpeexEncode,SpeexDecode
 from RawAudioMixer import RawAudioMixer as _RawAudioMixer
 from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
@@ -64,8 +68,16 @@ from Whiteboard.Entuple import Entuple
 from Whiteboard.Router import Router
 
 
+def SoundInput():
+    return _SoundInput( channels=1, sample_rate=8000, format="S16_LE" )
+
+def SoundOutput():
+    return _SoundOutput( channels=1, sample_rate=8000, format="S16_LE" )
+
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
+                           channels       = 1,
+                           format         = "S16_LE",
                            readThreshold  = 0.2,
                            bufferingLimit = 0.4,
                            readInterval   = 0.05,
@@ -379,11 +391,11 @@ if __name__=="__main__":
               TagAndFilterWrapperKeepingTag(
                   pipeline(
                       RawAudioMixer(),
-                      PackageData(channels=1,sample_rate=8000,format="S16_LE"),
+#                      PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
                       ######
-                      SoundInput(channels=1,sample_rate=8000,format="S16_LE"),
-                      ExtractData(),
+                      SoundInput(),
+#                      ExtractData(),
                   ),
               ),
               publishTo("AUDIO"),
