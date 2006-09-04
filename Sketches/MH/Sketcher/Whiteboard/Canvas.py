@@ -110,7 +110,7 @@ class Canvas(Axon.Component.component):
                    "toDisplay" )
 
         while not self.finished():
-            print self.scheduler.time
+            
             self.redrawNeeded = False
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
@@ -121,6 +121,7 @@ class Canvas(Axon.Component.component):
                     args = msg[1:]
                     # parse commands here
                     self.handleCommand(cmd, *args)
+                yield 1
             
             if self.redrawNeeded:
                 self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
