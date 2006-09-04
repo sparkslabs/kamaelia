@@ -27,8 +27,8 @@ import pymedia.muxer as muxer
 import pymedia.audio.acodec as acodec
 import pymedia.audio.sound as sound
 
-import sys
-sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia/")
+import sys,os
+sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*3)
 from Support.PyMedia.AudioFormats import codec2fileExt
 from Support.PyMedia.AudioFormats import pyMediaFormat2format
 

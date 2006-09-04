@@ -23,8 +23,8 @@
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-import sys
-sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/Timer")
+import sys,os
+sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*3 + "Timer")
 #from Axon.ThreadedComponent import threadedcomponent
 from ThreadedComponent import threadedcomponent
 

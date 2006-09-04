@@ -20,8 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import sys
-sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/pymedia/")
+import sys,os
+sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*1)
 
 from Audio.PyMedia.Output import Output as PyMediaOutput
 
