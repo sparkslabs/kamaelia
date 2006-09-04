@@ -16,9 +16,26 @@ sys.path.append("../Timer")
 #from Axon.ThreadedComponent import threadedcomponent
 from ThreadedComponent import threadedcomponent
 
-from Support.PyMedia.AudioFormats import mapping_format_to_pymedia
-from Support.PyMedia.AudioFormats import mapping_format_from_pymedia
+import pymedia.audio.sound as sound
 
+
+mapping_format_to_pymedia = {
+    'AC3'       : sound.AFMT_AC3,
+    'A_LAW'     : sound.AFMT_A_LAW,
+    'IMA_ADPCM' : sound.AFMT_IMA_ADPCM,
+    'MPEG'      : sound.AFMT_MPEG,
+    'MU_LAW'    : sound.AFMT_MU_LAW,
+    'S16_BE'    : sound.AFMT_S16_BE,
+    'S16_LE'    : sound.AFMT_S16_LE,
+    'S16_NE'    : sound.AFMT_S16_NE,
+    'S8'        : sound.AFMT_S8,
+    'U16_BE'    : sound.AFMT_U16_BE,
+    'U16_LE'    : sound.AFMT_U16_LE,
+    'U8'        : sound.AFMT_U8,
+}
+                                                
+mapping_format_from_pymedia = dict([(v,k) for (k,v) in mapping_format_to_pymedia.items() ])
+                                                
 
 class AudioDecoder(component):
     """\
@@ -200,6 +217,7 @@ class RawSoundOutput(threadedcomponent):
         shutdown=False
         while self.anyReady() or not shutdown:
             while self.dataReady("inbox"):
+                print "RawSoundOutput:",self.dataReady("inbox")
                 chunk = self.recv("inbox")
                 
                 for i in range(0,len(chunk),CHUNKSIZE):
@@ -211,8 +229,8 @@ class RawSoundOutput(threadedcomponent):
                     shutdown=True
                 self.send(msg,"signal")
                 
-            if not shutdown:
-                self.pause()
+#            if not shutdown:
+#                self.pause()
             
         self.snd.stop()
 
@@ -433,7 +451,7 @@ if __name__ == "__main__":
     
     extension = filename.split(".")[-1]
         
-    test = 5
+    test = 3
     
     if test == 1:
         pipeline( RateControlledFileReader(filename,readmode="bytes",rate=999999,chunksize=1024),
