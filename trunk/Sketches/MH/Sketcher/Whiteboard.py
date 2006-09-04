@@ -72,7 +72,7 @@ def SoundInput():
     return _SoundInput( channels=1, sample_rate=8000, format="S16_LE" )
 
 def SoundOutput():
-    return _SoundOutput( channels=1, sample_rate=8000, format="S16_LE" )
+    return _SoundOutput( channels=1, sample_rate=8000, format="S16_LE", maximumLag=1.0 )
 
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
