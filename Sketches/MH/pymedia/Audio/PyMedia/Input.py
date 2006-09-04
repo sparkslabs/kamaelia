@@ -23,6 +23,11 @@
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
+import sys
+sys.path.append("/home/matteh/kamaelia/trunk/Sketches/MH/Timer")
+#from Axon.ThreadedComponent import threadedcomponent
+from ThreadedComponent import threadedcomponent
+
 
 import time
 from math import log
@@ -34,7 +39,7 @@ import pymedia.audio.sound as sound
 from Support.PyMedia.AudioFormats import format2PyMediaFormat
 
 
-class Input(component):
+class Input(threadedcomponent):
     Outboxes = { "outbox" : "raw audio samples",
                  "format" : "dictionary detailing sample_rate, sample_format and channels",
                  "signal" : "Shutdown signalling",
@@ -71,6 +76,4 @@ class Input(component):
                     shutdown=True
                 self.send(msg,"signal")
                 
-            yield 1
-            
         self.snd.stop()

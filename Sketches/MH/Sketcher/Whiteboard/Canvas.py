@@ -110,23 +110,24 @@ class Canvas(Axon.Component.component):
                    "toDisplay" )
 
         while not self.finished():
-
+            print self.scheduler.time
+            self.redrawNeeded = False
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
 #                \
 #print repr(msgs)
-                self.redrawNeeded = False
                 for msg in msgs:
                     cmd = msg[0]
                     args = msg[1:]
                     # parse commands here
                     self.handleCommand(cmd, *args)
-                if self.redrawNeeded:
-                    self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-                    if not self.clean:
-                        if not self.dirty_sent:
-                            self.send("dirty", "surfacechanged")
-                            self.dirty_sent = True
+            
+            if self.redrawNeeded:
+                self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
+                if not self.clean:
+                    if not self.dirty_sent:
+                        self.send("dirty", "surfacechanged")
+                        self.dirty_sent = True
 
             # pass on events received from pygame display
             while self.dataReady("eventsIn"):
