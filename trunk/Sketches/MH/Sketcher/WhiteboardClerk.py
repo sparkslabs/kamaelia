@@ -89,24 +89,24 @@ class DeTimestamp(component):
             yield 1
         self.send(shuttingdown,"signal")
 
-# class IntersperseNewlines(component):
-#     def shutdown(self):
-#         while self.dataReady("control"):
-#             msg = self.recv("control")
-#             self.send(msg,"signal")
-#             if isinstance(msg, (producerFinished, shutdownMicroprocess)):
-#                 return True
-#         return False
-#         
-#     def main(self):
-#         while not self.shutdown():
-#             while self.dataReady("inbox"):
-#                 data = self.recv("inbox")
-#                 self.send( data, "outbox" )
-#                 self.send("\n", "outbox" )
-#             self.pause()
-#             yield 1
-# 
+class IntersperseNewlines(component):
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                return True
+        return False
+        
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                self.send( data, "outbox" )
+                self.send("\n", "outbox" )
+            self.pause()
+            yield 1
+
 
 if __name__=="__main__":
     
