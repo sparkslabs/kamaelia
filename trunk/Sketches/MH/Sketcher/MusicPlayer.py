@@ -28,8 +28,8 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
@@ -53,7 +53,6 @@ import sys
 sys.path.append("../pymedia/")
 sys.path.append("../")
 sys.path.append("../audio")
-from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
 from Speex import SpeexEncode,SpeexDecode
 from RawAudioMixer import RawAudioMixer as _RawAudioMixer
 
@@ -69,7 +68,8 @@ if __name__=="__main__":
     
     from Kamaelia.Internet.TCPClient import TCPClient
     from Kamaelia.File.Reading import RateControlledFileReader
-    from pymedia_test import AudioDecoder, ResampleTo
+    from Audio.Codec.PyMedia.Decoder import Decoder
+    from Audio.PyMedia.Resample import Resample
 
     import sys
     try:
@@ -85,11 +85,11 @@ if __name__=="__main__":
 #    rhost = "127.0.0.1"
 #    rport=1500
 
-    pipeline(
+    Pipeline(
         RateControlledFileReader("/home/matteh/music/Philip Glass/Solo Piano/01 - Metamorphosis One.mp3", readmode="bytes", rate=160*1024/8,chunksize=1024),
-        AudioDecoder("mp3"),
-        ResampleTo(sample_rate=8000, channels=1),
-        ExtractData(),
+        Decoder("mp3"),
+        Resample(sample_rate=44100, channels=2,
+                 to_sample_rate=8000, to_channels=1),
         SpeexEncode(3),
         Entuple(prefix=["SOUND"],postfix=[]),
         tokenlists_to_lines(),
