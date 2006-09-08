@@ -21,17 +21,19 @@
 # -------------------------------------------------------------------------
 #
 """\
-Pre-fabrication function chassis.
+================================
+Pre-fabrication function chassis
+================================
 
-This will be a collection of functions that link up components standardised
-ways.
+This is a collection of functions that link up components standardised ways.
 
 They take a collection of components as arguments, and then wire them up in a
 particular fashion. These components are children inside the prefab.
 
 
 
-JOINCHOOSERTOCAROUSEL
+JoinChooserToCarousel
+---------------------
 
     Automated "what arguments should I use for my next reusable component?"
 
@@ -49,7 +51,10 @@ JOINCHOOSERTOCAROUSEL
 
 
 
-    EXAMPLE : reading from a playlist of files
+    Example Usage
+    ~~~~~~~~~~~~~
+    
+    Reading from a playlist of files::
 
         def makeFileReader(filename):
             return ReadFileAdapter(filename = filename, ...other args... )
@@ -62,7 +67,8 @@ JOINCHOOSERTOCAROUSEL
 
 
 
-    DETAIL
+    More detail
+    ~~~~~~~~~~~
 
     Any component can be used that has the expected inboxes and outboxes, and
     which behaves in a relevant manner.
@@ -84,8 +90,9 @@ JOINCHOOSERTOCAROUSEL
 
 
 
-    TODO
-
+    To do
+    ~~~~~
+    
     This prefab needs a better name - it currently describes its design, not
     what its for.
 """
