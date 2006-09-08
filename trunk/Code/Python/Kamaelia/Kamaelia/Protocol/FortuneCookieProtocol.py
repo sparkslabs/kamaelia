@@ -74,6 +74,7 @@ class FortuneCookieProtocol(component):
    A protocol that spits out a random fortune cookie, then terminates.
 
    Keyword arguments:
+   
    - debug  -- Debugging output control (default=0)
    """
    

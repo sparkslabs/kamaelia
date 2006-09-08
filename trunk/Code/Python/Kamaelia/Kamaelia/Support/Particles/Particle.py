@@ -202,6 +202,7 @@ class Particle(object):
         particles not also on the same 'tick' value.
 
         Keyword args:
+        
         - particleIndex  -- index of all particles, implementing withinRadius(...) method (see SpatialIndexer)
         - laws           -- object implementing interaction laws (see SimpleLaws)
         - tick           -- time index of current simulation cycle

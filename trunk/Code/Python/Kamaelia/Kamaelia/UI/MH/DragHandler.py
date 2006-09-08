@@ -126,6 +126,7 @@ class DragHandler(object):
     a lambda function or equivalent)
 
     Keyword Arguments:
+    
     - event  -- pygame event object cuasing this
     - app    -- PyGameApp component this is happening in
     """

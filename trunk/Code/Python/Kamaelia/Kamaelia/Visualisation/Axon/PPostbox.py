@@ -138,6 +138,7 @@ class PPostbox(BaseParticle):
     visualisation.
     
     Keyword arguments:
+    
     - position  -- (x,y) tuple of particle coordinates
     - name      -- Name for the inbox/outbox being represented
     - boxtype   -- "inbox" or "outbox"

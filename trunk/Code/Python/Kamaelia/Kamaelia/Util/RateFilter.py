@@ -226,6 +226,7 @@ class MessageRateLimit(component):
     once the buffer is full.
 
     Keyword arguments:
+    
     - messages_per_second  -- maximum output rate
     - buffer               -- size of buffer (0 or greater) (default=60)
     """
@@ -281,6 +282,7 @@ class ByteRate_RequestControl(component):
     integers saying how much data to emit.
 
     Keyword arguments:
+    
     - rate                   -- qty of data items per second (default=100000)
     - chunksize              -- None or qty of items per 'chunk' (default=None)
     - chunkrate              -- None or number of chunks per second (default=10)

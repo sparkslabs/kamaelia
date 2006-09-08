@@ -134,6 +134,7 @@ class cartesianPingPong(send_one_component):
    bounds.
 
    Keyword arguments:
+   
    - point          -- starting (x,y) coordinates
    - width, height  -- bounds of the area
    - border         -- distance in from bounds at which bouncing happens

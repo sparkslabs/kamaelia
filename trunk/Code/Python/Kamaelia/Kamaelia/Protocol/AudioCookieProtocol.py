@@ -86,6 +86,7 @@ class AudioCookieProtocol(component):
    A protocol that spits out raw audio data from a randomly selected audio file.
 
    Keyword arguments:
+   
    - debug  -- Debugging output control (default=0)
    """
    Inboxes  = { "inbox"   : "NOT USED",

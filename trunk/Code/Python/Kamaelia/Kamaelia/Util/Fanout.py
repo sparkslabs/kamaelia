@@ -76,6 +76,7 @@ class Fanout(component):
    list of outboxes.
    
    Keyword arguments:
+   
    - boxnames  -- list of names for the outboxes any input will be fanned out to.
    """
 

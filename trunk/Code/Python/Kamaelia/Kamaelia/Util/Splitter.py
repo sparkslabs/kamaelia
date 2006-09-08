@@ -232,6 +232,7 @@ class addsink(ipc):
     wired to receive a data source (to be the data sink).
     
     Keywork arguments:
+    
     - sink         -- target component
     - sinkbox      -- target component's inbox name (default="inbox")
     - sinkcontrol  -- None, or target component's 'control' inbox name (default=None)
@@ -359,6 +360,7 @@ class PlugSplitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     destinations.
     
     Keyword arguments:
+    
     - sourceComponent  -- None, or component to act as data source
     """
 
@@ -525,6 +527,7 @@ class Plug(Axon.Component.component):
     splitter as a destination for data.
     
     Keyword arguments:
+    
     - splitter   -- splitter component to plug into (any component that accepts addsink(...) and removesink(...) messages on a 'configuration' inbox
     - component  -- component to receive data from the splitter
     """

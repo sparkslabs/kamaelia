@@ -230,10 +230,11 @@ class DiracEncoder(component):
     optional preset, optionally overriden by individual encoder and sequence parameters.
 
     Keyword arguments:
-    preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
-    verbose    -- NOT YET IMPLEMENTED (IGNORED)
-    encParams  -- dict of encoder setup parameters
-    seqParams  -- dict of video sequence info parameters
+    
+    - preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
+    - verbose    -- NOT YET IMPLEMENTED (IGNORED)
+    - encParams  -- dict of encoder setup parameters
+    - seqParams  -- dict of video sequence info parameters
     """
 
     def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}):

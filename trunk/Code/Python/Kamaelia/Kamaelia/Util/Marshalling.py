@@ -109,6 +109,7 @@ class Marshaller(component):
     A component for marshalling data (serialising it to a string).
 
     Keyword arguments:
+    
     - klass  -- a class with static method: marshall(data) that returns the data, marshalled.
     """
     Inboxes  = { "inbox"   : "data to be marshalled",

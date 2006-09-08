@@ -97,6 +97,7 @@ class PyGameApp(_Axon.Component.component):
     Subclass to implement your own pygame "app".
     
     Keyword arguments:
+    
     - screensize    -- (width,height) of the display area (default = (800,600))
     - caption       -- Caption for the pygame window (default = "Topology Viewer")
     - fullscreen    -- True to start up in fullscreen mode (default = False)

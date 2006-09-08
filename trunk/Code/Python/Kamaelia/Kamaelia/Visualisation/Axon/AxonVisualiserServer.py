@@ -77,6 +77,7 @@ class AxonVisualiserServer(_TopologyViewerServer):
     Axon/Kamaelia systems.
     
     Keyword arguments are those for TopologyViewerServer, excluding:
+    
     - particleTypes
     - laws
     - simCyclesPerRedraw

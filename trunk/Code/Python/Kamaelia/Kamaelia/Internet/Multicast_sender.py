@@ -65,6 +65,7 @@ class Multicast_sender(Axon.Component.component):
    specified multicast group.
    
    Keyword arguments:
+   
    - local_addr   -- local address (interface) to send from (string)
    - local_port   -- local port number
    - remote_addr  -- address of multicast group to send to (string)

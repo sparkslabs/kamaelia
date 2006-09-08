@@ -92,6 +92,7 @@ class Image(Axon.Component.component):
    Pygame image display component. Image, and other properties can be changed at runtime.
 
    Keyword arguments:
+   
    - image         -- Filename of image (default=None) 
    - position      -- (x,y) pixels position of top left corner (default=(0,0))
    - bgcolour      -- (r,g,b) background colour (behind the image if size>image size)

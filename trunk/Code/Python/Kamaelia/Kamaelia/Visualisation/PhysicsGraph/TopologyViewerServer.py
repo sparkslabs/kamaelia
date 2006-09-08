@@ -99,7 +99,8 @@ class TopologyViewerServer(Pipeline):
     specified port and send topology change data for display by a
     TopologyViewer.
     
-    Keywork arguments:
+    Keyword arguments:
+    
     - noServer    -- False, or True to not include the server component (default=False)
     - serverPort  -- None, or port number to listen on (default=1500)
     - args        -- all remaining keyword arguments passed onto TopologyViewer

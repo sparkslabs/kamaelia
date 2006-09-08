@@ -292,7 +292,8 @@ class PromptedFileReader(component):
     N is sent to its inbox.
 
     Keyword arguments:
-    - readmode = "bytes" or "lines"
+    
+    - readmode  -- "bytes" or "lines"
     """
     Inboxes = { "inbox" : "requests to 'n' read bytes/lines",
                 "control" : "for shutdown signalling"
@@ -392,8 +393,9 @@ def RateControlledFileReader(filename, readmode = "bytes", **rateargs):
     control the rate of file reading.
     
     Keyword arguments:
-    - readmode = "bytes" or "lines"
-    - **rateargs = arguments for ByteRate_RequestControl component constructor
+    
+    - readmode    -- "bytes" or "lines"
+    - **rateargs  -- arguments for ByteRate_RequestControl component constructor
     """
     return Graphline(RC  = ByteRate_RequestControl(**rateargs),
                     RFA = PromptedFileReader(filename, readmode),

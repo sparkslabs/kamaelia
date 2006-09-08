@@ -87,6 +87,7 @@ class Filter(component):
    'filter' into it.
    
    Keyword arguments:
+   
    - filter  -- an object implementing a filter(data) method (default=NullFilter instance)
    """
 

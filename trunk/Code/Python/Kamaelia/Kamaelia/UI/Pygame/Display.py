@@ -249,6 +249,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Or create your own and register it with setDisplayService(...)
 
    Keyword arguments (all optional):
+   
    - width              -- pixels width (default=800)
    - height             -- pixels height (default=600)
    - background_colour  -- (r,g,b) background colour (default=(255,255,255))

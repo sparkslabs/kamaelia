@@ -77,8 +77,9 @@ class RawYUVFramer(component):
     Creates a component that frames a raw stream of YUV video data into frames.
 
     Keyword arguments:
-    size = (width,height)        -- size of a video frame in pixels
-    pixformat = "YUV420_Planar"  -- raw video data format
+    
+    - size = (width,height)        -- size of a video frame in pixels
+    - pixformat = "YUV420_Planar"  -- raw video data format
     """
        
     def __init__(self, size, pixformat = "YUV420_planar"):
