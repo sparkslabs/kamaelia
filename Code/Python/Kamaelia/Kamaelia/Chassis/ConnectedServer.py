@@ -20,25 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-Simple Server Chassis.
+=====================
+Simple Server Chassis
+=====================
 
-Provides a framework for creating generic protocol handlers to deal with
-information coming in on a single port (and a single port only). This however
-covers a large array of server types.
-
-A protocol handler is simply a component that can receive and send data (as
-byte strings) in a particular format and with a particular behaviour - ie.
-conforming to a particular protocol. 
-
-Provide this chassis with a factory function to create a component to
-handle the protocol. Whenever a client connects a handler component will then be
-created to handle communications with that client.
+A simple TCP server, bound to a specified port. For each client that connects, a
+protocol handler component, of your choosing, is created to send and receive
+data to and from that client.
 
 
 
-EXAMPLE USAGE : Simple echo protocol
+Example Usage
+-------------
 
-Using a simple echo protocol, that just echoes back anything sent by the client:
+A server using a simple echo protocol, that just echoes back anything sent by
+the client::
 
     class EchoProtocol(Axon.Component.component):
     
@@ -62,7 +58,25 @@ Using a simple echo protocol, that just echoes back anything sent by the client:
 
 
 
-HOW DOES IT WORK?
+Why is this useful?
+-------------------
+
+Provides a framework for creating generic protocol handlers to deal with
+information coming in on a single port (and a single port only). This however
+covers a large array of server types.
+
+A protocol handler is simply a component that can receive and send data (as
+byte strings) in a particular format and with a particular behaviour - ie.
+conforming to a particular protocol. 
+
+Provide this chassis with a factory function to create a component to
+handle the protocol. Whenever a client connects a handler component will then be
+created to handle communications with that client.
+
+
+
+How does it work?
+-----------------
 
 At initialisation the component registers a TCPServer component to listen for
 new connections on the specified port.
@@ -80,18 +94,23 @@ If SingleServer receives a 'shutdownCSA' message (via "_oobinfo") then a
 Kamaelia.KamaeliaIpc.socketShutdown message is sent to the protocol handler's
 "control" inbox, and both it and the CSA are unwired.
 
+This component does not terminate. It ignores any messages sent to its "control"
+inbox.
+
 In practice, this component provides no external connectors for your use.
 
 
 
-HISTORY
+History
+-------
 
 This code is based on the code used for testing the Internet Connection
 abstraction layer.
 
 
 
-TODO
+To do
+-----
 
 This component currently lacks an inbox and corresponding code to allow it to
 be shut down (in a controlled fashion). Needs a "control" inbox that responds to
@@ -162,7 +181,8 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Creates and returns a protocol handler for new connection.
 
         Keyword arguments:
-        data -- data.object is the ConnectedSocketAdapter component for the connection
+        
+        - data  -- data.object is the ConnectedSocketAdapter component for the connection
         """
         CSA = data.object
 
