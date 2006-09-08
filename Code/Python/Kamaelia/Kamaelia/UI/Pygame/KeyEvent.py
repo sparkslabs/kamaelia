@@ -87,6 +87,7 @@ class KeyEvent(Axon.Component.component):
    Component that sends out messages in response to pygame keypress events.
 
    Keyword arguments:
+   
    - allkeys     -- if True, all keystrokes send messages out of "allkeys" outbox (default=False)
    - key_events  -- dict mapping pygame keycodes to (msg,"outboxname") pairs (default=None)
    - outboxes    -- dict of "outboxname":"description" key:value pairs (default={})

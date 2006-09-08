@@ -82,6 +82,7 @@ class ConsoleReader(threadedcomponent):
    from the "outbox" outbox one at a time.
    
    Keyword arguments:
+   
    - prompt  -- Command prompt (default=">>> ")
    - eol     -- End of line character(s) to put on end of every line outputted (default is newline)
    """
@@ -116,6 +117,7 @@ class ConsoleEchoer(component):
    console).
 
    Keyword arguments:
+   
    - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
    - use_repr   -- use repr() instead of str() if True (default=False)
    """

@@ -96,8 +96,9 @@ class Carousel(component):
     (in carousel fashion) using the supplied factory function.
 
     Keyword arguments:
-    componentFactory -- function that takes a single argument and returns a component
-    make1stRequest -- if True, Carousel will send an initial "NEXT" request. (default=False)
+    
+    - componentFactory  -- function that takes a single argument and returns a component
+    - make1stRequest    -- if True, Carousel will send an initial "NEXT" request. (default=False)
     """
 
     Inboxes = { "inbox"    : "child's inbox",

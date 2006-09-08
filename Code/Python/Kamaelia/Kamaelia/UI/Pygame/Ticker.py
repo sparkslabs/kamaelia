@@ -131,6 +131,7 @@ class Ticker(Axon.Component.component):
    A pygame based component that displays incoming text as a ticker.
 
    Keyword arguments (all optional):
+   
    - text_height        -- Font size in points (default=39)
    - line_spacing       -- (default=text_height/7)
    - background_colour  -- (r,g,b) background colour of the ticker (default=(128,48,128))

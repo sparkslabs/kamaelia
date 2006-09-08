@@ -90,8 +90,9 @@ class Pipeline(component):
    Encapsulates the specified set of components and wires them up in a chain
    (a Pipeline) in the order you provided them.
    
-   Arguments:
-   - components - the components you want, in the order you want them wired up
+   Keyword arguments:
+   
+   - components  -- the components you want, in the order you want them wired up
    """
    def __init__(self, *components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""

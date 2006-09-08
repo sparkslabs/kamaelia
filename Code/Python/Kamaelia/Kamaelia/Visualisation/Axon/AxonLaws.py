@@ -78,6 +78,7 @@ class AxonLaws(MultipleLaws):
     and "Postbox" in a physics simulation. Subclass of MultipleLaws.
     
     Keyword arguments:
+    
     - postboxBondLength  -- length of bond that represents Axon linkages (default=100)
     """
     

@@ -91,6 +91,7 @@ class Multiclick(Axon.Component.component):
    message out of its outbox when clicked.
 
    Keyword arguments (all optional):
+   
    - caption      -- text (default="Button <component id>")
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)

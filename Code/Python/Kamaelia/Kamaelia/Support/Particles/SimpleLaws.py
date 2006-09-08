@@ -124,6 +124,7 @@ class SimpleLaws(object):
     The same forces are applied irrespective of particle type.
 
     Keyword arguments:
+    
     - bondLength         -- Length of stable bonds between particles (default=100)
     - maxRepelRadius     -- Maximum distance repulsion force acts at (default=200)
     - repulsionStrength  -- Strength of repulsion of unbonded particles at bondLength separation (default=3.2)

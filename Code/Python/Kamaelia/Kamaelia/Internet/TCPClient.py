@@ -99,6 +99,7 @@ class TCPClient(Axon.Component.component):
    Establishes a TCP connection to the specified server.
    
    Keyword arguments:
+   
    - host     -- address of the server to connect to (string)
    - port     -- port number to connect on
    - delay    -- delay (seconds) after activation before connecting (default=0)

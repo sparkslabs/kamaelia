@@ -127,6 +127,7 @@ class Graphline(component):
    specified linkages.
 
    Keyword arguments:
+   
    - linkages    -- dictionary mapping ("componentname","boxname") to ("componentname","boxname")
    - components  -- dictionary mapping names to component instances (default is nothing)
    """

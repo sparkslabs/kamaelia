@@ -101,8 +101,9 @@ def JoinChooserToCarousel(chooser, carousel):  # CHASSIS
     the Chooser supplies it.
     
     Keyword arguments:
-    chooser --A Chooser component, or one with similar interfaces
-    carousel -- A Carousel component, or one with similar interfaces
+    
+    - chooser   -- A Chooser component, or one with similar interfaces
+    - carousel  -- A Carousel component, or one with similar interfaces
     """
 
     return Graphline(CHOOSER = chooser,

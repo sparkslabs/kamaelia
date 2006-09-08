@@ -108,6 +108,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
    with SpriteSheduler.
 
    Keyword arguments:
+   
    - image     -- pygame surface containing the image
    - position  -- (x,y) pixels position of the top left corner (default=(10,10))
    """

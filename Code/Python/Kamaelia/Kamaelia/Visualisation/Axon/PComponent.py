@@ -92,6 +92,7 @@ class PComponent(BaseParticle):
     Particle representing an Axon/Kamaelia Component for topology visualisation.
     
     Keyword arguments:
+    
     - ID        -- a unique ID for this particle
     - position  -- (x,y) tuple of particle coordinates
     - name      -- The full dot-delimited pathname of the component being represented

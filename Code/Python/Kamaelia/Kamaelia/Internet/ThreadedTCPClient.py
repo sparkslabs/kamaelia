@@ -94,6 +94,7 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
    Establishes a TCP connection to the specified server.
    
    Keyword arguments:
+   
    - host     -- address of the server to connect to (string)
    - port     -- port number to connect on
    - initialsendmessage  -- to be send immediately after connection is established (default=None)

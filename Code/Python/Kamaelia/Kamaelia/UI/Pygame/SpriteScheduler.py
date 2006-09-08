@@ -125,6 +125,7 @@ class SpriteScheduler(component):
    event handler object to handle dispatching of events from pygame.
 
    Keyword arguments:
+   
    - cat_args           -- arguments for event handler class instantiation
    - cat_sprites        -- Pygame sprite objects to be rendered
    - background         -- Pygame surface to be rendered as a background image

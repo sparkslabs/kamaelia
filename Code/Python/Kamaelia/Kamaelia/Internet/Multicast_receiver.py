@@ -70,6 +70,7 @@ class Multicast_receiver(Axon.Component.component):
     and sends it out of its "outbox" outbox.
     
     Keyword arguments:
+    
     - address  -- address of multicast group (string)
     - port     -- port number
     """

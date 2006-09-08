@@ -120,6 +120,7 @@ class Chooser(Axon.Component.component):
    "FIRST" or "LAST" messages to its "inbox" inbox.
    
    Keyword arguments:
+   
    - items  -- list of items to be chosen from, must be type 'list' (default=[])
    """
    

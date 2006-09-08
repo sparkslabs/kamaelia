@@ -93,6 +93,7 @@ class Multicast_transceiver(Axon.Component.component):
    form (src_addr, data) containing data received.
    
    Keyword arguments:
+   
    - local_addr   -- local address (interface) to send from (string)
    - local_port   -- port number
    - remote_addr  -- address of multicast group (string)

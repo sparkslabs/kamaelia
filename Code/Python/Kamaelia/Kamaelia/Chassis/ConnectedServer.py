@@ -115,8 +115,9 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     protocol handler component to handle each connection.
 
     Keyword arguments:
-    protocol -- function that returns a protocol handler component
-    port -- Port number to listen on for connections (default=1601)
+    
+    - protocol  -- function that returns a protocol handler component
+    - port      -- Port number to listen on for connections (default=1601)
     """
                     
     Inboxes = { "_oobinfo" : "internal use: Out Of Bounds Info - for receiving signalling of new and closing connections" }

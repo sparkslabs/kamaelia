@@ -73,6 +73,7 @@ class EventHandler(object):
    events. Pass in events to be handled by calling the dispatch(...) method.
 
    Keyword arguments:
+   
    - trace  -- Cause existing stub handlers to print messages to standard output.
    """
             

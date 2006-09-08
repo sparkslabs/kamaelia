@@ -268,7 +268,8 @@ class DataChunker(Axon.Component.component):
     misinterpretation.
 
     Keyword arguments:
-    - syncmessage  - string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
+    
+    - syncmessage  -- string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
     """
     
     Inboxes  = { "inbox"   : "message strings to be chunked",
@@ -325,7 +326,8 @@ class DataDeChunker(Axon.Component.component):
     are then passed on.
 
     Keyword arguments:
-    - syncmessage  - string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
+    
+    - syncmessage  -- string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
     """
     
     Inboxes  = { "inbox"   : "partial message chunk strings",

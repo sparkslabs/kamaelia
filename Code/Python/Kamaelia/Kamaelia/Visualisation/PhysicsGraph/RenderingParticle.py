@@ -84,6 +84,7 @@ class RenderingParticle(BaseParticle):
     Simple generic particle for topology visualisation.
     
     Keyword arguments:
+    
     - ID        -- a unique ID for this particle
     - position  -- (x,y) tuple of particle coordinates
     - name      -- A name this particle will be labelled with

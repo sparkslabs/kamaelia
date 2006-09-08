@@ -278,6 +278,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     types, appearance and physics interactions can be customised.
     
     Keyword arguments (in order):
+    
     - screensize          -- (width,height) of the display area (default = (800,600))
     - fullscreen          -- True to start up in fullscreen mode (default = False)
     - caption             -- Caption for the pygame window (default = "Topology Viewer")

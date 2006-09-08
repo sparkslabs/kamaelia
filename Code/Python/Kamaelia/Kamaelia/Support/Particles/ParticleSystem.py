@@ -113,6 +113,7 @@ class ParticleSystem(object):
     Discrete time simulator for a system of particles.
 
     Keyword arguments:
+    
     - initialParticles  -- list of particles (default=[])
     - initialTick       -- start value of the time 'tick' count (default=0)
     """
