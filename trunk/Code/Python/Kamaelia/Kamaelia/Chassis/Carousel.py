@@ -20,7 +20,38 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-Component Carousel Chassis.
+==========================
+Component Carousel Chassis
+==========================
+
+This component lets you create and wire up another component. You can then
+swap it for a new one by sending it a message. The message contents is used by
+a factory function to create the new replacement component.
+
+The component that is created is a child contained within Carousel. Wire up to
+Carousel's "inbox" inbox and "outbox" outbox to send and receive messages from
+the child.
+
+
+
+Example Usage
+-------------
+
+A reusable file reader::
+
+    def makeFileReader(filename):
+        return ReadFileAdapter(filename = filename, ...other args... )
+
+    reusableFileReader = Carousel(componentFactory = makeFileReader)
+
+Whenever you send a filename to the "next" inbox of the reusableFileReader
+component, it will read that file. You can do this as many times as you wish.
+The data read from the file comes out of the carousel's outbox.
+
+
+
+Why is this useful?
+-------------------
 
 This chassis component is for making a carousel of components. It gets its name
 from a broadcast carousel - where a programme (or set of programmes) is
@@ -37,19 +68,8 @@ prompt you make a new request.
 
 
 
-EXAMPLE USAGE : A reusable file reader
-
-    def makeFileReader(filename):
-        return ReadFileAdapter(filename = filename, ...other args... )
-
-    reusableFileReader = Carousel componentFactory = makeFileReader)
-
-Whenever you send a filename to the "next" inbox of the reusableFileReader
-component, it will read that file. You can do this as many times as you wish.
-
-
-
-HOW DOES IT WORK?
+How does it work?
+-----------------
 
 The carousel chassis creates and encapsulates (as a child) the component you
 want it to, and lets it get on with it.
