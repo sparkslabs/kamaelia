@@ -1,9 +1,103 @@
 #!/usr/bin/env python
 
+
+
+"""\
+==============================================================
+Support functions for parsing DVB 'descriptor' data structures
+==============================================================
+
+A collection of functions for parsing 'descriptor' elements of information
+tables in DVB data streams. Descriptors contain data such as channel names,
+tuning information for other multiplexes, and information about the audio/video
+streams making up a channel.
+
+
+
+Example Usage
+-------------
+
+A simple loop to parse a set of descriptors stored consecutively in a string::
+    i=0
+    while i < len(setOfDescriptors):
+        parsed, i = parseDescriptor(i, setOfDescriptors)
+        (tag, data) = parsed
+        print "Descriptor found with tag",tag
+        for (key,value) in data.items():
+            print key, "=", value
+            
+            
+
+Parsing Descriptors
+-------------------
+
+Call the parseDescriptor() function, passing it the string containing the
+descriptor and the index of the beginning of the descriptor within the string.
+
+parseDescriptor() will return the parsed descriptor::
+    (tag, data)
+        - tag = the ID of this descriptor type
+        - data = dictionary containing the parsed descriptor data:
+            { type : WhatKindOfDescriptor,
+              key  : value,
+              key2 : value2,
+              ...
+            }
+
+All parsed descriptor data will contain the 'type' key. The remaining key,value
+pairs are specific to the type of descriptor.
+
+parseDescriptor() uses helper functions to parse each particular descriptor. See
+their documentation to see what descriptors are currently supported and what
+data to expect in the dictionary.
+
+
+
+How does it Work?
+-----------------
+
+parseDescriptor() uses helper functions to parse each particular descriptor.
+parseDescriptor() extracts the 'tag' defining the descriptor type, and the
+length of the descriptor. A mapping table maps from tags to parser functions.
+
+Each parser function is of the form::
+    parse(data,i,length,end) -> dict(parsed descriptor elements)
+
+'data' is a string containing the descriptor. 'i' is the index into the string
+of the start of the descriptor. 'length' is the length of the descriptor payload
+and end' is the index of the first point after the descriptor.
+
+
+
+References
+----------
+
+For the full description of the descriptors available see the following MPEG and
+DVB standards documents:
+
+- ISO/IEC 13818-1 (aka "MPEG: Systems")
+  "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" 
+  
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+
+- "Digital Terrestrial Television: Requirements for Interoperability" Issue 4.0+
+
+"""
+
 # parsing routines for DVB PSI table descriptors
 import dvb3.frontend as dvb3f
 
 def parseDescriptor(i,data):
+    """\
+    parseDescriptor(i, data) -> (tag, parsedData), new_i
+    
+    Parses the desciptor in the string 'data', that starts at index 'i'.
+    Returns the descriptor's tag; the parsed descriptor contents as a dict
+    and the index of the first byte after the end of the descriptor.
+    """
+    
     # just a simple extract the tag and body of the descriptor
     tag    = ord(data[i])
     length = ord(data[i+1])
@@ -16,28 +110,127 @@ def parseDescriptor(i,data):
     return (tag,output), end
 
 
-
+# ==============================================================================
 # now parsers for all descriptor types
+# ==============================================================================
 
+# template for a null parser - used when we don't recognise/support the
+# descriptor type we find.
 
 def parser_Null_Descriptor(data,i,length,end):
-    return { "type" : "UNKNOWN",
-             "contents" : data[i+2:end]
-           }
+    """\
+    parser_NullDescriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "UNKNOWN", "contents" : unparsed_descriptor_contents }
+    """
+    return { "type" : "UNKNOWN", "contents" : data[i+2:end] }
 
 
-
+# ------------------------------------------------------------------------------
 # ISO 13818-1 defined descriptors
+# ------------------------------------------------------------------------------
 
-parser_video_stream_Descriptor                 = parser_Null_Descriptor
-parser_audio_stream_Descriptor                 = parser_Null_Descriptor
-parser_hierarchy_Descriptor                    = parser_Null_Descriptor
-parser_registration_Descriptor                 = parser_Null_Descriptor
-parser_data_stream_alignment_Descriptor        = parser_Null_Descriptor
-parser_target_background_grid_Descriptor       = parser_Null_Descriptor
-parser_video_window_Descriptor                 = parser_Null_Descriptor
+def parser_video_stream_Descriptor(data,i,length,end):
+    """\
+    parser_video_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "video_stream", "contents" : unparsed_descriptor_contents }
+       
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "video_stream", "contents" : data[i+2:end] }
+
+
+def parser_audio_stream_Descriptor(data,i,length,end):
+    """\
+    parser_audio_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "audio_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "audio_stream", "contents" : data[i+2:end] }
+
+
+def parser_hierarchy_Descriptor(data,i,length,end):
+    """\
+    parser_hierarchy_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "hierarchy", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "hierarchy", "contents" : data[i+2:end] }
+
+
+def parser_registration_Descriptor(data,i,length,end):
+    """\
+    parser_registration_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "registration", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "registration", "contents" : data[i+2:end] }
+
+
+def parser_data_stream_alignment_Descriptor(data,i,length,end):
+    """\
+    parser_data_stream_alignment_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "data_stream_alignment", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "data_stream_alignment", "contents" : data[i+2:end] }
+
+
+def parser_target_background_grid_Descriptor(data,i,length,end):
+    """\
+    parser_background_grid_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "background_grid", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "background_grid", "contents" : data[i+2:end] }
+
+
+def parser_video_window_Descriptor(data,i,length,end):
+    """\
+    parser_video_window_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "video_window", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "video_window", "contents" : data[i+2:end] }
+
 
 def parser_CA_Descriptor(data,i,length,end):
+    """\
+    parser_CA_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that describes the conditional access mechanism being
+    used to encrypt a given stream (identified by its PID).
+    
+    The dict returned is:
+       { "type"    : "CA",
+         "CA_system_id" : 16 bit unsigned integer identifying for the type of CA system,
+         "pid"          : the integer identifier of the stream,
+         "private_data" : string containing data specific to the CA system
+       }
+    
+    (Defined in ISO 13818-1 specification)
+    """
     d = { "type"         : "CA",
           "CA_system_id" : (ord(data[i+2])<<8) + ord(data[i+3]),
           "pid"          : ((ord(data[i+4])<<8) + ord(data[i+5])) & 0x1fff,
@@ -46,6 +239,25 @@ def parser_CA_Descriptor(data,i,length,end):
     return d
 
 def parser_ISO_639_Descriptor(data,i,length,end):
+    """\
+    parser_ISO_639_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that describes the one or more language(s) used, and
+    their suitability for those with hearing impairments, in an audio stream.
+    
+    The language types come from the ISO 639-2 standard. There may bemore than
+    one language and impairment suitability entry.
+    
+    The dict returned is:
+       { "type"    : "ISO_639",
+         "entries" :
+             list( { "language_code" : ISO 639 defined 3-letter language code
+                     "audio_type"    : "" or "CLEAN" or "HEARING IMPAIRED" or "VISUAL IMPAIRED COMMENTARY"
+                 } )
+       }
+    
+    (Defined in ISO 13818-1 specification)
+    """
     parts = []
     j=i+2
     while j<end:
@@ -58,18 +270,106 @@ def parser_ISO_639_Descriptor(data,i,length,end):
         }
     return d
 
-parser_system_clock_Descriptor                 = parser_Null_Descriptor
-parser_multiplex_buffer_utilisation_Descriptor = parser_Null_Descriptor
-parser_copyright_Descriptor                    = parser_Null_Descriptor
-parser_maximum_bitrate_Descriptor              = parser_Null_Descriptor
-parser_private_data_indicator_Descriptor       = parser_Null_Descriptor
-parser_smoothing_buffer_Descriptor             = parser_Null_Descriptor
-parser_STD_Descriptor                          = parser_Null_Descriptor
-parser_IBP_Descriptor                          = parser_Null_Descriptor
+def parser_system_clock_Descriptor(data,i,length,end):
+    """\
+    parser_system_clock_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "system_clock", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "system_clock", "contents" : data[i+2:end] }
+
+
+def parser_multiplex_buffer_utilisation_Descriptor(data,i,length,end):
+    """\
+    parser_multiplex_buffer_utilisation_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multiplex_buffer_utilisation", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "multiplex_buffer_utilisation", "contents" : data[i+2:end] }
+
+
+def parser_copyright_Descriptor(data,i,length,end):
+    """\
+    parser_copyright_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "copyright", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "copyright", "contents" : data[i+2:end] }
+
+
+def parser_maximum_bitrate_Descriptor(data,i,length,end):
+    """\
+    parser_maximum_bitrate_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "maximum_bitrate", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "maximum_bitrate", "contents" : data[i+2:end] }
+
+
+def parser_private_data_indicator_Descriptor(data,i,length,end):
+    """\
+    parser_private_data_indicator_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "private_data_indicator", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "private_data_indicator", "contents" : data[i+2:end] }
+
+
+def parser_smoothing_buffer_Descriptor(data,i,length,end):
+    """\
+    parser_smoothing_buffer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "smoothing_buffer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "smoothing_buffer", "contents" : data[i+2:end] }
+
+
+def parser_STD_Descriptor(data,i,length,end):
+    """\
+    parser_STD_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "STD", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "STD", "contents" : data[i+2:end] }
+
+
+def parser_IBP_Descriptor(data,i,length,end):
+    """\
+    parser_IBP_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "IBP", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "IBP", "contents" : data[i+2:end] }
 
 
 
+# ------------------------------------------------------------------------------
 # ETSI EN 300 468 defined descriptors
+# ------------------------------------------------------------------------------
 
 def parser_network_name_Descriptor(data,i,length,end):
     d = { "type" : "network_name",
