@@ -126,7 +126,7 @@ class DVB_Multiplex(threadedcomponent):
             
             for pid in pidlist:
                 if pid not in demuxers:
-                    demuxers[pid] = self.addPID(self.card, pid)
+                    demuxers[pid] = self.addPID(pid)
                     
             return demuxers
             
