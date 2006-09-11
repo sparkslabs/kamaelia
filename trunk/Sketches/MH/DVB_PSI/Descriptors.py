@@ -519,12 +519,77 @@ def parser_service_list_Descriptor(data,i,length,end):
         i=i+3
     return d
 
-parser_stuffing_Descriptor                    = parser_Null_Descriptor
-parser_satellite_delivery_system_Descriptor   = parser_Null_Descriptor
-parser_cable_delivery_system_Descriptor       = parser_Null_Descriptor
-parser_VBI_data_Descriptor                    = parser_Null_Descriptor
-parser_VBI_teletext_Descriptor                = parser_Null_Descriptor
-parser_bouquet_name_Descriptor                = parser_Null_Descriptor
+def parser_stuffing_Descriptor(data,i,length,end):
+    """\
+    parser_stuffing_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor serves as padding. It carries no data.
+       { "type": "stuffing" }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "stuffing" }
+
+
+def parser_satellite_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_satellite_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "satellite_delivery_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "satellite_delivery_system", "contents" : data[i+2:end] }
+
+
+def parser_cable_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_cable_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cable_delivery_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "satellite_delivery_system", "contents" : data[i+2:end] }
+
+
+def parser_VBI_data_Descriptor(data,i,length,end):
+    """\
+    parser_VBI_data_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "VBI_data", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "VBI_data", "contents" : data[i+2:end] }
+
+
+def parser_VBI_teletext_Descriptor(data,i,length,end):
+    """\
+    parser_VBI_teletext_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "VBI_teletext", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "VBI_teletext", "contents" : data[i+2:end] }
+
+
+def parser_bouquet_name_Descriptor(data,i,length,end):
+    """\
+    parser_bouquet_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "bouquet_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "bouquet_name", "contents" : data[i+2:end] }
+
 
 def parser_service_Descriptor(data,i,length,end):
     """\
@@ -560,10 +625,54 @@ def parser_service_Descriptor(data,i,length,end):
     d['service_name'] = data[j+1:j+1+length]
     return d
 
-parser_country_availability_Descriptor        = parser_Null_Descriptor
-parser_linkage_Descriptor                     = parser_Null_Descriptor
-parser_NVOD_reference_Descriptor              = parser_Null_Descriptor
-parser_time_shifted_service_Descriptor        = parser_Null_Descriptor
+
+def parser_country_availability_Descriptor(data,i,length,end):
+    """\
+    parser_country_availability_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "country_availability", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "country_availability", "contents" : data[i+2:end] }
+
+
+def parser_linkage_Descriptor(data,i,length,end):
+    """\
+    parser_linkage_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "linkage", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "linkage", "contents" : data[i+2:end] }
+
+
+def parser_NVOD_reference_Descriptor(data,i,length,end):
+    """\
+    parser_NVOD_reference_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "NVOD_reference", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "NVOD_reference", "contents" : data[i+2:end] }
+
+
+def parser_time_shifted_service_Descriptor(data,i,length,end):
+    """\
+    parser_time_shifted_service_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "time_shifted_service", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "time_shifted_service", "contents" : data[i+2:end] }
+
 
 def parser_short_event_Descriptor(data,i,length,end):
     """\
@@ -593,8 +702,29 @@ def parser_short_event_Descriptor(data,i,length,end):
     d['text'] = data[i:i+text_length]
     return d
 
-parser_extended_event_Descriptor              = parser_Null_Descriptor
-parser_time_shifted_event_Descriptor          = parser_Null_Descriptor
+def parser_extended_event_Descriptor(data,i,length,end):
+    """\
+    parser_extended_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "extended_event", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "extended_event", "contents" : data[i+2:end] }
+
+
+def parser_time_shifted_event_Descriptor(data,i,length,end):
+    """\
+    parser_time_shifted_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "time_shifted_event", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "time_shifted_event", "contents" : data[i+2:end] }
+
 
 def parser_component_Descriptor(data,i,length,end):
     """\
@@ -639,7 +769,18 @@ def parser_component_Descriptor(data,i,length,end):
         }
     return d
     
-parser_mosaic_Descriptor                      = parser_Null_Descriptor
+    
+def parser_mosaic_Descriptor(data,i,length,end):
+    """\
+    parser_mosaic_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "mosaic", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "mosaic", "contents" : data[i+2:end] }
+
 
 def parser_stream_identifier_Descriptor(data,i,length,end):
     """\
@@ -663,12 +804,77 @@ def parser_stream_identifier_Descriptor(data,i,length,end):
         }
     return d
 
-parser_CA_identifier_Descriptor               = parser_Null_Descriptor
-parser_content_Descriptor                     = parser_Null_Descriptor
-parser_parental_rating_Descriptor             = parser_Null_Descriptor
-parser_teletext_Descriptor                    = parser_Null_Descriptor
-parser_telephone_Descriptor                   = parser_Null_Descriptor
-parser_local_time_offset_Descriptor           = parser_Null_Descriptor
+def parser_CA_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_CA_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "CA_identifier", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "CA_identifier", "contents" : data[i+2:end] }
+
+
+def parser_content_Descriptor(data,i,length,end):
+    """\
+    parser_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "content", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "content", "contents" : data[i+2:end] }
+
+
+def parser_parental_rating_Descriptor(data,i,length,end):
+    """\
+    parser_parental_rating_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "parental_rating", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "parental_rating", "contents" : data[i+2:end] }
+
+
+def parser_teletext_Descriptor(data,i,length,end):
+    """\
+    parser_teletext_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "teletext", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "teletext", "contents" : data[i+2:end] }
+
+
+def parser_telephone_Descriptor(data,i,length,end):
+    """\
+    parser_telephone_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "telephone", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "telephone", "contents" : data[i+2:end] }
+
+
+def parser_local_time_offset_Descriptor(data,i,length,end):
+    """\
+    parser_local_time_offset_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "local_time_offset", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "local_time_offset", "contents" : data[i+2:end] }
+
 
 def parser_subtitling_Descriptor(data,i,length,end):
     """\
@@ -765,10 +971,52 @@ def parser_terrestrial_delivery_system_Descriptor(data,i,length,end):
     
     return d
 
-parser_multilingual_network_name_Descriptor   = parser_Null_Descriptor
-parser_multilingual_bouquet_name_Descriptor   = parser_Null_Descriptor
-parser_multilingual_service_name_Descriptor   = parser_Null_Descriptor
-parser_multilingual_component_Descriptor      = parser_Null_Descriptor
+def parser_multilingual_network_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_network_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_network_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_network_name", "contents" : data[i+2:end] }
+
+
+def parser_multilingual_bouquet_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_bouquet_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_bouquet_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_bouquet_name", "contents" : data[i+2:end] }
+
+
+
+def parser_multilingual_service_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_service_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_service_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_service_name", "contents" : data[i+2:end] }
+
+def parser_multilingual_component_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_component_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_component", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_component", "contents" : data[i+2:end] }
 
 def parser_private_data_specifier_Descriptor(data,i,length,end):
     """\
@@ -792,8 +1040,28 @@ def parser_private_data_specifier_Descriptor(data,i,length,end):
         }
     return d
     
-parser_service_move_Descriptor                = parser_Null_Descriptor
-parser_short_smoothing_buffer_Descriptor      = parser_Null_Descriptor
+
+def parser_service_move_Descriptor(data,i,length,end):
+    """\
+    parser_service_move_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "service_move", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "service_move", "contents" : data[i+2:end] }
+
+def parser_short_smoothing_buffer_Descriptor(data,i,length,end):
+    """\
+    parser_short_smoothing_buffer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "short_smoothing_buffer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "short_smoothing_buffer", "contents" : data[i+2:end] }
 
 def parser_frequency_list_Descriptor(data,i,length,end):
     """\
@@ -838,9 +1106,39 @@ def parser_frequency_list_Descriptor(data,i,length,end):
         i=i+4
     return d
 
-parser_partial_transport_stream_Descriptor    = parser_Null_Descriptor
-parser_data_broadcast_Descriptor              = parser_Null_Descriptor
-parser_CA_system_Descriptor                   = parser_Null_Descriptor
+
+def parser_partial_transport_stream_Descriptor(data,i,length,end):
+    """\
+    parser_partial_transport_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "partial_transport_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "partial_transport_stream", "contents" : data[i+2:end] }
+
+def parser_data_broadcast_Descriptor(data,i,length,end):
+    """\
+    parser_data_broadcast_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "data_broadcast", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "data_broadcast", "contents" : data[i+2:end] }
+
+def parser_CA_system_Descriptor(data,i,length,end):
+    """\
+    parser_CA_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "CA_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "CA_system", "contents" : data[i+2:end] }
 
 def parser_data_broadcast_id_Descriptor(data,i,length,end):
     """\
@@ -871,14 +1169,94 @@ def parser_data_broadcast_id_Descriptor(data,i,length,end):
         }
     return d
 
-parser_transport_stream_Descriptor            = parser_Null_Descriptor
-parser_DSNG_Descriptor                        = parser_Null_Descriptor
-parser_PDC_Descriptor                         = parser_Null_Descriptor
-parser_AC3_Descriptor                         = parser_Null_Descriptor
-parser_ancillary_data_Descriptor              = parser_Null_Descriptor
-parser_cell_list_Descriptor                   = parser_Null_Descriptor
-parser_cell_frequency_link_Descriptor         = parser_Null_Descriptor
-parser_announcement_support_Descriptor        = parser_Null_Descriptor
+
+def parser_transport_stream_Descriptor(data,i,length,end):
+    """\
+    parser_transport_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "transport_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "transport_stream", "contents" : data[i+2:end] }
+
+def parser_DSNG_Descriptor(data,i,length,end):
+    """\
+    parser_DSNG_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "DSNG", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "DSNG", "contents" : data[i+2:end] }
+
+def parser_PDC_Descriptor(data,i,length,end):
+    """\
+    parser_PDC_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "PDC", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "PDC", "contents" : data[i+2:end] }
+
+def parser_AC3_Descriptor(data,i,length,end):
+    """\
+    parser_AC3_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "AC3", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "AC3", "contents" : data[i+2:end] }
+
+def parser_ancillary_data_Descriptor(data,i,length,end):
+    """\
+    parser_ancillary_data_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "ancillary_data", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "ancillary_data", "contents" : data[i+2:end] }
+
+def parser_cell_list_Descriptor(data,i,length,end):
+    """\
+    parser_cell_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cell_list", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "cell_list", "contents" : data[i+2:end] }
+
+def parser_cell_frequency_link_Descriptor(data,i,length,end):
+    """\
+    parser_cell_frequency_link_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cell_frequency_link", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "cell_frequency_link", "contents" : data[i+2:end] }
+
+def parser_announcement_support_Descriptor(data,i,length,end):
+    """\
+    parser_announcement_support_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "announcement_support", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "announcement_support", "contents" : data[i+2:end] }
 
 # ------------------------------------------------------------------------------
 # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
@@ -917,10 +1295,50 @@ def parser_logical_channel_Descriptor(data,i,length,end):
     d['mappings'] = services
     return d
 
-parser_preferred_name_list_Descriptor       = parser_Null_Descriptor
-parser_preferred_name_identifier_Descriptor = parser_Null_Descriptor
-parser_service_attribute_Descriptor         = parser_Null_Descriptor
-parser_short_service_name_Descriptor        = parser_Null_Descriptor
+
+def parser_preferred_name_list_Descriptor(data,i,length,end):
+    """\
+    parser_preferred_name_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "preferred_name_list", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "preferred_name_list", "contents" : data[i+2:end] }
+
+def parser_preferred_name_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_preferred_name_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "preferred_name_identifier", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "preferred_name_identifier", "contents" : data[i+2:end] }
+
+def parser_service_attribute_Descriptor(data,i,length,end):
+    """\
+    parser_service_attribute_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "service_attribute", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "service_attribute", "contents" : data[i+2:end] }
+
+def parser_short_service_name_Descriptor(data,i,length,end):
+    """\
+    parser_short_service_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "short_service_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "short_service_name", "contents" : data[i+2:end] }
 
 
 __descriptor_parsers = {
