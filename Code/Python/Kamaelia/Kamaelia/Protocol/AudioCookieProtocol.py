@@ -59,7 +59,7 @@ No EOF/termination indication is given once the end of the file is reached.
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX VOMIT
+# XXX FIXME
 #
 # - Relies on afortune.pl, and finding that will depend on what the current
 #   working directory is

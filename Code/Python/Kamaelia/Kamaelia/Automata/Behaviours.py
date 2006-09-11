@@ -75,7 +75,7 @@ send_one_component = component
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX VOMIT
+# XXX FIXME
 #
 # - no true rate control in these components - they basically free run
 #   perhaps this is desirable behaviour, but I'm not sure at the mo (Matt)

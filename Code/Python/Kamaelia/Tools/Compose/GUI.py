@@ -130,7 +130,8 @@ class BuilderControlsGUI(TkWindow):
 
     def setupWindow(self):
         items = []
-        lookup = {} # This is a bit of a nasty hack really ... :-) XXX VOMIT
+        lookup = {} # This is a bit of a nasty hack really ... :-)
+                    # Why is this a hack ?
         self.window.title("Pipeline Builder")
 
         self.addframe = Tkinter.Frame(self.window, borderwidth=2, relief=Tkinter.GROOVE)

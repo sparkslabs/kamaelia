@@ -69,7 +69,7 @@ The compnent is based on Axon.ThreadedComponent.threadedcomponent
 """
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-# XXX VOMIT
+# XXX FIXME
 #
 # - needs reworking somewhat - bit messy, plus lacks error handling
 # - and spits all kinds of crud out of its "signal" outbox
