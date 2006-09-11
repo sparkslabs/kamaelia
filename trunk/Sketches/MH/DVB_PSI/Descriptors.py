@@ -77,12 +77,104 @@ DVB standards documents:
 
 - ISO/IEC 13818-1 (aka "MPEG: Systems")
   "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" 
+  ISO / Motion Picture Experts Grou7p
   
 - ETSI EN 300 468 
   "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
   in DVB systems"
+  ETSI / EBU (DVB group)
 
 - "Digital Terrestrial Television: Requirements for Interoperability" Issue 4.0+
+  (aka "The D book")
+  UK Digital Television Group
+
+
+
+Mappings, Tables, Values
+========================
+Various mappings, tables, values etc. used by the DVB standard.
+
+
+Service types
+-------------
+Types of services (channel) that can be found in a DVB multiplex::
+
+    "digital television service",
+    "digital radio sound service",
+    "Teletext service",
+    "NVOD reference service",
+    "NVOD time-shifted service",
+    "mosaic service",
+    "PAL coded signal",
+    "SECAM coded signal",
+    "D/D2-MAC",
+    "FM Radio",
+    "NTSC coded signal",
+    "data broadcast service",
+    "RCS Map",
+    "RCS FLS",
+    "DVB MHP service",
+
+
+
+
+Stream Component Mappings
+-------------------------
+Mappings from (stream_component, component_type) values to their actual
+meanings. Used in 'component' descriptors::
+
+    (0x01, 0x01) : ("video",                 "4:3 aspect ratio, 25 Hz"),
+    (0x01, 0x02) : ("video",                 "16:9 aspect ratio with pan vectors, 25 Hz"),
+    (0x01, 0x03) : ("video",                 "16:9 aspect ratio without pan vectors, 25 Hz"),
+    (0x01, 0x04) : ("video",                 "> 16:9 aspect ratio, 25 Hz"),
+    (0x01, 0x05) : ("video",                 "4:3 aspect ratio, 30 Hz"),
+    (0x01, 0x06) : ("video",                 "16:9 aspect ratio with pan vectors, 30 Hz"),
+    (0x01, 0x07) : ("video",                 "16:9 aspect ratio without pan vectors, 30 Hz"),
+    (0x01, 0x05) : ("video",                 "> 16:9 aspect ratio, 30 Hz"),
+    (0x01, 0x09) : ("high definition video", "4:3 aspect ratio, 25 Hz"),
+    (0x01, 0x0A) : ("high definition video", "16:9 aspect ratio with pan vectors, 25 Hz"),
+    (0x01, 0x0B) : ("high definition video", "16:9 aspect ratio without pan vectors, 25 Hz"),
+    (0x01, 0x0C) : ("high definition video", "> 16:9 aspect ratio, 25 Hz"),
+    (0x01, 0x0D) : ("high definition video", "4:3 aspect ratio, 30 Hz"),
+    (0x01, 0x0E) : ("high definition video", "16:9 aspect ratio with pan vectors, 30 Hz"),
+    (0x01, 0x0F) : ("high definition video", "16:9 aspect ratio without pan vec., 30 Hz"),
+    (0x01, 0x10) : ("high definition video", "> 16:9 aspect ratio, 30 Hz"),
+    (0x02, 0x01) : ("audio",                 "single mono channel"),
+    (0x02, 0x02) : ("audio",                 "dual mono channel"),
+    (0x02, 0x03) : ("audio",                 "stereo (2 channel)"),
+    (0x02, 0x04) : ("audio",                 "multi-lingual, multi-channel"),
+    (0x02, 0x05) : ("audio",                 "surround sound"),
+    (0x02, 0x40) : ("audio description for the visually impaired", ""),
+    (0x02, 0x41) : ("audio for the hard of hearing",               ""),
+    (0x03, 0x01) : ("EBU Teletext subtitles",  ""),
+    (0x03, 0x02) : ("associated EBU Teletext", ""),
+    (0x03, 0x03) : ("VBI data",                ""),
+    (0x03, 0x10) : ("DVB subtitles (normal)", "with no monitor aspect ratio criticality"),
+    (0x03, 0x11) : ("DVB subtitles (normal)", "for display on 4:3 aspect ratio monitor"),
+
+
+Private Data Specifiers
+-----------------------
+Specifiers defining various types of private data payload:
+    
+    0x00000001 : "SES",
+    0x00000002 : "BSkyB 1",
+    0x00000003 : "BSkyB 2",
+    0x00000004 : "BSkyB 3",
+    0x000000BE : "BetaTechnik",
+    0x00006000 : "News Datacom",
+    0x00006001 : "NDC 1",
+    0x00006002 : "NDC 2",
+    0x00006003 : "NDC 3",
+    0x00006004 : "NDC 4",
+    0x00006005 : "NDC 5",
+    0x00006006 : "NDC 6",
+    0x00362275 : "Irdeto",
+    0x004E544C : "NTL",
+    0x00532D41 : "Scientific Atlanta",
+    0x44414E59 : "News Datacom (IL) 1",
+    0x46524549 : "News Datacom (IL) 1",
+    0x53415053 : "Scientific Atlanta",
 
 """
 
@@ -372,13 +464,51 @@ def parser_IBP_Descriptor(data,i,length,end):
 # ------------------------------------------------------------------------------
 
 def parser_network_name_Descriptor(data,i,length,end):
+    """\
+    parser_network_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the name of the 'network' of which the
+    multiplex is a part. In the United Kingdom for the Freeview Terrestrial
+    Service, this is usually the name of the transmitter, eg. "Crystal Palace".
+    
+    The dict returned is:
+       { "type"    : "network_name",
+         "network_name" : string name of the network,
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type" : "network_name",
           "network_name" : data[i+2:end]
         }
     return d
 
 def parser_service_list_Descriptor(data,i,length,end):
-    d = { "type" : "network_name",
+    """\
+    parser_service_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the list of services (channels) available in
+    a given multiplex. Each service is listed by type and SID (service id).
+    
+    The dict returned is:
+       { "type"     : "service_list",
+         "services" :
+             list( { "service_id"   : identifier value for this service
+                     "service_type" : the type of service (see table below)
+                 } )
+       }
+       
+    Example service types include:
+    
+    - "digital television service",
+    - "digital radio sound service",
+    - "data broadcast service",
+
+    See "Service types" for the full list of service type values.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "service_list",
           "services" : []
         }
     i=i+2
@@ -397,6 +527,29 @@ parser_VBI_teletext_Descriptor                = parser_Null_Descriptor
 parser_bouquet_name_Descriptor                = parser_Null_Descriptor
 
 def parser_service_Descriptor(data,i,length,end):
+    """\
+    parser_service_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the name, provider and type of a service
+    (channel).
+    
+    The dict returned is:
+       { "type"                  : "service",
+         "service_type"          : the type of service (see table below)
+         "service_name"          : name of this channel (eg. "BBC ONE")
+         "service_provider_name" : string name of who is providing this channel
+       }
+       
+    Example service types include:
+    
+    - "digital television service",
+    - "digital radio sound service",
+    - "data broadcast service",
+
+    See "Service types" for the full list of service type values.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type" : "service",
           "service_type" : _service_types.get(ord(data[i+2]), ord(data[i+2])),
         }
@@ -413,6 +566,22 @@ parser_NVOD_reference_Descriptor              = parser_Null_Descriptor
 parser_time_shifted_service_Descriptor        = parser_Null_Descriptor
 
 def parser_short_event_Descriptor(data,i,length,end):
+    """\
+    parser_short_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing a short event - usually a programme. It gives
+    a name, longer description, and the language it is in. This is usually part
+    of schedule or now & next information.
+    
+    The dict returned is:
+       { "type"          : "short_event",
+         "language_code" : The language of this programme (ISO 639-2 3 letter language code)
+         "name"          : String name of the event (programme)
+         "text"          : Up to 255 character string description
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type"          : "short_event",
           "language_code" : data[i+2:i+5],
         }
@@ -428,6 +597,35 @@ parser_extended_event_Descriptor              = parser_Null_Descriptor
 parser_time_shifted_event_Descriptor          = parser_Null_Descriptor
 
 def parser_component_Descriptor(data,i,length,end):
+    """\
+    parser_component_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing technical details of an audio or visual
+    component of a service (channel) such as the aspect ratio of video, or the
+    number and configuration of audio channels.
+    
+    The dict returned is:
+       { "type"           : "component",
+         "component_tag"  : uniquely identifies this component within the service (channel) - maps to stream identifier descriptors (see parser_stream_identifier_Descriptor)
+         "stream_content" : number identifying whether the stream is audio, video, subtitles, etc
+         "component_type" : number identifying technical details of that stream type
+         "content,type"   : (content,type) textual equivalents of stream_contentand component_type (see below)
+         "language_code"  : The language of this component (ISO 639-2 3 letter language code)
+         "text"           : A textual description of this component
+       }
+       
+    Example component (content,type) descriptions include:
+    
+    - ("video",                  "4:3 aspec ratio, 25 Hz")
+    - ("high definition video",  "16:9 aspect ratio with pan vectors, 25 Hz")
+    - ("audio",                  "stereo (2 channel)")
+    - ("DVB subtitles (normal)", "with no monitor aspect ratio criticality")
+        
+    See "Stream Component Mappings" for a full list and the numeric stream_component
+    and component_type values that map to them.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     e = [ord(data[i+2]), ord(data[i+3]), ord(data[i+4])]
     e[0]=e[0] & 0x0f
     sctype = _stream_component_mappings.get((e[0],e[1]), (e[0],e[1]))
@@ -444,6 +642,22 @@ def parser_component_Descriptor(data,i,length,end):
 parser_mosaic_Descriptor                      = parser_Null_Descriptor
 
 def parser_stream_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_stream_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor identifying a component of a stream in a service
+    (channel). A set of these forms a list of the 'tag's that identifies the
+    set of components making up a stream.
+    
+    Used in the Programme Map Table (PMT) 
+    
+    The dict returned is:
+       { "type"          : "stream_identifier",
+         "component_tag" : tag uniquely identifying this component within the service - maps to component descriptors found in schedule and now&next data (EIT table)
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type"         : "stream_identifier",
           "component_tag" : ord(data[i+2]),
         }
@@ -457,6 +671,25 @@ parser_telephone_Descriptor                   = parser_Null_Descriptor
 parser_local_time_offset_Descriptor           = parser_Null_Descriptor
 
 def parser_subtitling_Descriptor(data,i,length,end):
+    """\
+    parser_subtitling_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing a subtitling service. It describes the
+    language of the subtitles, and the type of subtitle data (DVB supports
+    multiple types).
+    
+    The dict returned is:
+       { "type"                : "subtitling",
+         "language_code"       : language it is in (3 letter ISO 639-2 language code)
+         "subtitling_type"     : (content,type) textual equivalents of stream_contentand component_type (see below)
+         "composition_page_id" : signalling for DVB subtitles (specific to subtitling implementation)
+         "ancilliary_page_id"  : signalling for DVB subtitles (specific to subtitling implementation)
+       }
+    
+    See all 0x03 (subtitling) sections of "Stream Component Mappings"
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     parts = []
     j=i+2
     while j<end:
@@ -473,6 +706,37 @@ def parser_subtitling_Descriptor(data,i,length,end):
     return d
 
 def parser_terrestrial_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_terrestrial_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the parameteres needed to tune to a DVB
+    Digital Terrestrial Television (DVB-T) multiplex. Parameters are all encoded
+    using the constants defined in the dvb3 python bindings library - thereby
+    making easy to directly pass them to the frontend tuning function calls.
+    
+    Used in the Network Information Table (NIT)
+    
+    The dict returned is:
+       { "type"          : "terrestrial_delivery_system",
+         "params"        : Tuning parameters (see below)
+         "other_frequencies" : True if one or more other frequencies are being used
+      }
+      
+    Tuning parameters are a dict:
+      {
+         "frequency"     : Frequency in Hz,
+         "bandwidth"     : dvb3.frontend.BANDWIDTH_?_MHZ where ? is 6, 7 or 8
+         "constellation" : dvb3.frontend.QPSK, QAM_16 or QAM_64
+         "hierarchy_information" : dvb3.frontend.HIERARCHY_? where ? is NONE, 1, 2 or 4
+         "code_rate_HP" : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "code_rate_LP" : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "guard_interval" : dvb3.frontend.GUARD_INTERVAL_1_? where ? is 32, 16, 8 or 4
+         "transmission_mode" : dvb3.frontend.TRANSMISSION_MODE_?K where ? is 2 or 8
+         "inversion"         : dvb3.frontend.INVERSION_AUTO
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type" : "terrestrial_delivery_system",
         }
     e = [ord(data[x]) for x in range(i+2,i+9)]
@@ -507,6 +771,21 @@ parser_multilingual_service_name_Descriptor   = parser_Null_Descriptor
 parser_multilingual_component_Descriptor      = parser_Null_Descriptor
 
 def parser_private_data_specifier_Descriptor(data,i,length,end):
+    """\
+    parser_private_data_specifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor specifying the type of some 'private data' - that is
+    data outside of the core specifications.
+    
+    The dict returned is:
+       { "type"          : "private_data_specifier",
+         "private_data_specifier" : String description, or numeric type if unrecognised.
+       }
+    
+    See "Private Data Specifiers".
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     n = (ord(data[i+2])<<24) + (ord(data[i+3])<<16) + (ord(data[i+4])<<8) + ord(data[i+5])
     d = { "type" : "private_data_specifier",
           "private_data_specifier" : _private_data_specifiers.get(n,n),
@@ -517,6 +796,21 @@ parser_service_move_Descriptor                = parser_Null_Descriptor
 parser_short_smoothing_buffer_Descriptor      = parser_Null_Descriptor
 
 def parser_frequency_list_Descriptor(data,i,length,end):
+    """\
+    parser_frequency_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing a list of alternative frequences on which
+    the multiplex may be carried.
+    
+    The dict returned is:
+       { "type"       : "frequency_list",
+         "frequences" : list(frequency in Hz)
+       }
+    
+    See "Private Data Specifiers".
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
     d = { "type" : "frequency_list",
           "frequencies" : [],
         }
@@ -549,9 +843,31 @@ parser_data_broadcast_Descriptor              = parser_Null_Descriptor
 parser_CA_system_Descriptor                   = parser_Null_Descriptor
 
 def parser_data_broadcast_id_Descriptor(data,i,length,end):
+    """\
+    parser_data_broadcast_id_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing a list of alternative frequences on which
+    the multiplex may be carried.
+    
+    The dict returned is:
+       { "type"      : "data_broadcast_id",
+         "id"        : numeric identifier for the way in which the data is being broadcast
+         "selectors" : string data specific to the data broadcast type
+       }
+    
+    The id specifies the kind of data broadcast. For example, 0x106 has been 
+    registered by TDN for use in the United Kingdom Digital Terrestrial network
+    for 'interactive' applications.
+    
+    The selectors are data specific to the particular kind of data broadcast,
+    generally used to specify an 'interactive app' to be loaded when the channel
+    or data broadcast is tuned to by the user.
+    
+    (Defined in ETSI EN 300 468 specification and "The D book")
+    """
     d = { "type"      : "data_broadcast_id",
           "id"        : (ord(data[i+2])<<8) + ord(data[i+3]),
-          "selectors" : [ord(data[j]) for j in range(i+4,end)]
+          "selectors" : data[i+4:end],
         }
     return d
 
@@ -564,10 +880,31 @@ parser_cell_list_Descriptor                   = parser_Null_Descriptor
 parser_cell_frequency_link_Descriptor         = parser_Null_Descriptor
 parser_announcement_support_Descriptor        = parser_Null_Descriptor
 
+# ------------------------------------------------------------------------------
 # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
 # UK Digital Television Group (www.dtg.org.uk) document descriptors
+# aka "The D book"
+# ------------------------------------------------------------------------------
+
 
 def parser_logical_channel_Descriptor(data,i,length,end):
+    """\
+    parser_logical_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that assigns "channel numbers" (for viewers to see) to
+    services (channels).
+    
+    The dict returned is:
+       { "type"      : "logical_channel",
+         "mappings"  : dict of service_id to channel_number mappings
+       }
+       
+    For example, in the United Kingdom, the channel BBC ONE, when broadcast from
+    the Crystal Palace transmitter, has service_id 4164, but for viewers appears
+    as logical channel number 1.
+    
+    (Defined in "The D book")
+    """
     d = { "type" : "logical_channel",
         }
     i=i+2
