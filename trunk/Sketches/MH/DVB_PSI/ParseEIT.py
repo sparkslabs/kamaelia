@@ -15,15 +15,15 @@ def ParseEIT_Subset( actual_presentFollowing = True,
                    ):
     acceptTables = {}
     if actual_presentFollowing:
-        acceptTables[0x4e] = ("ACTUAL", "PRESENT FOLLOWING")
+        acceptTables[0x4e] = ("ACTUAL", True)
     if other_presentFollowing:
-        acceptTables[0x4f] = ("OTHER", "PRESENT FOLLOWING")
+        acceptTables[0x4f] = ("OTHER", True)
     if actual_schedule:
         for x in range(0x50,0x60):
-            acceptTables[x] = ("ACTUAL", "SCHEDULE")
+            acceptTables[x] = ("ACTUAL", False)
     if other_schedule:
         for x in range(0x60,0x70):
-            acceptTables[x] = ("OTHER", "SCHEDULE")
+            acceptTables[x] = ("OTHER", False)
     return ParseEIT(acceptTables = acceptTables)
 
 
@@ -63,45 +63,45 @@ class ParseEIT(component):
         super(ParseEIT,self).__init__()
         self.acceptTables = acceptTables
 
-    def parseTable(self, index, sections):
-        (table_id, current_next, service_id, transport_stream_id, original_network_id) = index
+    def parseTableSection(self, index, section):
+        (table_id, service_id, current_next, transport_stream_id, original_network_id) = index
         msg = { "table_type"          : "EIT",
                 "table_id"            : table_id,
                 "actual_other"        : self.acceptTables[table_id][0],
-                "pf_schedule"         : self.acceptTables[table_id][1],
+                "is_present_following": self.acceptTables[table_id][1],
                 "current"             : current_next,
                 "transport_stream_id" : transport_stream_id,
                 "original_network_id" : original_network_id,
                 "events"              : [],
               }
         
-        for (data,section_length) in sections:
+        (data,section_length) = section
             
-#            service_id = (ord(data[3])<<8) + ord(data[4])
-             
-            i=14
-            while i < section_length+3-4:
-                e = [ord(data[x]) for x in range(i+0,i+12)]
+        service_id = (ord(data[3])<<8) + ord(data[4])
+            
+        i=14
+        while i < section_length+3-4:
+            e = [ord(data[x]) for x in range(i+0,i+12)]
+            
+            event = { "service_id" : service_id }
+            
+            event["event_id"] = (e[0]<<8) + e[1]
+            # ( Y,M,D, HH,MM,SS )
+            event["starttime"] = list( parseMJD((e[2]<<8) + e[3]) )
+            event["starttime"].extend( [unBCD(e[4]), unBCD(e[5]), unBCD(e[6])] )
+            event["duration"] = unBCD(e[7]), unBCD(e[8]), unBCD(e[9])
+            event["running_status"] = (e[10] >> 5) & 0x07
+            event["free_CA_mode"] = e[10] & 0x10
+            
+            descriptors_length = ((e[10]<<8) + e[11]) & 0x0fff
+            event["descriptors"] = []
+            i=i+12
+            descriptors_end = i + descriptors_length
+            while i < descriptors_end:
+                descriptor,i = parseDescriptor(i,data)
+                event['descriptors'].append(descriptor)
                 
-                event = { "service_id" : service_id }
-                
-                event["event_id"] = (e[0]<<8) + e[1]
-                # ( Y,M,D, HH,MM,SS )
-                event["starttime"] = list( parseMJD((e[2]<<8) + e[3]) )
-                event["starttime"].extend( [unBCD(e[4]), unBCD(e[5]), unBCD(e[6])] )
-                event["duration"] = unBCD(e[7]), unBCD(e[8]), unBCD(e[9])
-                event["running_status"] = (e[10] >> 5) & 0x07
-                event["free_CA_mode"] = e[10] & 0x10
-                
-                descriptors_length = ((e[10]<<8) + e[11]) & 0x0fff
-                event["descriptors"] = []
-                i=i+12
-                descriptors_end = i + descriptors_length
-                while i < descriptors_end:
-                    descriptor,i = parseDescriptor(i,data)
-                    event['descriptors'].append(descriptor)
-                    
-                msg["events"].append(event)
+            msg["events"].append(event)
         
         return  msg
     
@@ -118,10 +118,9 @@ class ParseEIT(component):
         # ...for holding table sections (until we get  complete table)
         
         # indexed by (table_id, current_next, transport_stream_id, original_network_id)
-        sections = {}
+        sections_found = {}
         latest_versions = {}
         last_section_numbers = {}
-        missing_sections_count = {}
         
         while not self.shutdown():
              
@@ -151,7 +150,7 @@ class ParseEIT(component):
                 transport_stream_id = (e[8]<<8) + e[9]
                 original_network_id  = (e[10]<<8) + e[11]
                 
-                index = (table_id, current_next, service_id, transport_stream_id, original_network_id)
+                index = (table_id, service_id, current_next, transport_stream_id, original_network_id)
 
                 # if version number has changed, flush out all previously fetched tables
                 crcpass = False
@@ -162,20 +161,24 @@ class ParseEIT(component):
                         crcpass = True
                     latest_versions[index] = version
                     
-                    sections[index] = [None]*(last_section_number+1)
-                    missing_sections_count[index] = last_section_number+1
+                    sections_found[index] = [False]*(last_section_number+1)
                 
-                if sections[index][section_number] == None:
+#                 if index[0] == 0x50:
+#                     print index, section_number
+                if not sections_found[index][section_number]:
                     if crcpass or dvbcrc(data[:3+section_length]):
                         
-                        sections[index][section_number] = (data, section_length)
-                        missing_sections_count[index] -= 1
+                        sections_found[index][section_number] = True
                         
-                        # see if we have all sections of the table
-                        # if we do, send the whole bundle onwards
-                        if missing_sections_count[index] == 0:
-                            table = self.parseTable(index, sections[index])
-                            self.send( table, "outbox")
+                        # because of interesting decisions regarding subtable segments
+                        # in the spec (EN 300 468, page 22) we have no way of knowing if
+                        # we have received the whole table, so we're just going to parse
+                        # each fragment we get and output it (if we've not seen it before)
+                        tablesection = self.parseTableSection(index, (data, section_length))
+#                       print table['actual_other'], table['pf_schedule']
+                        self.send( tablesection, "outbox")
+                    else:
+                        pass  # ignore data with a bad crc
                         
             self.pause()
             yield 1
@@ -243,16 +246,20 @@ class SimplifyEIT(component):
                 
                 for event in eventset['events']:
                     
-                    if eventset['pf_schedule'] == "PRESENT FOLLOWING":
+                    if eventset['is_present_following']: # is now&next information
                         if event['running_status'] in [1,2]:
                             when = "NEXT"
                         elif event['running_status'] in [3,4]:
                             when = "NOW"
-                    elif eventset['pf_schedule'] == "SCHEDULE":
-                        if event['running_status'] in [1,2]:
+                        else:
+                            print "pf",event['running_status']
+                    else: # is schedule data
+                        if event['running_status'] in [0,1,2]:
                             when = "SCHEDULED"
                         elif event['running_status'] in [3,4]:
                             when = "NOW"
+                        else:
+                            print "sched",event['running_status']
                     
                     name        = ""
                     description = ""
@@ -366,7 +373,8 @@ if __name__ == "__main__":
     pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x12], feparams),
               DVB_Demuxer({ 0x12:["outbox"]}),
               PSIPacketReconstructor(),
-              ParseEIT_Subset(True,False,False,False),
+#              ParseEIT_Subset(True,False,False,False),
+              ParseEIT_Subset(True,True,True,True),
               MakeEITHumanReadable(),
 #              SimplifyEIT(),
 #              NowNextProgrammeJunctionDetect(),
