@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 
 import Kamaelia.Visualisation.PhysicsGraph
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as _TopologyViewer
 
 _TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
 
@@ -68,8 +69,7 @@ The extra window furniture is supplied by
 Kamaelia.Visualisation.Axon.ExtraWindowFurniture.
 """
 
-
-class AxonVisualiserServer(_TopologyViewerServer):
+def AxonVisualiserServer(**dictArgs):
     """\
     AxonVisualiserServer(...) -> new AxonVisualiserServer component.
     
@@ -83,18 +83,40 @@ class AxonVisualiserServer(_TopologyViewerServer):
     - simCyclesPerRedraw
     - extraWindowFurniture
     """
+    particleTypes = { "component" : PComponent,
+                        "inbox"     : PPostbox.Inbox,
+                        "outbox"    : PPostbox.Outbox
+                    }
+    return _TopologyViewerServer( particleTypes = particleTypes,
+                                  laws = AxonLaws(),
+                                  simCyclesPerRedraw = 3,
+                                  extraDrawing = ExtraWindowFurniture(),
+                                  **dictArgs
+                                )
 
-    def __init__(self, **dictArgs):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        particleTypes = { "component" : PComponent,
-                          "inbox"     : PPostbox.Inbox,
-                          "outbox"    : PPostbox.Outbox
-                        }
-                        
-        super(AxonVisualiserServer,self).__init__( particleTypes = particleTypes,
-                                                   laws = AxonLaws(),
-                                                   simCyclesPerRedraw = 3,
-                                                   extraDrawing = ExtraWindowFurniture(),
-                                                   **dictArgs
-                                                 )
-__kamaelia_components__  = ( AxonVisualiserServer, )
+def AxonVisualiser( **dictArgs):
+    """\
+    AxonVisualiserServer(...) -> new AxonVisualiserServer component.
+    
+    A specialisation of the TopologyViewerServer component for viewing
+    Axon/Kamaelia systems.
+    
+    Keyword arguments are those for TopologyViewerServer, excluding:
+    
+    - particleTypes
+    - laws
+    - simCyclesPerRedraw
+    - extraWindowFurniture
+    """
+    particleTypes = { "component" : PComponent,
+                        "inbox"     : PPostbox.Inbox,
+                        "outbox"    : PPostbox.Outbox
+                    }
+    return _TopologyViewer( particleTypes = particleTypes,
+                            laws = AxonLaws(),
+                            simCyclesPerRedraw = 3,
+                            extraDrawing = ExtraWindowFurniture(),
+                            **dictArgs
+                          )
+
+__kamaelia_prefab__  = ( AxonVisualiserServer, AxonVisualiser)

@@ -90,35 +90,40 @@ from TopologyViewer import TopologyViewer
 from Kamaelia.Internet.SingleServer import SingleServer
 from Kamaelia.Util.Console import ConsoleEchoer
 
-
-class TopologyViewerServer(Pipeline):
+def TopologyViewerServer(noServer = False, serverPort = 1500, **dictArgs):
     """\
     TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
 
     One-client-at-a-time TCP socket Topology viewer server. Connect on the
     specified port and send topology change data for display by a
     TopologyViewer.
-    
+
     Keyword arguments:
     
     - noServer    -- False, or True to not include the server component (default=False)
     - serverPort  -- None, or port number to listen on (default=1500)
     - args        -- all remaining keyword arguments passed onto TopologyViewer
     """
+    if noServer:
+        return Pipeline( chunks_to_lines(),
+                         lines_to_tokenlists(),
+                         TopologyViewer(**dictArgs),
+                         ConsoleEchoer()
+               )
+    else:
+        return Pipeline( SingleServer(port=serverPort),
+                         chunks_to_lines(),
+                         lines_to_tokenlists(),
+                         TopologyViewer(**dictArgs),
+                         ConsoleEchoer()
+               )
 
-    def __init__(self, noServer = False, serverPort = None, **dictArgs):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
-        
-        pipe = [chunks_to_lines(),
-                lines_to_tokenlists(),
-                TopologyViewer(**dictArgs),
-                ConsoleEchoer() ]
-                
-        if not noServer:
-            if serverPort == None:
-                serverPort = 1500
-            pipe.insert(0, SingleServer(port=serverPort))
+def TextControlledTopologyViewer(**dictArgs):
+    return Pipeline( chunks_to_lines(),
+                     lines_to_tokenlists(),
+                     TopologyViewer(**dictArgs),
+                     ConsoleEchoer()
+            )
 
-        super(TopologyViewerServer, self).__init__(*pipe)
-         
-__kamaelia_prefab__ = ( TopologyViewerServer, )
+__kamaelia_prefab__ = ( TopologyViewerServer, TextControlledTopologyViewer)
+

@@ -123,7 +123,8 @@ class PyGameApp(_Axon.Component.component):
                  position = None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PyGameApp, self).__init__()
-        pygame.init()
+        pygame.init() # FIXME: This should NEVER be called inside a component unless it is the
+                      #        PygameDisplay or GraphicDisplay or similar.
         
 #        flags = DOUBLEBUF
 #        if fullscreen:
@@ -178,6 +179,9 @@ class PyGameApp(_Axon.Component.component):
                 self.mainLoop()
             self.send({"REDRAW":True, "surface":self.screen}, "displaysignal")
             if not self.quitting and self.flip:
+                # FIXME: This does not play nicely at all with the standard pygame display
+                #        handling, despite requesting it's display from the standard
+                #        location.
                 pygame.display.flip()
                 yield 1
             else:
@@ -196,7 +200,9 @@ class PyGameApp(_Axon.Component.component):
            pass
 
     def mainLoop(self):
-        """Implement your runtime loop in this method here."""
+        """Implement your runtime loop in this method here.
+           FIXME: This is less than ideal.
+        """
         return 1
 
 
