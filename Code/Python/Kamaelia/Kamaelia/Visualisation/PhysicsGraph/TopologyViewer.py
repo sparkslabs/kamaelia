@@ -384,6 +384,10 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
         Main loop.
         
         Proceses commands from "inbox" inbox, runs physics simulation, then renders display
+        
+        FIXME: This is massively broken, this component overrides initialiseComponent,
+        and also has a main *AND* has a mainLoop. 
+        
         """
         # process incoming messages
         if self.dataReady("inbox"):
@@ -658,7 +662,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     def quit(self, event=None):
         """Cause termination."""
         super(TopologyViewer,self).quit(event)
-        raise "QUITTING"           ### XXX VOMIT : need better shutdown than this!
+        raise "QUITTING"           ### XXX FIXME : need better shutdown than this!
         
     def scroll( self, (dx, dy) ):
         """Scroll the contents being displayed on the surface by (dx,dy) left and up."""
@@ -670,10 +674,10 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     def selectParticle(self, particle):
         """Select the specified particle."""
         if self.selected != particle:
-            
+
             if self.selected != None:
                 self.selected.deselect()
-                
+
             self.selected = particle
             nodeid = None
             if self.selected != None:
@@ -682,4 +686,3 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             self.send( ("SELECT","NODE", nodeid), "outbox" )
 
 __kamaelia_components__  = ( TopologyViewer, )
-        
