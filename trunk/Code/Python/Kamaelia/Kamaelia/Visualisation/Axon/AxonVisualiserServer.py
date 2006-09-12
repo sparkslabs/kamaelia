@@ -69,6 +69,10 @@ The extra window furniture is supplied by
 Kamaelia.Visualisation.Axon.ExtraWindowFurniture.
 """
 
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
+
 def AxonVisualiserServer(**dictArgs):
     """\
     AxonVisualiserServer(...) -> new AxonVisualiserServer component.
@@ -93,6 +97,10 @@ def AxonVisualiserServer(**dictArgs):
                                   extraDrawing = ExtraWindowFurniture(),
                                   **dictArgs
                                 )
+def text_to_token_lists():
+    return Pipeline( chunks_to_lines(),
+                     lines_to_tokenlists()
+                   )
 
 def AxonVisualiser( **dictArgs):
     """\
@@ -118,5 +126,8 @@ def AxonVisualiser( **dictArgs):
                             extraDrawing = ExtraWindowFurniture(),
                             **dictArgs
                           )
+
+
+
 
 __kamaelia_prefab__  = ( AxonVisualiserServer, AxonVisualiser)

@@ -90,7 +90,7 @@ from TopologyViewer import TopologyViewer
 from Kamaelia.Internet.SingleServer import SingleServer
 from Kamaelia.Util.Console import ConsoleEchoer
 
-def TopologyViewerServer(noServer = False, serverPort = 1500, **dictArgs):
+def TopologyViewerServer(serverPort = 1500, **dictArgs):
     """\
     TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
 
@@ -100,22 +100,14 @@ def TopologyViewerServer(noServer = False, serverPort = 1500, **dictArgs):
 
     Keyword arguments:
     
-    - noServer    -- False, or True to not include the server component (default=False)
     - serverPort  -- None, or port number to listen on (default=1500)
     - args        -- all remaining keyword arguments passed onto TopologyViewer
     """
-    if noServer:
-        return Pipeline( chunks_to_lines(),
-                         lines_to_tokenlists(),
-                         TopologyViewer(**dictArgs),
-                         ConsoleEchoer()
-               )
-    else:
-        return Pipeline( SingleServer(port=serverPort),
-                         chunks_to_lines(),
-                         lines_to_tokenlists(),
-                         TopologyViewer(**dictArgs),
-                         ConsoleEchoer()
+    return Pipeline( SingleServer(port=serverPort),
+                     chunks_to_lines(),
+                     lines_to_tokenlists(),
+                     TopologyViewer(**dictArgs),
+                     ConsoleEchoer()
                )
 
 def TextControlledTopologyViewer(**dictArgs):
