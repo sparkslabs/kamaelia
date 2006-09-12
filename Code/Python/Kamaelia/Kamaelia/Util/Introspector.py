@@ -37,7 +37,8 @@ Introspect and display whats going on inside the system::
     MyComplexSystem().activate()
     
     Pipeline( Introspector(),
-              AxonVisualiserServer(noServer=True),
+              text_to_token_lists()
+              AxonVisualiser(),
             )
 
 

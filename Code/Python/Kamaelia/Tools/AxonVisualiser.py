@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,14 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-import Kamaelia.Visualisation.PhysicsGraph
+import sys
 from Kamaelia.Visualisation.Axon.AxonVisualiserServer import AxonVisualiserServer
+from Kamaelia.Visualisation.Axon.AxonVisualiserServer import AxonVisualiserServer, AxonVisualiser, text_to_token_lists
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.Util.Introspector import Introspector
+from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Introspector import Introspector
+from Kamaelia.Visualisation.PhysicsGraph import parseArgs as _parseArgs
 
 def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
     shortargs = "n" + extraShortArgs
     longargs  = ["navelgaze","introspect="] + extraLongArgs
 
-    dictArgs, optlist, remargs = Kamaelia.Visualisation.PhysicsGraph.parseArgs(args, shortargs, longargs)
+    dictArgs, optlist, remargs = _parseArgs(args, shortargs, longargs)
     
     if "help" in dictArgs:
         dictArgs["help"] += "   -n, --navelgaze\n" + \
@@ -52,47 +59,37 @@ def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
 
     
 if __name__=="__main__":
-    from Axon.Scheduler import scheduler as _scheduler
 
-    import sys
     dictArgs, optlist, remargs = parseArgs(sys.argv[1:])
 
     if "help" in dictArgs:
         print dictArgs["help"]
+        sys.exit(0)
+   
+    resolution = dictArgs.get("screensize",(800,600))
+    doNavelgaze = dictArgs.pop("navelgaze", None)
+    doIntrospect = dictArgs.pop("introspect", None)
+
+    pgd = PygameDisplay(width=resolution[0],height=resolution[1]).activate()
+    PygameDisplay.setDisplayService(pgd)
+
+    if doIntrospect is not None:
+        (server, port) = doIntrospect
         
+        Pipeline( Introspector(), 
+                  TCPClient(server, port) 
+                ).activate()
+
+    if doNavelgaze:
+        if "serverPort" in dictArgs:
+            raise "Makes no sense to navelgaze and use --port option - they're mutually exclusive"
+        app = Pipeline(
+                 Introspector(),
+                 text_to_token_lists(),
+                 AxonVisualiser(caption="Axon / Kamaelia Visualiser", **dictArgs)
+              ) 
     else:
-    
-        i = None
-        if "navelgaze" in dictArgs:
-            del dictArgs["navelgaze"]
-            dictArgs['noServer'] = True
-            from Kamaelia.Util.Introspector import Introspector
-            i = Introspector()
-
-        if "introspect" in dictArgs:
-            (server, port) = dictArgs["introspect"]
-            del dictArgs["introspect"]
-            
-            from Kamaelia.Util.Introspector import Introspector
-            from Kamaelia.Internet.TCPClient import TCPClient
-            from Kamaelia.Chassis.Pipeline import Pipeline
-            
-            Pipeline( Introspector(), 
-                      TCPClient(server, port) 
-                    ).activate()
-
-        resolution = dictArgs.get("screensize",(800,600))
-        from Kamaelia.UI.GraphicDisplay import PygameDisplay
-        
-        pgd = PygameDisplay(width=resolution[0],height=resolution[1]).activate()
-        PygameDisplay.setDisplayService(pgd)
-
         app = AxonVisualiserServer(caption="Axon / Kamaelia Visualiser", **dictArgs)
+    
+    app.run()
 
-        if i:
-            i.link( (i,"outbox"), (app,"inbox") )
-            i.activate()
-
-        app.activate()
-
-        _scheduler.run.runThreads(slowmo=0)
