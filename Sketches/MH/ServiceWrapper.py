@@ -86,6 +86,33 @@ class Subscribe(component):
             self.send( ("REMOVE", request, (self,"inbox")) , "_toService")
             
 
+class ToService(component):
+    def __init__(self, toService):
+        super(ToService,self).__init__()
+        self.serviceName = toService
+    
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+    
+    def main(self):
+        cat = CAT.getcat()
+        service = cat.retrieveService(self.serviceName)
+        
+        linkage = self.link( (self, "inbox"), service, passthrough=1 )
+        
+        shutdown=False
+        while not shutdown:
+            shutdown = self.shutdown()
+            self.pause()
+            yield 1
+            
+
+
 if __name__ == "__main__":
     
     from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
