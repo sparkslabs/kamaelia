@@ -179,7 +179,7 @@ class DVB_Demuxer(AdaptiveCommsComponent):
                 
                 del self.linkages[dest]
                 del self.boxes[dest]
-                del self.refCount[outboxname]
+                del self.boxRefCount[outboxname]
                 
                 
                 
