@@ -208,7 +208,7 @@ class MakeEITHumanReadable(component):
                         output += "    Table is valid for            : " + \
                                        ["NEXT (not valid yet)","CURRENT (valid)"][eit['current']] + "\n"
                         output += "    Actual or Other n/w           : %s\n" % eit['actual_other']
-                        output += "    Present-Following or Schedule : %s\n" % eit['pf_schedule']
+                        output += "    Present-Following or Schedule : %s\n" % iif(eit['is_present_following'],"Present-Following","Schedule")
                         output += "    Transport stream id           : %d\n" % eit['transport_stream_id']
                         output += "    Original network id           : %d\n" % eit['original_network_id']
                         
