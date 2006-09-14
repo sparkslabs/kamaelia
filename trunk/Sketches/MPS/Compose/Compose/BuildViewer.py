@@ -127,7 +127,7 @@ class ComponentParticle(Particle):
         self.selected = False
 
 def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):                                        
-    laws = SimpleLaws(bondLength=100)
+#    laws = SimpleLaws(bondLength=100)
     return AxonVisualiser( screensize=screensize,
                            fullscreen=fullscreen,
                            caption = "The pipeline",
