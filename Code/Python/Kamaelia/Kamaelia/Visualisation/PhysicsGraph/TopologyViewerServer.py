@@ -84,9 +84,9 @@ its behaviour.
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-from chunks_to_lines import chunks_to_lines
-from lines_to_tokenlists import lines_to_tokenlists
-from TopologyViewer import TopologyViewer
+from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Internet.SingleServer import SingleServer
 from Kamaelia.Util.Console import ConsoleEchoer
 
