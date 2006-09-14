@@ -116,15 +116,20 @@ def AxonVisualiser( **dictArgs):
     - simCyclesPerRedraw
     - extraWindowFurniture
     """
+    #
+    # Allow particleTypes to be overridden
+    #
+    args = dict(dictArgs)
     particleTypes = { "component" : PComponent,
                         "inbox"     : PPostbox.Inbox,
                         "outbox"    : PPostbox.Outbox
                     }
-    return _TopologyViewer( particleTypes = particleTypes,
-                            laws = AxonLaws(),
+    particleTypes.update( (args.get("particleTypes",{})) )
+    args["particleTypes"] = particleTypes
+    return _TopologyViewer(# laws = AxonLaws(),
                             simCyclesPerRedraw = 3,
                             extraDrawing = ExtraWindowFurniture(),
-                            **dictArgs
+                            **args
                           )
 
 
