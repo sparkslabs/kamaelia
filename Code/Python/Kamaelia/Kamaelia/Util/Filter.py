@@ -128,7 +128,7 @@ class Filter(component):
 import Kamaelia.Support.Deprecate as Deprecate
 
 FilterComponent = Deprecate.makeClassStub(
-    __FilterComponent,
+    Filter,
     "Use Kamaelia.Util.Filter:Filter instead of Kamaelia.Util.Filter:FilterComponent",
     "WARN"
     )
