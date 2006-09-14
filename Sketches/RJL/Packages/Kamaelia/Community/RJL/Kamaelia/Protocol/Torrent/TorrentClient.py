@@ -275,6 +275,9 @@ def BasicTorrentExplainer():
     return PureTransformer(lambda x : str(x) + "\n")
 
 
+__kamaelia_components__  = ( TorrentClient, )
+__kamaelia_prefabs__  = ( BasicTorrentExplainer, )
+
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
@@ -294,4 +297,3 @@ if __name__ == '__main__':
     ).run()
 
             
-__kamaelia_components__  = ( TorrentClient, BasicTorrentExplainer, )
