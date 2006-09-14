@@ -72,7 +72,8 @@ class DataSource(component):
 
 TriggeredSource = lambda msg : PureTransformer(lambda r : msg)
 
-__kamaelia_components__  = ( DataSource, TriggeredSource, )
+__kamaelia_components__  = ( DataSource, )
+__kamaelia_prefabs__  = ( TriggeredSource, )
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import pipeline
