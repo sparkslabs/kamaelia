@@ -65,7 +65,11 @@ def getModuleConstructorArgs( modulename, classnames):
 
 def getConstructorArgs(component):
     initfunc = eval("component.__init__")
-    (args, vargs, vargkw, defaults) = inspect.getargspec(initfunc)
+    try:
+        (args, vargs, vargkw, defaults) = inspect.getargspec(initfunc)
+    except TypeError, e:
+        print "FAILURE", str(component), repr(component), component
+        raise e
 
     arglist = [ [arg] for arg in args ]
     if defaults is not None:
