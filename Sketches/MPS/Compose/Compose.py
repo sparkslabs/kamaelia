@@ -20,6 +20,24 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+"""
+OK, basic actions needed:
+    * ADD COMPONENT
+        * ADD COMPONENT
+        * FOR EACH INBOX -- NEW
+            * ADD AND LINK
+        * FOR EACH OUTBOX -- NEW
+            * ADD AND LINK
+    * DELETE COMPONENT
+        * DELETE OUTBOXES -- NEW
+        * DELETE INBOXES -- NEW
+        * DELETE COMPONENT
+    * LINK -- NEW ( NO IMPLICIT LINK ANYMORE)
+        * THIS BOX
+        * TO THIS BOX
+"""
+
+
 # simple kamaelia pipeline builder GUI
 # run this program
 
@@ -99,27 +117,28 @@ if __name__ == "__main__":
     from PipeBuild import PipeBuild
     from PipelineWriter import PipelineWriter
     from BuildViewer import BuildViewer
-    from GUI import BuilderControlsGUI, TextOutputGUI
+    from GUI.BuilderControlsGUI import BuilderControlsGUI
+    from GUI.TextOutputGUI import TextOutputGUI
 
 
     items = list(getAllClasses( COMPONENTS ))
 
-    
+
     pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
                                  PipeBuild()
                                )
                       )
-                      
+
     viewer = Splitter(BuildViewer())
-    
+
     Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
-    
+
     Plug(pipegen, viewer).activate()
     Plug(pipegen, Pipeline(PipelineWriter(),
                            TextOutputGUI("Pipeline code")
                           )
         ).activate()
-    
+
     try:
         scheduler.run.runThreads()
     except:
