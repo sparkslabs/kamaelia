@@ -129,6 +129,9 @@ class postbox(object):
     def setShowTransit(self, showtransit=False, tag=None):
         self.storage.setShowTransit(showtransit, tag)
 
+    def isFull(self):
+        return (self.sink.size != None) and (len(self) >= self.sink.size)
+            
 thenullsink = nullsink()
 
 def makeInbox(notify, size = None):
