@@ -22,7 +22,7 @@
 #
 #
 
-from AxonExceptions import noSpaceInBox
+from AxonExceptions import noSpaceInBox, LinkageClash
 
 class nullsink(object):
     def __init__(self):
@@ -40,7 +40,7 @@ class nullsink(object):
         return 0
     def pop(self,index):
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
-
+    
     
 class realsink(list):
     def __init__(self, notify, size=None):
@@ -77,6 +77,7 @@ class postbox(object):
         self.sources = []
         self._retarget()
         self.local_len = storage.__len__    # so compoent can specifically query local storage
+        self.target = None
     
     def __len__(self):
         return self.__target_len__()
@@ -87,7 +88,7 @@ class postbox(object):
         'retarget' at this postbox.
         """
         self.sources.append(newsource)       # XXX assuming not already linked from that source
-        newsource._retarget(self.sink)
+        newsource._retarget(self)
         
     def removesource(self,oldsource):
         """\
@@ -107,10 +108,14 @@ class postbox(object):
         if newtarget==None:
             self.sink = self.storage
         else:
-            self.sink = newtarget
+#             if self.target != None and self.target != newtarget:
+#                 raise LinkageClash("Can't create linkage going out from an inbox/outbox that already has a linkage going out from it.")
+            self.sink = newtarget.sink
             # if i'm storing stuff, pass it on
             while len(self.storage):
                 self.sink.append(self.storage.pop(0))
+        
+        self.target = newtarget
         
         # make calling these methods go direct to the sink
         self.append         = self.sink.append
@@ -118,7 +123,7 @@ class postbox(object):
         self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
-            source._retarget(newtarget=self.sink)
+            source._retarget(newtarget=self)
 
     def setSize(self, size):
         self.storage.size = size
@@ -128,9 +133,6 @@ class postbox(object):
 
     def setShowTransit(self, showtransit=False, tag=None):
         self.storage.setShowTransit(showtransit, tag)
-    
-    def isFull(self):
-        return (self.sink.size != None) and (len(self) >= self.sink.size)
 
 thenullsink = nullsink()
 

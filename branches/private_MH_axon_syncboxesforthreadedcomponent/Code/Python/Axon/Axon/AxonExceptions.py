@@ -35,3 +35,4 @@ class MultipleServiceDeletion(AxonException): pass
 class NamespaceClash(AxonException): pass
 class AccessToUndeclaredTrackedVariable(AxonException): pass
 class ArgumentsClash(AxonException): pass
+class LinkageClash(AxonException): pass
