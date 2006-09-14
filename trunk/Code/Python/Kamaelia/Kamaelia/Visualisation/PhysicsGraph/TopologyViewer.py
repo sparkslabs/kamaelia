@@ -265,9 +265,9 @@ import Axon
 import Kamaelia.Support.Particles
 import Kamaelia.UI
 
-from GridRenderer import GridRenderer
-from ParticleDragger import ParticleDragger
-from RenderingParticle import RenderingParticle
+from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
+from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
+from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
                   
 class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     """\
