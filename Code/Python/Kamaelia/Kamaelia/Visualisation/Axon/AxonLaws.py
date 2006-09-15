@@ -106,7 +106,7 @@ class AxonLaws(MultipleLaws):
                                           dampcutoff        = dampcutoff,
                                           maxVelocity       = maxvel
                                         )
-        component_postbox   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*1.2,
+        component_postbox   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*1.5,
                                           maxRepelRadius    = _COMPONENT_RADIUS,
                                           repulsionStrength = 0.0 * forceScaler,
                                           maxBondForce      = 10.0 * forceScaler,
