@@ -26,7 +26,6 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import Tkinter
 
-
 class ArgumentsPanel(Tkinter.Frame):
     def __init__(self, parent, theclass):
         Tkinter.Frame.__init__(self, parent)
@@ -72,7 +71,7 @@ class ArgumentsPanel(Tkinter.Frame):
             self.args.append( (arg[0], svar, default) )
             row+=1
 
-
+         
          # now do * and ** args
         for argname in ["*","**"]:
             if self.theclass['args'][argname]:
@@ -94,10 +93,38 @@ class ArgumentsPanel(Tkinter.Frame):
     def getDef(self):
         return { "name"          : self.theclass['class'],
                  "module"        : self.theclass['module'],
-                 "instantiation" : self.getInstantiation()
+                 "instantiation" : self.getInstantiation(),
+                 "configuration" : self.getConfiguration()
                }
 
-                        
+
+    def getConfiguration(self):
+        """Return the instantiation string"""
+        argstr = ""
+        prefix = ""
+        SEQUENTIALARGS = []
+        TUPLEARGS = None
+        DICTARGS = None
+        for (argname, svar, default) in self.args:
+            unspecified = False
+            value = None
+            text = svar.get().strip()
+            default = default.strip()
+            if argname != "*" and argname != "**":
+                if default=="" or text != default:
+                    if not text:
+                        unspecified = True
+                    value = text
+                SEQUENTIALARGS.append( [argname, unspecified,value, default ] )
+            else:
+                if text:
+                    if argname == "*":
+                        TUPLEARGS = text
+                    if argname == "**":
+                        DICTARGS = text
+        
+        return (SEQUENTIALARGS, TUPLEARGS , DICTARGS)
+
     def getInstantiation(self):
         """Return the instantiation string"""
         argstr = ""
@@ -117,3 +144,4 @@ class ArgumentsPanel(Tkinter.Frame):
                     prefix=", "
         
         return argstr
+
