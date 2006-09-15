@@ -25,6 +25,6 @@ from Audio.PyMedia.Output import Output
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-Pipeline( Input(sample_rate=44100, channels=1, format="S16_LE"),
-          Output(sample_rate=44100, channels=1, format="U8"),
+Pipeline( Input(sample_rate=8000, channels=1, format="S16_LE"),
+          Output(sample_rate=8000, channels=1, format="S16_LE"),
         ).run()
