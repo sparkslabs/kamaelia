@@ -114,6 +114,7 @@ class Magic(Axon.Component.component):
     }
     Outboxes={
         "to_topology" : "Messages to control the topology",
+        "to_serialiser" : "Messages about the system topology are sent here for turning into code",
         "signal" : "default, unused",
         "outbox" : "default, unused",
     }    
@@ -124,6 +125,7 @@ class Magic(Axon.Component.component):
         self.LINKMODE = False
         self.linksource = None
         self.linksink = None
+        self.topology = []
     def main(self):
         print "Let the magic begin!"
         while 1:
@@ -147,11 +149,17 @@ class Magic(Axon.Component.component):
                 self.linksink = None
             yield 1
 
+    def updateSerialiser(self):
+        self.send( { "nodes": self.topologyDB, "links": self.topology },
+                   "to_serialiser")
+
     def makeLink(self):
         self.send( [ "ADD", "LINK",
                             self.linksource,
                             self.linksink,
                     ], "to_topology" )
+        self.topology.append([self.linksource,self.linksink])
+        self.updateSerialiser()
 
     def debug_PrintCurrentNodeDetails(self):
         print "CURRENT NODE", self.currentSelectedNode
@@ -176,6 +184,7 @@ class Magic(Axon.Component.component):
         for outbox in outboxes:
             ( boxid, label ) = outbox
             self.topologyDB[boxid] = ( "OUTBOX", label, nodeid )
+        self.updateSerialiser()
 
     def addNodeToTopology(self,event):
         print "ADD NODE"
@@ -221,6 +230,18 @@ class Magic(Axon.Component.component):
 
         return ( nodeid, label, inboxes, outboxes )
 
+class CodeGen(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.anyReady():
+                while self.dataReady("inbox"):
+                    topology = self.recv("inbox")
+                    print "_________________________ TOPOLOGY ___________________________"
+                    pprint.pprint(topology)
+                    print "_________________________ YGOLOPOT ___________________________"
+            else:
+                self.pause()
+            yield 1
 
 if __name__ == "__main__":
     import sys
@@ -291,11 +312,13 @@ if __name__ == "__main__":
                           position=(800, 0),
                           msg="LINK"),
         CENTRAL_CONTROL=Magic(),
+        CODE_GENERATOR = CodeGen(),
         linkages = {
             ("SEMANTIC_EVENTS","outbox"):("CENTRAL_CONTROL","from_panel"),
             ("SELECTION_EVENTS","outbox"):("CENTRAL_CONTROL","from_topology"),
             ("MAKELINK", "outbox") : ("CENTRAL_CONTROL", "makelink"),
             ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
+            ("CENTRAL_CONTROL","to_serialiser"):("CODE_GENERATOR","inbox"),
         }
     ).run()
 
