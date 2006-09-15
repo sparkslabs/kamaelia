@@ -25,6 +25,7 @@
 # run this program
 
 import Kamaelia.Support.Data.Repository
+import Axon
 
 C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
 COMPONENTS = {}
@@ -50,12 +51,12 @@ def getModuleConstructorArgs( modulename, classnames):
     module = __import__(modulename, [], [], classnames)
     for classname in classnames:
         theclass = eval("module."+classname)
-
         entry = { "module"   : modulename,
                   "class"    : classname,
                   "classdoc" : theclass.__doc__,
                   "initdoc"  : theclass.__init__.__doc__,
-                  "args"     : getConstructorArgs(theclass)
+                  "args"     : getConstructorArgs(theclass),
+                  "theclass" : theclass,
                 }
 
         clist.append(entry)
@@ -117,9 +118,11 @@ class Magic(Axon.Component.component):
     def main(self):
         print "Let the magic begin!"
         while 1:
-                self.pause()
-                yield 1
-
+            if self.dataReady("from_panel"):
+                event = self.recv("from_panel")
+            if self.dataReady("from_topology"):
+                event =  self.recv("from_topology")
+            yield 1
 
 if __name__ == "__main__":
     import sys

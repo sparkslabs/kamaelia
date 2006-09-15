@@ -25,13 +25,15 @@ from Kamaelia.Support.Tk.Scrolling import ScrollingMenu
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import Tkinter
+import pprint
 
 class ArgumentsPanel(Tkinter.Frame):
     def __init__(self, parent, theclass):
         Tkinter.Frame.__init__(self, parent)
 
         self.theclass = theclass
-
+        
+        pprint.pprint(theclass)
         # build widgets
         
         row=0
