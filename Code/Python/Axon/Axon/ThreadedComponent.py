@@ -59,6 +59,8 @@ class threadedcomponent(Component.component):
       self.threadtoaxonqueue = Queue.Queue()
       self.axontothreadqueue = Queue.Queue()
 
+      self.threadWakeUp = threading.Event()
+
 
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
        self._threadId = numId()
@@ -108,9 +110,14 @@ class threadedcomponent(Component.component):
       """Stub method. **This method is designed to be overridden.** """
       return 1
 
-   def pause(self):
-       # override this for now; but could do something again once flow control inversion
-       # is done and we want to block for events
+   def pause(self, timeout=None):
+       # wait for wakeup from an event, but also have an optional timeout
+       self.threadWakeUp.wait(timeout)
+       # clear the event immediately afterwards (not a race hazard, since
+       # if something else caused it to be set, it doesn't matter - we've
+       # already woken, and we've not yet started handling the causes of the
+       # event)
+       self.threadWakeUp.clear()
        return
 
    def _localmain(self):
@@ -145,6 +152,7 @@ class threadedcomponent(Component.component):
                   if not self.inqueues[box].full():
                       msg = self._nonthread_recv(box)
                       self.inqueues[box].put(msg)
+                      self.threadWakeUp.set()     # wake a paused main()
                   else:
                       stuffWaiting = True
                       break
@@ -269,7 +277,9 @@ if __name__ == "__main__":
         def main(self):
             self.send("ADD SRC")
             for i in range(10):
-                time.sleep(1.0)
+                t=1.0+time.time()
+                while time.time() < t:
+                    self.pause(t-time.time())   # time.sleep(1.0)
                 self.send("Threaded: "+str(i))
             self.send("DEL SRC")
                 
@@ -278,7 +288,9 @@ if __name__ == "__main__":
             self.count=10
             self.send("ADD SRC")
         def mainBody(self):
-            time.sleep(1.0)
+            t=1.0+time.time()
+            while time.time() < t:
+                self.pause(t-time.time())   # time.sleep(1.0)
             self.send("FSMThread: "+str(self.count))
             self.count=self.count-1
             return self.count
