@@ -51,6 +51,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Support.Tk",
                   "Kamaelia.Device",
                   "Kamaelia.Device.DVB",
+                  "Kamaelia.Experimental",
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
