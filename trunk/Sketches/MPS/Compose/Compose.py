@@ -147,6 +147,14 @@ if __name__ == "__main__":
     Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
 
     # Why doesn't this cause endless loops of pain?
+    ## Because this doesn't work the way it looks - the data going to viewer
+    ## below and pipegen above first goes through the component *inside* the
+    ## spitter rather than through a splitter.
+    ##
+    ## This code will be re-written to use the more modern idiom of a backplane,
+    ## which opens up the possibility of editting on one machine and running on
+    ## another (very star trek :-)
+    ##
 
     Plug(pipegen, viewer).activate()
     
