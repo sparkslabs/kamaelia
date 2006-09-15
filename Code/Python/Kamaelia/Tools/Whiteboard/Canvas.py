@@ -24,7 +24,7 @@
 import Axon
 import zlib
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-from Kamaelia.Util.PygameDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 import pygame
 
 try:
