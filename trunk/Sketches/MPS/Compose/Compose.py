@@ -81,6 +81,44 @@ def getConstructorArgs(component):
     
     return {"std":arglist, "*":vargs, "**":vargkw}
     
+class Magic(Axon.Component.component):
+    "This is where the magic happens"
+    """
+        OK, basic actions needed:
+        * ADD COMPONENT
+            * *This also needs to store what the arguments were*
+                * Beyond the immediate scope of the visualiser component
+                * Implies a filter of somekind (undecorate/decorate)
+            * ADD COMPONENT
+            * FOR EACH INBOX -- NEW
+                * ADD AND LINK
+            * FOR EACH OUTBOX -- NEW
+                * ADD AND LINK
+        * DELETE COMPONENT
+            * DELETE OUTBOXES -- NEW
+            * DELETE INBOXES -- NEW
+            * DELETE COMPONENT
+        * LINK -- NEW ( NO IMPLICIT LINK ANYMORE)
+            * THIS BOX
+            * TO THIS BOX
+    """
+    Inboxes = {
+        "from_panel" : "User events from the panel",
+        "from_topology" : "User events from the topology visualiser",
+        "inbox" : "unused, default",
+        "control" : "unused, default",
+    }
+    Outboxes={
+        "to_topology" : "Messages to control the topology",
+        "signal" : "default, unused",
+        "outbox" : "default, unused",
+    }    
+
+    def main(self):
+        print "Let the magic begin!"
+        while 1:
+                self.pause()
+                yield 1
 
 
 if __name__ == "__main__":
@@ -113,44 +151,6 @@ if __name__ == "__main__":
     # Take the result from this and make it the data source for a Pluggable Splitter
     #   "pipegen"
 
-    class Magic(Axon.Component.component):
-        "This is where the magic happens"
-        """
-        OK, basic actions needed:
-            * ADD COMPONENT
-                * *This also needs to store what the arguments were*
-                    * Beyond the immediate scope of the visualiser component
-                    * Implies a filter of somekind (undecorate/decorate)
-                * ADD COMPONENT
-                * FOR EACH INBOX -- NEW
-                    * ADD AND LINK
-                * FOR EACH OUTBOX -- NEW
-                    * ADD AND LINK
-            * DELETE COMPONENT
-                * DELETE OUTBOXES -- NEW
-                * DELETE INBOXES -- NEW
-                * DELETE COMPONENT
-            * LINK -- NEW ( NO IMPLICIT LINK ANYMORE)
-                * THIS BOX
-                * TO THIS BOX
-        """
-        Inboxes = {
-           "from_panel" : "User events from the panel",
-           "from_topology" : "User events from the topology visualiser",
-           "inbox" : "unused, default",
-           "control" : "unused, default",
-        }
-        Outboxes={
-           "to_topology" : "Messages to control the topology",
-           "signal" : "default, unused",
-           "outbox" : "default, unused",
-        }    
-    
-        def main(self):
-            print "Let the magic begin!"
-            while 1:
-                 self.pause()
-                 yield 1
 
     Backplane("Display").activate()
     Pipeline(SubscribeTo("Display"),
