@@ -1,3 +1,26 @@
+#!/usr/bin/env python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: RJL
+
 import string
 
 from Axon.Component import component
@@ -30,6 +53,36 @@ class HTMLProcess(component):
             return self.stateTagNameRead
         else:
             self.temp.append(c)
+    
+    def stateCommentStartA(self, c):
+        if c == "-":
+            return self.stateCommentStartB
+        else:
+            return self.stateStart # bad HTML
+    
+    def stateCommentStartB(self, c):
+        if c == "-":
+            return self.stateInComment
+        else:
+            return self.stateStart # bad HTML
+
+    def stateCommentEndA(self, c):
+        if c == "-":
+            return self.stateCommentEndB
+        else:
+            return self.stateInComment
+            
+    def stateCommentEndB(self, c):
+        if c == " " or c == "t":
+            pass
+        elif c == ">":
+            return self.stateStart # I'm assuming you can't do <p align=<!--abc-->"test">yo</p>
+            
+    def stateInComment(self, c):
+        if c == "-":
+            return self.stateInComment
+        else:
+            return self.stateStart # ba
             
     def popTag(self):
         self.tagstack.pop(-1)
@@ -80,7 +133,7 @@ class HTMLProcess(component):
         if c == ">":
             self.popTag()
             return self.stateStart
-    
+        
     def stateAttributeNameRead(self, c):
     
         if c == "=":
@@ -122,7 +175,9 @@ class HTMLProcess(component):
             self.temp.append(c)
     
     def stateTagNameRead(self, c):
-        if (c == " " or c == "/" or c == ">") and self.temp:
+        if c == "!" and len(self.temp) == 0:
+            return self.stateCommentStartA
+        elif (c == " " or c == "/" or c == ">") and self.temp:
             tag = HTMLTag()
             tag["name"] = "".join(self.temp).lower()
             self.temp = []
