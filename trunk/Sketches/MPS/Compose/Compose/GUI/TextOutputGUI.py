@@ -68,7 +68,7 @@ class TextOutputGUI(TkWindow):
                 if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
                     self.send(msg, "signal")
                     self.window.destroy()
-                    
+
             self.tkupdate()
             yield 1
 
