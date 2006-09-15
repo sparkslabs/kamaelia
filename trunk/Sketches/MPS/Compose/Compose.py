@@ -23,6 +23,9 @@
 """
 OK, basic actions needed:
     * ADD COMPONENT
+        * *This also needs to store what the arguments were*
+            * Beyond the immediate scope of the visualiser component
+            * Implies a filter of somekind (undecorate/decorate)
         * ADD COMPONENT
         * FOR EACH INBOX -- NEW
             * ADD AND LINK
