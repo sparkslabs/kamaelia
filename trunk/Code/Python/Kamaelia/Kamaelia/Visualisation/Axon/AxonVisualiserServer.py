@@ -121,12 +121,13 @@ def AxonVisualiser( **dictArgs):
     #
     args = dict(dictArgs)
     particleTypes = { "component" : PComponent,
-                        "inbox"     : PPostbox.Inbox,
-                        "outbox"    : PPostbox.Outbox
+                      "inbox"     : PPostbox.Inbox,
+                      "outbox"    : PPostbox.Outbox
                     }
-    particleTypes.update( (args.get("particleTypes",{})) )
+#    particleTypes.update( (args.get("particleTypes",{})) )
     args["particleTypes"] = particleTypes
-    return _TopologyViewer(# laws = AxonLaws(),
+    del args["laws"]
+    return _TopologyViewer( laws = AxonLaws(),
                             simCyclesPerRedraw = 3,
                             extraDrawing = ExtraWindowFurniture(),
                             **args

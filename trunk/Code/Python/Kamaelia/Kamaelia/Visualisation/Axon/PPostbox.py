@@ -94,7 +94,8 @@ def abbreviate(string):
         if c.isupper() or c.isdigit() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
             out += c.upper()
         prev = c
-    return out
+    return string
+#    return out
 
 _COMPONENT_RADIUS = 32    
 
