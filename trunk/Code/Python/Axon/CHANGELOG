@@ -1,3 +1,25 @@
+1.5.0 -> 1.5.1
+    Minor improvements to bring threaded component capabilities closer
+    to those of ordinary components.
+
+    * Size limited inboxes now supported by threaded components
+    * Pausing now supported by threaded components
+
+
+    ThreadedComponent.py
+    * Synchronous box support: now supports making inboxes size limited
+      and delivery to a size limited inbox on another component - namely
+      the threaded component will correctly receive a NoSpaceInBox
+      exception.
+
+    * Internal queues between the inboxes/outboxes, and the thread are
+      now size limited (default size of 10). This is a dependency of the
+      synchronous box support.
+
+    * self.pause() now implemented. A threaded component will sleep until
+      an (optional) timeout expires, or a message arrives.
+
+
 1.1.2 -> 1.5.0
     Major subsystem changes aimed at performance enhancements
 
