@@ -185,42 +185,14 @@ if __name__ == "__main__":
 
     
     if 0:
+        # Code left to remove/rewrite
         pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
-                                    PipeBuild()
+                                    PipeBuild() ### This is logically replaced by "Magic"
                                 )
-                        )
-    
-        # Create the viewer, and send it's results also to a pluggable splitter "viewer"
-    
-        viewer = Splitter(BuildViewer())
-    
-        # Pipe the viewer information into pipegen. This uses a sneaky feature that allows
-        # a pluggable splitter to have 2 inputs.
-    
-        Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
-    
-        # Why doesn't this cause endless loops of pain?
-        ## Because this doesn't work the way it looks - the data going to viewer
-        ## below and pipegen above first goes through the component *inside* the
-        ## spitter rather than through a splitter.
-        ##
-        ## This code will be re-written to use the more modern idiom of a backplane,
-        ## which opens up the possibility of editting on one machine and running on
-        ## another (very star trek :-)
-        ##
-    
-        Plug(pipegen, viewer).activate()
-        
-        # Subscribe to the output from the pipegen and send it on to the pipelinewriter.
-        
-        Plug(pipegen, Pipeline(PipelineWriter(),
+                        )                
+        Plug(pipegen, Pipeline(PipelineWriter(),   ### This is logically replaced by magic.
                             TextOutputGUI("Pipeline code")
                             )
             ).activate()
-
-    try:
-        scheduler.run.runThreads()
-    except:
-        pass
 
 
