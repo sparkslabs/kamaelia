@@ -33,7 +33,7 @@ class ArgumentsPanel(Tkinter.Frame):
 
         self.theclass = theclass
         
-        pprint.pprint(theclass)
+#        pprint.pprint(theclass)
         # build widgets
         
         row=0
@@ -107,6 +107,7 @@ class ArgumentsPanel(Tkinter.Frame):
         SEQUENTIALARGS = []
         TUPLEARGS = None
         DICTARGS = None
+
         for (argname, svar, default) in self.args:
             unspecified = False
             value = None
@@ -125,7 +126,11 @@ class ArgumentsPanel(Tkinter.Frame):
                     if argname == "**":
                         DICTARGS = text
         
-        return (SEQUENTIALARGS, TUPLEARGS , DICTARGS)
+        return { "args" : SEQUENTIALARGS,
+                 "tupleargs" : TUPLEARGS ,
+                 "dictargs" : DICTARGS,
+                 "theclass" : self.theclass["theclass"], # FIXME: Is this a mistake, should we pass everything out?
+               }
 
     def getInstantiation(self):
         """Return the instantiation string"""
