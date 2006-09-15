@@ -79,7 +79,7 @@ def getModuleConstructorArgs( modulename, classnames):
                 }
 
         clist.append(entry)
-        
+
     return clist
 
     
@@ -109,7 +109,8 @@ if __name__ == "__main__":
 
     from Axon.Scheduler import scheduler
 
-    from Kamaelia.Util.Pipeline import Pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 
     from Kamaelia.Util.Splitter import PlugSplitter as Splitter
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     from BuildViewer import BuildViewer
     from GUI.BuilderControlsGUI import BuilderControlsGUI
     from GUI.TextOutputGUI import TextOutputGUI
-
+    from Kamaelia.Util.Backplane import *
 
     items = list(getAllClasses( COMPONENTS ))
 
@@ -132,38 +133,90 @@ if __name__ == "__main__":
     # Take the result from this and make it the data source for a Pluggable Splitter
     #   "pipegen"
 
-    pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
-                                 PipeBuild()
-                               )
-                      )
-
-    # Create the viewer, and send it's results also to a pluggable splitter "viewer"
-
-    viewer = Splitter(BuildViewer())
-
-    # Pipe the viewer information into pipegen. This uses a sneaky feature that allows
-    # a pluggable splitter to have 2 inputs.
-
-    Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
-
-    # Why doesn't this cause endless loops of pain?
-    ## Because this doesn't work the way it looks - the data going to viewer
-    ## below and pipegen above first goes through the component *inside* the
-    ## spitter rather than through a splitter.
-    ##
-    ## This code will be re-written to use the more modern idiom of a backplane,
-    ## which opens up the possibility of editting on one machine and running on
-    ## another (very star trek :-)
-    ##
-
-    Plug(pipegen, viewer).activate()
+    class Magic(Axon.Component.component):
+        "This is where the magic happens"
+        Inboxes = {
+           "from_panel" : "User events from the panel",
+           "from_topology" : "User events from the topology visualiser",
+           "inbox" : "unused, default",
+           "control" : "unused, default",
+        }
+        Outboxes={
+           "to_topology" : "Messages to control the topology",
+           "signal" : "default, unused",
+           "outbox" : "default, unused",
+        }    
     
-    # Subscribe to the output from the pipegen and send it on to the pipelinewriter.
+        def main(self):
+            print "Let the magic begin!"
+            while 1:
+                 self.pause()
+                 yield 1
+
+    Backplane("Display").activate()
+    Pipeline(SubscribeTo("Display"),
+             TextOutputGUI("Code")
+    ).activate()
     
-    Plug(pipegen, Pipeline(PipelineWriter(),
-                           TextOutputGUI("Pipeline code")
-                          )
-        ).activate()
+    Backplane("Panel_Events").activate()
+    Pipeline(BuilderControlsGUI(items),
+             PublishTo("Panel_Events")
+    ).activate()
+    
+    Backplane("VisualiserControl").activate()
+    Backplane("VisualiserEvents").activate()
+    Pipeline(
+        SubscribeTo("VisualiserControl"),
+        BuildViewer(),
+        PublishTo("VisualiserEvents"),
+    ).activate()
+    
+    Graphline(
+        SEMANTIC_EVENTS=SubscribeTo("Panel_Events"),
+        SELECTION_EVENTS=SubscribeTo("VisualiserEvents"),
+        TOPOLOGY_VISUALISER=PublishTo("VisualiserControl"),
+        CENTRAL_CONTROL=Magic(),
+        linkages = {
+            ("SEMANTIC_EVENTS","outbox"):("CENTRAL_CONTROL","from_panel"),
+            ("SELECTION_EVENTS","outbox"):("CENTRAL_CONTROL","from_topology"),
+            ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
+        }
+    ).run()
+
+    
+    if 0:
+        pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
+                                    PipeBuild()
+                                )
+                        )
+    
+        # Create the viewer, and send it's results also to a pluggable splitter "viewer"
+    
+        viewer = Splitter(BuildViewer())
+    
+        # Pipe the viewer information into pipegen. This uses a sneaky feature that allows
+        # a pluggable splitter to have 2 inputs.
+    
+        Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
+    
+        # Why doesn't this cause endless loops of pain?
+        ## Because this doesn't work the way it looks - the data going to viewer
+        ## below and pipegen above first goes through the component *inside* the
+        ## spitter rather than through a splitter.
+        ##
+        ## This code will be re-written to use the more modern idiom of a backplane,
+        ## which opens up the possibility of editting on one machine and running on
+        ## another (very star trek :-)
+        ##
+    
+        Plug(pipegen, viewer).activate()
+        
+        # Subscribe to the output from the pipegen and send it on to the pipelinewriter.
+        
+        Plug(pipegen, Pipeline(PipelineWriter(),
+                            TextOutputGUI("Pipeline code")
+                            )
+            ).activate()
 
     try:
         scheduler.run.runThreads()
