@@ -25,6 +25,7 @@ from Kamaelia.Support.Tk.Scrolling import ScrollingMenu
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from ArgumentsPanel import ArgumentsPanel
 import Tkinter
+import pprint
 
 class BuilderControlsGUI(TkWindow):
 
@@ -38,6 +39,7 @@ class BuilderControlsGUI(TkWindow):
         items = []
         lookup = {} # This is a bit of a nasty hack really ... :-)
                     # Why is this a hack ?
+                    # Oh it's viewed here as a hack because it's a closure
         self.window.title("Pipeline Builder")
 
         self.addframe = Tkinter.Frame(self.window, borderwidth=2, relief=Tkinter.GROOVE)
@@ -48,6 +50,9 @@ class BuilderControlsGUI(TkWindow):
 
 #        print self.classes[0]
         for theclass in self.classes:
+            print "THECLASS"
+            pprint.pprint(theclass)
+            print "SSALCEHT"
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])
 
@@ -196,7 +201,8 @@ if __name__ == "__main__":
                     "class"    : classname,
                     "classdoc" : theclass.__doc__,
                     "initdoc"  : theclass.__init__.__doc__,
-                    "args"     : getConstructorArgs(theclass)
+                    "args"     : getConstructorArgs(theclass),
+                    "theclass" : theclass,
                     }
     
             clist.append(entry)
