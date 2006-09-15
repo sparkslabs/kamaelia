@@ -11,22 +11,16 @@ from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
-from PSIPacketReconstructor import PSIPacketReconstructorService
-import dvb3.frontend
+from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITablesService
 
-from ParseSDT import ParseSDT_ActualTS
-from ParsePAT import ParsePAT
-from ParsePMT import ParsePMT
+from Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable import SDT_PID, ParseServiceDescriptionTable_ActualTS
+from Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable import PAT_PID, ParseProgramAssociationTable
+from Kamaelia.Device.DVB.Parse.ParseProgramMapTable import ParseProgramMapTable
 
-from sys import path
-path.append("..")
-from ServiceWrapper import Service, Subscribe
+from Kamaelia.Experimental.Services import RegisterService, Subscribe
 
-
-PAT_PID = 0x00
-SDT_PID = 0x11
 
 class DVB_TuneToChannel(AdaptiveCommsComponent):
     """Uses tuner services to find and start getting the audio and video pids
@@ -47,13 +41,13 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
         
         # create a PSI packet reconstructor, and wire it so it can ask
         # the demuxer for PIDs as required.
-        psi = PSIPacketReconstructorService()
-        psi_service = Service(psi,{"PSI":"request"}).activate()
+        psi = ReassemblePSITablesService()
+        psi_service = RegisterService(psi,{"PSI":"request"}).activate()
         self.link( (psi,"pid_request"), service )
         
         # stage 1, we need to get the service ID, so we'll query the SDT
-        sdt_parser = pipeline( Subscribe("PSI", [SDT_PID]),
-                               ParseSDT_ActualTS()
+        sdt_parser = Pipeline( Subscribe("PSI", [SDT_PID]),
+                               ParseServiceDescriptionTable_ActualTS()
                              ).activate()
         
         fromSDT = self.addInbox("fromSDT")
@@ -85,8 +79,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
             
         # stage 2, find out which PID contains the PMT for the service,
         # so we'll query the PAT
-        pat_parser = pipeline( Subscribe("PSI", [PAT_PID]),
-                               ParsePAT()
+        pat_parser = Pipeline( Subscribe("PSI", [PAT_PID]),
+                               ParseProgramAssociationTable()
                              ).activate()
         
         fromPAT = self.addInbox("fromPAT")
@@ -110,8 +104,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
             
         # stage 3, find out which PIDs contain AV data, so we'll query this
         # service's PMT
-        pmt_parser = pipeline( Subscribe("PSI", [PMT_PID]),
-                               ParsePMT()
+        pmt_parser = Pipeline( Subscribe("PSI", [PMT_PID]),
+                               ParseProgramMapTable()
                              ).activate()
         
         fromPMT = self.addInbox("fromPMT")
@@ -158,7 +152,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.File.Writing import SimpleFileWriter
     
-    from MakeHumanReadable import MakeSDTHumanReadable
+    import dvb3.frontend
 
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -167,17 +161,14 @@ if __name__ == "__main__":
         "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-    from Multiplex import DVB_Receiver
+    from Kamaelia.Device.DVB.Receiver import Receiver
     
-    Service( DVB_Receiver(505833330.0/1000000.0, feparams),
-             {"MUX1":"inbox"}
-           ).activate()
+    RegisterService( Receiver(505833330.0/1000000.0, feparams),
+                     {"MUX1":"inbox"}
+                   ).activate()
     
     
-    from Kamaelia.Util.Introspector import Introspector
-    from Kamaelia.Internet.TCPClient import TCPClient
-    
-    pipeline( DVB_TuneToChannel(channel="BBC ONE",fromDemuxer="MUX1"),
+    Pipeline( DVB_TuneToChannel(channel="BBC ONE",fromDemuxer="MUX1"),
               SimpleFileWriter("bbc_one.ts"),
             ).run()
 
