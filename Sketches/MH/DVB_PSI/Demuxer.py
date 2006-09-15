@@ -1,10 +1,26 @@
 #!/usr/bin/env python
-
-# automagic channel tuner
-# you set up a DVB_Multiplex component tuned to the right multiplex
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
 #
-# then create one of these, saying which channel you want and it'll try to
-# find the audio and video streams for it
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+Components providing soft demuxing
+"""
 
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
@@ -17,9 +33,9 @@ import struct
 DVB_RESYNC      = chr(0x47)
 DVB_PACKET_SIZE = 188
 
-class DVB_Demuxer(AdaptiveCommsComponent):
+class DemuxerService(AdaptiveCommsComponent):
     """\
-    This demuxer expects to recieve the output from a DVB_Multiplex
+    This demuxer expects to recieve the output from a Tuner
     component on its primary inbox. 
     
     The output here is still transport stream packets. Another layer
@@ -34,7 +50,7 @@ class DVB_Demuxer(AdaptiveCommsComponent):
     This instructs this demuxer to add/remove the specified PIDs to those being
     sent (if any) to the specified destination. 
     
-    DVB_Demuxer automatically handles wiring/unwiring from the destination.
+    DemuxerService automatically handles wiring/unwiring from the destination.
     Eg. After a REMOVE message that reduces the number of PIDs being sent to the
     destination to zero, it will be automatically unwired.
     """
@@ -253,16 +269,15 @@ if __name__=="__main__":
                     self.pause()
                 yield 1
                 
+    print "There's a delay of several seconds before you'll see any activity..."
     print "---1st subscriber:------|---2nd subscriber:------"
     
     Subscriber("MUX1", 0,  1,2,3,4,5).activate()
     Subscriber("MUX1", 25, 1,2,3,4,5).activate()
 
-    from Kamaelia.Chassis.Pipeline import pipeline
-    from sys import path
-    path.append("..")
-    from ServiceWrapper import Service
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Experimental.Services import RegisterService
     
-    pipeline( PacketSource(),
-              Service(DVB_Demuxer(),{"MUX1":"request"}),
+    Pipeline( PacketSource(),
+              RegisterService(DemuxerService(),{"MUX1":"request"}),
             ).run()
