@@ -231,6 +231,10 @@ class Magic(Axon.Component.component):
         return ( nodeid, label, inboxes, outboxes )
 
 class CodeGen(Axon.Component.component):
+    def __init__(self):
+        super(CodeGen, self).__init__()
+        self.imports = []
+
     def main(self):
         while 1:
             if self.anyReady():
@@ -238,10 +242,27 @@ class CodeGen(Axon.Component.component):
                     topology = self.recv("inbox")
                     print "_________________________ TOPOLOGY ___________________________"
                     pprint.pprint(topology)
+                    self.collateImports(topology)
+                    self.displayImports()
                     print "_________________________ YGOLOPOT ___________________________"
             else:
                 self.pause()
             yield 1
+
+    def displayImports(self):
+        pprint.pprint(self.imports)
+    def collateImports(self, topology):
+        self.imports = {}
+        for nodeid in topology["nodes"]:
+            node = topology["nodes"][nodeid]
+            if node[0] == "COMPONENT":
+                module = node[4][3]["module"]
+                name = node[4][3]["name"]
+                try:
+                    if name not in self.imports[module]:
+                        self.imports[module].append(name)
+                except KeyError:
+                    self.imports[module] = [ name ]
 
 if __name__ == "__main__":
     import sys
