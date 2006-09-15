@@ -1,4 +1,23 @@
 #!/usr/bin/env python
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
 # A program designed to record a programme, by specifying its name and channel name
 # it is on. It records any programmes it sees that match the name - so if there is,
@@ -37,17 +56,15 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Backplane import Backplane,PublishTo,SubscribeTo
 
-from PSIPacketReconstructor import PSIPacketReconstructorService
+from Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable import SDT_PID, ParseServiceDescriptionTable_ActualTS
+from Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable import PAT_PID, ParseProgramAssociationTable
+from Kamaelia.Device.DVB.Parse.ParseProgramMapTable import ParseProgramMapTable
+from Kamaelia.Device.DVB.Parse.ParseEventInformationTable import EIT_PID, ParseEventInformationTable_Subset, SimplifyEIT
 
-from ParseSDT import ParseSDT_ActualTS
-from ParsePAT import ParsePAT
-from ParsePMT import ParsePMT
-from ParseEIT import ParseEIT_Subset, FilterOutNotCurrent, SimplifyEIT, NowNextProgrammeJunctionDetect
+from Kamaelia.Device.DVB.NowNext import NowNextProgrammeJunctionDetect
+from Kamaelia.Device.DVB.PSITables import FilterOutNotCurrent
 
-from sys import path
-path.append("..")
-from ServiceWrapper import Service, Subscribe, ToService
-
+from Kamaelia.Experimental.Services import RegisterService, Subscribe, ToService
 
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Graphline import Graphline
@@ -55,7 +72,6 @@ from Kamaelia.File.Writing import SimpleFileWriter
 
 import time
 
-SDT_PID = 0x11
 
 class ChannelNameLookupService(AdaptiveCommsComponent):
     """\
@@ -252,7 +268,6 @@ class ProgrammeDetector(component):
             self.send("STOP", "outbox")
 
 
-PAT_PID = 0x00
 
 
 class ControllableRecorder(component):
@@ -304,7 +319,7 @@ class ControllableRecorder(component):
         # stage 2, find out which PID contains the PMT for the service,
         # so we'll query the PAT
         pat_parser = Pipeline( Subscribe(self.fromPSI, [PAT_PID]),
-                               ParsePAT()
+                               ParseProgramAssociationTable()
                              ).activate()
         
         fromPAT_linkage = self.link( (pat_parser,"outbox"),(self,"_fromPAT") )
@@ -329,7 +344,7 @@ class ControllableRecorder(component):
         # stage 3, find out which PIDs contain AV data, so we'll query this
         # service's PMT
         pmt_parser = Pipeline( Subscribe(self.fromPSI, [PMT_PID]),
-                               ParsePMT()
+                               ParseProgramMapTable()
                              ).activate()
         
         fromPMT_linkage = self.link( (pmt_parser,"outbox"),(self,"_fromPMT") )
@@ -385,7 +400,8 @@ class ControllableRecorder(component):
                 while self.dataReady("inbox"):
                     recording = not ( self.recv("inbox") == "STOP" )
                     
-                self.pause()
+                if recording:
+                    self.pause()
                 yield 1
                 
             self.send( ("REMOVE", [audio_pid,video_pid], (self,"_av_packets")), "_toDemuxer")
@@ -394,13 +410,13 @@ class ControllableRecorder(component):
 
 # ==============================================================================
 
-from Multiplex import DVB_Receiver
+from Kamaelia.Device.DVB.Receiver import Receiver
 
 # DVB tuner and demultiplexer as a service, so other components can wire up
 # and request transport stream packets containing the pids they need
-Service( DVB_Receiver( FREQUENCY, FE_PARAMS, 0 ),
-         {"DEMUXER":"inbox"},
-       ).activate()
+RegisterService( Receiver( FREQUENCY, FE_PARAMS, 0 ),
+                 {"DEMUXER":"inbox"},
+               ).activate()
 
 
 # ------------------------------------------------------------------------------
@@ -408,24 +424,26 @@ Service( DVB_Receiver( FREQUENCY, FE_PARAMS, 0 ),
 # of services to their audio & video pids etc. can get their tables from somewhere.
 #
 # Connects to the demuxer service, so it can request the relevant bits of data
-Service( Graphline( PSI = PSIPacketReconstructorService(),
-                    DEMUXER = ToService("DEMUXER"),
-                    linkages = {
-                        ("PSI", "pid_request") : ("DEMUXER", "inbox"),
-                        ("", "request") : ("PSI", "request"),
-                    }
-                  ),
-         {"PSI_Tables":"request"}
-       ).activate()
+
+from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITablesService
+
+RegisterService( \
+     Graphline( PSI     = ReassemblePSITablesService(),
+                DEMUXER = ToService("DEMUXER"),
+                linkages = {
+                    ("PSI", "pid_request") : ("DEMUXER", "inbox"),
+                    ("",    "request")     : ("PSI",     "request"),
+                }
+              ),
+     {"PSI_Tables":"request"}
+).activate()
 
 
 # ------------------------------------------------------------------------------
 # now and next data on a backplane
 
-EIT_PID = 0x12
-
 Pipeline( Subscribe("PSI_Tables", [EIT_PID]),
-          ParseEIT_Subset( True, False, False, False),
+          ParseEventInformationTable_Subset( True, False, False, False),
           FilterOutNotCurrent(),
           SimplifyEIT(),
           NowNextProgrammeJunctionDetect(),
@@ -438,17 +456,18 @@ Backplane("now&next").activate()
 # ------------------------------------------------------------------------------
 # A service to map textual channel names to service_id's
 
-Service( Graphline( TABLE_SOURCE = Subscribe("PSI_Tables", [SDT_PID]),
-                    PARSING = ParseSDT_ActualTS(),
-                    LOOKUP = ChannelNameLookupService(),
-                    linkages = {
-                       ("","inbox")               : ("LOOKUP", "request"),
-                       ("TABLE_SOURCE", "outbox") : ("PARSING", "inbox"),
-                       ("PARSING", "outbox")      : ("LOOKUP", "inbox"),
-                       }
-                   ),
-         {"LookupChannelName" : "inbox"}
-       ).activate()
+RegisterService( \
+    Graphline( TABLE_SOURCE = Subscribe("PSI_Tables", [SDT_PID]),
+               PARSING = ParseServiceDescriptionTable_ActualTS(),
+               LOOKUP = ChannelNameLookupService(),
+               linkages = {
+                   ("","inbox")               : ("LOOKUP", "request"),
+                   ("TABLE_SOURCE", "outbox") : ("PARSING", "inbox"),
+                   ("PARSING", "outbox")      : ("LOOKUP", "inbox"),
+               }
+             ),
+    {"LookupChannelName" : "inbox"}
+).activate()
         
 
 # ------------------------------------------------------------------------------
