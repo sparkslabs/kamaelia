@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 """\
 
-Code to parse Network Information Tables from a DVB transport stream
+Code to parse Program Map Tables from a DVB transport stream
 
 """
 
