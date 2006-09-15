@@ -171,8 +171,6 @@ Specifically this says "delete the currently selected component"
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.Stringify import Stringify
-    from Kamaelia.Util.Console import ConsoleEchoer
     import Axon
     import pprint
      
@@ -226,10 +224,12 @@ if __name__ == "__main__":
     # subset for testing
     COMPONENTS = { 'Kamaelia.File.ReadFileAdaptor': ['ReadFileAdaptor'],
                    'Kamaelia.File.Reading': ['PromptedFileReader'],
+                   'Kamaelia.Codec.Dirac': ['DiracDecoder', 'DiracEncoder'],
+                   'Kamaelia.UI.Pygame.VideoOverlay': ['VideoOverlay'],
                    'Kamaelia.File.UnixProcess': ['UnixProcess'],
                    'Kamaelia.File.Writing': ['SimpleFileWriter']
                  }
-    
+
     class PrettyPrinter(Axon.Component.component):
         def main(self):
             while 1:
@@ -243,7 +243,5 @@ if __name__ == "__main__":
     Pipeline(
        BuilderControlsGUI(items),
        PrettyPrinter()
-#       Stringify(),
-#       ConsoleEchoer()
     ).run()
 
