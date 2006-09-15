@@ -46,7 +46,7 @@ class BuilderControlsGUI(TkWindow):
         def menuCallback(index, text):
             self.click_menuChoice(lookup[text])
 
-        print self.classes[0]
+#        print self.classes[0]
         for theclass in self.classes:
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])
@@ -133,12 +133,9 @@ class BuilderControlsGUI(TkWindow):
         c["id"] = ( c['name'], repr(self.makeUID()) )
         msg = ("ADD", c['id'], c['name'], c, self.selectedComponent)
         self.send( msg, "outbox")
-        
-
     def click_removeComponent(self):
         if self.selectedComponent:
             self.send( ("DEL", self.selectedComponent), "outbox")
-
 
     def click_chooseComponent(self):
         pass
@@ -151,3 +148,102 @@ class BuilderControlsGUI(TkWindow):
         self.argPanel.update_idletasks()
         self.argCanvas.itemconfigure(self.argCanvasWID, window=self.argPanel)
         self.argCanvas['scrollregion'] = self.argCanvas.bbox("all")
+
+"""
+When the "ADD component" button is clicked, emit a message of the form:
+   * ("ADD", c['id'], c['name'], c, self.selectedComponent)
+   * Out the outbox
+
+This declares a unique component id, with a unique name, along with a definition consisting
+of:
+def getDef(self):
+        return { "name"          : self.theclass['class'],
+                 "module"        : self.theclass['module'],
+                 "instantiation" : self.getInstantiation()
+               }
+
+When the "remove component" button is clicked, emit
+   *  a ("DEL", self.selectedComponent) message
+   * out the outbox "outbox"
+
+Specifically this says "delete the currently selected component"
+"""
+
+if __name__ == "__main__":
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Stringify import Stringify
+    from Kamaelia.Util.Console import ConsoleEchoer
+    import Axon
+    import pprint
+     
+    def getAllClasses( modules ):
+        _modules = list(modules.keys())
+        _modules.sort()
+        for modname in _modules:
+            try:
+                for entry in getModuleConstructorArgs( modname, modules[modname] ):
+                    yield entry
+            except ImportError:
+                print "WARNING: Import Error: ", modname
+                continue
+    
+    def getModuleConstructorArgs( modulename, classnames):
+        clist = []
+    
+        module = __import__(modulename, [], [], classnames)
+        for classname in classnames:
+            theclass = eval("module."+classname)
+    
+            entry = { "module"   : modulename,
+                    "class"    : classname,
+                    "classdoc" : theclass.__doc__,
+                    "initdoc"  : theclass.__init__.__doc__,
+                    "args"     : getConstructorArgs(theclass)
+                    }
+    
+            clist.append(entry)
+    
+        return clist
+    
+    def getConstructorArgs(component):
+        initfunc = eval("component.__init__")
+        try:
+            (args, vargs, vargkw, defaults) = inspect.getargspec(initfunc)
+        except TypeError, e:
+            print "FAILURE", str(component), repr(component), component
+            raise e
+    
+        arglist = [ [arg] for arg in args ]
+        if defaults is not None:
+            for i in range(0,len(defaults)):
+                arglist[-1-i].append( repr(defaults[-1-i]) )
+    
+        del arglist[0]   # remove 'self'
+        
+        return {"std":arglist, "*":vargs, "**":vargkw}
+
+    import inspect
+    # subset for testing
+    COMPONENTS = { 'Kamaelia.File.ReadFileAdaptor': ['ReadFileAdaptor'],
+                   'Kamaelia.File.Reading': ['PromptedFileReader'],
+                   'Kamaelia.File.UnixProcess': ['UnixProcess'],
+                   'Kamaelia.File.Writing': ['SimpleFileWriter']
+                 }
+    
+    class PrettyPrinter(Axon.Component.component):
+        def main(self):
+            while 1:
+                while self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    print "-------------------------------------------------------------------"
+                    pprint.pprint(data)
+                yield 1
+    
+    items = list(getAllClasses( COMPONENTS ))
+    Pipeline(
+       BuilderControlsGUI(items),
+       PrettyPrinter()
+#       Stringify(),
+#       ConsoleEchoer()
+    ).run()
+
