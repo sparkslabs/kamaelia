@@ -24,6 +24,7 @@
 # simple kamaelia pipeline builder GUI
 # run this program
 
+from Kamaelia.UI.Pygame.Button import Button
 import Kamaelia.Support.Data.Repository
 import Axon
 import pprint
@@ -107,6 +108,7 @@ class Magic(Axon.Component.component):
     Inboxes = {
         "from_panel" : "User events from the panel",
         "from_topology" : "User events from the topology visualiser",
+        "makelink" : "Simple event to create links",
         "inbox" : "unused, default",
         "control" : "unused, default",
     }
@@ -116,6 +118,12 @@ class Magic(Axon.Component.component):
         "outbox" : "default, unused",
     }    
 
+    def __init__(self):
+        super(Magic,self).__init__()
+        self.topologyDB = {}
+        self.LINKMODE = False
+        self.linksource = None
+        self.linksink = None
     def main(self):
         print "Let the magic begin!"
         while 1:
@@ -124,17 +132,52 @@ class Magic(Axon.Component.component):
                 print "MESSAGE FROM PANEL"
                 pprint.pprint(event)
                 if event[0] == "ADD":
-                    self.addNode(event)
+                    nodeinfo = self.addNodeToTopology(event)
+                    self.addNodeLocalDB(event, nodeinfo)
 
             if self.dataReady("from_topology"):
                 event =  self.recv("from_topology")
                 if event[0] == "SELECT":
                     self.currentSelectedNode = event[2]
-                    print "NODE SELECTED:", self.currentSelectedNode
-                
+                    self.debug_PrintCurrentNodeDetails()
+            if self.dataReady("makelink"):
+                self.recv("makelink")
+                self.LINKMODE = True
+                self.linksource = None
+                self.linksink = None
             yield 1
 
-    def addNode(self,event):
+    def makeLink(self):
+        self.send( [ "ADD", "LINK",
+                            self.linksource,
+                            self.linksink,
+                    ], "to_topology" )
+
+    def debug_PrintCurrentNodeDetails(self):
+        print "CURRENT NODE", self.currentSelectedNode
+        if self.currentSelectedNode is None:
+            self.LINKMODE = False
+            return
+        if self.LINKMODE:
+            if self.linksource == None:
+                self.linksource = self.currentSelectedNode
+            else:
+                self.linksink = self.currentSelectedNode
+                self.makeLink()
+                self.LINKMODE = False
+        print self.topologyDB[self.currentSelectedNode]
+        
+    def addNodeLocalDB(self, event, nodeinfo):
+        ( nodeid, label, inboxes, outboxes ) = nodeinfo
+        self.topologyDB[nodeid] = ( "COMPONENT", label, inboxes, outboxes, event )
+        for inbox in inboxes:
+            ( boxid, label ) = inbox
+            self.topologyDB[boxid] = ( "INBOX", label, nodeid )
+        for outbox in outboxes:
+            ( boxid, label ) = outbox
+            self.topologyDB[boxid] = ( "OUTBOX", label, nodeid )
+
+    def addNodeToTopology(self,event):
         print "ADD NODE"
         nodeid = "ID"
         label = "LABEL"
@@ -146,6 +189,7 @@ class Magic(Axon.Component.component):
                            "component"
                    ], "to_topology" )
 
+        inboxes = []
         for inbox in event[3]["configuration"]["theclass"].Inboxes:
             boxid = str(nodeid) + "." + inbox
             self.send( [ "ADD", "NODE",
@@ -158,7 +202,9 @@ class Magic(Axon.Component.component):
                                 nodeid,
                                 boxid,
                        ], "to_topology" )
+            inboxes.append(  [ boxid, inbox]  )
 
+        outboxes = []
         for outbox in event[3]["configuration"]["theclass"].Outboxes:
             boxid = str(nodeid) + "." + outbox
             self.send( [ "ADD", "NODE",
@@ -171,6 +217,9 @@ class Magic(Axon.Component.component):
                                 nodeid,
                                 boxid,
                        ], "to_topology" )
+            outboxes.append(  [ boxid, outbox]  )
+
+        return ( nodeid, label, inboxes, outboxes )
 
 
 if __name__ == "__main__":
@@ -232,20 +281,25 @@ if __name__ == "__main__":
         text_to_token_lists(),
         PublishTo("VisualiserControl")
     ).activate()
-    
+
     Graphline(
         SEMANTIC_EVENTS=SubscribeTo("Panel_Events"),
         SELECTION_EVENTS=SubscribeTo("VisualiserEvents"),
         TOPOLOGY_VISUALISER=PublishTo("VisualiserControl"),
+        MAKELINK = Button(caption="make link",
+                          size=(63,32),
+                          position=(800, 0),
+                          msg="LINK"),
         CENTRAL_CONTROL=Magic(),
         linkages = {
             ("SEMANTIC_EVENTS","outbox"):("CENTRAL_CONTROL","from_panel"),
             ("SELECTION_EVENTS","outbox"):("CENTRAL_CONTROL","from_topology"),
+            ("MAKELINK", "outbox") : ("CENTRAL_CONTROL", "makelink"),
             ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
         }
     ).run()
 
-    
+
     if 0:
         # Code left to remove/rewrite
         pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
