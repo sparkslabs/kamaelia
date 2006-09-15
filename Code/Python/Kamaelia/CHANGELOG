@@ -1,3 +1,25 @@
+0.4.2
+
+   Kamaelia 0.4.2 adds a wider set of Digital TV (DVB-T) support - with a
+   richer and more complete set of components for demultiplexing and
+   processing metadata within the stream.
+
+   To support this, some experimental code for making public services
+   (services registered under a name with the coordinating assistant tracker)
+   easier to create and use has been implemented.
+
+   Notable New Components:
+    * DVB tuner, demuxer and receiver.
+    * DVB data table reassembler
+    * Various DVB data table parsers and pretty printers
+
+   New Examples:
+    * A channel recorder that works out itself, from the name of the channel
+      what streams of data need recording from the broadcast multiplex.
+
+    * A personal video recorder that records programmes specified by
+      programme name and channel name.
+
 0.4.0
 
    Kamaelia 0.4.0 is a consolidation, documentation and optimisation enhanced
