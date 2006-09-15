@@ -126,7 +126,7 @@ def AxonVisualiser( **dictArgs):
                     }
 #    particleTypes.update( (args.get("particleTypes",{})) )
     args["particleTypes"] = particleTypes
-    del args["laws"]
+    args.pop("laws", None)
     return _TopologyViewer( laws = AxonLaws(),
                             simCyclesPerRedraw = 3,
                             extraDrawing = ExtraWindowFurniture(),
