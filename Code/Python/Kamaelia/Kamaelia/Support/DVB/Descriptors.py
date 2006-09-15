@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -20,1426 +19,1554 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-ISO 639-2 and 639-2T language code mappings
+=================================================
+Support functions for parsing DVB data structures
+=================================================
+
+A collection of functions for parsing 'descriptor' elements of information
+tables in DVB data streams. Descriptors contain data such as channel names,
+tuning information for other multiplexes, and information about the audio/video
+streams making up a channel.
+
+
+
+Example Usage
+-------------
+
+A simple loop to parse a set of descriptors stored consecutively in a string::
+    i=0
+    while i < len(setOfDescriptors):
+        parsed, i = parseDescriptor(i, setOfDescriptors)
+        (tag, data) = parsed
+        print "Descriptor found with tag",tag
+        for (key,value) in data.items():
+            print key, "=", value
+            
+            
+
+Parsing Descriptors
+-------------------
+
+Call the parseDescriptor() function, passing it the string containing the
+descriptor and the index of the beginning of the descriptor within the string.
+
+parseDescriptor() will return the parsed descriptor::
+    (tag, data)
+        - tag = the ID of this descriptor type
+        - data = dictionary containing the parsed descriptor data:
+            { type : WhatKindOfDescriptor,
+              key  : value,
+              key2 : value2,
+              ...
+            }
+
+All parsed descriptor data will contain the 'type' key. The remaining key,value
+pairs are specific to the type of descriptor.
+
+parseDescriptor() uses helper functions to parse each particular descriptor. See
+their documentation to see what descriptors are currently supported and what
+data to expect in the dictionary.
+
+
+
+How does it Work?
+-----------------
+
+parseDescriptor() uses helper functions to parse each particular descriptor.
+parseDescriptor() extracts the 'tag' defining the descriptor type, and the
+length of the descriptor. A mapping table maps from tags to parser functions.
+
+Each parser function is of the form::
+    parse(data,i,length,end) -> dict(parsed descriptor elements)
+
+'data' is a string containing the descriptor. 'i' is the index into the string
+of the start of the descriptor. 'length' is the length of the descriptor payload
+and end' is the index of the first point after the descriptor.
+
+
+
+References
+----------
+
+For the full description of the descriptors available see the following MPEG and
+DVB standards documents:
+
+- ISO/IEC 13818-1 (aka "MPEG: Systems")
+  "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" 
+  ISO / Motion Picture Experts Grou7p
+  
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+- "Digital Terrestrial Television: Requirements for Interoperability" Issue 4.0+
+  (aka "The D book")
+  UK Digital Television Group
+
+
+
+Mappings, Tables, Values
+========================
+Various mappings, tables, values etc. used by the DVB standard.
+
+
+Service types
+-------------
+Types of services (channel) that can be found in a DVB multiplex::
+
+    "digital television service",
+    "digital radio sound service",
+    "Teletext service",
+    "NVOD reference service",
+    "NVOD time-shifted service",
+    "mosaic service",
+    "PAL coded signal",
+    "SECAM coded signal",
+    "D/D2-MAC",
+    "FM Radio",
+    "NTSC coded signal",
+    "data broadcast service",
+    "RCS Map",
+    "RCS FLS",
+    "DVB MHP service",
+
+
+
+
+Stream Component Mappings
+-------------------------
+Mappings from (stream_component, component_type) values to their actual
+meanings. Used in 'component' descriptors::
+
+    (0x01, 0x01) : ("video",                 "4:3 aspect ratio, 25 Hz"),
+    (0x01, 0x02) : ("video",                 "16:9 aspect ratio with pan vectors, 25 Hz"),
+    (0x01, 0x03) : ("video",                 "16:9 aspect ratio without pan vectors, 25 Hz"),
+    (0x01, 0x04) : ("video",                 "> 16:9 aspect ratio, 25 Hz"),
+    (0x01, 0x05) : ("video",                 "4:3 aspect ratio, 30 Hz"),
+    (0x01, 0x06) : ("video",                 "16:9 aspect ratio with pan vectors, 30 Hz"),
+    (0x01, 0x07) : ("video",                 "16:9 aspect ratio without pan vectors, 30 Hz"),
+    (0x01, 0x05) : ("video",                 "> 16:9 aspect ratio, 30 Hz"),
+    (0x01, 0x09) : ("high definition video", "4:3 aspect ratio, 25 Hz"),
+    (0x01, 0x0A) : ("high definition video", "16:9 aspect ratio with pan vectors, 25 Hz"),
+    (0x01, 0x0B) : ("high definition video", "16:9 aspect ratio without pan vectors, 25 Hz"),
+    (0x01, 0x0C) : ("high definition video", "> 16:9 aspect ratio, 25 Hz"),
+    (0x01, 0x0D) : ("high definition video", "4:3 aspect ratio, 30 Hz"),
+    (0x01, 0x0E) : ("high definition video", "16:9 aspect ratio with pan vectors, 30 Hz"),
+    (0x01, 0x0F) : ("high definition video", "16:9 aspect ratio without pan vec., 30 Hz"),
+    (0x01, 0x10) : ("high definition video", "> 16:9 aspect ratio, 30 Hz"),
+    (0x02, 0x01) : ("audio",                 "single mono channel"),
+    (0x02, 0x02) : ("audio",                 "dual mono channel"),
+    (0x02, 0x03) : ("audio",                 "stereo (2 channel)"),
+    (0x02, 0x04) : ("audio",                 "multi-lingual, multi-channel"),
+    (0x02, 0x05) : ("audio",                 "surround sound"),
+    (0x02, 0x40) : ("audio description for the visually impaired", ""),
+    (0x02, 0x41) : ("audio for the hard of hearing",               ""),
+    (0x03, 0x01) : ("EBU Teletext subtitles",  ""),
+    (0x03, 0x02) : ("associated EBU Teletext", ""),
+    (0x03, 0x03) : ("VBI data",                ""),
+    (0x03, 0x10) : ("DVB subtitles (normal)", "with no monitor aspect ratio criticality"),
+    (0x03, 0x11) : ("DVB subtitles (normal)", "for display on 4:3 aspect ratio monitor"),
+
+
+Private Data Specifiers
+-----------------------
+Specifiers defining various types of private data payload:
+    
+    0x00000001 : "SES",
+    0x00000002 : "BSkyB 1",
+    0x00000003 : "BSkyB 2",
+    0x00000004 : "BSkyB 3",
+    0x000000BE : "BetaTechnik",
+    0x00006000 : "News Datacom",
+    0x00006001 : "NDC 1",
+    0x00006002 : "NDC 2",
+    0x00006003 : "NDC 3",
+    0x00006004 : "NDC 4",
+    0x00006005 : "NDC 5",
+    0x00006006 : "NDC 6",
+    0x00362275 : "Irdeto",
+    0x004E544C : "NTL",
+    0x00532D41 : "Scientific Atlanta",
+    0x44414E59 : "News Datacom (IL) 1",
+    0x46524549 : "News Datacom (IL) 1",
+    0x53415053 : "Scientific Atlanta",
+
 """
 
-def code2names(code):
-    return mappings[code][:]
+# parsing routines for DVB PSI table descriptors
+import dvb3.frontend as dvb3f
 
-def code2name(code):
-    return mappings[code][0]
+def parseDescriptor(i,data):
+    """\
+    parseDescriptor(i, data) -> (tag, parsedData), new_i
+    
+    Parses the desciptor in the string 'data', that starts at index 'i'.
+    Returns the descriptor's tag; the parsed descriptor contents as a dict
+    and the index of the first byte after the end of the descriptor.
+    """
+    
+    # just a simple extract the tag and body of the descriptor
+    tag    = ord(data[i])
+    length = ord(data[i+1])
+    end    = i+2+length
 
-def name2code(name):
-    return reverse_mappings[name]
+    parser = __descriptor_parsers.get(tag,parser_Null_Descriptor)
+
+    output = parser(data,i,length,end)
+
+    return (tag,output), end
 
 
-mappings = {
- 'aar': ['Afar, afar'],
- 'abk': ['Abkhazian'],
- 'ace': ['Achinese'],
- 'ach': ['Acoli'],
- 'ada': ['Adangme'],
- 'ady': ['adygh\xc3\xa9'],
- 'afa': ['Afro-Asiatic (Other)', 'afro-asiatiques, autres langues'],
- 'afh': ['Afrihili', 'afrihili'],
- 'afr': ['Afrikaans', 'afrikaans'],
- 'ain': ['Ainu', 'a\xc3\xafnou'],
- 'aka': ['Akan', 'akan'],
- 'akk': ['Akkadian', 'akkadien'],
- 'alb': ['Albania', 'albanais'],
- 'ale': ['Aleut', 'al\xc3\xa9oute'],
- 'alg': ['Algonquian languages', 'algonquines, langues'],
- 'alt': ['Southern Altai', 'alta\xc3\xaf du Sud'],
- 'amh': ['Amharic', 'amharique'],
- 'ang': ['English, Old (ca.450-1100)', 'anglo-saxon (ca.450-1100)'],
- 'anp': ['Angika', 'angika'],
- 'apa': ['Apache languages', 'apache'],
- 'ara': ['Arabic', 'arabe'],
- 'arc': ['Aramaic', 'aram\xc3\xa9en'],
- 'arg': ['Aragonese', 'aragonais'],
- 'arm': ['Armenian', 'arm\xc3\xa9nien'],
- 'arn': ['Araucanian', 'araucan'],
- 'arp': ['Arapaho', 'arapaho'],
- 'art': ['Artificial (Other)', 'artificielles, autres langues'],
- 'arw': ['Arawak', 'arawak'],
- 'asm': ['Assamese', 'assamais'],
- 'ast': ['Asturian, Bable', 'asturien,  bable'],
- 'ath': ['Athapascan languages', 'athapascanes, langues'],
- 'aus': ['Australian languages', 'australiennes, langues'],
- 'ava': ['Avaric', 'avar'],
- 'ave': ['Avestan', 'avestique'],
- 'awa': ['Awadhi', 'awadhi'],
- 'aym': ['Aymara', 'aymara'],
- 'aze': ['Azerbaijani', 'az\xc3\xa9ri'],
- 'bad': ['Banda', 'banda'],
- 'bai': ['Bamileke languages', 'bamil\xc3\xa9k\xc3\xa9s, langues'],
- 'bak': ['Bashkir', 'bachkir'],
- 'bal': ['Baluchi', 'baloutchi'],
- 'bam': ['Bambara', 'bambara'],
- 'ban': ['Balinese', 'balinais'],
- 'baq': ['Basque', 'basque'],
- 'bas': ['Basa', 'basa'],
- 'bat': ['Baltic (Other)', 'baltiques, autres langues'],
- 'bej': ['Beja', 'bedja'],
- 'bel': ['Belarusian', 'bi\xc3\xa9lorusse'],
- 'bem': ['Bemba', 'bemba'],
- 'ben': ['Bengali', 'bengali'],
- 'ber': ['Berber (Other)', 'berb\xc3\xa8res, autres langues'],
- 'bho': ['Bhojpuri', 'bhojpuri'],
- 'bih': ['Bihari', 'bihari'],
- 'bik': ['Bikol', 'bikol'],
- 'bin': ['Bini', 'bini'],
- 'bis': ['Bislama', 'bichlamar'],
- 'bla': ['Siksika', 'blackfoot'],
- 'bnt': ['Bantu (Other)', 'bantoues, autres langues'],
- 'bod': ['Tibetan', 'tib\xc3\xa9tain'],
- 'bos': ['Bosnian', 'bosniaque'],
- 'bra': ['Braj', 'braj'],
- 'bre': ['Breton', 'breton'],
- 'btk': ['Batak (Indonesia)', 'batak (Indon\xc3\xa9sie)'],
- 'bua': ['Buriat', 'bouriate'],
- 'bug': ['Buginese', 'bugi'],
- 'bul': ['Bulgarian', 'bulgare'],
- 'bur': ['Burmese', 'birman'],
- 'byn': ['Blin', 'Bilin'],
- 'cad': ['Caddo', 'caddo'],
- 'cai': ['Central American Indian (Other)',
-         "indiennes d'Am\xc3\xa9rique centrale, autres langues"],
- 'car': ['Carib', 'caribe'],
- 'cat': ['Catalan', 'Valencian catalan', 'valencien'],
- 'cau': ['Caucasian (Other)', 'caucasiennes, autres langues'],
- 'ceb': ['Cebuano', 'cebuano'],
- 'cel': ['Celtic (Other)', 'celtiques, autres langues'],
- 'cha': ['Chamorro', 'chamorro'],
- 'chb': ['Chibcha', 'chibcha'],
- 'che': ['Chechen', 'tch\xc3\xa9tch\xc3\xa8ne'],
- 'chg': ['Chagatai', 'djaghata\xc3\xaf'],
- 'chi': ['Chinese', 'chinois'],
- 'chk': ['Chuukese', 'chuuk'],
- 'chm': ['Mari', 'mari'],
- 'chn': ['Chinook jargon', 'chinook, jargon'],
- 'cho': ['Choctaw', 'choctaw'],
- 'chp': ['Chipewyan', 'chipewyan'],
- 'chr': ['Cherokee', 'cherokee'],
- 'chu': ['Church Slavic',
-         'Old Slavonic',
-         'Church Slavonic',
-         'Old Bulgarian',
-         'Old Church Slavonic',
-         "slavon d'\xc3\xa9glise",
-         'vieux slave',
-         'slavon liturgique',
-         'vieux bulgare'],
- 'chv': ['Chuvash', 'tchouvache'],
- 'chy': ['Cheyenne', 'cheyenne'],
- 'cmc': ['Chamic languages', 'chames, langues'],
- 'cop': ['Coptic', 'copte'],
- 'cor': ['Cornish', 'cornique'],
- 'cos': ['Corsican', 'corse'],
- 'cpe': ['Creoles and pidgins, English based (Other)',
-         'cr\xc3\xa9oles et pidgins anglais, autres'],
- 'cpf': ['Creoles and pidgins, French-based (Other)',
-         'cr\xc3\xa9oles et pidgins fran\xc3\xa7ais, autres'],
- 'cpp': ['Creoles and pidgins, Portuguese-based (Other)',
-         'cr\xc3\xa9oles et pidgins portugais, autres'],
- 'cre': ['Cree', 'cree'],
- 'crh': ['Crimean Tatar', 'Crimean Turkish, tatar de Crim\xc3\xa9'],
- 'crp': ['Creoles and pidgins (Other)', 'cr\xc3\xa9oles et pidgins divers'],
- 'csb': ['Kashubian', 'kachoube'],
- 'cus': ["Cushitic (Other)' couchitiques, autres langues"],
- 'cym': ['Welsh', 'gallois'],
- 'cze': ['Czech', 'tch\xc3\xa8que'],
- 'dak': ['Dakota', 'dakota'],
- 'dan': ['Danish', 'danois'],
- 'dar': ['Dargwa', 'dargwa'],
- 'day': ['Dayak', 'dayak'],
- 'del': ['Delaware', 'delaware'],
- 'den': ['Slave (Athapascan)', 'esclave (athapascan)'],
- 'deu': ['German', 'allemand'],
- 'dgr': ['Dogrib', 'dogrib'],
- 'din': ['Dinka', 'dinka'],
- 'div': ['Divehi', 'Dhivehi', 'Maldivian', 'maldivien'],
- 'doi': ['Dogri', 'dogri'],
- 'dra': ['Dravidian (Other)', 'dravidiennes, autres langues'],
- 'dsb': ['Lower Sorbian', 'bas-sorabe'],
- 'dua': ['Duala', 'douala'],
- 'dum': ['Dutch, Middle (ca.1050-1350)',
-         'n\xc3\xa9erlandais moyen (ca. 1050-1350)'],
- 'dut': ['Dutch', 'Flemish', 'n\xc3\xa9erlandais', 'flamand'],
- 'dyu': ['Dyula', 'dioula'],
- 'dzo': ['Dzongkha', 'dzongkha'],
- 'efi': ['Efik', 'efik'],
- 'egy': ['Egyptian (Ancient)', '\xc3\xa9gyptien'],
- 'eka': ['Ekajuk', 'ekajuk'],
- 'ell': ['Greek, Modern (1453-)', 'grec moderne (apr\xc3\xa8s 1453)'],
- 'elx': ['Elamite', '\xc3\xa9lamite'],
- 'eng': ['English', 'anglais'],
- 'enm': ['English, Middle (1100-1500)', 'anglais moyen (1100-1500)'],
- 'epo': ['Esperanto', 'esp\xc3\xa9ranto'],
- 'est': ['Estonian', 'estonien'],
- 'eus': ['Basque', 'basque'],
- 'ewe': ['Ewe', '\xc3\xa9w\xc3\xa9'],
- 'ewo': ['Ewondo', '\xc3\xa9wondo'],
- 'fan': ['Fang', 'fang'],
- 'fao': ['Faroese', 'f\xc3\xa9ro\xc3\xafen'],
- 'fas': ['Persian', 'persan'],
- 'fat': ['Fanti', 'fanti'],
- 'fij': ['Fijian', 'fidjien'],
- 'fil': ['Filipino', 'Pilipino', 'filipino', 'pilipino'],
- 'fin': ['Finnish', 'finnois'],
- 'fiu': ['Finno-Ugrian (Other)', 'finno-ougriennes, autres langues'],
- 'fon': ['Fon', 'fon'],
- 'fra': ['French', 'fran\xc3\xa7ais'],
- 'fre': ['French', 'fran\xc3\xa7ais'],
- 'frm': ['French, Middle (ca.1400-1600)', 'fran\xc3\xa7ais moyen (1400-1600)'],
- 'fro': ['French, Old (842-ca.1400)', 'fran\xc3\xa7ais ancien (842-ca.1400)'],
- 'frr': ['Northern Frisian', 'frison septentrional'],
- 'frs': ['Eastern Frisian', 'frison oriental'],
- 'fry': ['Western Frisian', 'frison occidental'],
- 'ful': ['Fulah', 'peul'],
- 'fur': ['Friulian', 'frioulan'],
- 'gaa': ['Ga', 'ga'],
- 'gay': ['Gayo', 'gayo'],
- 'gba': ['Gbaya', 'gbaya'],
- 'gem': ['Germanic (Other)', 'germaniques, autres langues'],
- 'geo': ['Georgian', 'g\xc3\xa9orgien'],
- 'ger': ['German', 'allemand'],
- 'gez': ['Geez', 'gu\xc3\xa8ze'],
- 'gil': ['Gilbertese', 'kiribati'],
- 'gla': ['Gaelic',
-         'Scottish Gaelic',
-         'ga\xc3\xa9lique',
-         'ga\xc3\xa9lique \xc3\xa9cossais'],
- 'gle': ['Irish', 'irlandais'],
- 'glg': ['Galician', 'galicien'],
- 'glv': ['Manx', 'manx', 'mannois'],
- 'gmh': ['German, Middle High (ca.1050-1500)',
-         'allemand, moyen haut (ca. 1050-1500)'],
- 'goh': ['German, Old High (ca.750-1050)',
-         'allemand, vieux haut (ca. 750-1050)'],
- 'gon': ['Gondi', 'gond'],
- 'gor': ['Gorontalo', 'gorontalo'],
- 'got': ['Gothic', 'gothique'],
- 'grb': ['Grebo', 'grebo'],
- 'grc': ['Greek, Ancient (to 1453)', "grec ancien (jusqu'\xc3\xa0 1453)"],
- 'gre': ['Greek, Modern (1453-)', 'grec moderne (apr\xc3\xa8s 1453)'],
- 'grn': ['Guarani', 'guarani'],
- 'gsw': ['Alemanic', 'Swiss German', 'al\xc3\xa9manique'],
- 'guj': ['Gujarati', 'goudjrati'],
- 'gwi': ['Gwich\xc2\xb4in', 'gwich\xc2\xb4in'],
- 'hai': ['Haida', 'haida'],
- 'hat': ['Haitian',
-         'Haitian Creole',
-         'ha\xc3\xaftien',
-         'cr\xc3\xa9ole ha\xc3\xaftien'],
- 'hau': ['Hausa', 'haoussa'],
- 'haw': ['Hawaiian', 'hawa\xc3\xafen'],
- 'heb': ['Hebrew', 'h\xc3\xa9breu'],
- 'her': ['Herero', 'herero'],
- 'hil': ['Hiligaynon', 'hiligaynon'],
- 'him': ['Himachali', 'himachali'],
- 'hin': ['Hindi', 'hindi'],
- 'hit': ['Hittite', 'hittite'],
- 'hmn': ['Hmong', 'hmong'],
- 'hmo': ['Hiri Motu', 'hiri motu'],
- 'hrv': ['Croatian', 'croate'],
- 'hsb': ['Upper Sorbian', 'haut-sorabe'],
- 'hun': ['Hungarian', 'hongrois'],
- 'hup': ['Hupa', 'hupa'],
- 'hye': ['Armenian', 'arm\xc3\xa9nien'],
- 'iba': ['Iban', 'iban'],
- 'ibo': ['Igbo', 'igbo'],
- 'ice': ['Icelandic', 'islandais'],
- 'ido': ['Ido', 'ido'],
- 'iii': ['Sichuan Yi', 'yi de Sichuan'],
- 'ijo': ['Ijo', 'ijo'],
- 'iku': ['Inuktitut', 'inuktitut'],
- 'ile': ['Interlingue', 'interlingue'],
- 'ilo': ['Iloko', 'ilocano'],
- 'ina': ['Interlingua (International Auxiliary Language Association)',
-         'interlingua (langue auxiliaire internationale)'],
- 'inc': ['Indic (Other)', 'indo-aryennes, autres langues'],
- 'ind': ['Indonesian', 'indon\xc3\xa9sien'],
- 'ine': ['Indo-European (Other)', 'indo-europ\xc3\xa9ennes, autres langues'],
- 'inh': ['Ingush', 'ingouche'],
- 'ipk': ['Inupiaq', 'inupiaq'],
- 'ira': ['Iranian (Other)', 'iraniennes, autres langues'],
- 'iro': ['Iroquoian languages', 'iroquoises, langues (famille)'],
- 'isl': ['Icelandic', 'islandais'],
- 'ita': ['Italian', 'italien'],
- 'jav': ['Javanese', 'javanais'],
- 'jbo': ['Lojban', 'lojban'],
- 'jpn': ['Japanese', 'japonais'],
- 'jpr': ['Judeo-Persian', 'jud\xc3\xa9o-persan'],
- 'jrb': ['Judeo-Arabic', 'jud\xc3\xa9o-arabe'],
- 'kaa': ['Kara-Kalpak', 'karakalpak'],
- 'kab': ['Kabyle', 'kabyle'],
- 'kac': ['Kachin', 'kachin'],
- 'kal': ['Kalaallisut', 'Greenlandic', 'groenlandais'],
- 'kam': ['Kamba', 'kamba'],
- 'kan': ['Kannada', 'kannada'],
- 'kar': ['Karen', 'karen'],
- 'kas': ['Kashmiri', 'kashmiri'],
- 'kat': ['Georgian', 'g\xc3\xa9orgien'],
- 'kau': ['Kanuri', 'kanouri'],
- 'kaw': ['Kawi', 'kawi'],
- 'kaz': ['Kazakh', 'kazakh'],
- 'kbd': ['Kabardian', 'kabardien'],
- 'kha': ['Khasi', 'khasi'],
- 'khi': ['Khoisan (Other)', 'khoisan, autres langues'],
- 'khm': ['Khmer', 'khmer'],
- 'kho': ['Khotanese', 'khotanais'],
- 'kik': ['Kikuyu', 'Gikuyu', 'kikuyu'],
- 'kin': ['Kinyarwanda', 'rwanda'],
- 'kir': ['Kirghiz', 'kirghize'],
- 'kmb': ['Kimbundu', 'kimbundu'],
- 'kok': ['Konkani', 'konkani'],
- 'kom': ['Komi', 'kom'],
- 'kon': ['Kongo', 'kongo'],
- 'kor': ['Korean', 'cor\xc3\xa9en'],
- 'kos': ['Kosraean', 'kosrae'],
- 'kpe': ['Kpelle', 'kpell\xc3\xa9'],
- 'krc': ['Karachay-Balkar', 'karatcha\xc3\xaf balkar'],
- 'krl': ['Karelian', 'car\xc3\xa9lien'],
- 'kro': ['Kru', 'krou'],
- 'kru': ['Kurukh', 'kurukh'],
- 'kua': ['Kuanyama', 'Kwanyama', 'kuanyama', 'kwanyama'],
- 'kum': ['Kumyk', 'koumyk'],
- 'kur': ['Kurdish', 'kurde'],
- 'kut': ['Kutenai', 'kutenai'],
- 'lad': ['Ladino', 'jud\xc3\xa9o-espagnol'],
- 'lah': ['Lahnda', 'lahnda'],
- 'lam': ['Lamba', 'lamba'],
- 'lao': ['Lao', 'lao'],
- 'lat': ['Latin', 'latin'],
- 'lav': ['Latvian', 'letton'],
- 'lez': ['Lezghian', 'lezghien'],
- 'lim': ['Limburgan', 'Limburger', 'Limburgish', 'limbourgeois'],
- 'lin': ['Lingala', 'lingala'],
- 'lit': ['Lithuanian', 'lituanien'],
- 'lol': ['Mongo', 'mongo'],
- 'loz': ['Lozi', 'lozi'],
- 'ltz': ['Luxembourgish', 'Letzeburgesch', 'luxembourgeois'],
- 'lua': ['Luba-Lulua', 'luba-lulua'],
- 'lub': ['Luba-Katanga', 'luba-katanga'],
- 'lug': ['Ganda', 'ganda'],
- 'lui': ['Luiseno', 'luiseno'],
- 'lun': ['Lunda', 'lunda'],
- 'luo': ['Luo (Kenya and Tanzania)', 'luo (Kenya et Tanzanie)'],
- 'lus': ['lushai', 'Lushai'],
- 'mac': ['Macedonian', 'mac\xc3\xa9donien'],
- 'mad': ['Madurese', 'madourais'],
- 'mag': ['Magahi', 'magahi'],
- 'mah': ['Marshallese', 'marshall'],
- 'mai': ['Maithili', 'maithili'],
- 'mak': ['Makasar', 'makassar'],
- 'mal': ['Malayalam', 'malayalam'],
- 'man': ['Mandingo', 'mandingue'],
- 'mao': ['Maori', 'maori'],
- 'map': ['Austronesian (Other)',
-         'malayo-polyn\xc3\xa9siennes, autres langues'],
- 'mar': ['Marathi', 'marathe'],
- 'mas': ['Masai', 'massa\xc3\xaf'],
- 'may': ['Malay', 'malais'],
- 'mdf': ['Moksha', 'moksa'],
- 'mdr': ['Mandar', 'mandar'],
- 'men': ['Mende', 'mend\xc3\xa9'],
- 'mga': ['Irish, Middle (900-1200)', 'irlandais moyen (900-1200)'],
- 'mic': ["Mi'kmaq", 'Micmac', "mi'kmaq", 'micmac'],
- 'min': ['Minangkabau', 'minangkabau'],
- 'mis': ['Miscellaneous languages', 'diverses, langues'],
- 'mkd': ['Macedonian', 'mac\xc3\xa9donien'],
- 'mkh': ['Mon-Khmer (Other)', 'm\xc3\xb4n-khmer, autres langues'],
- 'mlg': ['Malagasy', 'malgache'],
- 'mlt': ['Maltese', 'maltais'],
- 'mnc': ['Manchu', 'mandchou'],
- 'mni': ['Manipuri', 'manipuri'],
- 'mno': ['Manobo languages', 'manobo, langues'],
- 'moh': ['Mohawk', 'mohawk'],
- 'mol': ['Moldavian', 'moldave'],
- 'mon': ['Mongolian', 'mongol'],
- 'mos': ['Mossi', 'mor\xc3\xa9'],
- 'mri': ['Maori', 'maori'],
- 'msa': ['Malay', 'malais'],
- 'mul': ['Multiple languages', 'multilingue'],
- 'mun': ['Munda languages', 'mounda, langues'],
- 'mus': ['Creek', 'muskogee'],
- 'mwl': ['Mirandese', 'mirandais'],
- 'mwr': ['Marwari', 'marvari'],
- 'mya': ['Burmese', 'birman'],
- 'myn': ['Mayan languages', 'maya, langues'],
- 'myv': ['Erzya', 'erza'],
- 'nah': ['Nahuatl', 'nahuatl'],
- 'nai': ['North American Indian',
-         "indiennes d'Am\xc3\xa9rique du Nord, autres langues"],
- 'nap': ['Neapolitan', 'napolitain'],
- 'nau': ['Nauru', 'nauruan'],
- 'nav': ['Navajo', 'Navaho', 'navaho'],
- 'nbl': ['Ndebele, South',
-         'South Ndebele',
-         'nd\xc3\xa9b\xc3\xa9l\xc3\xa9 du Sud'],
- 'nde': ['Ndebele, North',
-         'North Ndebele',
-         'nd\xc3\xa9b\xc3\xa9l\xc3\xa9 du Nord'],
- 'ndo': ['Ndonga', 'ndonga'],
- 'nds': ['Low German',
-         'Low Saxon',
-         'German, Low',
-         'Saxon, Low',
-         'bas allemand',
-         'bas saxon',
-         'allemand, bas',
-         'saxon, bas'],
- 'nep': ['Nepali', 'n\xc3\xa9palais'],
- 'new': ['Nepal Bhasa', 'Newari', 'nepal bhasa', 'newari'],
- 'nia': ['Nias', 'nias'],
- 'nic': ['Niger-Kordofanian (Other)',
-         'nig\xc3\xa9ro-congolaises, autres langues'],
- 'niu': ['Niuean', 'niu\xc3\xa9'],
- 'nld': ['Dutch', 'Flemish, n\xc3\xa9erlandais', 'flamand'],
- 'nno': ['Norwegian Nynorsk', 'norv\xc3\xa9gien nynorsk'],
- 'nob': ['Norwegian Bokm\xc3\xa5l', 'norv\xc3\xa9gien bokm\xc3\xa5l'],
- 'nog': ['Nogai', 'noga\xc3\xaf', 'nogay'],
- 'non': ['Norse, Old', 'norrois, vieux'],
- 'nor': ['Norwegian', 'norv\xc3\xa9gien'],
- 'nqo': ["N'ko", "n'ko"],
- 'nso': ['Northern Sotho',
-         'Pedi',
-         'Sepedi',
-         'sotho du Nord',
-         'pedi',
-         'sepedi'],
- 'nub': ['Nubian languages', 'nubiennes, langues'],
- 'nwc': ['Classical Newari',
-         'Old Newari',
-         'Classical Nepal Bhasa',
-         'newari classique'],
- 'nya': ['Chichewa', 'Chewa', 'Nyanja', 'chichewa', 'chewa', 'nyanja'],
- 'nym': ['Nyamwezi', 'nyamwezi'],
- 'nyn': ['Nyankole', 'nyankol\xc3\xa9'],
- 'nyo': ['Nyoro', 'nyoro'],
- 'nzi': ['Nzima', 'nzema'],
- 'oci': ['Occitan (post 1500)',
-         'Proven\xc3\xa7al',
-         'occitan (apr\xc3\xa8s 1500)',
-         'proven\xc3\xa7al'],
- 'oji': ['Ojibwa', 'ojibwa'],
- 'ori': ['Oriya', 'oriya'],
- 'orm': ['Oromo', 'galla'],
- 'osa': ['Osage', 'osage'],
- 'oss': ['Ossetian', 'Ossetic', 'oss\xc3\xa8te'],
- 'ota': ['Turkish, Ottoman (1500-1928)', 'turc ottoman (1500-1928)'],
- 'oto': ['Otomian languages', 'otomangue, langues'],
- 'paa': ['Papuan (Other)', 'papoues, autres langues'],
- 'pag': ['Pangasinan', 'pangasinan'],
- 'pal': ['Pahlavi', 'pahlavi'],
- 'pam': ['Pampanga', 'pampangan'],
- 'pan': ['Panjabi', 'Punjabi', 'pendjabi'],
- 'pap': ['Papiamento', 'papiamento'],
- 'pau': ['Palauan', 'palau'],
- 'peo': ['Persian, Old (ca.600-400 B.C.)',
-         'perse, vieux (ca. 600-400 av. J.-C.)'],
- 'per': ['Persian', 'persan'],
- 'phi': ['Philippine (Other)', 'philippines, autres langues'],
- 'phn': ['Phoenician', 'ph\xc3\xa9nicien'],
- 'pli': ['Pali', 'pali'],
- 'pol': ['Polish', 'polonais'],
- 'pon': ['Pohnpeian', 'pohnpei'],
- 'por': ['Portuguese', 'portugais'],
- 'pra': ['Prakrit languages', 'pr\xc3\xa2krit'],
- 'pro': ['Proven\xc3\xa7al, Old (to 1500)',
-         "proven\xc3\xa7al ancien (jusqu'\xc3\xa0 1500)"],
- 'pus': ['Pushto', 'pachto'],
- 'qaa-qtz': ['Reserved for local use',
-             "r\xc3\xa9serv\xc3\xa9e \xc3\xa0 l'usage local"],
- 'que': ['Quechua', 'quechua'],
- 'raj': ['Rajasthani', 'rajasthani'],
- 'rap': ['Rapanui', 'rapanui'],
- 'rar': ['Rarotongan', 'rarotonga'],
- 'roa': ['Romance (Other)', 'romanes, autres langues'],
- 'roh': ['Raeto-Romance', 'rh\xc3\xa9to-roman'],
- 'rom': ['Romany', 'tsigane'],
- 'ron': ['Romanian', 'roumain'],
- 'run': ['Rundi', 'rundi'],
- 'rup': ['Aromanian',
-         'Arumanian',
-         'Macedo-Romanian',
-         'aroumain',
-         'mac\xc3\xa9do-roumain'],
- 'rus': ['Russian', 'russe'],
- 'sad': ['Sandawe', 'sandawe'],
- 'sag': ['Sango', 'sango'],
- 'sah': ['Yakut', 'iakoute'],
- 'sai': ['South American Indian (Other)',
-         "indiennes d'Am\xc3\xa9rique du Sud, autres langues"],
- 'sal': ['Salishan languages', 'salish, langues'],
- 'sam': ['Samaritan Aramaic', 'samaritain'],
- 'san': ['Sanskrit', 'sanskrit'],
- 'sas': ['Sasak', 'sasak'],
- 'sat': ['Santali', 'santal'],
- 'scc': ['Serbian', 'serbe'],
- 'scn': ['Sicilian', 'sicilien'],
- 'sco': ['Scots', '\xc3\xa9cossais'],
- 'scr': ['Croatian', 'croate'],
- 'sel': ['Selkup', 'selkoupe'],
- 'sem': ['Semitic (Other)', 's\xc3\xa9mitiques, autres langues'],
- 'sga': ['Irish, Old (to 900)', "irlandais ancien (jusqu'\xc3\xa0 900)"],
- 'sgn': ['Sign Languages', 'langues des signes'],
- 'shn': ['Shan', 'chan'],
- 'sid': ['Sidamo', 'sidamo'],
- 'sin': ['Sinhalese', 'Sinhala', 'singhalais'],
- 'sio': ['Siouan languages', 'sioux, langues'],
- 'sit': ['Sino-Tibetan (Other)', 'sino-tib\xc3\xa9taines, autres langues'],
- 'sla': ['Slavic (Other)', 'slaves, autres langues'],
- 'slk': ['Slovak', 'slovaque'],
- 'slo': ['Slovak', 'slovaque'],
- 'slv': ['Slovenian', 'slov\xc3\xa8ne'],
- 'sma': ['Southern Sami', 'sami du Sud'],
- 'sme': ['Northern Sami', 'sami du Nord'],
- 'smi': ['Sami languages (Other)', 'sami, autres langues'],
- 'smj': ['Lule Sami', 'sami de Lule'],
- 'smn': ['Inari Sami', "sami d'Inari"],
- 'smo': ['Samoan', 'samoan'],
- 'sms': ['Skolt Sami', 'sami skolt'],
- 'sna': ['Shona', 'shona'],
- 'snd': ['Sindhi', 'sindhi'],
- 'snk': ['Soninke', 'sonink\xc3\xa9'],
- 'sog': ['Sogdian', 'sogdien'],
- 'som': ['Somali', 'somali'],
- 'son': ['Songhai', 'songhai'],
- 'sot': ['Sotho, Southern', 'sotho du Sud'],
- 'spa': ['Spanish', 'Castilian', 'espagnol', 'castillan'],
- 'sqi': ['Albanian', 'albanais'],
- 'srd': ['Sardinian', 'sarde'],
- 'srn': ['Sranan Togo', 'sranan togo'],
- 'srp': ['Serbian', 'serbe'],
- 'srr': ['Serer', 's\xc3\xa9r\xc3\xa8re'],
- 'ssa': ['Nilo-Saharan (Other)', 'nilo-sahariennes, autres langues'],
- 'ssw': ['Swati', 'swati'],
- 'suk': ['Sukuma', 'sukuma'],
- 'sun': ['Sundanese', 'soundanais'],
- 'sus': ['Susu', 'soussou'],
- 'sux': ['Sumerian', 'sum\xc3\xa9rien'],
- 'swa': ['Swahili', 'swahili'],
- 'swe': ['Swedish', 'su\xc3\xa9dois'],
- 'syr': ['Syriac', 'syriaque'],
- 'tah': ['Tahitian', 'tahitien'],
- 'tai': ['Tai (Other)', 'tha\xc3\xafes, autres langues'],
- 'tam': ['Tamil', 'tamoul'],
- 'tat': ['Tatar', 'tatar'],
- 'tel': ['Telugu', 't\xc3\xa9lougou'],
- 'tem': ['Timne', 'temne'],
- 'ter': ['Tereno', 'tereno'],
- 'tet': ['Tetum', 'tetum'],
- 'tgk': ['Tajik', 'tadjik'],
- 'tgl': ['Tagalog', 'tagalog'],
- 'tha': ['Thai', 'tha\xc3\xaf'],
- 'tib': ['Tibetan', 'tib\xc3\xa9tain'],
- 'tig': ['Tigre', 'tigr\xc3\xa9'],
- 'tir': ['Tigrinya', 'tigrigna'],
- 'tiv': ['Tiv', 'tiv'],
- 'tkl': ['Tokelau', 'tokelau'],
- 'tlh': ['Klingon', 'tlhIngan-Hol', 'klingon'],
- 'tli': ['Tlingit', 'tlingit'],
- 'tmh': ['Tamashek', 'tamacheq'],
- 'tog': ['Tonga (Nyasa)', 'tonga (Nyasa)'],
- 'ton': ['Tonga (Tonga Islands)', 'tongan (\xc3\x8eles Tonga)'],
- 'tpi': ['Tok Pisin', 'tok pisin'],
- 'tsi': ['Tsimshian', 'tsimshian'],
- 'tsn': ['Tswana', 'tswana'],
- 'tso': ['Tsonga', 'tsonga'],
- 'tuk': ['Turkmen', 'turkm\xc3\xa8ne'],
- 'tum': ['Tumbuka', 'tumbuka'],
- 'tup': ['Tupi languages', 'tupi, langues'],
- 'tur': ['Turkish', 'turc'],
- 'tut': ['Altaic (Other)', 'alta\xc3\xafques, autres langues'],
- 'tvl': ['Tuvalu', 'tuvalu'],
- 'twi': ['Twi', 'twi'],
- 'tyv': ['Tuvinian', 'touva'],
- 'udm': ['Udmurt', 'oudmourte'],
- 'uga': ['Ugaritic', 'ougaritique'],
- 'uig': ['Uighur', 'Uyghur', 'ou\xc3\xafgour'],
- 'ukr': ['Ukrainian', 'ukrainien'],
- 'umb': ['Umbundu', 'umbundu'],
- 'und': ['Undetermined', 'ind\xc3\xa9termin\xc3\xa9e'],
- 'urd': ['Urdu', 'ourdou'],
- 'uzb': ['Uzbek', 'ouszbek'],
- 'vai': ['Vai', 'va\xc3\xaf'],
- 'ven': ['Venda', 'venda'],
- 'vie': ['Vietnamese', 'vietnamien'],
- 'vol': ['Volap\xc3\xbck', 'volap\xc3\xbck'],
- 'vot': ['Votic', 'vote'],
- 'wak': ['Wakashan languages', 'wakashennes, langues'],
- 'wal': ['Walamo', 'walamo'],
- 'war': ['Waray', 'waray'],
- 'was': ['Washo', 'washo'],
- 'wel': ['Welsh', 'gallois'],
- 'wen': ['Sorbian languages', 'sorabes, langues'],
- 'wln': ['Walloon', 'wallon'],
- 'wol': ['Wolof', 'wolof'],
- 'xal': ['Kalmyk', 'Oirat', 'kalmouk', 'o\xc3\xafrat'],
- 'xho': ['Xhosa', 'xhosa'],
- 'yao': ['Yao', 'yao'],
- 'yap': ['Yapese', 'yapois'],
- 'yid': ['Yiddish', 'yiddish'],
- 'yor': ['Yoruba', 'yoruba'],
- 'ypk': ['Yupik languages', 'yupik, langues'],
- 'zap': ['Zapotec', 'zapot\xc3\xa8que'],
- 'zen': ['Zenaga', 'zenaga'],
- 'zha': ['Zhuang', 'Chuang', 'zhuang', 'chuang'],
- 'zho': ['Chinese, chinois'],
- 'znd': ['Zande', 'zand\xc3\xa9'],
- 'zul': ['Zulu', 'zoulou'],
- 'zun': ['Zuni', 'zuni'],
- 'zxx': ['No linguistic content', 'pas de contenu linguistique']
+# ==============================================================================
+# now parsers for all descriptor types
+# ==============================================================================
+
+# template for a null parser - used when we don't recognise/support the
+# descriptor type we find.
+
+def parser_Null_Descriptor(data,i,length,end):
+    """\
+    parser_NullDescriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "UNKNOWN", "contents" : unparsed_descriptor_contents }
+    """
+    return { "type" : "UNKNOWN", "contents" : data[i+2:end] }
+
+
+# ------------------------------------------------------------------------------
+# ISO 13818-1 defined descriptors
+# ------------------------------------------------------------------------------
+
+def parser_video_stream_Descriptor(data,i,length,end):
+    """\
+    parser_video_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "video_stream", "contents" : unparsed_descriptor_contents }
+       
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "video_stream", "contents" : data[i+2:end] }
+
+
+def parser_audio_stream_Descriptor(data,i,length,end):
+    """\
+    parser_audio_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "audio_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "audio_stream", "contents" : data[i+2:end] }
+
+
+def parser_hierarchy_Descriptor(data,i,length,end):
+    """\
+    parser_hierarchy_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "hierarchy", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "hierarchy", "contents" : data[i+2:end] }
+
+
+def parser_registration_Descriptor(data,i,length,end):
+    """\
+    parser_registration_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "registration", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "registration", "contents" : data[i+2:end] }
+
+
+def parser_data_stream_alignment_Descriptor(data,i,length,end):
+    """\
+    parser_data_stream_alignment_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "data_stream_alignment", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "data_stream_alignment", "contents" : data[i+2:end] }
+
+
+def parser_target_background_grid_Descriptor(data,i,length,end):
+    """\
+    parser_background_grid_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "background_grid", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "background_grid", "contents" : data[i+2:end] }
+
+
+def parser_video_window_Descriptor(data,i,length,end):
+    """\
+    parser_video_window_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "video_window", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "video_window", "contents" : data[i+2:end] }
+
+
+def parser_CA_Descriptor(data,i,length,end):
+    """\
+    parser_CA_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that describes the conditional access mechanism being
+    used to encrypt a given stream (identified by its PID).
+    
+    The dict returned is:
+       { "type"    : "CA",
+         "CA_system_id" : 16 bit unsigned integer identifying for the type of CA system,
+         "pid"          : the integer identifier of the stream,
+         "private_data" : string containing data specific to the CA system
+       }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    d = { "type"         : "CA",
+          "CA_system_id" : (ord(data[i+2])<<8) + ord(data[i+3]),
+          "pid"          : ((ord(data[i+4])<<8) + ord(data[i+5])) & 0x1fff,
+          "private_data" : data[i+6:end]
+        }
+    return d
+
+def parser_ISO_639_Descriptor(data,i,length,end):
+    """\
+    parser_ISO_639_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that describes the one or more language(s) used, and
+    their suitability for those with hearing impairments, in an audio stream.
+    
+    The language types come from the ISO 639-2 standard. There may bemore than
+    one language and impairment suitability entry.
+    
+    The dict returned is:
+       { "type"    : "ISO_639",
+         "entries" :
+             list( { "language_code" : ISO 639 defined 3-letter language code
+                     "audio_type"    : "" or "CLEAN" or "HEARING IMPAIRED" or "VISUAL IMPAIRED COMMENTARY"
+                 } )
+       }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    parts = []
+    j=i+2
+    while j<end:
+        parts.append( { "language_code" : data[j:j+3],
+                        "audio_type"    : _iso639_audiotypes.get(ord(data[j+3]), ord(data[j+3]))
+                      } )
+        j += 4
+    d = { "type" : "ISO_639",
+          "entries" : parts,
+        }
+    return d
+
+def parser_system_clock_Descriptor(data,i,length,end):
+    """\
+    parser_system_clock_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "system_clock", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "system_clock", "contents" : data[i+2:end] }
+
+
+def parser_multiplex_buffer_utilisation_Descriptor(data,i,length,end):
+    """\
+    parser_multiplex_buffer_utilisation_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multiplex_buffer_utilisation", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "multiplex_buffer_utilisation", "contents" : data[i+2:end] }
+
+
+def parser_copyright_Descriptor(data,i,length,end):
+    """\
+    parser_copyright_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "copyright", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "copyright", "contents" : data[i+2:end] }
+
+
+def parser_maximum_bitrate_Descriptor(data,i,length,end):
+    """\
+    parser_maximum_bitrate_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "maximum_bitrate", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "maximum_bitrate", "contents" : data[i+2:end] }
+
+
+def parser_private_data_indicator_Descriptor(data,i,length,end):
+    """\
+    parser_private_data_indicator_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "private_data_indicator", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "private_data_indicator", "contents" : data[i+2:end] }
+
+
+def parser_smoothing_buffer_Descriptor(data,i,length,end):
+    """\
+    parser_smoothing_buffer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "smoothing_buffer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "smoothing_buffer", "contents" : data[i+2:end] }
+
+
+def parser_STD_Descriptor(data,i,length,end):
+    """\
+    parser_STD_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "STD", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "STD", "contents" : data[i+2:end] }
+
+
+def parser_IBP_Descriptor(data,i,length,end):
+    """\
+    parser_IBP_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "IBP", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ISO 13818-1 specification)
+    """
+    return { "type" : "IBP", "contents" : data[i+2:end] }
+
+
+
+# ------------------------------------------------------------------------------
+# ETSI EN 300 468 defined descriptors
+# ------------------------------------------------------------------------------
+
+def parser_network_name_Descriptor(data,i,length,end):
+    """\
+    parser_network_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the name of the 'network' of which the
+    multiplex is a part. In the United Kingdom for the Freeview Terrestrial
+    Service, this is usually the name of the transmitter, eg. "Crystal Palace".
+    
+    The dict returned is:
+       { "type"    : "network_name",
+         "network_name" : string name of the network,
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "network_name",
+          "network_name" : data[i+2:end]
+        }
+    return d
+
+def parser_service_list_Descriptor(data,i,length,end):
+    """\
+    parser_service_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the list of services (channels) available in
+    a given multiplex. Each service is listed by type and SID (service id).
+    
+    The dict returned is:
+       { "type"     : "service_list",
+         "services" :
+             list( { "service_id"   : identifier value for this service
+                     "service_type" : the type of service (see table below)
+                 } )
+       }
+       
+    Example service types include:
+    
+    - "digital television service",
+    - "digital radio sound service",
+    - "data broadcast service",
+
+    See "Service types" for the full list of service type values.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "service_list",
+          "services" : []
+        }
+    i=i+2
+    while i<end:
+        sid = (ord(data[i])<<8) + ord(data[i+1])
+        sit = _service_types.get(ord(data[i+2]), ord(data[i+2])),
+        d['services'].append( {"service_id":sid, "service_type":sit } )
+        i=i+3
+    return d
+
+def parser_stuffing_Descriptor(data,i,length,end):
+    """\
+    parser_stuffing_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor serves as padding. It carries no data.
+       { "type": "stuffing" }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "stuffing" }
+
+
+def parser_satellite_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_satellite_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "satellite_delivery_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "satellite_delivery_system", "contents" : data[i+2:end] }
+
+
+def parser_cable_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_cable_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cable_delivery_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "satellite_delivery_system", "contents" : data[i+2:end] }
+
+
+def parser_VBI_data_Descriptor(data,i,length,end):
+    """\
+    parser_VBI_data_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "VBI_data", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "VBI_data", "contents" : data[i+2:end] }
+
+
+def parser_VBI_teletext_Descriptor(data,i,length,end):
+    """\
+    parser_VBI_teletext_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "VBI_teletext", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "VBI_teletext", "contents" : data[i+2:end] }
+
+
+def parser_bouquet_name_Descriptor(data,i,length,end):
+    """\
+    parser_bouquet_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "bouquet_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "bouquet_name", "contents" : data[i+2:end] }
+
+
+def parser_service_Descriptor(data,i,length,end):
+    """\
+    parser_service_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the name, provider and type of a service
+    (channel).
+    
+    The dict returned is:
+       { "type"                  : "service",
+         "service_type"          : the type of service (see table below)
+         "service_name"          : name of this channel (eg. "BBC ONE")
+         "service_provider_name" : string name of who is providing this channel
+       }
+       
+    Example service types include:
+    
+    - "digital television service",
+    - "digital radio sound service",
+    - "data broadcast service",
+
+    See "Service types" for the full list of service type values.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "service",
+          "service_type" : _service_types.get(ord(data[i+2]), ord(data[i+2])),
+        }
+    length = ord(data[i+3])
+    j = i+4+length
+    d['service_provider_name'] = data[i+4:j]
+    length = ord(data[j])
+    d['service_name'] = data[j+1:j+1+length]
+    return d
+
+
+def parser_country_availability_Descriptor(data,i,length,end):
+    """\
+    parser_country_availability_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "country_availability", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "country_availability", "contents" : data[i+2:end] }
+
+
+def parser_linkage_Descriptor(data,i,length,end):
+    """\
+    parser_linkage_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "linkage", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "linkage", "contents" : data[i+2:end] }
+
+
+def parser_NVOD_reference_Descriptor(data,i,length,end):
+    """\
+    parser_NVOD_reference_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "NVOD_reference", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "NVOD_reference", "contents" : data[i+2:end] }
+
+
+def parser_time_shifted_service_Descriptor(data,i,length,end):
+    """\
+    parser_time_shifted_service_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "time_shifted_service", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "time_shifted_service", "contents" : data[i+2:end] }
+
+
+def parser_short_event_Descriptor(data,i,length,end):
+    """\
+    parser_short_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing a short event - usually a programme. It gives
+    a name, longer description, and the language it is in. This is usually part
+    of schedule or now & next information.
+    
+    The dict returned is:
+       { "type"          : "short_event",
+         "language_code" : The language of this programme (ISO 639-2 3 letter language code)
+         "name"          : String name of the event (programme)
+         "text"          : Up to 255 character string description
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type"          : "short_event",
+          "language_code" : data[i+2:i+5],
+        }
+    name_length = ord(data[i+5])
+    i = i+6
+    d['name'] = data[i:i+name_length]
+    text_length = ord(data[i+name_length])
+    i = i+name_length+1
+    d['text'] = data[i:i+text_length]
+    return d
+
+def parser_extended_event_Descriptor(data,i,length,end):
+    """\
+    parser_extended_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "extended_event", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "extended_event", "contents" : data[i+2:end] }
+
+
+def parser_time_shifted_event_Descriptor(data,i,length,end):
+    """\
+    parser_time_shifted_event_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "time_shifted_event", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "time_shifted_event", "contents" : data[i+2:end] }
+
+
+def parser_component_Descriptor(data,i,length,end):
+    """\
+    parser_component_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing technical details of an audio or visual
+    component of a service (channel) such as the aspect ratio of video, or the
+    number and configuration of audio channels.
+    
+    The dict returned is:
+       { "type"           : "component",
+         "component_tag"  : uniquely identifies this component within the service (channel) - maps to stream identifier descriptors (see parser_stream_identifier_Descriptor)
+         "stream_content" : number identifying whether the stream is audio, video, subtitles, etc
+         "component_type" : number identifying technical details of that stream type
+         "content,type"   : (content,type) textual equivalents of stream_contentand component_type (see below)
+         "language_code"  : The language of this component (ISO 639-2 3 letter language code)
+         "text"           : A textual description of this component
+       }
+       
+    Example component (content,type) descriptions include:
+    
+    - ("video",                  "4:3 aspec ratio, 25 Hz")
+    - ("high definition video",  "16:9 aspect ratio with pan vectors, 25 Hz")
+    - ("audio",                  "stereo (2 channel)")
+    - ("DVB subtitles (normal)", "with no monitor aspect ratio criticality")
+        
+    See "Stream Component Mappings" for a full list and the numeric stream_component
+    and component_type values that map to them.
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    e = [ord(data[i+2]), ord(data[i+3]), ord(data[i+4])]
+    e[0]=e[0] & 0x0f
+    sctype = _stream_component_mappings.get((e[0],e[1]), (e[0],e[1]))
+    d = { "type" : "component",
+          "stream_content" : e[0],
+          "component_type" : e[1],
+          "component_tag"  : e[2],
+          "content,type"   : sctype,
+          "language_code"  : data[i+5:i+8],
+          "text"           : data[i+8:end],
+        }
+    return d
+    
+    
+def parser_mosaic_Descriptor(data,i,length,end):
+    """\
+    parser_mosaic_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "mosaic", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "mosaic", "contents" : data[i+2:end] }
+
+
+def parser_stream_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_stream_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor identifying a component of a stream in a service
+    (channel). A set of these forms a list of the 'tag's that identifies the
+    set of components making up a stream.
+    
+    Used in the Programme Map Table (PMT) 
+    
+    The dict returned is:
+       { "type"          : "stream_identifier",
+         "component_tag" : tag uniquely identifying this component within the service - maps to component descriptors found in schedule and now&next data (EIT table)
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type"         : "stream_identifier",
+          "component_tag" : ord(data[i+2]),
+        }
+    return d
+
+def parser_CA_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_CA_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "CA_identifier", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "CA_identifier", "contents" : data[i+2:end] }
+
+
+def parser_content_Descriptor(data,i,length,end):
+    """\
+    parser_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "content", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "content", "contents" : data[i+2:end] }
+
+
+def parser_parental_rating_Descriptor(data,i,length,end):
+    """\
+    parser_parental_rating_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "parental_rating", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "parental_rating", "contents" : data[i+2:end] }
+
+
+def parser_teletext_Descriptor(data,i,length,end):
+    """\
+    parser_teletext_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "teletext", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "teletext", "contents" : data[i+2:end] }
+
+
+def parser_telephone_Descriptor(data,i,length,end):
+    """\
+    parser_telephone_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "telephone", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "telephone", "contents" : data[i+2:end] }
+
+
+def parser_local_time_offset_Descriptor(data,i,length,end):
+    """\
+    parser_local_time_offset_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "local_time_offset", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "local_time_offset", "contents" : data[i+2:end] }
+
+
+def parser_subtitling_Descriptor(data,i,length,end):
+    """\
+    parser_subtitling_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor describing a subtitling service. It describes the
+    language of the subtitles, and the type of subtitle data (DVB supports
+    multiple types).
+    
+    The dict returned is:
+       { "type"                : "subtitling",
+         "language_code"       : language it is in (3 letter ISO 639-2 language code)
+         "subtitling_type"     : (content,type) textual equivalents of stream_contentand component_type (see below)
+         "composition_page_id" : signalling for DVB subtitles (specific to subtitling implementation)
+         "ancilliary_page_id"  : signalling for DVB subtitles (specific to subtitling implementation)
+       }
+    
+    See all 0x03 (subtitling) sections of "Stream Component Mappings"
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    parts = []
+    j=i+2
+    while j<end:
+        stype = _stream_component_mappings.get((0x03,ord(data[j+3])), (ord(data[j+3]),""))
+        parts.append( { "language_code"       : data[j:j+3],
+                        "subtitling_type"     : stype,
+                        "composition_page_id" : (ord(data[j+4])<<8) + ord(data[j+5]),
+                        "ancilliary_page_id"  : (ord(data[j+6])<<8) + ord(data[j+7]),
+                      } )
+        j += 8
+    d = { "type" : "subtitling",
+          "entries" : parts,
+        }
+    return d
+
+def parser_terrestrial_delivery_system_Descriptor(data,i,length,end):
+    """\
+    parser_terrestrial_delivery_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing the parameteres needed to tune to a DVB
+    Digital Terrestrial Television (DVB-T) multiplex. Parameters are all encoded
+    using the constants defined in the dvb3 python bindings library - thereby
+    making easy to directly pass them to the frontend tuning function calls.
+    
+    Used in the Network Information Table (NIT)
+    
+    The dict returned is:
+       { "type"          : "terrestrial_delivery_system",
+         "params"        : Tuning parameters (see below)
+         "other_frequencies" : True if one or more other frequencies are being used
+      }
+      
+    Tuning parameters are a dict:
+      {
+         "frequency"     : Frequency in Hz,
+         "bandwidth"     : dvb3.frontend.BANDWIDTH_?_MHZ where ? is 6, 7 or 8
+         "constellation" : dvb3.frontend.QPSK, QAM_16 or QAM_64
+         "hierarchy_information" : dvb3.frontend.HIERARCHY_? where ? is NONE, 1, 2 or 4
+         "code_rate_HP" : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "code_rate_LP" : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "guard_interval" : dvb3.frontend.GUARD_INTERVAL_1_? where ? is 32, 16, 8 or 4
+         "transmission_mode" : dvb3.frontend.TRANSMISSION_MODE_?K where ? is 2 or 8
+         "inversion"         : dvb3.frontend.INVERSION_AUTO
+       }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "terrestrial_delivery_system",
+        }
+    e = [ord(data[x]) for x in range(i+2,i+9)]
+    params = {}
+    params['frequency'] = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
+    v = e[4] >> 5
+    params['bandwidth'] = _dvbt_bandwidths.get(v,v)
+    v = e[5] >> 6
+    params['constellation'] = _dvbt_constellations.get(v,v)
+    v = (e[5] >> 3) & 0x07
+    params['hierarchy_information'] = _dvbt_hierarchy.get(v,v)
+    v = e[5] & 0x07
+    params['code_rate_HP'] = _dvbt_code_rate_hp.get(v,v)
+    v = e[6] >> 5
+    params['code_rate_LP'] = _dvbt_code_rate_lp.get(v,v)
+    v = (e[6] >> 3) & 0x03
+    params['guard_interval'] = _dvbt_guard_interval.get(v,v)
+    v = (e[6] >> 1) & 0x03
+    params['transmission_mode'] = _dvbt_transmission_mode.get(v,v)
+    
+    # other desirable params
+    params['inversion'] = dvb3f.INVERSION_AUTO
+    
+    d['params'] = params
+    d['other_frequencies'] = e[6] & 0x01
+    
+    return d
+
+def parser_multilingual_network_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_network_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_network_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_network_name", "contents" : data[i+2:end] }
+
+
+def parser_multilingual_bouquet_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_bouquet_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_bouquet_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_bouquet_name", "contents" : data[i+2:end] }
+
+
+
+def parser_multilingual_service_name_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_service_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_service_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_service_name", "contents" : data[i+2:end] }
+
+def parser_multilingual_component_Descriptor(data,i,length,end):
+    """\
+    parser_multilingual_component_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "multilingual_component", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "multilingual_component", "contents" : data[i+2:end] }
+
+def parser_private_data_specifier_Descriptor(data,i,length,end):
+    """\
+    parser_private_data_specifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor specifying the type of some 'private data' - that is
+    data outside of the core specifications.
+    
+    The dict returned is:
+       { "type"          : "private_data_specifier",
+         "private_data_specifier" : String description, or numeric type if unrecognised.
+       }
+    
+    See "Private Data Specifiers".
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    n = (ord(data[i+2])<<24) + (ord(data[i+3])<<16) + (ord(data[i+4])<<8) + ord(data[i+5])
+    d = { "type" : "private_data_specifier",
+          "private_data_specifier" : _private_data_specifiers.get(n,n),
+        }
+    return d
+    
+
+def parser_service_move_Descriptor(data,i,length,end):
+    """\
+    parser_service_move_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "service_move", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "service_move", "contents" : data[i+2:end] }
+
+def parser_short_smoothing_buffer_Descriptor(data,i,length,end):
+    """\
+    parser_short_smoothing_buffer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "short_smoothing_buffer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "short_smoothing_buffer", "contents" : data[i+2:end] }
+
+def parser_frequency_list_Descriptor(data,i,length,end):
+    """\
+    parser_frequency_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing a list of alternative frequences on which
+    the multiplex may be carried.
+    
+    The dict returned is:
+       { "type"       : "frequency_list",
+         "frequences" : list(frequency in Hz)
+       }
+    
+    See "Private Data Specifiers".
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    d = { "type" : "frequency_list",
+          "frequencies" : [],
+        }
+    coding_type = ord(data[i+2]) & 0x03
+    i=i+3
+    while i<end:
+        e = [ord(data[x]) for x in range(i,i+4)]
+        freq = None
+        if   coding_type==1:  # satellite
+            freq = 10000000000*unBCD(e[0]) + \
+                     100000000*unBCD(e[1]) + \
+                       1000000*unBCD(e[2]) + \
+                         10000*unBCD(e[3])
+        elif coding_type==2:  # cable
+            freq = 100000000*unBCD(e[0]) + \
+                     1000000*unBCD(e[1]) + \
+                       10000*unBCD(e[2]) + \
+                         100*unBCD(e[3])
+        elif coding_type==3:  # terrestrial
+            freq = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
+        else:
+            pass        # just ignore the value cos we don't know what to do with it
+        if freq:
+            d['frequencies'].append(freq)
+        i=i+4
+    return d
+
+
+def parser_partial_transport_stream_Descriptor(data,i,length,end):
+    """\
+    parser_partial_transport_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "partial_transport_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "partial_transport_stream", "contents" : data[i+2:end] }
+
+def parser_data_broadcast_Descriptor(data,i,length,end):
+    """\
+    parser_data_broadcast_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "data_broadcast", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "data_broadcast", "contents" : data[i+2:end] }
+
+def parser_CA_system_Descriptor(data,i,length,end):
+    """\
+    parser_CA_system_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "CA_system", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "CA_system", "contents" : data[i+2:end] }
+
+def parser_data_broadcast_id_Descriptor(data,i,length,end):
+    """\
+    parser_data_broadcast_id_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor containing a list of alternative frequences on which
+    the multiplex may be carried.
+    
+    The dict returned is:
+       { "type"      : "data_broadcast_id",
+         "id"        : numeric identifier for the way in which the data is being broadcast
+         "selectors" : string data specific to the data broadcast type
+       }
+    
+    The id specifies the kind of data broadcast. For example, 0x106 has been 
+    registered by TDN for use in the United Kingdom Digital Terrestrial network
+    for 'interactive' applications.
+    
+    The selectors are data specific to the particular kind of data broadcast,
+    generally used to specify an 'interactive app' to be loaded when the channel
+    or data broadcast is tuned to by the user.
+    
+    (Defined in ETSI EN 300 468 specification and "The D book")
+    """
+    d = { "type"      : "data_broadcast_id",
+          "id"        : (ord(data[i+2])<<8) + ord(data[i+3]),
+          "selectors" : data[i+4:end],
+        }
+    return d
+
+
+def parser_transport_stream_Descriptor(data,i,length,end):
+    """\
+    parser_transport_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "transport_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "transport_stream", "contents" : data[i+2:end] }
+
+def parser_DSNG_Descriptor(data,i,length,end):
+    """\
+    parser_DSNG_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "DSNG", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "DSNG", "contents" : data[i+2:end] }
+
+def parser_PDC_Descriptor(data,i,length,end):
+    """\
+    parser_PDC_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "PDC", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "PDC", "contents" : data[i+2:end] }
+
+def parser_AC3_Descriptor(data,i,length,end):
+    """\
+    parser_AC3_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "AC3", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "AC3", "contents" : data[i+2:end] }
+
+def parser_ancillary_data_Descriptor(data,i,length,end):
+    """\
+    parser_ancillary_data_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "ancillary_data", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "ancillary_data", "contents" : data[i+2:end] }
+
+def parser_cell_list_Descriptor(data,i,length,end):
+    """\
+    parser_cell_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cell_list", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "cell_list", "contents" : data[i+2:end] }
+
+def parser_cell_frequency_link_Descriptor(data,i,length,end):
+    """\
+    parser_cell_frequency_link_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "cell_frequency_link", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "cell_frequency_link", "contents" : data[i+2:end] }
+
+def parser_announcement_support_Descriptor(data,i,length,end):
+    """\
+    parser_announcement_support_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "announcement_support", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "announcement_support", "contents" : data[i+2:end] }
+
+# ------------------------------------------------------------------------------
+# "Digital Terrestrial Television: Requirements for Interoperability V4.0"
+# UK Digital Television Group (www.dtg.org.uk) document descriptors
+# aka "The D book"
+# ------------------------------------------------------------------------------
+
+
+def parser_logical_channel_Descriptor(data,i,length,end):
+    """\
+    parser_logical_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that assigns "channel numbers" (for viewers to see) to
+    services (channels).
+    
+    The dict returned is:
+       { "type"      : "logical_channel",
+         "mappings"  : dict of service_id to channel_number mappings
+       }
+       
+    For example, in the United Kingdom, the channel BBC ONE, when broadcast from
+    the Crystal Palace transmitter, has service_id 4164, but for viewers appears
+    as logical channel number 1.
+    
+    (Defined in "The D book")
+    """
+    d = { "type" : "logical_channel",
+        }
+    i=i+2
+    services = {}
+    while i < end:
+        service_id = (ord(data[i])<<8) + ord(data[i+1])
+        logical_channel_number = ((ord(data[i+2])<<8) + ord(data[i+3])) & 0x03ff
+        services[service_id] = logical_channel_number
+        i=i+4
+    d['mappings'] = services
+    return d
+
+
+def parser_preferred_name_list_Descriptor(data,i,length,end):
+    """\
+    parser_preferred_name_list_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "preferred_name_list", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "preferred_name_list", "contents" : data[i+2:end] }
+
+def parser_preferred_name_identifier_Descriptor(data,i,length,end):
+    """\
+    parser_preferred_name_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "preferred_name_identifier", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "preferred_name_identifier", "contents" : data[i+2:end] }
+
+def parser_service_attribute_Descriptor(data,i,length,end):
+    """\
+    parser_service_attribute_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "service_attribute", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "service_attribute", "contents" : data[i+2:end] }
+
+def parser_short_service_name_Descriptor(data,i,length,end):
+    """\
+    parser_short_service_name_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "short_service_name", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type" : "short_service_name", "contents" : data[i+2:end] }
+
+
+__descriptor_parsers = {
+    # ISO 13818-1 defined descriptors
+        0x02 : parser_video_stream_Descriptor,
+        0x03 : parser_audio_stream_Descriptor,
+        0x04 : parser_hierarchy_Descriptor,
+        0x05 : parser_registration_Descriptor,
+        0x06 : parser_data_stream_alignment_Descriptor,
+        0x07 : parser_target_background_grid_Descriptor,
+        0x08 : parser_video_window_Descriptor,
+        0x09 : parser_CA_Descriptor,
+        0x0a : parser_ISO_639_Descriptor,
+        0x0b : parser_system_clock_Descriptor,
+        0x0c : parser_multiplex_buffer_utilisation_Descriptor,
+        0x0d : parser_copyright_Descriptor,
+        0x0e : parser_maximum_bitrate_Descriptor,
+        0x0f : parser_private_data_indicator_Descriptor,
+        0x10 : parser_smoothing_buffer_Descriptor,
+        0x11 : parser_STD_Descriptor,
+        0x12 : parser_IBP_Descriptor,
+
+    # ETSI EN 300 468 defined descriptors
+
+        0x40 : parser_network_name_Descriptor,
+        0x41 : parser_service_list_Descriptor,
+        0x42 : parser_stuffing_Descriptor,
+        0x43 : parser_satellite_delivery_system_Descriptor,
+        0x44 : parser_cable_delivery_system_Descriptor,
+        0x45 : parser_VBI_data_Descriptor,
+        0x46 : parser_VBI_teletext_Descriptor,
+        0x47 : parser_bouquet_name_Descriptor,
+        0x48 : parser_service_Descriptor,
+        0x49 : parser_country_availability_Descriptor,
+        0x4A : parser_linkage_Descriptor,
+        0x4B : parser_NVOD_reference_Descriptor,
+        0x4C : parser_time_shifted_service_Descriptor,
+        0x4D : parser_short_event_Descriptor,
+        0x4E : parser_extended_event_Descriptor,
+        0x4F : parser_time_shifted_event_Descriptor,
+        0x50 : parser_component_Descriptor,
+        0x51 : parser_mosaic_Descriptor,
+        0x52 : parser_stream_identifier_Descriptor,
+        0x53 : parser_CA_identifier_Descriptor,
+        0x54 : parser_content_Descriptor,
+        0x55 : parser_parental_rating_Descriptor,
+        0x56 : parser_teletext_Descriptor,
+        0x57 : parser_telephone_Descriptor,
+        0x58 : parser_local_time_offset_Descriptor,
+        0x59 : parser_subtitling_Descriptor,
+        0x5A : parser_terrestrial_delivery_system_Descriptor,
+        0x5B : parser_multilingual_network_name_Descriptor,
+        0x5C : parser_multilingual_bouquet_name_Descriptor,
+        0x5D : parser_multilingual_service_name_Descriptor,
+        0x5E : parser_multilingual_component_Descriptor,
+        0x5F : parser_private_data_specifier_Descriptor,
+        0x60 : parser_service_move_Descriptor,
+        0x61 : parser_short_smoothing_buffer_Descriptor,
+        0x62 : parser_frequency_list_Descriptor,
+        0x63 : parser_partial_transport_stream_Descriptor,
+        0x64 : parser_data_broadcast_Descriptor,
+        0x65 : parser_CA_system_Descriptor,
+        0x66 : parser_data_broadcast_id_Descriptor,
+        0x67 : parser_transport_stream_Descriptor,
+        0x68 : parser_DSNG_Descriptor,
+        0x69 : parser_PDC_Descriptor,
+        0x6A : parser_AC3_Descriptor,
+        0x6B : parser_ancillary_data_Descriptor,
+        0x6C : parser_cell_list_Descriptor,
+        0x6D : parser_cell_frequency_link_Descriptor,
+        0x6E : parser_announcement_support_Descriptor,
+        
+    # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
+    # UK Digital Television Group (www.dtg.org.uk) document descriptors
+    
+        0x83 : parser_logical_channel_Descriptor,
+        0x84 : parser_preferred_name_list_Descriptor,
+        0x85 : parser_preferred_name_identifier_Descriptor,
+        0x86 : parser_service_attribute_Descriptor,
+        0x87 : parser_short_service_name_Descriptor,
 }
 
-reverse_mappings = {
- 'abkhazian': 'abk',
- 'achinese': 'ace',
- 'acoli': 'ach',
- 'adangme': 'ada',
- 'adygh\xc3\xa9': 'ady',
- 'afar, afar': 'aar',
- 'afrihili': 'afh',
- 'afrikaans': 'afr',
- 'afro-asiatic (other)': 'afa',
- 'afro-asiatiques, autres langues': 'afa',
- 'ainu': 'ain',
- 'akan': 'aka',
- 'akkadian': 'akk',
- 'akkadien': 'akk',
- 'albanais': 'sqi',
- 'albania': 'alb',
- 'albanian': 'sqi',
- 'alemanic': 'gsw',
- 'aleut': 'ale',
- 'algonquian languages': 'alg',
- 'algonquines, langues': 'alg',
- 'allemand': 'ger',
- 'allemand, bas': 'nds',
- 'allemand, moyen haut (ca. 1050-1500)': 'gmh',
- 'allemand, vieux haut (ca. 750-1050)': 'goh',
- 'altaic (other)': 'tut',
- 'alta\xc3\xaf du sud': 'alt',
- 'alta\xc3\xafques, autres langues': 'tut',
- 'al\xc3\xa9manique': 'gsw',
- 'al\xc3\xa9oute': 'ale',
- 'amharic': 'amh',
- 'amharique': 'amh',
- 'angika': 'anp',
- 'anglais': 'eng',
- 'anglais moyen (1100-1500)': 'enm',
- 'anglo-saxon (ca.450-1100)': 'ang',
- 'apache': 'apa',
- 'apache languages': 'apa',
- 'arabe': 'ara',
- 'arabic': 'ara',
- 'aragonais': 'arg',
- 'aragonese': 'arg',
- 'aramaic': 'arc',
- 'aram\xc3\xa9en': 'arc',
- 'arapaho': 'arp',
- 'araucan': 'arn',
- 'araucanian': 'arn',
- 'arawak': 'arw',
- 'armenian': 'hye',
- 'arm\xc3\xa9nien': 'hye',
- 'aromanian': 'rup',
- 'aroumain': 'rup',
- 'artificial (other)': 'art',
- 'artificielles, autres langues': 'art',
- 'arumanian': 'rup',
- 'assamais': 'asm',
- 'assamese': 'asm',
- 'asturian, bable': 'ast',
- 'asturien,  bable': 'ast',
- 'athapascan languages': 'ath',
- 'athapascanes, langues': 'ath',
- 'australian languages': 'aus',
- 'australiennes, langues': 'aus',
- 'austronesian (other)': 'map',
- 'avar': 'ava',
- 'avaric': 'ava',
- 'avestan': 'ave',
- 'avestique': 'ave',
- 'awadhi': 'awa',
- 'aymara': 'aym',
- 'azerbaijani': 'aze',
- 'az\xc3\xa9ri': 'aze',
- 'a\xc3\xafnou': 'ain',
- 'bachkir': 'bak',
- 'balinais': 'ban',
- 'balinese': 'ban',
- 'baloutchi': 'bal',
- 'baltic (other)': 'bat',
- 'baltiques, autres langues': 'bat',
- 'baluchi': 'bal',
- 'bambara': 'bam',
- 'bamileke languages': 'bai',
- 'bamil\xc3\xa9k\xc3\xa9s, langues': 'bai',
- 'banda': 'bad',
- 'bantoues, autres langues': 'bnt',
- 'bantu (other)': 'bnt',
- 'bas allemand': 'nds',
- 'bas saxon': 'nds',
- 'bas-sorabe': 'dsb',
- 'basa': 'bas',
- 'bashkir': 'bak',
- 'basque': 'eus',
- 'batak (indonesia)': 'btk',
- 'batak (indon\xc3\xa9sie)': 'btk',
- 'bedja': 'bej',
- 'beja': 'bej',
- 'belarusian': 'bel',
- 'bemba': 'bem',
- 'bengali': 'ben',
- 'berber (other)': 'ber',
- 'berb\xc3\xa8res, autres langues': 'ber',
- 'bhojpuri': 'bho',
- 'bichlamar': 'bis',
- 'bihari': 'bih',
- 'bikol': 'bik',
- 'bilin': 'byn',
- 'bini': 'bin',
- 'birman': 'mya',
- 'bislama': 'bis',
- 'bi\xc3\xa9lorusse': 'bel',
- 'blackfoot': 'bla',
- 'blin': 'byn',
- 'bosnian': 'bos',
- 'bosniaque': 'bos',
- 'bouriate': 'bua',
- 'braj': 'bra',
- 'breton': 'bre',
- 'bugi': 'bug',
- 'buginese': 'bug',
- 'bulgare': 'bul',
- 'bulgarian': 'bul',
- 'buriat': 'bua',
- 'burmese': 'mya',
- 'caddo': 'cad',
- 'carib': 'car',
- 'caribe': 'car',
- 'car\xc3\xa9lien': 'krl',
- 'castilian': 'spa',
- 'castillan': 'spa',
- 'catalan': 'cat',
- 'caucasian (other)': 'cau',
- 'caucasiennes, autres langues': 'cau',
- 'cebuano': 'ceb',
- 'celtic (other)': 'cel',
- 'celtiques, autres langues': 'cel',
- 'central american indian (other)': 'cai',
- 'chagatai': 'chg',
- 'chames, langues': 'cmc',
- 'chamic languages': 'cmc',
- 'chamorro': 'cha',
- 'chan': 'shn',
- 'chechen': 'che',
- 'cherokee': 'chr',
- 'chewa': 'nya',
- 'cheyenne': 'chy',
- 'chibcha': 'chb',
- 'chichewa': 'nya',
- 'chinese': 'chi',
- 'chinese, chinois': 'zho',
- 'chinois': 'chi',
- 'chinook jargon': 'chn',
- 'chinook, jargon': 'chn',
- 'chipewyan': 'chp',
- 'choctaw': 'cho',
- 'chuang': 'zha',
- 'church slavic': 'chu',
- 'church slavonic': 'chu',
- 'chuuk': 'chk',
- 'chuukese': 'chk',
- 'chuvash': 'chv',
- 'classical nepal bhasa': 'nwc',
- 'classical newari': 'nwc',
- 'copte': 'cop',
- 'coptic': 'cop',
- 'cornique': 'cor',
- 'cornish': 'cor',
- 'corse': 'cos',
- 'corsican': 'cos',
- 'cor\xc3\xa9en': 'kor',
- 'cree': 'cre',
- 'creek': 'mus',
- 'creoles and pidgins (other)': 'crp',
- 'creoles and pidgins, english based (other)': 'cpe',
- 'creoles and pidgins, french-based (other)': 'cpf',
- 'creoles and pidgins, portuguese-based (other)': 'cpp',
- 'crimean tatar': 'crh',
- 'crimean turkish, tatar de crim\xc3\xa9': 'crh',
- 'croate': 'scr',
- 'croatian': 'scr',
- 'cr\xc3\xa9ole ha\xc3\xaftien': 'hat',
- 'cr\xc3\xa9oles et pidgins anglais, autres': 'cpe',
- 'cr\xc3\xa9oles et pidgins divers': 'crp',
- 'cr\xc3\xa9oles et pidgins fran\xc3\xa7ais, autres': 'cpf',
- 'cr\xc3\xa9oles et pidgins portugais, autres': 'cpp',
- "cushitic (other)' couchitiques, autres langues": 'cus',
- 'czech': 'cze',
- 'dakota': 'dak',
- 'danish': 'dan',
- 'danois': 'dan',
- 'dargwa': 'dar',
- 'dayak': 'day',
- 'delaware': 'del',
- 'dhivehi': 'div',
- 'dinka': 'din',
- 'dioula': 'dyu',
- 'divehi': 'div',
- 'diverses, langues': 'mis',
- 'djaghata\xc3\xaf': 'chg',
- 'dogri': 'doi',
- 'dogrib': 'dgr',
- 'douala': 'dua',
- 'dravidian (other)': 'dra',
- 'dravidiennes, autres langues': 'dra',
- 'duala': 'dua',
- 'dutch': 'nld',
- 'dutch, middle (ca.1050-1350)': 'dum',
- 'dyula': 'dyu',
- 'dzongkha': 'dzo',
- 'eastern frisian': 'frs',
- 'efik': 'efi',
- 'egyptian (ancient)': 'egy',
- 'ekajuk': 'eka',
- 'elamite': 'elx',
- 'english': 'eng',
- 'english, middle (1100-1500)': 'enm',
- 'english, old (ca.450-1100)': 'ang',
- 'erza': 'myv',
- 'erzya': 'myv',
- 'esclave (athapascan)': 'den',
- 'espagnol': 'spa',
- 'esperanto': 'epo',
- 'esp\xc3\xa9ranto': 'epo',
- 'estonian': 'est',
- 'estonien': 'est',
- 'ewe': 'ewe',
- 'ewondo': 'ewo',
- 'fang': 'fan',
- 'fanti': 'fat',
- 'faroese': 'fao',
- 'fidjien': 'fij',
- 'fijian': 'fij',
- 'filipino': 'fil',
- 'finnish': 'fin',
- 'finno-ougriennes, autres langues': 'fiu',
- 'finno-ugrian (other)': 'fiu',
- 'finnois': 'fin',
- 'flamand': 'nld',
- 'flemish': 'dut',
- 'flemish, n\xc3\xa9erlandais': 'nld',
- 'fon': 'fon',
- 'fran\xc3\xa7ais': 'fre',
- 'fran\xc3\xa7ais ancien (842-ca.1400)': 'fro',
- 'fran\xc3\xa7ais moyen (1400-1600)': 'frm',
- 'french': 'fre',
- 'french, middle (ca.1400-1600)': 'frm',
- 'french, old (842-ca.1400)': 'fro',
- 'frioulan': 'fur',
- 'frison occidental': 'fry',
- 'frison oriental': 'frs',
- 'frison septentrional': 'frr',
- 'friulian': 'fur',
- 'fulah': 'ful',
- 'f\xc3\xa9ro\xc3\xafen': 'fao',
- 'ga': 'gaa',
- 'gaelic': 'gla',
- 'galician': 'glg',
- 'galicien': 'glg',
- 'galla': 'orm',
- 'gallois': 'wel',
- 'ganda': 'lug',
- 'gayo': 'gay',
- 'ga\xc3\xa9lique': 'gla',
- 'ga\xc3\xa9lique \xc3\xa9cossais': 'gla',
- 'gbaya': 'gba',
- 'geez': 'gez',
- 'georgian': 'kat',
- 'german': 'ger',
- 'german, low': 'nds',
- 'german, middle high (ca.1050-1500)': 'gmh',
- 'german, old high (ca.750-1050)': 'goh',
- 'germanic (other)': 'gem',
- 'germaniques, autres langues': 'gem',
- 'gikuyu': 'kik',
- 'gilbertese': 'gil',
- 'gond': 'gon',
- 'gondi': 'gon',
- 'gorontalo': 'gor',
- 'gothic': 'got',
- 'gothique': 'got',
- 'goudjrati': 'guj',
- 'grebo': 'grb',
- "grec ancien (jusqu'\xc3\xa0 1453)": 'grc',
- 'grec moderne (apr\xc3\xa8s 1453)': 'gre',
- 'greek, ancient (to 1453)': 'grc',
- 'greek, modern (1453-)': 'gre',
- 'greenlandic': 'kal',
- 'groenlandais': 'kal',
- 'guarani': 'grn',
- 'gujarati': 'guj',
- 'gu\xc3\xa8ze': 'gez',
- 'gwich\xc2\xb4in': 'gwi',
- 'g\xc3\xa9orgien': 'kat',
- 'haida': 'hai',
- 'haitian': 'hat',
- 'haitian creole': 'hat',
- 'haoussa': 'hau',
- 'hausa': 'hau',
- 'haut-sorabe': 'hsb',
- 'hawaiian': 'haw',
- 'hawa\xc3\xafen': 'haw',
- 'ha\xc3\xaftien': 'hat',
- 'hebrew': 'heb',
- 'herero': 'her',
- 'hiligaynon': 'hil',
- 'himachali': 'him',
- 'hindi': 'hin',
- 'hiri motu': 'hmo',
- 'hittite': 'hit',
- 'hmong': 'hmn',
- 'hongrois': 'hun',
- 'hungarian': 'hun',
- 'hupa': 'hup',
- 'h\xc3\xa9breu': 'heb',
- 'iakoute': 'sah',
- 'iban': 'iba',
- 'icelandic': 'isl',
- 'ido': 'ido',
- 'igbo': 'ibo',
- 'ijo': 'ijo',
- 'ilocano': 'ilo',
- 'iloko': 'ilo',
- 'inari sami': 'smn',
- 'indic (other)': 'inc',
- "indiennes d'am\xc3\xa9rique centrale, autres langues": 'cai',
- "indiennes d'am\xc3\xa9rique du nord, autres langues": 'nai',
- "indiennes d'am\xc3\xa9rique du sud, autres langues": 'sai',
- 'indo-aryennes, autres langues': 'inc',
- 'indo-european (other)': 'ine',
- 'indo-europ\xc3\xa9ennes, autres langues': 'ine',
- 'indonesian': 'ind',
- 'indon\xc3\xa9sien': 'ind',
- 'ind\xc3\xa9termin\xc3\xa9e': 'und',
- 'ingouche': 'inh',
- 'ingush': 'inh',
- 'interlingua (international auxiliary language association)': 'ina',
- 'interlingua (langue auxiliaire internationale)': 'ina',
- 'interlingue': 'ile',
- 'inuktitut': 'iku',
- 'inupiaq': 'ipk',
- 'iranian (other)': 'ira',
- 'iraniennes, autres langues': 'ira',
- 'irish': 'gle',
- 'irish, middle (900-1200)': 'mga',
- 'irish, old (to 900)': 'sga',
- 'irlandais': 'gle',
- "irlandais ancien (jusqu'\xc3\xa0 900)": 'sga',
- 'irlandais moyen (900-1200)': 'mga',
- 'iroquoian languages': 'iro',
- 'iroquoises, langues (famille)': 'iro',
- 'islandais': 'isl',
- 'italian': 'ita',
- 'italien': 'ita',
- 'japanese': 'jpn',
- 'japonais': 'jpn',
- 'javanais': 'jav',
- 'javanese': 'jav',
- 'judeo-arabic': 'jrb',
- 'judeo-persian': 'jpr',
- 'jud\xc3\xa9o-arabe': 'jrb',
- 'jud\xc3\xa9o-espagnol': 'lad',
- 'jud\xc3\xa9o-persan': 'jpr',
- 'kabardian': 'kbd',
- 'kabardien': 'kbd',
- 'kabyle': 'kab',
- 'kachin': 'kac',
- 'kachoube': 'csb',
- 'kalaallisut': 'kal',
- 'kalmouk': 'xal',
- 'kalmyk': 'xal',
- 'kamba': 'kam',
- 'kannada': 'kan',
- 'kanouri': 'kau',
- 'kanuri': 'kau',
- 'kara-kalpak': 'kaa',
- 'karachay-balkar': 'krc',
- 'karakalpak': 'kaa',
- 'karatcha\xc3\xaf balkar': 'krc',
- 'karelian': 'krl',
- 'karen': 'kar',
- 'kashmiri': 'kas',
- 'kashubian': 'csb',
- 'kawi': 'kaw',
- 'kazakh': 'kaz',
- 'khasi': 'kha',
- 'khmer': 'khm',
- 'khoisan (other)': 'khi',
- 'khoisan, autres langues': 'khi',
- 'khotanais': 'kho',
- 'khotanese': 'kho',
- 'kikuyu': 'kik',
- 'kimbundu': 'kmb',
- 'kinyarwanda': 'kin',
- 'kirghiz': 'kir',
- 'kirghize': 'kir',
- 'kiribati': 'gil',
- 'klingon': 'tlh',
- 'kom': 'kom',
- 'komi': 'kom',
- 'kongo': 'kon',
- 'konkani': 'kok',
- 'korean': 'kor',
- 'kosrae': 'kos',
- 'kosraean': 'kos',
- 'koumyk': 'kum',
- 'kpelle': 'kpe',
- 'kpell\xc3\xa9': 'kpe',
- 'krou': 'kro',
- 'kru': 'kro',
- 'kuanyama': 'kua',
- 'kumyk': 'kum',
- 'kurde': 'kur',
- 'kurdish': 'kur',
- 'kurukh': 'kru',
- 'kutenai': 'kut',
- 'kwanyama': 'kua',
- 'ladino': 'lad',
- 'lahnda': 'lah',
- 'lamba': 'lam',
- 'langues des signes': 'sgn',
- 'lao': 'lao',
- 'latin': 'lat',
- 'latvian': 'lav',
- 'letton': 'lav',
- 'letzeburgesch': 'ltz',
- 'lezghian': 'lez',
- 'lezghien': 'lez',
- 'limbourgeois': 'lim',
- 'limburgan': 'lim',
- 'limburger': 'lim',
- 'limburgish': 'lim',
- 'lingala': 'lin',
- 'lithuanian': 'lit',
- 'lituanien': 'lit',
- 'lojban': 'jbo',
- 'low german': 'nds',
- 'low saxon': 'nds',
- 'lower sorbian': 'dsb',
- 'lozi': 'loz',
- 'luba-katanga': 'lub',
- 'luba-lulua': 'lua',
- 'luiseno': 'lui',
- 'lule sami': 'smj',
- 'lunda': 'lun',
- 'luo (kenya and tanzania)': 'luo',
- 'luo (kenya et tanzanie)': 'luo',
- 'lushai': 'lus',
- 'luxembourgeois': 'ltz',
- 'luxembourgish': 'ltz',
- 'macedo-romanian': 'rup',
- 'macedonian': 'mkd',
- 'mac\xc3\xa9do-roumain': 'rup',
- 'mac\xc3\xa9donien': 'mkd',
- 'madourais': 'mad',
- 'madurese': 'mad',
- 'magahi': 'mag',
- 'maithili': 'mai',
- 'makasar': 'mak',
- 'makassar': 'mak',
- 'malagasy': 'mlg',
- 'malais': 'msa',
- 'malay': 'msa',
- 'malayalam': 'mal',
- 'malayo-polyn\xc3\xa9siennes, autres langues': 'map',
- 'maldivian': 'div',
- 'maldivien': 'div',
- 'malgache': 'mlg',
- 'maltais': 'mlt',
- 'maltese': 'mlt',
- 'manchu': 'mnc',
- 'mandar': 'mdr',
- 'mandchou': 'mnc',
- 'mandingo': 'man',
- 'mandingue': 'man',
- 'manipuri': 'mni',
- 'mannois': 'glv',
- 'manobo languages': 'mno',
- 'manobo, langues': 'mno',
- 'manx': 'glv',
- 'maori': 'mri',
- 'marathe': 'mar',
- 'marathi': 'mar',
- 'mari': 'chm',
- 'marshall': 'mah',
- 'marshallese': 'mah',
- 'marvari': 'mwr',
- 'marwari': 'mwr',
- 'masai': 'mas',
- 'massa\xc3\xaf': 'mas',
- 'maya, langues': 'myn',
- 'mayan languages': 'myn',
- 'mende': 'men',
- 'mend\xc3\xa9': 'men',
- "mi'kmaq": 'mic',
- 'micmac': 'mic',
- 'minangkabau': 'min',
- 'mirandais': 'mwl',
- 'mirandese': 'mwl',
- 'miscellaneous languages': 'mis',
- 'mohawk': 'moh',
- 'moksa': 'mdf',
- 'moksha': 'mdf',
- 'moldave': 'mol',
- 'moldavian': 'mol',
- 'mon-khmer (other)': 'mkh',
- 'mongo': 'lol',
- 'mongol': 'mon',
- 'mongolian': 'mon',
- 'mor\xc3\xa9': 'mos',
- 'mossi': 'mos',
- 'mounda, langues': 'mun',
- 'multilingue': 'mul',
- 'multiple languages': 'mul',
- 'munda languages': 'mun',
- 'muskogee': 'mus',
- 'm\xc3\xb4n-khmer, autres langues': 'mkh',
- "n'ko": 'nqo',
- 'nahuatl': 'nah',
- 'napolitain': 'nap',
- 'nauru': 'nau',
- 'nauruan': 'nau',
- 'navaho': 'nav',
- 'navajo': 'nav',
- 'ndebele, north': 'nde',
- 'ndebele, south': 'nbl',
- 'ndonga': 'ndo',
- 'nd\xc3\xa9b\xc3\xa9l\xc3\xa9 du nord': 'nde',
- 'nd\xc3\xa9b\xc3\xa9l\xc3\xa9 du sud': 'nbl',
- 'neapolitan': 'nap',
- 'nepal bhasa': 'new',
- 'nepali': 'nep',
- 'newari': 'new',
- 'newari classique': 'nwc',
- 'nias': 'nia',
- 'niger-kordofanian (other)': 'nic',
- 'nig\xc3\xa9ro-congolaises, autres langues': 'nic',
- 'nilo-saharan (other)': 'ssa',
- 'nilo-sahariennes, autres langues': 'ssa',
- 'niuean': 'niu',
- 'niu\xc3\xa9': 'niu',
- 'no linguistic content': 'zxx',
- 'nogai': 'nog',
- 'nogay': 'nog',
- 'noga\xc3\xaf': 'nog',
- 'norrois, vieux': 'non',
- 'norse, old': 'non',
- 'north american indian': 'nai',
- 'north ndebele': 'nde',
- 'northern frisian': 'frr',
- 'northern sami': 'sme',
- 'northern sotho': 'nso',
- 'norv\xc3\xa9gien': 'nor',
- 'norv\xc3\xa9gien bokm\xc3\xa5l': 'nob',
- 'norv\xc3\xa9gien nynorsk': 'nno',
- 'norwegian': 'nor',
- 'norwegian bokm\xc3\xa5l': 'nob',
- 'norwegian nynorsk': 'nno',
- 'nubian languages': 'nub',
- 'nubiennes, langues': 'nub',
- 'nyamwezi': 'nym',
- 'nyanja': 'nya',
- 'nyankole': 'nyn',
- 'nyankol\xc3\xa9': 'nyn',
- 'nyoro': 'nyo',
- 'nzema': 'nzi',
- 'nzima': 'nzi',
- 'n\xc3\xa9erlandais': 'dut',
- 'n\xc3\xa9erlandais moyen (ca. 1050-1350)': 'dum',
- 'n\xc3\xa9palais': 'nep',
- 'occitan (apr\xc3\xa8s 1500)': 'oci',
- 'occitan (post 1500)': 'oci',
- 'oirat': 'xal',
- 'ojibwa': 'oji',
- 'old bulgarian': 'chu',
- 'old church slavonic': 'chu',
- 'old newari': 'nwc',
- 'old slavonic': 'chu',
- 'oriya': 'ori',
- 'oromo': 'orm',
- 'osage': 'osa',
- 'ossetian': 'oss',
- 'ossetic': 'oss',
- 'oss\xc3\xa8te': 'oss',
- 'otomangue, langues': 'oto',
- 'otomian languages': 'oto',
- 'oudmourte': 'udm',
- 'ougaritique': 'uga',
- 'ourdou': 'urd',
- 'ouszbek': 'uzb',
- 'ou\xc3\xafgour': 'uig',
- 'o\xc3\xafrat': 'xal',
- 'pachto': 'pus',
- 'pahlavi': 'pal',
- 'palau': 'pau',
- 'palauan': 'pau',
- 'pali': 'pli',
- 'pampanga': 'pam',
- 'pampangan': 'pam',
- 'pangasinan': 'pag',
- 'panjabi': 'pan',
- 'papiamento': 'pap',
- 'papoues, autres langues': 'paa',
- 'papuan (other)': 'paa',
- 'pas de contenu linguistique': 'zxx',
- 'pedi': 'nso',
- 'pendjabi': 'pan',
- 'persan': 'per',
- 'perse, vieux (ca. 600-400 av. j.-c.)': 'peo',
- 'persian': 'per',
- 'persian, old (ca.600-400 b.c.)': 'peo',
- 'peul': 'ful',
- 'philippine (other)': 'phi',
- 'philippines, autres langues': 'phi',
- 'phoenician': 'phn',
- 'ph\xc3\xa9nicien': 'phn',
- 'pilipino': 'fil',
- 'pohnpei': 'pon',
- 'pohnpeian': 'pon',
- 'polish': 'pol',
- 'polonais': 'pol',
- 'portugais': 'por',
- 'portuguese': 'por',
- 'prakrit languages': 'pra',
- 'proven\xc3\xa7al': 'oci',
- "proven\xc3\xa7al ancien (jusqu'\xc3\xa0 1500)": 'pro',
- 'proven\xc3\xa7al, old (to 1500)': 'pro',
- 'pr\xc3\xa2krit': 'pra',
- 'punjabi': 'pan',
- 'pushto': 'pus',
- 'quechua': 'que',
- 'raeto-romance': 'roh',
- 'rajasthani': 'raj',
- 'rapanui': 'rap',
- 'rarotonga': 'rar',
- 'rarotongan': 'rar',
- 'reserved for local use': 'qaa-qtz',
- 'rh\xc3\xa9to-roman': 'roh',
- 'romance (other)': 'roa',
- 'romanes, autres langues': 'roa',
- 'romanian': 'ron',
- 'romany': 'rom',
- 'roumain': 'ron',
- 'rundi': 'run',
- 'russe': 'rus',
- 'russian': 'rus',
- 'rwanda': 'kin',
- "r\xc3\xa9serv\xc3\xa9e \xc3\xa0 l'usage local": 'qaa-qtz',
- 'salish, langues': 'sal',
- 'salishan languages': 'sal',
- 'samaritain': 'sam',
- 'samaritan aramaic': 'sam',
- "sami d'inari": 'smn',
- 'sami de lule': 'smj',
- 'sami du nord': 'sme',
- 'sami du sud': 'sma',
- 'sami languages (other)': 'smi',
- 'sami skolt': 'sms',
- 'sami, autres langues': 'smi',
- 'samoan': 'smo',
- 'sandawe': 'sad',
- 'sango': 'sag',
- 'sanskrit': 'san',
- 'santal': 'sat',
- 'santali': 'sat',
- 'sarde': 'srd',
- 'sardinian': 'srd',
- 'sasak': 'sas',
- 'saxon, bas': 'nds',
- 'saxon, low': 'nds',
- 'scots': 'sco',
- 'scottish gaelic': 'gla',
- 'selkoupe': 'sel',
- 'selkup': 'sel',
- 'semitic (other)': 'sem',
- 'sepedi': 'nso',
- 'serbe': 'srp',
- 'serbian': 'srp',
- 'serer': 'srr',
- 'shan': 'shn',
- 'shona': 'sna',
- 'sichuan yi': 'iii',
- 'sicilian': 'scn',
- 'sicilien': 'scn',
- 'sidamo': 'sid',
- 'sign languages': 'sgn',
- 'siksika': 'bla',
- 'sindhi': 'snd',
- 'singhalais': 'sin',
- 'sinhala': 'sin',
- 'sinhalese': 'sin',
- 'sino-tibetan (other)': 'sit',
- 'sino-tib\xc3\xa9taines, autres langues': 'sit',
- 'siouan languages': 'sio',
- 'sioux, langues': 'sio',
- 'skolt sami': 'sms',
- 'slave (athapascan)': 'den',
- 'slaves, autres langues': 'sla',
- 'slavic (other)': 'sla',
- "slavon d'\xc3\xa9glise": 'chu',
- 'slavon liturgique': 'chu',
- 'slovak': 'slo',
- 'slovaque': 'slo',
- 'slovenian': 'slv',
- 'slov\xc3\xa8ne': 'slv',
- 'sogdian': 'sog',
- 'sogdien': 'sog',
- 'somali': 'som',
- 'songhai': 'son',
- 'soninke': 'snk',
- 'sonink\xc3\xa9': 'snk',
- 'sorabes, langues': 'wen',
- 'sorbian languages': 'wen',
- 'sotho du nord': 'nso',
- 'sotho du sud': 'sot',
- 'sotho, southern': 'sot',
- 'soundanais': 'sun',
- 'soussou': 'sus',
- 'south american indian (other)': 'sai',
- 'south ndebele': 'nbl',
- 'southern altai': 'alt',
- 'southern sami': 'sma',
- 'spanish': 'spa',
- 'sranan togo': 'srn',
- 'sukuma': 'suk',
- 'sumerian': 'sux',
- 'sum\xc3\xa9rien': 'sux',
- 'sundanese': 'sun',
- 'susu': 'sus',
- 'su\xc3\xa9dois': 'swe',
- 'swahili': 'swa',
- 'swati': 'ssw',
- 'swedish': 'swe',
- 'swiss german': 'gsw',
- 'syriac': 'syr',
- 'syriaque': 'syr',
- 's\xc3\xa9mitiques, autres langues': 'sem',
- 's\xc3\xa9r\xc3\xa8re': 'srr',
- 'tadjik': 'tgk',
- 'tagalog': 'tgl',
- 'tahitian': 'tah',
- 'tahitien': 'tah',
- 'tai (other)': 'tai',
- 'tajik': 'tgk',
- 'tamacheq': 'tmh',
- 'tamashek': 'tmh',
- 'tamil': 'tam',
- 'tamoul': 'tam',
- 'tatar': 'tat',
- 'tchouvache': 'chv',
- 'tch\xc3\xa8que': 'cze',
- 'tch\xc3\xa9tch\xc3\xa8ne': 'che',
- 'telugu': 'tel',
- 'temne': 'tem',
- 'tereno': 'ter',
- 'tetum': 'tet',
- 'thai': 'tha',
- 'tha\xc3\xaf': 'tha',
- 'tha\xc3\xafes, autres langues': 'tai',
- 'tibetan': 'tib',
- 'tib\xc3\xa9tain': 'tib',
- 'tigre': 'tig',
- 'tigrigna': 'tir',
- 'tigrinya': 'tir',
- 'tigr\xc3\xa9': 'tig',
- 'timne': 'tem',
- 'tiv': 'tiv',
- 'tlhingan-hol': 'tlh',
- 'tlingit': 'tli',
- 'tok pisin': 'tpi',
- 'tokelau': 'tkl',
- 'tonga (nyasa)': 'tog',
- 'tonga (tonga islands)': 'ton',
- 'tongan (\xc3\x8eles tonga)': 'ton',
- 'touva': 'tyv',
- 'tsigane': 'rom',
- 'tsimshian': 'tsi',
- 'tsonga': 'tso',
- 'tswana': 'tsn',
- 'tumbuka': 'tum',
- 'tupi languages': 'tup',
- 'tupi, langues': 'tup',
- 'turc': 'tur',
- 'turc ottoman (1500-1928)': 'ota',
- 'turkish': 'tur',
- 'turkish, ottoman (1500-1928)': 'ota',
- 'turkmen': 'tuk',
- 'turkm\xc3\xa8ne': 'tuk',
- 'tuvalu': 'tvl',
- 'tuvinian': 'tyv',
- 'twi': 'twi',
- 't\xc3\xa9lougou': 'tel',
- 'udmurt': 'udm',
- 'ugaritic': 'uga',
- 'uighur': 'uig',
- 'ukrainian': 'ukr',
- 'ukrainien': 'ukr',
- 'umbundu': 'umb',
- 'undetermined': 'und',
- 'upper sorbian': 'hsb',
- 'urdu': 'urd',
- 'uyghur': 'uig',
- 'uzbek': 'uzb',
- 'vai': 'vai',
- 'valencian catalan': 'cat',
- 'valencien': 'cat',
- 'va\xc3\xaf': 'vai',
- 'venda': 'ven',
- 'vietnamese': 'vie',
- 'vietnamien': 'vie',
- 'vieux bulgare': 'chu',
- 'vieux slave': 'chu',
- 'volap\xc3\xbck': 'vol',
- 'vote': 'vot',
- 'votic': 'vot',
- 'wakashan languages': 'wak',
- 'wakashennes, langues': 'wak',
- 'walamo': 'wal',
- 'wallon': 'wln',
- 'walloon': 'wln',
- 'waray': 'war',
- 'washo': 'was',
- 'welsh': 'wel',
- 'western frisian': 'fry',
- 'wolof': 'wol',
- 'xhosa': 'xho',
- 'yakut': 'sah',
- 'yao': 'yao',
- 'yapese': 'yap',
- 'yapois': 'yap',
- 'yi de sichuan': 'iii',
- 'yiddish': 'yid',
- 'yoruba': 'yor',
- 'yupik languages': 'ypk',
- 'yupik, langues': 'ypk',
- 'zande': 'znd',
- 'zand\xc3\xa9': 'znd',
- 'zapotec': 'zap',
- 'zapot\xc3\xa8que': 'zap',
- 'zenaga': 'zen',
- 'zhuang': 'zha',
- 'zoulou': 'zul',
- 'zulu': 'zul',
- 'zuni': 'zun',
- '\xc3\xa9cossais': 'sco',
- '\xc3\xa9gyptien': 'egy',
- '\xc3\xa9lamite': 'elx',
- '\xc3\xa9wondo': 'ewo',
- '\xc3\xa9w\xc3\xa9': 'ewe'
-}
+# Aciliary support stuff
+
+def unBCD(byte):
+    return (byte>>4)*10 + (byte & 0xf)
+
+# dvbt transmission parameters
+
+_dvbt_bandwidths = {
+        0 : dvb3f.BANDWIDTH_8_MHZ,
+        1 : dvb3f.BANDWIDTH_7_MHZ,
+        2 : dvb3f.BANDWIDTH_6_MHZ,
+    }
+
+_dvbt_constellations = {
+        0 : dvb3f.QPSK,
+        1 : dvb3f.QAM_16,
+        2 : dvb3f.QAM_64,
+    }
+    
+_dvbt_hierarchy = {
+        0 : dvb3f.HIERARCHY_NONE,
+        1 : dvb3f.HIERARCHY_1,
+        2 : dvb3f.HIERARCHY_2,
+        3 : dvb3f.HIERARCHY_4,
+     }
+
+_dvbt_code_rate_hp = {
+        0 : dvb3f.FEC_1_2,
+        1 : dvb3f.FEC_2_3,
+        2 : dvb3f.FEC_3_4,
+        3 : dvb3f.FEC_5_6,
+        4 : dvb3f.FEC_7_8,
+     }
+
+_dvbt_code_rate_lp = _dvbt_code_rate_hp
+
+_dvbt_guard_interval = {
+        0 : dvb3f.GUARD_INTERVAL_1_32,
+        1 : dvb3f.GUARD_INTERVAL_1_16,
+        2 : dvb3f.GUARD_INTERVAL_1_8,
+        3 : dvb3f.GUARD_INTERVAL_1_4,
+     }
+
+_dvbt_transmission_mode = {
+        0 : dvb3f.TRANSMISSION_MODE_2K,
+        1 : dvb3f.TRANSMISSION_MODE_8K,
+     }
+    
+# service descriptor, service types
+_service_types = {
+       0x01 : "digital television service",
+       0x02 : "digital radio sound service",
+       0x03 : "Teletext service",
+       0x04 : "NVOD reference service",
+       0x05 : "NVOD time-shifted service",
+       0x06 : "mosaic service",
+       0x07 : "PAL coded signal",
+       0x08 : "SECAM coded signal",
+       0x09 : "D/D2-MAC",
+       0x0A : "FM Radio",
+       0x0B : "NTSC coded signal",
+       0x0C : "data broadcast service",
+       0x0E : "RCS Map",
+       0x0F : "RCS FLS",
+       0x10 : "DVB MHP service",
+    }
+
+# table for iso_639_descriptor
+_iso639_audiotypes = {
+        0 : "",
+        1 : "CLEAN",
+        2 : "HEARING IMPAIRED",
+        3 : "VISUAL IMPAIRED COMMENTARY",
+    }
+
+
+_stream_component_mappings = {
+       (0x01, 0x01) : ("video",                 "4:3 aspect ratio, 25 Hz"),
+       (0x01, 0x02) : ("video",                 "16:9 aspect ratio with pan vectors, 25 Hz"),
+       (0x01, 0x03) : ("video",                 "16:9 aspect ratio without pan vectors, 25 Hz"),
+       (0x01, 0x04) : ("video",                 "> 16:9 aspect ratio, 25 Hz"),
+       (0x01, 0x05) : ("video",                 "4:3 aspect ratio, 30 Hz"),
+       (0x01, 0x06) : ("video",                 "16:9 aspect ratio with pan vectors, 30 Hz"),
+       (0x01, 0x07) : ("video",                 "16:9 aspect ratio without pan vectors, 30 Hz"),
+       (0x01, 0x05) : ("video",                 "> 16:9 aspect ratio, 30 Hz"),
+       (0x01, 0x09) : ("high definition video", "4:3 aspect ratio, 25 Hz"),
+       (0x01, 0x0A) : ("high definition video", "16:9 aspect ratio with pan vectors, 25 Hz"),
+       (0x01, 0x0B) : ("high definition video", "16:9 aspect ratio without pan vectors, 25 Hz"),
+       (0x01, 0x0C) : ("high definition video", "> 16:9 aspect ratio, 25 Hz"),
+       (0x01, 0x0D) : ("high definition video", "4:3 aspect ratio, 30 Hz"),
+       (0x01, 0x0E) : ("high definition video", "16:9 aspect ratio with pan vectors, 30 Hz"),
+       (0x01, 0x0F) : ("high definition video", "16:9 aspect ratio without pan vec., 30 Hz"),
+       (0x01, 0x10) : ("high definition video", "> 16:9 aspect ratio, 30 Hz"),
+       (0x02, 0x01) : ("audio",                 "single mono channel"),
+       (0x02, 0x02) : ("audio",                 "dual mono channel"),
+       (0x02, 0x03) : ("audio",                 "stereo (2 channel)"),
+       (0x02, 0x04) : ("audio",                 "multi-lingual, multi-channel"),
+       (0x02, 0x05) : ("audio",                 "surround sound"),
+       (0x02, 0x40) : ("audio description for the visually impaired", ""),
+       (0x02, 0x41) : ("audio for the hard of hearing",               ""),
+       (0x03, 0x01) : ("EBU Teletext subtitles",  ""),
+       (0x03, 0x02) : ("associated EBU Teletext", ""),
+       (0x03, 0x03) : ("VBI data",                ""),
+       (0x03, 0x10) : ("DVB subtitles (normal)", "with no monitor aspect ratio criticality"),
+       (0x03, 0x11) : ("DVB subtitles (normal)", "for display on 4:3 aspect ratio monitor"),
+       (0x03, 0x12) : ("DVB subtitles (normal)", "for display on 16:9 aspect ratio monitor"),
+       (0x03, 0x13) : ("DVB subtitles (normal)", "for display on 2.21:1 aspect ratio monitor"),
+       (0x03, 0x20) : ("DVB subtitles (for the hard of hearing)", "with nomonitor aspect ratio criticality"),
+       (0x03, 0x21) : ("DVB subtitles (for the hard of hearing)", "for display on 4:3 aspect ratiomonitor"),
+       (0x03, 0x22) : ("DVB subtitles (for the hard of hearing)", "for display on 16:9 aspect ratiomonitor"),
+       (0x03, 0x23) : ("DVB subtitles (for the hard of hearing)", "for display on 2.21:1 aspect ratiomonitor"),
+    }
+
+_private_data_specifiers = {
+        0x00000001 : "SES",
+        0x00000002 : "BSkyB 1",
+        0x00000003 : "BSkyB 2",
+        0x00000004 : "BSkyB 3",
+        0x000000BE : "BetaTechnik",
+        0x00006000 : "News Datacom",
+        0x00006001 : "NDC 1",
+        0x00006002 : "NDC 2",
+        0x00006003 : "NDC 3",
+        0x00006004 : "NDC 4",
+        0x00006005 : "NDC 5",
+        0x00006006 : "NDC 6",
+        0x00362275 : "Irdeto",
+        0x004E544C : "NTL",
+        0x00532D41 : "Scientific Atlanta",
+        0x44414E59 : "News Datacom (IL) 1",
+        0x46524549 : "News Datacom (IL) 1",
+        0x53415053 : "Scientific Atlanta",
+    }
