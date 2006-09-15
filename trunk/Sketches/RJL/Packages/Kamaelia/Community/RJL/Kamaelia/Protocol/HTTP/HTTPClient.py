@@ -19,6 +19,8 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: RJL
+
 """\
 =================
 Single-Shot HTTP Client
@@ -100,6 +102,10 @@ from Kamaelia.Internet.TCPClient import TCPClient
 
 from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
 
+class ParsedHTTPRedirect(object):
+    def __init__(self, redirectto):
+        self.redirectto = redirectto
+        
 def intval(mystring):
     """Convert a string to an integer, representing errors by None"""
     try:
@@ -247,6 +253,7 @@ class SingleShotHTTPClient(component):
             # location header gives the redirect URL
             newurl = header["headers"].get("location", "")
             if newurl != "":
+                self.send(ParsedHTTPRedirect(redirectto=newurl), "outbox")
                 redirectedrequest = HTTPRequest(self.formRequest(newurl), self.currentrequest.redirectcount + 1)
                 self.requestqueue.append(redirectedrequest)
                 return True

@@ -19,6 +19,8 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: RJL
+
 """\
 =================
 HTTP Parser
@@ -70,6 +72,8 @@ def splitUri(url):
     if splituri[0] != "":
         requestobject["uri-server"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0]):]
+        if requestobject["raw-uri"] == "":
+            requestobject["raw-uri"] = "/"
     else:
         if requestobject["uri-protocol"] != "": #then it's the server
             requestobject["uri-server"] = requestobject["raw-uri"]

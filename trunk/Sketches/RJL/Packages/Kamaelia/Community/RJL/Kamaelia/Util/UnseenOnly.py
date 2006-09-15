@@ -20,6 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
+# Licensed to the BBC under a Contributor Agreement: RJL
+
 """\
 =================
 UnseenOnly component
