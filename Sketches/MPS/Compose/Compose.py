@@ -125,9 +125,13 @@ class Magic(Axon.Component.component):
                 pprint.pprint(event)
                 if event[0] == "ADD":
                     self.addNode(event)
-            
+
             if self.dataReady("from_topology"):
                 event =  self.recv("from_topology")
+                if event[0] == "SELECT":
+                    self.currentSelectedNode = event[2]
+                    print "NODE SELECTED:", self.currentSelectedNode
+                
             yield 1
 
     def addNode(self,event):
@@ -141,8 +145,7 @@ class Magic(Axon.Component.component):
                            "randompos", 
                            "component"
                    ], "to_topology" )
-        print "CLASS", event[3]["configuration"]["theclass"]
-        
+
         for inbox in event[3]["configuration"]["theclass"].Inboxes:
             boxid = str(nodeid) + "." + inbox
             self.send( [ "ADD", "NODE",
@@ -160,7 +163,7 @@ class Magic(Axon.Component.component):
             boxid = str(nodeid) + "." + outbox
             self.send( [ "ADD", "NODE",
                                 boxid,
-                                inbox,
+                                outbox,
                                 "randompos",
                                 "outbox"
                        ], "to_topology" )
@@ -217,6 +220,17 @@ if __name__ == "__main__":
         SubscribeTo("VisualiserControl"),
         BuildViewer(),
         PublishTo("VisualiserEvents"),
+    ).activate()
+    
+    #
+    # Debugging console
+    #
+    from Kamaelia.Util.Console import ConsoleReader
+    from Kamaelia.Visualisation.Axon.AxonVisualiserServer import text_to_token_lists
+    Pipeline(
+        ConsoleReader(),
+        text_to_token_lists(),
+        PublishTo("VisualiserControl")
     ).activate()
     
     Graphline(
