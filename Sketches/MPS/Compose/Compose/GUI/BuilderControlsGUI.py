@@ -50,9 +50,9 @@ class BuilderControlsGUI(TkWindow):
 
 #        print self.classes[0]
         for theclass in self.classes:
-            print "THECLASS"
-            pprint.pprint(theclass)
-            print "SSALCEHT"
+#            print "THECLASS"
+#            pprint.pprint(theclass)
+#            print "SSALCEHT"
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])
 
