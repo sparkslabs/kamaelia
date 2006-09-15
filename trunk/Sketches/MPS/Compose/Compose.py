@@ -26,6 +26,7 @@
 
 import Kamaelia.Support.Data.Repository
 import Axon
+import pprint
 
 C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
 COMPONENTS = {}
@@ -120,9 +121,54 @@ class Magic(Axon.Component.component):
         while 1:
             if self.dataReady("from_panel"):
                 event = self.recv("from_panel")
+                print "MESSAGE FROM PANEL"
+                pprint.pprint(event)
+                if event[0] == "ADD":
+                    self.addNode(event)
+            
             if self.dataReady("from_topology"):
                 event =  self.recv("from_topology")
             yield 1
+
+    def addNode(self,event):
+        print "ADD NODE"
+        nodeid = "ID"
+        label = "LABEL"
+        (label, nodeid) = event[1]
+        self.send( ["ADD", "NODE", 
+                           nodeid, 
+                           label, 
+                           "randompos", 
+                           "component"
+                   ], "to_topology" )
+        print "CLASS", event[3]["configuration"]["theclass"]
+        
+        for inbox in event[3]["configuration"]["theclass"].Inboxes:
+            boxid = str(nodeid) + "." + inbox
+            self.send( [ "ADD", "NODE",
+                                boxid,
+                                inbox,
+                                "randompos",
+                                "inbox"
+                       ], "to_topology" )
+            self.send( [ "ADD", "LINK",
+                                nodeid,
+                                boxid,
+                       ], "to_topology" )
+
+        for outbox in event[3]["configuration"]["theclass"].Outboxes:
+            boxid = str(nodeid) + "." + outbox
+            self.send( [ "ADD", "NODE",
+                                boxid,
+                                inbox,
+                                "randompos",
+                                "outbox"
+                       ], "to_topology" )
+            self.send( [ "ADD", "LINK",
+                                nodeid,
+                                boxid,
+                       ], "to_topology" )
+
 
 if __name__ == "__main__":
     import sys
