@@ -126,17 +126,32 @@ if __name__ == "__main__":
 
     items = list(getAllClasses( COMPONENTS ))
 
+    # Create the TK GUI for selecting which components to add remove
+    # Pass that data through an intermediary tracking the topology caled PipeBuild
+    
+    # Take the result from this and make it the data source for a Pluggable Splitter
+    #   "pipegen"
 
     pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
                                  PipeBuild()
                                )
                       )
 
+    # Create the viewer, and send it's results also to a pluggable splitter "viewer"
+
     viewer = Splitter(BuildViewer())
+
+    # Pipe the viewer information into pipegen. This uses a sneaky feature that allows
+    # a pluggable splitter to have 2 inputs.
 
     Plug(viewer, pipegen).activate()   # feedback loop for 'selected' msgs
 
+    # Why doesn't this cause endless loops of pain?
+
     Plug(pipegen, viewer).activate()
+    
+    # Subscribe to the output from the pipegen and send it on to the pipelinewriter.
+    
     Plug(pipegen, Pipeline(PipelineWriter(),
                            TextOutputGUI("Pipeline code")
                           )
