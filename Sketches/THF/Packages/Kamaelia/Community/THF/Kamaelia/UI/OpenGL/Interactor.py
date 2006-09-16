@@ -266,3 +266,4 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 __kamaelia_components__ = ( Interactor, )
 
 
+# Licensed to the BBC under a Contributor Agreement: THF

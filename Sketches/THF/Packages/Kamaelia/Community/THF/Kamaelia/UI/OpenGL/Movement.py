@@ -512,3 +512,4 @@ if __name__=='__main__':
     buzzer.link((buzzer,"outbox"), (cube4,"scaling"))
 
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

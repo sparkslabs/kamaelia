@@ -120,8 +120,9 @@ if __name__=='__main__':
     from Kamaelia.Util.Graphline import Graphline
 
     Graphline(    
-        CUBEC = SimpleCube(position=(0, 0,-12), rotation=(40,90,0), size=(1,1,1)).activate(),
+        CUBEC = SimpleCube(position=(0, 0,-12), rotation=(225,45,135), size=(1,1,1)).activate(),
         CUBER = SimpleCube(position=(4,0,-22), size=(2,2,2)).activate(),
         CUBEB = SimpleCube(position=(0,-4,-18), rotation=(0,180,20), size=(1,3,2)).activate(),
         linkages = {}
     ).run()
+# Licensed to the BBC under a Contributor Agreement: THF

@@ -193,3 +193,4 @@ class Intersect:
         """
         pass
     OOB_OOB = staticmethod(OOB_OOB)
+# Licensed to the BBC under a Contributor Agreement: THF

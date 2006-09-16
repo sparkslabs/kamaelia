@@ -128,3 +128,4 @@ if __name__=='__main__':
     i4 = SimpleRotationInteractor(target=o4).activate()
     
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

@@ -80,3 +80,4 @@ __kamaelia_components__ = (SkyGrassBackground,)
 if __name__=='__main__':
     SkyGrassBackground(size=(5000,5000,0), position=(0,0,-100)).activate()
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

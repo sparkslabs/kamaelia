@@ -39,3 +39,4 @@ setup(name = "Kamaelia.Community.THF",
       long_description = """\
 """
       )
+# Licensed to the BBC under a Contributor Agreement: THF

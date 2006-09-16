@@ -127,3 +127,4 @@ class CheckersInteractor(Interactor):
 
 if __name__=='__main__':
     pass
+# Licensed to the BBC under a Contributor Agreement: THF

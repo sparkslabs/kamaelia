@@ -58,3 +58,4 @@ if __name__=='__main__':
     o1 = CheckersBoard(position=(0,0,-15)).activate()
 
     Axon.Scheduler.scheduler.run.runThreads()
+# Licensed to the BBC under a Contributor Agreement: THF

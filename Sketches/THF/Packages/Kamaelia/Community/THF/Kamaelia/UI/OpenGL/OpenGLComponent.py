@@ -489,3 +489,4 @@ if __name__=='__main__':
     Point(position=(-1,0,-10)).activate()
     ChangingColourQuad(position=(1,0,-10)).activate()
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

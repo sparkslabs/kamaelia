@@ -21,3 +21,4 @@
 # -------------------------------------------------------------------------
 """\
 """
+# Licensed to the BBC under a Contributor Agreement: THF
