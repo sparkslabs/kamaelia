@@ -180,3 +180,4 @@ if __name__ == "__main__":
    Magna = MagnaDoodle().activate()
    
    Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

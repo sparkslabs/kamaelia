@@ -133,3 +133,4 @@ class Vector:
 
     def __neg__(self):
         return Vector(-self.x, -self.y, -self.z)
+# Licensed to the BBC under a Contributor Agreement: THF

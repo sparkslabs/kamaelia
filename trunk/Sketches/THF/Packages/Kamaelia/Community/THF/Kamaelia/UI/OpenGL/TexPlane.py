@@ -151,3 +151,4 @@ if __name__=='__main__':
     PLANE = TexPlane(position=(0, 0,-6), texture="nemo.jpeg").activate()
         
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

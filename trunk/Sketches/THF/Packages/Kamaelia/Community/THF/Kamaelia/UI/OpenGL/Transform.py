@@ -223,3 +223,4 @@ class Transform:
         x.m[14] = self.m[12]*other.m[2] + self.m[13]*other.m[6] + self.m[14]*other.m[10] + self.m[15]*other.m[14];
         x.m[15] = self.m[12]*other.m[3] + self.m[13]*other.m[7] + self.m[14]*other.m[11] + self.m[15]*other.m[15];
         self.m = x.m
+# Licensed to the BBC under a Contributor Agreement: THF

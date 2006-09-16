@@ -300,3 +300,4 @@ if __name__=='__main__':
     READER.link( (READER,"outbox"), (TICKER, "inbox") )
     
     Axon.Scheduler.scheduler.run.runThreads()  
+# Licensed to the BBC under a Contributor Agreement: THF

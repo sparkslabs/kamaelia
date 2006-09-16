@@ -291,3 +291,4 @@ if __name__=='__main__':
             ("ROTATOR", "outbox") : ("CONTAINER","rel_rotation")
         }
     ).run()
+# Licensed to the BBC under a Contributor Agreement: THF
