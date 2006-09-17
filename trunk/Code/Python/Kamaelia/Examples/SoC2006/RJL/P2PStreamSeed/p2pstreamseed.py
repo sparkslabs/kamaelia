@@ -87,16 +87,16 @@ from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Fanout import fanout
 
-from Kamaelia.Community.RJL.Kamaelia.Util.Chunkifier import Chunkifier
-from Kamaelia.Community.RJL.Kamaelia.Util.ChunkNamer import ChunkNamer
-from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
+from Kamaelia.Util.Chunkifier import Chunkifier
+from Kamaelia.Util.ChunkNamer import ChunkNamer
+from Kamaelia.File.WholeFileWriter import WholeFileWriter
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
+from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Protocol.HTTP.IcecastClient import IcecastClient, IcecastDemux, IcecastStreamRemoveMetadata
+from Kamaelia.Protocol.HTTP.HTTPHelpers import HTTPMakePostRequest
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 
 if __name__ == '__main__':
 

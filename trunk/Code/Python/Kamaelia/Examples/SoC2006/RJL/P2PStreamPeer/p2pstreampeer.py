@@ -53,15 +53,15 @@ from Axon.Component import component
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
-from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
+from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStatusUpdate
+from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStatusUpdate
 
-from Kamaelia.Community.RJL.Kamaelia.Util.Clock import CheapAndCheerfulClock
-from Kamaelia.Community.RJL.Kamaelia.Util.DataSource import TriggeredSource
+from Kamaelia.Util.Clock import CheapAndCheerfulClock
+from Kamaelia.Util.DataSource import TriggeredSource
 
 class StreamReconstructor(component):
     """\

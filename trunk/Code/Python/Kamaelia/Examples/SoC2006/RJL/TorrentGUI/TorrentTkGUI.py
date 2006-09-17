@@ -66,8 +66,7 @@ The TorrentTkGUI component accepts the following Torrent IPC messages on "inbox"
 
 It uses these messages to build and update a list of torrents and their
 percentage completion.
-See TorrentPatron, TorrentClient and TorrentIPC in
-Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent
+See TorrentPatron, TorrentClient and TorrentIPC in Kamaelia.Protocol.Torrent
 for more details on how the BitTorrent components function and the
 messages they send/accept.
 
@@ -83,8 +82,8 @@ import Tkinter, time
 from Kamaelia.UI.Tk.TkWindow import TkWindow
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStartFail, TIPCTorrentAlreadyDownloading, TIPCTorrentStatusUpdate
+from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCNewTorrentCreated, TIPCTorrentStartFail, TIPCTorrentAlreadyDownloading, TIPCTorrentStatusUpdate
 
 class TorrentTkWindow(TkWindow):
     """Tkinter BitTorrent client GUI"""
@@ -222,7 +221,7 @@ __kamaelia_components__  = ( TorrentTkWindow, )
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     
     Graphline(
         gui = TorrentTkWindow(), # our GUI
