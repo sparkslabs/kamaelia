@@ -25,10 +25,10 @@ import string
 
 from Axon.Component import component
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import splitUri
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Protocol.HTTP.HTTPParser import splitUri
 
-from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 
 def HTMLTag():
@@ -310,8 +310,8 @@ class CorrectRelativeLinks(component):
 if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
-    from Kamaelia.Community.RJL.Kamaelia.Util.UnseenOnly import UnseenOnly    
+    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    from Kamaelia.Util.UnseenOnly import UnseenOnly    
     from Kamaelia.Util.Fanout import fanout
     
     urlprefix = raw_input("URL matching prefix: ") # e.g. "http://www.example.com/" to only download stuff from that domain

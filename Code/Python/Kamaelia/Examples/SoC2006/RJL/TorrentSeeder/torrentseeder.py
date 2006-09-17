@@ -63,11 +63,11 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Util.Fanout import fanout
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
-from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
-from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
+from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
+from Kamaelia.File.WholeFileWriter import WholeFileWriter
+from Kamaelia.Protocol.Torrent.TorrentMaker import TorrentMaker
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
