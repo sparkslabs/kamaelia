@@ -19,6 +19,25 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+#
+# First proper iteration of this code:
+#    * Sat Sep 16 11:24:50 BST 2006, passing through Coventry
+#   
+# Was able to create a simple video server completely graphically.
+#
+# Issues:
+#    * Code needs tidying up
+#    * Want to be able to re-edit components that have already been created
+#    * Want to be able to delete already created components
+#    * Want to be able to break already created linkages
+#
+# Good start though !
+#
+# Sunday 17:
+#    * Can delete already created components
+#    * Can break already created linkages
+#
+#
 
 
 # simple kamaelia pipeline builder GUI
@@ -88,22 +107,22 @@ class Magic(Axon.Component.component):
     "This is where the magic happens"
     """
         OK, basic actions needed:
-        * ADD COMPONENT
-            * *This also needs to store what the arguments were*
-                * Beyond the immediate scope of the visualiser component
-                * Implies a filter of somekind (undecorate/decorate)
-            * ADD COMPONENT
-            * FOR EACH INBOX -- NEW
-                * ADD AND LINK
-            * FOR EACH OUTBOX -- NEW
-                * ADD AND LINK
+        * ADD COMPONENT (DONE)
+            * *This also needs to store what the arguments were* (DONE)
+                * Beyond the immediate scope of the visualiser component (DONE)
+                * Implies a filter of somekind (undecorate/decorate) (DONE)
+            * ADD COMPONENT (DONE)
+            * FOR EACH INBOX -- NEW (DONE)
+                * ADD AND LINK (DONE)
+            * FOR EACH OUTBOX -- NEW (DONE)
+                * ADD AND LINK (DONE)
         * DELETE COMPONENT
             * DELETE OUTBOXES -- NEW
             * DELETE INBOXES -- NEW
             * DELETE COMPONENT
-        * LINK -- NEW ( NO IMPLICIT LINK ANYMORE)
-            * THIS BOX
-            * TO THIS BOX
+        * LINK -- NEW ( NO IMPLICIT LINK ANYMORE)  (DONE)
+            * THIS BOX (DONE)
+            * TO THIS BOX (DONE)
     """
     Inboxes = {
         "from_panel" : "User events from the panel",
@@ -136,11 +155,18 @@ class Magic(Axon.Component.component):
                 if event[0] == "ADD":
                     nodeinfo = self.addNodeToTopology(event)
                     self.addNodeLocalDB(event, nodeinfo)
+                if event[0] == "DEL":
+                    self.handleDeleteNode(event)
 
             if self.dataReady("from_topology"):
                 event =  self.recv("from_topology")
                 if event[0] == "SELECT":
                     self.currentSelectedNode = event[2]
+
+                    print "HMM, the next should display the most recently selected node"
+                    print "AHA! It does"
+                    print "We need to tell the panel to update itself with these details then"
+                    
                     self.debug_PrintCurrentNodeDetails()
             if self.dataReady("makelink"):
                 self.recv("makelink")
@@ -149,6 +175,86 @@ class Magic(Axon.Component.component):
                 self.linksink = None
             yield 1
 
+    def handleDeleteNode(self, event):
+        """
+        Messages look like this:
+           * ("DEL", "2.control")
+           * ("DEL", "2")
+        """
+        print "DELETE NODE, identifying type", event
+        nodeid = event[1]
+        nodetype = self.topologyDB[nodeid][0]
+        if nodetype == "COMPONENT":
+            ( nodetype, label, inboxes, outboxes, event ) = self.topologyDB[nodeid]
+            print "ASKED TO DELETE component"
+            print "We need to do this:"
+            print "   * delete the component node"
+            self.send( [ "DEL", "NODE", nodeid ], "to_topology" )
+            print "   * delete its inboxes"
+            print inboxes
+            for inbox in inboxes:
+                boxid = inbox[0]
+                self.send( [ "DEL", "NODE", boxid ], "to_topology" )
+            
+            print "   * delete its outboxes"
+            print outboxes
+            for outbox in outboxes:
+                boxid = outbox[0]
+                self.send( [ "DEL", "NODE", boxid ], "to_topology" )
+            
+            """
+            We need to do this:
+            * delete the component node
+            * delete its inboxes
+            [['1.control', 'control'], ['1.inbox', 'inbox']]
+            * delete its outboxes
+            [['1.outbox', 'outbox'], ['1.signal', 'signal']]
+            * delete linkages to/from said linkages
+            NEED TO REMOVE LINKAGE ['1.outbox', '3.inbox']
+            
+            This needs to be removed from:
+                  self.topology
+                  self.topologyDB
+                  also needs to be removed from the axon visualiser
+                  (del node requests)
+            """
+            # Remove links from self.topology
+            self.topology = [ link for link in self.topology if not self.matchesNode(nodeid, link) ]
+            
+            # remove inboxes from topologyDB
+            inboxids = [ x[0] for x in inboxes ]
+            for boxid in inboxids:
+                del self.topologyDB[boxid]
+            
+            # remove outboxes from topologyDB
+            outboxids = [ x[0] for x in outboxes ]
+            for boxid in outboxids:
+                del self.topologyDB[boxid]
+            
+            # Deleted the component itself from the topologyDB
+            del self.topologyDB[nodeid]
+
+        else:
+            boxid = nodeid
+            ( boxtype, label, nodeid ) = self.topologyDB[boxid]
+            print "ASKED TO DELETE box"
+            print "   * Can't actually do that!"
+            print "   * Deleting linkages to/from that box instead!"
+            if boxtype == "INBOX":
+                print "DELETING AN INBOX!", nodeid, boxid
+                # Remove links from visualiser
+                for link in self.topology:
+                    if self.matchesNode(boxid, link):
+                        source, sink = link
+                        print [ "DEL", "LINK", source, sink ], "to_topology", boxid, link, nodeid
+                        self.send( [ "DEL", "LINK", source, sink ], "to_topology" )
+                # Remove links from self.topology
+                self.topology = [ link for link in self.topology if not self.matchesNode(boxid, link) ]
+            if boxtype == "OUTBOX":
+                print "DELETING AN OUTBOX!"
+
+        self.updateSerialiser()
+            
     def updateSerialiser(self):
         self.send( { "nodes": self.topologyDB, "links": self.topology },
                    "to_serialiser")
@@ -160,6 +266,22 @@ class Magic(Axon.Component.component):
                     ], "to_topology" )
         self.topology.append([self.linksource,self.linksink])
         self.updateSerialiser()
+    
+    def matchesNode(self, nodeid, link):
+        print "nodeid, link", nodeid, link
+        linksource,linksink = link
+        if "." not in nodeid:
+            print "HERE 1"
+            source, sourcebox = linksource.split(".")
+            sink, sinkbox = linksink.split(".")
+            print "(source == nodeid)", (source == nodeid)
+            print "(sink == nodeid)", (sink == nodeid)
+            return (source == nodeid) or (sink == nodeid)
+        else:
+            print "HERE 2"
+            print "(linksource == nodeid)", (linksource == nodeid)
+            print "(linksink == nodeid)", (linksink == nodeid)
+            return (linksource == nodeid) or (linksink == nodeid)
 
     def debug_PrintCurrentNodeDetails(self):
         print "CURRENT NODE", self.currentSelectedNode
@@ -230,43 +352,8 @@ class Magic(Axon.Component.component):
 
         return ( nodeid, label, inboxes, outboxes )
 
-class CodeGen(Axon.Component.component):
-    def __init__(self):
-        super(CodeGen, self).__init__()
-        self.imports = []
-
-    def main(self):
-        while 1:
-            if self.anyReady():
-                while self.dataReady("inbox"):
-                    topology = self.recv("inbox")
-                    print "_________________________ TOPOLOGY ___________________________"
-                    pprint.pprint(topology)
-                    self.collateImports(topology)
-                    self.displayImports()
-                    print "_________________________ YGOLOPOT ___________________________"
-            else:
-                self.pause()
-            yield 1
-
-    def displayImports(self):
-        pprint.pprint(self.imports)
-    def collateImports(self, topology):
-        self.imports = {}
-        for nodeid in topology["nodes"]:
-            node = topology["nodes"][nodeid]
-            if node[0] == "COMPONENT":
-                module = node[4][3]["module"]
-                name = node[4][3]["name"]
-                try:
-                    if name not in self.imports[module]:
-                        self.imports[module].append(name)
-                except KeyError:
-                    self.imports[module] = [ name ]
-
 if __name__ == "__main__":
     import sys
-    sys.path.append("Compose")
 
     from Axon.Scheduler import scheduler
 
@@ -279,11 +366,12 @@ if __name__ == "__main__":
 
 #    from Filters import FilterSelectMsgs, FilterTopologyMsgs
 
-    from PipeBuild import PipeBuild
-    from PipelineWriter import PipelineWriter
-    from BuildViewer import BuildViewer
-    from GUI.BuilderControlsGUI import BuilderControlsGUI
-    from GUI.TextOutputGUI import TextOutputGUI
+    from Compose.PipeBuild import PipeBuild
+    from Compose.PipelineWriter import PipelineWriter
+    from Compose.CodeGen import CodeGen
+    from Compose.BuildViewer import BuildViewer
+    from Compose.GUI.BuilderControlsGUI import BuilderControlsGUI
+    from Compose.GUI.TextOutputGUI import TextOutputGUI
     from Kamaelia.Util.Backplane import *
 
     items = list(getAllClasses( COMPONENTS ))
@@ -300,11 +388,17 @@ if __name__ == "__main__":
              TextOutputGUI("Code")
     ).activate()
     
+    Backplane("Panel_Feedback").activate()
     Backplane("Panel_Events").activate()
-    Pipeline(BuilderControlsGUI(items),
+    Pipeline(SubscribeTo("Panel_Feedback"),
+             BuilderControlsGUI(items),
              PublishTo("Panel_Events")
     ).activate()
     
+    Pipeline( SubscribeTo("VisualiserEvents"),
+              PublishTo("Panel_Feedback"),
+    ).activate()
+
     Backplane("VisualiserControl").activate()
     Backplane("VisualiserEvents").activate()
     Pipeline(
@@ -328,6 +422,7 @@ if __name__ == "__main__":
         SEMANTIC_EVENTS=SubscribeTo("Panel_Events"),
         SELECTION_EVENTS=SubscribeTo("VisualiserEvents"),
         TOPOLOGY_VISUALISER=PublishTo("VisualiserControl"),
+        CODE_DISPLAY = PublishTo("Display"),
         MAKELINK = Button(caption="make link",
                           size=(63,32),
                           position=(800, 0),
@@ -340,19 +435,7 @@ if __name__ == "__main__":
             ("MAKELINK", "outbox") : ("CENTRAL_CONTROL", "makelink"),
             ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
             ("CENTRAL_CONTROL","to_serialiser"):("CODE_GENERATOR","inbox"),
+            ("CODE_GENERATOR","outbox"): ("CODE_DISPLAY","inbox"),
         }
     ).run()
-
-
-    if 0:
-        # Code left to remove/rewrite
-        pipegen = Splitter(Pipeline( BuilderControlsGUI(items),
-                                    PipeBuild() ### This is logically replaced by "Magic"
-                                )
-                        )                
-        Plug(pipegen, Pipeline(PipelineWriter(),   ### This is logically replaced by magic.
-                            TextOutputGUI("Pipeline code")
-                            )
-            ).activate()
-
 
