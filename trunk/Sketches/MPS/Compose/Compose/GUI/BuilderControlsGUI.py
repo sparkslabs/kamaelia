@@ -82,7 +82,7 @@ class BuilderControlsGUI(TkWindow):
         self.selectedlabel = Tkinter.Label(self.remframe, text="<no component selected>")
         self.selectedlabel.grid(row=0, column=0, sticky=Tkinter.S)
         
-        self.delbutton = Tkinter.Button(self.remframe, text="REMOVE Component", command=self.click_removeComponent )
+        self.delbutton = Tkinter.Button(self.remframe, text="REMOVE Component/Links", command=self.click_removeComponent )
         self.delbutton.grid(row=1, column=0, sticky=Tkinter.S)
         self.delbutton.config(state=Tkinter.DISABLED)
 
