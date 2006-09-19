@@ -43,11 +43,11 @@ import os
 
 from Kamaelia.Chassis.Graphline import Graphline
 
-from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
 from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
 from Kamaelia.Util.Fanout import Fanout
-from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
+from Sprites.BasicSprite import BasicSprite
+from Sprites.SpriteScheduler import SpriteScheduler
 
 banner_location = "banner.gif"
 cat_location    = "cat.gif"

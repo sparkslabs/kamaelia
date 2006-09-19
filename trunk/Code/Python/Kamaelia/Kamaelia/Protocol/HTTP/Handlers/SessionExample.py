@@ -32,7 +32,7 @@ Each time a URL that is handled by this component is requested, the page's
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
-import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
+import Kamaelia.Protocol.HTTP.ErrorPages
 
 Sessions = {}
 

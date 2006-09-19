@@ -39,9 +39,9 @@ import string, time, dircache, os
 from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
 
-from Kamaelia.Community.RJL.Kamaelia.File.BetterReading import IntelligentFileReader
-import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.MimeTypes as MimeTypes
-import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+from Kamaelia.File.BetterReading import IntelligentFileReader
+import Kamaelia.Protocol.HTTP.MimeTypes as MimeTypes
+import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 
 def sanitizeFilename(filename):
     output = ""

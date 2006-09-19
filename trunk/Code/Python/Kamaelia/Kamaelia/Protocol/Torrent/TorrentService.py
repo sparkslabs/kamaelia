@@ -57,8 +57,8 @@ import Axon.CoordinatingAssistantTracker as cat
 from Axon.Ipc import shutdown, producerFinished
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
+from Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 class TorrentService(AdaptiveCommsComponent):
     """\

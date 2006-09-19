@@ -32,7 +32,7 @@ data and stores the number of .torrent files save to a file "meta.txt".
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
-import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
+import Kamaelia.Protocol.HTTP.ErrorPages
 
 Sessions = {}
 

@@ -50,7 +50,7 @@ from BitTorrent.parseargs import parseargs, printHelp
 from BitTorrent import BTFailure
 
 from Axon.ThreadedComponent import threadedcomponent
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import *
 import time
 import os
 import tempfile

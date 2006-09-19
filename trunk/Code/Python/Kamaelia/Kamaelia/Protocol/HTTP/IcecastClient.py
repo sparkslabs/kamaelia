@@ -56,10 +56,10 @@ import string, time
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import *
-from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
-from Kamaelia.Community.RJL.Kamaelia.IPC.BaseIPC import IPC
+from Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Protocol.HTTP.HTTPClient import *
+from Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.IPC.BaseIPC import IPC
 
 def intval(mystring):
     try:
