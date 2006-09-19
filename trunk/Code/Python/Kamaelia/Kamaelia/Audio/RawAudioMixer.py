@@ -102,8 +102,7 @@ import time as _time
 
 # want pausing capability in threadedcomponent
 import sys
-sys.path.append("../Timer/")
-from ThreadedComponent import threadedcomponent
+from Axon.ThreadedComponent import threadedcomponent
 
 
 class AudioBuffer(object):
