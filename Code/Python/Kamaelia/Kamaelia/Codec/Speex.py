@@ -8,7 +8,7 @@
 from sys import path
 import Axon
 import speex
-import ThreadedComponent
+import Axon.ThreadedComponent
 
 # class speex:
 #     def new(klass,quality,raw):
