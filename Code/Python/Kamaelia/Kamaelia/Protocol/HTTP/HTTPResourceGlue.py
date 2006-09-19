@@ -40,11 +40,11 @@ Feel free to write your own for your webserver configuration.
 # import the modules that you want for your website
 import types
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.SessionExample import SessionExampleWrapper
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.Handlers.UploadTorrents import UploadTorrentsWrapper
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
+from Kamaelia.Protocol.HTTP.Handlers.SessionExample import SessionExampleWrapper
+from Kamaelia.Protocol.HTTP.Handlers.UploadTorrents import UploadTorrentsWrapper
 
-import Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.ErrorPages
+import Kamaelia.Protocol.HTTP.ErrorPages
 
 # then define what paths should trigger those modules, in order of priority
 # i.e. put more specific URL handlers first

@@ -100,7 +100,7 @@ from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.Internet.TCPClient import TCPClient
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Protocol.HTTP.HTTPParser import *
 
 class ParsedHTTPRedirect(object):
     def __init__(self, redirectto):

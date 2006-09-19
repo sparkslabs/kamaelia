@@ -52,8 +52,8 @@ from Axon.Ipc import shutdown, producerFinished
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
-from Kamaelia.Community.RJL.Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 """\
 =================
@@ -282,7 +282,7 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
-    from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
+    from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
 
     # download a linux distro or whatever
     # NOTE: Do not follow this example. It is used to illustrate/test the use of a TorrentClient component

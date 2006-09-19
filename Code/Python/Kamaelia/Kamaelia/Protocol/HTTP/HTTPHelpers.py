@@ -54,7 +54,7 @@ class HTTPMakePostRequest(component):
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import pipeline
-    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     
     postscript = raw_input("Post Script URL: ") # e.g. "http://www.example.com/upload.php"
     

@@ -95,7 +95,7 @@ __kamaelia_components__  = ( ChunkNamer, )
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import pipeline
-    from Kamaelia.Community.RJL.Kamaelia.File.WholeFileWriter import WholeFileWriter
+    from Kamaelia.File.WholeFileWriter import WholeFileWriter
     from Kamaelia.Util.Console import ConsoleReader
     pipeline(
         ConsoleReader(),

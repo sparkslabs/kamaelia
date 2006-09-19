@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """(Bit)Torrent IPC messages"""
-from Kamaelia.Community.RJL.Kamaelia.IPC.BaseIPC import IPC
+from Kamaelia.IPC.BaseIPC import IPC
 
 # ====================== Messages to send to TorrentMaker =======================
 class TIPCMakeTorrent(IPC):

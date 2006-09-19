@@ -62,7 +62,7 @@ __kamaelia_components__  = ( CheapAndCheerfulClock, )
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import pipeline
-    from Kamaelia.Community.RJL.Kamaelia.Util.DataSource import TriggeredSource
+    from Kamaelia.Util.DataSource import TriggeredSource
     from Kamaelia.Util.Console import ConsoleEchoer
     
     # Example - print "fish" every 3 seconds.

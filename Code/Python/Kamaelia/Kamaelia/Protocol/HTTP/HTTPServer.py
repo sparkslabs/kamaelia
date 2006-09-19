@@ -131,7 +131,7 @@ from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Protocol.HTTP.HTTPParser import *
 
 def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
@@ -528,7 +528,7 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
     
     # this works out what the correct response to a request is
-    from Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
+    from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
     
     def createhttpserver():
         return HTTPServer(createRequestHandler)

@@ -82,8 +82,8 @@ Those used externally (i.e. seen/sent by user components):
 from Axon.Ipc import shutdown, producerFinished
 from Axon.Component import component
 
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentService import TorrentService
-from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentService import TorrentService
+from Kamaelia.Protocol.Torrent.TorrentIPC import *
 
 class TorrentPatron(component):
     """Inboxes/outboxes and message behaviour identical to TorrentClient but
@@ -148,8 +148,8 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
-    from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
-    from Kamaelia.Community.RJL.Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
+    from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
+    from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
     
     # Download a .torrent file with your web browser then enter its file path
     # to the console to have TorrentPatron download it for you
