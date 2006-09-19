@@ -70,21 +70,15 @@ def convertback(data):
 
 
 if __name__ == "__main__":
-    import sys
-    sys.path.append("../pymedia")
-    
-    from Audio.PyMedia.Input import Input
-    from Audio.PyMedia.Output import Output
-    
-    sys.path.append("..")
-    from Speex import SpeexEncode,SpeexDecode
-    
-    from RawAudioMixer import RawAudioMixer
-    
-    sys.path.append("../Sketcher/Whiteboard")
-    from Entuple import Entuple
-    
+    import sys    
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Audio.PyMedia.Input import Input
+    from Kamaelia.Audio.PyMedia.Output import Output
+    from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+    from Kamaelia.Audio.RawAudioMixer import RawAudioMixer
+
+    sys.path.append("../../Tools/Whiteboard")
+    from Entuple import Entuple
     
     Pipeline( Input(sample_rate=8000, channels=1, format="S16_LE"),
               LPF(),
