@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 
 import sys,os
-sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*1)
+# sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*1)
 
-from Audio.PyMedia.Input import Input as PyMediaInput
+from Kamaelia.Audio.PyMedia.Input import Input as PyMediaInput
 
