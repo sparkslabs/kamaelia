@@ -92,7 +92,9 @@
 
    NOTE: With version 1.3.7.0 of pymedia, Linux users may experience segfaults
          whilst using the audio input component. A patch exists for pymedia
-         to fix this. See: 
+         to fix this. Get the patch here:
+             http://kamaelia.sf.net/t/pymedia_patch.tar.gz
+         
 
    SPEEX CODING AND DECODING
 
