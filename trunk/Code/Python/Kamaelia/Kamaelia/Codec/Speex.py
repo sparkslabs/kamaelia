@@ -5,12 +5,9 @@
 # with modifications to improve shutdown, and a few other things
 
 
-import speex
-#from Axon import ThreadedComponent
-from Axon.Component import component
-import Axon
 from sys import path
-path.append("../../MH/Timer")
+import Axon
+import speex
 import ThreadedComponent
 
 # class speex:
