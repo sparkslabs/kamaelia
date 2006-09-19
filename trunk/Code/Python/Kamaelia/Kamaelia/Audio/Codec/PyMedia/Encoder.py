@@ -27,9 +27,9 @@ import pymedia.muxer as muxer
 import pymedia.audio.acodec as acodec
 
 import sys,os
-sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*3)
-from Support.PyMedia.AudioFormats import format2PyMediaFormat
-from Support.PyMedia.AudioFormats import codec2PyMediaCodec
+# sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*3)
+from Kamaelia.Support.PyMedia.AudioFormats import format2PyMediaFormat
+from Kamaelia.Support.PyMedia.AudioFormats import codec2PyMediaCodec
 
 
 class Encoder(component):
