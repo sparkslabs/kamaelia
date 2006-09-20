@@ -49,6 +49,7 @@ pipeline(
 
 If you want to play around with parsing HTTP requests: (like a server)
 
+        
 pipeline(
     ConsoleReader(),
     HTTPParser(mode="response"),
@@ -58,8 +59,19 @@ pipeline(
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
+from Kamaelia.Community.RJL.Kamaelia.Util.CharacterQueue import CharacterFIFO
 import string
 
+def TuplifyHTTPVersion(versionstring):
+    splitversion = versionstring.split(".", 1)
+    if len(splitversion) == 2:
+        try:        
+            major, minor = int(splitversion[0]), int(splitversion[1])
+        except ValueError:
+            major, minor = 0, 0
+
+    return (major, minor)
+            
 #TODO: modify to handle %20 style encoding
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
@@ -80,7 +92,6 @@ def splitUri(url):
             requestobject["raw-uri"] = "/"
         else:
             requestobject["uri-server"] = ""
-        
     splituri = string.split(requestobject["uri-server"], ":")
     if len(splituri) == 2:
         requestobject["uri-port"] = splituri[1]
@@ -120,6 +131,11 @@ class HTTPParser(component):
     """Component that transforms HTTP requests or responses from a
     single TCP connection into multiple easy-to-use dictionary objects."""
     
+    # if we don't set a maximum URI length, then someone could just send us a few GB of URI
+    # which we'd try to store in memory - not nice!
+    MaxFirstLineLength = 10000
+    MaxTotalHeadersLength = 50000
+    
     Inboxes =  {
         "inbox"         : "Raw HTTP requests/responses",
         "control"       : "UNUSED"
@@ -134,6 +150,7 @@ class HTTPParser(component):
         super(HTTPParser, self).__init__()
         self.mode = mode
 
+        self.charqueue = CharacterFIFO()
         self.lines = []
         self.readbuffer = ""
         
@@ -141,7 +158,7 @@ class HTTPParser(component):
         protvers = protvers.split("/")
         if len(protvers) != 2:
             requestobject["protocol"] = protvers[0]
-            requestobject["version"] = "0"
+            requestobject["version"] = "0.0"
         else:
             requestobject["protocol"] = protvers[0]
             requestobject["version"]  = protvers[1]
@@ -150,13 +167,14 @@ class HTTPParser(component):
         """Read once from inbox (generally a TCP connection) and add
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
-            self.readbuffer += self.recv("inbox")
+            self.charqueue.push(self.recv("inbox"))
             return 1
         else:
             return 0
             
     def debug(self, msg):
-        self.send(msg, "debug")
+        # self.send(msg, "debug")
+        print msg
     
     def shouldShutdown(self):
         while self.dataReady("control"):
@@ -166,22 +184,30 @@ class HTTPParser(component):
                 return True
         
         return False
+    
+    def bufferLength(self):
+        return len(self.charqueue)
+    
+    def popBuffer(self):
+        return self.charqueue.poplength(len(self.charqueue))
         
     def nextLine(self):
         "Fetch the next complete line in the readbuffer, if there is one"
-        lineendpos = string.find(self.readbuffer, "\n")
-        if lineendpos == -1:
-            return None
-        else:
-            line = removeTrailingCr(self.readbuffer[:lineendpos])
-            self.readbuffer = self.readbuffer[lineendpos + 1:] #the remainder after the \n
+
+        line  = self.charqueue.popline()
+        if line != None:
+            if line[-2:] == "\r\n":
+                line = line[:-2]
+            elif line[-1:] == "\n":
+                line = line[:-1]
             self.debug("Fetched line: " + line)
-            return line
+        return line
     
     def main(self):
 
         while 1:
             self.debug("HTTPParser::main - stage 0")
+            
             if self.mode == "request":
                 requestobject = { "bad": False,
                                   "headers": {},
@@ -209,8 +235,13 @@ class HTTPParser(component):
                     pass
                 currentline = self.nextLine()
                 if currentline == None:
-                    self.pause()
-                    yield 1
+                    if self.bufferLength() > self.MaxFirstLineLength: # looks like a DoS attempt - reject line rather than wasting lots of memory
+                        self.debug("HTTPParser request line too long - terminating\n")
+                        self.send(producerFinished(self), "signal") #this functionality is semi-complete
+                        return
+                    else:
+                        self.pause()
+                        yield 1
                 
             self.debug("HTTPParser::main - initial line found")
             splitline = string.split(currentline, " ")
@@ -244,13 +275,19 @@ class HTTPParser(component):
                     requestobject["responsecode"] = splitline[1]
                     self.splitProtocolVersion(splitline[0], requestobject)
             
+            requestobject["version"] = TuplifyHTTPVersion(requestobject["version"])
+            
             if not requestobject["bad"]:
-                if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
+                # some requests, e.g. POSTs, come with a payload that we must accept after the headers
+                # others, e.g. GETs, have no payload - after the headers comes the next request
+                # responses (i.e. from a server) always have a payload
+                if self.mode == "response" or requestobject["method"] in ["PUT", "POST"]:
                     bodiedrequest = True
                 else:
                     bodiedrequest = False
-
-                #state 2 - as this is a valid request, we now accept headers	
+                
+                # state 2 - as this is a valid request, we now accept headers
+                # TODO: add a limit to header size
                 previousheader = ""
                 endofheaders = False
                 while not endofheaders:
@@ -267,7 +304,7 @@ class HTTPParser(component):
                             endofheaders = True
                             break
                         else:
-                            if currentline[0] == " " or currentline[0] == "\t": #continued header
+                            if currentline[0] in [" ", "\t"]: #continued header
                                 requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
                             else:
                                 splitheader = string.split(currentline, ":")
@@ -283,7 +320,7 @@ class HTTPParser(component):
                 if requestobject["headers"].has_key("host"):
                     requestobject["uri-server"] = requestobject["headers"]["host"]
                 
-                if requestobject["version"] == "1.1":
+                if requestobject["version"] > (1, 1):
                     requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
                 else:
                     requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
@@ -372,21 +409,17 @@ class HTTPParser(component):
                                 yield 1
                         
                         self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
-                    else: #we'll assume it's a connection: close jobby
-                        #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
+                    else: # we'll assume it's a connection: close jobby
+                        # THIS CODE IS BROKEN - IT WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
                         self.debug("HTTPParser::main - stage 3.connection-close start\n")
                         connectionopen = True
                         while connectionopen:
-                            #print "HTTPParser::main - stage 3.connection close.1"
-                            if self.shouldShutdown(): return						
+                            self.debug("HTTPParser::main - stage 3.connection close.1")
+                            if self.shouldShutdown(): return
+                            
                             while self.dataFetch():
-                                #print "!"
-                                pass
-                                
-                            if len(self.readbuffer) > 0:
-                                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
-                                self.readbuffer = ""
-                                
+                                self.send(ParsedHTTPBodyChunk(self.popBuffer()), "outbox")
+                                                                
                             while self.dataReady("control"):
                                 #print "!"                            
                                 temp = self.recv("control")

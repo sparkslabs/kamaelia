@@ -294,7 +294,8 @@ class HTTPRequestHandler(component):
     }
     
     def debug(self, msg):
-        self.send(msg, "debug")
+        #self.send(msg, "debug")
+        print msg
         
     def resourceUTF8Encode(self, resource):
         "Encode a resource's unicode data as utf-8 octets"
@@ -315,10 +316,10 @@ class HTTPRequestHandler(component):
                     
         statustext = self.MapStatusCodeToText.get(resource["statuscode"], "500 Internal Server Error")
 
-        if (protocolversion == "0.9"):
-            header = ""        
+        if protocolversion == (0, 9):
+            header = ""
         else:
-            header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.4\r\nDate: " + currentTimeHTTP() + "\r\n"
+            header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.5\r\nDate: " + currentTimeHTTP() + "\r\n"
             if resource.has_key("charset"):
                 header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
             else:
@@ -341,11 +342,11 @@ class HTTPRequestHandler(component):
         if request["protocol"] != "HTTP":
             request["bad"] = "400"
             
-        elif request["version"] > "1.0" and not request["headers"].has_key("host"):
+        elif request["version"] > (1, 0) and not request["headers"].has_key("host"):
             request["bad"] = "400"
             request["error-msg"] = "Host header required."
             
-        if request["method"] not in ("GET", "HEAD", "POST"):
+        if request["method"] not in ["GET", "HEAD", "POST"]:
             request["bad"] = "501"
        
     def waitingOnNetworkToSend(self):
@@ -409,10 +410,11 @@ class HTTPRequestHandler(component):
         return 0
         
     def main(self):
-
+        self.debug("HTTPServer::main - start")
+        
         while 1:
-            yield 1        
-
+            yield 1
+            
             while self.dataReady("inbox"):
                 # we have a new request from the remote HTTP client
                 request = self.recv("inbox")
@@ -426,7 +428,7 @@ class HTTPRequestHandler(component):
                 # add ["bad"] and ["error-msg"] keys to the request if it is invalid
                 self.checkRequestValidity(request)
                 
-                if request["version"] == "1.1":
+                if request["version"] >= (1, 1):
                     connection = request["headers"].get("connection", "keep-alive")
                 else:
                     connection = request["headers"].get("connection", "close")
@@ -464,11 +466,12 @@ class HTTPRequestHandler(component):
                     sendChunk = self.sendChunkExplicit
                     sendEnd = self.sendEndExplicit
                     
-                elif True: #request["version"] < "1.1":
+                elif request["version"] < "1.1":
                     lengthMethod = "close"
                     self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
                     sendChunk = self.sendChunkExplicit
-                    sendEnd = self.sendEndClose                
+                    sendEnd = self.sendEndClose
+                    
                 else:
                     lengthMethod = "chunked"
                     self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
@@ -514,7 +517,7 @@ class HTTPRequestHandler(component):
                     self.send(producerFinished(), "signal") #this functionality is semi-complete
                     return
 
-            self.updateShutdownStatus()
+            self.updateShouldShutdown()
             if self.ssCode > 0:
                 return
 
