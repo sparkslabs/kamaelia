@@ -236,12 +236,12 @@ __kamaelia_components__  = ( IcecastDemux, IcecastClient, IcecastStreamWriter )
 __kamaelia_prefabs__  = ( IcecastStreamRemoveMetadata )
 
 if __name__ == '__main__':
-    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     
     # Save a SHOUTcast/Icecast stream to disk
     # (you can then use an MP3 player program to listen to it while it downloads).
     streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
-    pipeline(
+    Pipeline(
         IcecastClient(streamurl),
         IcecastDemux(),
         IcecastStreamWriter("stream.mp3"),
