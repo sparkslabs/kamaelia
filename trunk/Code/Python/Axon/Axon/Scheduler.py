@@ -224,6 +224,7 @@ class scheduler(microprocess):
                         if canActivate:
                             nextrunqueue.append(mprocess)
                             self.threads[mprocess] = _ACTIVE
+                            allsleeping = False
 
                except Queue.Empty:
                     # catch timeout
