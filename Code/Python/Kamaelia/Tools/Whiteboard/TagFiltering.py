@@ -23,7 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 
 # A pair of components for tagging data with a unique ID and filtering out
 # data with a given unique ID
@@ -95,15 +95,52 @@ class FilterTag(component):
             yield 1
 
 
-def TagAndFilterWrapper(target):
+class FilterButKeepTag(component):
+    Inboxes = { "inbox"   : "incoming tagged items",
+                "control" : "shutdown signalling",
+                 "uid"    : "uid to filter",
+              }
+    Outboxes = { "outbox" : "items, not tagged with uid",
+                 "signal" : "shutdown signalling",
+               }
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg, "signal")
+            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                return True
+        return False
+
+    def main(self):
+        uid = object()
+
+        while not self.finished():
+            while self.dataReady("uid"):
+                uid = self.recv("uid")
+
+            while self.dataReady("inbox"):
+                (ID,item) = self.recv("inbox")
+                if not ID == uid:
+                    self.send( (ID,item), "outbox" )
+
+            self.pause()
+            yield 1
+
+
+def TagAndFilterWrapper(target, dontRemoveTag=False):
     """\
     Returns a component that wraps a target component, tagging all traffic
     coming from its outbox; and filtering outany traffic coming into its inbox
     with the same unique id.
     """
+    if dontRemoveTag:
+        Filter = FilterButKeepTag
+    else:
+        Filter = FilterTag
 
     return Graphline( TAGGER = UidTagger(),
-                      FILTER = FilterTag(),
+                      FILTER = Filter(),
                       TARGET = target,
                       linkages = {
                           ("TARGET", "outbox") : ("TAGGER", "inbox"),    # tag data coming from target
@@ -121,15 +158,19 @@ def TagAndFilterWrapper(target):
                       },
                     )
 
-def FilterAndTagWrapper(target):
+def FilterAndTagWrapper(target, dontRemoveTag=False):
     """\
     Returns a component that wraps a target component, tagging all traffic
     going into its inbox; and filtering outany traffic coming out of its outbox
     with the same unique id.
     """
+    if dontRemoveTag:
+        Filter = FilterButKeepTag
+    else:
+        Filter = FilterTag
 
     return Graphline( TAGGER = UidTagger(),
-                      FILTER = FilterTag(),
+                      FILTER = Filter(),
                       TARGET = target,
                       linkages = {
                           ("TARGET", "outbox") : ("FILTER", "inbox"),    # filter data coming from target
@@ -146,3 +187,9 @@ def FilterAndTagWrapper(target):
                           ("FILTER", "signal") : ("self", "signal"),
                       },
                     )
+
+def TagAndFilterWrapperKeepingTag(target):
+    return TagAndFilterWrapper(target, dontRemoveTag=True)
+
+def FilterAndTagWrapperKeepingTag(target):
+    return FilterAndTagWrapper(target, dontRemoveTag=True)

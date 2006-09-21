@@ -86,13 +86,13 @@ class CheckpointSequencer(Axon.Component.component):
                 yield 1
 
 if __name__ == "__main__":
-    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     def loadMessage(current): return [["LOAD", "slide.%d.png" % (current,)]]
     def saveMessage(current): return [["SAVE", "slide.%d.png" % (current,)]]
 
-    Pipeline(
+    pipeline(
         ConsoleReader(">>>", ""),
         CheckpointSequencer(lambda X: [["LOAD", "slide.%d.png" % (X,)]],
                             lambda X: [["SAVE", "slide.%d.png" % (X,)]],
@@ -105,13 +105,13 @@ if __name__ == "__main__":
 
 
 if __name__ == "__OLDmain__":
-    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     def loadMessage(current): return [["LOAD", "slide.%d.png" % (current,)]]
     def saveMessage(current): return [["SAVE", "slide.%d.png" % (current,)]]
 
-    Pipeline(
+    pipeline(
         ConsoleReader(">>>", ""),
         CheckpointSequencer(lambda X: [["LOAD", "slide.%d.png" % (X,)]],
                             lambda X: [["SAVE", "slide.%d.png" % (X,)]],
