@@ -65,8 +65,8 @@ if __name__=="__main__":
     
     from Kamaelia.Internet.TCPClient import TCPClient
     from Kamaelia.File.Reading import RateControlledFileReader
-    from Audio.Codec.PyMedia.Decoder import Decoder
-    from Audio.PyMedia.Resample import Resample
+    from Kamaelia.Audio.Codec.PyMedia.Decoder import Decoder
+    from Kamaelia.Audio.PyMedia.Resample import Resample
 
     import sys
     try:

@@ -9,8 +9,7 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
@@ -126,7 +125,7 @@ if __name__=="__main__":
         sys.exit(1)
 
     print "Recording..."
-    pipeline(
+    Pipeline(
         OneShot(msg=[["GETIMG"]]),
         tokenlists_to_lines(),
         TCPClient(host=rhost, port=rport),

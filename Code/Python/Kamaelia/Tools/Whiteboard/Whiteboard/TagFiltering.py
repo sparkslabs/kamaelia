@@ -23,7 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 
 # A pair of components for tagging data with a unique ID and filtering out
 # data with a given unique ID
