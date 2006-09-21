@@ -71,10 +71,10 @@ class Output(threadedcomponent):
                 
             if self.maxLag > 0:
                 while buffersize > self.maxLag:
-                    print "reducing",buffersize
+#                    print "reducing",buffersize
                     buffersize -= len(buffer[0])
                     del buffer[0]
-                print buffersize
+#                print buffersize
                 
             for chunk in buffer:
                 for i in range(0,len(chunk),CHUNKSIZE):

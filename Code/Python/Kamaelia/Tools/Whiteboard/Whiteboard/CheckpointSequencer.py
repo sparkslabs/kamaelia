@@ -55,7 +55,7 @@ class CheckpointSequencer(Axon.Component.component):
                 if command == "undo":
                     self.send( self.loadMessage(current), "outbox")
                 if command == "dirty":
-                    print "OK, got dirty message"
+#                    print "OK, got dirty message"
                     dirty = True
 #                    self.send( self.loadMessage(current), "outbox")
 
