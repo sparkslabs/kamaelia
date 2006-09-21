@@ -16,6 +16,7 @@ class Sandbox(Axon.Component.component):
     ("ADD", "importpath:factorycmd", ...)
     ("DEL", id)
     ("LINK", introspector-outbox-id, introspector-inbox-id)
+    ("UNLINK", introspector-outbox-id, introspector-inbox-id)
     
     Eventually need to add UNLINK and a way to replace components, eg. by specifying the id
     """
@@ -28,6 +29,7 @@ class Sandbox(Axon.Component.component):
                
     def __init__(self):
         super(Sandbox,self).__init__()
+        self.linkages = {}
         
     def main(self):
         yield 1
@@ -53,7 +55,7 @@ class Sandbox(Axon.Component.component):
                     self.makeLink( cmd[1], cmd[2] )
                 
                 elif cmd[0] == "UNLINK":
-                    raise "Can't handle destroying links yet!"
+                    self.unmakeLink( cmd[1], cmd[2] )
                 
                 elif cmd[0] == "GO":
                     yield self.go()
@@ -71,7 +73,11 @@ class Sandbox(Axon.Component.component):
         (modulename, classname, arguments) = match.groups()
         module = __import__(modulename, [], [], [classname])
 
-        thecomponent = eval("module."+classname+arguments)   ### XXX Probably a gaping security hole!!!
+        try:
+            thecomponent = eval("module."+classname+arguments)   ### XXX Probably a gaping security hole!!!
+        except e:
+            print "Couldn't instantiate component: ",str(e)
+            
         if not uid is None:
             thecomponent.id = eval(uid)
         thecomponent.name = spec + "_" + str(thecomponent.id)
@@ -109,8 +115,21 @@ class Sandbox(Axon.Component.component):
         components.append(self)
         source = [c for c in components if c.id == sid]
         dest   = [c for c in components if c.id == did]
-        self.link( (source[0], sbox), (dest[0], dbox), passthrough=passthrough )
+        linkage = self.link( (source[0], sbox), (dest[0], dbox), passthrough=passthrough )
+        self.linkages[ (src,dst) ] = linkage
 
+
+    def unmakeLink(self, src, dst):
+        # get right way around if back to front
+        src, dst = eval(src), eval(dst)            # XXX SECURITY RISK
+        print src
+        if src[1] == "i" and dst[1] == "o":
+            src, dst = dst, src
+        
+        linkage = self.linkages.get((src,dst),None)
+        if linkage:
+            self.unlink(thelinkage=linkage)
+            del self.linkages[(src,dst)]
         
     def go(self):
         return Ipc.newComponent(*[c for c in self.childComponents()])
