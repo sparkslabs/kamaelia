@@ -39,12 +39,12 @@ class Canvas(Axon.Component.component):
 
     Inboxes =  { "inbox"   : "Receives drawing instructions",
                  "control" : "",
-                 "fromDisplay"  : "For receiving replies from Pygame Display service",
-                 "eventsIn" : "For receiving Pygame Display events",
+                 "fromDisplay"  : "For receiving replies from PygameDisplay service",
+                 "eventsIn" : "For receiving PygameDisplay events",
                }
     Outboxes = { "outbox" : "Issues drawing instructions",
                  "signal" : "",
-                 "toDisplay" : "For sending requests to Pygame Display service",
+                 "toDisplay" : "For sending requests to PygameDisplay service",
                  "eventsOut" : "Events forwarded out of here",
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                }
@@ -110,23 +110,25 @@ class Canvas(Axon.Component.component):
                    "toDisplay" )
 
         while not self.finished():
-
+            
+            self.redrawNeeded = False
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
 #                \
 #print repr(msgs)
-                self.redrawNeeded = False
                 for msg in msgs:
                     cmd = msg[0]
                     args = msg[1:]
                     # parse commands here
                     self.handleCommand(cmd, *args)
-                if self.redrawNeeded:
-                    self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-                    if not self.clean:
-                        if not self.dirty_sent:
-                            self.send("dirty", "surfacechanged")
-                            self.dirty_sent = True
+                yield 1
+            
+            if self.redrawNeeded:
+                self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
+                if not self.clean:
+                    if not self.dirty_sent:
+                        self.send("dirty", "surfacechanged")
+                        self.dirty_sent = True
 
             # pass on events received from pygame display
             while self.dataReady("eventsIn"):
