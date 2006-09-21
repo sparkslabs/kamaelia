@@ -26,11 +26,15 @@ import pygame
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
+from Kamaelia.Visualisation.Axon.AxonVisualiserServer import AxonVisualiser
 from Kamaelia.Support.Particles import SimpleLaws, Particle
 from Kamaelia.Visualisation.Axon.ExtraWindowFurniture import ExtraWindowFurniture
 
 import time
 
+#
+# FIXME: How does this relate to the normal particle?
+#
 class ComponentParticle(Particle):
     """Version of Physics.Particle designed to represent components in a simple pipeline"""
 
@@ -39,29 +43,29 @@ class ComponentParticle(Particle):
         self.radius = 20
         self.labelText = name   # strip up to the first pipe only
         self.name = name
-        
+
         pygame.font.init()
         font = pygame.font.Font(None, 24)
         self.label = font.render(self.labelText, False, (0,0,0))
         self.left = 0
         self.top  = 0
         self.selected = False
-       
+
     def render(self, surface):
         """Rendering passes. A generator method that renders in multiple passes.
         Use yields to specify a wait until the pass the next stage of rendering
         should take place at.
-        
+
         Example, that renders bonds 'behind' the blobs.
             def render(self, surface):
                 yield 1
                 self.renderBonds(surface)        # render bonds on pass 1
                 yield 5 
                 self.renderSelf(surface)         # render 'blob' on pass 5
-        
+
          If another particle type rendered, for example, on pass 3, then it
          would be rendered on top of the bonds, but behind the blobs.
-         
+
          Use this mechanism to order rendering into layers.
          """
         sx = int(self.pos[0]) - self.left
@@ -100,15 +104,15 @@ class ComponentParticle(Particle):
 
         
         yield 2
-        
+
         if self.selected:
             pygame.draw.circle(surface, (255,255,128), (sx,sy), self.radius)
         else:
             pygame.draw.circle(surface, (192,192,192), (sx,sy), self.radius)
-            
+
         surface.blit(self.label, (sx - self.label.get_width()/2, sy - self.label.get_height()/2))
-        
-        
+
+
     def setOffset( self, (left,top) ):
         """Inform of a change to the coords of the top left of the drawing surface,
         so that this entity can render, as if the top left had moved
@@ -116,7 +120,6 @@ class ComponentParticle(Particle):
         self.left = left
         self.top  = top
 
-        
     def select( self ):
         """Tell this particle it is selected"""
         self.selected = True
@@ -125,12 +128,12 @@ class ComponentParticle(Particle):
         """Tell this particle it is selected"""
         self.selected = False
 
-def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):                                        
+def BuildViewer(screensize = (800,600), fullscreen = False, transparency = None):
     laws = SimpleLaws(bondLength=100)
-    return TopologyViewer( screensize=screensize,
+    return AxonVisualiser( screensize=screensize,
                            fullscreen=fullscreen,
                            caption = "The pipeline",
                            particleTypes = {"component":ComponentParticle},
-                           extraDrawing = ExtraWindowFurniture(),
-                           laws = laws
+#                           extraDrawing = ExtraWindowFurniture(),
+                            laws = laws
                          )
