@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 #
 
+import sys
 import Axon
 import pygame
 
@@ -48,19 +49,11 @@ from Whiteboard.TwoWaySplitter import TwoWaySplitter
 from Whiteboard.SingleShot import OneShot
 from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
+from Kamaelia.Audio.PyMedia.Input  import Input  as _SoundInput
+from Kamaelia.Audio.PyMedia.Output import Output as _SoundOutput
 
-# stuff for doing audio
-import sys
-sys.path.append("../pymedia/")
-sys.path.append("../")
-sys.path.append("../audio")
-#from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
-
-from Audio.PyMedia.Input  import Input  as _SoundInput
-from Audio.PyMedia.Output import Output as _SoundOutput
-
-from Speex import SpeexEncode,SpeexDecode
-from RawAudioMixer import RawAudioMixer as _RawAudioMixer
+from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+from Kamaelia.Audio.RawAudioMixer import RawAudioMixer as _RawAudioMixer
 from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
 
 from Kamaelia.Util.Detuple import SimpleDetupler
@@ -272,7 +265,7 @@ class PreFilter(Axon.Component.component): # This is a data tap/siphon/demuxer
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                print "INCOMING", data
+#                print "INCOMING", data
                 if (data == [["prev"]]) or (data == [["next"]]):
                     self.send((data[0][0], "local"), "history_event")
                 else:

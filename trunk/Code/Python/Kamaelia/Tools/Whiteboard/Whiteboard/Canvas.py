@@ -194,7 +194,7 @@ class Canvas(Axon.Component.component):
 
     def load(self, args):
             filename = args[0]
-            print "ARGS", args
+#            print "ARGS", args
             try:
                 loadedimage = pygame.image.load(filename)
             except:
@@ -221,7 +221,7 @@ class Canvas(Axon.Component.component):
             imagestring = zlib.compress(imagestring)
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
-            print "GETIMG"
+#            print "GETIMG"
 
     def setimg(self, args):
             w,h = int(args[1]), int(args[2])
