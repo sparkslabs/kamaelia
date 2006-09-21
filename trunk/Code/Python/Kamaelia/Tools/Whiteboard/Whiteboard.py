@@ -29,9 +29,9 @@ from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
@@ -131,20 +131,20 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
         from Kamaelia.Util.Console import ConsoleEchoer
 
         def clientconnector():
-            return pipeline(
+            return Pipeline(
                 chunks_to_lines(),
                 lines_to_tokenlists(),
                 Graphline(
                     WHITEBOARD = FilterAndTagWrapper(
-                        pipeline( publishTo(whiteboardBackplane),
+                        Pipeline( publishTo(whiteboardBackplane),
                                   # well, should be to separate pipelines, this is lazier!
                                   subscribeTo(whiteboardBackplane),
                                 )),
-                    AUDIO = pipeline(
+                    AUDIO = Pipeline(
                         SimpleDetupler(1),     # remove 'SOUND' tag
                         SpeexDecode(3),
                         FilterAndTagWrapperKeepingTag(
-                            pipeline( publishTo(audioBackplane),
+                            Pipeline( publishTo(audioBackplane),
                                         # well, should be to separate pipelines, this is lazier!
                                     subscribeTo(audioBackplane),
                                     ),
@@ -188,7 +188,7 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
         loadingmsg = "Fetching sketch from server..."
 
         return Graphline(
-                NETWORK = pipeline(
+                NETWORK = Pipeline(
                     tokenlists_to_lines(),
                     TCPClient(host=rhost,port=rport),
                     chunks_to_lines(),
@@ -198,17 +198,17 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                                  ((lambda tuple : tuple[0]!="SOUND"), "whiteboard"),
                                ),
                 WHITEBOARD = FilterAndTagWrapper(
-                    pipeline(
+                    Pipeline(
                         publishTo(whiteboardBackplane),
                         #
                         subscribeTo(whiteboardBackplane),
                     )
                 ),
-                AUDIO = pipeline(
+                AUDIO = Pipeline(
                     SimpleDetupler(1),     # remove 'SOUND' tag
                     SpeexDecode(3),
                     FilterAndTagWrapperKeepingTag(
-                        pipeline(
+                        Pipeline(
                             publishTo(audioBackplane),
                             #
                             subscribeTo(audioBackplane),
@@ -361,7 +361,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
 mainsketcher = \
     Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
-               CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
+               CONSOLE = Pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
 
                linkages = { ('self','inbox'):('SKETCHER','inbox'),
                             ('SKETCHER','outbox'):('self','outbox'),
@@ -374,15 +374,15 @@ mainsketcher = \
 if __name__=="__main__":
     
     # primary whiteboard
-    pipeline( subscribeTo("WHITEBOARD"),
+    Pipeline( subscribeTo("WHITEBOARD"),
             TagAndFilterWrapper(mainsketcher),
             publishTo("WHITEBOARD")
             ).activate()
             
     # primary sound IO - tagged and filtered, so can't hear self
-    pipeline( subscribeTo("AUDIO"),
+    Pipeline( subscribeTo("AUDIO"),
               TagAndFilterWrapperKeepingTag(
-                  pipeline(
+                  Pipeline(
                       RawAudioMixer(),
 #                      PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
@@ -410,7 +410,7 @@ if __name__=="__main__":
 #    sys.path.append("../Introspection")
 #    from Profiling import FormattedProfiler
 #    
-#    pipeline(FormattedProfiler( 20.0, 1.0),
+#    Pipeline(FormattedProfiler( 20.0, 1.0),
 #             ConsoleEchoer()
 #            ).activate()
 

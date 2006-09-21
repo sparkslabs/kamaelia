@@ -34,7 +34,7 @@ Example Usage
 Taking console input and sandwiching it in a tuple between the strings
 ("You" and "said") and ("just" and now")::
     
-    pipeline( ConsoleReader(),
+    Pipeline( ConsoleReader(),
               Entuple(prefix=["You","said"], postfix=["just","now"]),
               ConsoleEchoer(),
             ).run()
