@@ -12,6 +12,7 @@ class EditorLogic(Axon.Component.component):
         "newnode" : "Inbox where we recieve messages telling us to add a node",
         "delnode" : "Inbox where we recieve messages telling us to delete a node",
         "linknode" : "Inbox where we recieve messages telling us to form links",
+        "unlinknode" : "Inbox where we recieve messages telling us to break links",
         "go" : "Inbox where we receive messages telling us to start the components",
     }
     Outboxes = {
@@ -51,7 +52,12 @@ class EditorLogic(Axon.Component.component):
                     if new_node is not None:
                         node = new_node
                         if linkmode and linkstart is not None:
-                            self.send(("LINK", linkstart, node), "commands")
+                            if linkmode=="MAKE":
+                                self.send(("LINK", linkstart, node), "commands")
+                            elif linkmode=="UNMAKE":
+                                self.send(("UNLINK", linkstart, node), "commands")
+                            else:
+                                raise "Nooo!"
                             linkmode = False
                             linkstart = None
                 # forward stuff on
@@ -77,7 +83,13 @@ class EditorLogic(Axon.Component.component):
                 self.recv("linknode")
                 if node is not None:
                     linkstart = node
-                    linkmode = True
+                    linkmode = "MAKE"
+
+            if self.dataReady("unlinknode"):
+                self.recv("unlinknode")
+                if node is not None:
+                    linkstart = node
+                    linkmode = "UNMAKE"
 
             if self.dataReady("go"):
                 self.recv("go")

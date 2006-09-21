@@ -123,7 +123,7 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 pgd = PygameDisplay(width=800,height=600).activate()
 PygameDisplay.setDisplayService(pgd)
 
-TVC = TopologyViewerComponent(position=(0,0), laws = AxonLaws(), particleTypes=particleTypes)
+TVC = TopologyViewerComponent(position=(0,48), laws = AxonLaws(), particleTypes=particleTypes)
 
 SANDBOX = Sandbox()
 
@@ -137,16 +137,18 @@ Graphline(
     TVC = TVC,
     INTROSPECTOR = pipeline(Introspector(SANDBOX), chunks_to_lines(), lines_to_tokenlists()),
     SANDBOX = SANDBOX,
-    NEW = Button(caption="New Component", msg="NEXT", position=(72,32)),
-    CHANGE = Button(caption="Change Component", msg="NEXT", position=(182,32)),
-    DEL = Button(caption="Delete Component", msg="NEXT", position=(292,32)),
-    LINK = Button(caption="Make Link", msg="NEXT", position=(402,32)),
-    GO   = Button(caption="Activate!", msg="NEXT", position=(500,32)),
+    NEW = Button(caption="New Component", msg="NEXT", position=(8,8)),
+    CHANGE = Button(caption="Change Component", msg="NEXT", position=(128,8)),
+    DEL = Button(caption="Delete Component", msg="NEXT", position=(256,8)),
+    LINK = Button(caption="Make Link", msg="NEXT", position=(402,8)),
+    UNLINK = Button(caption="Break Link", msg="NEXT", position=(480,8)),
+    GO   = Button(caption="Activate!", msg="NEXT", position=(590,8)),
     EDITOR_LOGIC = EditorLogic(),
     CED = ComponentEditor(classes),
     linkages = {
        ("CONSOLEINPUT", "outbox") : ("SANDBOX", "inbox"),
        ("LINK", "outbox") : ("EDITOR_LOGIC", "linknode"),
+       ("UNLINK", "outbox") : ("EDITOR_LOGIC", "unlinknode"),
        ("CHANGE", "outbox"): ("EDITOR_LOGIC", "changenode"),
        ("EDITOR_LOGIC", "componentedit") : ("CED", "inbox"),
        ("DEL", "outbox") : ("EDITOR_LOGIC", "delnode"),
