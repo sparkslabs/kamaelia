@@ -50,11 +50,8 @@ from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
 # stuff for doing audio
 import sys
-sys.path.append("../pymedia/")
-sys.path.append("../")
-sys.path.append("../audio")
-from Speex import SpeexEncode,SpeexDecode
-from RawAudioMixer import RawAudioMixer as _RawAudioMixer
+from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+from Kamaelia.Audio.RawAudioMixer import RawAudioMixer as _RawAudioMixer
 
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
@@ -74,19 +71,20 @@ if __name__=="__main__":
     import sys
     try:
         if "--help" in sys.argv:
-            sys.stderr.write("Usage:\n    ./MusicPlayer host port\n\n")
+            sys.stderr.write("Usage:\n    ./MP3Player filename host port\n\n")
             sys.exit(0)
-        rhost = sys.argv[1]
-        rport = int(sys.argv[2])
+        filename = sys.argv[1]
+        rhost = sys.argv[2]
+        rport = int(sys.argv[3])
     except:
-        sys.stderr.write("Usage:\n    ./MusicPlayer host port\n\n")
+        sys.stderr.write("Usage:\n    ./MP3Player filename host port\n\n")
         sys.exit(1)
 
 #    rhost = "127.0.0.1"
 #    rport=1500
 
     Pipeline(
-        RateControlledFileReader("/home/matteh/music/Philip Glass/Solo Piano/01 - Metamorphosis One.mp3", readmode="bytes", rate=160*1024/8,chunksize=1024),
+        RateControlledFileReader(filename, readmode="bytes", rate=160*1024/8,chunksize=1024),
         Decoder("mp3"),
         Resample(sample_rate=44100, channels=2,
                  to_sample_rate=8000, to_channels=1),
