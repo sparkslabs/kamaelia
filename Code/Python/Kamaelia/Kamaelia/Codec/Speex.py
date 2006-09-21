@@ -21,7 +21,7 @@ import Axon.ThreadedComponent
 #     def encode(self,data):
 #         return data
 
-class SpeexEncode(ThreadedComponent.threadedcomponent):
+class SpeexEncode(Axon.ThreadedComponent.threadedcomponent):
 
     def __init__(self, quality=8):
 
@@ -56,7 +56,7 @@ class SpeexEncode(ThreadedComponent.threadedcomponent):
                 self.pause()
 #            yield 1
 
-class SpeexDecode(ThreadedComponent.threadedcomponent):
+class SpeexDecode(Axon.ThreadedComponent.threadedcomponent):
 
 
     def __init__(self, quality=8):
