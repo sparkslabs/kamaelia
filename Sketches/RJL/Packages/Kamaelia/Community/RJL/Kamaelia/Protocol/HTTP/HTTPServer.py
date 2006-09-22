@@ -117,9 +117,9 @@ and the version of HTTP that the client supports
 
 What may need work?
 ========================
-- HTTP standards-compliance (e.g. handling of version numbers for a start)
+- HTTP standards-compliance
 - Requests for byte ranges, cache control (though these may be better implemented
-    in each request handler)
+    at the request handler level)
 - Performance tuning (also in HTTPParser)
 - Prevent many MBs of data being queued up because TCPClient finds it has a slow
     upload to the remote host
@@ -317,25 +317,27 @@ class HTTPRequestHandler(component):
         statustext = self.MapStatusCodeToText.get(resource["statuscode"], "500 Internal Server Error")
 
         if protocolversion == (0, 9):
-            header = ""
+            header = []
         else:
-            header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.5\r\nDate: " + currentTimeHTTP() + "\r\n"
+            header = ["HTTP/1.1 ", statustext, "\r\nServer: Kamaelia HTTP Server (RJL) 0.5\r\nDate: ", currentTimeHTTP(), "\r\n"]
             if resource.has_key("charset"):
-                header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
+                header += ["Content-Type: ", resource["type"], "; ", resource["charset"], "\r\n"]
             else:
-                header += "Content-Type: " + resource["type"] + "\r\n"
+                header += ["Content-Type: ", resource["type"], "\r\n"]
             
             if lengthMethod == "explicit":
-                header += "Content-Length: " + str(resource["length"]) + "\r\n"
+                header += ["Content-Length: ", str(resource["length"]), "\r\n"]
                 
             elif lengthMethod == "chunked":
-                header += "Transfer-Encoding: chunked\r\n"
-                header += "Connection: keep-alive\r\n"
+                header += ["Transfer-Encoding: chunked\r\n"]
+                header += ["Connection: keep-alive\r\n"]
                 
             else: #connection close
-                header += "Connection: close\r\n"
+                header += ["Connection: close\r\n"]
 
-            header += "\r\n";            
+            header += ["\r\n"]
+        
+        header = "".join(header) # concatenate the list
         return header
 
     def checkRequestValidity(self, request):
@@ -466,7 +468,7 @@ class HTTPRequestHandler(component):
                     sendChunk = self.sendChunkExplicit
                     sendEnd = self.sendEndExplicit
                     
-                elif request["version"] < "1.1":
+                elif request["version"] < (1, 1)
                     lengthMethod = "close"
                     self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
                     sendChunk = self.sendChunkExplicit

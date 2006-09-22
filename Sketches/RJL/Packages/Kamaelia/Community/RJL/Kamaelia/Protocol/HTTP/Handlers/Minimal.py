@@ -101,6 +101,7 @@ class Minimal(component):
     Inboxes = {
         "inbox"        : "UNUSED",
         "control"      : "UNUSED",
+        "debug"        : "Information useful for debugging",
         "_fileread"    : "File data",
         "_filecontrol" : "Signals from file reader"
     }
@@ -111,6 +112,9 @@ class Minimal(component):
         "_filesignal" : "Shutdown the file reader"
 	}
     
+    def debug(self, msg):
+        #self.send(msg, "debug")
+        print msg
     
     def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
 	    self.request = request
@@ -120,6 +124,8 @@ class Minimal(component):
         
     def main(self):
         """Produce the appropriate response then terminate."""
+        
+        self.debug("Minimal::main.1")
         filename = sanitizePath(self.request["raw-uri"])
         #if os.path.isdir(homedirectory + filename):
         #    if filename[-1:] != "/": filename += "/"
@@ -163,24 +169,29 @@ class Minimal(component):
         self.filereader.activate()
         yield 1        
         
+        self.debug("Minimal::main.2")
+        
         done = False
         while not done:
             yield 1
+            self.debug("Minimal::main.loop")            
             while self.dataReady("_fileread") and len(self.outboxes["outbox"]) < 3:
                 msg = self.recv("_fileread")
+                self.debug("Minimal::main.sending " + str(len(msg)) + " bytes")
                 resource = { "data" : msg }
                 self.send(resource, "outbox")
                 
             if len(self.outboxes["outbox"]) < 3:
                 self.send("GARBAGE", "_fileprompt") # we use this to wakeup the filereader
-                        
+            
             while self.dataReady("_filecontrol") and not self.dataReady("_fileread"):
                 msg = self.recv("_filecontrol")
                 if isinstance(msg, producerFinished):
                     done = True
                     
-            self.pause()
-        
+            # self.pause() # uncomment me when we have unpause on receipt
+
         self.send(producerFinished(self), "signal")
+        self.debug("Minimal::main.complete")        
 
 __kamaelia_components__  = ( Minimal, )

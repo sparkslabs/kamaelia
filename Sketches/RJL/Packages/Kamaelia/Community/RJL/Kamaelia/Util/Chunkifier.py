@@ -57,49 +57,8 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
 import string
+from Kamaelia.Community.RJL.Kamaelia.Util.CharacterQueue import CharacterFIFO
 
-class CharacterFIFO(object):
-    """An efficient character queue type (designed to work in O(n) time for n characters)."""
-    def __init__(self):
-        self.queuearray = []
-        self.length = 0
-        self.startboundary = 0
-        
-    def push(self, text):
-        self.queuearray.append(text)
-        self.length += len(text)
-        
-    def __len__(self):
-        return self.length
-        
-    def poplength(self, length):
-        if len(self) < length:
-            raise IndexError
-        else:
-            thischunk = []
-            sizeneeded = length
-            while 1:
-                chunk = self.queuearray[0]
-                sizeneeded -= len(chunk) - self.startboundary
-                
-                if sizeneeded < 0: # new start boundary in the middle of this chunk
-                    thischunk.append(chunk[self.startboundary:len(chunk) + sizeneeded])
-                    self.startboundary = len(chunk) + sizeneeded
-                else: # this chunk is completely within the requested string
-                    if self.startboundary > 0:
-                        thischunk.append(chunk[self.startboundary:])
-                    else:
-                        thischunk.append(chunk)
-                    
-                    self.queuearray.pop(0)
-                    self.startboundary = 0
-                    
-                if sizeneeded <= 0:
-                    break
-
-            self.length -= length
-            return string.join(thischunk, "")
-    
 class Chunkifier(component):
     """\
     Chunkifier([chunksize]) -> new Chunkifier component.
