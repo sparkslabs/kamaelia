@@ -46,7 +46,7 @@ from BitTorrent import GetTorrent
 from BitTorrent.RawServer_twisted import RawServer, task
 from BitTorrent.ConvertedMetainfo import ConvertedMetainfo
 from BitTorrent.platform import get_temp_dir
-inject_main_logfile()
+#inject_main_logfile()
 
 from Axon.Ipc import shutdown, producerFinished
 from Axon.ThreadedComponent import threadedcomponent

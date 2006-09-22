@@ -41,7 +41,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.KamaeliaIPC import newReader
+from Kamaelia.IPC import newReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.Selector import Selector
@@ -77,7 +77,8 @@ class IntelligentFileReader(component):
         self.chunkbuffer = ""
 
     def debug(self, msg):
-        self.send(msg, "debug")
+        # self.send(msg, "debug")
+        print msg
     
     def makeNonBlocking(self, fd):
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -97,6 +98,7 @@ class IntelligentFileReader(component):
                 self.done = True
                 return False
             else:
+                self.debug("IntelligentFileReader.tryReadChunk forwarded " + str(len(data)))
                 self.send(data, "outbox")
                 return True
                 
@@ -127,8 +129,8 @@ class IntelligentFileReader(component):
         waiting = True
         
         while not self.done:
-            #print "main"
             yield 1
+            self.debug("IntelligentFileReader.main.loop")            
             
             # we use inbox just to wake us up
             while self.dataReady("inbox"):
