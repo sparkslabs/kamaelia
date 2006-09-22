@@ -279,7 +279,7 @@ __kamaelia_components__  = ( TorrentClient, )
 __kamaelia_prefabs__  = ( BasicTorrentExplainer, )
 
 if __name__ == '__main__':
-    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     from Kamaelia.Community.RJL.Kamaelia.File.TriggeredFileReader import TriggeredFileReader
@@ -288,7 +288,7 @@ if __name__ == '__main__':
     # NOTE: Do not follow this example. It is used to illustrate/test the use of a TorrentClient component
     # alone. TorrentPatron can and should be used in place of TorrentClient for user applications
     # as it supports multiple instances (create two TorrentClients and see it all come falling down).
-    pipeline(
+    Pipeline(
         ConsoleReader(">>> ", ""),
         TriggeredFileReader(),
         TorrentClient(),
