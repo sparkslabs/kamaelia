@@ -35,15 +35,17 @@ import Queue
 from idGen import numId
 import sys
 
+DefaultQueueSize = 1000
+
 class threadedcomponent(Component.component):
    """This component is intended to allow blocking calls to be made from within
       a component by running them inside a thread in the component.
       
       Internal queues buffer data going to and from inboxes and outboxes. Set
-      the size of these at initialisation (default=10)
+      the size of these at initialisation (default=1000)
    """
 
-   def __init__(self,queuelengths=10):
+   def __init__(self,queuelengths=DefaultQueueSize):
       super(threadedcomponent,self).__init__()
       
       self._threadrunning = False
