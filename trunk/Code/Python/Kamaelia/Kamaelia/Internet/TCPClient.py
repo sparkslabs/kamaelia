@@ -82,6 +82,7 @@ import errno
 import Axon
 from Axon.util import Finality
 
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Ipc import newComponent, status
 from Kamaelia.IPC import socketShutdown, newCSA
 
@@ -106,7 +107,7 @@ class TCPClient(Axon.Component.component):
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
-                "control"         : "NOT USED"
+                "control"         : "Shutdown signalling"
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
@@ -159,6 +160,8 @@ class TCPClient(Axon.Component.component):
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
+      
+      self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
       self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
@@ -219,6 +222,8 @@ class TCPClient(Axon.Component.component):
             sock.setblocking(0); yield 0.6
             try:
                while not self.safeConnect(sock,(self.host, self.port)):
+                  if self.shutdown():
+                      return
                   yield 1
                yield newComponent(*self.setupCSA(sock))
                while self.waitCSAClose():
@@ -241,9 +246,17 @@ class TCPClient(Axon.Component.component):
          # component know, shutdown everything, and get outta here.
          #
          pass
+         self.send(shutdownMicroprocess(self), "signal")
 #          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
+   def shutdown(self):
+       while self.dataReady("control"):
+           msg = self.recv("control")
+           self.send(msg,"signal")
+           if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+               return True
+       return False
 
 __kamaelia_components__  = ( TCPClient, )
 
