@@ -85,7 +85,7 @@ import errno
 
 import Axon
 from Axon.Component import component
-from Axon.Ipc import wouldblock, status, producerFinished
+from Axon.Ipc import wouldblock, status, producerFinished, shutdownMicroprocess
 from Kamaelia.IPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.IPC import removeReader, removeWriter
 from Kamaelia.IPC import newReader, newWriter
@@ -141,6 +141,13 @@ class ConnectedSocketAdapter(component):
               self.connectionRECVLive = False
               self.connectionSENDLive = False
               self.howDied = "producer finished"
+          elif isinstance(data, shutdownMicroprocess):
+#              print "Raising shutdown: ConnectedSocketAdapter recieved shutdownMicroprocess Message", self,data
+              self.connectionRECVLive = False
+              self.connectionSENDLive = False
+              self.howDied = "shutdown microprocess"
+          else:
+              pass # unrecognised message
    
    def handleSendRequest(self):
        """Check for data to send to the socket, add to an internal send queue buffer."""
