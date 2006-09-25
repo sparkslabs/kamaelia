@@ -95,17 +95,31 @@ class SubscribeTo(Axon.Component.component):
         splitter,configbox = cat.retrieveService("Backplane_O_"+self.source)
         p = PassThrough()
         plug = Plug(splitter, p)
+        self.link( (self, "control"), (plug, "control"), passthrough=1)
         self.link( (plug,"outbox"), (self,"outbox"), passthrough=2)
         self.link( (plug,"signal"), (self,"signal"), passthrough=2)
         self.addChildren(plug)
         yield newComponent(plug)
+        # wait until all child component has terminated
         # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
         # FIXME: then this while loop here would be irrelevent, which would be cool.
         # FIXME: especially if we could exec in such a way that passthrough linkages
         # FIXME: still operated as you'd expect.
-        while 1:
+        while not self.childrenDone():
             self.pause()
-            yield 1            
+            yield 1
+
+
+    def childrenDone(self):
+        """\
+        Unplugs any children that have terminated, and returns true if there are no
+        running child components left (ie. their microproceses have finished)
+        """
+        for child in self.childComponents():
+            if child._isStopped():
+                self.removeChild(child)   # deregisters linkages for us
+
+        return 0==len(self.childComponents())
 
 
 # deprecation stubs
