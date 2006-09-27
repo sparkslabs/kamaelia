@@ -233,7 +233,7 @@ class IcecastStreamWriter(component):
             self.pause()
 
 __kamaelia_components__  = ( IcecastDemux, IcecastClient, IcecastStreamWriter )
-__kamaelia_prefabs__  = ( IcecastStreamRemoveMetadata )
+__kamaelia_prefabs__  = ( IcecastStreamRemoveMetadata, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
