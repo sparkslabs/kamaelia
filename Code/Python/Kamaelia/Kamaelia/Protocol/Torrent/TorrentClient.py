@@ -18,9 +18,10 @@
 #     All Rights Reserved.
 
 from __future__ import division
+import os
+os.environ["LANG"] = "en_GB.UTF-8"
 
 from BitTorrent.translation import _
-
 import pdb
 import sys
 import os
@@ -153,7 +154,7 @@ class TorrentClient(threadedcomponent):
         rawserver.listen_forever(self.rawserver_doneflag) # runs until the component terminates
 
         self.send(producerFinished(self), "signal")
-        print "TorrentClient has shutdown"
+#        print "TorrentClient has shutdown"
                         
     def startTorrent(self, metainfo, save_incomplete_as, save_as, torrentid):
         """startTorrent causes MultiTorrent to begin downloading a torrent eventually.
@@ -238,7 +239,7 @@ class TorrentClient(threadedcomponent):
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdown):
-                print "TorrentClient trying to shutdown"
+#                print "TorrentClient trying to shutdown"
                 #cause us to shutdown
                 self.rawserver_doneflag.set()
                 self.core_doneflag.set()
@@ -275,7 +276,7 @@ def BasicTorrentExplainer():
     return PureTransformer(lambda x : str(x) + "\n")
 
 
-__kamaelia_components__  = ( TorrentClient, )
+# __kamaelia_components__  = ( TorrentClient, ) ### FIXME
 __kamaelia_prefabs__  = ( BasicTorrentExplainer, )
 
 if __name__ == '__main__':
