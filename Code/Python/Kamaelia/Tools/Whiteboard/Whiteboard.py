@@ -329,7 +329,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("PALETTE", "outbox")    : ("PAINTER", "colour"),
                           ("ERASER", "outbox")     : ("PAINTER", "erase"),
 
-                          ("CLEAR","outbox")       : ("CANVAS", "inbox"),
+                          ("CLEAR","outbox")       : ("SPLIT", "inbox"),
                           ("NEWPAGE","outbox")     : ("HISTORY", "inbox"),
 
 #                          ("REMOTEPREV","outbox")  : ("self", "outbox"),
