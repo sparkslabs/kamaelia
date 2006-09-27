@@ -10,6 +10,9 @@
 # for the specific language governing rights and limitations under the
 # License.
 
+import os
+os.environ["LANG"] = "en_GB.UTF-8"
+
 """\
 =================
 .torrent Maker
