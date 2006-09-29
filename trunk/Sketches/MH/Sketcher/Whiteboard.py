@@ -46,7 +46,7 @@ from Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
 from Whiteboard.Canvas import Canvas
 from Whiteboard.Painter import Painter
 from Whiteboard.TwoWaySplitter import TwoWaySplitter
-from Whiteboard.SingleShot import OneShot
+from Whiteboard.SingleShot import OneShot, TriggeredOneShot
 from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
 from Kamaelia.Audio.PyMedia.Input  import Input  as _SoundInput
@@ -192,11 +192,26 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
         failuremsg2 = str(rhost)+" on port "+str(rport)
 
         return Graphline(
-                NETWORK = Pipeline(
-                    tokenlists_to_lines(),
-                    TCPClient(host=rhost,port=rport),
-                    chunks_to_lines(),
-                    lines_to_tokenlists(),
+                NETWORK = Graphline(
+                    PIPE = Pipeline(
+                        tokenlists_to_lines(),
+                        TCPClient(host=rhost,port=rport),
+                        chunks_to_lines(),
+                        lines_to_tokenlists(),
+                        ),
+                    SHUTDOWN = TriggeredOneShot(msg=shutdownMicroprocess()),
+                    linkages = {
+                        ("",     "inbox")  : ("PIPE", "inbox"),
+                        ("PIPE", "outbox") : ("", "outbox"),
+                        
+                        # shutdown stuff - TCPClient may have caused it, so need to
+                        # loop the shutdown message back round to the front of the pipe
+                        # as well as propagating it onwards
+                        ("",         "control") : ("PIPE",     "control"),
+                        ("PIPE",     "signal")  : ("SHUTDOWN", "inbox"),
+                        ("SHUTDOWN", "outbox")  : ("PIPE",     "control"),
+                        ("SHUTDOWN", "signal")  : ("",         "signal"),
+                    }
                 ),
                 ROUTER = Router( ((lambda tuple : tuple[0]=="SOUND"), "audio"),
                                  ((lambda tuple : tuple[0]!="SOUND"), "whiteboard"),
@@ -224,9 +239,9 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                 ),
                 GETIMG = OneShot(msg=[["GETIMG"]]),
                 BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
-                FAILURE = Carousel(lambda _ :OneShot(msg=[["WRITE", 100,200, 32, 255, 96, 96, failuremsg],
-                                                          ["WRITE", 100,232, 24, 255,160,160, failuremsg2]]), 
-                                   make1stRequest=False),
+                FAILURE = TriggeredOneShot(msg=[["WRITE", 100,200, 32, 255, 96, 96, failuremsg],
+                                                ["WRITE", 100,232, 24, 255,160,160, failuremsg2]]), 
+                
                 linkages = {
                     # incoming messages from network connection go to a router
                     ("NETWORK", "outbox") : ("ROUTER", "inbox"),
@@ -244,12 +259,12 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                     ("BLACKOUT", "outbox") : ("WHITEBOARD", "inbox"),
                     
                     # shutdown routing, not sure if this will actually work, but hey!
-                    ("NETWORK", "signal") : ("FAILURE", "next"),
+                    ("NETWORK", "signal") : ("FAILURE", "inbox"),
                     ("FAILURE", "outbox") : ("WHITEBOARD", "inbox"),
-#                    ("NETWORK",    "signal") : ("ROUTER",     "control"),
-#                    ("ROUTER",     "signal") : ("AUDIO",      "control"),
-#                    ("AUDIO",      "signal") : ("WHITEBOARD", "control"),
-#                    ("WHITEBOARD", "signal") : ("",           "signal"),
+                    ("FAILURE",    "signal") : ("ROUTER",     "control"),
+                    ("ROUTER",     "signal") : ("AUDIO",      "control"),
+                    ("AUDIO",      "signal") : ("WHITEBOARD", "control"),
+                    ("WHITEBOARD", "signal") : ("",           "signal"),
                 }
             )
 
@@ -429,7 +444,7 @@ if __name__=="__main__":
             while 1:
                 allthreads = self.scheduler.listAllThreads()
                 pausedthreads = filter(self.scheduler.isThreadPaused,allthreads)
-                print len(allthreads), len(allthreads)-len(pausedthreads)
+                print len(allthreads), "components of which",len(allthreads)-len(pausedthreads),"are active"
                 self.pause(0.5)
     Enumerate().activate()
 

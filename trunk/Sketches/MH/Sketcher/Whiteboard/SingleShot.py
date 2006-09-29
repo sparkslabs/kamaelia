@@ -31,3 +31,27 @@ class OneShot(Axon.Component.component):
     def main(self):
         self.send(self.msg,"outbox")
         yield 1
+        self.send(producerFinished(self),"signal")
+
+
+class TriggeredOneShot(Axon.Component.component):
+    def __init__(self, msg=None):
+        super(TriggeredOneShot, self).__init__()
+        self.msg = msg
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                self.send(self.msg,"outbox")
+                yield 1
+                self.send(producerFinished(self),"signal")
+                return
+                
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                self.send(msg, "signal")
+                if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                    return
+                    
+            if not self.anyReady():
+                self.pause()
+            yield 1
