@@ -1,0 +1,68 @@
+This is the example/template package for packaging up Kamaelia based
+modules, and systems. This is designed to assist you with collaborating
+with the rest of the Kamaelia community!
+
+Firstly, remove the following files:
+|-- Kamaelia
+|   |-- Community
+|   |   |-- MPS
+|   |   |   |-- Demo.py
+...
+|-- Tests
+|   `-- test_Kamaelia.Community.MPS.Demo.py
+
+And replace with your own tests and code. (name all tests files "test_*"
+
+Secondly, DO CHANGE the following files to match your own details/project:
+|-- AUTHORS   **
+|-- CHANGELOG   **
+|-- COPYING   **
+|-- Docs
+|   `-- README   **
+|-- Kamaelia
+|   |-- Community
+|   |   |-- MPS   ** directory name(!)
+...
+|-- MANIFEST.in
+|-- README   ** (this file!)
+|-- Tests
+|   |-- README   **
+...
+`-- setup.py   ** (description, target filename, etc...)
+
+*** NOTE ***
+
+   In particular, please ensure that COPYING matches your intended license
+   for your distribution. The preferred licenses are as follows:
+      * The Mozilla tri-license - ie MPL/GPL/LGPL combo - this is the same
+        license as the official distribution of Kamaelia.
+
+      * The BSD license. (the COPYING file as included is this license, but
+        you will want to edit this to remove a header and change the name in
+        the third bullet!) 
+
+        Please note, many systems won't be able to choose this option,
+        however components which are standalone, and/or can use a MiniAxon 
+        as a test bed can - such as those wrapping external libraries
+        (subject to the restrictions of those libraries naturally)
+
+   These are both directly and simply compatible with the main Kamaelia
+   distribution license.
+
+   If in doubt, use the MPL/GPL/LGPL combination from the main Kamaelia
+   distribution (this ensures compatibility, with the least likelihood of
+   you choosing wrong :-).
+
+************
+
+Thirdly, to actually build a distribution, simply type:
+   python setup.py sdist
+
+You will then be left with a distribution in "dist", which you can then
+share with everyone else. If you need any help with this process, please
+email kamaelia-list@lists.sourceforge.net !
+
+Have fun!
+
+
+Michael.

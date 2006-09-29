@@ -1,0 +1,20 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><a name="Microprocess"></a><span style="font-size:14pt;font-weight:600">1. Microprocesses - A Generator with Context</span></p>
+<p dir="ltr">Axon is built on top of generators with some added context. Whilst the most common version of this a user actually uses is called a component, this is a specialisation of the general concept - a generator with context.</p>
+<p dir="ltr"><span style="font-weight:600">Exercise:</span> Write a class called <span style="font-family:Courier;font-weight:600">microprocess</span> (make sure you subclass &quot;object&quot; !) with the following methods:</p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">__init__(self)</span></li>
+<ul type="disc"><li dir="ltr">Takes no arguments. (aside from self)</li>
+<li dir="ltr">into this put any initialisation you might need</li></ul>
+<li dir="ltr"><span style="font-family:Courier">main(self)</span></li>
+<ul type="disc"><li dir="ltr">Takes no arguments. (aside from self)</li>
+<li dir="ltr">This should be a generator that simply yields 1 value - specifically a 1</li></ul></ul>
+<p dir="ltr">[[tabs]<br />[mat1=MiniAxon/BlankAnswer.html]<br />[mat1_name=Answer Hidden]<br />[mat2=MiniAxon/MicroprocessAnswer.html]<br />[mat2_name=Show Answer]<br />[_tabstem=mat] ]</p>
+<p dir="ltr"><span style="font-weight:600">Discussion:</span></p>
+<p dir="ltr">Clearly we can create 5 of these now:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]a = microprocess()<br />b = microprocess()<br />c = microprocess()]</span></div></ul>
+<p dir="ltr">Calling their main method results in us being given a generator:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]&gt;&gt;&gt; a.main()<br />&lt;generator object at 0x40396d2c&gt;<br />&gt;&gt;&gt; b.main()<br />&lt;generator object at 0x40396ccc&gt;<br />&gt;&gt;&gt; c.main()<br />&lt;generator object at 0x40396d2c&gt;]</span></div></ul>
+<p dir="ltr">We can then run these generators in the usual way (though these are fairly boring microprocesses):</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]&gt;&gt;&gt; for i in a.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in b.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1<br />&gt;&gt;&gt; for i in c.main():<br />...     print &quot;Value&quot;, i<br />...<br />Value 1]</span></div></ul>
+<p dir="ltr">OK, so we have a mechanism for adding context to generators, and we've called that a microprocess. Let's make it simple to set lots of these running.</p>
+</body></html>

@@ -1,0 +1,33 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:20pt;font-weight:600">Status</span></p>
+<p>The bulk of Kamaelia is a collection of components that use Axon. These range from components for building network servers and clients using TCP and Multicast, through to music playback, audio codec decode through to components suitable for viewing network topologies and interactive systems - such as networked personal autocues.</p>
+<p></p>
+<p><a href="http://kamaelia.sourceforge.net/Docs/Axon.html"><span style="font-weight:600">Axon</span></a><span style="font-weight:600"> - </span>Kamaelia core concurrency framework</p>
+<li type="disc">Axon is available from Kamaelia's main <a href="http://sourceforge.net/projects/kamaelia/">sourceforge project page</a>.</li>
+<p>The current status of the project is that Axon itself has been deemed feature stable, and currently stands at version 1.1.0. Axon runs on Windows, Mac OS X, Linux and Series 60 mobile phones. This is sufficiently stable in terms of API and coverage in terms of testcases to be used as is. It should work with python 2.2 onwards. <a href="Contact.html">If it doesn't, please let us know!</a></p>
+<li type="disc"><span style="font-style:italic">Documentation, Stability, Completeness</span></li>
+<li type="disc">We believe Axon to be largely feature complete given that it's functionality has been driven by application spikes whilst writing Kamaelia. Documentation for Axon is in the process of collation into this website, with the <a href="Docs/Axon.html">main starting page here</a>.</li>
+<p>Examples included with Axon's release:</p>
+<ul type="disc"><li>A simple producer/consumer example - this shows how to build components, and build pipelines manually. (Syntactic sugar for pipelines exists inside Kamaelia's Util tree)</li>
+<li>A more complex, but still simple producer/consumer example.</li></ul>
+<p></p>
+<p><span style="font-weight:600">Kamaelia</span></p>
+<p>The Kamaelia portion is the larger of the two parts to the project since it is a collection of components that use Axon. These range from components for building network servers and clients through to music playback, audio codec decode through to components suitable for viewing network topologies and interactive systems.</p>
+<p>However we feel has a long way to go before the system can be considered reaching a 1.0 release. As a result the current version number reflects this and currently stands at 0.1.2. That said, like Axon, it runs on Windows, Mac OS X, Linux and Series 60 mobile phones.</p>
+<p>Examples included with Kamaelia's 0.1.2 release:</p>
+<ul type="disc"><li><span style="font-weight:600">Example 1: </span>A simple &quot;FortuneCookie&quot; protocol system. Includes server and client as part of a single system.</li>
+<li><span style="font-weight:600">Example 2: </span>This has much the same structure, but rather than serve and display fortune cookies, serves (ogg vorbis) audio over a TCP connection to a client which decodes and plays back the audio.</li>
+<li><span style="font-weight:600">Example 3: </span>Splits the structure in example 2 into a specific server application and a client application. On a single CPU system with Axon versions 1.1.0 or lower, this causes problems because Axon doesn't hint to the system it's busy waiting and interruptable. Above that Axon does. (Hence why the latest version of Axon is generally recommended)</li>
+<li><span style="font-weight:600">Example 4: </span> Simple multicast based ogg vorbis streaming system.</li></ul>
+<li type="disc">Examples to be included in Kamaelia's 0.2 release (see <a href="Download.html">Downloads</a>):</li>
+<ul type="disc"><li><span style="font-weight:600">Example 5: </span> An introspecting version of Examples 2/3. This creates a simple streaming system, and looks inside to see what components are running/active, and passes the resulting information over a network connection to an Axon Visualisation server.</li>
+<li><span style="font-weight:600">Example 6: </span>  This is a simple/generic topology visualisation server. The server listens on port 1500, and accepts the following commands:<br />     ADD NODE id label auto -<br />     ADD LINK id id<br />     DEL NODE id<br />     DEL ALL</li>
+<div>As this stands this is pretty useful, but that's pretty much everything it does like this.</div>
+<li><span style="font-weight:600">Example 7: </span>  This shows how the visualisation subsystem can be extended to work in different ways. What this does by default when run is randomly create new nodes and new linkages quite quickly, allowing you to see how the system works.</li>
+<li><span style="font-weight:600">Example 8: </span>  Sample slideshow/presentation tool. Unlike traditional slideshow/presentation tools, you can modify this to run arbitrary components. An example of how this can work is provided - allowing stepping through some graph visualisations along with the presentation.</li>
+<li><span style="font-weight:600">Example 9</span>: Simple component based game using pygame. Not quite fully integrated with the other pygame code (will be), but fully reusable &amp; reconfigurable code and it's a useful start for people wanting to see how to write things varying from games through other interactive systems.</li></ul>
+<p></p>
+<p>Other Kamaelia Modules &amp; comments:</p>
+<ul type="disc"><div>We have recently made our code available as a CVS release for developers who are interested at this stage. We are slowly moving documentation and material describing the motivation into both the website and documentation. The project changed to a largely test-first approach late in the project, and some test suites are being implemented. The Kamaelia system itself is now largely complete for building TCP based servers - the most common class of network server. A small number of trivial <a href="Docs/NetworkProtocolModules.html">example protocols</a> are included.</div></ul>
+<p></p>
+</body></html>
