@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 #
 
+import sys
 import Axon
 import pygame
 
@@ -28,9 +29,9 @@ from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, publishTo, subscribeTo
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
@@ -48,19 +49,11 @@ from Whiteboard.TwoWaySplitter import TwoWaySplitter
 from Whiteboard.SingleShot import OneShot
 from Whiteboard.CheckpointSequencer import CheckpointSequencer
 
+from Kamaelia.Audio.PyMedia.Input  import Input  as _SoundInput
+from Kamaelia.Audio.PyMedia.Output import Output as _SoundOutput
 
-# stuff for doing audio
-import sys
-sys.path.append("../pymedia/")
-sys.path.append("../")
-sys.path.append("../audio")
-#from pymedia_test import SoundOutput,SoundInput,ExtractData,PackageData
-
-from Audio.PyMedia.Input  import Input  as _SoundInput
-from Audio.PyMedia.Output import Output as _SoundOutput
-
-from Speex import SpeexEncode,SpeexDecode
-from RawAudioMixer import RawAudioMixer as _RawAudioMixer
+from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+from Kamaelia.Audio.RawAudioMixer import RawAudioMixer as _RawAudioMixer
 from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
 
 from Kamaelia.Util.Detuple import SimpleDetupler
@@ -72,7 +65,7 @@ def SoundInput():
     return _SoundInput( channels=1, sample_rate=8000, format="S16_LE" )
 
 def SoundOutput():
-    return _SoundOutput( channels=1, sample_rate=8000, format="S16_LE", maximumLag=1.0 )
+    return _SoundOutput( channels=1, sample_rate=8000, format="S16_LE", maximumLag=0.25 )
 
 def RawAudioMixer():
     return _RawAudioMixer( sample_rate    = 8000,
@@ -138,20 +131,20 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
         from Kamaelia.Util.Console import ConsoleEchoer
 
         def clientconnector():
-            return pipeline(
+            return Pipeline(
                 chunks_to_lines(),
                 lines_to_tokenlists(),
                 Graphline(
                     WHITEBOARD = FilterAndTagWrapper(
-                        pipeline( publishTo(whiteboardBackplane),
+                        Pipeline( publishTo(whiteboardBackplane),
                                   # well, should be to separate pipelines, this is lazier!
                                   subscribeTo(whiteboardBackplane),
                                 )),
-                    AUDIO = pipeline(
+                    AUDIO = Pipeline(
                         SimpleDetupler(1),     # remove 'SOUND' tag
                         SpeexDecode(3),
                         FilterAndTagWrapperKeepingTag(
-                            pipeline( publishTo(audioBackplane),
+                            Pipeline( publishTo(audioBackplane),
                                         # well, should be to separate pipelines, this is lazier!
                                     subscribeTo(audioBackplane),
                                     ),
@@ -191,11 +184,15 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
 def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO"):
         # plug a TCPClient into the backplae
         from Kamaelia.Internet.TCPClient import TCPClient
+        from Kamaelia.Chassis.Carousel import Carousel
 
         loadingmsg = "Fetching sketch from server..."
+        
+        failuremsg  = "FAILED: Couldn't connect to server:"
+        failuremsg2 = str(rhost)+" on port "+str(rport)
 
         return Graphline(
-                NETWORK = pipeline(
+                NETWORK = Pipeline(
                     tokenlists_to_lines(),
                     TCPClient(host=rhost,port=rport),
                     chunks_to_lines(),
@@ -205,17 +202,17 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                                  ((lambda tuple : tuple[0]!="SOUND"), "whiteboard"),
                                ),
                 WHITEBOARD = FilterAndTagWrapper(
-                    pipeline(
+                    Pipeline(
                         publishTo(whiteboardBackplane),
                         #
                         subscribeTo(whiteboardBackplane),
                     )
                 ),
-                AUDIO = pipeline(
+                AUDIO = Pipeline(
                     SimpleDetupler(1),     # remove 'SOUND' tag
                     SpeexDecode(3),
                     FilterAndTagWrapperKeepingTag(
-                        pipeline(
+                        Pipeline(
                             publishTo(audioBackplane),
                             #
                             subscribeTo(audioBackplane),
@@ -227,6 +224,9 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                 ),
                 GETIMG = OneShot(msg=[["GETIMG"]]),
                 BLACKOUT = OneShot(msg=[["CLEAR",0,0,0],["WRITE",100,100,24,255,255,255,loadingmsg]]),
+                FAILURE = Carousel(lambda _ :OneShot(msg=[["WRITE", 100,200, 32, 255, 96, 96, failuremsg],
+                                                          ["WRITE", 100,232, 24, 255,160,160, failuremsg2]]), 
+                                   make1stRequest=False),
                 linkages = {
                     # incoming messages from network connection go to a router
                     ("NETWORK", "outbox") : ("ROUTER", "inbox"),
@@ -244,10 +244,12 @@ def EventServerClients(rhost, rport, whiteboardBackplane="WHITEBOARD", audioBack
                     ("BLACKOUT", "outbox") : ("WHITEBOARD", "inbox"),
                     
                     # shutdown routing, not sure if this will actually work, but hey!
-                    ("NETWORK",    "signal") : ("ROUTER",     "control"),
-                    ("ROUTER",     "signal") : ("AUDIO",      "control"),
-                    ("AUDIO",      "signal") : ("WHITEBOARD", "control"),
-                    ("WHITEBOARD", "signal") : ("",           "signal"),
+                    ("NETWORK", "signal") : ("FAILURE", "next"),
+                    ("FAILURE", "outbox") : ("WHITEBOARD", "inbox"),
+#                    ("NETWORK",    "signal") : ("ROUTER",     "control"),
+#                    ("ROUTER",     "signal") : ("AUDIO",      "control"),
+#                    ("AUDIO",      "signal") : ("WHITEBOARD", "control"),
+#                    ("WHITEBOARD", "signal") : ("",           "signal"),
                 }
             )
 
@@ -272,7 +274,7 @@ class PreFilter(Axon.Component.component): # This is a data tap/siphon/demuxer
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                print "INCOMING", data
+#                print "INCOMING", data
                 if (data == [["prev"]]) or (data == [["next"]]):
                     self.send((data[0][0], "local"), "history_event")
                 else:
@@ -336,7 +338,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("PALETTE", "outbox")    : ("PAINTER", "colour"),
                           ("ERASER", "outbox")     : ("PAINTER", "erase"),
 
-                          ("CLEAR","outbox")       : ("CANVAS", "inbox"),
+                          ("CLEAR","outbox")       : ("SPLIT", "inbox"),
                           ("NEWPAGE","outbox")     : ("HISTORY", "inbox"),
 
 #                          ("REMOTEPREV","outbox")  : ("self", "outbox"),
@@ -368,7 +370,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
 mainsketcher = \
     Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
-               CONSOLE = pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
+               CONSOLE = Pipeline(ConsoleReader(),text_to_tokenlists(),parseCommands()),
 
                linkages = { ('self','inbox'):('SKETCHER','inbox'),
                             ('SKETCHER','outbox'):('self','outbox'),
@@ -381,15 +383,15 @@ mainsketcher = \
 if __name__=="__main__":
     
     # primary whiteboard
-    pipeline( subscribeTo("WHITEBOARD"),
+    Pipeline( subscribeTo("WHITEBOARD"),
             TagAndFilterWrapper(mainsketcher),
             publishTo("WHITEBOARD")
             ).activate()
             
     # primary sound IO - tagged and filtered, so can't hear self
-    pipeline( subscribeTo("AUDIO"),
+    Pipeline( subscribeTo("AUDIO"),
               TagAndFilterWrapperKeepingTag(
-                  pipeline(
+                  Pipeline(
                       RawAudioMixer(),
 #                      PackageData(channels=1,sample_rate=8000,format="S16_LE"),
                       SoundOutput(),
@@ -417,9 +419,19 @@ if __name__=="__main__":
 #    sys.path.append("../Introspection")
 #    from Profiling import FormattedProfiler
 #    
-#    pipeline(FormattedProfiler( 20.0, 1.0),
+#    Pipeline(FormattedProfiler( 20.0, 1.0),
 #             ConsoleEchoer()
 #            ).activate()
+
+    from Axon.ThreadedComponent import threadedcomponent
+    class Enumerate(threadedcomponent):
+        def main(self):
+            while 1:
+                allthreads = self.scheduler.listAllThreads()
+                pausedthreads = filter(self.scheduler.isThreadPaused,allthreads)
+                print len(allthreads), len(allthreads)-len(pausedthreads)
+                self.pause(0.5)
+    Enumerate().activate()
 
     Backplane("WHITEBOARD").activate()
     Backplane("AUDIO").run()
