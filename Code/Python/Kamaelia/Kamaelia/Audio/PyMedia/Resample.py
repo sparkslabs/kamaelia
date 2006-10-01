@@ -76,7 +76,7 @@ class Resample(component):
     Resamples audio to a different sample rate and/or number of channels using
     the pymedia library.
     
-    Keyword arguments::
+    Keyword arguments:
         
     - sample_rate     -- Input sample rate in Hz
     - channels        -- Input number of channels

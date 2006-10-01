@@ -155,6 +155,7 @@ class AudioBuffer(object):
     
     
     Keyword arguments:
+        
     -- activationThreshold  - Point at which the buffer is deemed activated
     -- sizeLimit            - Filling the buffer beyond this causes samples to be dropped
     """

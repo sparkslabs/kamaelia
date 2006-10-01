@@ -77,7 +77,7 @@ class Input(threadedcomponent):
     Captures audio using the PyMedia library and sends the raw audio data out
     of its "outbox" outbox.
     
-    Keyword arguments::
+    Keyword arguments:
         
     - sample_rate  -- Sample rate in Hz (default = 44100)
     - channels     -- Number of channels (default = 2)
