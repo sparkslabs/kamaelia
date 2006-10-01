@@ -117,15 +117,12 @@ be shut down (in a controlled fashion). Needs a "control" inbox that responds to
 shutdownMicroprocess messages.
 """
 
-import Axon as _Axon
-from Axon import AxonObject as _AxonObject
-import Kamaelia.Internet.TCPServer as _ic
-import Kamaelia.IPC as _ki
+import Axon
+from Kamaelia.Internet.TCPServer import TCPServer
+from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown
+from Axon.Ipc import newComponent
 
-class simpleServerProtocol(_Axon.Component.component):
-    pass
-
-class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
     SimpleServer(protocol[,port]) -> new Simple protocol server component
 
@@ -154,13 +151,14 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def main(self):
         """Run the server"""
         if self.socketOptions is None:
-            myPLS = _ic.TCPServer(listenport=self.listenport)
+            myPLS = TCPServer(listenport=self.listenport)
         else:
-            myPLS = _ic.TCPServer(listenport=self.listenport,socketOptions=self.socketOptions)
+            myPLS = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
 
         self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
         self.addChildren(myPLS)
-        yield _Axon.Ipc.newComponent(myPLS)
+        yield Axon.Ipc.newComponent(myPLS)
+
         while 1:
             while not self.anyReady():
                 self.pause()
@@ -168,6 +166,16 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             result = self.checkOOBInfo()
             yield 1
     
+    def checkOOBInfo(self):
+        """Check and handle Out Of Bounds info - notifications of new and closed sockets."""
+        while self.dataReady("_oobinfo"):
+            data = self.recv("_oobinfo")
+            if isinstance(data, newCSA):
+                self.handleNewCSA(data)
+            if isinstance(data, shutdownCSA):
+                assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
+                self.handleClosedCSA(data)
+
     def handleNewCSA(self, data):
         """
         handleNewCSA(data) -> Axon.Ipc.newComponent(protocol handler)
@@ -213,7 +221,7 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         CSA = data.object
         bundle=self.retrieveTrackedResourceInformation(CSA)
         inboxes,outboxes,pHandler = bundle
-        self.send(_ki.socketShutdown(),outboxes[0])
+        self.send(socketShutdown(),outboxes[0])
         assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
         self.removeChild(CSA)
         self.removeChild(pHandler)
@@ -221,23 +229,13 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.ceaseTrackingResource(CSA)
         assert self.debugger.note("SimpleServer.handleClosedCSA",5, "GRRR... ARRRGG")
 
-    def checkOOBInfo(self):
-        """Check and handle Out Of Bounds info - notifications of new and closed sockets."""
-        while self.dataReady("_oobinfo"):
-            data = self.recv("_oobinfo")
-            if isinstance(data,_ki.newCSA):
-                self.handleNewCSA(data)
-            if isinstance(data,_ki.shutdownCSA):
-                assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
-                self.handleClosedCSA(data)
-
 __kamaelia_components__ = ( SimpleServer, )
 
                 
 if __name__ == '__main__':
     
     from Axon.Scheduler import scheduler
-    class SimpleServerTestProtocol(simpleServerProtocol):
+    class SimpleServerTestProtocol(Axon.Component.component):
         def __init__(self):
             super(SimpleServerTestProtocol, self).__init__()
             assert self.debugger.note("SimpleServerTestProtocol.__init__",1, "Starting test protocol")
