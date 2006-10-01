@@ -34,8 +34,8 @@ simple addition. Values are not scaled down.
 Example Usage
 -------------
 
-Mixing between 0 and 3 sources of audio (sometimes a source is active, sometimes
-it isn't)::
+Mixing up to 3 sources of audio (sometimes a source is active, sometimes it
+isn't)::
 
     Graphline(
         MIXER = RawAudioMixer( sample_rate=8000,
@@ -62,10 +62,64 @@ it isn't)::
                },
              ).run()
 
+Each source is buffered for 1 second before it is output. If more than 2 seconds
+of audio are buffered, then samples are dropped.
+
 
 
 How does it work?
 -----------------
+
+Send (id, raw-audio) tuples to RawAudioMixer's inbox. Where 'id' is any value
+that uniquely distinguishes each source of audio.
+
+RawAudioMixer buffers each source of audio, and mixes them together additively,
+outputting the resulting stream of audio data.
+
+Constructor arguments:
+   
+   * sample_rate, channels, format
+     The format of audio to be mixed. The only format understood at the moment
+     is "S16_LE"
+    
+   * readThreshold
+     number of seconds of audio that will be buffered before RawAudioMixer
+     starts mixing it into its output.
+     
+   * bufferingLimit
+     maximum number of seconds of audio that will be buffered. If more piles up
+     then some audio will be lost.
+
+   * readInterval
+     number of seconds between each time RawAudioMixer outputs a chunk of audio
+     data.
+
+RawAudioMixer buffers each source of audio separately. If the amount of audio in
+any buffer exceeds the 'buffering limit' then the oldest samples buffered will
+be lost.
+
+When one or more buffered sources reaches the 'read threshold' then they are
+mixed together and output. How often audio is output is determined by setting
+the 'read Interval'.
+
+Mixing is done additively and is *not* scaled down (ie. it is a sum() function,
+not an average() ). Therefore, ensure that the sum of the sources being mixed
+does not exceed the range of values that samples can take.
+
+Why the buffering, thresholds, and read intervals? It is done this way so that
+RawAudioMixer can mix without needing to know what sources of audio there are,
+and whether they are running or stopped. It also enables RawAudioMixer to cope
+with audio data arriving from different sources at different times.
+
+You may introduce new audio sources at any time - simply send audio data tagged
+with a new, unique identifier.
+
+You may stop an audio source at any time too - simply stop sending audio data.
+The existing buffered data will be output, until there is not left.
+
+If there is not enough audio in any of the buffers (or perhaps there are no
+sources of audio) then RawAudioMixer will not output anything, not even
+'silence'.
 
 If a shutdownMicroprocess or producerFinished message is received on this
 component's "control" inbox this component will cease reading in data from any
@@ -79,23 +133,10 @@ TODO:
 
     * Needs a timeout mechanism to discard very old data (otherwise this is
       effectively a memory leak!)
+      
+      - If an audio source sends less than the readThreshold amount of audio
+        data, then stops; then this data never gets flushed out.
 """
-
-
-# dynamic audio downmixer
-
-# this component takes in raw 1 channel S16_LE audio chunks
-# each chunk must be framed with a unique source identifier
-#     (srcId, audiodata)
-#
-#
-# this component maintains buffering buckets for each source
-# it mixes together all sources for which it has data at the time
-# if a given buffer bucket overflows, then the oldest data is dropped
-
-# a buffering bucket doesn't start to be read from until it has reached a minimum
-# threshold amount of data; after which it remains 'active' until it empties
-
 
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 import time as _time
