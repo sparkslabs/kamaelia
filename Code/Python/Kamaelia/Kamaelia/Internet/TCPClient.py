@@ -72,8 +72,10 @@ sent to the "signal" outbox.
 This component will terminate if the CSA sends a socketShutdown message to its
 "CreatorFeedback" outbox.
 
-Messages sent to the "control" inbox are ignored - users of this component
-cannot ask it to close the connection.
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to its "control" inbox. This message is forwarded onto the CSA.
+TCPClient will then wait for the CSA to terminate. It then sends its own
+shutdownMicroprocess message out of the "signal" outbox.
 """
 
 import socket
