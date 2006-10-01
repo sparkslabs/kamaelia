@@ -19,13 +19,44 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===========================
+Audio Capture using PyMedia
+===========================
+
+This component captures raw audio using the pymedia library, and outputs it
+out of its "outbox" outbox.
+
+
+
+Example Usage
+-------------
+
+Recording telephone quality audio to a file::
+    
+    Pipeline( Input(sample_rate=8000, channels=1, format="S16_LE"),
+              SimpleFileWriter("recording.raw"),
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+Input uses the PyMedia library to capture audio from the currently selected
+audio capture device.
+
+It outputs to its "outbox" outbox raw binary audio data in strings.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+"""
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 import sys,os
-# sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*3 + "Timer")
-#from Axon.ThreadedComponent import threadedcomponent
 from Axon.ThreadedComponent import threadedcomponent
 
 
@@ -40,12 +71,25 @@ from Kamaelia.Support.PyMedia.AudioFormats import format2PyMediaFormat
 
 
 class Input(threadedcomponent):
+    """\
+    Input([sample_rate][,channels][,format]) -> new Input component.
+    
+    Captures audio using the PyMedia library and sends the raw audio data out
+    of its "outbox" outbox.
+    
+    Keyword arguments::
+        
+    - sample_rate  -- Sample rate in Hz (default = 44100)
+    - channels     -- Number of channels (default = 2)
+    - format       -- Sample format (default = "S16_LE")
+    """
     Outboxes = { "outbox" : "raw audio samples",
                  "format" : "dictionary detailing sample_rate, sample_format and channels",
                  "signal" : "Shutdown signalling",
                }
     
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Input,self).__init__()
         
         pformat = format2PyMediaFormat[format]
