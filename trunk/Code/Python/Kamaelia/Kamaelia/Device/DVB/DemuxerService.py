@@ -19,7 +19,56 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-Components providing soft demuxing
+===============================================
+DVB-T (Digital Terrestrial TV) Demuxing Service
+===============================================
+
+A component for demultiplexing packets by packet ID (PID) from DVB/MPEG
+transport streams. Provides this as a service, to which other components can
+subscribe as clients, requesting to receive packets with certain PIDs.
+
+
+
+Example Usage
+-------------
+
+See Kamaelia.Devices.DVB.Receiver for examples of use.
+
+
+
+How does it work?
+-----------------
+
+DemuxerService takes MPEG transport stream packets, sent to its "inbox" inbox
+and determines the packet ID (PID) of each, then distributes them to all
+clients who are after packets with that PID.
+
+To be a client, send a 'ADD' or 'REMOVE' message to the "request" inbox,
+requesting to be sent (or no longer be sent) packets with particular PIDs, and
+specifying the inbox to which you want the packets to be sent. The
+format of these requests is::
+
+    ("ADD",    (dest_component, dest_inboxname), [pid, pid, ...])
+    ("REMOVE", (dest_component, dest_inboxname), [pid, pid, ...])
+    
+DemuxerService will automatically do the wiring or unwiring needed to ensure the
+packets you have requested get sent to the inbox you specified.
+
+Send an 'ADD' request, and you will immediately start receiving packets with
+those PIDs. Send a 'REMOVE' request and you will shortly no longer receive
+packets with the PIDs you specify. Note that you may still receive some packets
+after your 'REMOVE' request.
+
+DemuxerService sends its own identical format 'ADD' and 'REMOVE' requests out
+of its "pid_request" outbox. Wire this to the source of MPEG transport stream
+packets, if that source needs to know what PIDs it is expected to provide.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+
+When it terminates, this component will unwire itself from all clients to which
+it has been sending packets.
 """
 
 from Axon.Component import component
@@ -35,34 +84,21 @@ DVB_PACKET_SIZE = 188
 
 class DemuxerService(AdaptiveCommsComponent):
     """\
-    This demuxer expects to recieve the output from a Tuner
-    component on its primary inbox. 
+    DemuxerService() -> new DemuxerService component.
     
-    The output here is still transport stream packets. Another layer
-    is required to decide what to do with these - to yank out the PES
-    and ES packets.
-    
-    Clients subscribe by sending ADD and REMOVE messages to the "request"
-    inbox. Messages are of the form:
-        ("ADD",    (dest_component, dest_inboxname), [pid, pid, ...])
-        ("REMOVE", (dest_component, dest_inboxname), [pid, pid, ...])
-    
-    This instructs this demuxer to add/remove the specified PIDs to those being
-    sent (if any) to the specified destination. 
-    
-    DemuxerService automatically handles wiring/unwiring from the destination.
-    Eg. After a REMOVE message that reduces the number of PIDs being sent to the
-    destination to zero, it will be automatically unwired.
+    Demultiplexes packets from an MPEG transport stream, sent to its "inbox"
+    inbox and sends them, based on their packet ID (PID) to client who have
+    requested to receive packets with that PID.
     """
     Inboxes = {
         "inbox" : "This is where we expect to recieve a transport stream",
-        "request" : "Where we receive add and remove messages",
+        "request" : "'ADD' and 'REMOVE' requests from clients",
         "control" : "We will receive shutdown messages here",
     }
     Outboxes = {
         "outbox" : "NOT USED",
         "signal" : "Shutdown signalling",
-        "pid_request" : "Messages to subscribe/unsubscribe from PIDs",
+        "pid_request" : "Messages to the source of the transport stream, requesting to subscribe/unsubscribe from PIDs",
     }
     
 

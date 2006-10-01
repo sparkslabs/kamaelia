@@ -18,10 +18,85 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+====================================
+DVB-T (Digital Terrestrial TV) Tuner
+====================================
 
-# DVB Tuner ... where the PIDs of packets to be output can be changed at runtime
-# and the card can be specified (if multiple dvb receiver cards present)
+Tunes to the specified frequency, using the specified parameters, using a DVB
+tuner device; then outputs packets from the received MPEG transport stream as
+requested.
 
+
+
+Example Usage
+-------------
+
+Record entire received MPEG transport stream, from a particular frequency and
+set of tuning parameters to file::
+
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    Pipeline( OneShot( msg=["ADD", [0x2000] ] ),    # send the msg ["ADD", [0x2000]]
+              Tuner(537.833330, feparams),
+              SimpleFileWriter("dump.ts"),
+            ).run()
+
+Record just packets with packet ID (PID) 0 and 18::
+
+    Pipeline( OneShot( msg=["ADD", [0, 18] ] ),
+              Tuner(537833330.0, feparams),
+              SimpleFileWriter("dump.ts"),
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+Tuner tunes, using the specified tuning parameters to a DVB-T transmitted
+multiplex. You can also specify which DVB tuner card (device) to use if there
+is more than one in your system.
+
+To start with it outputs nothing. To start or stop outputting packets, send
+messages to the "inbox" inbox of the form::
+    
+    [ "ADD",    [pid, pid, ...] ]
+    [ "REMOVE", [pid, pid, ...] ]
+    
+These instruct Tuner to output packets from the received multiplex with the
+specified packet IDs (PIDs).
+
+Most DVB tuner devices understand a special packet ID of 0x2000 to request the
+entire transport stream of all packets with all IDs.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+
+
+Tuning parameters
+~~~~~~~~~~~~~~~~~
+
+The tuning parameters come from the dvb3.frontend library. Specify them as a
+dictionary::
+    
+    {
+         "bandwidth"             : dvb3.frontend.BANDWIDTH_?_MHZ where ? is 6, 7 or 8
+         "constellation"         : dvb3.frontend.QPSK, QAM_16 or QAM_64
+         "hierarchy_information" : dvb3.frontend.HIERARCHY_? where ? is NONE, 1, 2 or 4
+         "code_rate_HP"          : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "code_rate_LP"          : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+         "guard_interval"        : dvb3.frontend.GUARD_INTERVAL_1_? where ? is 32, 16, 8 or 4
+         "transmission_mode"     : dvb3.frontend.TRANSMISSION_MODE_?K where ? is 2 or 8
+         "inversion"             : dvb3.frontend.INVERSION_AUTO
+    }
+"""
 
 import os
 import dvb3.frontend
@@ -40,26 +115,21 @@ DVB_RESYNC = "\x47"
     
 class Tuner(threadedcomponent):
     """\
-    This is a DVB Multiplex Tuner.
-
-    This tunes the given DVB card to the given frequency. This then sets
-    up the dvr0 device node to recieve the data recieved on a number of
-    PIDs.
-
-    A special case use of these is to tune to 2 specific PIDs - the audio
-    and video for a specific TV channel. If you pass just 2 PIDs then
-    you're tuning to a specific channel.
-
-    NOTE 1: This multiplex tuner deliberately does not know what
-    frequency the multiplex is on, and does not know what PIDs are
-    inside that multiplex. You are expected to find out this information
-    independently.
-
-    NOTE 2: This means also that producing a mock for the next stages in
-    this system should be relatively simple - we run this code once and
-    dump to disk. 
+    Tuner(freq[,feparams][,card]) -> new Tuner component.
+    
+    Tunes the DVB-T card to the given frequency with the given parameters. Send
+    (ADD, [PID list]) or (REMOVE, [PID list]) messages to its "inbox" inbox to
+    cuase it to output MPEG transport stream packets (with the specified PIDs)
+    from its "outbox" outbox.
+    
+    Keyword arguments:
+        
+    - freq      -- Frequency to tune to in MHz
+    - feparams  -- Dictionary of parameters for the tuner front end (default={})
+    - card      -- Which DVB device to use (default=0)
     """
     def __init__(self, freq, feparams={},card=0):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         self.freq = freq
         self.feparams = feparams
         self.card = card
