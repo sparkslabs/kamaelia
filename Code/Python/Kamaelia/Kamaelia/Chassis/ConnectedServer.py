@@ -146,19 +146,19 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.protocolClass = protocol
         self.listenport = port
         self.socketOptions = socketOptions
+        self.server = None
 
     def initialiseServerSocket(self):
         if self.socketOptions is None:
-            myPLS = TCPServer(listenport=self.listenport)
+            self.server = TCPServer(listenport=self.listenport)
         else:
-            myPLS = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
+            self.server = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
 
-        self.link((myPLS,"protocolHandlerSignal"),(self,"_socketactivity"))
-        self.addChildren(myPLS)
-        myPLS.activate()
+        self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
+        self.addChildren(self.server)
+        self.server.activate()
     
     def main(self):
-        """Run the server"""
         self.initialiseServerSocket()
         while 1:
             while not self.anyReady():
@@ -171,7 +171,6 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if isinstance(data, newCSA):
                     self.handleNewCSA(data)
                 if isinstance(data, shutdownCSA):
-                    assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
                     self.handleClosedCSA(data)
             yield 1
     
@@ -190,10 +189,8 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         pHandler = self.protocolClass()
     
         pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
-        assert self.debugger.note("SimpleServer.handleNewCSA",5,"Allocated shutdown signal box", pHandlerShutdownOutbox)
     
         self.trackResourceInformation(CSA, [], [pHandlerShutdownOutbox], pHandler)
-        assert self.debugger.note("SimpleServer.handleNewCSA",5, "tracking resource")
     
         self.addChildren(CSA,pHandler)
     
@@ -216,17 +213,14 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Keyword arguments:
         data -- data.object is the ConnectedSocketAdapter for socket that is closing.
         """
-        assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
         CSA = data.object
         bundle=self.retrieveTrackedResourceInformation(CSA)
         inboxes,outboxes,pHandler = bundle
         self.send(socketShutdown(),outboxes[0])
-        assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
         self.removeChild(CSA)
         self.removeChild(pHandler)
         self.deleteOutbox(outboxes[0])
         self.ceaseTrackingResource(CSA)
-        assert self.debugger.note("SimpleServer.handleClosedCSA",5, "GRRR... ARRRGG")
 
 __kamaelia_components__ = ( SimpleServer, )
 
