@@ -79,7 +79,7 @@ class Output(threadedcomponent):
     Outputs (plays) raw audio data sent to its "inbox" inbox using the PyMedia
     library.
     
-    Keyword arguments::
+    Keyword arguments:
         
     - sample_rate  -- Sample rate in Hz (default = 44100)
     - channels     -- Number of channels (default = 2)
