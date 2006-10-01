@@ -146,6 +146,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             raise "Need a protocol to handle!"
         self.protocolClass = protocol
         self.listenport = port
+        self.connectedSockets = []
         self.socketOptions = socketOptions
         self.server = None
 
@@ -194,7 +195,8 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         connectedSocket = newCSAMessage.object
 
         protocolHandler = self.protocolClass()
-    
+        self.connectedSockets.append(connectedSocket)
+        
         outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
     
         self.trackResourceInformation(connectedSocket, 
@@ -235,6 +237,8 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         bundle=self.retrieveTrackedResourceInformation(connectedSocket)
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
+        self.connectedSockets = [ x for x in self.protocolhandlers if x != protocolHandler ]
+  
         print resourceInboxes,resourceOutboxes,(protocolHandler,controllink)
         print self.postoffice.linkages
         self.unlink(thelinkage=controllink)
