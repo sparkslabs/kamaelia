@@ -18,8 +18,75 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=======================================================
+DVB-T (Digital Terrestrial TV) Tuner & Demuxing Service
+=======================================================
 
-# prefab component that tunes and provides a demxing service
+Tunes to the specified frequency, using the specified parameters, using a DVB
+tuner device; then demultiplexes packets by packet ID (PID) from DVB/MPEG
+transport streams. Provides this as a service, to which other components can
+subscribe as clients, requesting to receive packets with certain PIDs.
+
+This is a prefab component built out of a Tuner and DemuxerService component.
+
+
+
+Example Usage
+-------------
+
+(Using experimental Kamaelia.Experimental.Services components)
+
+Set up receiver as a named public service, then subscribe to specific PIDs for
+recording a stream and some event information::
+    
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    RegisterService( Receiver(505.833330, feparams),
+                     {"DEMUXER":"inbox"}
+                   ).activate()
+                   
+    Pipeline( Subscribe("DEMUXER", [600,601]),
+              SimpleFileWriter("recording_of_600_and_601.ts"),
+            ).activate()
+    
+    Pipeline( Subscribe("DEMUXER", [18]),
+              SimpleFileWriter("event_information_data.ts")
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+This component is a prefab combining a Tuner and a DemuxerService component.
+
+Use this component in exactly the same way as you would use the
+Kamaelia.Device.DVB.DemuxerService component. The only difference is that
+requests should be sent to the "inbox" inbox, instead of a different one.
+
+To request to be sent packets with particular PIDs, send messages of the form:
+
+    ("ADD",    (dest_component, dest_inboxname), [pid, pid, ...])
+    ("REMOVE", (dest_component, dest_inboxname), [pid, pid, ...])
+
+For more details, see Kamaelia.Device.DVB.DemuxerService.
+
+Internally, the DemuxerService component is wired so that its requests for PIDs
+go straight back to the Tuner component. When a client makes a request, the
+DemuxerService therefore automatically asks the Tuner to give it only the
+packets it needs to satisfy all its current clients.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+
+"""
 
 import os
 import dvb3.frontend
