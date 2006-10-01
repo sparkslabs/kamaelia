@@ -84,13 +84,13 @@ new connections on the specified port.
 You supply a factory function that takes no arguments and returns a new
 protocol handler component.
 
-When it receives a 'newCSA' message from the TCPServer (via the "_oobinfo"
+When it receives a 'newCSA' message from the TCPServer (via the "_socketactivity"
 inbox), the factory function is called to create a new protocol handler. The
 protocol handler's "inbox" inbox and "outbox" outbox are wired to the
 ConnectedSocketAdapter (CSA) component handling that socket connection, so it can
 receive and send data.
 
-If SingleServer receives a 'shutdownCSA' message (via "_oobinfo") then a
+If SingleServer receives a 'shutdownCSA' message (via "_socketactivity") then a
 Kamaelia.KamaeliaIpc.socketShutdown message is sent to the protocol handler's
 "control" inbox, and both it and the CSA are unwired.
 
@@ -135,7 +135,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - port      -- Port number to listen on for connections (default=1601)
     """
                     
-    Inboxes = { "_oobinfo" : "internal use: Out Of Bounds Info - for receiving signalling of new and closing connections" }
+    Inboxes = { "_socketactivity" : "Messages about new and closing connections here" }
     Outboxes = {}
     
     def __init__(self, protocol=None, port=1601, socketOptions=None):
@@ -143,39 +143,38 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         super(SimpleServer, self).__init__()
         if not protocol:
             raise "Need a protocol to handle!"
-        self.protocolhandlers = None
         self.protocolClass = protocol
         self.listenport = port
         self.socketOptions = socketOptions
-    
-    def main(self):
-        """Run the server"""
+
+    def initialiseServerSocket(self):
         if self.socketOptions is None:
             myPLS = TCPServer(listenport=self.listenport)
         else:
             myPLS = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
 
-        self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
+        self.link((myPLS,"protocolHandlerSignal"),(self,"_socketactivity"))
         self.addChildren(myPLS)
-        yield Axon.Ipc.newComponent(myPLS)
-
+        myPLS.activate()
+    
+    def main(self):
+        """Run the server"""
+        self.initialiseServerSocket()
         while 1:
             while not self.anyReady():
                 self.pause()
                 yield 1
-            result = self.checkOOBInfo()
+            # Check and handle Out Of Bounds info
+            # notifications of new and closed sockets
+            while self.dataReady("_socketactivity"):
+                data = self.recv("_socketactivity")
+                if isinstance(data, newCSA):
+                    self.handleNewCSA(data)
+                if isinstance(data, shutdownCSA):
+                    assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
+                    self.handleClosedCSA(data)
             yield 1
     
-    def checkOOBInfo(self):
-        """Check and handle Out Of Bounds info - notifications of new and closed sockets."""
-        while self.dataReady("_oobinfo"):
-            data = self.recv("_oobinfo")
-            if isinstance(data, newCSA):
-                self.handleNewCSA(data)
-            if isinstance(data, shutdownCSA):
-                assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
-                self.handleClosedCSA(data)
-
     def handleNewCSA(self, data):
         """
         handleNewCSA(data) -> Axon.Ipc.newComponent(protocol handler)
