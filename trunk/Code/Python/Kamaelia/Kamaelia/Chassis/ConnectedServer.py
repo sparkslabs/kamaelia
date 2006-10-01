@@ -121,7 +121,6 @@ import Axon as _Axon
 from Axon import AxonObject as _AxonObject
 import Kamaelia.Internet.TCPServer as _ic
 import Kamaelia.IPC as _ki
-import time as _time
 
 class simpleServerProtocol(_Axon.Component.component):
     pass
@@ -149,30 +148,25 @@ class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             raise "Need a protocol to handle!"
         self.protocolhandlers = None
         self.protocolClass = protocol
-        self.iter = 0
-        self.time = _time.time()
         self.listenport = port
         self.socketOptions = socketOptions
     
-    def initialiseComponent(self):
-        """Sets up socket binding to listen for incoming connections"""
+    def main(self):
+        """Run the server"""
         if self.socketOptions is None:
             myPLS = _ic.TCPServer(listenport=self.listenport)
         else:
             myPLS = _ic.TCPServer(listenport=self.listenport,socketOptions=self.socketOptions)
+
         self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
         self.addChildren(myPLS)
-        return _Axon.Ipc.newComponent(myPLS)
-    
-    def mainBody(self):
-        """Main loop"""
-        self.pause()
-        result = self.checkOOBInfo()
-        if ((_time.time() - self.time) > 1):
-            self.time = _time.time()
-    
-        self.iter = self.iter +1
-        return 1
+        yield _Axon.Ipc.newComponent(myPLS)
+        while 1:
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            result = self.checkOOBInfo()
+            yield 1
     
     def handleNewCSA(self, data):
         """
