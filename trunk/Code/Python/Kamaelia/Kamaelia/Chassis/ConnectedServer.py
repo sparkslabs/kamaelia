@@ -119,7 +119,7 @@ shutdownMicroprocess messages.
 
 import Axon
 from Kamaelia.Internet.TCPServer import TCPServer
-from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown
+from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
 from Axon.Ipc import newComponent
 
 class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -135,7 +135,8 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - port      -- Port number to listen on for connections (default=1601)
     """
                     
-    Inboxes = { "_socketactivity" : "Messages about new and closing connections here" }
+    Inboxes = { "_socketactivity" : "Messages about new and closing connections here",
+                "control" : "We expect to get serverShutdown messages here" }
     Outboxes = {}
     
     def __init__(self, protocol=None, port=1601, socketOptions=None):
@@ -169,58 +170,81 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             while self.dataReady("_socketactivity"):
                 data = self.recv("_socketactivity")
                 if isinstance(data, newCSA):
-                    self.handleNewCSA(data)
+                    self.handleNewConnection(data)
                 if isinstance(data, shutdownCSA):
                     self.handleClosedCSA(data)
+            if self.dataReady("control"):
+                print "Well, we got in here!"
+                data = self.recv("control")
+                if isinstance(data, serverShutdown):
+                    break
             yield 1
+        print "Simple Server Shutting Down Broken"
     
-    def handleNewCSA(self, data):
+    def handleNewConnection(self, newCSAMessage):
         """
-        handleNewCSA(data) -> Axon.Ipc.newComponent(protocol handler)
+        handleNewConnection(newCSAMessage) -> Axon.Ipc.newComponent(protocol handler)
          
         Creates and returns a protocol handler for new connection.
 
         Keyword arguments:
         
-        - data  -- data.object is the ConnectedSocketAdapter component for the connection
+        - newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection
         """
-        CSA = data.object
+        connectedSocket = newCSAMessage.object
 
-        pHandler = self.protocolClass()
+        protocolHandler = self.protocolClass()
     
-        pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
+        outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
     
-        self.trackResourceInformation(CSA, [], [pHandlerShutdownOutbox], pHandler)
+        self.trackResourceInformation(connectedSocket, 
+                                      [], 
+                                      [outboxToShutdownProtocolHandler], 
+                                      protocolHandler)
     
-        self.addChildren(CSA,pHandler)
-    
-        self.link((CSA,"outbox"),(pHandler,"inbox"))
-        self.link((pHandler,"outbox"),(CSA,"inbox"))
-        self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
-    
-        if "signal" in pHandler.Outboxes:
-            self.link((pHandler,"signal"),(CSA, "control"))
+        self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
+        self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
+        self.link((self,outboxToShutdownProtocolHandler), (protocolHandler, "control"))
+        self.link((protocolHandler,"signal"),(connectedSocket, "control"))
 
-        CSA.activate()
-        pHandler.activate()
+        if "serversignal" in protocolHandler.Outboxes:
+            controllink = self.link((protocolHandler, "serversignal"), (self, "control"))
+            print "we made the link"
+        else:
+            controllink = None
+            
+        self.trackResourceInformation(connectedSocket, 
+                                      [], 
+                                      [outboxToShutdownProtocolHandler], 
+                                      ( protocolHandler, controllink ) )
+    
+        self.addChildren(connectedSocket,protocolHandler)
+        connectedSocket.activate()
+        protocolHandler.activate()
 
-    def handleClosedCSA(self,data):
+    def handleClosedCSA(self,shutdownCSAMessage):
         """
-        handleClosedCSA(data) -> None
+        handleClosedCSA(shutdownCSAMessage) -> None
         
         Terminates and unwires the protocol handler for the closing socket.
 
         Keyword arguments:
-        data -- data.object is the ConnectedSocketAdapter for socket that is closing.
+        shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
         """
-        CSA = data.object
-        bundle=self.retrieveTrackedResourceInformation(CSA)
-        inboxes,outboxes,pHandler = bundle
-        self.send(socketShutdown(),outboxes[0])
-        self.removeChild(CSA)
-        self.removeChild(pHandler)
-        self.deleteOutbox(outboxes[0])
-        self.ceaseTrackingResource(CSA)
+        connectedSocket = shutdownCSAMessage.object
+        bundle=self.retrieveTrackedResourceInformation(connectedSocket)
+        resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
+
+        print resourceInboxes,resourceOutboxes,(protocolHandler,controllink)
+        print self.postoffice.linkages
+        self.unlink(thelinkage=controllink)
+        print self.postoffice.linkages
+        self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
+        self.removeChild(connectedSocket)
+        self.removeChild(protocolHandler)
+        self.deleteOutbox(resourceOutboxes[0]) # So this is now safe
+                                               # This did not used to be the case.
+        self.ceaseTrackingResource(connectedSocket)
 
 __kamaelia_components__ = ( SimpleServer, )
 
