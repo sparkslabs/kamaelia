@@ -29,6 +29,7 @@ from __future__ import generators
 
 from Axon import Component
 from Axon.AdaptiveCommsComponent import _AdaptiveCommsable as _AC
+from AxonExceptions import noSpaceInBox
 import threading
 import Queue
 from Axon.idGen import numId
@@ -110,7 +111,6 @@ class threadedcomponent(Component.component):
       return 1
 
    def pause(self, timeout=None):
-       # override this 
        # wait for wakeup from an event, but also have an optional timeout
        self.threadWakeUp.wait(timeout)
        # clear the event immediately afterwards (not a race hazard, since
