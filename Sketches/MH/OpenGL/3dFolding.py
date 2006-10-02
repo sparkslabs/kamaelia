@@ -2,11 +2,11 @@
 
 # loadTexture function and event handling based on code from THF
 
-from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Vector import Vector
-from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Transform import Transform
-from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.Intersect import Intersect
+from Kamaelia.UI.OpenGL.Vector import Vector
+from Kamaelia.UI.OpenGL.Transform import Transform
+from Kamaelia.UI.OpenGL.Intersect import Intersect
 
-from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 
 import Axon
 import pygame
@@ -81,10 +81,10 @@ class Simple3dFold(OpenGLComponent):
                              ((+size.x*0.6, +size.y    ), (self.tex_w*0.80, 1.0                )),
                              ((+size.x*0.6, -size.y    ), (self.tex_w*0.80, 1.0-self.tex_h     )),
                            ],
-                           [ ((-size.x*0.2, -size.y*0.2), (self.tex_w*0.40, 1.0-self.tex_h*0.60)),
-                             ((-size.x*0.2, +size.y*0.2), (self.tex_w*0.40, 1.0-self.tex_h*0.40)),
-                             ((+size.x*0.2, +size.y*0.2), (self.tex_w*0.60, 1.0-self.tex_h*0.40)),
-                             ((+size.x*0.2, -size.y*0.2), (self.tex_w*0.60, 1.0-self.tex_h*0.60)),
+                           [ ((-size.x*0.4, -size.y*0.4), (self.tex_w*0.30, 1.0-self.tex_h*0.70)),
+                             ((-size.x*0.4, +size.y*0.4), (self.tex_w*0.30, 1.0-self.tex_h*0.30)),
+                             ((+size.x*0.4, +size.y*0.4), (self.tex_w*0.70, 1.0-self.tex_h*0.30)),
+                             ((+size.x*0.4, -size.y*0.4), (self.tex_w*0.70, 1.0-self.tex_h*0.70)),
                            ],
                         ]
         else:
@@ -530,8 +530,8 @@ def dist(vector):
 if __name__ == '__main__':
     import Axon
 
-    from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
-    from Kamaelia.Community.THF.Kamaelia.UI.OpenGL.SimpleRotationInteractor import SimpleRotationInteractor
+    from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
+    from Kamaelia.UI.OpenGL.SimpleRotationInteractor import SimpleRotationInteractor
 
     display = OpenGLDisplay(background_colour=(0.75, 0.75, 1.0)).activate()
     OpenGLDisplay.setDisplayService(display)
