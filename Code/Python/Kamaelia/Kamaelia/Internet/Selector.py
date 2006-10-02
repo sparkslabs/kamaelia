@@ -120,6 +120,8 @@ import time
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
+timeout = 5
+
 class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     """\
     Selector() -> new Selector component
@@ -132,7 +134,11 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
          "inbox" : "Not used at present",
          "notify" : "Used to be notified about things to select"
     }
-    
+
+    def __init__(self):
+        super(Selector, self).__init__()
+        self.trackedby = None
+            
     def removeLinks(self, selectable, meta, selectables):
         """\
         Removes a file descriptor (selectable).
@@ -204,8 +210,12 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
+    def trackedBy(self, tracker):
+        self.trackedby = tracker
+
     def main(self):
         """Main loop"""
+        global timeout
         readers,writers, exceptionals = [],[], []
         selections = [readers,writers, exceptionals]
         meta = [ {}, {}, {} ]
@@ -213,11 +223,34 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             self.sync()        # momentary pause-ish thing
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
+        shuttingDown = False
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
+#                print "recieved control message"
                 message = self.recv("control")
                 if isinstance(message,shutdown):
-                   return
+#                   print "recieved shutdown message"
+                   shutdownStart = time.time()
+                   timeWithNooneUsing = 0
+                   shuttingDown = True
+                   if self.trackedby is not None:
+#                       print "we are indeed tracked"
+                       self.trackedby.deRegisterService("selector")
+                       self.trackedby.deRegisterService("selectorshutdown")
+            if shuttingDown:
+#               print "we're shutting down"
+               if len(readers) + len(writers) + len(exceptionals) == 0:
+                   if timeWithNooneUsing == 0:
+#                       print "starting timeout"
+                       timeWithNooneUsing = time.time()
+                   else:
+                       if time.time() - timeWithNooneUsing > timeout:
+#                           print "Yay, timed out!"
+                           break # exit the loop
+#               else:
+#                   print "But someone is still using us...."
+#                   print readers, writers, exceptionals
+                   
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 try:
@@ -250,8 +283,9 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 self.sync()
             elif not self.anyReady():
                 self.sync()        # momentary pause-ish thing
-            else:
-                print "HMM"
+#            else:
+#                print "HMM"
+##        print "SELECTOR HAS EXITTED"
 
 
     def setSelectorServices(selector, tracker = None):
@@ -265,6 +299,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             tracker = cat.coordinatingassistanttracker.getcat()
         tracker.registerService("selector", selector, "notify")
         tracker.registerService("selectorshutdown", selector, "control")
+        selector.trackedBy(tracker)
     setSelectorServices = staticmethod(setSelectorServices)
 
     def getSelectorServices(tracker=None): # STATIC METHOD

@@ -91,6 +91,7 @@ from Kamaelia.Internet.Selector import Selector
 from Kamaelia.IPC import newReader, newWriter
 from Kamaelia.IPC import removeReader, removeWriter
 from Kamaelia.IPC import serverShutdown
+from Axon.Ipc import shutdown
 
 class TCPServer(Axon.Component.component):
    """\
@@ -108,6 +109,7 @@ class TCPServer(Axon.Component.component):
    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
                 "signal"                : "NOT USED",
                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
+                "_selectorShutdownSignal" : "To deregister our interest with the selector",
               }
 
    def __init__(self,listenport, socketOptions=None):
@@ -221,7 +223,9 @@ class TCPServer(Axon.Component.component):
        if newSelector:
            newSelector.activate()
        self.link((self, "_selectorSignal"),selectorService)
+       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
        self.selectorService = selectorService
+       self.selectorShutdownService = selectorShutdownService
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
@@ -236,6 +240,9 @@ class TCPServer(Axon.Component.component):
                if isinstance(data, serverShutdown):
                    break
            yield 1
+       self.send(removeReader(self, self.listener), "_selectorSignal") 
+#       for i in xrange(100): yield 1
+       self.send(shutdown(), "_selectorShutdownSignal")
 
 __kamaelia_components__  = ( TCPServer, )
 
