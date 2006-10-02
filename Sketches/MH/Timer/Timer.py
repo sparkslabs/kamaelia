@@ -19,7 +19,7 @@ from Axon.Ipc import WaitComplete
 from heapq import heappush,heappop
 import time
 
-from ThreadedComponent import threadedadaptivecommscomponent
+from Axon.ThreadedComponent import threadedadaptivecommscomponent
 
 # events are a single value 'when' - representing the time
 # the event should trigger
