@@ -247,6 +247,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                        if time.time() - timeWithNooneUsing > timeout:
 #                           print "Yay, timed out!"
                            break # exit the loop
+               else:
+                   timeWithNooneUsing == 0 # reset this to zero if readers/writers/excepts goes up again...
 #               else:
 #                   print "But someone is still using us...."
 #                   print readers, writers, exceptionals
