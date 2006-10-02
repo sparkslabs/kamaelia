@@ -120,7 +120,7 @@ shutdownMicroprocess messages.
 import Axon
 from Kamaelia.Internet.TCPServer import TCPServer
 from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
-from Axon.Ipc import newComponent
+from Axon.Ipc import newComponent, shutdownMicroprocess
 
 class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
@@ -137,7 +137,8 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
     Inboxes = { "_socketactivity" : "Messages about new and closing connections here",
                 "control" : "We expect to get serverShutdown messages here" }
-    Outboxes = {}
+    Outboxes = { "_serversignal" : "we send shutdown messages to the TCP server here",
+               }
     
     def __init__(self, protocol=None, port=1601, socketOptions=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -157,6 +158,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.server = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
 
         self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
+        self.link((self,"_serversignal"), (self.server,"contol"))
         self.addChildren(self.server)
         self.server.activate()
     
@@ -175,12 +177,14 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if isinstance(data, shutdownCSA):
                     self.handleClosedCSA(data)
             if self.dataReady("control"):
-                print "Well, we got in here!"
                 data = self.recv("control")
                 if isinstance(data, serverShutdown):
                     break
             yield 1
-        print "Simple Server Shutting Down Broken"
+        for CSA in self.connectedSockets:
+            self.handleClosedCSA(shutdownCSA(self,CSA))
+
+        print "Simple Server Shutting Down"
     
     def handleNewConnection(self, newCSAMessage):
         """
@@ -198,6 +202,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.connectedSockets.append(connectedSocket)
         
         outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
+        outboxToShutdownConnectedSocket= self.addOutbox("connectedSocketShutdownSignal")
     
         self.trackResourceInformation(connectedSocket, 
                                       [], 
@@ -207,17 +212,17 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
         self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
         self.link((self,outboxToShutdownProtocolHandler), (protocolHandler, "control"))
+        self.link((self,outboxToShutdownConnectedSocket), (connectedSocket, "control"))
         self.link((protocolHandler,"signal"),(connectedSocket, "control"))
 
         if "serversignal" in protocolHandler.Outboxes:
             controllink = self.link((protocolHandler, "serversignal"), (self, "control"))
-            print "we made the link"
         else:
             controllink = None
             
         self.trackResourceInformation(connectedSocket, 
                                       [], 
-                                      [outboxToShutdownProtocolHandler], 
+                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
                                       ( protocolHandler, controllink ) )
     
         self.addChildren(connectedSocket,protocolHandler)
@@ -237,16 +242,18 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         bundle=self.retrieveTrackedResourceInformation(connectedSocket)
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
-        self.connectedSockets = [ x for x in self.protocolhandlers if x != protocolHandler ]
+        self.connectedSockets = [ x for x in self.connectedSockets if x != self.connectedSockets ]
   
-        print resourceInboxes,resourceOutboxes,(protocolHandler,controllink)
-        print self.postoffice.linkages
         self.unlink(thelinkage=controllink)
-        print self.postoffice.linkages
+
         self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
+        self.send(shutdownMicroprocess(),resourceOutboxes[1]) # This is now instantly delivered
+
         self.removeChild(connectedSocket)
         self.removeChild(protocolHandler)
         self.deleteOutbox(resourceOutboxes[0]) # So this is now safe
+                                               # This did not used to be the case.
+        self.deleteOutbox(resourceOutboxes[1]) # So this is now safe
                                                # This did not used to be the case.
         self.ceaseTrackingResource(connectedSocket)
 
