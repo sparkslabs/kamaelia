@@ -248,8 +248,10 @@ class Introspector(Axon.Component.component):
         for c in components:
             components.extend(c.childComponents())
 
+        self.allComponents = self.targets[0].scheduler.listAllThreads()
+        
         def namelabel(component):
-            if component._microprocess__thread != None:
+            if component in self.allComponents:
                 if component._isRunnable():
                     return "*"+p.name
                 else:
