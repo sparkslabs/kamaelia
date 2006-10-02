@@ -9,9 +9,64 @@
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import struct
+import time
 
 # we're going to assume we're receiving aligned, well formed, TS packets
+
+DVB_PACKET_SIZE = 188
+DVB_RESYNC = "\x47"
+
+class AlignTSPackets(component):
+    
+    def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
+    def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
+
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.shuttingdown=True
+        return self.shuttingdown
+    
+    def main(self):
+        buffer = ""
+        buffers = []
+        self.shuttingdown=False
+        while (not self.shutdown()) or self.dataReady("inbox"):
+            yield 1
+            if not self.dataReady("inbox"):
+               self.pause()
+               yield 1
+               continue
+            else:
+                while self.dataReady("inbox"):
+                    buffers.append(self.recv("inbox"))
+            while len(buffers)>0:
+                if len(buffer) == 0:
+                    buffer = buffers.pop(0)
+                else:
+                    buffer += buffers.pop(0)
+    
+                while len(buffer) >= DVB_PACKET_SIZE:
+                      i = buffer.find(DVB_RESYNC)
+                      if i == -1: # if not found
+                          "we have a dud"
+                          buffer = ""
+                          continue
+                      if i>0:
+                          print "X"
+                          # if found remove all bytes preceeding that point in the buffers
+                          # And try again
+                          buffer = buffer[i:]
+                          continue
+                      # packet is the first 188 bytes in the buffer now
+                      packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
+    
+                      if self.errorIndicatorSet(packet): continue
+                      if self.scrambledPacket(packet):   continue
+    
+                      self.send(packet, "outbox")
 
 
 class ExtractPCR(component):
@@ -72,10 +127,47 @@ class ExtractPCR(component):
                     pcr_base = pcr>>15      # top 33 bits
                                             # middle 6 bits reserved
                     pcr_ext  = pcr & 0x1ff  # bottom 9 bits
+                    
+                    real_pcr = pcr_base * 300 + pcr_ext
 
-                    self.send( "pid %4d : pcr = %10d . %3d\n" % (pid,pcr_base,pcr_ext), "outbox")
+                    self.send( (pid, real_pcr), "outbox")
+                    
+#                    self.send( "pid %4d : pcr = %10d . %3d\n" % (pid,pcr_base,pcr_ext), "outbox")
 #                    print pid, pcr_base, pcr_ext
                     
+                    
+class MeasurePCRs(component):
+                    
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                return True
+        return False
+
+    def main(self):
+        shutdown = False
+        pcrs = {}
+        while not shutdown:
+            
+            while self.dataReady("inbox"):
+                now = time.time()
+                pid,pcr = self.recv("inbox")
+                
+                if not pcrs.has_key(pid):
+                    pcrs[pid] = pcr, now
+                else:
+                    old_pcr, then = pcrs[pid]
+                    rate = float(pcr-old_pcr) / float(now-then) / 1000000.0
+                    print "pid %4d : approximating ... rate about %.5f MHz" % (pid, rate)
+            
+            shutdown = shutdown or self.shutdown()
+            
+            if not shutdown and not self.anyReady():
+                self.pause()
+                
+            yield 1
 
 if __name__ == "__main__":
     
@@ -93,6 +185,8 @@ if __name__ == "__main__":
                 }
                    
     Pipeline( DVB_Multiplex(FREQUENCY, [0x2000], FE_PARAMS),
+              AlignTSPackets(),
               ExtractPCR(),
+              MeasurePCRs(),
               ConsoleEchoer(),
             ).run()
