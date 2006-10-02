@@ -268,7 +268,6 @@ class ConnectedSocketAdapter(component):
           if not self.canDoSomething():
               self.pause()
  
-
        self.passOnShutdown()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
 
