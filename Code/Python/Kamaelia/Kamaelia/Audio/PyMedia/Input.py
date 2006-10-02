@@ -89,7 +89,7 @@ class Input(threadedcomponent):
                }
     
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
-      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Input,self).__init__()
         
         pformat = format2PyMediaFormat[format]
