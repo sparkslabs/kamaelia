@@ -158,7 +158,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.server = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
 
         self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
-        self.link((self,"_serversignal"), (self.server,"contol"))
+        self.link((self,"_serversignal"), (self.server,"control"))
         self.addChildren(self.server)
         self.server.activate()
     
@@ -184,7 +184,9 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for CSA in self.connectedSockets:
             self.handleClosedCSA(shutdownCSA(self,CSA))
 
-        print "Simple Server Shutting Down"
+        self.send(serverShutdown(), "_serversignal")
+#        print len(self.outboxes["_serversignal"])
+#        print "Simple Server Shutting Down"
     
     def handleNewConnection(self, newCSAMessage):
         """

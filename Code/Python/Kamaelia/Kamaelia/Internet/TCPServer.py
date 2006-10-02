@@ -90,7 +90,7 @@ from Kamaelia.Internet.Selector import Selector
 
 from Kamaelia.IPC import newReader, newWriter
 from Kamaelia.IPC import removeReader, removeWriter
-
+from Kamaelia.IPC import serverShutdown
 
 class TCPServer(Axon.Component.component):
    """\
@@ -103,6 +103,7 @@ class TCPServer(Axon.Component.component):
    Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
                 "_feedbackFromCSA" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
                 "newconnection" : "We expected to recieve a message here when a new connection is ready",
+                "control" : "we expect to recieve serverShutdown messages here",
               }
    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
                 "signal"                : "NOT USED",
@@ -224,11 +225,16 @@ class TCPServer(Axon.Component.component):
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
-           self.pause()
+           if not self.anyReady():
+               self.pause()
            if self.anyClosedSockets():
                for i in xrange(10):
                   yield 1
            self.handleNewConnection() # Data ready means that we have a connection waiting.
+           if self.dataReady("control"):
+               data = self.recv("control")
+               if isinstance(data, serverShutdown):
+                   break
            yield 1
 
 __kamaelia_components__  = ( TCPServer, )
