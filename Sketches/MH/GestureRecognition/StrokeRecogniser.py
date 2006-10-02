@@ -21,8 +21,8 @@ from PreProcessing import *
 from Analyser import *
 from Grammar import *
 
-from Kamaelia.Util.Graphline import Graphline
-from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 def StrokeRecogniser():
     return Graphline( QUANTISE  = QuantiseStroke(),
@@ -45,7 +45,7 @@ def StrokeRecogniser():
 
 if __name__ == "__main__":
 
-    from Kamaelia.UI.PygameDisplay import PygameDisplay
+    from Kamaelia.UI.Pygame.Display import PygameDisplay
     from Kamaelia.Util.Console import ConsoleEchoer
 
     width = 1024
