@@ -98,7 +98,7 @@ if __name__ == "__main__":
     
     from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
     from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITables
-#    from Kamaelia.Device.DVB.Parse.PrettifyTables import PrettifyEventInformationTable
+    from Kamaelia.Device.DVB.Parse.PrettifyTables import PrettifyTimeAndDateTable
 
     import dvb3.frontend
     feparams = {
@@ -112,6 +112,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ TDT_PID:["outbox"]}),
               ReassemblePSITables(),
               ParseTimeAndDateTable(),
+              PrettifyTimeAndDateTable(),
               ConsoleEchoer(),
             ).run()
 
