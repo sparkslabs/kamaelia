@@ -197,6 +197,8 @@ Specifiers defining various types of private data payload:
 # parsing routines for DVB PSI table descriptors
 import dvb3.frontend as dvb3f
 
+from DateTime import unBCD, parseMJD
+
 def parseDescriptor(i,data):
     """\
     parseDescriptor(i, data) -> (tag, parsedData), new_i
@@ -885,11 +887,35 @@ def parser_local_time_offset_Descriptor(data,i,length,end):
     parser_local_time_offset_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
     
     This descriptor is not parsed at the moment. The dict returned is:
-       { "type": "local_time_offset", "contents" : unparsed_descriptor_contents }
+       { "type"        : "local_time_offset",
+         "country"     : 3 character ISO 3166 / ETSI ETR 162,
+         "region"      : region within country, or 0
+         "offset"      : (hours, minutes) of time offset (positive or negative)
+         "changesWhen" : (y,m,d,h,m,s) when the time offset will next change
+         "nextOffset"  : (hours, minutes) of next time offset (positive or negative)
+       }
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "local_time_offset", "contents" : data[i+2:end] }
+    e = [ord(data[i+x]) for x in range(5,15)]
+    
+    offset     = ( unBCD(e[1]), unBCD(e[2]) )
+    changeDateTime = list( parseMJD((e[3]<<8) + e[4]) )
+    changeDateTime.extend( [unBCD(e[5]), unBCD(e[6]), unBCD(e[7])] )
+    nextOffset = ( unBCD(e[8]), unBCD(e[9]) )
+    
+    negative = e[0] & 1
+    if negative:
+        offset     = ( -offset[0],     -offset[1]     )
+        nextOffset = ( -nextOffset[0], -nextOffset[1] )
+
+    return { "type"         : "local_time_offset",
+             "country"      : data[i+2:i+5],
+             "region"       : e[0] >> 2,
+             "offset"       : offset,
+             "timeOfChange" : changeDateTime,
+             "nextOffset"   : nextOffset,
+           }
 
 
 def parser_subtitling_Descriptor(data,i,length,end):
