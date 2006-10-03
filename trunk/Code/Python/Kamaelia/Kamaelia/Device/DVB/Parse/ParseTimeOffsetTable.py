@@ -93,13 +93,14 @@ class ParseTimeOffsetTable(component):
                 while i < descriptors_end:
                     (dtype,descriptor),i = parseDescriptor(i,data)
                     if descriptor['type'] == "local_time_offset":
-                        table = { "UTC_now" : timeNow,
-                                  "offset"  : descriptor['offset'],
-                                  "next"    : { "offset" : descriptor['nextOffset'],
-                                                "when"   : descriptor['timeOfChange'],
-                                              },
-                                  "country" : descriptor['country'],
-                                  "region"  : descriptor['region'],
+                        table = { "table_type" : "TOT",
+                                  "UTC_now"    : timeNow,
+                                  "offset"     : descriptor['offset'],
+                                  "next"       : { "offset" : descriptor['nextOffset'],
+                                                   "when"   : descriptor['timeOfChange'],
+                                                 },
+                                  "country"    : descriptor['country'],
+                                  "region"     : descriptor['region'],
                                 }
 
                         self.send(table, "outbox")
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     
     from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
     from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITables
-    from Kamaelia.Device.DVB.Parse.PrettifyTables import PrettifyEventInformationTable
+    from Kamaelia.Device.DVB.Parse.PrettifyTables import PrettifyTimeOffsetTable
 
     from Kamaelia.Device.DVB.NowNext import NowNextProgrammeJunctionDetect
     from Kamaelia.Device.DVB.NowNext import NowNextServiceFilter
@@ -132,6 +133,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ TOT_PID:["outbox"]}),
               ReassemblePSITables(),
               ParseTimeOffsetTable(),
+              PrettifyTimeOffsetTable(),
               ConsoleEchoer(),
             ).run()
 

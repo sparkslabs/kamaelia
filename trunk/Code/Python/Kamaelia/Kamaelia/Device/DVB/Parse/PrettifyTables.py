@@ -265,6 +265,68 @@ class PrettifyEventInformationTable(component):
             yield 1
 
 
+class PrettifyTimeAndDateTable(component):
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+                tdt = self.recv("inbox")
+                try:
+                    y, m, d, hh, mm, ss = tdt
+                    output =  "TDT received:\n"
+                    output += "   UTC Date now (y,m,d) : %04d %02d %02d\n" % (y,m,d)
+                    output += "   UTC Time now (h,m,s) : %02d:%02d:%02d\n" % (hh,mm,ss)
+                    output += "----\n"
+                except:
+                    output = "Not recognised as Time and Date data\n"
+                        
+                self.send(output,"outbox")
+                
+            self.pause()
+            yield 1
+
+
+class PrettifyTimeOffsetTable(component):
+    def shutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            self.send(msg,"signal")
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return True
+        return False
+
+    def main(self):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
+                tot = self.recv("inbox")
+                try:
+                    if tot['table_type'] == "TOT":
+                        output =  "TOT received:\n"
+                        output += "   DateTime now (UTC)         : %04d-%02d-%02d %02d:%02d:%02d\n" % tuple(tot['UTC_now'])
+                        output += "   Current local offset (h,m) : %02d:%02d\n" % tot['offset']
+                        output += "   Country & region in it     : %s (%d)\n" % (tot['country'],tot['region'])
+                        output += "   Next change of offset:\n"
+                        output += "       Changes to             : %02d:%02d\n" % tot['next']['offset']
+                        output += "       Changes on (y,m,d)     : %04d-%02d-%02d %02d:%02d:%02d\n" % tuple(tot['next']['when'])
+                        output += "----\n"
+                    else:
+                        output="Unrecognised data received (not a parsed TOT)\n"
+                except:
+                    output="Unrecognised data received (not a parsed TOT)/error parsing table)\n"
+                    raise
+                        
+                self.send(output,"outbox")
+                
+            self.pause()
+            yield 1
+
 
 # ancilliary util functions
 import pprint
