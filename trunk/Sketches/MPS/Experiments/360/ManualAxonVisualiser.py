@@ -33,37 +33,17 @@ from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 example = Source(["""\
 ADD NODE Source Source randompos component
 ADD NODE Source#default default randompos inbox
-ADD NODE Source#clicknext "Click Next" randompos outbox
+ADD NODE Source#next Next randompos outbox
 ADD LINK Source Source#default
-ADD LINK Source Source#clicknext
+ADD LINK Source Source#next
 ADD NODE Sink Sink randompos component
 ADD NODE Sink#default default randompos inbox
-ADD NODE Sink#clicknext ClickNext randompos outbox
+ADD NODE Sink#next Next randompos outbox
 ADD LINK Sink Sink#default
-ADD LINK Sink Sink#clicknext
-ADD LINK Source#clicknext Sink#default
-ADD LINK Sink#clicknext Source#default
+ADD LINK Sink Sink#next
+ADD LINK Source#next Sink#default
+ADD LINK Sink#next Source#default
 """])
-
-Backplane("VIS").activate()
-Backplane("UI_Events").activate()
-
-X = Pipeline(
-    SubscribeTo("VIS"),
-#    ConsoleEchoer(forwarder=True),
-    chunks_to_lines(),
-    lines_to_tokenlists(),
-    AxonVisualiser(position=(0,0)),
-    ConsoleEchoer(forwarder=True),
-    PublishTo("UI_Events"),
-).activate()
-
-Y = Pipeline(
-    example,
-#    ConsoleEchoer(forwarder=True),
-    PublishTo("VIS"),
-).activate()
-
 
 class AssetManager(Axon.Component.component):
     def main(self):
@@ -78,22 +58,23 @@ class AssetManager(Axon.Component.component):
                     nlabel = nid + ".label"
                     self.send("ADD NODE "+nid+" "+nlabel+" randompos component\n","outbox")
                     self.send("ADD NODE "+nid+"#default default randompos inbox\n","outbox")
-                    self.send('ADD NODE '+nid+'#clicknext "Click Next" randompos outbox\n',"outbox")
+                    self.send('ADD NODE '+nid+'#next Next randompos outbox\n',"outbox")
                     self.send("ADD LINK "+nid+" "+nid+"#default\n","outbox")
-                    self.send("ADD LINK "+nid+" "+nid+"#clicknext\n","outbox")
+                    self.send("ADD LINK "+nid+" "+nid+"#next\n","outbox")
             yield 1
              
-F = Pipeline(
-             Button(caption="ADD ASSET",
-                    size=(63,32),
-                    position=(800, 20),
-                    msg='add').activate(),
-             AssetManager(),
-             ConsoleEchoer(forwarder=True),
-             PublishTo("VIS"),
-).activate()
 
 class Magic(Axon.Component.component):
+    Inboxes = {
+       "nodeselect" : "expect to get node notifications here",
+       "makelink": "Expect to be told to make links here",
+       "inbox" : "",
+       "control" : "",
+    }
+    Outboxes = {
+       "outbox" : "",
+       "signal" : "",
+    }
     def main(self):
         selected = None
         mode = None
@@ -101,23 +82,26 @@ class Magic(Axon.Component.component):
         sink = None
         while 1:
             yield 1
-            while self.dataReady("inbox"):
-                event = self.recv("inbox")
-                if event[0] == "SELECT":
-                    if event[1] == "NODE":
-                        selected = event[2]
-                        print "CLICKED: ", selected
-                        if mode == "LINK":  
-                            sink = selected
-                            try:
-                                if "#" not in sink:
-                                    sink = selected+"#default"
-                                self.send("ADD LINK "+source+" "+sink+"\n","outbox")
-                            except TypeError:
-                                pass
-                            source = None
-                            priorselected = None
-                            selected = None
+            while self.dataReady("nodeselect"):
+                event = self.recv("nodeselect")
+                selected = event[2]
+                print "CLICKED: ", selected
+                if mode == "LINK":
+                    print "Make link?", source, sink
+                    sink = selected
+                    print "Make link?", source, sink
+                    try:
+                        if "#" not in sink:
+                            sink = selected+"#default"
+                        self.send("ADD LINK "+source+" "+sink+"\n","outbox")
+                    except TypeError:
+                        pass
+                    source, sink, selected, mode = None, None, None, None
+                    selected = None
+
+            while self.dataReady("makelink"):
+                print "BONGLE"
+                event = self.recv("makelink")
                             
                 if event[0] == "MAKELINKTO":
                    mode = "LINK"
@@ -125,32 +109,44 @@ class Magic(Axon.Component.component):
                    source = selected
                    try:
                        if '#' not in source:
-                            print "Hmm, we don't allow you to make links from nodes without going grrrrr"
-                            mode = None
+                            source = source+"#next"
                    except TypeError,e:
                            mode = None
                            source = None
                            sink = None
                            priorselected = None
                            selected = None
-#                       else:
-#                           print "Gingle?",e
 
-F_ = Pipeline(
-             Button(caption="LINK",
-                    size=(64,32),
-                    position=(800, 53),
-                    msg=("MAKELINKTO",) ).activate(),
-             ConsoleEchoer(forwarder=True),
-             PublishTo("UI_Events"),
+Backplane("VIS").activate()
+Backplane("UI_Events").activate()
+
+X = Pipeline(
+    SubscribeTo("VIS"),
+    chunks_to_lines(),
+    lines_to_tokenlists(),
+    AxonVisualiser(position=(0,0)),
+    ConsoleEchoer(forwarder=True),
+    PublishTo("UI_Events"),
 ).activate()
 
-Pipeline( 
-    SubscribeTo("UI_Events"),
-#    ConsoleEchoer(forwarder=True),
-    Magic(),
-    ConsoleEchoer(forwarder=True),
-    PublishTo("VIS"),
+
+Graphline(
+    EXAMPLE = example,
+    ADDASSET =  Button(caption="ADD ASSET", position=(800, 20), msg='add'),
+    LINKER = Button(caption="LINK", position=(800, 53), msg=("MAKELINKTO",) ),
+    
+    EVENTS = SubscribeTo("UI_Events"),
+    MAGIC = Magic(),
+    ASSETS = AssetManager(),
+    CONTROL = PublishTo("VIS"),
+    linkages = {
+        ("EVENTS","outbox") : ("MAGIC","nodeselect"),
+        ("LINKER","outbox") : ("MAGIC","makelink"),
+        ("ADDASSET","outbox") : ("ASSETS","inbox"),
+        ("MAGIC","outbox") : ("CONTROL","inbox"),
+        ("ASSETS","outbox") : ("CONTROL","inbox"),
+        ("EXAMPLE","outbox") : ("CONTROL","inbox"), # This can be removed at a later date
+    }
 ).activate()
 
 Z = Pipeline(
