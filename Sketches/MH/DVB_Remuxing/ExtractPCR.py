@@ -18,8 +18,8 @@ DVB_RESYNC = "\x47"
 
 class AlignTSPackets(component):
     
-    def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
-    def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
+#    def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
+#    def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
 
     def shutdown(self):
         while self.dataReady("control"):
@@ -63,8 +63,8 @@ class AlignTSPackets(component):
                       # packet is the first 188 bytes in the buffer now
                       packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
     
-                      if self.errorIndicatorSet(packet): continue
-                      if self.scrambledPacket(packet):   continue
+#                      if self.errorIndicatorSet(packet): continue
+#                      if self.scrambledPacket(packet):   continue
     
                       self.send(packet, "outbox")
 
@@ -188,5 +188,5 @@ if __name__ == "__main__":
               AlignTSPackets(),
               ExtractPCR(),
               MeasurePCRs(),
-              ConsoleEchoer(),
+#              ConsoleEchoer(),
             ).run()
