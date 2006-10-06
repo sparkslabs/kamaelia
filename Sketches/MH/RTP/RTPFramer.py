@@ -140,7 +140,8 @@ if __name__ == "__main__":
     
     elif test==2:
         from Kamaelia.Chassis.Pipeline import Pipeline
-        from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
+        #from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
+        from Multicast_transceiver import Multicast_transceiver
         from Kamaelia.File.Reading import RateControlledFileReader
         import sys; sys.path.append("../DVB_Remuxing/")
         from ExtractPCR import AlignTSPackets
@@ -177,7 +178,18 @@ if __name__ == "__main__":
                     self.pause()
                     yield 1
         
-        Pipeline( RateControlledFileReader("/data/channel4_lost.ts",readmode="bytes",rate=5000000/8),
+        from Kamaelia.Device.DVB.Core import DVB_Multiplex
+        
+        import dvb3.frontend
+        
+        FREQUENCY = 505.833330
+        FE_PARAMS = { "inversion" : dvb3.frontend.INVERSION_AUTO,
+                    "constellation" : dvb3.frontend.QAM_16,
+                    "coderate_HP" : dvb3.frontend.FEC_3_4,
+                    "coderate_LP" : dvb3.frontend.FEC_3_4,
+                    }
+                    
+        Pipeline( DVB_Multiplex(FREQUENCY, [600,601], FE_PARAMS),
                   AlignTSPackets(),
                   GroupTSPackets(),
                   PrepForRTP(),
