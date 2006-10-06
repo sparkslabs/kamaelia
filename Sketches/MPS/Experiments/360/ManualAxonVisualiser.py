@@ -143,8 +143,8 @@ Graphline(
         ("EVENTS","outbox") : ("MAGIC","nodeselect"),
         ("LINKER","outbox") : ("MAGIC","makelink"),
         ("ADDASSET","outbox") : ("ASSETS","inbox"),
-        ("MAGIC","outbox") : ("CONTROL","inbox"),
-        ("ASSETS","outbox") : ("CONTROL","inbox"),
+        ("MAGIC","outbox")   : ("CONTROL","inbox"),
+        ("ASSETS","outbox")  : ("CONTROL","inbox"),
         ("EXAMPLE","outbox") : ("CONTROL","inbox"), # This can be removed at a later date
     }
 ).activate()
