@@ -103,21 +103,22 @@ class RTPDeframer(component):
                
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
-    from Kamaelia.Internet.Multicast_receiver import Multicast_receiver
+#    from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
+    from Multicast_transceiver import Multicast_transceiver
     from Kamaelia.Protocol.SimpleReliableMulticast import RecoverOrder
     from Kamaelia.File.Writing import SimpleFileWriter
     from Kamaelia.Util.Detuple import SimpleDetupler
+    from Kamaelia.Util.Console import ConsoleEchoer
     
     Pipeline( Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
               #Multicast_transceiver("0.0.0.0", 1234, "239.255.42.42", 0),  # for live555 testing
-              #Multicast_receiver("239.255.42.42",1234),
               SimpleDetupler(1),
               RTPDeframer(),
               RecoverOrder(),
               SimpleDetupler(1),
               SimpleDetupler("payload"),
               SimpleFileWriter("received.ts"),
+#              ConsoleEchoer(),
             ).run()
     
     
