@@ -126,6 +126,8 @@ class RecoverOrder(Axon.Component.component):
       bufsize = 30
       datasource = []
       while 1:
+         if not self.anyReady():
+             self.pause()
          yield 1
          while self.dataReady("inbox"):
             item = self.recv("inbox")
