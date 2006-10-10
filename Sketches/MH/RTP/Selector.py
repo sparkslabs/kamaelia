@@ -230,7 +230,6 @@ class _SelectorCore(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponen
         shuttingDown = False
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
-#                print "recieved control message"
                 message = self.recv("control")
                 if isinstance(message,shutdown):
 #                   print "recieved shutdown message"
@@ -329,7 +328,7 @@ class Selector(component):
 
         shutdownMessage = shutdown()
         
-        while self.childrenDone():
+        while not self.childrenDone():
             if not self.anyReady():
                 self.pause()
             yield 1
@@ -337,7 +336,8 @@ class Selector(component):
             wakeSelector=False
             
             while self.dataReady("notify"):
-                self.send(self.recv("notify"), "_toNotify")
+                message=self.recv("notify")
+                self.send(message, "_toNotify")
                 wakeSelector=True
             
             while self.dataReady("control"):
