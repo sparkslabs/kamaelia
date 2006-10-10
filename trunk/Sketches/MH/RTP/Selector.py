@@ -122,7 +122,9 @@ READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
 timeout = 5
 
-class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
+from Axon.Component import component
+
+class _SelectorCore(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     """\
     Selector() -> new Selector component
 
@@ -135,9 +137,12 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
          "notify" : "Used to be notified about things to select"
     }
 
-    def __init__(self):
-        super(Selector, self).__init__()
-        self.trackedby = None
+    def __init__(self,notifySocket=None):
+        super(_SelectorCore, self).__init__()
+        self.minSelectables = 0
+        self.notifySocket = notifySocket
+        if self.notifySocket:
+            self.minSelectables += 1
             
     def removeLinks(self, selectable, meta, selectables):
         """\
@@ -210,13 +215,12 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
-    def trackedBy(self, tracker):
-        self.trackedby = tracker
-
     def main(self):
         """Main loop"""
         global timeout
         readers,writers, exceptionals = [],[], []
+        if self.notifySocket:
+            readers.append(self.notifySocket)
         selections = [readers,writers, exceptionals]
         meta = [ {}, {}, {} ]
         if not self.anyReady():
@@ -233,13 +237,9 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                    shutdownStart = time.time()
                    timeWithNooneUsing = 0
                    shuttingDown = True
-                   if self.trackedby is not None:
-#                       print "we are indeed tracked"
-                       self.trackedby.deRegisterService("selector")
-                       self.trackedby.deRegisterService("selectorshutdown")
             if shuttingDown:
 #               print "we're shutting down"
-               if len(readers) + len(writers) + len(exceptionals) == 0:
+               if len(readers) + len(writers) + len(exceptionals) <= self.minSelectables: # always have at least teh wakeup socket
                    if timeWithNooneUsing == 0:
 #                       print "starting timeout"
                        timeWithNooneUsing = time.time()
@@ -261,14 +261,15 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                     
                     for i in xrange(3):
                         for selectable in read_write_except[i]:
-#                            try:
+                            try:
                                 replyService, outbox, linkage = meta[i][selectable]
                                 self.send(selectable, outbox)
                                 replyService, outbox, linkage = None, None, None
                                 # Note we remove the selectable until we know the reason for it being here has cleared.
-                                self.removeLinks(selectable, meta[i], selections[i]) 
-#                            except KeyError, k:
-#                                pass
+                                self.removeLinks(selectable, meta[i], selections[i])
+                            except KeyError, k:
+                                # must be the wakeup signal, don't remove it or act on it
+                                pass
                             
                 except ValueError, e:
                     if FAILHARD: 
@@ -284,12 +285,88 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
-                self.sync()        # momentary pause-ish thing
+                self.pause()        # momentary pause-ish thing
 #            else:
 #                print "HMM"
 ##        print "SELECTOR HAS EXITTED"
 
 
+class Selector(component):
+    Inboxes = {
+         "control" : "Recieving a Axon.Ipc.shutdown() message here causes shutdown",
+         "inbox" : "Not used at present",
+         "notify" : "Used to be notified about things to select",
+         "_sink" : "For dummy notifications from selector",
+    }
+    Outboxes = {
+         "outbox" : "",
+         "signal" : "",
+         "_toNotify"  : "Forwarding of messages to notify inbox of actual selector",
+         "_toControl" : "Forwarding of messages to control inbox of actual selector",
+    }
+
+    def __init__(self):
+        super(Selector, self).__init__()
+        self.trackedby = None
+
+    
+    def trackedBy(self, tracker):
+        self.trackedby = tracker
+
+    def main(self):
+        self.notifySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.notifySocket.setblocking(False)
+        self.notifySocket.bind(("127.0.0.1",1678))
+        self.notifySocket.connect(("127.0.0.1",1678))
+        
+        self.selector =  _SelectorCore(self.notifySocket)
+        self.addChildren(self.selector)
+        self.selector.activate()
+        self.link((self,"_toNotify"),(self.selector, "notify"))
+        self.link((self,"_toControl"),(self.selector, "control"))
+
+#        self.send( newReader( (self,"_sink"), self.notifySocket), "_toNotify")
+
+        shutdownMessage = shutdown()
+        
+        while self.childrenDone():
+            if not self.anyReady():
+                self.pause()
+            yield 1
+            
+            wakeSelector=False
+            
+            while self.dataReady("notify"):
+                self.send(self.recv("notify"), "_toNotify")
+                wakeSelector=True
+            
+            while self.dataReady("control"):
+                message = self.recv("control")
+                if isinstance(message,shutdown):
+                   if self.trackedby is not None:
+#                       print "we are indeed tracked"
+                       self.trackedby.deRegisterService("selector")
+                       self.trackedby.deRegisterService("selectorshutdown")
+                       self.send(message, "_toControl")
+                       shutdownMessage=message
+                       wakeSelector=True
+
+            if wakeSelector:
+                self.notifySocket.send("X")
+
+
+        self.send(shutdownMessage, "signal")
+
+    def childrenDone(self):
+        """Unplugs any children that have terminated, and returns true if there are no
+           running child components left (ie. their microproceses have finished)
+        """
+        for child in self.childComponents():
+            if child._isStopped():
+                self.removeChild(child)   # deregisters linkages for us
+
+        return 0==len(self.childComponents())
+    
     def setSelectorServices(selector, tracker = None):
         """\
         Sets the given selector as the service for the selected tracker or the
