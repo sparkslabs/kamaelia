@@ -269,7 +269,7 @@ class _SelectorCore(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponen
                                 self.removeLinks(selectable, meta[i], selections[i])
                             except KeyError, k:
                                 # must be the wakeup signal, don't remove it or act on it
-                                pass
+                                selectable.recv(1)
                             
                 except ValueError, e:
                     if FAILHARD: 
