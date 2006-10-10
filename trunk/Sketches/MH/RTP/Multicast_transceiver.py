@@ -94,7 +94,8 @@ from Kamaelia.IPC import removeReader, removeWriter
 #from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 from ConnectedSocketAdapter import ConnectedSocketAdapter
 
-from Kamaelia.Internet.Selector import Selector
+#from Kamaelia.Internet.Selector import Selector
+from Selector import Selector
 
 class Multicast_transceiver(Axon.Component.component):
    """\
