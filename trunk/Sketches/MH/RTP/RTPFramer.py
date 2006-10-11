@@ -82,11 +82,11 @@ class RTPFramer(component):
         packet.append( struct.pack(">H", self.seqnum) )
         self.seqnum = (self.seqnum + 1) & 0xffff
 
-        packet.append( struct.pack(">I",(timestamp + self.timestamp_offset) & 0xffffffff) )
-        packet.append( struct.pack(">I",ssrc & 0xffffffff) )
+        packet.append( struct.pack(">I",(timestamp + self.timestamp_offset) & 0xffffffffL) )
+        packet.append( struct.pack(">I",ssrc & 0xffffffffL) )
 
         for csrc in csrcs:
-            packet.append( struct.pack(">I",csrc & 0xffffffff) )
+            packet.append( struct.pack(">I",csrc & 0xffffffffL) )
 
         if extension:
             ehdr, epayload = extension

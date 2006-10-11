@@ -182,7 +182,7 @@ class EITPacketParser(component):
                    
 def crc32(data):
     poly = 0x4c11db7
-    crc = 0xffffffff
+    crc = 0xffffffffL
     for byte in data:
         byte = ord(byte)
         for bit in range(7,-1,-1):  # MSB to LSB
@@ -190,7 +190,7 @@ def crc32(data):
             crc = crc << 1
             if ((byte>>bit)&1) ^ z32:
                 crc = crc ^ poly
-            crc = crc & 0xffffffff
+            crc = crc & 0xffffffffL
     return crc
 
 
