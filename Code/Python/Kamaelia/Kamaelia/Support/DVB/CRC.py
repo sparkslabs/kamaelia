@@ -28,7 +28,7 @@ CRC algorithm used to verify the integrity of data in DVB transport streams.
 # 
 # def crc32(data):
 #     poly = 0x4c11db7
-#     crc = 0xffffffff
+#     crc = 0xffffffffL
 #     for byte in data:
 #         byte = ord(byte)
 #         for bit in range(7,-1,-1):  # MSB to LSB
@@ -36,13 +36,13 @@ CRC algorithm used to verify the integrity of data in DVB transport streams.
 #             crc = crc << 1
 #             if ((byte>>bit)&1) ^ z32:
 #                 crc = crc ^ poly
-#             crc = crc & 0xffffffff
+#             crc = crc & 0xffffffffL
 #     return crc
 # 
 # def dvbcrc(data):
 #     return not crc32(data)
 
-def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffff):
+def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffffL):
     """\
     MakeCRC32([polynomial][,inital]) -> (string -> 32bit CRC of binary string data)
     
@@ -61,13 +61,13 @@ def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffff):
             crc = crc << 1
             if z32:
                 crc = crc ^ polynomial
-            crc = crc & 0xffffffff
-        xorvals.append(crc & 0xffffffff)   # only interested in bottom 24 bits
+            crc = crc & 0xffffffffL
+        xorvals.append(crc & 0xffffffffL)   # only interested in bottom 24 bits
     
     # define the function that will do the crc, using the table we've just
     # precalculated.
     def fastcrc32(data):
-        crc = 0xffffffff
+        crc = 0xffffffffL
         for byte in data:
             byte = ord(byte)
             xv = xorvals[byte ^ (crc>>24)]
