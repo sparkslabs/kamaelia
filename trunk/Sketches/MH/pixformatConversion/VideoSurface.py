@@ -28,6 +28,7 @@ from Kamaelia.UI.GraphicDisplay import PygameDisplay
 import pygame
 
 
+from pixConvert import rgbi_to_yuv420p   # RGB_interleaved to YUV420_planar
 from pixConvert import yuv420p_to_rgbi   # YUV420_planar to RGB_interleaved
 from pixConvert import yuv422p_to_rgbi   # YUV422_planar to RGB_interleaved
 
@@ -67,6 +68,46 @@ class YUVtoRGB(component):
                               }, "outbox")
                     
 
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    done=True
+                    
+            if not done:
+                self.pause()
+                
+            yield 1
+
+
+
+class RGBtoYUV(component):
+    
+    Inboxes =  { "inbox"   : "RGB video frame",
+                 "control" : "Shutdown signalling"
+               }
+    Outboxes = { "outbox"      : "YUV video frame",
+                 "signal"      : "Shutdown signalling",
+               }
+
+
+    def main(self):
+        """Main loop."""
+
+        done = False
+        
+        while not done:
+            while self.dataReady("inbox"):
+                
+                frame = self.recv("inbox")
+                if frame['pixformat'] == "RGB_interleaved":
+                    rgb = frame['rgb']
+                    W,H = frame['size']
+                    self.send({ "yuv"       : rgbi_to_yuv420p(rgb, W,H),
+                                "size"      : (W,H),
+                                "pixformat" : "YUV420_planar",
+                              }, "outbox")
+                    
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
@@ -198,17 +239,21 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
+    from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
     
-    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
-              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
+#    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+#              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
+#              YUVtoRGB(),
+#              VideoSurface(),
+#            ).run()
+            
+    from Kamaelia.Codec.Dirac import DiracDecoder
+            
+    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 2280960*8),
+              DiracDecoder(),
+              YUVtoRGB(),
+              RGBtoYUV(),
               YUVtoRGB(),
               VideoSurface(),
+#              VideoOverlay(),
             ).run()
-            
-#     from Kamaelia.Codec.Dirac import DiracDecoder
-#             
-#     Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 2280960*8),
-#               DiracDecoder(),
-#               YUVtoRGB(),
-#               VideoSurface(),
-#             ).run()
