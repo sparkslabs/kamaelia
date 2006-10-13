@@ -1,5 +1,129 @@
 /** Pixel type conversion routines **/
 
+#include <malloc.h>
+
+int RGB_to_YUV420(unsigned char *rgb_input,
+                  unsigned char *y_output,
+                  unsigned char *u_output,
+                  unsigned char *v_output,
+                  int width, int height)
+{
+    int R, G, B;
+    int Y, U, V;
+
+    int row;
+    int col;
+
+    int *uline;
+    int *vline;
+    int *ubuf;
+    int *vbuf;
+
+    int *ulineptr;
+    int *vlineptr;
+    int *ubufptr;
+    int *vbufptr;
+
+    int halfwidth;
+    halfwidth = width>>1;
+
+    // allocate temporary buffers for filtering U and V components to allow
+    // sensible downsampling
+    uline = vline = ubuf = vbuf = NULL;
+
+    uline = (int *)calloc( width+2, sizeof(int) );
+    vline = (int *)calloc( width+2, sizeof(int) );
+    ubuf  = (int *)calloc( halfwidth*(height+2), sizeof(int) );
+    vbuf  = (int *)calloc( halfwidth*(height+2), sizeof(int) );
+
+    if ( uline == NULL || vline == NULL || ubuf == NULL || vbuf == NULL )
+    {
+        free(uline);
+        free(vline);
+        free(ubuf);
+        free(vbuf);
+        return -1;
+    }
+
+    // pre-pad buffers with default 'zero' values (128)
+    uline[0] = uline[width+1] = 128;
+    vline[0] = vline[width+1] = 128;
+    for(col=0; col<halfwidth; col++)
+    {
+        ubuf[col] = ubuf[col + halfwidth*(height+1)] = 128;
+        vbuf[col] = ubuf[col + halfwidth*(height+1)] = 128;
+    }
+
+    // offset base addresses
+    uline = uline + 1;
+    vline = vline + 1;
+    ubuf = ubuf + halfwidth;
+    vbuf = vbuf + halfwidth;
+
+    ubufptr = ubuf;
+    vbufptr = vbuf;
+    for (row=0; row<height; row=row+1)
+    {
+        ulineptr = uline;
+        vlineptr = vline;
+
+        for(col=0; col<width; col++)
+        {
+            // even numbered pixel
+            R = (int)(*(rgb_input++));
+            G = (int)(*(rgb_input++));
+            B = (int)(*(rgb_input++));
+
+            Y = (( 66*R + 129*G +  25*B + 128)>>8)+ 16;
+            U = ((-38*R -  74*G + 112*B + 128)>>8)+128;
+            V = ((112*R -  94*G -  18*B + 128)>>8)+128;
+
+            *(y_output++) = (unsigned char)( (Y<0) ? 0 : ((Y>255) ? 255 : Y) );
+            *(ulineptr++) = U;
+            *(vlineptr++) = V;
+        }
+
+        for(col=0; col<width; col=col+2)
+        {
+            *(ubufptr++) = ( uline[col-1] + 2*uline[col] + uline[col+1] )>>2;
+            *(vbufptr++) = ( vline[col-1] + 2*vline[col] + vline[col+1] )>>2;
+        }
+    }
+
+    ubufptr = ubuf;
+    vbufptr = vbuf;
+    for (row=0; row<height; row=row+2)
+    {
+        for(col=0; col<halfwidth; col++)
+        {
+            U = ( ubufptr[-halfwidth] + 2*(*ubufptr) + ubufptr[+halfwidth] )>>2;
+            V = ( vbufptr[-halfwidth] + 2*(*vbufptr) + vbufptr[+halfwidth] )>>2;
+
+            *(u_output++) = (unsigned char)( (U<0) ? 0 : ((U>255) ? 255 : U) );
+            *(v_output++) = (unsigned char)( (V<0) ? 0 : ((V>255) ? 255 : V) );
+
+            ubufptr++;
+            vbufptr++;
+        }
+        ubufptr += halfwidth;
+        vbufptr += halfwidth;
+    }
+
+    uline = uline - 1;
+    vline = vline - 1;
+    ubuf = ubuf - halfwidth;
+    vbuf = vbuf - halfwidth;
+
+    free(uline);
+    free(vline);
+    free(ubuf);
+    free(vbuf);
+
+    return 0;
+}
+
+
+
 
 int YUV422_to_RGB(unsigned char *y_input,
                   unsigned char *u_input,

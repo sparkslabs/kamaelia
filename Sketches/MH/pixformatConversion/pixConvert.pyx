@@ -21,6 +21,8 @@
 # Pyrex wrapper for simple YUV422 to RGB conversion functions
 
 cdef extern from "convert.c":
+    cdef int RGB_to_YUV420(unsigned char *rgb_input, unsigned char *y_output, unsigned char *u_output, unsigned char *v_output, int width, int height)
+    
     cdef int YUV422_to_RGB(unsigned char *y_input, unsigned char *u_input, unsigned char *v_input, unsigned char *rgb_output, int width, int height)
 
     cdef int YUV420_to_RGB(unsigned char *y_input, unsigned char *u_input, unsigned char *v_input, unsigned char *rgb_output, int width, int height)
@@ -35,6 +37,26 @@ cdef extern from "Python.h":
 
 class __Blah(object):
     pass
+
+def rgbi_to_yuv420p(rgb, width, height):
+    cdef unsigned char *ychr
+    cdef unsigned char *uchr
+    cdef unsigned char *vchr
+    cdef unsigned char *rgbchr
+
+    y = PyString_FromStringAndSize(NULL, (width*height))
+    u = PyString_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
+    v = PyString_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
+
+    ychr = <unsigned char *>PyString_AsString(y)
+    uchr = <unsigned char *>PyString_AsString(u)
+    vchr = <unsigned char *>PyString_AsString(v)
+
+    rgbchr = <unsigned char *>PyString_AsString(rgb)
+    
+    RGB_to_YUV420(rgbchr, ychr,uchr,vchr, width, height)
+
+    return y,u,v
 
 def yuv422p_to_rgbi(y,u,v, width, height):
     cdef unsigned char *ychr
