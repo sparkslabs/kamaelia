@@ -2,6 +2,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete
+from Axon.Ipc import shutdownMicroprocess, producerFinished
 import re
 from Kamaelia.Support.Data.Rationals import rational
 
@@ -11,7 +12,15 @@ class YUV4MPEGToFrame(component):
     def __init__(self):
         super(YUV4MPEGToFrame,self).__init__()
         self.remainder = ""
+        self.shutdownMsg = None
     
+    def checkShutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                return msg
+        return False
+        
     def readline(self):
         bytes = []
         newdata = self.remainder
@@ -19,6 +28,11 @@ class YUV4MPEGToFrame(component):
         while index==-1:
             bytes.append(newdata)
             while not self.dataReady("inbox"):
+                shutdownmsg = self.checkShutdown()
+                if shutdownmsg:
+                    self.bytesread = ""
+                    return
+                self.pause()
                 yield 1
             newdata = self.recv("inbox")
             index = newdata.find("\x0a")
@@ -39,6 +53,13 @@ class YUV4MPEGToFrame(component):
                 newdata = self.recv("inbox")
                 buf.append(newdata)
                 bufsize += len(newdata)
+            else:
+                shutdownmsg = self.checkShutdown()
+                if shutdownmsg:
+                    self.bytesread = ""
+                    return
+            if bufsize<size and not self.anyReady():
+                self.pause()
             yield 1
             
         excess = bufsize-size
@@ -79,10 +100,18 @@ class YUV4MPEGToFrame(component):
             csize = seq_params["chroma_size"][0] * seq_params["chroma_size"][1]
             
             yield WaitComplete(self.readbytes(ysize))
+            if not self.bytesread:
+                break
             y = self.bytesread
+            
             yield WaitComplete(self.readbytes(csize))
+            if not self.bytesread:
+                break
             u = self.bytesread
+            
             yield WaitComplete(self.readbytes(csize))
+            if not self.bytesread:
+                break
             v = self.bytesread
             
             frame = { "yuv" : (y,u,v) }
@@ -90,6 +119,11 @@ class YUV4MPEGToFrame(component):
             frame.update(frame_params)
             self.send(frame, "outbox")
             yield 1
+
+        if self.shutdownMsg:
+            self.send(self.shutdownMsg, "signal")
+        else:
+            self.send(producerFinished(), "signal")
 
 
 
@@ -219,8 +253,19 @@ def parse_frame_tags(fields):
 
 
 class FrameToYUV4MPEG(component):
+    def checkShutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                return msg
+        return False
+        
     def main(self):
         while not self.dataReady("inbox"):
+            msg = self.checkShutdown()
+            if msg:
+                self.send(msg, "signal")
+                return
             self.pause()
             yield 1
         frame = self.recv("inbox")
@@ -231,6 +276,11 @@ class FrameToYUV4MPEG(component):
             while self.dataReady("inbox"):
                 frame = self.recv("inbox")
                 self.write_frame(frame)
+            msg = self.checkShutdown()
+            if msg:
+                self.send(msg, "signal")
+                return
+            self.pause()
             yield 1
 
     def write_header(self, frame):
