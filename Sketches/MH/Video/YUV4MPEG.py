@@ -1,17 +1,31 @@
 #!/usr/bin/env python
 
 from Axon.Component import component
+from Axon.Ipc import WaitComplete
 import re
 
 
+
 class parseYUV4MPEG(component):
+    def __init__(self):
+        super(parseYUV4MPEG,self).__init__()
+        self.file = open("/data/stream.yuv","rb")
+    
+    def readline(self):
+        if 0:
+            yield 1
+        self.bytesread = self.file.readline()
+        
+    def readbytes(self,size):
+        if 0:
+            yield 1
+        self.bytesread = self.file.read(size)
+        
     
     def main(self):
-    
-        file = open("/data/stream.yuv","rb")
-        
         # parse header
-        line = file.readline()
+        yield WaitComplete(self.readline())
+        line = self.bytesread
         m = re.match("^YUV4MPEG2((?: .\S*)*)\n$", line)
         assert(m)
         fields = m.groups()[0]
@@ -20,7 +34,8 @@ class parseYUV4MPEG(component):
         yield 1
             
         while 1:
-            line = file.readline()
+            yield WaitComplete(self.readline())
+            line = self.bytesread
             if not line:
                 break
             m = re.match("^FRAME((?: .\S*)*)\n$", line)
@@ -31,9 +46,12 @@ class parseYUV4MPEG(component):
             ysize = seq_params["size"][0] * seq_params["size"][1]
             csize = seq_params["chroma_size"][0] * seq_params["chroma_size"][1]
             
-            y = file.read(ysize)
-            u = file.read(csize)
-            v = file.read(csize)
+            yield WaitComplete(self.readbytes(ysize))
+            y = self.bytesread
+            yield WaitComplete(self.readbytes(csize))
+            u = self.bytesread
+            yield WaitComplete(self.readbytes(csize))
+            v = self.bytesread
             
             frame = { "yuv" : (y,u,v) }
             frame.update(seq_params)
