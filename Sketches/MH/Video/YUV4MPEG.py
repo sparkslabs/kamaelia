@@ -9,18 +9,49 @@ import re
 class parseYUV4MPEG(component):
     def __init__(self):
         super(parseYUV4MPEG,self).__init__()
-        self.file = open("/data/stream.yuv","rb")
+        self.remainder = ""
     
     def readline(self):
-        if 0:
-            yield 1
-        self.bytesread = self.file.readline()
+        bytes = []
+        newdata = self.remainder
+        index = newdata.find("\x0a")
+        while index==-1:
+            bytes.append(newdata)
+            while not self.dataReady("inbox"):
+                yield 1
+            newdata = self.recv("inbox")
+            index = newdata.find("\x0a")
+            
+        tail = newdata[:index+1]
+        self.remainder = newdata[index+1:]
+        bytes.append(tail)
         
+        self.bytesread = "".join(bytes)
+        return
+    
+    
     def readbytes(self,size):
-        if 0:
+        buf = [self.remainder]
+        bufsize = len(self.remainder)
+        while bufsize < size:
+            if self.dataReady("inbox"):
+                newdata = self.recv("inbox")
+                buf.append(newdata)
+                bufsize += len(newdata)
             yield 1
-        self.bytesread = self.file.read(size)
+            
+        excess = bufsize-size
+        if excess:
+            wanted = buf[:-1]
+            tail, self.remainder = buf[-1][:-excess], buf[-1][-excess:]
+            wanted.append(tail)
+        else:
+            wanted = buf
+            self.remainder = ""
         
+        self.bytesread = "".join(wanted)
+        return
+    
     
     def main(self):
         # parse header
@@ -187,9 +218,10 @@ def parse_frame_tags(fields):
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
     
-    Pipeline( parseYUV4MPEG(),
-              
+    Pipeline( RateControlledFileReader("/data/stream.yuv",readmode="bytes",rate=25*(608256+128)),
+              parseYUV4MPEG(),
               VideoOverlay(),
             ).run()
