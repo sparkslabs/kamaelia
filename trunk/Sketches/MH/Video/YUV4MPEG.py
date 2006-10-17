@@ -3,12 +3,13 @@
 from Axon.Component import component
 from Axon.Ipc import WaitComplete
 import re
+from Kamaelia.Support.Data.Rationals import rational
 
 
 
-class parseYUV4MPEG(component):
+class YUV4MPEGToFrame(component):
     def __init__(self):
-        super(parseYUV4MPEG,self).__init__()
+        super(YUV4MPEGToFrame,self).__init__()
         self.remainder = ""
     
     def readline(self):
@@ -216,12 +217,79 @@ def parse_frame_tags(fields):
     return params
 
 
+
+class FrameToYUV4MPEG(component):
+    def main(self):
+        while not self.dataReady("inbox"):
+            self.pause()
+            yield 1
+        frame = self.recv("inbox")
+        self.write_header(frame)
+        self.write_frame(frame)
+        
+        while 1:
+            while self.dataReady("inbox"):
+                frame = self.recv("inbox")
+                self.write_frame(frame)
+            yield 1
+
+    def write_header(self, frame):
+        self.send("YUV4MPEG2","outbox")
+        self.send(" W%d H%d" % tuple(frame['size']), "outbox")
+        
+        if   frame['pixformat']=="YUV420_planar":
+            self.send(" C420mpeg2", "outbox")
+        elif frame['pixformat']=="YUV411_planar":
+            self.send(" C411", "outbox")
+        elif frame['pixformat']=="YUV422_planar":
+            self.send(" C422", "outbox")
+        elif frame['pixformat']=="YUV444_planar":
+            self.send(" C444", "outbox")
+        elif frame['pixformat']=="YUV4444_planar":
+            self.send(" C444alpha", "outbox")
+        elif frame['pixformat']=="Y_planar":
+            self.send(" Cmono", "outbox")
+
+        interlace = frame.get("interlaced",False)
+        topfieldfirst = frame.get("topfieldfirst",False)
+        if   interlace and topfieldfirst:
+            self.send(" It", "outbox")
+        elif interlace and not topfieldfirst:
+            self.send(" Ib", "outbox")
+        elif not interlace:
+            self.send(" Ip", "outbox")
+
+        rate = frame.get("frame_rate", 0)
+        if rate > 0:
+            num,denom = rational(rate)
+            self.send(" F%d:%d" % (num,denom), "outbox")
+            
+        rate = frame.get("pixel_aspect", 0)
+        if rate > 0:
+            num,denom = rational(rate)
+            self.send(" A%d:%d" % (num,denom), "outbox")
+            
+        if "sequence_meta" in frame:
+            self.send(" X"+frame['sequence_meta'], "outbox")
+            
+        self.send("\x0a", "outbox")
+    
+    
+    def write_frame(self, frame):
+        self.send("FRAME\x0a", "outbox")
+        for component in frame['yuv']:
+            self.send(component, "outbox")
+
+
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
     
     Pipeline( RateControlledFileReader("/data/stream.yuv",readmode="bytes",rate=25*(608256+128)),
-              parseYUV4MPEG(),
+              YUV4MPEGToFrame(),
+              FrameToYUV4MPEG(),
+              YUV4MPEGToFrame(),
               VideoOverlay(),
             ).run()
