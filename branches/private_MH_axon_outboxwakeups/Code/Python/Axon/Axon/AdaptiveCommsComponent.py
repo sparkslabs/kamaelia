@@ -72,7 +72,7 @@ class _AdaptiveCommsable(object):
    def addOutbox(self,*args):
       "Adds a custom outbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the outbox added."
       name = self._newOutboxName(*args)
-      self.outboxes[name]=makeOutbox()
+      self.outboxes[name]=makeOutbox(self.unpause)
       return name
 
    def deleteOutbox(self,name):
