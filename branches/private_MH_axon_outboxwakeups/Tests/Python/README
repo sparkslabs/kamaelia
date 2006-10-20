@@ -1,0 +1,12 @@
+Python based test suites live here.
+Currently all tests are in the main tree, they will get moved to here.
+
+
+Michael, October 2004
+
+Update: March 2006
+
+Axon tests are now being migrated into here. Baseline for Kamaelia tests
+will follow.
+
+Michael, March 2006

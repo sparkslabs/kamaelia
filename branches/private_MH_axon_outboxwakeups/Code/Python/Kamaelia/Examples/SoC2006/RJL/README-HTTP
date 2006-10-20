@@ -1,0 +1,28 @@
+                    Kamaelia.Protocol.HTTP
+                    
+           Components for serving and downloading
+                    files using HTTP 1.1.
+
+Components
+==========
+
+* SingleShotHTTPClient - an HTTP client component capable of downloading
+                         a single file/resource per instance
+                         
+* SimpleHTTPClient     - a multiple-use HTTP client that downloads the
+                         files corresponding to URLs received in its inbox
+                         
+* HTTPServer           - a flexible HTTP server component
+
+* HTTPRequestHandler   - a subcomponent of HTTPServer
+
+* HTTPParser           - component used by most other HTTP components
+                         which converts raw HTTP requests to
+                         dictionaries and IPC messages
+                         
+* IcecastClient        - a component that downloads an Icecast/SHOUTcast
+                         stream
+
+
+August 2006 - Ryan Lothian
+Created for Google Summer of Code 2006
