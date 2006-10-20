@@ -75,6 +75,7 @@ class postbox(object):
         super(postbox,self).__init__()
         self.storage = storage
         self.sources = []
+        self.target = None
         self._retarget()
         self.local_len = storage.__len__    # so compoent can specifically query local storage
     
@@ -87,7 +88,7 @@ class postbox(object):
         'retarget' at this postbox.
         """
         self.sources.append(newsource)       # XXX assuming not already linked from that source
-        newsource._retarget(self.sink)
+        newsource._retarget(self)
         
     def removesource(self,oldsource):
         """\
@@ -105,9 +106,11 @@ class postbox(object):
         If newtarget is unspecified or None, target is default lol storage.
         """
         if newtarget==None:
+            self.target = None
             self.sink = self.storage
         else:
-            self.sink = newtarget
+            self.targ = newtarget
+            self.sink = newtarget.sink
             # if i'm storing stuff, pass it on
             while len(self.storage):
                 self.sink.append(self.storage.pop(0))
@@ -118,7 +121,7 @@ class postbox(object):
         self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
-            source._retarget(newtarget=self.sink)
+            source._retarget(newtarget=self)
 
     def setSize(self, size):
         self.storage.size = size
