@@ -149,8 +149,9 @@ class IntelligentFileReader(component):
                 if readsomething:
                     self.selectorWait(self.fd)
                     waiting = True
-                
-            self.pause()
+                    
+            if not self.done:
+                self.pause()
           
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")
