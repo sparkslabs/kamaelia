@@ -64,8 +64,12 @@ class threadedcomponent_Test(unittest.TestCase):
         self.assert_("signal" in c.outboxes.keys(), "by default, has 'signal' outbox")
     
     def test_smoketest_args(self):
-        """__init__ - accepts no arguments, raises TypeError is any supplied."""
-        self.failUnlessRaises(TypeError, threadedcomponent, 5)
+        """__init__ - can accept no arguments"""
+        self.assert_(threadedcomponent())
+        
+    def test_smoketest_oneargs(self):
+        """__init__ - accepts one argument"""
+        self.assert_(threadedcomponent(10))
         
     def test_localprocessterminates(self):
         """_localmain() microprocess also terminates when the thread terminates"""
@@ -223,8 +227,13 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         self.assert_("signal" in c.outboxes.keys(), "by default, has 'signal' outbox")
     
     def test_smoketest_args(self):
-        """__init__ - accepts no arguments, raises TypeError is any supplied."""
-        self.failUnlessRaises(TypeError, threadedcomponent, 5)
+        """__init__ - can accept no arguments"""
+        self.assert_(threadedadaptivecommscomponent())
+        
+    def test_smoketest_oneargs(self):
+        """__init__ - accepts one argument"""
+        self.assert_(threadedadaptivecommscomponent(10))
+        
     
     def test_addInbox(self):
         """addInbox - adds a new inbox with the specified name. Component can then receive from that inbox."""
