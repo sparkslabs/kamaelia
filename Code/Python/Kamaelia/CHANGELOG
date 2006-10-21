@@ -1,3 +1,21 @@
+0.x.x
+
+   Shutdown handling improved for internet components: CSA, TCPClient,
+   and TCPServer. Shutting down capability added to the Selector component.
+
+   Documentation improved for DVB components, and parsing added for date and
+   time DVB SI data.
+
+   Documentation added to RawAudioMixer, and pymedia audio components.
+
+   NEW EXAMPLES:
+
+   OPEN GL:
+    * Stub test code from the OpenGL components have been separated out as
+      lots of mini examples:
+
+   
+
 0.4.2
 
    Kamaelia 0.4.2 adds a large number of new components, many of which have
