@@ -494,6 +494,89 @@ class MessageDeliveryNotifications_Test(unittest.TestCase):
         self.assert_(d.unpaused==0)
         self.assert_(e.unpaused==0)
         
+    def test_LinkBrokenNoNotify(self):
+        """If the linkage chain breaks before a message is collected, the owners of outboxes that are no longer in the chain are not notified."""
+        a,b,c,d,e = self.initComponents(5)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.unlink(thelinkage=L2)
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==0)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+       
+    def test_LinkReestablishedNotify(self):
+        """If the linkage chain breaks and is then re-established before a message is collected, the owners of outboxes that are no longer in the chain are not notified, but ones that are will be."""
+        a,b,c,d,e = self.initComponents(5)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.unlink(thelinkage=L2)
+        self.runForAWhile()
+        b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )   # re-establish
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)  # reestablished
+        self.assert_(b.unpaused==1)  # reestablished
+        self.assert_(c.unpaused==1)  # stil linked
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+       
+    def test_LinkNewlyEestablishedNotify(self):
+        """If a message is sent, then a new linkage added before a message is collected, the owner of the newly linked in outbox will notified too."""
+        a,b,c,d,e,f = self.initComponents(6)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.runForAWhile()
+        f.link( (f,"outbox"),(c,"outbox"), passthrough=2 )
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        f.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==1)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+        self.assert_(f.unpaused==1)  # new one linked in, also gets notified
+       
         
 if __name__=='__main__':
    unittest.main()
