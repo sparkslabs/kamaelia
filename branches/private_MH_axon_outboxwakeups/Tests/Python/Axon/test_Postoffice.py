@@ -359,7 +359,141 @@ class linkagechaining_Test(unittest.TestCase):
         self.verifyChain((a,"outbox"), (b,"inbox"))
         
 
+class UnpauseDetectionComponent(component):
+    def __init__(self):
+        super(UnpauseDetectionComponent,self).__init__()
+        self.unpaused=0
+    def main(self):
+        while 1:
+            self.pause()
+            yield 1
+            self.unpaused += 1
+
+class MessageDeliveryNotifications_Test(unittest.TestCase):
+    """\
+    Tests to check notification callbacks are correctly established and used for
+    message deliveries and collections.
+    """
     
+    def initComponents(self,qty):
+        scheduler.run = scheduler()
+        self.schedthread = scheduler.run.main()
+        return self.makeComponents(qty)
     
+    def makeComponents(self, qty):
+        return [UnpauseDetectionComponent().activate() for _ in range(0,qty)]
+    
+    def runForAWhile(self, cycles=100):
+        for _ in range(0,cycles):
+            self.schedthread.next()
+    
+    def test_NothingHappensIfNothingHappens(self):
+        """A paused component stays paused if nothing happens"""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"outbox"), (a,"inbox") )
+        self.assert_(a.unpaused==0 and b.unpaused==0)
+        self.runForAWhile()
+        self.assert_(a.unpaused==0 and b.unpaused==0)
+            
+    def test_ConsumerWokenByDelivery(self):
+        """A paused component is unpaused when a message is delivered to its inbox."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.assert_(b.unpaused==1)
+    
+    def test_ProducerNotWokenByDelivery(self):
+        """A paused component is not unpaused when it sends a message."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==0)
+    
+    def test_ProducerNotWokenByDelivery(self):
+        """A paused component is unpaused when a consumer picks up a message it has sent."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+    
+    def test_ChainOnlyFinalDestinationNotified(self):
+        """In a chain of linkages with more than one inbox, only the final destination is woken when a message is sent."""
+        a,b,c,d = self.initComponents(4)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"inbox"),  (c,"inbox"), passthrough=1 )
+        c.link( (c,"inbox"),  (d,"inbox"), passthrough=1 )
+        
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        
+        self.assert_(a.unpaused==0)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==0)
+        self.assert_(d.unpaused==1)
+        
+    def test_ChainOnlyOutboxHoldersNotified(self):
+        """In a chain of linkages, only the owners of outboxes are notified when a message is picked up."""
+        a,b,c,d = self.initComponents(4)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"inbox"),  (c,"inbox"), passthrough=1 )
+        c.link( (c,"inbox"),  (d,"inbox"), passthrough=1 )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==0)
+        self.assert_(d.unpaused==0)
+        
+    def test_AllOutboxOwnersNotified(self):
+        """In a chain of linkages, all owners of outboxes are notified when a message is picked up."""
+        a,b,c,d,e = self.initComponents(5)
+        a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        c.link( (c,"outbox"), (d,"inbox"),                )
+        d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==1)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+        
+        
 if __name__=='__main__':
    unittest.main()
