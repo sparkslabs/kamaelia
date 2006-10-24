@@ -59,19 +59,23 @@ class ThreadedSender(threadedcomponent):
             self.delay=None
         super(ThreadedSender,self).__init__(*argl,**argd)
         self.feedback = Queue.Queue()
-        self.startsignal = threading.Event()
+        self.howManyToSend = Queue.Queue()
     def main(self):
-        self.startsignal.wait()
-        try:
-            for _ in xrange(99999):
-                self.send(_,"outbox")
-                if self.delay!=None:
-                    self.pause(self.delay)
-            self.feedback.put("FAIL")
-        except noSpaceInBox:
-            self.feedback.put(_)
-        except:
-            raise
+        while 1:
+            qty = self.howManyToSend.get()
+            if qty<=0 or qty=="STOP":
+                return
+            else:
+                try:
+                    for i in xrange(qty):
+                        self.send(i,"outbox")
+                        if self.delay!=None:
+                            self.pause(self.delay)
+                    self.feedback.put("ALL SENT")
+                except noSpaceInBox:
+                    self.feedback.put(i)
+                except:
+                    raise
 
 class DoesNothingThread(threadedcomponent):
     def main(self):
@@ -83,6 +87,14 @@ class DoesNothingComponent(component):
         while 1:
             self.pause()
             yield 1
+
+def get(list,index,default):
+    try:
+        return list[index]
+    except IndexError:
+        return default
+
+
 
 class threadedcomponent_Test(unittest.TestCase):
     
@@ -252,17 +264,23 @@ class threadedcomponent_Test(unittest.TestCase):
         
         sched=scheduler()
         t=ThreadedSender().activate(Scheduler=sched)
-        s=sched.main()
-        for _ in range(0,10):
-            s.next()
-            
-        t.startsignal.set()
-       
-        while t.feedback.qsize() == 0:
-            time.sleep(0.1)
         
-        result = t.feedback.get()
-        self.assert_(int(result) > 0)
+        try:
+            s=sched.main()
+            for _ in range(0,10):
+                s.next()
+                
+            t.howManyToSend.put(99999)
+        
+            while t.feedback.qsize() == 0:
+                time.sleep(0.1)
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result > 0)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
         
     def test_CanSetOutgoingQueueSize(self):
         """Setting the queue size in the initializer limits the number of messages that can queue up waiting to be sent out by the main thread."""
@@ -270,18 +288,23 @@ class threadedcomponent_Test(unittest.TestCase):
         QSIZE=20
         sched=scheduler()
         t=ThreadedSender(QSIZE).activate(Scheduler=sched)
-        s=sched.main()
-        for _ in range(0,10):
-            s.next()
+        
+        try:
+            s=sched.main()
+            for _ in range(0,10):
+                s.next()
+                
+            t.howManyToSend.put(99999)
+        
+            while t.feedback.qsize() == 0:
+                time.sleep(0.1)
             
-        t.startsignal.set()
-       
-        while t.feedback.qsize() == 0:
-            time.sleep(0.1)
-        
-        result = t.feedback.get()
-        self.assert_(result==QSIZE)
-        
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result==QSIZE)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
         
     def test_RestrictedInboxSize(self):
         """Setting the inbox size means at most inbox_size+internal_queue_size messages can queue up before the sender receives a noSpaceInBox exception"""
@@ -319,15 +342,83 @@ class threadedcomponent_Test(unittest.TestCase):
             s.next()
         
         t.activate(Scheduler=sched)
+        
+        try:
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+        
+            while t.feedback.qsize() == 0:
+                s.next()
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == QSIZE+BSIZE)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
 
-        t.startsignal.set()
-       
-        while t.feedback.qsize() == 0:
+    def test_TakingFromDestinationAllowsMoreToBeDelivered(self):
+        """"""
+        QSIZE=20
+        BSIZE=10
+        self.assert_(QSIZE > BSIZE)
+        sched=scheduler()
+        t=ThreadedSender(QSIZE)
+        d=DoesNothingComponent().activate(Scheduler=sched)
+        d.inboxes['inbox'].setSize(BSIZE)
+        d.link((t,"outbox"),(d,"inbox"))
+        
+        s=sched.main()
+        for _ in range(10):
             s.next()
         
-        result = t.feedback.get()
-        self.assert_(int(result) == QSIZE+BSIZE)
-
+        t.activate(Scheduler=sched)
+        
+        try:
+            for _ in range(10):
+                s.next()
+            
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            
+            # wait for a response, verify it filled its in queue
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == QSIZE)
+            
+            # flush them through to the inbox queue of the destination
+            for _ in range(BSIZE*5):
+                s.next()
+            
+            # let the thread fill the newly free slots
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == BSIZE)
+            
+            
+            # collect messages
+            NUM_COLLECT = 0
+            while NUM_COLLECT < BSIZE/2:
+                while not d.dataReady("inbox"):
+                    s.next()
+                if d.dataReady("inbox"):
+                    d.recv("inbox")
+                    NUM_COLLECT += 1
+                
+            # let the main thread flush some message through from the thread
+            for _ in range(50):
+                s.next()
+                
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            
+            while t.feedback.qsize() == 0:
+                s.next()
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == NUM_COLLECT)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
 
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
