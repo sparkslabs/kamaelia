@@ -286,7 +286,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
-                self.pause()        # pause - we're not selecting on anything
+                self.pause(0.5)        # pause - we're not selecting on anything, timeout becuase of shutdown timeout needs
 #            else:
 #                print "HMM"
 ##        print "SELECTOR HAS EXITTED"
