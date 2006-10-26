@@ -187,6 +187,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             if isinstance(message, newReader):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+#                print "new reader",selectable
                 L.showtransit = 0
 
             if isinstance(message, newWriter):
@@ -264,6 +265,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                            try:
                                 replyService, outbox, linkage = meta[i][selectable]
                                 self.send(selectable, outbox)
+#                                print "sent",selectable,"to",outbox
                                 replyService, outbox, linkage = None, None, None
                                 # Note we remove the selectable until we know the reason for it being here has cleared.
                                 self.removeLinks(selectable, meta[i], selections[i]) 
@@ -284,7 +286,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
-                self.sync()        # momentary pause-ish thing
+                self.pause()        # pause - we're not selecting on anything
 #            else:
 #                print "HMM"
 ##        print "SELECTOR HAS EXITTED"
