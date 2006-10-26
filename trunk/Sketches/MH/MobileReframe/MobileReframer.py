@@ -4,6 +4,7 @@ from Misc import TagWithSequenceNumber
 from Misc import PromptedTurnstile
 from Misc import OneShot
 from Misc import InboxControlledCarousel
+from Misc import StopSelector
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
@@ -24,12 +25,20 @@ sys.path.append("../pixformatConversion/")
 from VideoSurface import YUVtoRGB
 from VideoSurface import RGBtoYUV
 
-
+from Kamaelia.File.BetterReading import IntelligentFileReader
+from UnixProcess import UnixProcess
+from Misc import IgnoreUntil
 
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath):
+    strip_preamble = IgnoreUntil("YUV4MPEG2")
+    strip_preamble.inboxes['inbox'].setSize(5)
     return Pipeline(
-        RateControlledFileReader(inFileName, readmode="bytes",rate=10000000),       #  or mencoder
+        #RateControlledFileReader(inFileName, readmode="bytes",rate=20000000),       #  or mencoder
+        #IntelligentFileReader(inFileName, chunksize=1024*1024),
+        #YUV4MPEGToFrame(),
+        UnixProcess("mplayer -vo yuv4mpeg:file=/dev/stdout -nosound -really-quiet "+inFileName, 2000000),
+        strip_preamble,
         YUV4MPEGToFrame(),
         TagWithSequenceNumber(),
         InboxControlledCarousel( lambda (framenum, frame) : \
@@ -37,7 +46,8 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
                             FrameToYUV4MPEG(),
                             SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
                           )
-                )
+                ),
+        StopSelector(),
         )
 
 
