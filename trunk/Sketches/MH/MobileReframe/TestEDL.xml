@@ -3,14 +3,14 @@
 <EDL>
     <FileID>File identifier</FileID>
     
-    <EDIT>
-        <START frame="0"  />
-        <END   frame="24" />
-        <CROP  x1="0" y1="0" x2="400" y2="100" />
-    </EDIT>
-    <EDIT>
-        <START frame="25" />
-        <END   frame="49" />
-        <CROP  x1="80" y1="40" x2="480" y2="140" />
-    </EDIT>
+    <Edit>
+        <Start frame="0"  />
+        <End   frame="24" />
+        <Crop  x1="0" y1="0" x2="400" y2="100" />
+    </Edit>
+    <Edit>
+        <Start frame="25" />
+        <End   frame="49" />
+        <Crop  x1="80" y1="40" x2="480" y2="140" />
+    </Edit>
 </EDL>

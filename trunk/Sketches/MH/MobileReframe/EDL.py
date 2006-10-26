@@ -67,17 +67,17 @@ class EDLParser(component):
                 fileID = fileID.replace("\n","").strip()
                 yield None
                         
-            elif self.ifIs("element","EDIT"):
+            elif self.ifIs("element","Edit"):
                 edit = {"fileID":fileID}
-                while not self.ifIs("/element","EDIT"):
+                while not self.ifIs("/element","Edit"):
                     yield None
-                    if self.ifIs("element","START"):
+                    if self.ifIs("element","Start"):
                         attrs = self.token[2]
                         edit["start"] = int(attrs["frame"])
-                    elif self.ifIs("element","END"):
+                    elif self.ifIs("element","End"):
                         attrs = self.token[2]
                         edit["end"] = int(attrs["frame"])
-                    elif self.ifIs("element","CROP"):
+                    elif self.ifIs("element","Crop"):
                         attrs = self.token[2]
                         #assert( contains(("x1","y1","x2","y2"), attrs) )
                         edit["left"]   = int(attrs["x1"])
