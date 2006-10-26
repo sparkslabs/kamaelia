@@ -43,6 +43,7 @@ class TagWithSequenceNumber(component):
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 self.send( (index,msg), "outbox")
+                print index
                 index+=1
                 
             while self.dataReady("control"):
@@ -119,3 +120,88 @@ class PromptedTurnstile(component):
             self.recv("next")
                 
         self.send(shutdownMsg, "signal")
+
+class IgnoreUntil(component):
+    def __init__(self,pattern):
+        super(IgnoreUntil,self).__init__()
+        self.pattern=pattern
+        
+    def checkShutdown(self,noNeedToWait):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg,shutdownMicroprocess):
+                self.shutdownMsg=msg
+                raise "STOP"
+            elif isinstance(msg, producerFinished):
+                if not isinstance(self.shutdownMsg, shutdownMicroprocess):
+                    self.shutdownMsg=msg
+            else:
+                pass
+        if self.shutdownMsg and noNeedToWait:
+            raise "STOP"
+        
+        
+    def main(self):
+        found=False
+        buffer=""
+        pos=-1
+        i=0
+        self.shutdownMsg=None
+        
+        try:
+            while i<len(self.pattern):
+                if pos==len(buffer)-1:
+                    while not self.dataReady("inbox"):
+                        self.checkShutdown(noNeedToWait=True)
+                        self.pause()
+                        yield 1
+                    buffer = self.recv("inbox")
+                    pos=-1
+                index = buffer.find(self.pattern[i],pos+1)
+                if index<=-1:
+                    buffer=""
+                    i=0
+                elif index==pos+1 or i==0:
+                    i+=1
+                    pos=index
+                else:
+                    i=0
+                    
+            self.send(self.pattern + buffer[pos+1:],"outbox")
+            
+            while 1:
+                while self.dataReady("inbox"):
+                    buffer = self.recv("inbox")
+                    self.send(buffer,"outbox")
+                self.checkShutdown(noNeedToWait=True)
+                self.pause()
+                yield 1
+        
+        except "STOP":
+            pass
+        
+        self.send(self.shutdownMsg,"signal")
+
+
+from Kamaelia.Internet.Selector import Selector
+from Axon.Ipc import shutdown
+
+class StopSelector(component):
+    Outboxes = {"outbox":"","signal":"","selector_shutdown":""}
+    def main(self):
+        while not (self.dataReady("inbox") or self.dataReady("control")):
+            self.pause()
+            yield 1
+        
+        # stop the selector
+        selectorService, selectorShutdownService, newSelectorService = Selector.getSelectorServices(self.tracker) # get a reference to a     
+        link = self.link((self,"selector_shutdown"),selectorShutdownService)
+        self.send(shutdown(),"selector_shutdown")
+        self.unlink(thelinkage=link)
+        
+        while self.dataReady("control"):
+            self.send(self.recv("control"), "signal")
+            
+        self.send(producerFinished(self), "signal")
+        print "DONE"
+        
