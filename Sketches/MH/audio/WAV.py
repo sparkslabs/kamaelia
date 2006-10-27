@@ -207,8 +207,20 @@ if __name__ == "__main__":
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
     from Kamaelia.Audio.PyMedia.Output import Output
+    from Kamaelia.Chassis.Carousel import Carousel
+    from Kamaelia.Chassis.Graphline import Graphline
     
-    Pipeline( RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=44100*4),
-              WavParser(),
-              Output(sample_rate=44100/2,format="S16_LE",channels=2),
-            ).run()
+    Graphline(
+        SRC = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=44100*4),
+        WAV = WavParser(),
+        DST = Carousel(lambda meta:     
+            Output(sample_rate=meta['sample_rate'],format=meta['sample_format'],channels=meta['channels'])
+            ),
+        linkages = {
+            ("SRC","outbox") : ("WAV","inbox"),
+            ("SRC","signal") : ("WAV","control"),
+            ("WAV","outbox") : ("DST","inbox"),
+            ("WAV","signal") : ("DST","control"),
+            ("WAV","all_meta") : ("DST","next"),
+        }
+        ).run()
