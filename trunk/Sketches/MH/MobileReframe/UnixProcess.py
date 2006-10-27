@@ -22,14 +22,35 @@ class UnixProcess(component):
     Outboxes = { "outbox" : "",
                  "error"  : "",
                  "signal" : "",
+                 "_shutdownOutpipes" : "For shutting down any named pipes used for output"
                }
 
-    def __init__(self, command, buffersize=32768):
+    def __init__(self, command, buffersize=32768, outpipes={}):
+        for outpipe,outboxname in outpipes.items():
+            self.Outboxes[outboxname] = "Output from named pipe: "+outpipe
+            
         super(UnixProcess,self).__init__()
         self.command = command
         self.buffersize = buffersize
+        self.outpipes = outpipes
 
     def main(self):
+        # lets add any named output pipes requested
+        outpipeshutdown=(self,"_shutdownOutpipes")
+        for (outpipename,outboxname) in self.outpipes.items():
+            os.mkfifo(outpipename)
+            
+            f = open(outpipename, "rb+",self.buffersize)
+            makeNonBlocking(f)
+            
+            PIPE = _FromFileHandle(f, self.buffersize)
+            self.link((PIPE,"outbox"), (self,outboxname), passthrough=2)
+            # shutdown chain
+            self.link(outpipeshutdown,(PIPE,"control"))
+            outpipeshutdown=(PIPE,"signal")
+            
+            self.addChildren(PIPE)
+            
         # set up the subprocess
         p = subprocess.Popen(self.command, 
                              shell=True, 
@@ -49,32 +70,38 @@ class UnixProcess(component):
         STDOUT = _FromFileHandle(p.stdout, self.buffersize)
         STDERR = _FromFileHandle(p.stderr, self.buffersize)
 
-        linkages = [
-            # stdin from inbox; stdout and stderr to outboxes
-            self.link((self,"inbox"),    (STDIN,"inbox"), passthrough=1),
-            self.link((STDOUT,"outbox"), (self,"outbox"), passthrough=2),
-            self.link((STDERR,"outbox"), (self,"error"),  passthrough=2),
+        # stdin from inbox; stdout and stderr to outboxes
+        self.link((self,"inbox"),    (STDIN,"inbox"), passthrough=1),
+        self.link((STDOUT,"outbox"), (self,"outbox"), passthrough=2),
+        self.link((STDERR,"outbox"), (self,"error"),  passthrough=2),
 
-            # if outputs close, then close input too
-            self.link((STDOUT,"signal"), (STDIN,"control")),
-            self.link((STDERR,"signal"), (STDIN,"control")),
+        # if outputs close, then close input too
+        self.link((STDOUT,"signal"), (STDIN,"control")),
+        self.link((STDERR,"signal"), (STDIN,"control")),
 
-            # if ordered from outside, then close input
-            self.link((self,"control"), (STDIN, "control"), passthrough=1),
-        ]
+        # if ordered from outside, then close input
+        self.link((self,"control"), (STDIN, "control"), passthrough=1),
+
+        self.addChildren(STDIN,STDOUT,STDERR)
+            
+        for child in self.childComponents():
+            child.activate()
 
         shutdownMsg = producerFinished(self)
         
-        STDIN.activate()
-        STDOUT.activate()
-        STDERR.activate()
-        self.addChildren(STDIN,STDOUT,STDERR)
-
         while not self.childrenDone():
+            if p.poll() is not None:
+                if self.outpipes:
+                    self.send(shutdownMicroprocess(self), "_shutdownOutpipes")
             self.pause()
             yield 1
 
         self.send(shutdownMsg,"signal")
+        
+        # delete any named pipes
+        for outpipename in self.outpipes.keys():
+            os.remove(outpipename)
+        
 
     def childrenDone(self):
         """Unplugs any children that have terminated, and returns true if there are no
