@@ -27,18 +27,17 @@ from VideoSurface import RGBtoYUV
 
 from Kamaelia.File.BetterReading import IntelligentFileReader
 from UnixProcess import UnixProcess
-from Misc import IgnoreUntil
 
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath):
-    strip_preamble = IgnoreUntil("YUV4MPEG2")
-    strip_preamble.inboxes['inbox'].setSize(5)
+    vidpipe = tmpFilePath+"vidPipe"
+    try:
+        os.remove(vidpipe)
+    except:
+        pass
+    
     return Pipeline(
-        #RateControlledFileReader(inFileName, readmode="bytes",rate=20000000),       #  or mencoder
-        #IntelligentFileReader(inFileName, chunksize=1024*1024),
-        #YUV4MPEGToFrame(),
-        UnixProcess("mplayer -vo yuv4mpeg:file=/dev/stdout -nosound -really-quiet "+inFileName, 2000000),
-        strip_preamble,
+        UnixProcess("mplayer -vo yuv4mpeg:file="+vidpipe+" -nosound -really-quiet "+inFileName+" > /dev/null", 2000000, {vidpipe:"outbox"}),
         YUV4MPEGToFrame(),
         TagWithSequenceNumber(),
         InboxControlledCarousel( lambda (framenum, frame) : \
@@ -49,6 +48,7 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
                 ),
         StopSelector(),
         )
+
 
 
 # 2) reframe, writing out sequences
