@@ -23,7 +23,7 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia",
-      version = "0.5.0",
+      version = "0.5.1",
       description = "Kamaelia - Multimedia & Server Development Kit",
       author = "Michael & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
@@ -57,6 +57,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.UI.Pygame",  
                   "Kamaelia.UI.OpenGL",
                   "Kamaelia.Util",
+                  "Kamaelia.Util.Tokenisation",
                   "Kamaelia.Visualisation",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.PhysicsGraph",

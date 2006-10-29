@@ -1,4 +1,4 @@
-0.x.x
+0.5.1
 
    Shutdown handling improved for internet components: CSA, TCPClient,
    and TCPServer. Shutting down capability added to the Selector component.
@@ -14,11 +14,12 @@
     * Stub test code from the OpenGL components have been separated out as
       lots of mini examples:
 
-   
+      Moved Tools/Whiteboard/Tokenisation.py into
+         Kamaelia/Util/Tokenisation/Simple.py
 
-0.4.2
+0.5.0
 
-   Kamaelia 0.4.2 adds a large number of new components, many of which have
+   Kamaelia 0.5.0 adds a large number of new components, many of which have
    been developed by students participating in Google's Summer Of Code 2006
    Programme. There are many new examples demonstrating these new features.
 
