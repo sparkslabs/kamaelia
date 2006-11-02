@@ -257,7 +257,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 try:
-                    read_write_except = select.select(readers, writers, exceptionals,5) #0.05
+                    read_write_except = select.select(readers, writers, exceptionals,0.05) #0.05
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
                     
                     for i in xrange(3):
