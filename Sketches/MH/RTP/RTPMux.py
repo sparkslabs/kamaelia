@@ -9,35 +9,30 @@ import sys; sys.path.append("../DVB_Remuxing/")
 from ExtractPCR import AlignTSPackets
 from RTPFramer import RTPFramer, GroupTSPackets, PrepForRTP
 from RTPDeframer import RTPDeframer
+from Kamaelia.Util.Backplane import Backplane, SubscribeTo, PublishTo
 
 from Axon.Component import component
 
-class Test(component):
-    def main(self):
-        size=0
-        m=""
-        while 1:
-            while self.dataReady("inbox"):
-                m=self.recv("inbox")
-                size+=len(m)
-                self.send(m,"outbox")
-            print size, repr(m)
-            self.pause()
-            yield 1
 
 Pipeline( Multicast_transceiver("0.0.0.0", 5150, "233.122.227.151", 0),
 ##          SimpleDetupler(1),
-#          Test(),
           RTPDeframer(),
           RecoverOrder(),
           SimpleDetupler(1),
           SimpleDetupler("payload"),
-#          AlignTSPackets(),          
-#          GroupTSPackets(),
+          AlignTSPackets(),
+          PublishTo("TS PACKETS"),
+        ).activate()
+        
+Pipeline( SubscribeTo("TS PACKETS"),
+          GroupTSPackets(),
           PrepForRTP(),
           RTPFramer(),
           Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600)
-        ).run()
+        ).activate()
+        
+Backplane("TS PACKETS").run()
+
 # multicast relay only: 15.5%
 # repackaging rtp, excluding splitting up the TS packets: 42.5%
 # including splitting and regrouping the TS packets: peaks 72%
