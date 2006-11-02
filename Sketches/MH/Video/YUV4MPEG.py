@@ -16,10 +16,17 @@ class YUV4MPEGToFrame(component):
     
     def checkShutdown(self):
         while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return msg
-        return False
+            newMsg = self.recv("control")
+            if isinstance(newMsg, shutdownMicroprocess):
+                self.shutdownMsg = newMsg
+            elif self.shutdownMsg is None and isinstance(newMsg, producerFinished):
+                self.shutdownMsg = newMsg
+        if isinstance(self.shutdownMsg, shutdownMicroprocess):
+            return "NOW"
+        elif self.shutdownMsg is not None:
+            return "WHENEVER"
+        else:
+            return None
         
     def readline(self):
         bytes = []
@@ -28,9 +35,7 @@ class YUV4MPEGToFrame(component):
         while index==-1:
             bytes.append(newdata)
             while not self.dataReady("inbox"):
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
+                if self.checkShutdown() == "NOW":
                     return
                 self.pause()
                 yield 1
@@ -54,9 +59,7 @@ class YUV4MPEGToFrame(component):
                 buf.append(newdata)
                 bufsize += len(newdata)
             else:
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
+                if self.checkShutdown() == "NOW":
                     return
             if bufsize<size and not self.anyReady():
                 self.pause()
@@ -74,10 +77,23 @@ class YUV4MPEGToFrame(component):
         self.bytesread = "".join(wanted)
         return
     
+    def safesend(self, data, boxname):
+        while 1:
+            try:
+                self.send(data, boxname)
+                break
+            except noSpaceInBox:
+                if self.checkShutdown() == "NOW":
+                    return
+                self.pause()
+                yield 1
+            
     
     def main(self):
         # parse header
         yield WaitComplete(self.readline())
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            return
         line = self.bytesread
         m = re.match("^YUV4MPEG2((?: .\S*)*)\n$", line)
         assert(m)
@@ -89,7 +105,7 @@ class YUV4MPEGToFrame(component):
         while 1:
             yield WaitComplete(self.readline())
             line = self.bytesread
-            if not line:
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
                 break
             m = re.match("^FRAME((?: .\S*)*)\n$", line)
             assert(m)
@@ -100,24 +116,26 @@ class YUV4MPEGToFrame(component):
             csize = seq_params["chroma_size"][0] * seq_params["chroma_size"][1]
             
             yield WaitComplete(self.readbytes(ysize))
-            if not self.bytesread:
-                break
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                return
             y = self.bytesread
             
             yield WaitComplete(self.readbytes(csize))
-            if not self.bytesread:
-                break
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                return
             u = self.bytesread
             
             yield WaitComplete(self.readbytes(csize))
-            if not self.bytesread:
-                break
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                return
             v = self.bytesread
             
             frame = { "yuv" : (y,u,v) }
             frame.update(seq_params)
             frame.update(frame_params)
-            self.send(frame, "outbox")
+            yield WaitComplete(self.safesend(frame,"outbox"))
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                return
             yield 1
 
         if self.shutdownMsg:
