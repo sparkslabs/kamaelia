@@ -183,6 +183,58 @@ class IgnoreUntil(component):
         self.send(self.shutdownMsg,"signal")
 
 
+class FirstOnly(component):
+    def main(self):
+        while not self.dataReady("inbox"):
+            if self.dataReady("control"):
+                self.send(self.recv("control"))
+                return
+            self.pause()
+            yield 1
+            
+        self.send(self.recv("inbox"),"outbox")
+        
+        while not self.dataReady("control"):
+            while self.dataReady("inbox"):
+                self.recv("inbox")          # absorb anything sent to me
+            self.pause()
+            yield 1
+            
+        self.send(self.recv("control"),"signal")
+        
+class Chunk(component):
+    def __init__(self,datarate,quanta,chunkrate):
+        super(Chunk,self).__init__()
+        self.datarate  = datarate
+        self.quanta    = quanta
+        self.chunkrate = chunkrate
+    def main(self):
+        quantaPerChunk = float(self.datarate)/self.chunkrate/self.quanta
+        
+        nextChunk = quantaPerChunk
+        
+        buffer = ""
+        while 1:
+            while self.dataReady("inbox"):
+                newdata=self.recv("inbox")
+                buffer += newdata
+                
+                while len(buffer) >= (int(nextChunk)*self.quanta):
+                    amount = (int(nextChunk)*self.quanta)
+                    toSend = buffer[:amount]
+                    buffer = buffer[amount:]
+                    nextChunk = nextChunk - int(nextChunk) + quantaPerChunk
+                    self.send(toSend,"outbox")
+        
+            while  self.dataReady("control"):
+                msg = self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                    return
+                
+            self.pause()
+            yield 1
+
 from Kamaelia.Internet.Selector import Selector
 from Axon.Ipc import shutdown
 
