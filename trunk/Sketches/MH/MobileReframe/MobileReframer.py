@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
+# NOTE: this code is unstable* if run without the wake-on-message-removal
+# bugfix to Axon.
+
 from Misc import TagWithSequenceNumber
 from Misc import PromptedTurnstile
 from Misc import OneShot
 from Misc import InboxControlledCarousel
 from Misc import StopSelector
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Chassis.Graphline import Graphline
+#from Kamaelia.Chassis.Pipeline import Pipeline
+#from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
@@ -28,6 +31,20 @@ from VideoSurface import RGBtoYUV
 from Kamaelia.File.BetterReading import IntelligentFileReader
 from UnixProcess import UnixProcess
 
+sys.path.append("../audio/")
+from WAV import WavParser
+
+sys.path.append("../Sketcher/Whiteboard/")
+from TwoWaySplitter import TwoWaySplitter
+
+from Misc import FirstOnly
+from Misc import Chunk
+
+from Kamaelia.Util.Console import ConsoleEchoer
+
+from Chassis import Pipeline
+from Chassis import Graphline
+
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath):
     vidpipe = tmpFilePath+"vidPipe"
@@ -36,19 +53,107 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
     except:
         pass
     
-    return Pipeline(
-        UnixProcess("mplayer -vo yuv4mpeg:file="+vidpipe+" -nosound -really-quiet "+inFileName+" > /dev/null", 2000000, {vidpipe:"outbox"}),
-        YUV4MPEGToFrame(),
-        TagWithSequenceNumber(),
-        InboxControlledCarousel( lambda (framenum, frame) : \
-                  Pipeline( OneShot(frame),
-                            FrameToYUV4MPEG(),
-                            SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
-                          )
+    audpipe = tmpFilePath+"audPipe"
+    try:
+        os.remove(audpipe)
+    except:
+        pass
+    
+    mplayer = "mplayer -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName
+    
+    return Graphline(
+            MPLAYER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
+            DEBUG = ConsoleEchoer(),
+            FRAMES = YUV4MPEGToFrame(),
+            SPLIT = TwoWaySplitter(),
+            FIRST = FirstOnly(),
+            VIDEO = SaveVideoFrames(tmpFilePath),
+            AUDIO = Carousel(lambda vformat: SaveAudioFrames(vformat['frame_rate'],tmpFilePath)),
+            linkages = {
+                ("MPLAYER","video") : ("FRAMES","inbox"),
+                ("FRAMES","outbox") : ("SPLIT","inbox"),
+                ("SPLIT","outbox") : ("VIDEO","inbox"),
+                
+                ("SPLIT","outbox2") : ("FIRST","inbox"),
+                ("FIRST","outbox") : ("AUDIO","next"),
+                ("MPLAYER","audio") : ("AUDIO","inbox"),
+                
+                ("MPLAYER","signal") : ("FRAMES","control"),
+                ("FRAMES","signal") : ("SPLIT","control"),
+                ("SPLIT","signal") : ("VIDEO","control"),
+                ("SPLIT","signal2") : ("FIRST","control"),
+                ("FIRST","signal") : ("AUDIO","control"),
+                
+                ("MPLAYER","outbox") : ("DEBUG","inbox"),
+                ("MPLAYER","error") : ("DEBUG","inbox"),
+                },
+            boxsizes = {
+                ("FRAMES", "inbox") : 3,
+                ("SPLIT",  "inbox") : 1,
+                }
+            )
+        
+def SaveVideoFrames(tmpFilePath):
+    print "!!!"
+    return \
+        Pipeline(
+            TagWithSequenceNumber(),
+            InboxControlledCarousel( lambda (framenum, frame) : \
+                Pipeline( OneShot(frame),
+                          FrameToYUV4MPEG(),
+                          SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
+                        )
                 ),
-        StopSelector(),
+            StopSelector(),
         )
 
+
+
+def SaveAudioFrames(frame_rate,tmpFilePath):
+    print "###",frame_rate
+    return \
+        Graphline(
+            WAV = WavParser(),
+            AUD = Carousel(
+                lambda ameta : AudioSplitterByFrames( frame_rate,
+                                                      ameta['channels'],
+                                                      ameta['sample_rate'],
+                                                      ameta['sample_format'],
+                                                      tmpFilePath
+                                                    )
+                ),
+            linkages = {
+                # incoming WAV file passed to decoder
+                ("", "inbox") : ("WAV", "inbox"),
+                # raw audio sent to the carousel for splitting and writing
+                ("WAV", "outbox") : ("AUD", "inbox"),
+                
+                # pass audio format info to the carousel
+                ("WAV", "all_meta") : ("AUD", "next"),
+                
+                ("", "control") : ("WAV", "control"),
+                ("WAV", "signal") : ("AUD", "control"),
+            }
+        )
+                                              
+
+
+def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath):
+    from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
+    
+    print "@@@",framerate,channels,sample_rate,sample_format
+    quanta = format2BytesPerSample[sample_format] * channels
+    audioByteRate = quanta*sample_rate
+    
+    return Pipeline(
+        Chunk(datarate=audioByteRate, quanta=quanta, chunkrate=framerate),
+        TagWithSequenceNumber(),
+        InboxControlledCarousel( lambda (framenum, audiochunk) : \
+            Pipeline( OneShot(audiochunk),
+                      SimpleFileWriter(tmpFilePath+("%08d.pcm" % framenum)),
+                    )
+            ),
+        )
 
 
 # 2) reframe, writing out sequences
