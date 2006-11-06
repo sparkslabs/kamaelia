@@ -1,72 +1,86 @@
+#!/usr/bin/env python
+
 from Axon.Component import component
 import string
 import struct
-from Axon.Ipc import producerFinished, shutdown
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class PCMToWave(component):
-    def __init__(self, bytespersample, samplingfrequency):
-        super(PCMToWave, self).__init__()
-        self.bytespersample = bytespersample
-        self.samplingfrequency = samplingfrequency
-        
-        if self.bytespersample not in [2,4]:
-            print "Currently bytespersample must be 2 or 4"
-            raise ValueError
-        
-        bytestofunction = { 2: self.sample2Byte, 4: self.sample4Byte }
-        self.pack = bytestofunction[self.bytespersample]
-        
-    def sample2Byte(self, value):
-        return struct.pack("<h", int(value * 32768.0))
+# based on ryan's PCMToWave component, modified to match WAVParser's formats for
+# conveying samplerate, channels etc
+#
+# also takes binary sample data, instead of integer samples
 
-    def sample4Byte(self, value):
-        return struct.pack("<l", int(value * 2147483648.0))
-                
+class WavWriter(component):
+    def __init__(self, channels, sample_format, sample_rate):
+        super(WavWriter, self).__init__()
+        if sample_format == "S8":
+            self.bitsPerSample = 8
+            self.bytespersample = 1
+        elif sample_format == "S16_LE":
+            self.bitsPerSample = 16
+            self.bytespersample = 2
+        else:
+            raise "WavWriter can't handle sample format "+str(sample_format)+" at the moment"
+        
+        self.samplingfrequency = sample_rate
+        self.channels = channels
+        
     def main(self):
         #we don't know the length yet, so we say the file lasts an arbitrary (long) time 
-        riffchunk = "RIFF" + struct.pack("<L", 0xEFFFFFFF) + "WAVE"
+        riffchunk = "RIFF" + struct.pack("<L", 0x0) + "WAVE"
         
-        bytespersecond = self.bytespersample * self.samplingfrequency
+        bytespersecond = self.bytespersample * self.channels * self.samplingfrequency
         
         formatchunk = "fmt "
-        formatchunk += struct.pack("<L", 0x10) #16 for PCM
+        formatchunk += struct.pack("<L", self.bitsPerSample)
         formatchunk += struct.pack("<H", 0x01) #PCM/Linear quantization
-        formatchunk += struct.pack("<H", 0x01) #mono
+        formatchunk += struct.pack("<H", self.channels) 
         formatchunk += struct.pack("<L", self.samplingfrequency)
         formatchunk += struct.pack("<L", bytespersecond)
-        formatchunk += struct.pack("<H", self.bytespersample)
-        formatchunk += struct.pack("<H", self.bytespersample * 8)
+        formatchunk += struct.pack("<H", self.bytespersample * self.channels)
+        formatchunk += struct.pack("<H", self.bitsPerSample)
     
         self.send(riffchunk, "outbox")
         self.send(formatchunk, "outbox")
-        datachunkheader = "data" + struct.pack("<L", 0xEFFFFFFF) #again, an arbitrary (large) value
+        datachunkheader = "data" + struct.pack("<L", 0x0) #again, an arbitrary (large) value
         self.send(datachunkheader, "outbox")
         
         running = True
         while running:
             yield 1
             
-            codedsamples = []
-            while self.dataReady("inbox"): # we accept lists of floats
-                samplelist = self.recv("inbox")
+            while self.dataReady("inbox"): # we accept binary sample data in strings
+                sampledata = self.recv("inbox")
+                self.send(sampledata, "outbox")
                 
-                for sample in samplelist:
-                
-                    if sample < -1:
-                        sample = -1
-                    elif sample > 1:
-                        sample = 1
-                    
-                    codedsamples.append(self.pack(sample))
-                
-                del samplelist
-                
-            if codedsamples:
-                self.send(string.join(codedsamples, ""), "outbox")
-                
-            while self.dataReady("control"): # we accept lists of floats
+            while self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                     return
                     
             self.pause()
+
+
+if __name__=="__main__":
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Chassis.Carousel import Carousel
+    from WAV import WavParser
+    from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.File.Writing import SimpleFileWriter
+    
+    Graphline(
+        READ  = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=1000000),
+        PARSE = WavParser(),
+        ENC   = Carousel(lambda meta : WavWriter(**meta)),
+        WRITE = SimpleFileWriter("test.wav"),
+        linkages = {
+            ("READ", "outbox") : ("PARSE", "inbox"),
+            ("PARSE", "outbox") : ("ENC", "inbox"),
+            ("PARSE", "all_meta") : ("ENC", "next"),
+            ("ENC", "outbox") : ("WRITE", "inbox"),
+            
+            ("READ", "signal") : ("PARSE", "control"),
+            ("PARSE", "signal") : ("ENC", "control"),
+            ("ENC", "signal") : ("WRITE", "control"),
+        },
+    ).run()
