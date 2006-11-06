@@ -23,10 +23,17 @@ class WavParser(component):
     
     def checkShutdown(self):
         while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return msg
-        return False
+            newMsg = self.recv("control")
+            if isinstance(newMsg, shutdownMicroprocess):
+                self.shutdownMsg = newMsg
+            elif self.shutdownMsg is None and isinstance(newMsg, producerFinished):
+                self.shutdownMsg = newMsg
+        if isinstance(self.shutdownMsg, shutdownMicroprocess):
+            return "NOW"
+        elif self.shutdownMsg is not None:
+            return "WHENEVER"
+        else:
+            return None
         
     def readline(self):
         bytes = []
@@ -35,9 +42,7 @@ class WavParser(component):
         while index==-1:
             bytes.append(newdata)
             while not self.dataReady("inbox"):
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
+                if self.checkShutdown():
                     return
                 self.pause()
                 yield 1
@@ -60,11 +65,9 @@ class WavParser(component):
                 newdata = self.recv("inbox")
                 buf.append(newdata)
                 bufsize += len(newdata)
-            else:
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
-                    return
+            shutdown = self.checkShutdown()
+            if shutdown == "NOW" or shutdown and not self.dataReady("inbox"):
+                return
             if bufsize<size and not self.anyReady():
                 self.pause()
             yield 1
@@ -81,41 +84,25 @@ class WavParser(component):
         self.bytesread = "".join(wanted)
         return
     
-    
-    def ignorebytes(self,size):
-        buf = [self.remainder]
-        bufsize = len(self.remainder)
-        while bufsize < size:
-            if self.dataReady("inbox"):
-                newdata = self.recv("inbox")
-                buf.append(newdata)
-                bufsize += len(newdata)
-            else:
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
+    def safesend(self, data, boxname):
+        while 1:
+            try:
+                self.send(data, boxname)
+                break
+            except noSpaceInBox:
+                if self.checkShutdown() == "NOW":
                     return
-            if bufsize<size and not self.anyReady():
                 self.pause()
-            yield 1
-            
-        excess = bufsize-size
-        if excess:
-            self.remainder = buf[-1][-excess:]
-        else:
-            self.remainder = ""
-        
-        self.bytesread = ""
-        return
+                yield 1
+    
     
     def readuptobytes(self,size):
         while self.remainder == "":
             if self.dataReady("inbox"):
                 self.remainder = self.recv("inbox")
             else:
-                shutdownmsg = self.checkShutdown()
-                if shutdownmsg:
-                    self.bytesread = ""
+                shutdown = self.checkShutdown()
+                if shutdown == "NOW" or shutdown and not self.dataReady("inbox"):
                     return
             if self.remainder == "":
                 self.pause()
@@ -129,10 +116,16 @@ class WavParser(component):
     def main(self):
         # parse header
         yield WaitComplete(self.readbytes(16))
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            self.send(self.shutdownMsg,"signal")
+            return
         riff,filesize,wavfmt = struct.unpack("<4sl8s",self.bytesread)
         assert(riff=="RIFF" and wavfmt=="WAVEfmt ")
 
         yield WaitComplete(self.readbytes(20))
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            self.send(self.shutdownMsg,"signal")
+            return
         filesize -= 24
 
         chunksize, format, channels, sample_rate, bytesPerSec, blockAlign, bitsPerSample = struct.unpack("<lhHLLHH", self.bytesread)
@@ -167,12 +160,18 @@ class WavParser(component):
         # skip any excess header bytes
         if headerBytesLeft > 0:
             yield WaitComplete(self.readbytes(headerBytesLeft))
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                self.send(self.shutdownMsg,"signal")
+                return
             
         filesize-=headerBytesLeft
 
         # hunt for the DATA chunk
         while 1:
             yield WaitComplete(self.readbytes(8))
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                self.send(self.shutdownMsg,"signal")
+                return
             chunk, size = struct.unpack("<4sl",self.bytesread)
             if chunk=="data":
                 break
@@ -181,6 +180,9 @@ class WavParser(component):
             if (size % 1):
                 size+=1
             yield WaitComplete(self.readbytes(size))
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                self.send(self.shutdownMsg,"signal")
+                return
             filesize-=size+8
 
         # we're now in a data chunk
@@ -188,7 +190,15 @@ class WavParser(component):
         if size<=0:
             size=-1
         while size!=0:
-            yield WaitComplete(self.readuptobytes(size))
+            if size>0:
+                yield WaitComplete(self.readuptobytes(size))
+            else:
+                yield WaitComplete(self.readuptobytes(32768))
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+                self.send(self.shutdownMsg,"signal")
+                return
+            if self.bytesread == "":
+                print "!!!",self.checkShutdown()
             self.send(self.bytesread,"outbox")
             size-=len(self.bytesread)
 
@@ -212,6 +222,7 @@ if __name__ == "__main__":
     
     Graphline(
         SRC = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=44100*4),
+        #SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
         WAV = WavParser(),
         DST = Carousel(lambda meta:     
             Output(sample_rate=meta['sample_rate'],format=meta['sample_format'],channels=meta['channels'])
