@@ -22,21 +22,24 @@ class UnixProcess(component):
     Outboxes = { "outbox" : "",
                  "error"  : "",
                  "signal" : "",
-                 "_shutdownOutpipes" : "For shutting down any named pipes used for output"
+                 "_shutdownPipes" : "For shutting down any named pipes used for output"
                }
 
-    def __init__(self, command, buffersize=32768, outpipes={}):
+    def __init__(self, command, buffersize=32768, outpipes={}, inpipes={}):
         for outpipe,outboxname in outpipes.items():
             self.Outboxes[outboxname] = "Output from named pipe: "+outpipe
+        for inpipe,inboxname in inpipes.items():
+            self.Inboxes[inboxname] = "Input to named pipe: "+inpipe
             
         super(UnixProcess,self).__init__()
         self.command = command
         self.buffersize = buffersize
         self.outpipes = outpipes
+        self.inpipes = inpipes
 
     def main(self):
         # lets add any named output pipes requested
-        outpipeshutdown=(self,"_shutdownOutpipes")
+        pipeshutdown=(self,"_shutdownPipes")
         for (outpipename,outboxname) in self.outpipes.items():
             os.mkfifo(outpipename)
             
@@ -46,8 +49,25 @@ class UnixProcess(component):
             PIPE = _FromFileHandle(f, self.buffersize)
             self.link((PIPE,"outbox"), (self,outboxname), passthrough=2)
             # shutdown chain
-            self.link(outpipeshutdown,(PIPE,"control"))
-            outpipeshutdown=(PIPE,"signal")
+            self.link(pipeshutdown,(PIPE,"control"))
+            pipeshutdown=(PIPE,"signal")
+            
+            self.addChildren(PIPE)
+            
+        # lets add any named input pipes requested
+        firstinpipe = None
+        for (inpipename,inboxname) in self.inpipes.items():
+            os.mkfifo(inpipename)
+            
+            f = open(inpipename, "wb+", self.buffersize)
+            makeNonBlocking(f)
+            
+            PIPE = _ToFileHandle(f)
+            if firstinpipe is None:
+                firstinpipe = PIPE
+            self.link((self,inboxname), (PIPE,"inbox"), passthrough=1)
+            self.link(pipeshutdown,(PIPE,"control"))
+            pipeshutdown=(PIPE,"signal")
             
             self.addChildren(PIPE)
             
@@ -69,7 +89,7 @@ class UnixProcess(component):
         STDIN = _ToFileHandle(p.stdin)
         STDOUT = _FromFileHandle(p.stdout, self.buffersize)
         STDERR = _FromFileHandle(p.stderr, self.buffersize)
-
+        
         # stdin from inbox; stdout and stderr to outboxes
         self.link((self,"inbox"),    (STDIN,"inbox"), passthrough=1),
         self.link((STDOUT,"outbox"), (self,"outbox"), passthrough=2),
@@ -81,6 +101,9 @@ class UnixProcess(component):
 
         # if ordered from outside, then close input
         self.link((self,"control"), (STDIN, "control"), passthrough=1),
+        
+        if firstinpipe is not None:
+            self.link((STDIN,"signal"),(firstinpipe,"control"))
 
         self.addChildren(STDIN,STDOUT,STDERR)
             
@@ -92,8 +115,9 @@ class UnixProcess(component):
         while not self.childrenDone():
             if p.poll() is not None:
                 if self.outpipes:
-                    self.send(shutdownMicroprocess(self), "_shutdownOutpipes")
-            self.pause()
+                    self.send(producerFinished(self), "_shutdownPipes")
+            else:
+                self.pause()
             yield 1
 
         self.send(shutdownMsg,"signal")
@@ -102,6 +126,9 @@ class UnixProcess(component):
         for outpipename in self.outpipes.keys():
             os.remove(outpipename)
         
+        for inpipename in self.inpipes.keys():
+            os.remove(inpipename)
+            
 
     def childrenDone(self):
         """Unplugs any children that have terminated, and returns true if there are no
@@ -185,7 +212,7 @@ class _ToFileHandle(component):
                         self.send(newWriter(self,((self, "ready"), self.fh)), "selector")
                     while not self.dataReady("ready"):
                         self.checkShutdown(noNeedToWait=False)
-                        self.pause
+                        self.pause()
                         yield 1
                         
                     self.recv("ready")
@@ -201,7 +228,6 @@ class _ToFileHandle(component):
         except:
             pass
         self.send(self.shutdownMsg,"signal")
-
 
 
 class _FromFileHandle(component):
@@ -229,6 +255,9 @@ class _FromFileHandle(component):
             if isinstance(msg,shutdownMicroprocess):
                 self.shutdownMsg=msg
                 raise "STOP"
+            elif isinstance(msg,producerFinished):
+                self.shutdownMsg=msg
+        return self.shutdownMsg
 
 
     def main(self):
@@ -242,7 +271,7 @@ class _FromFileHandle(component):
 
         dataPending = ""
         waitingToStop=False
-        self.shutdownMsg = producerFinished(self)
+        self.shutdownMsg = None
         
         try:
             while 1:
@@ -262,15 +291,17 @@ class _FromFileHandle(component):
                             raise "STOP"
                     except IOError:
                         # no data available yet, need to wait
+                        if self.checkShutdown():
+                            raise "STOP"
                         if self.dataReady("ready"):
                             self.recv("ready")
                         else:
                             self.send(newReader(self,((self, "ready"), self.fh)), "selector")
-                            while not self.dataReady("ready"):
-                                self.checkShutdown()
+                            while not self.dataReady("ready") and not self.checkShutdown():
                                 self.pause()
                                 yield 1
-                            self.recv("ready")
+                            if self.dataReady("ready"):
+                                self.recv("ready")
                         
         except "STOP":
             pass  # ordered to shutdown!
@@ -282,8 +313,11 @@ class _FromFileHandle(component):
             pass
         yield 1
         yield 1
-        self.send(self.shutdownMsg,"signal")
-
+        
+        if not self.shutdownMsg:
+            self.send(producerFinished(self), "signal")
+        else:
+            self.send(self.shutdownMsg,"signal")
 
 
 if __name__=="__main__":
@@ -297,7 +331,7 @@ if __name__=="__main__":
                 yield 1
                 self.send("hello%5d\n" % i, "outbox")
                 i+=1
-                b += len("hello\n")
+                b += len("hello12345\n")
             self.send("byebye!!!!!\n", "outbox")
             b+=len("byebye!!!!!\n")
             self.send(producerFinished(), "signal")
@@ -373,11 +407,15 @@ if __name__=="__main__":
                 yield 1
                         
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
+    import os
     
 #    test="rate limit output"
 #    test="rate limited input"
-    test="reached end of output"
+#    test="reached end of output"
+#    test="outpipes"
+    test="inpipes"
             
     if test=="rate limit output":
         Pipeline(
@@ -404,4 +442,38 @@ if __name__=="__main__":
             ChargenComponent(),
             UnixProcess("wc",32),
             ConsoleEchoer(forwarder=True)
+        ).run()
+    elif test=="outpipes":
+        try:
+            os.remove("/tmp/tmppipe")
+        except OSError:
+            pass
+        Graphline(
+            SRC = ChargenComponent(),
+            UXP = UnixProcess("cat - > /tmp/tmppipe",outpipes={"/tmp/tmppipe":"output"}),
+            DST = ConsoleEchoer(),
+            linkages = {
+                ("SRC","outbox") : ("UXP","inbox"),
+                ("UXP","output") : ("DST","inbox"),
+                
+                ("SRC","signal") : ("UXP","control"),
+                ("UXP","signal") : ("DST","control"),
+            }
+        ).run()
+    elif test=="inpipes":
+        try:
+            os.remove("/tmp/tmppipe")
+        except OSError:
+            pass
+        Graphline(
+            SRC = ChargenComponent(),
+            UXP = UnixProcess("cat /tmp/tmppipe",inpipes={"/tmp/tmppipe":"input"}),
+            DST = ConsoleEchoer(),
+            linkages = {
+                ("SRC","outbox") : ("UXP","input"),
+                ("UXP","outbox") : ("DST","inbox"),
+                
+                ("SRC","signal") : ("UXP","control"),
+                ("UXP","signal") : ("DST","control"),
+            }
         ).run()
