@@ -187,7 +187,7 @@ class FirstOnly(component):
     def main(self):
         while not self.dataReady("inbox"):
             if self.dataReady("control"):
-                self.send(self.recv("control"))
+                self.send(self.recv("control"),"signal")
                 return
             self.pause()
             yield 1
@@ -256,4 +256,23 @@ class StopSelector(component):
             
         self.send(producerFinished(self), "signal")
         print "DONE"
-        
+
+
+class Sync(component):
+    """Waits for 'n' items before sending one of them on"""
+    def __init__(self, n=2):
+        super(Sync,self).__init__()
+        self.n=n
+    def main(self):
+        while 1:
+            for i in range(self.n):
+                while not self.dataReady("inbox"):
+                    while self.dataReady("control"):
+                        msg = self.recv("control")
+                        self.send(msg,"signal")
+                        if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                            return
+                    self.pause()
+                    yield 1
+                data = self.recv("inbox")
+            self.send(data,"outbox")

@@ -12,6 +12,7 @@ from Misc import StopSelector
 #from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.File.Reading import RateControlledFileReader
+from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
 from SAX import SAXPromptedParser
@@ -33,17 +34,22 @@ from UnixProcess import UnixProcess
 
 sys.path.append("../audio/")
 from WAV import WavParser
+from ToWAV import WavWriter
 
 sys.path.append("../Sketcher/Whiteboard/")
 from TwoWaySplitter import TwoWaySplitter
 
 from Misc import FirstOnly
 from Misc import Chunk
+from Misc import Sync
 
 from Kamaelia.Util.Console import ConsoleEchoer
 
 from Chassis import Pipeline
 from Chassis import Graphline
+
+sys.path.append("../Introspection/")
+from Profiling import Profiler
 
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath):
@@ -59,16 +65,17 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
     except:
         pass
     
-    mplayer = "mplayer -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName
+    mplayer = "mplayer -mc 0 -frames 700 -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName.replace(" ","\ ")
     
     return Graphline(
             MPLAYER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
-            DEBUG = ConsoleEchoer(),
             FRAMES = YUV4MPEGToFrame(),
             SPLIT = TwoWaySplitter(),
             FIRST = FirstOnly(),
             VIDEO = SaveVideoFrames(tmpFilePath),
             AUDIO = Carousel(lambda vformat: SaveAudioFrames(vformat['frame_rate'],tmpFilePath)),
+#            DEBUG = ConsoleEchoer(),
+#            MONITOR = Profiler(10.0, 0.1),
             linkages = {
                 ("MPLAYER","video") : ("FRAMES","inbox"),
                 ("FRAMES","outbox") : ("SPLIT","inbox"),
@@ -84,8 +91,9 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
                 ("SPLIT","signal2") : ("FIRST","control"),
                 ("FIRST","signal") : ("AUDIO","control"),
                 
-                ("MPLAYER","outbox") : ("DEBUG","inbox"),
-                ("MPLAYER","error") : ("DEBUG","inbox"),
+#                ("MPLAYER","outbox") : ("DEBUG","inbox"),
+#                ("MPLAYER","error") : ("DEBUG","inbox"),
+#                ("MONITOR","outbox") : ("DEBUG","inbox"),
                 },
             boxsizes = {
                 ("FRAMES", "inbox") : 3,
@@ -94,7 +102,6 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
             )
         
 def SaveVideoFrames(tmpFilePath):
-    print "!!!"
     return \
         Pipeline(
             TagWithSequenceNumber(),
@@ -110,7 +117,6 @@ def SaveVideoFrames(tmpFilePath):
 
 
 def SaveAudioFrames(frame_rate,tmpFilePath):
-    print "###",frame_rate
     return \
         Graphline(
             WAV = WavParser(),
@@ -141,7 +147,6 @@ def SaveAudioFrames(frame_rate,tmpFilePath):
 def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath):
     from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
     
-    print "@@@",framerate,channels,sample_rate,sample_format
     quanta = format2BytesPerSample[sample_format] * channels
     audioByteRate = quanta*sample_rate
     
@@ -150,7 +155,8 @@ def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFil
         TagWithSequenceNumber(),
         InboxControlledCarousel( lambda (framenum, audiochunk) : \
             Pipeline( OneShot(audiochunk),
-                      SimpleFileWriter(tmpFilePath+("%08d.pcm" % framenum)),
+                      WavWriter(channels,sample_format,sample_rate),
+                      SimpleFileWriter(tmpFilePath+("%08d.wav" % framenum)),
                     )
             ),
         )
@@ -163,12 +169,27 @@ def Reframing(edlfile, tmpFilePath, width, height):
         GET_EDL = EditDecisionSource(edlfile),
         REFRAMER = Carousel( lambda edit : ProcessEditDecision(tmpFilePath, edit, width, height),
                              make1stRequest=True ),
+        AUDIO = Carousel( lambda edit : PassThroughAudioSegment(tmpFilePath, edit),
+                          make1stRequest=True),
+        SPLIT = TwoWaySplitter(),
+        SYNC = Sync(n=2),
         linkages = {
-            ("REFRAMER", "requestNext") : ("GET_EDL", "inbox"),
-            ("GET_EDL", "outbox") : ("REFRAMER", "next"),
-            ("GET_EDL", "signal") : ("REFRAMER", "control"),
+            ("REFRAMER", "requestNext") : ("SYNC", "inbox"),
+            ("AUDIO", "requestNext")    : ("SYNC", "inbox"),
+            ("SYNC", "outbox") : ("GET_EDL", "inbox"),
+            
+            ("GET_EDL", "outbox") : ("SPLIT","inbox"),
+            ("SPLIT", "outbox") : ("REFRAMER", "next"),
+            ("SPLIT", "outbox2") : ("AUDIO", "next"),
+            
+            ("REFRAMER", "outbox") : ("", "video"),
+            ("AUDIO", "outbox") : ("", "audio"),
+            
+            ("GET_EDL", "signal") : ("SPLIT", "control"),
+            ("SPLIT", "signal") : ("REFRAMER", "control"),
+            ("SPLIT", "signal2") : ("AUDIO", "control"),
+            ("AUDIO", "signal") : ("SYNC", "control"),
             ("REFRAMER", "signal") : ("", "signal"),
-            ("REFRAMER", "outbox") : ("", "outbox"),
         })
 
 def EditDecisionSource(edlfile):
@@ -189,9 +210,8 @@ def EditDecisionSource(edlfile):
 
         } )
 
-
 def ProcessEditDecision(tmpFilePath, edit, width, height):
-    print "   ",edit
+    print " V ",edit
     filenames = [ tmpFilePath+"%08d.yuv" % i for i in range(edit["start"], edit["end"]+1) ]
     newsize = (width,height)
     cropbounds = (edit["left"], edit["top"], edit["right"], edit["bottom"])
@@ -200,7 +220,7 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
         FILENAMES = ForwardIteratingChooser(filenames),
         FRAME_LOADER = Carousel( lambda filename : 
                                  Pipeline(
-                                     RateControlledFileReader(filename,readmode="bytes",rate=100000000,chunksize=1000000),
+                                     RateControlledFileReader(filename,readmode="bytes",rate=100000000,chunksize=65536),
                                      YUV4MPEGToFrame(),
                                      ),
                                  make1stRequest=False ),
@@ -222,11 +242,103 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
     )
 
 
+def PassThroughAudioSegment(tmpFilePath, edit):
+    print " A ",edit
+    filenames = [ tmpFilePath+"%08d.wav" % i for i in range(edit["start"], edit["end"]+1) ]
+    
+    return Graphline( \
+        FILENAMES = ForwardIteratingChooser(filenames),
+        FRAME_LOADER = Carousel( lambda filename : 
+                                 Pipeline(
+                                     RateControlledFileReader(filename,readmode="bytes",rate=100000000,chunksize=65536),
+                                     WavParser(),
+                                     ),
+                                 make1stRequest=False ),
+        linkages = {
+            ("FRAME_LOADER", "requestNext") : ("FILENAMES", "inbox"),
+            
+            ("FILENAMES",    "outbox") : ("FRAME_LOADER", "next"),
+            ("FRAME_LOADER", "outbox") : ("", "outbox"),
+            
+            ("FILENAMES",    "signal") : ("FRAME_LOADER", "control"),
+            ("FRAME_LOADER", "signal") : ("", "signal"),
+        }
+    )
+
+
 # 3) concatenate sequences and reencode
+def WriteToFiles():
+    return Graphline( \
+               VIDEO = FrameToYUV4MPEG(),
+               AUDIO = WavWriter(2, "S16_LE", 44100),
+               TEST = SimpleFileWriter("test.yuv"),
+               TESTA = SimpleFileWriter("test.wav"),
+               linkages = {
+                   ("","video") : ("VIDEO","inbox"),
+                   ("VIDEO","outbox") : ("TEST","inbox"),
+                   
+                   ("","audio") : ("AUDIO", "inbox"),
+                   ("AUDIO","outbox") : ("TESTA","inbox"),
+                   
+                   ("","control") : ("VIDEO","control"),
+                   ("VIDEO","signal") : ("AUDIO","control"),
+                   ("AUDIO","signal") : ("TEST", "control"),
+                   ("TEST", "signal") : ("TESTA", "control"),
+                   ("TESTA", "signal") : ("", "signal"),
+               },
+           )
+    
 def ReEncode(outFileName):
-    return Pipeline( FrameToYUV4MPEG(),
-                     SimpleFileWriter(outFileName),       # or mencoder
-                   )
+    vidpipe = tmpFilePath+"vidPipe2.yuv"
+    try:
+        os.remove(vidpipe)
+    except:
+        pass
+    
+    audpipe = tmpFilePath+"audPipe2.wav"
+    try:
+        os.remove(audpipe)
+    except:
+        pass
+    
+    vidpipe=vidpipe.replace(" ","\ ")
+    audpipe=audpipe.replace(" ","\ ")
+    outFileName=outFileName.replace(" ","\ ")
+    
+#    encoder = "cat "+vidpipe+" > test2.yuv"
+#    encoder = "ffmpeg -f yuv4mpegpipe -i "+vidpipe+" -i "+audpipe+" -y "+outFileName
+    encoder = ( "mencoder -audiofile "+audpipe+" "+vidpipe +
+                " -ovc lavc -oac mp3lame" +
+                " -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128" +
+#                " -mc 0 -noskip" +
+                " -cache 16384 -audiofile-cache 500 -really-quiet" +
+                " -o "+outFileName.replace(" ","\ ")
+              )
+             
+    return Graphline( \
+               VIDEO = FrameToYUV4MPEG(),
+               AUDIO = WavWriter(2, "S16_LE", 48000),
+               ENCODE = UnixProcess(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"}),
+               DEBUG = ConsoleEchoer(),
+               STOP = StopSelector(),
+               linkages = {
+                   ("","video") : ("VIDEO","inbox"),
+                   ("VIDEO","outbox") : ("ENCODE","video"),
+                   
+                   ("","audio") : ("AUDIO", "inbox"),
+                   ("AUDIO","outbox") : ("ENCODE", "audio"),
+                   
+                   ("","control") : ("VIDEO","control"),
+                   ("VIDEO","signal") : ("AUDIO","control"),
+                   ("AUDIO","signal") : ("ENCODE", "control"),
+                   ("ENCODE", "signal") : ("STOP", "control"),
+                   ("STOP", "signal") : ("DEBUG", "control"),
+                   ("DEBUG", "signal") : ("", "signal"),
+
+                   ("ENCODE","outbox") : ("DEBUG","inbox"),
+                   ("ENCODE","error") : ("DEBUG","inbox"),
+               },
+           )
 
 
 # NOW RUN THE SYSTEM
@@ -270,10 +382,19 @@ except:
 
 print "Separating frames..."
 DecodeAndSeparateFrames(inFileName, tmpFilePath).run()
+
 print "Processing Edits..."
-Pipeline( Reframing(edlfile, tmpFilePath, output_width, output_height),
-          ReEncode(outFileName),
-        ).run()
+Graphline(
+    REFRAMING = Reframing(edlfile, tmpFilePath, output_width, output_height),
+    ENCODING  = ReEncode(outFileName),
+#    ENCODING = WriteToFiles(),
+#    PROF = Profiler(),
+    linkages = {
+        ("REFRAMING","video") : ("ENCODING","video"),
+        ("REFRAMING","audio") : ("ENCODING","audio"),
+        ("REFRAMING","signal") : ("ENCODING", "control"),
+        }
+    ).run()
 
 print "Cleaning up..."
 # clean up
