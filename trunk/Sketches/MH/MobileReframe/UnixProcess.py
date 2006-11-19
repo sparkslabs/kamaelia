@@ -193,19 +193,23 @@ class _ToFileHandle(component):
             while 1:
                 
                 # no data pending
-                while not self.dataReady("inbox"):
-                    self.checkShutdown(noNeedToWait=True)
-                    self.pause()
-                    yield 1
-                
-                dataPending = self.recv("inbox")
+                if dataPending=="":
+                    while not self.dataReady("inbox"):
+                        self.checkShutdown(noNeedToWait=True)
+                        self.pause()
+                        yield 1
+                    
+                    dataPending = self.recv("inbox")
                 
                 # now try to send it
                 try:
-                    self.fh.write(dataPending)
+                    #self.fh.write(dataPending)
+                    byteswritten = os.write(self.fh.fileno(),dataPending)
+                    if byteswritten >= 0:
+                        dataPending = dataPending[byteswritten:]
 #                    print "sent to subprocess",len(dataPending),"bytes"
-                    dataPending=""
-                except IOError:
+                    # dataPending=""
+                except OSError,IOError:
                     # data pending
                     # wait around until stdin is ready
                     if not self.dataReady("ready"):
@@ -286,10 +290,11 @@ class _FromFileHandle(component):
                         
                 while not dataPending:
                     try:
-                        dataPending=self.fh.read(self.maxReadChunkSize)
+                        #dataPending=self.fh.read(self.maxReadChunkSize)
+                        dataPending = os.read(self.fh.fileno(), self.maxReadChunkSize)
                         if dataPending=="":
                             raise "STOP"
-                    except IOError:
+                    except OSError,IOError:
                         # no data available yet, need to wait
                         if self.checkShutdown():
                             raise "STOP"
