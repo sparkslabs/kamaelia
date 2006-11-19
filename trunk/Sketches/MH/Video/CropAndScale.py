@@ -12,14 +12,17 @@ class CropAndScale(component):
     def __init__(self, newsize, cropbounds):
         super(CropAndScale,self).__init__()
         self.newsize = newsize
-        self.cropbounds = cropbounds
+        self.cropbounds = cropbounds[0], cropbounds[3], cropbounds[2], cropbounds[1]
 
     def main(self):
+        i=0
         while 1:
             while self.dataReady("inbox"):
                 frame = self.recv("inbox")
                 newframe = self.processFrame(frame)
                 self.send(newframe, "outbox")
+                print i
+                i+=1
 
             while self.dataReady("control"):
                 msg = self.recv("control")
