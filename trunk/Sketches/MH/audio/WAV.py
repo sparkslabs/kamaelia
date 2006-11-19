@@ -43,6 +43,7 @@ class WavParser(component):
             bytes.append(newdata)
             while not self.dataReady("inbox"):
                 if self.checkShutdown():
+                    self.bytesread=""
                     return
                 self.pause()
                 yield 1
@@ -66,7 +67,8 @@ class WavParser(component):
                 buf.append(newdata)
                 bufsize += len(newdata)
             shutdown = self.checkShutdown()
-            if shutdown == "NOW" or shutdown and not self.dataReady("inbox"):
+            if shutdown == "NOW" or (shutdown and not self.dataReady("inbox") and bufsize<size):
+                self.bytesread=""
                 return
             if bufsize<size and not self.anyReady():
                 self.pause()
@@ -102,8 +104,8 @@ class WavParser(component):
                 self.remainder = self.recv("inbox")
             else:
                 shutdown = self.checkShutdown()
-                if shutdown == "NOW" or shutdown and not self.dataReady("inbox"):
-                    return
+                if shutdown == "NOW" or (shutdown and not self.dataReady("inbox")):
+                    break
             if self.remainder == "":
                 self.pause()
             yield 1
@@ -116,14 +118,14 @@ class WavParser(component):
     def main(self):
         # parse header
         yield WaitComplete(self.readbytes(16))
-        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
             self.send(self.shutdownMsg,"signal")
             return
         riff,filesize,wavfmt = struct.unpack("<4sl8s",self.bytesread)
         assert(riff=="RIFF" and wavfmt=="WAVEfmt ")
 
         yield WaitComplete(self.readbytes(20))
-        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
             self.send(self.shutdownMsg,"signal")
             return
         filesize -= 24
@@ -160,7 +162,7 @@ class WavParser(component):
         # skip any excess header bytes
         if headerBytesLeft > 0:
             yield WaitComplete(self.readbytes(headerBytesLeft))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
             
@@ -169,7 +171,7 @@ class WavParser(component):
         # hunt for the DATA chunk
         while 1:
             yield WaitComplete(self.readbytes(8))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
             chunk, size = struct.unpack("<4sl",self.bytesread)
@@ -180,7 +182,7 @@ class WavParser(component):
             if (size % 1):
                 size+=1
             yield WaitComplete(self.readbytes(size))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
             filesize-=size+8
@@ -194,7 +196,7 @@ class WavParser(component):
                 yield WaitComplete(self.readuptobytes(size))
             else:
                 yield WaitComplete(self.readuptobytes(32768))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
             if self.bytesread == "":

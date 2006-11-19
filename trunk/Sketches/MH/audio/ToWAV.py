@@ -56,6 +56,7 @@ class WavWriter(component):
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                    self.send(msg,"signal")
                     return
                     
             self.pause()
