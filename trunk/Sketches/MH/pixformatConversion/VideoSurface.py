@@ -51,27 +51,27 @@ class YUVtoRGB(component):
             while self.dataReady("inbox"):
                 
                 frame = self.recv("inbox")
+                Y,U,V = frame['yuv']
+                W,H   = frame['size']
+                newframe = {
+                    'size' : (W,H),
+                    "pixformat" : "RGB_interleaved",
+                }
                 if frame['pixformat'] == "YUV420_planar":
-                    Y,U,V = frame['yuv']
-                    W,H   = frame['size']
-                    self.send({ "rgb"       : yuv420p_to_rgbi(Y,U,V, W,H),
-                                "size"      : (W,H),
-                                "pixformat" : "RGB_interleaved",
-                              }, "outbox")
-                    
+                    newframe["rgb"] = yuv420p_to_rgbi(Y,U,V, W,H)
                 elif frame['pixformat'] == "YUV422_planar":
-                    Y,U,V = frame['yuv']
-                    W,H   = frame['size']
-                    self.send({ "rgb"       : yuv422p_to_rgbi(Y,U,V, W,H),
-                                "size"      : (W,H),
-                                "pixformat" : "RGB_interleaved",
-                              }, "outbox")
+                    newframe["rgb"] = yuv422p_to_rgbi(Y,U,V, W,H)
                     
+                for key in frame.keys():
+                    if key not in newframe:
+                        newframe[key] = frame[key]
+                
+                self.send(newframe,"outbox")
 
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 msg = self.recv("control")
+                self.send(msg, "signal")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                    self.send(msg, "signal")
                     done=True
                     
             if not done:
@@ -103,15 +103,21 @@ class RGBtoYUV(component):
                 if frame['pixformat'] == "RGB_interleaved":
                     rgb = frame['rgb']
                     W,H = frame['size']
-                    self.send({ "yuv"       : rgbi_to_yuv420p(rgb, W,H),
-                                "size"      : (W,H),
-                                "pixformat" : "YUV420_planar",
-                              }, "outbox")
+                    newframe = {
+                        "yuv"       : rgbi_to_yuv420p(rgb, W,H),
+                        "size"      : (W,H),
+                        "pixformat" : "YUV420_planar",
+                        "chroma_size" : (W/2,H/2),
+                        }
+                    for key in frame.keys():
+                        if key not in newframe and key!="rgb":
+                            newframe[key] = frame[key]
+                    self.send(newframe, "outbox")
                     
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 msg = self.recv("control")
+                self.send(msg, "signal")
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                    self.send(msg, "signal")
                     done=True
                     
             if not done:
