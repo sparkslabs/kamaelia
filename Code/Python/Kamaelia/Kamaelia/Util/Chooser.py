@@ -301,6 +301,9 @@ class ForwardIteratingChooser(Axon.Component.component):
                   pass
 
          done = done or self.shutdown()
+         
+         if not done:
+             self.pause()
 
    def getCurrentChoice(self):
       """Return the current choice"""
