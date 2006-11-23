@@ -23,6 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.AxonExceptions import noSpaceInBox
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 
@@ -239,23 +240,28 @@ from Kamaelia.Internet.Selector import Selector
 from Axon.Ipc import shutdown
 
 class StopSelector(component):
+    def __init__(self, waitForTrigger=False):
+        super(StopSelector,self).__init__()
+        self.waitForTrigger=waitForTrigger
+
     Outboxes = {"outbox":"","signal":"","selector_shutdown":""}
     def main(self):
-        while not (self.dataReady("inbox") or self.dataReady("control")):
-            self.pause()
-            yield 1
-        
         # stop the selector
         selectorService, selectorShutdownService, newSelectorService = Selector.getSelectorServices(self.tracker) # get a reference to a     
         link = self.link((self,"selector_shutdown"),selectorShutdownService)
+        
+        if self.waitForTrigger:
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            
         self.send(shutdown(),"selector_shutdown")
         self.unlink(thelinkage=link)
         
-        while self.dataReady("control"):
+        if self.dataReady("control"):
             self.send(self.recv("control"), "signal")
-            
-        self.send(producerFinished(self), "signal")
-        print "DONE"
+        else:
+            self.send(producerFinished(self), "signal")
 
 
 class Sync(component):
@@ -276,3 +282,4 @@ class Sync(component):
                     yield 1
                 data = self.recv("inbox")
             self.send(data,"outbox")
+
