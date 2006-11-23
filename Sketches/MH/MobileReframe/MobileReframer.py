@@ -48,6 +48,10 @@ from Kamaelia.Util.Console import ConsoleEchoer
 from Chassis import Pipeline
 from Chassis import Graphline
 
+from MaxSpeedFileReader import MaxSpeedFileReader
+
+from Kamaelia.Util.Backplane import Backplane,PublishTo,SubscribeTo
+
 sys.path.append("../Introspection/")
 from Profiling import Profiler
 
@@ -111,7 +115,6 @@ def SaveVideoFrames(tmpFilePath):
                           SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
                         )
                 ),
-            StopSelector(),
         )
 
 
@@ -164,33 +167,22 @@ def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFil
 
 # 2) reframe, writing out sequences
 
-def Reframing(edlfile, tmpFilePath, width, height):
+def ReframeVideo(edlfile, tmpFilePath, width, height):
     return Graphline( \
         GET_EDL = EditDecisionSource(edlfile),
         REFRAMER = Carousel( lambda edit : ProcessEditDecision(tmpFilePath, edit, width, height),
                              make1stRequest=True ),
-        AUDIO = Carousel( lambda edit : PassThroughAudioSegment(tmpFilePath, edit),
-                          make1stRequest=True),
-        SPLIT = TwoWaySplitter(),
-        SYNC = Sync(n=2),
         linkages = {
-            ("REFRAMER", "requestNext") : ("SYNC", "inbox"),
-            ("AUDIO", "requestNext")    : ("SYNC", "inbox"),
-            ("SYNC", "outbox") : ("GET_EDL", "inbox"),
+            ("REFRAMER", "requestNext") : ("GET_EDL", "inbox"),
             
-            ("GET_EDL", "outbox") : ("SPLIT","inbox"),
-            ("SPLIT", "outbox") : ("REFRAMER", "next"),
-            ("SPLIT", "outbox2") : ("AUDIO", "next"),
+            ("GET_EDL", "outbox") : ("REFRAMER", "next"),
             
-            ("REFRAMER", "outbox") : ("", "video"),
-            ("AUDIO", "outbox") : ("", "audio"),
+            ("REFRAMER", "outbox") : ("", "outbox"),
             
-            ("GET_EDL", "signal") : ("SPLIT", "control"),
-            ("SPLIT", "signal") : ("REFRAMER", "control"),
-            ("SPLIT", "signal2") : ("AUDIO", "control"),
-            ("AUDIO", "signal") : ("SYNC", "control"),
+            ("GET_EDL", "signal") : ("REFRAMER", "control"),
             ("REFRAMER", "signal") : ("", "signal"),
-        })
+        },
+        )
 
 def EditDecisionSource(edlfile):
     return Graphline( \
@@ -220,13 +212,13 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
         FILENAMES = ForwardIteratingChooser(filenames),
         FRAME_LOADER = Carousel( lambda filename : 
                                  Pipeline(
-                                     RateControlledFileReader(filename,readmode="bytes",rate=100000000,chunksize=65536),
-                                     YUV4MPEGToFrame(),
+                                     2, MaxSpeedFileReader(filename,chunksize=1024*1024),
+                                     2, YUV4MPEGToFrame(),
                                      ),
                                  make1stRequest=False ),
-        REFRAMING = Pipeline( YUVtoRGB(),
-                              CropAndScale(newsize, cropbounds),
-                              RGBtoYUV(),
+        REFRAMING = Pipeline( 2, YUVtoRGB(),
+                              2, CropAndScale(newsize, cropbounds),
+                              2, RGBtoYUV(),
                             ),
         linkages = {
             ("FRAME_LOADER", "requestNext") : ("FILENAMES", "inbox"),
@@ -238,21 +230,62 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
             ("FILENAMES",    "signal") : ("FRAME_LOADER", "control"),
             ("FRAME_LOADER", "signal") : ("REFRAMING", "control"),
             ("REFRAMING",    "signal") : ("", "signal"),
-        }
+        },
+        boxsizes = {
+        },
     )
 
 
-def PassThroughAudioSegment(tmpFilePath, edit):
+def PassThroughAudio(edlfile, tmpFilePath):
+    backplane_name = "AUDIO_FORMAT"
+    return Graphline( \
+        GET_EDL = EditDecisionSource(edlfile),
+        AUDIO = Carousel( lambda edit : PassThroughAudioSegment(tmpFilePath, edit, backplane_name),
+                          make1stRequest=True),
+        
+        BACKPLANE = Backplane(backplane_name),
+        AUDIOFORMAT = Pipeline( SubscribeTo(backplane_name), FirstOnly() ),
+        
+        linkages = {
+            ("AUDIO", "requestNext") : ("GET_EDL", "inbox"),
+            
+            ("GET_EDL", "outbox") : ("AUDIO", "next"),
+            
+            ("AUDIO", "outbox") : ("", "outbox"),
+            
+            ("AUDIOFORMAT", "outbox") : ("", "audioformat"),
+            
+            ("GET_EDL", "signal") : ("AUDIO", "control"),
+            ("AUDIO", "signal") : ("AUDIOFORMAT", "control"),
+            ("AUDIOFORMAT", "signal") : ("BACKPLANE", "control"),
+            ("BACKPLANE", "signal") : ("", "signal"),
+        },
+        )
+
+def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
     print " A ",edit
     filenames = [ tmpFilePath+"%08d.wav" % i for i in range(edit["start"], edit["end"]+1) ]
     
     return Graphline( \
         FILENAMES = ForwardIteratingChooser(filenames),
         FRAME_LOADER = Carousel( lambda filename : 
-                                 Pipeline(
-                                     RateControlledFileReader(filename,readmode="bytes",rate=100000000,chunksize=65536),
-                                     WavParser(),
-                                     ),
+                                 Graphline(
+                                     READ = MaxSpeedFileReader(filename),
+                                     PARS = WavParser(),
+                                     META = PublishTo(backplane_name),
+                                     linkages = {
+                                         ("READ","outbox") : ("PARS","inbox"),
+                                         ("PARS","outbox") : ("","outbox"),
+                                         
+                                         ("PARS","all_meta") : ("META","inbox"),
+                                         
+                                         ("","control") : ("READ","control"),
+                                         ("READ","signal") : ("PARS","control"),
+                                         ("PARS","signal") : ("META","control"),
+                                         ("META","signal") : ("","signal"),
+                                     },
+                                     boxsizes = { ("PARS","inbox") : 2 },
+                                 ),
                                  make1stRequest=False ),
         linkages = {
             ("FRAME_LOADER", "requestNext") : ("FILENAMES", "inbox"),
@@ -262,7 +295,7 @@ def PassThroughAudioSegment(tmpFilePath, edit):
             
             ("FILENAMES",    "signal") : ("FRAME_LOADER", "control"),
             ("FRAME_LOADER", "signal") : ("", "signal"),
-        }
+        },
     )
 
 
@@ -270,7 +303,7 @@ def PassThroughAudioSegment(tmpFilePath, edit):
 def WriteToFiles():
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
-               AUDIO = WavWriter(2, "S16_LE", 44100),
+               AUDIO = WavWriter(2, "S16_LE", 48000),
                TEST = SimpleFileWriter("test.yuv"),
                TESTA = SimpleFileWriter("test.wav"),
                linkages = {
@@ -317,11 +350,12 @@ def ReEncode(outFileName):
              
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
-               AUDIO = WavWriter(2, "S16_LE", 48000),
-               ENCODE = UnixProcess(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"}),
+               AUDIO = Carousel( lambda format : WavWriter(**format),
+                                 make1stRequest=False),
+               ENCODE =  UnixProcess(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"},boxsizes={"inbox":2,"video":2,"audio":2}),
                DEBUG = ConsoleEchoer(),
-               STOP = StopSelector(),
                linkages = {
+                   ("","audioformat") : ("AUDIO","next"),
                    ("","video") : ("VIDEO","inbox"),
                    ("VIDEO","outbox") : ("ENCODE","video"),
                    
@@ -331,13 +365,16 @@ def ReEncode(outFileName):
                    ("","control") : ("VIDEO","control"),
                    ("VIDEO","signal") : ("AUDIO","control"),
                    ("AUDIO","signal") : ("ENCODE", "control"),
-                   ("ENCODE", "signal") : ("STOP", "control"),
-                   ("STOP", "signal") : ("DEBUG", "control"),
+                   ("ENCODE", "signal") : ("DEBUG", "control"),
                    ("DEBUG", "signal") : ("", "signal"),
 
                    ("ENCODE","outbox") : ("DEBUG","inbox"),
                    ("ENCODE","error") : ("DEBUG","inbox"),
                },
+               boxsizes = {
+                   ("VIDEO",  "inbox") : 2,
+                   ("AUDIO",  "inbox") : 2,
+               }
            )
 
 
@@ -368,35 +405,44 @@ else:
         sys.exit(1)
         
     
-# inFileName = "/data/stream.yuv"
-# outFileName = "/data/result.yuv"
-# tmpFilePath = "/tmp/mobile_reframer/"
-# output_width=64
-# output_height=48
-# edlfile = "TestEDL.xml"
 
 try:
     os.mkdir(tmpFilePath[:-1])
 except:
     pass
 
-print "Separating frames..."
-DecodeAndSeparateFrames(inFileName, tmpFilePath).run()
+from Seq import Seq
 
-print "Processing Edits..."
-Graphline(
-    REFRAMING = Reframing(edlfile, tmpFilePath, output_width, output_height),
-    ENCODING  = ReEncode(outFileName),
-#    ENCODING = WriteToFiles(),
-#    PROF = Profiler(),
-    linkages = {
-        ("REFRAMING","video") : ("ENCODING","video"),
-        ("REFRAMING","audio") : ("ENCODING","audio"),
-        ("REFRAMING","signal") : ("ENCODING", "control"),
-        }
+from Axon.Introspector import Introspector
+from Kamaelia.Internet.TCPClient import TCPClient
+
+Seq( "Separating frames...",
+     lambda : DecodeAndSeparateFrames(inFileName, tmpFilePath),
+     "Processing edits...",
+     lambda : 
+        Graphline(
+            REFRAMING = ReframeVideo(edlfile, tmpFilePath, output_width, output_height),
+            SOUND     = PassThroughAudio(edlfile, tmpFilePath),
+            ENCODING  = ReEncode(outFileName),
+#            PROF = Profiler(),
+#            INTROSPECT = Pipeline(Introspector(),TCPClient("r44116",1601)),
+        linkages = {
+            ("REFRAMING","outbox") : ("ENCODING","video"),
+            ("SOUND","outbox") : ("ENCODING","audio"),
+            ("SOUND","audioformat") : ("ENCODING","audioformat"),
+            
+            ("REFRAMING","signal") : ("SOUND","control"),
+            ("SOUND","signal") : ("ENCODING", "control"),
+            },
+        boxsizes = {
+            ("ENCODING","video") : 2,
+            ("ENCODING","audio") : 2,
+            },
+        ),
+    "Cleaning up...",
+    lambda : StopSelector(),
     ).run()
 
-print "Cleaning up..."
 # clean up
 for file in os.listdir(tmpFilePath):
     os.remove(tmpFilePath+file)
