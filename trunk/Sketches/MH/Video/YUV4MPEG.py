@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from Axon.Component import component
-from Axon.Ipc import WaitComplete
+#from Axon.Ipc import WaitComplete
 from Axon.Ipc import shutdownMicroprocess, producerFinished
+from Axon.AxonExceptions import noSpaceInBox
 import re
 from Kamaelia.Support.Data.Rationals import rational
 
@@ -35,7 +36,8 @@ class YUV4MPEGToFrame(component):
         while index==-1:
             bytes.append(newdata)
             while not self.dataReady("inbox"):
-                if self.checkShutdown() == "NOW":
+                if self.checkShutdown():
+                    self.bytesread=""
                     return
                 self.pause()
                 yield 1
@@ -58,9 +60,10 @@ class YUV4MPEGToFrame(component):
                 newdata = self.recv("inbox")
                 buf.append(newdata)
                 bufsize += len(newdata)
-            else:
-                if self.checkShutdown() == "NOW":
-                    return
+            shutdown = self.checkShutdown()
+            if shutdown == "NOW" or (shutdown and not self.dataReady("inbox") and bufsize<size):
+                self.bytesread=""
+                return
             if bufsize<size and not self.anyReady():
                 self.pause()
             yield 1
@@ -81,7 +84,7 @@ class YUV4MPEGToFrame(component):
         while 1:
             try:
                 self.send(data, boxname)
-                break
+                return
             except noSpaceInBox:
                 if self.checkShutdown() == "NOW":
                     return
@@ -91,8 +94,9 @@ class YUV4MPEGToFrame(component):
     
     def main(self):
         # parse header
-        yield WaitComplete(self.readline())
-        if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+        for _ in self.readline(): yield _
+        if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
+            self.send(self.shutdownMsg,"signal")
             return
         line = self.bytesread
         m = re.match("^YUV4MPEG2((?: .\S*)*)\n$", line)
@@ -103,9 +107,9 @@ class YUV4MPEGToFrame(component):
         yield 1
             
         while 1:
-            yield WaitComplete(self.readline())
+            for _ in self.readline(): yield _
             line = self.bytesread
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 break
             m = re.match("^FRAME((?: .\S*)*)\n$", line)
             assert(m)
@@ -115,27 +119,27 @@ class YUV4MPEGToFrame(component):
             ysize = seq_params["size"][0] * seq_params["size"][1]
             csize = seq_params["chroma_size"][0] * seq_params["chroma_size"][1]
             
-            yield WaitComplete(self.readbytes(ysize))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
-                return
+            for _ in self.readbytes(ysize): yield _
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
+                break
             y = self.bytesread
             
-            yield WaitComplete(self.readbytes(csize))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
-                return
+            for _ in self.readbytes(csize): yield _
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
+                break
             u = self.bytesread
             
-            yield WaitComplete(self.readbytes(csize))
-            if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
-                return
+            for _ in self.readbytes(csize): yield _
+            if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
+                break
             v = self.bytesread
             
             frame = { "yuv" : (y,u,v) }
             frame.update(seq_params)
             frame.update(frame_params)
-            yield WaitComplete(self.safesend(frame,"outbox"))
+            for _ in self.safesend(frame,"outbox"): yield _
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and not self.dataReady("inbox")):
-                return
+                break
             yield 1
 
         if self.shutdownMsg:
@@ -271,82 +275,119 @@ def parse_frame_tags(fields):
 
 
 class FrameToYUV4MPEG(component):
+        
     def checkShutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return msg
-        return False
+            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg,shutdownMicroprocess):
+                self.shutdownMsg = msg
+            elif isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+    
+    def canShutdown(self):
+        return isinstance(self.shutdownMsg, (producerFinished, shutdownMicroprocess))
+    
+    def mustShutdown(self):
+        return isinstance(self.shutdownMsg, shutdownMicroprocess)
+        
+    def sendoutbox(self,data):
+        while 1:
+            try:
+                self.send(data,"outbox")
+                return
+            except noSpaceInBox:
+                self.checkShutdown()
+                if self.mustShutdown():
+                    raise "STOP"
+                
+                self.pause()
+                yield 1
+                
+                self.checkShutdown()
+                if self.mustShutdown():
+                    raise "STOP"
         
     def main(self):
-        while not self.dataReady("inbox"):
-            msg = self.checkShutdown()
-            if msg:
-                self.send(msg, "signal")
-                return
-            self.pause()
-            yield 1
-        frame = self.recv("inbox")
-        self.write_header(frame)
-        self.write_frame(frame)
+        self.shutdownMsg = None
         
-        while 1:
-            while self.dataReady("inbox"):
-                frame = self.recv("inbox")
-                self.write_frame(frame)
-            msg = self.checkShutdown()
-            if msg:
-                self.send(msg, "signal")
-                return
-            self.pause()
-            yield 1
+        try:
+            while not self.dataReady("inbox"):
+                self.checkShutdown()
+                if self.canShutdown():
+                    raise "STOP"
+                self.pause()
+                yield 1
+            
+            frame = self.recv("inbox")
+            for _ in self.write_header(frame):
+                yield _
+            for _ in self.write_frame(frame):
+                yield _
+            
+            while 1:
+                while self.dataReady("inbox"):
+                    frame = self.recv("inbox")
+                    for _ in self.write_frame(frame):
+                        yield _
+                self.checkShutdown()
+                if self.canShutdown():
+                    raise "STOP"
+                self.pause()
+                yield 1
+                
+        except "STOP":
+            self.send(self.shutdownMsg,"signal")
 
     def write_header(self, frame):
-        self.send("YUV4MPEG2","outbox")
-        self.send(" W%d H%d" % tuple(frame['size']), "outbox")
+        format = "YUV4MPEG2 W%d H%d" % tuple(frame['size'])
         
         if   frame['pixformat']=="YUV420_planar":
-            self.send(" C420mpeg2", "outbox")
+            format += " C420mpeg2"
         elif frame['pixformat']=="YUV411_planar":
-            self.send(" C411", "outbox")
+            format += " C411"
         elif frame['pixformat']=="YUV422_planar":
-            self.send(" C422", "outbox")
+            format += " C422"
         elif frame['pixformat']=="YUV444_planar":
-            self.send(" C444", "outbox")
+            format += " C444"
         elif frame['pixformat']=="YUV4444_planar":
-            self.send(" C444alpha", "outbox")
+            format += " C444alpha"
         elif frame['pixformat']=="Y_planar":
-            self.send(" Cmono", "outbox")
+            format += " Cmono"
 
         interlace = frame.get("interlaced",False)
         topfieldfirst = frame.get("topfieldfirst",False)
         if   interlace and topfieldfirst:
-            self.send(" It", "outbox")
+            format += " It"
         elif interlace and not topfieldfirst:
-            self.send(" Ib", "outbox")
+            format += " Ib"
         elif not interlace:
-            self.send(" Ip", "outbox")
+            format += " Ip"
 
         rate = frame.get("frame_rate", 0)
         if rate > 0:
             num,denom = rational(rate)
-            self.send(" F%d:%d" % (num,denom), "outbox")
+            format += " F%d:%d" % (num,denom)
             
         rate = frame.get("pixel_aspect", 0)
         if rate > 0:
             num,denom = rational(rate)
-            self.send(" A%d:%d" % (num,denom), "outbox")
+            format += " A%d:%d" % (num,denom)
             
         if "sequence_meta" in frame:
-            self.send(" X"+frame['sequence_meta'], "outbox")
+            format += " X"+frame['sequence_meta']
             
-        self.send("\x0a", "outbox")
+        format += "\x0a"
+        
+        for _ in self.sendoutbox(format):
+            yield _
     
     
     def write_frame(self, frame):
-        self.send("FRAME\x0a", "outbox")
+        for _ in self.sendoutbox("FRAME\x0a"):
+            yield _
         for component in frame['yuv']:
-            self.send(component, "outbox")
+            for _ in self.sendoutbox(component):
+                yield _
 
 
 
