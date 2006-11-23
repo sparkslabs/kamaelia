@@ -46,6 +46,7 @@ class Profiler(threadedcomponent):
         nextoutput = now
         cycles=0
         scheduler = self.scheduler
+        latest=0
         
         while not self.shutdown():
             
@@ -56,26 +57,39 @@ class Profiler(threadedcomponent):
             if now >= nextsample:
                 nextsample = now+self.samplestep
                 cycles+=1
+                latest+=1
                 
                 for mprocess in scheduler.listAllThreads():
                     name=mprocess.name
-                    running,active,shortactive = microprocesses.get(name, (0,0,0))
+                    running,active,shortactive,_,_2 = microprocesses.get(name, (0,0,0,None,-1))
                     running+=1
 #                    if not scheduler.isThreadPaused(mprocess):
                     if scheduler.threads[mprocess] == _ACTIVE:
                         active+=1
                         shortactive+=1
-                    microprocesses[name] = running,active,shortactive
+                    try:
+                        lineno = mprocess._microprocess__thread.gi_frame.f_locals['pc'].gi_frame.f_lineno
+                    except:
+                        lineno = -1
+                    microprocesses[name] = running,active,shortactive,latest,lineno
                 
             if now >= nextoutput:
                 nextoutput = now+self.outputstep
                 
-                print "-----Run----Active--%Usage--Name-----------------"
-                for name,(running,active,shortactive) in microprocesses.iteritems():
-                    print "%8d  %8d  %6.2f  %s" % (running,active,100.0*shortactive/cycles,name)
-                    microprocesses[name] = (running,active,0)
+                print "-----Run----Active--%Usage--LineNo--Name-----------------"
+                todel=[]
+                for name,(running,active,shortactive,mru,lineno) in microprocesses.iteritems():
+                    if mru!=latest:
+                        todel.append(name)
+                        name += " [DONE]"
+                    else:
+                        microprocesses[name] = (running,active,0,mru,lineno)
+                    print "%8d  %8d  %6.2f  %6d  %s" % (running,active,100.0*shortactive/cycles,lineno,name)
                 print "------------------------------------------"
                 cycles=0
+                for name in todel:
+                    del microprocesses[name]
+            
 
 
 class ProfilerOutputFormatter(component):
