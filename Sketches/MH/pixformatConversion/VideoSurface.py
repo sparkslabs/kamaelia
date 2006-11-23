@@ -24,6 +24,7 @@
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Ipc import WaitComplete
+from Axon.AxonExceptions import noSpaceInBox
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 import pygame
 
@@ -41,44 +42,73 @@ class YUVtoRGB(component):
                  "signal"      : "Shutdown signalling",
                }
 
+    def handleControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+            elif isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+
+    def canStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, (producerFinished,shutdownMicroprocess))
+
+    def mustStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, shutdownMicroprocess)
+    
+    def waitSend(self,data,boxname):
+        while 1:
+            try:
+                self.send(data,boxname)
+                return
+            except noSpaceInBox:
+                if self.mustStop():
+                    raise "STOP"
+                
+                self.pause()
+                yield 1
+                
+                if self.mustStop():
+                    raise "STOP"
 
     def main(self):
         """Main loop."""
 
-        done = False
+        self.shutdownMsg = None
         
-        while not done:
-            while self.dataReady("inbox"):
-                
-                frame = self.recv("inbox")
-                Y,U,V = frame['yuv']
-                W,H   = frame['size']
-                newframe = {
-                    'size' : (W,H),
-                    "pixformat" : "RGB_interleaved",
-                }
-                if frame['pixformat'] == "YUV420_planar":
-                    newframe["rgb"] = yuv420p_to_rgbi(Y,U,V, W,H)
-                elif frame['pixformat'] == "YUV422_planar":
-                    newframe["rgb"] = yuv422p_to_rgbi(Y,U,V, W,H)
+        try:
+            while 1:
+                while self.dataReady("inbox"):
                     
-                for key in frame.keys():
-                    if key not in newframe:
-                        newframe[key] = frame[key]
-                
-                self.send(newframe,"outbox")
-
-            while self.dataReady("control"):
-                msg = self.recv("control")
-                self.send(msg, "signal")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                    done=True
+                    frame = self.recv("inbox")
+                    Y,U,V = frame['yuv']
+                    W,H   = frame['size']
+                    newframe = {
+                        'size' : (W,H),
+                        "pixformat" : "RGB_interleaved",
+                    }
+                    if frame['pixformat'] == "YUV420_planar":
+                        newframe["rgb"] = yuv420p_to_rgbi(Y,U,V, W,H)
+                    elif frame['pixformat'] == "YUV422_planar":
+                        newframe["rgb"] = yuv422p_to_rgbi(Y,U,V, W,H)
+                        
+                    for key in frame.keys():
+                        if key not in newframe:
+                            newframe[key] = frame[key]
                     
-            if not done:
+                    for _ in self.waitSend(newframe,"outbox"):
+                        yield _
+    
+                if self.canStop():
+                    raise "STOP"
+    
                 self.pause()
-                
-            yield 1
+                yield 1
 
+        except "STOP":
+            self.send(self.shutdownMsg,"signal")
 
 
 class RGBtoYUV(component):
@@ -90,41 +120,71 @@ class RGBtoYUV(component):
                  "signal"      : "Shutdown signalling",
                }
 
+    def handleControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+            elif isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+
+    def canStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, (producerFinished,shutdownMicroprocess))
+
+    def mustStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, shutdownMicroprocess)
+    
+    def waitSend(self,data,boxname):
+        while 1:
+            try:
+                self.send(data,boxname)
+                return
+            except noSpaceInBox:
+                if self.mustStop():
+                    raise "STOP"
+                
+                self.pause()
+                yield 1
+                
+                if self.mustStop():
+                    raise "STOP"
 
     def main(self):
         """Main loop."""
+        self.shutdownMsg = None
 
-        done = False
-        
-        while not done:
-            while self.dataReady("inbox"):
-                
-                frame = self.recv("inbox")
-                if frame['pixformat'] == "RGB_interleaved":
-                    rgb = frame['rgb']
-                    W,H = frame['size']
-                    newframe = {
-                        "yuv"       : rgbi_to_yuv420p(rgb, W,H),
-                        "size"      : (W,H),
-                        "pixformat" : "YUV420_planar",
-                        "chroma_size" : (W/2,H/2),
-                        }
-                    for key in frame.keys():
-                        if key not in newframe and key!="rgb":
-                            newframe[key] = frame[key]
-                    self.send(newframe, "outbox")
+        try:
+            while 1:
+    
+                while self.dataReady("inbox"):
                     
-            while self.dataReady("control"):
-                msg = self.recv("control")
-                self.send(msg, "signal")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                    done=True
-                    
-            if not done:
+                    frame = self.recv("inbox")
+                    if frame['pixformat'] == "RGB_interleaved":
+                        rgb = frame['rgb']
+                        W,H = frame['size']
+                        newframe = {
+                            "yuv"       : rgbi_to_yuv420p(rgb, W,H),
+                            "size"      : (W,H),
+                            "pixformat" : "YUV420_planar",
+                            "chroma_size" : (W/2,H/2),
+                            }
+                        for key in frame.keys():
+                            if key not in newframe and key!="rgb":
+                                newframe[key] = frame[key]
+                        
+                        for _ in self.waitSend(newframe,"outbox"):
+                            yield _
+                        
+                if self.canStop():
+                    raise "STOP"
+                        
                 self.pause()
+                yield 1
                 
-            yield 1
-
+        except "STOP":
+            self.send(self.shutdownMsg,"signal")
 
 
 class VideoSurface(component):
