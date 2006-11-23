@@ -45,7 +45,7 @@ class TwoWaySplitter(Axon.Component.component):
                 self.send(data, "signal")
                 self.send(data, "signal2")
                 if isinstance(data, (producerFinished, shutdownMicroprocess)):
-                    done=True
+                    return
 
             self.pause()
             yield 1
