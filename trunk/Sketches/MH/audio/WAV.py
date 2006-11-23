@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from Axon.Component import component
-from Axon.Ipc import WaitComplete
+#from Axon.Ipc import WaitComplete
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 import struct
 
@@ -117,14 +117,14 @@ class WavParser(component):
     
     def main(self):
         # parse header
-        yield WaitComplete(self.readbytes(16))
+        for _ in self.readbytes(16): yield _
         if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
             self.send(self.shutdownMsg,"signal")
             return
         riff,filesize,wavfmt = struct.unpack("<4sl8s",self.bytesread)
         assert(riff=="RIFF" and wavfmt=="WAVEfmt ")
 
-        yield WaitComplete(self.readbytes(20))
+        for _ in self.readbytes(20): yield _
         if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
             self.send(self.shutdownMsg,"signal")
             return
@@ -161,7 +161,7 @@ class WavParser(component):
 
         # skip any excess header bytes
         if headerBytesLeft > 0:
-            yield WaitComplete(self.readbytes(headerBytesLeft))
+            for _ in self.readbytes(headerBytesLeft): yield _
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
@@ -170,7 +170,7 @@ class WavParser(component):
 
         # hunt for the DATA chunk
         while 1:
-            yield WaitComplete(self.readbytes(8))
+            for _ in self.readbytes(8): yield _
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
@@ -181,7 +181,7 @@ class WavParser(component):
             # skip over this chunk; if the size is odd, then take into account a postfixed padding byte
             if (size % 1):
                 size+=1
-            yield WaitComplete(self.readbytes(size))
+            for _ in self.readbytes(size): yield _
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
@@ -193,16 +193,14 @@ class WavParser(component):
             size=-1
         while size!=0:
             if size>0:
-                yield WaitComplete(self.readuptobytes(size))
+                for _ in self.readuptobytes(size): yield _
             else:
-                yield WaitComplete(self.readuptobytes(32768))
+                for _ in self.readuptobytes(32768): yield _
+            self.send(self.bytesread,"outbox")
+            size-=len(self.bytesread)
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
                 return
-            if self.bytesread == "":
-                print "!!!",self.checkShutdown()
-            self.send(self.bytesread,"outbox")
-            size-=len(self.bytesread)
 
 
         if self.shutdownMsg:
