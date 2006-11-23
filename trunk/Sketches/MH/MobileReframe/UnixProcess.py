@@ -25,7 +25,7 @@ class UnixProcess(component):
                  "_shutdownPipes" : "For shutting down any named pipes used for output"
                }
 
-    def __init__(self, command, buffersize=32768, outpipes={}, inpipes={}):
+    def __init__(self, command, buffersize=32768, outpipes={}, inpipes={}, boxsizes={}):
         for outpipe,outboxname in outpipes.items():
             self.Outboxes[outboxname] = "Output from named pipe: "+outpipe
         for inpipe,inboxname in inpipes.items():
@@ -36,6 +36,7 @@ class UnixProcess(component):
         self.buffersize = buffersize
         self.outpipes = outpipes
         self.inpipes = inpipes
+        self.boxsizes = boxsizes
 
     def main(self):
         # lets add any named output pipes requested
@@ -53,6 +54,7 @@ class UnixProcess(component):
             pipeshutdown=(PIPE,"signal")
             
             self.addChildren(PIPE)
+            PIPE.name = "[UnixProcess outpipe '"+outpipename+"'] "+PIPE.name
             
         # lets add any named input pipes requested
         firstinpipe = None
@@ -69,7 +71,11 @@ class UnixProcess(component):
             self.link(pipeshutdown,(PIPE,"control"))
             pipeshutdown=(PIPE,"signal")
             
+            if inboxname in self.boxsizes:
+                PIPE.inboxes["inbox"].setSize(self.boxsizes[inboxname])
+            
             self.addChildren(PIPE)
+            PIPE.name = "[UnixProcess inpipe '"+inpipename+"'] "+PIPE.name
             
         # set up the subprocess
         p = subprocess.Popen(self.command, 
@@ -90,6 +96,10 @@ class UnixProcess(component):
         STDOUT = _FromFileHandle(p.stdout, self.buffersize)
         STDERR = _FromFileHandle(p.stderr, self.buffersize)
         
+        STDIN.name = "[UnixProcess stdin] "+STDIN.name
+        STDOUT.name = "[UnixProcess stdout] "+STDOUT.name
+        STDERR.name = "[UnixProcess stderr] "+STDERR.name
+        
         # stdin from inbox; stdout and stderr to outboxes
         self.link((self,"inbox"),    (STDIN,"inbox"), passthrough=1),
         self.link((STDOUT,"outbox"), (self,"outbox"), passthrough=2),
@@ -101,6 +111,9 @@ class UnixProcess(component):
 
         # if ordered from outside, then close input
         self.link((self,"control"), (STDIN, "control"), passthrough=1),
+        
+        if "inbox" in self.boxsizes:
+            STDIN.inboxes['inbox'].setSize(self.boxsizes['inbox'])
         
         if firstinpipe is not None:
             self.link((STDIN,"signal"),(firstinpipe,"control"))
