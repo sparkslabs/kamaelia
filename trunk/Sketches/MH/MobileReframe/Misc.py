@@ -25,7 +25,8 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.AxonExceptions import noSpaceInBox
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Carousel import Carousel
+#from Kamaelia.Chassis.Carousel import Carousel
+from Chassis import Carousel
 
 class OneShot(component):
     def __init__(self, msg=None):
@@ -283,3 +284,62 @@ class Sync(component):
                 data = self.recv("inbox")
             self.send(data,"outbox")
 
+
+class Collate(component):
+    """Waits for all data, then sends them on as a single message, and terminates"""
+    def main(self):
+        collated = []
+        while 1:
+            while self.dataReady("inbox"):
+                collated.append(self.recv("inbox"))
+                
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                    self.send(collated,"outbox")
+                    self.send(msg,"signal")
+                    return
+                else:
+                    self.send(msg,"signal")
+            
+            self.pause()
+            yield 1
+            
+            
+class Max(component):
+    """Takes in a list of values and outputs the maximum in the list"""
+    def main(self):
+        while 1:
+            while self.dataReady("inbox"):
+                items = self.recv("inbox")
+                self.send( max(items), "outbox")
+                
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                    return
+            
+            self.pause()
+            yield 1
+            
+class TriggeredOneShot(component):
+    def __init__(self, msg=None):
+        super(TriggeredOneShot, self).__init__()
+        self.msg = msg
+    def main(self):
+        while not self.dataReady("inbox"):
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                    return
+            self.pause()
+            yield 1
+        
+        self.recv("inbox")
+        self.send(self.msg,"outbox")
+        yield 1
+        self.send(producerFinished(self),"signal")
+            
+            
