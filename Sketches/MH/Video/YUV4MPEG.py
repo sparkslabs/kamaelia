@@ -1,4 +1,148 @@
 #!/usr/bin/env python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
+
+"""\
+=============================================
+Parsing and Creation of YUV4MPEG format files
+=============================================
+
+YUV4MPEGToFrame parses YUV4MPEG format data sent to its "inbox" inbox and sends
+video fram data structures to its "outbox" outbox.
+
+FrameToYUV4MPEG does the reverse - taking frame data structures sent to its
+"inbox" inbox and outputting YUV4MPEG format data to its "outbox" outbox."
+
+The YUV4MPEG file format is supported by many tools, such as mjpegtools,
+mplayer/mencoder, and ffmpeg.
+
+
+
+Example Usage
+=============
+
+Playback a YUV4MPEG format file::
+
+    Pipeline( RateControlledFileReader("video.yuv4mpeg",readmode="bytes", ...),
+              YUV4MPEGToFrame(),
+              VideoOverlay()
+            ).run()
+            
+Decode a dirac encoded video file to a YUV4MPEG format file::
+
+    Pipeline( RateControlledFileReader("video.dirac",readmode="bytes", ...),
+              DiracDecoder(),
+              FrameToYUV4MPEG(),
+              SimpleFileWriter("output.yuv4mpeg")
+            ).run()
+
+
+
+YUV4MPEGToFrame Behaviour
+=========================
+
+Send binary data as strings containing YUV4MPEG format data to the "inbox" inbox
+and frame data structures will be sent out of the "outbox" outbox as soon as
+they are parsed.
+
+See below for a description of the uncompressed frame data structure format.
+
+This component supports sending data out of its outbox to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data,.
+
+If a producerFinished message is received on the "control" inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its "signal" outbox and terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox, this
+component will immediately send it on out of its "signal" outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.
+
+
+
+FrameToYUV4MPEG Behaviour
+=========================
+
+Send frame data structures to the "inbox" inbox of this component. YUV4MPEG
+format binary string data will be sent out of the "outbox" outbox.
+
+See below for a description of the uncompressed frame data structure format.
+
+The header data for the YUV4MPEG file is determined from the first frame.
+
+All frames sent to this component must therefore be in the same pixel format and
+size, otherwise the output data will not be valid YUV4MPEG.
+
+This component supports sending data out of its outbox to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data,.
+
+If a producerFinished message is received on the "control" inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its "signal" outbox and terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox, this
+component will immediately send it on out of its "signal" outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.
+
+
+
+=========================
+UNCOMPRESSED FRAME FORMAT
+=========================
+
+A frame is a dictionary data structure. It must, at minimum contain the first 3
+("yuv", "size" and "pixformat")::
+    
+    {
+      "yuv" : (y_data, u_data, v_data)  # a tuple of strings
+      "size" : (width, height)          # in pixels
+      "pixformat" :  pixelformat        # format of raw video data
+      "frame_rate" : fps                # frames per second
+      "interlaced" : 0 or not 0         # non-zero if the frame is two interlaced fields
+      "topfieldfirst" : 0 or not 0      # non-zero the first field comes first in the data
+      "pixel_aspect" : fraction         # aspect ratio of pixels
+      "sequence_meta" : metadata        # string containing extended metadata
+                                        # (no whitespace or control characters)
+    }
+
+All other fields are optional when providing frames to FrameToYUV4MPEG.
+
+YUV4MPEGToFrame only guarantees to fill inthe YUV data itself. All other fields
+will be filled in if the relevant header data is detected in the file.
+
+The pixel formats recognised (and therefore supported) are::
+    
+        "YUV420_planar"
+        "YUV411_planar"
+        "YUV422_planar"
+        "YUV444_planar"
+        "YUV4444_planar"
+        "Y_planar"
+
+"""
 
 from Axon.Component import component
 #from Axon.Ipc import WaitComplete
@@ -8,14 +152,25 @@ import re
 from Kamaelia.Support.Data.Rationals import rational
 
 
-
 class YUV4MPEGToFrame(component):
+    """\
+    YUV4MPEGToFrame() -> new YUV4MPEGToFrame component.
+    
+    Parses YUV4MPEG format binarydata, sent as strings to its "inbox" inbox
+    and outputs uncompressed video frame data structures to its "outbox" outbox.
+    """
     def __init__(self):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(YUV4MPEGToFrame,self).__init__()
         self.remainder = ""
         self.shutdownMsg = None
     
     def checkShutdown(self):
+        """\
+        Collects any new shutdown messages arriving at the "control" inbox, and
+        returns "NOW" if immediate shutdown is required, or "WHENEVER" if the
+        component can shutdown when it has finished processing pending data.
+        """
         while self.dataReady("control"):
             newMsg = self.recv("control")
             if isinstance(newMsg, shutdownMicroprocess):
@@ -30,6 +185,23 @@ class YUV4MPEGToFrame(component):
             return None
         
     def readline(self):
+        """\
+        Generator.
+        
+        Read up to the next newline char from the stream of chunks of binary
+        string data arriving at the "inbox" inbox.
+        
+        Any excess data is placed into self.remainder ready for the next call
+        to self.readline or self.readbytes.
+        
+        Data is only read from the inbox when required. It is not preemptively
+        fetched.
+        
+        The read data is placed into self.bytesread
+        
+        If a shutdown is detected, self.bytesread is set to "" and this
+        generator immediately returns.
+        """
         bytes = []
         newdata = self.remainder
         index = newdata.find("\x0a")
@@ -53,6 +225,23 @@ class YUV4MPEGToFrame(component):
     
     
     def readbytes(self,size):
+        """\
+        Generator.
+        
+        Read the specified number of bytes from the stream of chunks of binary
+        string data arriving at the "inbox" inbox.
+        
+        Any excess data is placed into self.remainder ready for the next call
+        to self.readline or self.readbytes.
+        
+        Data is only read from the inbox when required. It is not preemptively
+        fetched.
+        
+        The read data is placed into self.bytesread
+        
+        If a shutdown is detected, self.bytesread is set to "" and this
+        generator immediately returns.
+        """
         buf = [self.remainder]
         bufsize = len(self.remainder)
         while bufsize < size:
@@ -81,6 +270,15 @@ class YUV4MPEGToFrame(component):
         return
     
     def safesend(self, data, boxname):
+        """\
+        Generator.
+        
+        Sends data out of the named outbox. If the destination is full
+        (noSpaceInBox exception) then it waits until there is space and retries
+        until it succeeds.
+        
+        If a shutdownMicroprocess message is received, returns early.
+        """
         while 1:
             try:
                 self.send(data, boxname)
@@ -93,6 +291,8 @@ class YUV4MPEGToFrame(component):
             
     
     def main(self):
+        """Main loop"""
+        
         # parse header
         for _ in self.readline(): yield _
         if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
@@ -150,6 +350,7 @@ class YUV4MPEGToFrame(component):
 
 
 def parse_seq_tags(fields):
+    """Parses YUV4MPEG header tags"""
     params = {}
     tags = {}
     while fields:
@@ -227,6 +428,9 @@ def parse_seq_tags(fields):
 
 
 def parse_frame_tags(fields):
+    """\
+    Parses YUV4MPEG frame tags.
+    """
     params = {}
     tags = {}
     while fields:
@@ -275,8 +479,19 @@ def parse_frame_tags(fields):
 
 
 class FrameToYUV4MPEG(component):
+    """\
+    FrameToYUV4MPEG() -> new FrameToYUV4MPEG component.
+    
+    Parses uncompressed video frame data structures sent to its "inbox" inbox
+    and writes YUV4MPEG format binary data as strings to its "outbox" outbox.
+    """
         
     def checkShutdown(self):
+        """\
+        Collects any new shutdown messages arriving at the "control" inbox, and
+        ensures self.shutdownMsg contains the highest priority one encountered
+        so far.
+        """
         while self.dataReady("control"):
             msg = self.recv("control")
             if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg,shutdownMicroprocess):
@@ -285,12 +500,27 @@ class FrameToYUV4MPEG(component):
                 self.shutdownMsg = msg
     
     def canShutdown(self):
+        """\
+        Returns true if the component should terminate when it has finished
+        processing any pending data.
+        """
         return isinstance(self.shutdownMsg, (producerFinished, shutdownMicroprocess))
     
     def mustShutdown(self):
+        """Returns true if the component should terminate immediately."""
         return isinstance(self.shutdownMsg, shutdownMicroprocess)
         
     def sendoutbox(self,data):
+        """\
+        Generator.
+        
+        Sends data out of the "outbox" outbox. If the destination is full
+        (noSpaceInBox exception) then it waits until there is space. It keeps
+        retrying until it succeeds.
+        
+        If the component is ordered to immediately terminate then "STOP" is
+        raised as an exception.
+        """
         while 1:
             try:
                 self.send(data,"outbox")
@@ -308,6 +538,7 @@ class FrameToYUV4MPEG(component):
                     raise "STOP"
         
     def main(self):
+        """Main loop"""
         self.shutdownMsg = None
         
         try:
@@ -339,6 +570,12 @@ class FrameToYUV4MPEG(component):
             self.send(self.shutdownMsg,"signal")
 
     def write_header(self, frame):
+        """\
+        Generator.
+        
+        Sends the YUV4MPEG format header to the "outbox" outbox, based on
+        attributes of the supplied frame data structure.
+        """
         format = "YUV4MPEG2 W%d H%d" % tuple(frame['size'])
         
         if   frame['pixformat']=="YUV420_planar":
@@ -383,6 +620,11 @@ class FrameToYUV4MPEG(component):
     
     
     def write_frame(self, frame):
+        """\
+        Generator.
+        
+        Writes out YUV4MPEG format frame marker and data.
+        """
         for _ in self.sendoutbox("FRAME\x0a"):
             yield _
         for component in frame['yuv']:
