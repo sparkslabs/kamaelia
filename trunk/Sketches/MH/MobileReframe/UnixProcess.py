@@ -1,7 +1,73 @@
 #!/usr/bin/env python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
 
 # yet another attempt at a proper UnixProcess able to cope with buffer limiting
 # both on input to the subprocess and on output to the destination inbox
+
+"""\
+===================================================
+Unix sub processes with communication through pipes
+===================================================
+
+UnixProcess allows you to start a separate process and send data to it and
+receive data from it using the standard input/output/error pipes and optional
+additional named pipes.
+
+
+
+Example Usage
+=============
+
+Using the 'wc' word count GNU util to count the number of lines in some data::
+    
+    Pipeline( RateControlledFileReader(filename, ... ),
+              UnixProcess("wc -l"),
+              ConsoleEchoer(),
+            ).run()
+
+Feeding separate audio and video streams to ffmpeg::
+    
+    
+    
+    Graphline(
+        ENCODER = UnixProcess( "ffmpeg -i audpipe -i vidpipe -",
+                               inpipes = { "audpipe":"audio",
+                                           "vidpipe":"video",
+                                         },
+                               boxsizes = { "audio":2, "video":2 }
+                             ),
+        VIDSOURCE = MaxSpeedFileReader(...),
+        AUDSOURCE = MaxSpeFileReader(...),
+        SINK = SimpleFileWriter("encodedvideo"),
+        linkages = {
+            ("VIDSOURCE","outbox") : ("ENCODER","video"),
+            ("AUDSOURCE","outbox") : ("ENCODER","audio"),
+            ("ENCODER","outbox") : ("SINK", "inbox"),
+            }
+        ).run()
+        
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
@@ -18,14 +84,38 @@ import sys
 
 
 class UnixProcess(component):
+    """\
+    UnixProcess(command[,buffersize][,outpipes][,inpipes][,boxsizes]) -> new UnixProcess component.
+    
+    Starts the specified command as a separate process. Data can be sent to
+    stdin and received from stdout. Named pipes can also be created for extra
+    channels to get data to and from the process.
+    
+    Keyword arguments::
+        
+    - command     -- command line string that will invoke the subprocess
+    - buffersize  -- bytes size of buffers on the pipes to and from the process (default=32768)
+    - outpipes    -- dict mapping named-pipe-filenames to outbox names (default={})
+    - inpipes     -- dict mapping named-pipe-filenames to inbox names (default={})
+    - boxsizes    -- dict mapping inbox names to box sizes (default={})
+    """
+    
+    Inboxes = { "inbox"   : "Binary string data to go to STDIN of the process.",
+                "control" : "Shutdown signalling",
+              }
 
-    Outboxes = { "outbox" : "",
-                 "error"  : "",
-                 "signal" : "",
+    Outboxes = { "outbox" : "Binary string data from STDOUT of the process",
+                 "error"  : "Binary string data from STDERR of the process",
+                 "signal" : "Shutdown signalling",
                  "_shutdownPipes" : "For shutting down any named pipes used for output"
                }
 
     def __init__(self, command, buffersize=32768, outpipes={}, inpipes={}, boxsizes={}):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        
+        # create additional outboxes and inboxes for the additional named pipes
+        # requested. Doing this before the super() call.
+        # XXX HACKY - ought to be a better way
         for outpipe,outboxname in outpipes.items():
             self.Outboxes[outboxname] = "Output from named pipe: "+outpipe
         for inpipe,inboxname in inpipes.items():
@@ -39,44 +129,17 @@ class UnixProcess(component):
         self.boxsizes = boxsizes
 
     def main(self):
-        # lets add any named output pipes requested
-        pipeshutdown=(self,"_shutdownPipes")
-        for (outpipename,outboxname) in self.outpipes.items():
-            os.mkfifo(outpipename)
-            
-            f = open(outpipename, "rb+",self.buffersize)
-            makeNonBlocking(f)
-            
-            PIPE = _FromFileHandle(f, self.buffersize)
-            self.link((PIPE,"outbox"), (self,outboxname), passthrough=2)
-            # shutdown chain
-            self.link(pipeshutdown,(PIPE,"control"))
-            pipeshutdown=(PIPE,"signal")
-            
-            self.addChildren(PIPE)
-            PIPE.name = "[UnixProcess outpipe '"+outpipename+"'] "+PIPE.name
-            
-        # lets add any named input pipes requested
-        firstinpipe = None
-        for (inpipename,inboxname) in self.inpipes.items():
-            os.mkfifo(inpipename)
-            
-            f = open(inpipename, "wb+", self.buffersize)
-            makeNonBlocking(f)
-            
-            PIPE = _ToFileHandle(f)
-            if firstinpipe is None:
-                firstinpipe = PIPE
-            self.link((self,inboxname), (PIPE,"inbox"), passthrough=1)
-            self.link(pipeshutdown,(PIPE,"control"))
-            pipeshutdown=(PIPE,"signal")
-            
-            if inboxname in self.boxsizes:
-                PIPE.inboxes["inbox"].setSize(self.boxsizes[inboxname])
-            
-            self.addChildren(PIPE)
-            PIPE.name = "[UnixProcess inpipe '"+inpipename+"'] "+PIPE.name
-            
+        """main loop"""
+        
+        # SETUP
+        
+        # lets add any named pipes requested
+        # passing an outbox which will send a shutdown message, so the pipe
+        # handlers we create can daisy chain shutdowns together
+        pipeshutdownbox = (self,"_shutdownPipes")
+        pipeshutdownbox              = self.setupNamedOutPipes(pipeshutdownbox)
+        pipeshutdownbox, firstinpipe = self.setupNamedInPipes(pipeshutdownbox)
+        
         # set up the subprocess
         p = subprocess.Popen(self.command, 
                              shell=True, 
@@ -86,16 +149,17 @@ class UnixProcess(component):
                              stderr = subprocess.PIPE, 
                              close_fds=True)
 
+        # sort standard IO
         makeNonBlocking( p.stdin.fileno() )
         makeNonBlocking( p.stdout.fileno() )
         makeNonBlocking( p.stderr.fileno() )
         
         # set up child components to handle the IO
-        
         STDIN = _ToFileHandle(p.stdin)
         STDOUT = _FromFileHandle(p.stdout, self.buffersize)
         STDERR = _FromFileHandle(p.stderr, self.buffersize)
         
+        # make their names more useful for debuggin
         STDIN.name = "[UnixProcess stdin] "+STDIN.name
         STDOUT.name = "[UnixProcess stdout] "+STDOUT.name
         STDERR.name = "[UnixProcess stderr] "+STDERR.name
@@ -112,13 +176,18 @@ class UnixProcess(component):
         # if ordered from outside, then close input
         self.link((self,"control"), (STDIN, "control"), passthrough=1),
         
+        # set box size limits
         if "inbox" in self.boxsizes:
             STDIN.inboxes['inbox'].setSize(self.boxsizes['inbox'])
         
+        # wire up such that if standard input closes, then it should cause all
+        # other named pipes sending to the process to close down
         if firstinpipe is not None:
             self.link((STDIN,"signal"),(firstinpipe,"control"))
 
         self.addChildren(STDIN,STDOUT,STDERR)
+        
+        # GO!
             
         for child in self.childComponents():
             child.activate()
@@ -126,12 +195,15 @@ class UnixProcess(component):
         shutdownMsg = producerFinished(self)
         
         while not self.childrenDone():
+            
+            # if the process has exited, make sure we shutdown all the pipes
             if p.poll() is not None:
-                if self.outpipes:
-                    self.send(producerFinished(self), "_shutdownPipes")
+                self.send(producerFinished(self), "_shutdownPipes")
             else:
                 self.pause()
             yield 1
+            
+        # SHUTDOWN
 
         self.send(shutdownMsg,"signal")
         
@@ -141,7 +213,76 @@ class UnixProcess(component):
         
         for inpipename in self.inpipes.keys():
             os.remove(inpipename)
+    
+
+    def setupNamedOutPipes(self, pipeshutdown):
+        # lets add any named output pipes requested
+        for (outpipename,outboxname) in self.outpipes.items():
             
+            # create the pipe
+            try:
+                os.mkfifo(outpipename)
+            except:
+                pass
+            
+            # open the file handle for reading
+            f = open(outpipename, "rb+",self.buffersize)
+            
+            # create the handler component to receive from that pipe
+            PIPE = _FromFileHandle(f, self.buffersize)
+            self.link((PIPE,"outbox"), (self,outboxname), passthrough=2)
+            
+            # wire up and inbox for it, and daisy chain its control box from the
+            # previous pipe's signal box
+            self.link(pipeshutdown,(PIPE,"control"))
+            pipeshutdown=(PIPE,"signal")
+            
+            self.addChildren(PIPE)
+            
+            # give it a useful name (for debugging), and make it our child
+            PIPE.name = "[UnixProcess outpipe '"+outpipename+"'] "+PIPE.name
+            
+        return pipeshutdown
+    
+    
+    def setupNamedInPipes(self,pipeshutdown):
+        # lets add any named input pipes requested
+        firstinpipe = None
+        for (inpipename,inboxname) in self.inpipes.items():
+            
+            # create the pipe
+            try:
+                os.mkfifo(inpipename)
+            except:
+                pass
+            
+            # open the file handle for writing
+            f = open(inpipename, "wb+", self.buffersize)
+            
+            # create the handler component to send to that pipe
+            PIPE = _ToFileHandle(f)
+            
+            # note it down if this is the first
+            if firstinpipe is None:
+                firstinpipe = PIPE
+                
+            # wire up and inbox for it, and daisy chain its control box from the
+            # previous pipe's signal box
+            self.link((self,inboxname), (PIPE,"inbox"), passthrough=1)
+            self.link(pipeshutdown,(PIPE,"control"))
+            pipeshutdown=(PIPE,"signal")
+            
+            # limit its box size (if specified)
+            if inboxname in self.boxsizes:
+                PIPE.inboxes["inbox"].setSize(self.boxsizes[inboxname])
+            
+            self.addChildren(PIPE)
+            
+            # give it a useful name (for debugging)
+            PIPE.name = "[UnixProcess inpipe '"+inpipename+"'] "+PIPE.name
+            
+        return pipeshutdown, firstinpipe
+    
 
     def childrenDone(self):
         """Unplugs any children that have terminated, and returns true if there are no
@@ -154,23 +295,30 @@ class UnixProcess(component):
         return 0==len(self.childComponents())
 
 
+
+
 def makeNonBlocking(fd):
+    """Set a file handle to non blocking behaviour on read & write"""
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NDELAY)
 
 
+
+
 class _ToFileHandle(component):
-    Inboxes = { "inbox" : "",
-                "control" : "",
-                "ready" : "",
+    Inboxes = { "inbox" : "Binary string data to be written to the file handle",
+                "control" : "Shutdown signalling",
+                "ready" : "Notifications from the Selector",
               }
-    Outboxes = { "outbox" : "",
-                 "signal" : "",
-                 "selector" : "",
+    Outboxes = { "outbox" : "NOT USED",
+                 "signal" : "Shutdown signalling",
+                 "selector" : "For communication to the Selector",
                }
     def __init__(self, fileHandle):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(_ToFileHandle,self).__init__()
         self.fh = fileHandle
+        makeNonBlocking(self.fh)
         self.shutdownMsg = None
 
 
@@ -220,7 +368,6 @@ class _ToFileHandle(component):
                     byteswritten = os.write(self.fh.fileno(),dataPending)
                     if byteswritten >= 0:
                         dataPending = dataPending[byteswritten:]
-#                    print "sent to subprocess",len(dataPending),"bytes"
                     # dataPending=""
                 except OSError,IOError:
                     # data pending
@@ -259,6 +406,7 @@ class _FromFileHandle(component):
     def __init__(self, fileHandle,maxReadChunkSize=32768):
         super(_FromFileHandle,self).__init__()
         self.fh = fileHandle
+        makeNonBlocking(self.fh)
         self.maxReadChunkSize = maxReadChunkSize
         if self.maxReadChunkSize <= 0:
             self.maxReadChunkSize=32768
@@ -336,7 +484,6 @@ class _FromFileHandle(component):
             self.send(producerFinished(self), "signal")
         else:
             self.send(self.shutdownMsg,"signal")
-
 
 if __name__=="__main__":
     class ChargenComponent(component):
