@@ -36,7 +36,7 @@ additional named pipes.
 
 
 Example Usage
-=============
+-------------
 
 Using the 'wc' word count GNU util to count the number of lines in some data::
     
