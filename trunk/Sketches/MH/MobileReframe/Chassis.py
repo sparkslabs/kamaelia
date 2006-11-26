@@ -58,3 +58,17 @@ def Graphline(linkages = None, boxsizes = None,**components):
             components[componentname].inboxes[boxname].setSize(size)
 
     return g
+
+
+from Kamaelia.Chassis.Carousel import Carousel as _Carousel
+
+def Carousel(componentFactory, make1stRequest=False, boxsize=None):
+    if boxsize is not None:
+        def setBoxSize(component):
+            component.inboxes['inbox'].setSize(boxsize)
+            return component
+        newComponentFactory = lambda meta : setBoxSize(componentFactory(meta))
+    else:
+        newComponentFactory = componentFactory
+        
+    return _Carousel(newComponentFactory, make1stRequest)
