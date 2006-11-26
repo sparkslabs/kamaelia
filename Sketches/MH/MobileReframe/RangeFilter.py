@@ -31,7 +31,7 @@ match this are discarded.
 
 
 Example Usage
-=============
+-------------
 
 Reading all video frames from a YUV4MPEG format video file, but only passing on
 video frames 25-49 and 100-199 inclusive further along the pipeline::
@@ -46,7 +46,7 @@ video frames 25-49 and 100-199 inclusive further along the pipeline::
 
 
 Behaviour
-=========
+---------
 
 At initialisation, specify a list of value ranges that RangeFilter should allow.
 The list should be of the form::
