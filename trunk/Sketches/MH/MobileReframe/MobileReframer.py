@@ -3,16 +3,17 @@
 # NOTE: this code is unstable* if run without the wake-on-message-removal
 # bugfix to Axon.
 
-from Misc import TagWithSequenceNumber
-from Misc import PromptedTurnstile
-from Misc import OneShot
-from Misc import InboxControlledCarousel
-from Misc import StopSelector
+from TagWithSequenceNumber import TagWithSequenceNumber
+from OneShot import OneShot
+from OneShot import TriggeredOneShot
+from InboxControlledCarousel import InboxControlledCarousel
+from StopSelector import StopSelector
+from PromptedTurnstile import PromptedTurnstile
 #from Kamaelia.Chassis.Pipeline import Pipeline
 #from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Carousel import Carousel
+#from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.File.Reading import RateControlledFileReader
-from Kamaelia.File.Reading import PromptedFileReader
+#from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
 from SAX import SAXPromptedParser
@@ -29,7 +30,7 @@ sys.path.append("../pixformatConversion/")
 from VideoSurface import YUVtoRGB
 from VideoSurface import RGBtoYUV
 
-from Kamaelia.File.BetterReading import IntelligentFileReader
+#from Kamaelia.File.BetterReading import IntelligentFileReader
 from UnixProcess import UnixProcess
 
 sys.path.append("../audio/")
@@ -39,45 +40,53 @@ from ToWAV import WavWriter
 sys.path.append("../Sketcher/Whiteboard/")
 from TwoWaySplitter import TwoWaySplitter
 
-from Misc import FirstOnly
-from Misc import Chunk
-from Misc import Sync
+from FirstOnly import FirstOnly
+from Chunk import Chunk
+from Sync import Sync
 
 from Kamaelia.Util.Console import ConsoleEchoer
 
 from Chassis import Pipeline
 from Chassis import Graphline
+from Chassis import Carousel
 
 from MaxSpeedFileReader import MaxSpeedFileReader
 
 from Kamaelia.Util.Backplane import Backplane,PublishTo,SubscribeTo
 
+from Collate import Collate
+from Kamaelia.Util.Filter import Filter
+from RangeFilter import RangeFilter
+from Misc import Max
+from Kamaelia.Util.Detuple import SimpleDetupler
+
 sys.path.append("../Introspection/")
 from Profiling import Profiler
 
 # 1) decode video to individual frames
-def DecodeAndSeparateFrames(inFileName, tmpFilePath):
-    vidpipe = tmpFilePath+"vidPipe"
+def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
+    vidpipe = tmpFilePath+"vidPipe.yuv"
     try:
         os.remove(vidpipe)
     except:
         pass
     
-    audpipe = tmpFilePath+"audPipe"
+    audpipe = tmpFilePath+"audPipe.wav"
     try:
         os.remove(audpipe)
     except:
         pass
     
-    mplayer = "mplayer -mc 0 -frames 700 -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName.replace(" ","\ ")
+ #   mplayer = "mplayer -frames 200 -mc 0 -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName.replace(" ","\ ")
+    mplayer = "ffmpeg -vframes %d -i %s -f yuv4mpegpipe -y %s -f wav -y %s" % ((maxframe*1.1+2),inFileName.replace(" ","\ "),vidpipe,audpipe)
     
     return Graphline(
             MPLAYER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
             FRAMES = YUV4MPEGToFrame(),
             SPLIT = TwoWaySplitter(),
             FIRST = FirstOnly(),
-            VIDEO = SaveVideoFrames(tmpFilePath),
-            AUDIO = Carousel(lambda vformat: SaveAudioFrames(vformat['frame_rate'],tmpFilePath)),
+            VIDEO = SaveVideoFrames(tmpFilePath,edlfile),
+            AUDIO = Carousel(lambda vformat: SaveAudioFrames(vformat['frame_rate'],tmpFilePath,edlfile)),
 #            DEBUG = ConsoleEchoer(),
 #            MONITOR = Profiler(10.0, 0.1),
             linkages = {
@@ -94,21 +103,61 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath):
                 ("SPLIT","signal") : ("VIDEO","control"),
                 ("SPLIT","signal2") : ("FIRST","control"),
                 ("FIRST","signal") : ("AUDIO","control"),
+                ("AUDIO","signal") : ("","signal"),
                 
 #                ("MPLAYER","outbox") : ("DEBUG","inbox"),
 #                ("MPLAYER","error") : ("DEBUG","inbox"),
 #                ("MONITOR","outbox") : ("DEBUG","inbox"),
                 },
             boxsizes = {
-                ("FRAMES", "inbox") : 3,
+                ("FRAMES", "inbox") : 2,
                 ("SPLIT",  "inbox") : 1,
                 }
             )
         
-def SaveVideoFrames(tmpFilePath):
+def FilterForWantedFrameNumbers(edlfile):
+    class ExtractRanges(object):
+        def filter(self, edit):
+            try:
+                return (edit['start'],edit['end'])
+            except:
+                return None
+    
+    return Graphline(
+        RANGESRC = Pipeline(
+                       RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
+                       SAXPromptedParser(freeRun=True),
+                       EDLParser(),
+                       Filter(filter = ExtractRanges()),
+                       Collate(),
+                   ),
+        FILTER   = Carousel(lambda ranges : RangeFilter(ranges)),
+        linkages = {
+            ("RANGESRC","outbox") : ("FILTER","next"),
+            
+            ("","inbox") : ("FILTER","inbox"),
+            ("FILTER","outbox") : ("","outbox"),
+            
+            ("","control") : ("FILTER","control"),
+            ("FILTER","signal") :("","signal"),
+        },
+        )
+        
+def DetermineMaxFrameNumber(edlfile):
+    return Pipeline(
+        RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
+        SAXPromptedParser(freeRun=True),
+        EDLParser(),
+        SimpleDetupler("end"),
+        Collate(),
+        Max(),
+        )
+        
+def SaveVideoFrames(tmpFilePath,edlfile):
     return \
         Pipeline(
             TagWithSequenceNumber(),
+            FilterForWantedFrameNumbers(edlfile),
             InboxControlledCarousel( lambda (framenum, frame) : \
                 Pipeline( OneShot(frame),
                           FrameToYUV4MPEG(),
@@ -119,7 +168,7 @@ def SaveVideoFrames(tmpFilePath):
 
 
 
-def SaveAudioFrames(frame_rate,tmpFilePath):
+def SaveAudioFrames(frame_rate,tmpFilePath,edlfile):
     return \
         Graphline(
             WAV = WavParser(),
@@ -128,7 +177,8 @@ def SaveAudioFrames(frame_rate,tmpFilePath):
                                                       ameta['channels'],
                                                       ameta['sample_rate'],
                                                       ameta['sample_format'],
-                                                      tmpFilePath
+                                                      tmpFilePath,
+                                                      edlfile,
                                                     )
                 ),
             linkages = {
@@ -147,15 +197,16 @@ def SaveAudioFrames(frame_rate,tmpFilePath):
                                               
 
 
-def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath):
+def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath,edlfile):
     from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
     
-    quanta = format2BytesPerSample[sample_format] * channels
-    audioByteRate = quanta*sample_rate
+    quantasize = format2BytesPerSample[sample_format] * channels
+    audioByteRate = quantasize*sample_rate
     
     return Pipeline(
-        Chunk(datarate=audioByteRate, quanta=quanta, chunkrate=framerate),
+        Chunk(datarate=audioByteRate, quantasize=quantasize, chunkrate=framerate),
         TagWithSequenceNumber(),
+        FilterForWantedFrameNumbers(edlfile),
         InboxControlledCarousel( lambda (framenum, audiochunk) : \
             Pipeline( OneShot(audiochunk),
                       WavWriter(channels,sample_format,sample_rate),
@@ -343,7 +394,7 @@ def ReEncode(outFileName):
     encoder = ( "mencoder -audiofile "+audpipe+" "+vidpipe +
                 " -ovc lavc -oac mp3lame" +
                 " -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128" +
-#                " -mc 0 -noskip" +
+                " -mc 0 -noskip" +
                 " -cache 16384 -audiofile-cache 500 -really-quiet" +
                 " -o "+outFileName.replace(" ","\ ")
               )
@@ -416,8 +467,23 @@ from Seq import Seq
 from Axon.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
 
-Seq( "Separating frames...",
-     lambda : DecodeAndSeparateFrames(inFileName, tmpFilePath),
+Seq( "Decoding & separating frames...",
+     lambda : Graphline(
+          MAXF = DetermineMaxFrameNumber(edlfile),
+          DO = Carousel( lambda maxframe : 
+              DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe),
+          ),
+          STOP = TriggeredOneShot(""),
+#          PROF = Profiler(),
+          linkages = {
+              ("MAXF","outbox"):("DO","next"),
+              ("DO","outbox"):("","outbox"),
+              
+              ("DO","requestNext"):("STOP","inbox"),
+              ("STOP","signal"):("DO","control"),
+              ("DO","signal"):("","signal"),
+          },
+          ),
      "Processing edits...",
      lambda : 
         Graphline(
