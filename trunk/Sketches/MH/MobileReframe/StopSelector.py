@@ -64,6 +64,9 @@ producerFinished message will be sent on just before termination.
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
+from Kamaelia.Internet.Selector import Selector
+from Axon.Ipc import shutdown
+
 
 class StopSelector(component):
     """\
