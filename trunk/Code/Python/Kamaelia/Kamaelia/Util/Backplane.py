@@ -52,13 +52,32 @@ class Backplane(Axon.Component.component):
 
             raise e
     def main(self):
+        self.link((self,"control"),(self.splitter,"control"), passthrough=1)
+        self.link((self.splitter,"signal"),(self,"signal"), passthrough=2)
+        
         yield newComponent(self.splitter)
+        self.addChildren(self.splitter)
         self.splitter = None
         # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
         # FIXME: then this while loop here would be irrelevent, which would be cool.
-        while 1:
+        while not self.childrenDone():
             self.pause()
             yield 1
+            
+        cat = CAT.getcat()
+        cat.deRegisterService("Backplane_I_"+self.name)
+        cat.deRegisterService("Backplane_O_"+self.name)
+
+    def childrenDone(self):
+        """\
+        Unplugs any children that have terminated, and returns true if there are no
+        running child components left (ie. their microproceses have finished)
+        """
+        for child in self.childComponents():
+            if child._isStopped():
+                self.removeChild(child)   # deregisters linkages for us
+
+        return 0==len(self.childComponents())
 
 
 class PublishTo(Axon.Component.component):
