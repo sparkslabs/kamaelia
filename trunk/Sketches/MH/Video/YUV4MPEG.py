@@ -38,7 +38,7 @@ mplayer/mencoder, and ffmpeg.
 
 
 Example Usage
-=============
+-------------
 
 Playback a YUV4MPEG format file::
 
@@ -58,7 +58,7 @@ Decode a dirac encoded video file to a YUV4MPEG format file::
 
 
 YUV4MPEGToFrame Behaviour
-=========================
+-------------------------
 
 Send binary data as strings containing YUV4MPEG format data to the "inbox" inbox
 and frame data structures will be sent out of the "outbox" outbox as soon as
@@ -82,7 +82,7 @@ terminate. It will not complete processing, or sending on any pending data.
 
 
 FrameToYUV4MPEG Behaviour
-=========================
+-------------------------
 
 Send frame data structures to the "inbox" inbox of this component. YUV4MPEG
 format binary string data will be sent out of the "outbox" outbox.
