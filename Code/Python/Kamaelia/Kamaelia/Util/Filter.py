@@ -74,6 +74,8 @@ will result in None being returned.
 
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished,shutdownMicroprocess
+
 class NullFilter(object):
    """A filter class that filters nothing.  This is the null default for the Filter."""
    def filter(self, newtext):
@@ -120,7 +122,7 @@ class Filter(component):
    def closeDownComponent(self):
       """Flush any data remaining in the filter before shutting down."""
       while 1:
-        outmes = self.filt.filter("")
+        outmes = self.filter.filter("")
         if outmes is None:
             break
         self.send(outmes)
