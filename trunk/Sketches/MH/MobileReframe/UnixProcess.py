@@ -33,6 +33,9 @@ UnixProcess allows you to start a separate process and send data to it and
 receive data from it using the standard input/output/error pipes and optional
 additional named pipes.
 
+This component works on *nix platforms only. It is almost certainly not Windows
+compatible. Tested only under Linux.
+
 
 
 Example Usage
@@ -45,9 +48,8 @@ Using the 'wc' word count GNU util to count the number of lines in some data::
               ConsoleEchoer(),
             ).run()
 
-Feeding separate audio and video streams to ffmpeg::
-    
-    
+Feeding separate audio and video streams to ffmpeg, and taking the encoded
+output::
     
     Graphline(
         ENCODER = UnixProcess( "ffmpeg -i audpipe -i vidpipe -",
@@ -66,6 +68,113 @@ Feeding separate audio and video streams to ffmpeg::
             }
         ).run()
         
+
+
+Behaviour
+---------
+
+At initialisation, specify:
+    
+  * the command to invoke the sub process
+  * the size limit for internal buffers
+  * additional named input and output pipes
+  * box size limits for any input pipe's inbox, including "inbox" for STDIN
+
+Named input pipes must all use different inbox names. They must not use "inbox"
+or "control". Named output pipes may use any outbox name they wish. More than
+one named ouput pipe can use the same outbox, including "outbox".
+
+The pipe files needed for named pipes are created automatically at activation
+and are deleted at termination.
+
+Activate UnixProcess and the sub process will be started. Use the inboxes and
+outboxes of UnixProcess to communicate with the sub process. For example::
+    
+    UnixProcess( "ffmpeg -i /tmp/inpipe -f wav /tmp/outpipe",
+                 inpipes  = { "/tmp/inpipe" :"in"  },
+                 outpipes = { "/tmp/outpipe":"out" },
+               )
+            ________________________________________________
+           |                UnixProcess                     |
+           |             _______________________            |
+           |            |   "ffmpeg -i ..."     |           |
+    ---> "inbox" ---> STDIN                  STDOUT ---> "outbox" --->
+           |            |                    STDERR ---> "error"  --->
+           |            |                       |           |
+    ---> "in"    ---> "/tmp/inpipe"  "/tmp/outpipe" ---> "out"    --->
+           |            |_______________________|           |
+           |________________________________________________|
+
+Send binary string data to the "inbox" inbox and it will be sent to STDIN of
+the proces.
+
+Binary string data from STDOUT and STDERR is sent out of the "outbox" and
+"error" outboxes respectively.
+
+To send to a named pipe, send binary string data to the respective inbox you
+specified.
+
+Data written by the sub process to a named output pipe will be sent out of the
+respective outbox.
+
+The specified buffering size sets a maximum limit on the amount of data that
+can be buffered on the inputs and outputs to and from the sub process. It also
+determines the chunk size in which data coming from the sub process will emerge.
+Note therefore that data may languish in an output buffer indefinitely until
+the process terminates. Do not assume that data coming from a sub process will
+emerge the moment it is generated.
+
+UnixProcess will leave data in its inboxes until it is able to send it to the
+required pipe. If a destination box is full (noSpaceInBox exception) then
+UnixProces will wait and retry until it succeeds in sending the data.
+
+If the sub process closes its pipes (STDIN, STDOUT, STDERR) then UnixProcess
+will close its named input and output pipes too, and will send a
+producerFinished message out of its "signal" outbox then immediately terminate.
+
+If a producerFinished message is received on the "control" inbox, UnixProcess
+will finish passing any pending data waiting in inboxes into the sub process and
+will finish passing on any pending data waiting to come from the sub process
+onto destination outboxes. Once this is complete, UnixProcess will close all
+pipes and send a producerFinished message out of its "signal" outbox and
+immediately terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox,
+UnixProcess will close all pipes as soon as possible and send the message on
+out of its "signal" outbox and immediately terminate.
+
+
+
+How does it work?
+-----------------
+
+The UnixProcess component itself is primarily just the initiator of the sub
+process and a container for other child components that handle the actual I/O
+with pipes. It uses _ToFileHandle and _FromFileHandle components for each input
+and output pipe respectively.
+
+For each specified named pipe, the specified pipe file is created if required
+(using mkfifo).
+
+The shutdown signalling boxes of all child components are daisy chained.
+Shutdown messages sent to the "control" inbox of UnixProcess are routed to the
+"control" inbox of the component handling STDIN. The shutdown message is then
+propagated to named output pipes and then named input pipes.
+
+If STDOUT close it causes STDERR to close. If STDERR closes then the shutdown
+message is propagated to STDIN and then onto named pipes as described above.
+
+When the process exits, it is assumed the STDIN, STDOUT and STDERR will close by
+themselves in due course. However an explicit shutdown message is sent to the
+named pipes.
+
+
+
+XXX Fix Me
+----------
+
+If UnixProcess is terminated by receiving shutdown messages, it doesn't
+currently explicitly terminate the sub process.
 
 """
 
@@ -213,7 +322,7 @@ class UnixProcess(component):
         
         for inpipename in self.inpipes.keys():
             os.remove(inpipename)
-    
+
 
     def setupNamedOutPipes(self, pipeshutdown):
         # lets add any named output pipes requested
@@ -306,6 +415,18 @@ def makeNonBlocking(fd):
 
 
 class _ToFileHandle(component):
+    """\
+    _ToFileHandle(fileHandle) -> new _ToFileHandle component.
+    
+    Send data to this component and it will be written to the specified file
+    handle, in non-blocking mode. Uses the Selector service to wake. Leaves data
+    in the inbox when blocked.
+    
+    Keyword arguments::
+    
+    - fileHandle  -- file handle open for binary mode writing
+    """
+    
     Inboxes = { "inbox" : "Binary string data to be written to the file handle",
                 "control" : "Shutdown signalling",
                 "ready" : "Notifications from the Selector",
@@ -314,6 +435,7 @@ class _ToFileHandle(component):
                  "signal" : "Shutdown signalling",
                  "selector" : "For communication to the Selector",
                }
+               
     def __init__(self, fileHandle):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(_ToFileHandle,self).__init__()
@@ -395,15 +517,30 @@ class _ToFileHandle(component):
 
 
 class _FromFileHandle(component):
-    Inboxes = { "inbox" : "",
-                "control" : "",
-                "ready" : "",
+    """\
+    _FromFileHandle(fileHandle[,maxReadChunkSize]) -> new _FromFileHandle component.
+    
+    Reads binary string data from the specified file handle in non blocking mode.
+    Uses the Selector service it wake when blocked. Will wait if the destination
+    box is full.
+    
+    Keyword arguments::
+    
+    - fileHandle        -- File handle to read data from
+    - maxReadChunkSize  -- Maximum number of bytes read at a time (default=32768)
+    """
+    
+    Inboxes = { "inbox" : "NOT USED",
+                "control" : "Shutdown signalling",
+                "ready" : "Notifications from the Selector service",
               }
-    Outboxes = { "outbox" : "",
-                 "signal" : "",
-                 "selector" : "",
+    Outboxes = { "outbox" : "Binary string data read from the file handle",
+                 "signal" : "Shutdown signalling",
+                 "selector" : "Requests to the Selector service",
                }
+               
     def __init__(self, fileHandle,maxReadChunkSize=32768):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(_FromFileHandle,self).__init__()
         self.fh = fileHandle
         makeNonBlocking(self.fh)
