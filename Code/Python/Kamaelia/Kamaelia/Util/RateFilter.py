@@ -60,8 +60,9 @@ faster than that rate, though they may be emitted slower.
 Make sure you choose a sufficient buffer size to handle any expected
 jitter/temporary shortages of data.
 
-This component does not terminate. It ignores any messages received on its
-"control" inbox.
+If a producerFinished or shutdownMicroprocess message is received on the
+components' "control" inbox, it is sent on out of the "signal" outbox. The
+component will then immediately terminate.
 
 
 
@@ -249,6 +250,11 @@ class MessageRateLimit(component):
     def main(self):
         """Main loop."""
         while self.dataReady("inbox") <self.buffer:
+            while self.dataReady("control"):
+                msg = self.recv("control")
+                self.send(msg,"signal")
+                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                    return
             self.pause()
             yield 1
         c = 0
@@ -259,7 +265,12 @@ class MessageRateLimit(component):
         while 1:
             try:
                 while not( self.scheduler.time - last > interval):
-                   yield 1
+                    while self.dataReady("control"):
+                        msg = self.recv("control")
+                        self.send(msg,"signal")
+                        if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+                            return
+                    yield 1
                 c = c+1
                 last = self.scheduler.time
                 if last - start > 1:
