@@ -37,7 +37,7 @@ sys.path.append("../audio/")
 from WAV import WavParser
 from ToWAV import WavWriter
 
-sys.path.append("../Sketcher/Whiteboard/")
+#sys.path.append("../Sketcher/Whiteboard/")
 from TwoWaySplitter import TwoWaySplitter
 
 from FirstOnly import FirstOnly
@@ -390,14 +390,15 @@ def ReEncode(outFileName):
     outFileName=outFileName.replace(" ","\ ")
     
 #    encoder = "cat "+vidpipe+" > test2.yuv"
-#    encoder = "ffmpeg -f yuv4mpegpipe -i "+vidpipe+" -i "+audpipe+" -y "+outFileName
-    encoder = ( "mencoder -audiofile "+audpipe+" "+vidpipe +
-                " -ovc lavc -oac mp3lame" +
-                " -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128" +
-                " -mc 0 -noskip" +
-                " -cache 16384 -audiofile-cache 500 -really-quiet" +
-                " -o "+outFileName.replace(" ","\ ")
-              )
+    encoder = "ffmpeg -f yuv4mpegpipe -i "+vidpipe+" -f wav -i "+audpipe+" -y "+outFileName
+#    encoder = ( "mencoder -audiofile "+audpipe+" "+vidpipe +
+#                " -ovc lavc -oac mp3lame" +
+#                " -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128" +
+#                " -mc 0 -noskip" +
+#                " -cache 16384 -audiofile-cache 500" + # -really-quiet" +
+#                " -o "+outFileName
+#              )
+    print encoder
              
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
