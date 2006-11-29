@@ -141,7 +141,7 @@ class Multicast_transceiver(Axon.Component.component):
       if newSelector:
          self.addChildren(newSelector)
 
-      CSA = ConnectedSocketAdapter(sock, selectorService, remote=self.remote) #  self.createConnectedSocket(sock)
+      CSA = ConnectedSocketAdapter(sock, selectorService, sendTo=self.remote) #  self.createConnectedSocket(sock)
       self.addChildren(CSA)
       self.link((self, "_selectorSignal"),selectorService)
  

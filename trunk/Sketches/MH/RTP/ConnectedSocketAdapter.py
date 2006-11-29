@@ -54,6 +54,10 @@ component acting as a server - listening for incoming connections from clients.
 
 The socket should be set up and passed to the constructor to make the CSA.
 
+At initialisation, specify the 'sendTo' destination (address,port) if data needs
+to be sent to the socket using socket.sendto (specifying a destination) rather
+than the socket.send method.
+
 Incoming data, read by the CSA, is sent out of its "outbox" outbox as strings
 containing the received binary data. Send data by sending it, as strings, to
 the "inbox" outbox.
@@ -103,13 +107,25 @@ crashAndBurn = { "uncheckedSocketShutdown" : True,
 
 class ConnectedSocketAdapter(component):
    """\
-   ConnectedSocketAdapter(socket) -> new CSA component wrapping specified socket
+   ConnectedSocketAdapter(listensocket,
+                          selectorService
+                          [,crashOnBadDataToSend]
+                          [,noisyErrors]
+                          [,sendTo]) -> new ConnectedSocketAdaptor component.
 
    Component for communicating with a socket. Send to its "inbox" inbox to
    send data, and receive data from its "outbox" outbox.
 
    "ReadReady" inbox must be wired to something that will notify it when new
    data has arrived at the socket.
+
+   Keyword arguments::
+
+   - listensocket          -- the open socket to send/receive data to/from
+   - selectorService       -- (component,inboxname) for a Selector component
+   - crashOnBadDataToSend  -- True for TypeError to be raised if data to send is the wrong type, otherwise False (default=False)
+   - noisyErrors           -- True for errors to be printed to stdout, otherwise False (default=True)
+   - sendTo                -- None, or (host,port) to which socket will always be asked to send data.
    """
        
    Inboxes  = { "inbox"   : "Data for this CSA to send through the socket (Axon.Ipc.status message)",
@@ -123,14 +139,14 @@ class ConnectedSocketAdapter(component):
                 "_selectorSignal" : "For communication to the selector",
               }
 
-   def __init__(self, listensocket, selectorService, crashOnBadDataToSend=False, noisyErrors = True, remote = None):
+   def __init__(self, listensocket, selectorService, crashOnBadDataToSend=False, noisyErrors = True, sendTo = None):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConnectedSocketAdapter, self).__init__()
       self.socket = listensocket
       self.sendQueue = []
       self.crashOnBadDataToSend = crashOnBadDataToSend
       self.noisyErrors = noisyErrors
-      self.remote = remote
+      self.sendTo = sendTo
       self.selectorService = selectorService
    
    def handleControl(self):
@@ -165,8 +181,8 @@ class ConnectedSocketAdapter(component):
        retry scenarios gracefully"""
        bytes_sent = 0
        try:
-          if self.remote:
-              bytes_sent = sock.sendto(data, self.remote)
+          if self.sendTo:
+              bytes_sent = sock.sendto(data, self.sendTo)
           else:
               bytes_sent = sock.send(data)
           return bytes_sent
