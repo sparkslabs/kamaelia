@@ -24,34 +24,82 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=================
-Simple TCP Client
-=================
+============================
+Simple multicast transceiver
+============================
 
-This component is for making a TCP connection to a server. Send to its "inbox"
-inbox to send data to the server. Pick up data received from the server on its
-"outbox" outbox.
+A simple component for transmitting and receiving multicast packets.
+
+Remember that multicast is an unreliable connection - packets may be lost,
+duplicated or reordered.
 
 
 
 Example Usage
 -------------
 
-Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
+Send a file to, and receive data from multicast group address 1.2.3.4 on
+port 1000 with no guarantees of reliability, integrity or packet ordering::
 
     Pipeline( RateControlledFileReader("myfile", rate=100000),
-              Multicast_transceiver("1.2.3.4", 1000),
+              Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
+
+    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+              ConsoleEchoer()
+            ).activate()
+
+Or::
+    
+    Pipeline( RateControlledFileReader("myfile", rate=100000),
+              Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 1000),
+              ConsoleEchoer()
+            ).activate()
+
+The data emitted by Multicast_transciever (and displayed by ConsoleEchoer) is of
+the form (source_address, data).
+
+
+
+Behaviour
+---------
+
+Data sent to the component's "inbox" inbox is sent to the multicast group.
+
+Data received from the multicast group is emitted as a tuple:
+(source_addr, data) where data is a string of the received data.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to its "control" inbox. This message is forwarded onto the CSA.
+Multicast_transceiver will then wait for the CSA to terminate. It then sends its
+own shutdownMicroprocess message out of the "signal" outbox.
+
+Multicast groups do not 'shut down', so this component will not usually emit any
+signals on its "signal" outbox. However if, for some reason, there is a socket
+error, a shutdownMicroprocess message will be sent out the "signal" outbox and
+this component will then immediately terminate.
+
+
+
+Why a transciever component?
+----------------------------
+
+Listens for packets in the given multicast group. Any data received is
+sent to the receiver's outbox. The logic here is likely to be not quite
+ideal. When complete though, this will be preferable over the sender and
+receiver components since it models what multicast really is rather than
+what people tend to think it is.
+
 
 
 
 How does it work?
 -----------------
 
-Multicast_transceiver opens a socket connection to the specified server on the specified
-port. Data received over the connection appears at the component's "outbox"
-outbox as strings. Data can be sent as strings by sending it to the "inbox"
-inbox.
+Multicast_transceiver opens a socket connection to the specified server on the
+specified port. Data received over the connection appears at the component's
+"outbox" outbox as strings. Data can be sent as strings by sending it to the
+"inbox" inbox.
 
 An optional delay (between component activation and attempting to connect) can
 be specified. The default is no delay.
@@ -62,9 +110,10 @@ selectorComponent is obtained by calling
 selectorComponent.getSelectorService(...) to look it up with the local
 Coordinating Assistant Tracker (CAT).
 
-Multicast_transceiver wires itself to the "CreatorFeedback" outbox of the CSA. It also wires
-its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox,
-and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.
+Multicast_transceiver wires itself to the "CreatorFeedback" outbox of the CSA.
+It also wires its "inbox" inbox to pass data straight through to the CSA's
+"inbox" inbox, and its "outbox" outbox to pass through data from the CSA's
+"outbox" outbox.
 
 Socket errors (after the connection has been successfully established) may be
 sent to the "signal" outbox.
@@ -74,8 +123,8 @@ This component will terminate if the CSA sends a socketShutdown message to its
 
 This component will terminate if a shutdownMicroprocess or producerFinished
 message is sent to its "control" inbox. This message is forwarded onto the CSA.
-Multicast_transceiver will then wait for the CSA to terminate. It then sends its own
-shutdownMicroprocess message out of the "signal" outbox.
+Multicast_transceiver will then wait for the CSA to terminate. It then sends its
+own shutdownMicroprocess message out of the "signal" outbox.
 """
 
 import socket
@@ -99,6 +148,14 @@ from Selector import Selector
 
 class Multicast_transceiver(Axon.Component.component):
    """\
+   Multicast_transceiver(local_addr,local_port,remote_addr,remote_port) -> new Multicast_transceiver component.
+
+   Keyword arguments::
+
+   - local_addr   -- address of the local interface to send to/receive from, usually "0.0.0.0"
+   - local_port   -- port number to receive on
+   - remote_addr  -- address of multicast group
+   - remote_port  -- port number to send to
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
