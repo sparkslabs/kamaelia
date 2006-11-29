@@ -1,4 +1,81 @@
 #!/usr/bin/env python
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+=================
+RTP Packet Parser
+=================
+
+Parses an RTP packet in binary string format and outputs a (seqnum, packet)
+tuple containing a sequence number and a dict structure containing the payload
+and metadata of the RTP packet.
+
+See RFC 3550 and 3551 for information on the RTP speecification and the meaning
+and formats of fields in RTP packets.
+
+
+
+Example Usage
+-------------
+
+Save the payload from a stream of RTP packets being received from multicast
+address 224.168.2.9 on port 1600 down to a file::
+
+    Pipeline( Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
+              SimpleDetupler(1),              # discard the source address
+              RTPDeframer(),
+              RecoverOrder(),                 # uses sequence numbers
+              SimpleDetupler(1),              # discard the sequence number
+              SimpleDetupler("payload"),
+              SimpleFileWriter("received_stream"),
+            )
+
+
+
+Behaviour
+---------
+
+Send to RTPDeframer's "inbox" inbox a binary string of an RTP packet, and the
+packet will be parsed, resulting in a (seqnum, packet_contents) tuple being sent
+to the "outbox" outbox. It will have this structure:
+
+    ( sequence_number,
+      {
+        'payloadtype'  : integer payload type
+        'payload'      : binary string containing the payload
+        'timestamp'    : integer timestamp (32 bit, unsigned)
+        'ssrc'         : sync source identifier (32 bit, unsigned)
+        'csrcs'        : list of contributing source identifiers, [] if empty
+        'extension'    : binary string of any extension data, "" if none
+        'marker'       : True if marker bit was set, otherwise False
+      }
+    )
+
+See RFC 3550 for an explanation of the precise purposes of these fields.
+    
+If a producerFinished or shutdownMicroprocess message is received on the
+"control" inbox. It is immediately sent on out of the "signal" outbox and the
+component then immediately terminates.
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
@@ -7,19 +84,11 @@ import struct
 
 class RTPDeframer(component):
     """\
-    Deconstructs an RTP packet
-
-    Passes out (seqnum, dict) ... dict is a dictionary containing these fields:
-
-        payloadtype  - integer payload type
-        payload      - raw payload string
-        timestamp    - integer timestamp
-        ssrc         - integer sync source id
-        extension    - None or (2byte, extension data)
-        csrcs        - list of contrib. sync. source ids (default=[])
-        marker       - marker bit flag (default=False)
-        
-    Does sequence number and randomisation of timestamp itself
+    RTPDeframer() -> new RTPDeframer component.
+    
+    Deconstructs an RTP packet, outputting (seqnum, dict) tuple where seqnum
+    is for recovering the order of packets, and dict contains the fields from
+    the RTP packet.
     """
 
     def shutdown(self):
