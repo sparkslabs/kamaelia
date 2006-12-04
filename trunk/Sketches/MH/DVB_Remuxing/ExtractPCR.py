@@ -11,63 +11,8 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import time
 
-# we're going to assume we're receiving aligned, well formed, TS packets
 
-DVB_PACKET_SIZE = 188
-DVB_RESYNC = "\x47"
-
-class AlignTSPackets(component):
-    
-#    def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
-#    def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
-
-    def shutdown(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg,"signal")
-            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                self.shuttingdown=True
-        return self.shuttingdown
-    
-    def main(self):
-        buffer = ""
-        buffers = []
-        self.shuttingdown=False
-        while (not self.shutdown()) or self.dataReady("inbox"):
-            yield 1
-            if not self.dataReady("inbox"):
-               self.pause()
-               yield 1
-               continue
-            else:
-                while self.dataReady("inbox"):
-                    buffers.append(self.recv("inbox"))
-            while len(buffers)>0:
-                if len(buffer) == 0:
-                    buffer = buffers.pop(0)
-                else:
-                    buffer += buffers.pop(0)
-    
-                while len(buffer) >= DVB_PACKET_SIZE:
-                      i = buffer.find(DVB_RESYNC)
-                      if i == -1: # if not found
-                          "we have a dud"
-                          buffer = ""
-                          continue
-                      if i>0:
-                          print "X"
-                          # if found remove all bytes preceeding that point in the buffers
-                          # And try again
-                          buffer = buffer[i:]
-                          continue
-                      # packet is the first 188 bytes in the buffer now
-                      packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
-    
-#                      if self.errorIndicatorSet(packet): continue
-#                      if self.scrambledPacket(packet):   continue
-    
-                      self.send(packet, "outbox")
-
+from AlignTSPackets import AlignTSPackets
 
 class ExtractPCR(component):
     Inboxes = { "inbox" : "Individual tranport stream packets",
