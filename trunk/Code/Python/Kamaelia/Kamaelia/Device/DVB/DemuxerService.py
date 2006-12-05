@@ -76,7 +76,6 @@ from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
 
-import dvb3.frontend
 import struct
 
 DVB_RESYNC      = chr(0x47)
