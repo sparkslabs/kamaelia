@@ -42,7 +42,7 @@ CRC algorithm used to verify the integrity of data in DVB transport streams.
 # def dvbcrc(data):
 #     return not crc32(data)
 
-def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffffL):
+def __MakeCRC32(polynomial = 0x4c11db7L,initial=0xffffffffL):
     """\
     MakeCRC32([polynomial][,inital]) -> (string -> 32bit CRC of binary string data)
     
@@ -55,7 +55,7 @@ def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffffL):
     # new_byte_of_data xor most-sig-byte of current CRC
     xorvals = []
     for x in range(0,256):   # x is the result of top byte of crc xored with new data byte
-        crc = x<<24
+        crc = long(x)<<24
         for bit in range(7,-1,-1):  # MSB to LSB
             z32 = crc>>31    # top bit
             crc = crc << 1
@@ -71,12 +71,12 @@ def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffffL):
         for byte in data:
             byte = ord(byte)
             xv = xorvals[byte ^ (crc>>24)]
-            crc = xv ^ ((crc & 0xffffff)<<8)
+            crc = xv ^ ((crc & 0xffffffL)<<8)
         return crc
 
     return fastcrc32
 
-__dvbcrc = __MakeCRC32(polynomial = 0x04c11db7)
+__dvbcrc = __MakeCRC32(polynomial = 0x04c11db7L)
 
 dvbcrc = lambda data : not __dvbcrc(data)
 
