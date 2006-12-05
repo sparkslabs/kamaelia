@@ -54,7 +54,8 @@ class PrettifyProgramAssociationTable(component):
                         output += "    Table ID           : %d\n" % pat['table_id']
                         output += "    Table is valid for : " + \
                                        ["NEXT (not valid yet)","CURRENT (valid)"][pat['current']] + "\n"
-                        output += "    NIT is in PID      : %d\n" % pat['NIT_PID']
+                        if "NIT_PID" in pat:
+                            output += "    NIT is in PID      : %d\n" % pat['NIT_PID']
                         for ts in pat['transport_streams']:
                             output += "    For transport stream id : %d\n" % ts
                             tsmap = pat['transport_streams'][ts]
