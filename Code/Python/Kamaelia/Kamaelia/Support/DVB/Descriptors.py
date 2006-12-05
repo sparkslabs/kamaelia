@@ -195,7 +195,15 @@ Specifiers defining various types of private data payload:
 """
 
 # parsing routines for DVB PSI table descriptors
-import dvb3.frontend as dvb3f
+try:
+    import dvb3.frontend as dvb3f
+except ImportError:
+    import sys
+    sys.stderr.write("WARNING: dvb3 bindings not found, substituting dvb3 constants with descriptive strings/n")
+    class Descriptive(object):
+        def __getattribute__(self,name):
+            return "dvb3.frontend."+name
+    dvb3f = Descriptive()
 
 from DateTime import unBCD, parseMJD
 
