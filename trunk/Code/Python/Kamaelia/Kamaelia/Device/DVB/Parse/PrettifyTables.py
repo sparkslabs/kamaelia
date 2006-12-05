@@ -159,7 +159,7 @@ class PrettifyProgramMapTable(component):
                         output += "----\n"
                     else:
                         output="Unrecognised data received (not a parsed PMT)\n"
-                except:
+                except "DUMMY":
                         output="Unrecognised data received (not a parsed PMT)/error parsing table)\n"
                         
                 self.send(output,"outbox")
@@ -361,5 +361,5 @@ def formatDescriptors(title,lineprefix,descriptors):
 
 def pformat(lineprefix,key,value):
     leadin = lineprefix + " "*len(key)
-    return lineprefix + key + pprint.pformat(value,4).replace("\n","\n" + leadin)
+    return lineprefix + key + "    " + pprint.pformat(value).replace("\n","\n" + leadin)
 
