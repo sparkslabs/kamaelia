@@ -1,0 +1,43 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Kamaelia Macro</span></p>
+<p align="right"><span style="font-size:18pt">Tools for timeshifting</span></p>
+<p>For more context on timeshifting in Kamaelia, <a href="http://kamaelia.sourceforge.net/ToolsForTimeshifting.html">please see this page</a>.</p>
+<p><span style="font-size:14pt;font-weight:600">What is it?</span></p>
+<p>It records and transcodes what is broadcast over DTT for future viewing. It is essentially a form of timeshifting. It is currently at a prototype stage, and as such the contents of this page is subject to change. Programs are captured, transcoded and then made avallable for viewing in a variety of formats. The two primary formats are suitable for handheld TV's and <span style="font-style:italic">relatively </span>small living room TVs. </p>
+<p>The resulting data is forwarded to a simple front end for demonstration purposes. The current front end can be found here, and has not been active that long - please be gentle!</p>
+<ul type="disc"><li><a href="http://bbc.kamaelia.org/cgi-bin/blog/blog.cgi">http://bbc.kamaelia.org/cgi-bin/blog/blog.cgi</a></li></ul>
+<p><span style="font-size:14pt;font-weight:600">High Level Architecture</span></p>
+<p>The high level architecture is as follows:</p>
+<p>[[IMG][SRC=/images/macro_1.1.png]]</p>
+<p>This might seem too high level. However, due to Kamaelia's nature, this has a direct mapping to the underlying code.</p>
+<ul type="disc"><div>[[pre]Graphline(<br />    SOURCE=DVB_Multiplex(754, [640, 641, 620, 621, 622,<br />                               610, 611, 612, 600, 601,<br />                               18]),<br />    DEMUX=DVB_Demuxer({<br />        &quot;640&quot;: [&quot;NEWS24&quot;], &quot;641&quot;: [&quot;NEWS24&quot;],<br />        &quot;600&quot;: [&quot;BBCONE&quot;], &quot;601&quot;: [&quot;BBCONE&quot;],<br />        &quot;610&quot;: [&quot;BBCTWO&quot;], &quot;611&quot;: [&quot;BBCTWO&quot;],<br />        &quot;620&quot;: [&quot;CBBC&quot;],   &quot;621&quot;: [&quot;CBBC&quot;],<br />        &quot;18&quot;, [ &quot;NEWS24&quot;, &quot;BBCONE&quot;, &quot;BBCTWO&quot;, &quot;CBBC&quot; ]<br />    }),<br />    NEWS24=ChannelTranscoder(base=&quot;News24&quot;),<br />    BBCONE=ChannelTranscoder(base=&quot;bbcone&quot;),<br />    BBCTWO=ChannelTranscoder(base=&quot;bbctwo&quot;),<br />    CBBC=ChannelTranscoder(base=&quot;cbbc&quot;),<br />    linkages={<br />       (&quot;SOURCE&quot;, &quot;outbox&quot;):(&quot;DEMUX&quot;,&quot;inbox&quot;),<br />       (&quot;DEMUX&quot;, &quot;NEWS24&quot;): (&quot;NEWS24&quot;, &quot;inbox&quot;),<br />       (&quot;DEMUX&quot;, &quot;BBCONE&quot;): (&quot;BBCONE&quot;, &quot;inbox&quot;),<br />       (&quot;DEMUX&quot;, &quot;BBCTWO&quot;): (&quot;BBCTWO&quot;, &quot;inbox&quot;),<br />       (&quot;DEMUX&quot;, &quot;CBBC&quot;): (&quot;CBBC&quot;, &quot;inbox&quot;),<br />    }<br />).run()<br />]</div></ul>
+<p><span style="font-size:14pt;font-weight:600">Channel Transcoding</span></p>
+<p>A channel transcoder takes the data it recieves and splits it into two.</p>
+<ul type="disc"><li>Scheduling information - EIT data - is extracted, and sent to an EIT Handler. This looks for events - specifically programme changes. When there's a programme change it spits out the information regarding the programme. This &quot;programme change&quot; event is also used to break up the transcoding, as we shall see shortly. The EIT information is also stored as a MIME like object with a name that increments.</li>
+<li>The audio/video data relating to the channel. To handle this a Unix Shell out component - a <span style="font-weight:600">Pipethrough</span> component is created. This performs the actual transcoding to a given filename. The filename increments and matches the EIT data. The transcoding is specifically done by performing a shell out to  [[tt]<span style="font-family:Courier 10 Pitch">mencoder]</span>.</li></ul>
+<p>Diagrammatically, this looks like this: (only one actual transcoder shown for simplicity)</p>
+<p>[[IMG][SRC=/images/macro_1.2.png]]</p>
+<p>The interesting point is what happens when there's a programme event change. In this circumstance, new transcoders are created, and the audio visual data is sent to them. The original transcoders are sent shutdown messages telling them to shutdown after completing their transcoding. This then triggers the copying of the transcoded data &amp; captured metadata to a location where the (currently simple) frontend can access it.</p>
+<p>Diagrammatically, the replumbing looks like this:</p>
+<p>[[IMG][SRC=/images/macro_1.3.png]]</p>
+<p>Specifically, files are created of the form:</p>
+<ul type="disc"><li>channelname.programmeid.bitrate.avi # 200 Kbit/s</li>
+<li>channelname.programmeid.bitrate.avi # 512 Kbit/s</li>
+<li>channelname.programmeid.bitrate.DONE # 200 Kbit/s</li>
+<li>channelname.programmeid.bitrate.DONE # 512 Kbit/s</li>
+<li>channelname.programmeid.META</li></ul>
+<p><span style="font-weight:600">Primitive Front End</span></p>
+<p>The existing front end is a simple prototype that shows how a standard single channel can be made to look like a RSS feed like any other &quot;web&quot; channel. This can be found here:</p>
+<ul type="disc"><li><a href="http://bbc.kamaelia.org/cgi-bin/blog/blog.cgi">http://bbc.kamaelia.org/cgi-bin/blog/blog.cgi</a></li></ul>
+<p>A snapshot of the current view:</p>
+<ul type="disc"><div>[[IMG][SRC=/images/macro_1.4.png]]</div></ul>
+<p><span style="font-weight:600">This is not the end...</span></p>
+<p>The code &amp; system described here is not the final version. The upcoming release of Kamaelia &amp; Axon (0.4.0 and 1.5.0 respectively) will include the simple version of Macro as an example, in examples 15 specifically. Until then in order to use this you'll want to grab a bundle, follow the instructions for getting started, and then get a recent CVS snapshot. Please contact us for help in getting started. Once again though, bear in mind that these tools have been created for legal timeshifting purposes only.</p>
+<p>If you're interested in collaborating on building this and taking this technology forward (or perhaps even building into a domestic PVR, or a personal/homebrew PVR) we'd be very interested in hearing from you!</p>
+<p><span style="font-weight:600">End Notes</span></p>
+<p>Kamaelia tools for timeshifting are relatively nascent, but as can be seen can be used for a variety of interesting uses already. As it should be clear, extending these systems to do more would be relatively simple. For example rebroadcasting the transcoded data using multicast is a relatively simple extension. </p>
+<p dir="ltr">Regarding Kamaelia, this work has been useful so far for driving a large amount of optimisation work for the core system - Axon. This has had a number of knockon effects, such as making collaborative whiteboarding a realistically useful tool.</p>
+<p dir="ltr">[[hr] ]</p>
+<p dir="ltr">Michael, May 2006</p>
+<p dir="ltr"></p>
+</body></html>

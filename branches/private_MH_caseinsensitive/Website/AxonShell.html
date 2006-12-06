@@ -1,0 +1,73 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:URW Gothic L">
+<p><span style="font-size:28pt;font-weight:600">Axon Shell</span></p>
+<p align="right"><span style="font-size:18pt">Interactive Kamaelia</span></p>
+<p>In <span style="font-style:italic">Tools</span> in the Kamaelia distribution, we have the Axon Shell. This is an integration of IPython with Axon, with Axon running in a secondary shell, thus you can build Axon systems in the same way you build unix systems - interactively from the command line.</p>
+<p><span style="font-size:16pt;font-weight:600">Starting the Axon Shell</span></p>
+<p>[[boxright] The Axon shell can be found in the <span style="font-family:Courier">Tools</span> directory of the Kamaelia distribution, named <span style="font-family:Courier">axonshell.py</span>. In the following run through, we'll use <span style="font-family:Courier;font-style:italic;font-weight:600">bold italic</span> to indicate something the user types.]</p>
+<p>First of all, start up the Axon Shell:</p>
+<ul type="disc"><div><span style="font-family:Courier"># </span><span style="font-family:Courier;font-style:italic;font-weight:600">./axonshell.py<br /></span><span style="font-family:Courier">Starting Axon Interactive Shell<br />***Called from top level. Hit Ctrl-D to exit interpreter and continue program.<br />In [1]:</span></div></ul>
+<p>You're then greeted by the IPython default command line prompt. (This is the line labeled '<span style="font-family:Courier">In [1]</span>:' )</p>
+<p>If you want, you can confirm that Axon is indeed already loaded and available:</p>
+<p><span style="font-family:Courier">In [1]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">Axon</span><span style="font-family:Courier;font-style:italic;font-weight:400"><br /></span><span style="font-family:Courier">Out[1]: &lt;module 'Axon' from '/usr/lib/python2.4/site-packages/Axon/__init__.pyc'&gt;</span></p>
+<p>The line starting &quot;<span style="font-family:Courier">Out [1]</span>' is output from IPython, in this case displaying where the Axon module was loaded from.</p>
+<p><span style="font-size:16pt;font-weight:600">Loading and Running a Component</span></p>
+<p>The next thing we might want to know is how to load and run a component. This is pretty much as you would do with a component in a running system, the difference is as soon as we activate the component it starts immediately - this is due to the scheduler running in a separate thread:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [2]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">import Kamaelia.UI.Pygame.Ticker</span><span style="font-family:Courier"><br />In [3]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myticker = Kamaelia.UI.Pygame.Ticker.Ticker()</span><span style="font-family:Courier"><br />In [4]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myticker</span><span style="font-family:Courier"><br />Out[4]: &lt;Kamaelia.UI.Pygame.Ticker.Ticker object at 0x40991aec&gt;</span></div></ul>
+<p>This shows the creation of a component, which we can now activate:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [5]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myticker.activate()<br /></span><span style="font-family:Courier">Out[5]: &lt;Kamaelia.UI.Pygame.Ticker.Ticker object at 0x40991aec&gt;</span></div></ul>
+<p>At this point in time a pygame window appears with a blank (white on white) ticker. We can then send a message to the tickers main inbox as follows:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [6]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myticker._deliver(&quot;This is some text&quot;)</span></div></ul>
+<p>This text then appears - but it does so instantaneously - too quick to notice...</p>
+<p><span style="font-size:16pt;font-weight:600">Sending a Component Data</span></p>
+<p dir="ltr">OK, so that's relatively interesting, but let's make this more visible. We'll grab a chunk of text, split it into words, and deliver those every tenth of a second. One source of text is documentation, so let's check the size of the docstring for the pydoc module:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [7]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">import pydoc</span><span style="font-family:Courier"><br />In [8]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">print len(pydoc.__doc__)</span><span style="font-family:Courier"><br />1305</span></div></ul>
+<p>This looks like a reasonable size, but how many chunks would this split into, if we do a <span style="font-style:italic">rough</span> word split?</p>
+<ul type="disc"><div><span style="font-family:Courier">In [9]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">print len(pydoc.__doc__.split())</span><span style="font-family:Courier"><br />217</span></div></ul>
+<p>217 words seems reasonable - if we have this displayed at a rate of 10 words per second this will take about 20 seconds - nice for testing, not too long, not too short. OK, so lets just deliver these every 0.1 seconds apart:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [10]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">import time</span><span style="font-family:Courier"><br />In [11]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">for i in pydoc.__doc__.split():</span></div>
+<ul type="disc"><ul type="disc"><ul type="disc"><div><span style="font-family:Courier;font-style:italic;font-weight:600">myticker._deliver(i)</span><span style="font-family:Courier"><br /></span><span style="font-family:Courier;font-style:italic;font-weight:600">time.sleep(0.1)</span><span style="font-family:Courier"><br /></span></div></ul></ul></ul></ul>
+<p>And key presto - we have a working ticker controlled from the command line :)</p>
+<p><span style="font-size:16pt;font-weight:600">Building and using Pipelines</span></p>
+<p>OK, so that's nice, what else can we do?</p>
+<p><span style="font-style:italic;font-weight:600">Making the pipeline</span></p>
+<p>Let's try the graph viewer. For this we need to build a simple pipeline, because it's a lot simpler to send text strings to the graph viewer rather than data structures (though we could send data structures). First of all we need to import the components we're going to use:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">In [12]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent</span><span style="font-family:Courier"><br />In [13]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists<br /></span><span style="font-family:Courier">In [14]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">from Kamaelia.Util.PipelineComponent import pipeline</span></div></ul>
+<p>Then we can build the pipeline, activate it and take a reference to it. This is however relatively simple:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [15]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis = pipeline(lines_to_tokenlists(),</span></div>
+<ul type="disc"><ul type="disc"><ul type="disc"><ul type="disc"><ul type="disc"><div><span style="font-family:Courier;font-style:italic;font-weight:600">TopologyViewerComponent()</span><span style="font-family:Courier"><br /></span><span style="font-family:Courier;font-style:italic;font-weight:600">).activate()</span></div></ul></ul></ul></ul></ul></ul>
+<p>And just as before, the topology viewer appears instantaneously.</p>
+<p></p>
+<p><span style="font-style:italic;font-weight:600">Using the pipeline</span></p>
+<p>This topology viewer understands messages sent to it of the following two forms:</p>
+<ul type="disc"><li>ADD NODE <span style="font-style:italic">id label</span> auto -</li>
+<li>ADD LINK <span style="font-style:italic">id id</span></li>
+<li>DEL ALL</li></ul>
+<p>So let's try it! Let's draw a simple producer consumer system. First of all, let's create a producer node ...</p>
+<ul type="disc"><div><span style="font-family:Courier">In [16]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE Producer Producer auto -&quot;)</span></div></ul>
+<p>... and it appears. So let's create a consumer node ...</p>
+<ul type="disc"><div><span style="font-family:Courier">In [17]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE Consumer Consumer auto -&quot;)</span></div></ul>
+<p>... and that appears. Creating a link between then is then also simple:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [18]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK Producer Consumer&quot;)</span></div></ul>
+<p>And the link appears. The topology viewer is then still interactive, so you can move the nodes around etc.</p>
+<p><span style="font-style:italic;font-weight:600">Using the pipeline to visualise something more complex</span></p>
+<p>OK, that's fairly interesting - let's try visualising the systems described in <a href="SimpleReliableMulticast.html">Simple Reliable Multicast</a>.So we start off by wiping the display:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [19]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;DEL ALL&quot;)</span></div></ul>
+<p>We can then add on the 4 components in the server piple line as nodes. For convenience I'm giving them ids &quot;1&quot;, &quot;2&quot;, &quot;3&quot; and &quot;4&quot;.</p>
+<ul type="disc"><div><span style="font-family:Courier">In [20]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 1 FileReader auto -&quot;)</span><span style="font-family:Courier"><br />In [21]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 2 SRM_Sender auto -&quot;)</span><span style="font-family:Courier"><br />In [22]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 3 blockise auto -&quot;)</span><span style="font-family:Courier"><br />In [23]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 4 Multicast_transceiver auto -&quot;)</span></div></ul>
+<p>Then we simply add in the links:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [25]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 1 2&quot;)</span><span style="font-family:Courier"><br />In [26]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 2 3&quot;)</span></div>
+<div><span style="font-family:Courier">In [27]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 3 4&quot;)</span></div></ul>
+<p>Similarly, we can add in the client side components ...</p>
+<ul type="disc"><div><span style="font-family:Courier">In [48]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 5 Multicast_transeiver auto -&quot;)</span><span style="font-family:Courier"><br />In [49]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 6 detuple auto -&quot;)</span><span style="font-family:Courier"><br />In [50]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 7 SRM_Receiver auto -&quot;)</span><span style="font-family:Courier"><br />In [51]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 8 detuple auto -&quot;)</span><span style="font-family:Courier"><br />In [52]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 9 VorbisDecode auto -&quot;)</span><span style="font-family:Courier"><br />In [53]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD NODE 10 AOPlaybackAdaptor auto -&quot;)</span></div></ul>
+<p>... and add in their links:</p>
+<ul type="disc"><div><span style="font-family:Courier">In [54]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 5 6&quot;)</span><span style="font-family:Courier"><br />In [55]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 6 7&quot;)</span><span style="font-family:Courier"><br />In [56]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 7 8&quot;)</span><span style="font-family:Courier"><br />In [57]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 8 9&quot;)</span><span style="font-family:Courier"><br />In [58]: </span><span style="font-family:Courier;font-style:italic;font-weight:600">myvis._deliver(&quot;ADD LINK 9 10&quot;)</span></div></ul>
+<p><span style="font-size:16pt;font-weight:600">Summary</span></p>
+<p dir="ltr">This page has shown how you can use IPython and Kamaelia together to run the Axon shell. It's shown how you can build simple pipelines on the command line to do interesting tasks interactively - even things involving external event loops such as pygame based systems. </p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+</body></html>

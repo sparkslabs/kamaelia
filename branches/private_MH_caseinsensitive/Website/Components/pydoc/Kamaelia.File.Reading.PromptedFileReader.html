@@ -1,0 +1,48 @@
+<html><body>
+<h1>Kamaelia.File.Reading.PromptedFileReader</h1>
+<h2>class PromptedFileReader(Axon.Component.component)</h2>
+
+<p>PromptedFileReader(filename[,readmode]) -&gt; file reading component</p>
+<p>Creates a file reader component. Reads N bytes/lines from the file when
+N is sent to its inbox.</p>
+<p>Keyword arguments:
+- readmode = &quot;bytes&quot; or &quot;lines&quot;</p>
+<h4>Inboxes</h4>
+<ul><li>   control : for shutdown signalling
+<li>   inbox : requests to 'n' read bytes/lines
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : data output
+<li>   signal : outputs 'producerFinished' after all data has been read
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, filename, readmode)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>closeDownComponent(self)</h3>
+<p>Closes the file handle</p>
+<h3>main(self)</h3>
+<p>Main loop</p>
+<h3>readNBytes(self, n)</h3>
+<p>readNBytes(n) -&gt; string containing 'n' bytes read from the file.</p>
+<p>&quot;EOF&quot; raised if the end of the file is reached and there is no data to
+return.</p>
+<h3>readNLines(self, n)</h3>
+<p>readNLines(n) -&gt; string containing 'n' lines read from the file.</p>
+<p>&quot;EOF&quot; raised if the end of the file is reached and there is no data to
+return.</p>
+<h3>shutdown(self)</h3>
+<p>Returns True if a shutdownMicroprocess message is received.</p>
+<p>Also passes the message on out of the &quot;signal&quot; outbox.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>

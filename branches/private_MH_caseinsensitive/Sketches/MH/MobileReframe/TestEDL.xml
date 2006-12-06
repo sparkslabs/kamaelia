@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<EDL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="MobileReframe.xsd">>
+    <FileID>File identifier</FileID>
+    
+    <Edit>
+        <Start frame="0"  />
+        <End   frame="24" />
+        <Crop  x1="0" y1="0" x2="400" y2="100" />
+    </Edit>
+    <Edit>
+        <Start frame="25" />
+        <End   frame="49" />
+        <Crop  x1="80" y1="40" x2="480" y2="140" />
+    </Edit>
+</EDL>
