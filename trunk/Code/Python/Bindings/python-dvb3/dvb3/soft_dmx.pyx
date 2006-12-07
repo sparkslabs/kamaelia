@@ -114,7 +114,7 @@ cdef class SoftDemux:
                     
                     # if reached end of fragment, get rid of it, then if one is buffered, move onto next
                     if self.cfrag_remaining == 0:
-                        del self.frag_buffer[0]
+                        self.frag_buffer.pop(0)
                         if self.length > 0:
                             self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
                             self.cfrag_remaining = len(self.frag_buffer[0])
@@ -140,7 +140,7 @@ cdef class SoftDemux:
                 
                 # if reached end of fragment, get rid of it, then if one is buffered, move onto next
                 if self.cfrag_remaining == 0:
-                    del self.frag_buffer[0]
+                    self.frag_buffer.pop(0)
                     if self.length > 0:
                         self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
                         self.cfrag_remaining = len(self.frag_buffer[0])
