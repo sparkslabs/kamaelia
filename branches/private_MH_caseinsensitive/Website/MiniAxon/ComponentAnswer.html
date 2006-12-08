@@ -1,5 +1,0 @@
-<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
-<p><span style="font-weight:600">Answer:</span></p>
-<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class component(microprocess):<br />    def __init__(self):<br />        super(component, self).__init__()<br />        self.boxes = { &quot;inbox&quot; : [], &quot;outbox&quot;: [] }<br />    def send(self, value, outboxname):<br />        self.boxes[outboxname].append(value)<br />    def recv(self, inboxname):<br />        result = self.boxes[inboxname][0]<br />        del self.boxes[inboxname][0]<br />        return result<br />    def dataReady(self, inboxname):<br />        return len(self.boxes[inboxname])]</span></div></ul>
-<p dir="ltr"></p>
-</body></html>

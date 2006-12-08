@@ -1,5 +1,0 @@
-
-This directory contains the pyrex bindings for the libxxtea. First build and install libxxtea. Then
-
-       * python setup.py install
-       * python xxtea_test.py
