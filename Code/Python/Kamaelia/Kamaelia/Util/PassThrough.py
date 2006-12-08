@@ -63,6 +63,16 @@ class PassThrough(component):
       self.pause()
       return forwarded
 
+
+import Kamaelia.Support.Deprecate as Deprecate
+
+passThrough = Deprecate.makeClassStub(
+    PassThrough,
+    "Use Kamaelia.Util.PassThrough:PassThrough instead of Kamaelia.Util.PassThrough:passThrough or Kamaelia.Util.passThrough.PassThrough",
+    "WARN"
+    )
+
+
 __kamaelia_components__  = ( PassThrough, )
 
       
