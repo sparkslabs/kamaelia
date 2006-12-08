@@ -159,7 +159,6 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         buffers = []
         self.shuttingdown=False
         while (not self.shutdown()) or self.dataReady("inbox"):
-            yield 1
             if not self.dataReady("inbox"):
                self.pause()
                yield 1
