@@ -1,6 +1,6 @@
 /** Pixel type conversion routines **/
 
-#include <malloc.h>
+#include <stdlib.h>
 
 int RGB_to_YUV420(unsigned char *rgb_input,
                   unsigned char *y_output,
