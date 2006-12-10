@@ -87,7 +87,7 @@ class TagWithSequenceNumber(component):
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 self.send( (index,msg), "outbox")
-                print index
+#                print index
                 index+=1
                 
             while self.dataReady("control"):
