@@ -40,6 +40,7 @@ pipeline(
 """
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished,shutdownMicroprocess,shutdown
 
 class PureTransformer(component):
     def __init__(self, function=None):
