@@ -47,6 +47,7 @@ class SdpParser(component):
         mandatory = "XXX"
         try:
             for line in self.readline(): yield 1
+            # self.readline() generator complete ... line now contains a line with something on it
             type,key,value = parseline(line)
 
             while 1:
@@ -79,6 +80,7 @@ class SdpParser(component):
                         session[key] = value
                 
                     for line in self.readline(): yield 1
+                    # self.readline() generator complete ... line now contains a line with something on it
                     type,key,value = parseline(line)
 
                 # we've hit an 'm' so its the end of the session section
@@ -102,6 +104,7 @@ class SdpParser(component):
                     session['media'].append(media)
                     
                     for line in self.readline(): yield 1
+                    # self.readline() generator complete ... line now contains a line with something on it
                     type,key,value = parseline(line)
                     
                     while type != "m" and type != "v":
@@ -116,6 +119,7 @@ class SdpParser(component):
                             media[key] = value
                     
                         for line in self.readline(): yield 1
+                        # self.readline() generator complete ... line now contains a line with something on it
                         type,key,value = parseline(line)
 
                     # end of media section
