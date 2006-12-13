@@ -209,8 +209,6 @@ class component(microprocess):
       self._callOnCloseDown = []
 
       self.postoffice = postoffice("component :" + self.name)
-      print str(self)
-
 
    def __str__(self):
       """Provides a useful string representation of the component.
