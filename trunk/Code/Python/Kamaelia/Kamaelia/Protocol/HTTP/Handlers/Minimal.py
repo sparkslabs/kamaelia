@@ -133,7 +133,8 @@ class Minimal(component):
         
         error = None
         try:
-            if os.path.exists(self.homedirectory + filename) and not os.path.isdir(self.homedirectory + filename):
+            if     os.path.exists(self.homedirectory + filename) and \
+               not os.path.isdir(self.homedirectory + filename):
                 resource = {
                     "type"           : filetype,
                     "statuscode"     : "200",
@@ -142,6 +143,9 @@ class Minimal(component):
                 self.send(resource, "outbox")
             else:
                 print "Error 404, " + filename + " is not a file"
+                print "self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename)
+                print "os.path.exists(self.homedirectory + filename)", os.path.exists(self.homedirectory + filename)
+                print "not os.path.isdir(self.homedirectory + filename)", (not os.path.isdir(self.homedirectory + filename))
                 error = 404
                 
         except OSError, e:
