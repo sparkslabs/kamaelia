@@ -205,11 +205,11 @@ class component(microprocess):
       for boxname in self.Outboxes:
           self.outboxes[boxname] = makeOutbox()
 
-
       self.children = []
       self._callOnCloseDown = []
 
       self.postoffice = postoffice("component :" + self.name)
+      print str(self)
 
 
    def __str__(self):
@@ -234,8 +234,16 @@ class component(microprocess):
       You will want to call this function if you create child components of your
       component.
       """
-      child._callOnCloseDown.append(self.unpause)
-      self.children.append(child)
+      try:
+          child._callOnCloseDown.append(self.unpause)
+          self.children.append(child)
+      except Exception, e:
+          print "WARNING, I really REALLY should not be showing you this error for", str(child)
+          print "         What you have probably done is used a CLASS where you "
+          print "         should have used an instance"
+          print "         eg You meant to use ExampleProtocol() but actually had"
+          print "                             ExampleProtocol - ie you missed off instantiation"
+          raise e
 
    def addChildren(self,*children):
       """'C.addChildren(list,of,components)' -
