@@ -8,6 +8,8 @@ from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 
+from Kamaelia.Chassis.Pipeline import Pipeline
+
 homedirectory = "/media/usbdisk/SF/hotdocs/"
 indexfilename = "index.html"
 
@@ -50,15 +52,13 @@ class Cat(Axon.Component.component):
         super(Cat, self).__init__()
         self.args = args
     def main(self):
-        self.send(args, "outbox")
+        self.send(self.args, "outbox")
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
 class ExampleWrapper(Axon.Component.component):
-    def __init__(self):
-        super(ExampleWrapper, self).__init__()
  
-   def main(self):
+    def main(self):
         # Tell the browser the type of data we're sending!
         resource = {
            "type"           : "text/html",
@@ -74,7 +74,7 @@ class ExampleWrapper(Axon.Component.component):
 
         # Wait for it....
         while not self.dataReady("inbox"):
-#            self.pause()
+            self.pause()
             yield 1
 
         # Send the data we recieve as the page body
@@ -94,12 +94,8 @@ class ExampleWrapper(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-from Kamaelia.Chassis.Pipeline import Pipeline
-
-def OurHandler(request):
-    return Pipeline ( Cat(request), ExampleWrapper)
-
-
+def EchoHandler(request):
+    return Pipeline ( Cat(request), ExampleWrapper() )
 
 def servePage(request):
     return Minimal(request=request, 
@@ -108,7 +104,7 @@ def servePage(request):
 
 def HTTPProtocol():
     return HTTPServer(requestHandlers([
-                         ["/echo", OurHandler ],
+                         ["/echo", EchoHandler ],
                          ["/hello", HelloHandler ],
                          ["/", servePage ],
                       ]))
@@ -116,20 +112,3 @@ def HTTPProtocol():
 SimpleServer(protocol=HTTPProtocol,
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()
-
-
-
-
-#        header = {
-#          "data" : "<html><body>"
-#        }
-#        body = {
-#          "data" : "<h1>Hello World</h1><P> Game Over!! "
-#        }
-#        footer = {
-#          "data" : "</body></html>"
-#        }
-#        self.send(header, "outbox"); yield 1
-#        self.send(body  , "outbox"); yield 1
-#        self.send(body  , "outbox"); yield 1
-#        self.send(footer, "outbox"); yield 1
