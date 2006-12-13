@@ -512,10 +512,15 @@ class HTTPRequestHandler(component):
                 self.debug("sendEnd")
                 if lengthMethod == "close" or connection.lower() == "close":
                     self.send(producerFinished(), "signal") #this functionality is semi-complete
+                    yield 1
                     return
 
-            self.updateShutdownStatus()
+#            self.updateShutdownStatus()
+            self.ssCode = 2 # cf the comment above when this is initialised
+                            # Magic numbers are evil
             if self.ssCode > 0:
+                self.send(producerFinished(), "signal") #this functionality is semi-complete
+                yield 1
                 return
 
             self.pause()
