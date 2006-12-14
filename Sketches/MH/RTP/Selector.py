@@ -254,6 +254,7 @@ class _SelectorCore(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponen
                    
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
+#                print len(readers),len(writers),len(exceptionals)
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,5) #0.05
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
@@ -268,7 +269,7 @@ class _SelectorCore(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponen
                                 self.removeLinks(selectable, meta[i], selections[i])
                             except KeyError, k:
                                 # must be the wakeup signal, don't remove it or act on it
-                                selectable.recv(1)
+                                selectable.recv(1024)
                             
                 except ValueError, e:
                     if FAILHARD: 
