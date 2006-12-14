@@ -148,6 +148,10 @@ class ConnectedSocketAdapter(component):
       self.noisyErrors = noisyErrors
       self.sendTo = sendTo
       self.selectorService = selectorService
+      self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 131072)
+      self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 131072)
+      print self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+      print self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
