@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import dvb3.soft_dmx
+#import dvb3.soft_dmx
+from MpegTsDemux import MpegTsDemux
 import Axon.AdaptiveCommsComponent
 import time
 
@@ -42,7 +43,8 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
     def main(self):
-        demuxer = dvb3.soft_dmx.SoftDemux(pidfilter = self.pidmap.keys())
+#        demuxer = dvb3.soft_dmx.SoftDemux(pidfilter = self.pidmap.keys())
+        demuxer = MpegTsDemux(pidfilter = self.pidmap.keys())
         self.shuttingdown = False
         
         while (not self.shutdown()) or self.dataReady("inbox"):
@@ -89,7 +91,7 @@ if __name__ == "__main__":
         start = time.time()
         for _ in range(3):
             Graphline(
-                SOURCE=ReadFileAdaptor("/home/matteh/junction.ts",readmode="bitrate",bitrate=600000000000,chunkrate=600000000000/8/2048),
+                SOURCE=ReadFileAdaptor("/home/matteh/Documents/presentations/Skylife presentation/BBC TWO DVB.ts",readmode="bitrate",bitrate=600000000000,chunkrate=600000000000/8/2048),
                 DEMUX=demuxer( { 18 : ["_EIT_"], 20 : ["_DATETIME_"] } ),
                 linkages={ ("SOURCE", "outbox"):("DEMUX","inbox"),
                            ("SOURCE", "signal"):("DEMUX","control"),
