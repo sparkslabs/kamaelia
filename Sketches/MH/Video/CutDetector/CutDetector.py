@@ -240,7 +240,7 @@ if __name__=="__main__":
         Pipeline(
             SubscribeTo("VIDEO"),
             TagWithSequenceNumber(),
-            CutDetector(0.8),
+            CutDetector(threshold),
             FormatOutput(),
             ConsoleEchoer(),
             ).activate()
