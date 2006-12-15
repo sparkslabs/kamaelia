@@ -183,6 +183,7 @@ if __name__=="__main__":
     
     show=False
     files=[]
+    threshold=0.9
     
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
@@ -190,9 +191,16 @@ if __name__=="__main__":
                 show=True
             else:
                 files.append(arg)
+                
+    if len(files) > 1:
+        try:
+            threshold = float(files[0])
+        except ValueError:
+            threshold = None
+        files.pop(0)
     
-    if len(files) != 1:
-        sys.stderr.write("Usage:\n\n    CutDetector.py [--show] videofile\n\n")
+    if len(files) != 1 or threshold is None or threshold<=0.0:
+        sys.stderr.write("Usage:\n\n    CutDetector.py [--show] [threshold] videofile\n\n* threshold is a floating point value greater than zero (default=0.9)\n\n")
         sys.exit(1)
     
     
@@ -204,7 +212,7 @@ if __name__=="__main__":
         Pipeline( UnixProcess("ffmpeg -i "+infile+" -f yuv4mpegpipe -y /dev/stdout",32768),
                 2, YUV4MPEGToFrame(),
                 1, TagWithSequenceNumber(),
-                1, CutDetector(0.9),
+                1, CutDetector(threshold),
                 FormatOutput(),
                 ConsoleEchoer(),
                 StopSelector(waitForTrigger=True),
