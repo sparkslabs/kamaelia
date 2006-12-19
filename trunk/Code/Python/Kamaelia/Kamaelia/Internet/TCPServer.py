@@ -101,8 +101,8 @@ class TCPServer(Axon.Component.component):
    specified port.
    """
    
-   Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
-                "_feedbackFromCSA" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
+   Inboxes  = {  "_feedbackFromCSA" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
+                # "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
                 "newconnection" : "We expected to recieve a message here when a new connection is ready",
                 "control" : "we expect to recieve serverShutdown messages here",
               }
