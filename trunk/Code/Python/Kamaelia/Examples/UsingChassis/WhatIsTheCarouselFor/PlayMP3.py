@@ -19,12 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# Simple multi-file ogg vorbis streaming system
-#
-# based on Kamaelia/Examples/example2
-# use Kamaelia/Examples/example2/Simple[r]StreamingClient.py to receive
-#
 
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Audio.Codec.PyMedia.Decoder import Decoder
