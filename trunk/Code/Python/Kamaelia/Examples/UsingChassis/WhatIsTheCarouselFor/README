@@ -1,3 +1,8 @@
+PlayMP3.py
+     * Simple MP3 player - uses a Carousel to instantiate the audio Output
+       component at runtime with parameters read from the decoded audio.
+     * Requires PyMedia
+
 SimpleMultiFileStreamer.py
      * Simple streamer that repeatedly streams (3 times) the same audio
        file.
@@ -13,3 +18,4 @@ ClientStreamToFile.py
 
 
 Michael, October 2005
+Matt, December 2006
