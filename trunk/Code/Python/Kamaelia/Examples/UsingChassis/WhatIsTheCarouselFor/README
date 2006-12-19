@@ -1,6 +1,7 @@
-PlayMP3.py
+PlayMP3.py / PlayMP3s.py
      * Simple MP3 player - uses a Carousel to instantiate the audio Output
        component at runtime with parameters read from the decoded audio.
+     * PlayMP3s.py plays a playlist of mp3 files one after the other.
      * Requires PyMedia
 
 SimpleMultiFileStreamer.py
