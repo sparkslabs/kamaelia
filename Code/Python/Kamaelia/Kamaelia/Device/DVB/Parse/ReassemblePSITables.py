@@ -23,12 +23,173 @@
 Reassembly of DVB PSI Tables
 ============================
 
-These are components for reassembling DVB Programme Status Information (PSI)
-tables. One is capable of reassembling one table at a time from a stream of
-packets. The other is a full service capable of reassembling multiple tables
-from a multiplexed stream of packets, and distributing them to subscribers.
+Components that take a stream of MPEG Transport stream packets containing
+Programme Status Information (PSI) tables and reassembles the tables, ready
+for parsing of the data within them.
+
+ReassemblePSITables can do this for a stream of packets containing a single
+table.
+
+ReassemblePSITablesService provides a full service capable of reassembling
+multiple tables from a multiplexed stream of packets, and distributing them to
+subscribers.
+
+
+
+Example Usage
+~~~~~~~~~~~~~
+
+A simple pipeline to decode and display the Event Information Table in a
+multiplex::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    EIT_PID = 0x12
+    
+    Pipeline( OneShot( msg=["ADD", [0x2000] ] ),    # take all packets of all PIDs
+              Tuner(FREQUENCY, feparams),
+              DVB_SoftDemuxer( { EIT_PID : ["outbox"] } ),
+              ReassemblePSITables(),
+              ParseEventInformationTable(),
+              PrettifyEventInformationTable(),
+              ConsoleEchoer(),
+            ).run()
+
+Set up a dvb tuner and demultiplexer as a service; then set up a PSI tables
+service (that subscribes to the demuxer); then finally subscribe to the PSI
+tables service to get Event Information Tables and parse and display them::
+
+    RegisterService( Receiver( FREQUENCY, FE_PARAMS, 0 ),
+                    {"DEMUXER":"inbox"},
+                ).activate()
+
+    RegisterService( \
+        Graphline( PSI     = ReassemblePSITablesService(),
+                   DEMUXER = ToService("DEMUXER"),
+                   linkages = {
+                       ("PSI", "pid_request") : ("DEMUXER", "inbox"),
+                       ("",    "request")     : ("PSI",     "request"),
+                   }
+                 ),
+        {"PSI_Tables":"request"}
+    ).activate()
+
+    Pipeline( Subscribe("PSI", [EIT_PID]),
+              ParseEventInformationTable(),
+              PrettifyEventInformationTable(),
+              ConsoleEchoer(),
+            ).run()
+
+In the above example, the final pipeline subscribes to the 'PSI' service,
+requesting the PSI tables in MPEG Transport Stream packets with packet id 0x12.
+
+The ReassemblePSITablesService service uses a ToService component to send its
+own requests to the 'DEMUXER' service to ask for MPEG Transport Stream packets
+with the packet ids it needs.
+
+
+
+ReassemblePSITables
+~~~~~~~~~~~~~~~~~~~
+
+ReassemblePSITables reassembles one PSI table at a time from a stream of
+MPEG transport stream packets containing that table.
+
+
+
+Behaviour
+---------
+
+Send individual MPEG Transport Stream packets to the "inbox" inbox containing
+fragments of a particular PSI table.
+
+ReassemblePSITables will reconstruct the table. As soon as it is complete, it
+will be sent, as a raw binary string, out of the "outbox" outbox. The process
+repeats indefinitely.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+
+
+ReassemblePSITablesService
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ReassemblePSITablesService provides a full service capable of reassembling
+multiple tables from a multiplexed stream of packets, and distributing them to
+subscribers.
+
+
+
+Behaviour
+---------
+
+ReassemblePSITablesServices takes individual MPEG Transport Stream packets sent
+to its "inbox" inbox and 
+
+
+To be a client you can wrap ReassemblePSITablesService into a named service
+by using a Kamaelia.Experiment.Services.RegisterService component, and then
+subscribe to it using a Kamaelia.Experiment.Services.SubscribeTo component.
+
+Alternatively, send a 'ADD' or 'REMOVE' message to its "request" inbox,
+requesting to be sent (or no longer be sent) tables from packets of particular
+PIDs, and specifying the inbox to which you want the packets to be sent. The
+format of these requests is::
+
+    ("ADD",    [pid, pid, ...], (dest_component, dest_inboxname))
+    ("REMOVE", [pid, pid, ...], (dest_component, dest_inboxname))
+    
+ReassemblePSITablesService will automatically do the wiring or unwiring needed
+to ensure the packets you have requested get sent to the inbox you specified.
+
+Send an 'ADD' request, and you will immediately start receiving tables in
+those PIDs. Send a 'REMOVE' request and you will shortly no longer receive
+tables in the PIDs you specify. Note that you may still receive some tables
+after your 'REMOVE' request.
+
+ReassemblePSITablesService will also send its own requests (in the same format)
+out of its "pid_request" outbox. You can wire this up to the source of transport
+stream packets, so that ReassemblePSITablesService can tell that source what
+PIDs it needs. Alternatively, simply ensure that your source is already sending
+all the PIDs your ReassemblePSITablesService component will need.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+
+
+How does it work?
+-----------------
+
+ReassemblePSITablesService creates an outbox for each subscriber destination,
+and wires from it to the destination.
+
+For each PID that needs to be processed, a ReassemblePSITables component is
+created to handle reconstruction of that particular table.Transport Stream packets arriving at the "inbox" inbox are sent to the relevant
+ReassemblePSITables component for table reconstruction. Reconstructed tables
+coming back from each ReassemblePSITables component are forwarded to all
+destinations that have subscribed to it.
+
+When ReassemblePSITablesServices starts or stops using packets of a given PID,
+an 'add' or 'remove' message is also sent out of the "pid_request" outbox::
+
+    ("ADD",    [pid], (self, "inbox"))
+    ("REMOVE", [pid], (self, "inbox"))
+
+This can be wired up to the source of transport stream packets, so that
+ReassemblePSITablesService can tell that source what PIDs it needs.
 
 """
+
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
@@ -105,6 +266,7 @@ class ReassemblePSITables(component):
 
 class ReassemblePSITablesService(AdaptiveCommsComponent):
     """\
+    ReassemblePSITablesService() -> new ReassemblePSITablesService component.
     
     Subscribe to PSI packets by sending ("ADD", (component,inbox), [PIDs] ) to "request"
     Unsubscribe by sending ("REMOVE", (component,inbox), [PIDs] ) to "request"
