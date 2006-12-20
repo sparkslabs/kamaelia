@@ -48,8 +48,8 @@ requesting to be sent (or no longer be sent) packets with particular PIDs, and
 specifying the inbox to which you want the packets to be sent. The
 format of these requests is::
 
-    ("ADD",    (dest_component, dest_inboxname), [pid, pid, ...])
-    ("REMOVE", (dest_component, dest_inboxname), [pid, pid, ...])
+    ("ADD",    [pid, pid, ...], (dest_component, dest_inboxname))
+    ("REMOVE", [pid, pid, ...], (dest_component, dest_inboxname))
     
 DemuxerService will automatically do the wiring or unwiring needed to ensure the
 packets you have requested get sent to the inbox you specified.
