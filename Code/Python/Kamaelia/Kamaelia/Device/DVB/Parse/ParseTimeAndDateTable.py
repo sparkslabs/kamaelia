@@ -34,13 +34,15 @@ DVB SI specification::
   in DVB systems"
   ETSI / EBU (DVB group)
 
+The Time Offset Table (TOT) additionally contains information on the current
+(and next) timezone offset that applies, as well as duplicating the datetime
+information. See ParseTimeOffsetTable component.
 
 
 Example Usage
 -------------
 
-A simple pipeline to receive, parse and display the Time and Date Table
-applying to the transport stream (MUX) being received ("actual TS")::
+A simple pipeline to receive, parse and display the Time and Date Table::
 
     FREQUENCY = 505.833330
     feparams = {
