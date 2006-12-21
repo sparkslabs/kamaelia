@@ -20,8 +20,309 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+=================================================
+Parsing Network Information Tables in DVB streams
+=================================================
 
-Code to parse Network Information Tables from a DVB transport stream
+ParseNetworkInformationTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs a dictionary containing the data in the table.
+
+The purpose of the NIT and details of the fields within in are defined in the
+DVB SI specification::
+
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+See Kamaelia.Support.DVB.Descriptors for information on how they are parsed.
+
+
+
+Example Usage
+-------------
+
+A simple pipeline to receive, parse and display the Network Information Table in
+a multiplex::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    NIT_PID = 0x10
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
+              DVB_Demuxer({ NIT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseNetworkInformationTable(),
+              PrettifyNetworkInformationTable(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+Behaviour
+---------
+
+At initialisation, specify whether you want ParseNetworkInformationTable to
+parse 'actual' or 'other' tables (or both). 'Actual' tables describe transport
+streams/multiplexes within the same actual networks that this table has been
+broadcast in. 'Other' tables describe transport streams/multiplexes being
+broadcast for other networks. For example: 'freeview' is a network in the UK
+that broadcasts several multiplexes.
+
+For example::
+
+    ParseNetworkInformationTable(acceptTables = {0x40:"ACTUAL",0x41:"OTHER"})
+
+There are shorthands available for the various combinations::
+
+    ParseNetworkInformationTable_ActualNetwork()
+    ParseNetworkInformationTable_OtherNetwork()
+    ParseNetworkInformationTable_ActualAndOtherNetwork():
+
+Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections
+of the table have arrived, ParseNetworkInformationTable will parse the table
+and send it out of its "outbox" outbox.
+
+If the table is unchanged since last time it was parsed, then it will not be
+sent out. Parsed tables are only sent out when they are new or have just
+changed.
+
+The parsed table is sent out as a dictionary data structure, like this (list of
+transport streams abridged for marginally better brevity)::
+
+    {
+        'table_id'    : 64,
+        'table_type'  : 'NIT',
+        'current'     : 1,
+        'actual_other': 'ACTUAL',
+        'network_id'  : 12293,
+        'descriptors': [ (64, {'type': 'network_name', 'network_name': 'Crystal Palace'} ) ]
+        'transport_streams': [
+            { 'transport_stream_id': 4100,
+              'descriptors': [
+                  ( 65, { 'type': 'service_list'
+                          'services': [
+                              {'service_type': ('digital television service',), 'service_id': 4164},
+                              {'service_type': ('digital television service',), 'service_id': 4228},
+                              {'service_type': ('digital television service',), 'service_id': 4351},
+                              {'service_type': ('digital television service',), 'service_id': 4415},
+                              {'service_type': ('digital television service',), 'service_id': 4479},
+                              {'service_type': ('digital television service',), 'service_id': 4671}
+                          ],
+                        } ),
+                  ( 90, { 'other_frequencies': 1,
+                          'params': { 'inversion': 2,
+                                      'transmission_mode': 0,
+                                      'hierarchy_information': 0,
+                                      'code_rate_LP': 3,
+                                      'guard_interval': 0,
+                                      'bandwidth': 0,
+                                      'frequency': 505833330,
+                                      'constellation': 1,
+                                      'code_rate_HP': 3
+                                    },
+                          'type': 'terrestrial_delivery_system'
+                        } ),
+                  ( 98, { 'type': 'frequency_list',
+                          'frequencies': [697833330, 690166670, 554000000]
+                        } ),
+                  ( 95, { 'type': 'private_data_specifier',
+                          'private_data_specifier': 9018
+                        } ),
+                  (131, { 'type': 'logical_channel',
+                          'mappings': { 4228: 2, 4351: 7, 4479: 105, 4164: 1, 4415: 80, 4671: 70 }
+                        } )
+              ],
+              'original_network_id': 9018
+            },
+
+           .....
+
+            { 'transport_stream_id': 24576,
+              'descriptors': [
+                  ( 65, { 'services': [
+                              {'service_type': ('digital television service',), 'service_id': 25664},
+                              {'service_type': ('digital television service',), 'service_id': 25728},
+                              {'service_type': ('digital television service',), 'service_id': 25792},
+                              {'service_type': ('digital television service',), 'service_id': 25856},
+                              {'service_type': ('digital television service',), 'service_id': 25920},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26176},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26240},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26304},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26368},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26432},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26496},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26560},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26624},
+                              {'service_type': ('digital radio sound service',), 'service_id': 26688},
+                              {'service_type': ('data broadcast service',), 'service_id': 27008},
+                              {'service_type': ('digital television service',), 'service_id': 27072},
+                              {'service_type': ('digital television service',), 'service_id': 27136}
+                          ],
+                          'type': 'service_list'
+                        } ),
+                  ( 90, { 'other_frequencies': 1,
+                          'params': { 'inversion': 2,
+                                      'transmission_mode': 0,
+                                      'hierarchy_information': 0,
+                                      'code_rate_LP': 3,
+                                      'guard_interval': 0,
+                                      'bandwidth': 0,
+                                      'frequency': 537833330,
+                                      'constellation': 1,
+                                      'code_rate_HP': 3
+                                    },
+                          'type': 'terrestrial_delivery_system'
+                        } ),
+                  ( 98, { 'frequencies': [738000000, 826000000, 834000000],
+                          'type': 'frequency_list'
+                        } ),
+                  ( 95, { 'type': 'private_data_specifier',
+                          'private_data_specifier': 9018
+                        } ),
+                  (131, { 'type': 'logical_channel',
+                          'mappings': { 25664: 18,  25728: 21,  26496: 710, 26432: 717,
+                                        26560: 711, 26624: 715, 26688: 716, 25792: 19,
+                                        25856: 20,  25920: 22,  27008: 300, 27072: 31,
+                                        27136: 29,  26176: 713, 26240: 712, 26304: 722,
+                                        26368: 718
+                                      }
+                        } )
+              ],
+              'original_network_id': 9018
+            }
+          ],
+    }
+            
+This is an instantaneous snapshot of the NIT for Crystal Palace MUX 1
+transmission (505.8MHz) in the UK on 21th Dec 2006. It describes the each of
+the transport streams being broadcast, including how to tune to them (frequency
+and other parameters) and an overview of the services in each. It also describes
+the mapping of channel numbers on the user's remote control, to service ids.
+
+If this data is sent on through a PrettifyNetworkInformationTable component,
+then the equivalent output is a string containing this (again, abridged for
+brevity)::
+
+    NIT received:
+        Table ID           : 64
+        Table is valid for : CURRENT (valid)
+        Actual or Other n/w: ACTUAL
+        Network ID         : 12293
+        Network descriptors:
+        Network Descriptors:
+            Descriptor 0x40 : network_name
+                network_name : 'Crystal Palace'
+        Transport Stream:
+            transport stream id : 4100
+            original network id : 9018
+            Transport Stream Descriptors:
+                Descriptor 0x41 : service_list
+                    services : [   {'service_type': ('digital television service',), 'service_id': 4164},
+                                   {'service_type': ('digital television service',), 'service_id': 4228},
+                                   {'service_type': ('digital television service',), 'service_id': 4351},
+                                   {'service_type': ('digital television service',), 'service_id': 4415},
+                                   {'service_type': ('digital television service',), 'service_id': 4479},
+                                   {'service_type': ('digital television service',), 'service_id': 4671}]
+                Descriptor 0x5a : terrestrial_delivery_system
+                    other_frequencies : 1
+                    params : {   'bandwidth': 0,
+                                 'code_rate_HP': 3,
+                                 'code_rate_LP': 3,
+                                 'constellation': 1,
+                                 'frequency': 505833330,
+                                 'guard_interval': 0,
+                                 'hierarchy_information': 0,
+                                 'inversion': 2,
+                                 'transmission_mode': 0}
+                Descriptor 0x62 : frequency_list
+                    frequencies : [697833330, 690166670, 554000000]
+                Descriptor 0x5f : private_data_specifier
+                    private_data_specifier : 9018
+                Descriptor 0x83 : logical_channel
+                    mappings : {4228: 2, 4351: 7, 4479: 105, 4164: 1, 4415: 80, 4671: 70}
+    
+        .....
+    
+        Transport Stream:
+            transport stream id : 24576
+            original network id : 9018
+            Transport Stream Descriptors:
+                Descriptor 0x41 : service_list
+                    services : [   {'service_type': ('digital television service',), 'service_id': 25664},
+                                   {'service_type': ('digital television service',), 'service_id': 25728},
+                                   {'service_type': ('digital television service',), 'service_id': 25792},
+                                   {'service_type': ('digital television service',), 'service_id': 25856},
+                                   {'service_type': ('digital television service',), 'service_id': 25920},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26176},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26240},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26304},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26368},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26432},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26496},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26560},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26624},
+                                   {'service_type': ('digital radio sound service',), 'service_id': 26688},
+                                   {'service_type': ('data broadcast service',), 'service_id': 27008},
+                                   {'service_type': ('digital television service',), 'service_id': 27072},
+                                   {'service_type': ('digital television service',), 'service_id': 27136}]
+                Descriptor 0x5a : terrestrial_delivery_system
+                    other_frequencies : 1
+                    params : {   'bandwidth': 0,
+                                 'code_rate_HP': 3,
+                                 'code_rate_LP': 3,
+                                 'constellation': 1,
+                                 'frequency': 537833330,
+                                 'guard_interval': 0,
+                                 'hierarchy_information': 0,
+                                 'inversion': 2,
+                                 'transmission_mode': 0}
+                Descriptor 0x62 : frequency_list
+                    frequencies : [738000000, 826000000, 834000000]
+                Descriptor 0x5f : private_data_specifier
+                    private_data_specifier : 9018
+                Descriptor 0x83 : logical_channel
+                    mappings : {   25664: 18,
+                                   25728: 21,
+                                   25792: 19,
+                                   25856: 20,
+                                   25920: 22,
+                                   26176: 713,
+                                   26240: 712,
+                                   26304: 722,
+                                   26368: 718,
+                                   26432: 717,
+                                   26496: 710,
+                                   26560: 711,
+                                   26624: 715,
+                                   26688: 716,
+                                   27008: 300,
+                                   27072: 31,
+                                   27136: 29}
+
+ParseNetworkInformationTable can collect the sections of, and then parse, both
+'current' and 'next' tables simultaneously.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+
+
+How does it work?
+-----------------
+
+ParseNetworkInformationTable logs all the table sections it receives, until it
+determines it has the complete set; then it parses them.
+
+If the version number field in any table section changes, then the log is
+cleared, and the component starts collecting the sections again from scratch.
 
 """
 
@@ -34,28 +335,46 @@ from Kamaelia.Support.DVB.CRC import dvbcrc
 NIT_PID = 0x10
 
 def ParseNetworkInformationTable_ActualNetwork():
+    """\
+    ParseNetworkInformationTable_ActualNetwork() -> new ParseNetworkInformationTable component.
+
+    Instantiates a ParseNetworkInformationTable component configured to parse
+    'ACTUAL' Network tables only (table id 0x40)
+    """
     return ParseNetworkInformationTable(acceptTables = {0x40:"ACTUAL"})
 
 def ParseNetworkInformationTable_OtherNetwork():
+    """\
+    ParseNetworkInformationTable_OtherNetwork() -> new ParseNetworkInformationTable component.
+
+    Instantiates a ParseNetworkInformationTable component configured to parse
+    'OTHER' Netowrk tables only (table id 0x41)
+    """
     return ParseNetworkInformationTable(acceptTables = {0x41:"OTHER"})
 
 def ParseNetworkInformationTable_ActualAndOtherNetwork():
+    """\
+    ParseNetworkInformationTable_ActualAndOtherNetwork() -> new ParseNetworkInformationTable component.
+
+    Instantiates a ParseNetworkInformationTable component configured to parse
+    both 'ACTUAL' and 'OTHER' Network tables (table ids 0x40 and 0x41)
+    """
     return ParseNetworkInformationTable(acceptTables = {0x40:"ACTUAL",0x41:"OTHER"})
 
 
 class ParseNetworkInformationTable(component):
-    """
-    Parses a Network Information table.
-    
-    Receives table sections from PSI packets. Once all sections have been
-    gathered; parses the table and outputs a dictionary containing the contents.
+    """\
+    ParseNetworkInformationTable([acceptTables]) -> new ParseNetworkInformationTable component.
+
+    Send reconstructed PSI table sections to the "inbox" inbox. When a complete
+    table is assembled and parsed, the result is sent out of the "outbox" outbox
+    as a dictionary.
     
     Doesn't emit anything again until the version number of the table changes.
     
-    Outputs both 'current' and 'next' tables.
-    
-    Can only handle multiple NITs with multiple table id's all simultaneously. Those
-    table IDs must be registered in the initializer.
+    Keyword arguments::
+
+    - acceptTables  - dict of (table_id,string_description) mappings for tables to be accepted (default={0x40:"ACTUAL",0x41:"OTHER"})
     """
     Inboxes = { "inbox" : "DVB PSI Packets from a single PID containing NIT table sections",
                 "control" : "Shutdown signalling",
