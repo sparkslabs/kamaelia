@@ -19,8 +19,96 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+=========================================
+Parsing Time Offset Tables in DVB streams
+=========================================
 
-Code to parse Time and Date Tables from a DVB transport stream
+ParseTimeOffsetTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs the current time and date in UTC (GMT) aswell as
+the current time offset, and when the next change will be (due to daylight
+saving).
+
+The purpose of the TOT and details of the fields within in are defined in the
+DVB SI specification, including the possible 'descriptor' fields that feature in
+the table::
+
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+
+
+Example Usage
+-------------
+
+A simple pipeline to receive, parse and display the Time Offset Table::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    TOT_PID = 0x14
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [TOT_PID], feparams),
+              DVB_Demuxer({ TOT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseTimeOffsetDateTable(),
+              PrettifyTimeOffsetDateTable(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+Behaviour
+---------
+
+Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections
+of the table have arrived, ParseTimeOffsetTable will parse the table and send it
+out of its "outbox" outbox.
+
+The table is output every time it is received. In practice a multiplex is likely
+to transmit about 1 instance of this table per second, giving a reasonably
+accurate measure of the current time.
+
+The parsed table is sent out as a dictionary data structure, similar to this::
+
+    {
+        'table_type' : 'TOT',
+        'country'    : 'GBR'
+        'region'     : 0,
+        'offset'     : (0, 0),
+        'next'       : { 'when'  : [2007, 3, 25, 1, 0, 0],
+                         'offset': (1, 0)
+                       },
+        'UTC_now'    : [2006, 12, 21, 16, 16, 8],
+    }
+
+If this data is sent on through a PrettifyTimeOffsetTable component, then the
+equivalent output is a string of the following form::
+
+    TOT received:
+       DateTime now (UTC)         : 2006-12-21 16:16:08
+       Current local offset (h,m) : 00:00
+       Country & region in it     : GBR (0)
+       Next change of offset:
+           Changes to             : 01:00
+           Changes on (y,m,d)     : 2007-03-25 01:00:00
+
+Note that this not only includes the current date, time, location and offset
+from UTC (GMT), but it also tells you when the next change of offset will happen
+(due to Daylight Saving time) and what that new offset will be.
+
+The above example output shows that it is currently 21st December 2006 16:16:08
+GMT but that at 1am on 25th March 2007 it will change to GMT+0100.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
 
 """
 
