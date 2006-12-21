@@ -48,7 +48,6 @@ class View(Axon.Component.component,wx.Frame):
     def SetMoney(self, money):
         print "setting money", money
         self.moneyCtrl.SetValue(str(money))
-#        self.moneyCtrl.Refresh()
 
     def main(self):
         self.link((self.dataSource, "outbox"), (self, "inbox"))
