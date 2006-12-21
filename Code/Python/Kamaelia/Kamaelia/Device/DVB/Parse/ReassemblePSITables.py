@@ -24,8 +24,8 @@ Reassembly of DVB PSI Tables
 ============================
 
 Components that take a stream of MPEG Transport stream packets containing
-Programme Status Information (PSI) tables and reassembles the tables, ready
-for parsing of the data within them.
+Programme Status Information (PSI) tables and reassembles the table sections,
+ready for parsing of the data within them.
 
 ReassemblePSITables can do this for a stream of packets containing a single
 table.
@@ -39,9 +39,9 @@ subscribers.
 Example Usage
 ~~~~~~~~~~~~~
 
-A simple pipeline to decode and display the Event Information Table in a
+A simple pipeline to receive, parse and display the Event Information Table in a
 multiplex::
-
+    
     FREQUENCY = 505.833330
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
@@ -109,9 +109,9 @@ Behaviour
 Send individual MPEG Transport Stream packets to the "inbox" inbox containing
 fragments of a particular PSI table.
 
-ReassemblePSITables will reconstruct the table. As soon as it is complete, it
-will be sent, as a raw binary string, out of the "outbox" outbox. The process
-repeats indefinitely.
+ReassemblePSITables will reconstruct the table sections. As soon as a section is
+complete, it will be sent, as a raw binary string, out of the "outbox" outbox.
+The process repeats indefinitely.
 
 If a shutdownMicroprocess or producerFinished message is received on the
 "control" inbox, then it will immediately be sent on out of the "signal" outbox
@@ -132,8 +132,8 @@ Behaviour
 ---------
 
 ReassemblePSITablesServices takes individual MPEG Transport Stream packets sent
-to its "inbox" inbox and 
-
+to its "inbox" inbox and reconstructs table sections, distributing them to
+clients/subscribers that have requested them.
 
 To be a client you can wrap ReassemblePSITablesService into a named service
 by using a Kamaelia.Experiment.Services.RegisterService component, and then
@@ -174,7 +174,8 @@ ReassemblePSITablesService creates an outbox for each subscriber destination,
 and wires from it to the destination.
 
 For each PID that needs to be processed, a ReassemblePSITables component is
-created to handle reconstruction of that particular table.Transport Stream packets arriving at the "inbox" inbox are sent to the relevant
+created to handle reconstruction of that particular table.Transport Stream
+packets arriving at the "inbox" inbox are sent to the relevant
 ReassemblePSITables component for table reconstruction. Reconstructed tables
 coming back from each ReassemblePSITables component are forwarded to all
 destinations that have subscribed to it.
