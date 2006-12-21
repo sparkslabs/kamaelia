@@ -19,8 +19,86 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+===========================================
+Parsing Time And Date Tables in DVB streams
+===========================================
 
-Code to parse Time and Date Tables from a DVB transport stream
+ParseTimeAndDateTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs the current time and date in UTC (GMT).
+
+The purpose of the TDT and details of the fields within in are defined in the
+DVB SI specification::
+
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+
+
+Example Usage
+-------------
+
+A simple pipeline to receive, parse and display the Time and Date Table
+applying to the transport stream (MUX) being received ("actual TS")::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    TDT_PID = 0x14
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [TDT_PID], feparams),
+              DVB_Demuxer({ TDT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseTimeAndDateTable(),
+              PrettifyTimeAndDateTable(),
+              ConsoleEchoer(),
+            ).run()
+
+The output will look like this::
+
+    [2006, 12, 21, 15, 1, 3]
+    [2006, 12, 21, 15, 1, 4]
+    [2006, 12, 21, 15, 1, 5]
+    [2006, 12, 21, 15, 1, 6]
+
+    .....
+
+
+
+Behaviour
+---------
+
+Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections
+of the table have arrived, ParseServiceDescriptionTable will parse the table and
+send it out of its "outbox" outbox.
+
+The table is output every time it is received. In practice a multiplex is likely
+to transmit about 1 instance of this table per second, giving a reasonably
+accurate measure of the current time.
+
+The value output is a simple list/tuple describing the current UTC (GMT) date
+and time, in the form (year,month,day,hour,minute,second).
+
+For example: 21st December 2006 15:01:03 GMT is represented as::
+
+    [2006, 12, 21, 15, 1, 3]
+
+If this data is sent on through a PrettifyTimeAndDateTable component, then the
+equivalent output is a string of the following form::
+
+    TDT received:
+       UTC Date now (y,m,d) : 2006 12 21
+       UTC Time now (h,m,s) : 15:01:03
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
 
 """
 
@@ -36,12 +114,12 @@ TDT_PID = 0x14
 
 
 class ParseTimeAndDateTable(component):
-    """
-    Parses a TDT table.
-    
-    Receives table sections from PSI packets. Outputs the current time and date
-    (UTC).
-    
+    """\
+    ParseTimeAndDateTable() -> new ParseTimeAndDateTable component.
+
+    Send reconstructed PSI table sections to the "inbox" inbox. When a complete
+    table is assembled and parsed, the result is sent out of the "outbox" outbox
+    in the form [year,month,day,hour,minute,second]. The times are UTC (GMT).
     """
     Inboxes = { "inbox" : "DVB PSI Packets from a single PID containing a TDT table",
                 "control" : "Shutdown signalling",
