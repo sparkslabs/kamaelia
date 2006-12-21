@@ -20,9 +20,258 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+=================================================
+Parsing Service Description Tables in DVB streams
+=================================================
 
-Code to parse Service Description Tables from a DVB transport stream
+ParseServiceDescriptionTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs a dictionary containing the data in the table.
 
+The purpose of the SDT and details of the fields within in are defined in the
+DVB SI specification, including the possible 'descriptor' fields that feature in
+the table::
+
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+See Kamaelia.Support.DVB.Descriptors for information on how they are parsed.
+
+
+
+Example Usage
+~~~~~~~~~~~~~
+
+A simple pipeline to receive, parse and display the Service Description Table
+applying to the transport stream (MUX) being received ("actual TS")::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    SID_Actual_PID = 0x11
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [SID_Actual_PID], feparams),
+              DVB_Demuxer({ SID_Actual_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseServiceDescriptionTable_ActualTS(),
+              PrettifyServiceDescriptionTable(),
+              ConsoleEchoer(),
+            ).run()
+
+A simple pipeline to receive and parse the Service Description Table then
+convert it to a simple list mapping service names to service ids::
+
+    Pipeline( DVB_Multiplex(FREQUENCY, [SID_Actual_PID], feparams),
+              DVB_Demuxer({ SID_Actual_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseServiceDescriptionTable_ActualTS(),
+              SDT_to_SimpleServiceList(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+ParseServiceDescriptionTable
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Behaviour
+---------
+
+At initialisation, specify whether you want ParseServiceDescriptionTables to
+parse 'actual' or 'other' tables (or both). 'Actual' tables describe services
+within the actual transport stream the table is it. 'Other' tables describe
+services carried in other transport streams - ie. broadcast in a different MUX
+in the same network. For example::
+
+    ParseServiceDescriptionTable(acceptTables = {0x42:"ACTUAL",0x46:"OTHER"})
+
+There are shorthands available for the various combinations::
+
+    ParseServiceDescriptionTable_ActualTS()
+    ParseServiceDescriptionTable_OtherTS()
+    ParseServiceDescriptionTable_ActualAndOtherTS():
+
+Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections
+of the table have arrived, ParseServiceDescriptionTable will parse the table and
+send it out of its "outbox" outbox.
+
+If the table is unchanged since last time it was parsed, then it will not be
+sent out. Parsed tables are only sent out when they are new or have just
+changed.
+
+The parsed table is sent out as a dictionary data structure, similar to this
+(the 'streams' list here is abridged for brevity)::
+
+    {
+        'actual_other'        : 'ACTUAL',
+        'table_type'          : 'SDT',
+        'current'             : 1,
+        'original_network_id' : 9018,
+        'table_id'            : 66,
+        'services': {
+            4228: { 'running_status'       : 4,
+                    'free_CA_mode'         : 0,
+                    'eit_present_following': 1,
+                    'eit_schedule'         : 2,
+                    'descriptors': [
+                        ( 72, { 'type': 'service',
+                                'service_name': 'BBC TWO',
+                                'service_type': 'digital television service',
+                                'service_provider_name': 'BBC'
+                              } ),
+                        (115, { 'type': 'UNKNOWN',
+                                'contents': 'fp.bbc.co.uk'
+                              } )
+                    ] },
+            4164: { 'running_status'       : 4,
+                    'free_CA_mode'         : 0,
+                    'eit_present_following': 1,
+                    'eit_schedule'         : 2,
+                    'descriptors': [
+                        ( 72, { 'type': 'service',
+                                'service_name': 'BBC ONE',
+                                'service_type': 'digital television service',
+                                'service_provider_name': 'BBC'
+                              } ),
+                        (115, { 'type': 'UNKNOWN',
+                                'contents': 'fp.bbc.co.uk'
+                              } )
+                    ] },
+
+            .....
+
+            4671: { 'running_status': 4,
+                    'free_CA_mode'         : 0,
+                    'eit_present_following': 1,
+                    'eit_schedule'         : 2,
+                    'descriptors': [
+                        ( 72, { 'type': 'service',
+                                'service_name': 'CBBC Channel',
+                                'service_type': 'digital television service',
+                                'service_provider_name': 'BBC'
+                              } ),
+                        (115, { 'type': 'UNKNOWN',
+                                'contents': 'fp.bbc.co.uk'
+                              } )
+                    ] }
+            },
+        'transport_stream_id': 4100
+    }
+    
+This table contains information about the services within the transport stream.
+It lists the services (channels) including their names. types, and the fact that
+there is now & next data (eit_present_following) and Electronic Programme Guide
+(eit_schedule) data available for each of them.
+
+This is part of an instantaneous snapshot of the SDT broadcast from Crystal
+Palace MUX 1 (505.8MHz) in the UK on 21th Dec 2006.
+
+If this data is sent on through a PrettifyServiceDescriptionTable component,
+then the equivalent output is a string containing the following (again, abridged
+here for brevity)::
+
+    Table ID           : 66
+    Table is valid for : CURRENT (valid)
+    Actual or Other n/w: ACTUAL
+    Transport stream id: 4100
+    Original network id: 9018
+    Services:
+        Service id : 4228
+            EIT present_following? : YES
+            EIT schedule?          : YES
+            Running status         : 4 (RUNNING)
+            Scrambled?             : NO
+            Service descriptors:
+                Descriptor 0x48 : service
+                    service_name : 'BBC TWO'
+                    service_provider_name : 'BBC'
+                    service_type : 'digital television service'
+                Descriptor 0x73 : UNKNOWN
+                    contents : 'fp.bbc.co.uk'
+        Service id : 4164
+            EIT present_following? : YES
+            EIT schedule?          : YES
+            Running status         : 4 (RUNNING)
+            Scrambled?             : NO
+            Service descriptors:
+                Descriptor 0x48 : service
+                    service_name : 'BBC ONE'
+                    service_provider_name : 'BBC'
+                    service_type : 'digital television service'
+                Descriptor 0x73 : UNKNOWN
+                    contents : 'fp.bbc.co.uk'
+
+        .....
+
+        Service id : 4671
+            EIT present_following? : YES
+            EIT schedule?          : YES
+            Running status         : 4 (RUNNING)
+            Scrambled?             : NO
+            Service descriptors:
+                Descriptor 0x48 : service
+                    service_name : 'CBBC Channel'
+                    service_provider_name : 'BBC'
+                    service_type : 'digital television service'
+                Descriptor 0x73 : UNKNOWN
+                    contents : 'fp.bbc.co.uk'
+
+ParseServiceDescriptionTable can collect the sections of, and then parse, both
+'current' and 'next' tables simultaneously.
+
+See the "DVB SI" specifications for information on the purposes of the
+descriptor fields that appear in various parts of this table.
+
+See Kamaelia.Support.DVB.Descriptors for information on how each is parsed.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+
+
+How does it work?
+-----------------
+
+ParseServiceDescriptionTable logs all the table sections it receives, until it
+determines it has the complete set; then it parses them.
+
+If the version number field in any table section changes, then the log is
+cleared, and the component starts collecting the sections again from scratch.
+
+
+
+SDT_to_SimpleServiceList
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Behaviour
+---------
+
+Send parsed service description tables to this component's "inbox" inbox and
+a dictionary mapping service names to service ids will be sent out the "outbox"
+outbox. For example::
+
+    { 'BBCi'        : 4479,
+      'BBC ONE'     : 4164,
+      'BBC TWO'     : 4228,
+      'CBBC Channel': 4671,
+      'BBC NEWS 24' : 4415,
+      'BBC THREE'   : 4351
+    }
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
 """
 
 from Axon.Component import component
@@ -35,27 +284,51 @@ SDT_PID = 0x11
 
 
 def ParseServiceDescriptionTable_ActualTS():
+    """\
+    ParseServiceDescriptionTable_ActualTS() -> new ParseServiceDescriptionTable component.
+
+    Instantiates a ParseServiceDescriptionTable component configured to parse
+    'ACTUAL TS' tables only (table id 0x42)
+    """
     return ParseServiceDescriptionTable(acceptTables = {0x42:"ACTUAL"})
 
+
+
 def ParseServiceDescriptionTable_OtherTS():
+    """\
+    ParseServiceDescriptionTable_OtherTS() -> new ParseServiceDescriptionTable component.
+
+    Instantiates a ParseServiceDescriptionTable component configured to parse
+    'OTHER TS' tables only (table id 0x46)
+    """
     return ParseServiceDescriptionTable(acceptTables = {0x46:"OTHER"})
 
+
+
 def ParseServiceDescriptionTable_ActualAndOtherTS():
+    """\
+    ParseServiceDescriptionTable_ActualAndOtherTS() -> new ParseServiceDescriptionTable component.
+
+    Instantiates a ParseServiceDescriptionTable component configured to parse
+    both 'ACTUAL' and 'OTHER TS' tables (table ids 0x42 and 0x46)
+    """
     return ParseServiceDescriptionTable(acceptTables = {0x42:"ACTUAL",0x46:"OTHER"})
 
+
+
 class ParseServiceDescriptionTable(component):
-    """
-    Parses a Service Description Table.
-    
-    Receives table sections from PSI packets. Once all sections have been
-    gathered; parses the table and outputs a dictionary containing the contents.
+    """\
+    ParseServiceDescriptionTable([acceptTables]) -> new ParseServiceDescriptionTable component.
+
+    Send reconstructed PSI table sections to the "inbox" inbox. When a complete
+    table is assembled and parsed, the result is sent out of the "outbox" outbox
+    as a dictionary.
     
     Doesn't emit anything again until the version number of the table changes.
     
-    Outputs both 'current' and 'next' tables.
-    
-    Can only handle multiple SDTs with multiple table id's all simultaneously. Those
-    table IDs must be registered in the initializer.
+    Keyword arguments::
+
+    - acceptTables  - dict of (table_id,string_description) mappings for tables to be accepted (default={0x42:"ACTUAL",0x46:"OTHER"})
     """
     Inboxes = { "inbox" : "DVB PSI Packets from a single PID containing SDT table sections",
                 "control" : "Shutdown signalling",
@@ -184,6 +457,11 @@ class ParseServiceDescriptionTable(component):
 
 
 class SDT_to_SimpleServiceList(component):
+    """\
+    SDT_to_SimpleServiceList() -> new SDT_to_SimpleServiceList component.
+
+    Converts parsed Service Description Tables to a simplified list of services.
+    """
     
     def shutdown(self):
         while self.dataReady("control"):
