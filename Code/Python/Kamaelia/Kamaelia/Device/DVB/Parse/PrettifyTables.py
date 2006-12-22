@@ -18,6 +18,82 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+========================================
+Pretty printing of parsed DVB PSI tables
+========================================
+
+A selection of components for creating human readable strings of the output of
+the various components in Kamaelia.Device.DVB.Parse that parse data tables
+in DVB MPEG Transport Streams.
+
+
+
+Example Usage
+-------------
+
+Pretty printing of a Program Association Table (PAT)::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    PAT_PID = 0x0
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [PAT_PID], feparams),
+              DVB_Demuxer({ PAT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseProgramAssociationTable(),
+              PrettifyProgramAssociationTable(),
+              ConsoleEchoer(),
+            ).run()
+
+Example output::
+
+    PAT received:
+        Table ID           : 0
+        Table is valid for : CURRENT (valid)
+        NIT is in PID      : 16
+        For transport stream id : 4100
+            For service 4228 : PMT is in PID 4228
+            For service 4351 : PMT is in PID 4351
+            For service 4479 : PMT is in PID 4479
+            For service 4164 : PMT is in PID 4164
+            For service 4415 : PMT is in PID 4415
+            For service 4671 : PMT is in PID 4671
+
+This data came from  an instantaneous snapshot of the PAT for Crystal Palace MUX
+1 transmission (505.8MHz) in the UK on 20th Dec 2006.
+
+
+
+Behaviour
+---------
+
+The components available are::
+
+    PrettifyProgramAssociationTable
+    PrettifyNetworkInformationTable
+    PrettifyProgramMapTable
+    PrettifyServiceDescriptionTable
+    PrettifyEventInformationTable
+    PrettifyTimeAndDateTable
+    PrettifyTimeOffsetTable
+
+Send to the "inbox" inbox of any of these components the relevant parsed table,
+and a string will be sent out the "outbox" outbox containing a 'prettified'
+human readable equivalent of the table data.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+"""
+
 
 # Parsed SI data human readable formatter
 from Axon.Component import component
@@ -36,6 +112,12 @@ _running_status = [
 
 
 class PrettifyProgramAssociationTable(component):
+    """\
+    PrettifyProgramAssociationTable() -> new PrettifyProgramAssociationTable component.
+
+    Send parsed program association tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -74,6 +156,12 @@ class PrettifyProgramAssociationTable(component):
 
 
 class PrettifyNetworkInformationTable(component):
+    """\
+    PrettifyNetworkInformationTable() -> new PrettifyNetworkInformationTable component.
+
+    Send parsed network information tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -122,6 +210,12 @@ class PrettifyNetworkInformationTable(component):
 
 
 class PrettifyProgramMapTable(component):
+    """\
+    PrettifyProgramMapTable() -> new PrettifyProgramMapTable component.
+
+    Send parsed program map tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -169,6 +263,12 @@ class PrettifyProgramMapTable(component):
 
 
 class PrettifyServiceDescriptionTable(component):
+    """\
+    PrettifyServiceDescriptionTable() -> new PrettifyServiceDescriptionTable component.
+
+    Send parsed service description tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -219,6 +319,12 @@ class PrettifyServiceDescriptionTable(component):
 
 
 class PrettifyEventInformationTable(component):
+    """\
+    PrettifyEventInformationTable() -> new PrettifyEventInformationTable component.
+
+    Send parsed event information tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -267,6 +373,12 @@ class PrettifyEventInformationTable(component):
 
 
 class PrettifyTimeAndDateTable(component):
+    """\
+    PrettifyTimeAndDateTable() -> new PrettifyTimeAndDateTable component.
+
+    Send parsed time and date tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -295,6 +407,12 @@ class PrettifyTimeAndDateTable(component):
 
 
 class PrettifyTimeOffsetTable(component):
+    """\
+    PrettifyTimeOffsetTable() -> new PrettifyTimeOffsetTable component.
+
+    Send parsed time offset tables to the "inbox" inbox and a human
+    readable string version will be sent out the "outbox" outbox.
+    """
     def shutdown(self):
         while self.dataReady("control"):
             msg = self.recv("control")
