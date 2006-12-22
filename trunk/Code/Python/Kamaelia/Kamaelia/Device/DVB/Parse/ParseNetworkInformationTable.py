@@ -58,7 +58,7 @@ a multiplex::
     Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
               DVB_Demuxer({ NIT_PID:["outbox"]}),
               ReassemblePSITables(),
-              ParseNetworkInformationTable(),
+              ParseNetworkInformationTable_ActualNetwork(),
               PrettifyNetworkInformationTable(),
               ConsoleEchoer(),
             ).run()
