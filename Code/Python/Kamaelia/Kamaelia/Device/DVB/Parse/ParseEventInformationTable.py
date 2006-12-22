@@ -19,8 +19,256 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+===============================================
+Parsing Event Information Tables in DVB streams
+===============================================
 
-Code to parse Event Information Tables from a DVB transport stream
+ParseEventInformationTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs a dictionary containing the data in the table.
+
+The Event Information Table carries data about the programmes being broadcast
+both now (present-following data) and in the future (schedule data) and is
+typically used to drive Electronic Progamme Guides, scheduled recording and
+"now and next" information displays.
+
+The purpose of the EIT and details of the fields within in are defined in the
+DVB SI specification::
+
+- ETSI EN 300 468 
+  "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+  in DVB systems"
+  ETSI / EBU (DVB group)
+
+See Kamaelia.Support.DVB.Descriptors for information on how they are parsed.
+
+
+
+Example Usage
+~~~~~~~~~~~~~
+
+A simple pipeline to receive, parse and display the "now and next" information
+for programmes in the current multiplex, from the Event Information Table::
+
+    FREQUENCY = 505.833330
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
+    }
+    
+    EIT_PID = 0x12
+    
+    Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
+              DVB_Demuxer({ NIT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseEventInformationTable_Subset(actual_presentFollowing=True),
+              PrettifyEventInformationTable(),
+              ConsoleEchoer(),
+            ).run()
+
+A slight modification to the pipeline, to convert the parsed tables into a
+stream of inidividual events::
+
+    Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
+              DVB_Demuxer({ NIT_PID:["outbox"]}),
+              ReassemblePSITables(),
+              ParseEventInformationTable_Subset(actual_presentFollowing=True),
+              SimplifyEIT(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+ParseEventInformationTable / ParseEventInformationTable_Subset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+            
+Behaviour
+---------
+
+At initialisation, specify what sub tables you want ParseEventInformationTable
+to process (others will be ignored). Event information is grouped into sub
+tables according to where it is::
+
+   * 'Actual' data describes programmes broadcast in the same actual multiplex
+     as this data
+   * 'Other' data describes programmes being broadcast in other multiplexes
+
+...and what timeframe it relates to::
+    
+   * 'present following' data describes the now showing (present) and next
+     (following) programme to be shown
+  * 'schedule' data describes programmes being shown later, typically over the
+    next 7 or 8 days.
+
+Initialise ParseEventInformationTable by providing a dictionary mapping table
+ids, to be accepted, to (label, is-present-following-flag) pairs. For example,
+to accept tables of present-following data for this and other multiplexes::
+
+    ParseEventInformationTable(acceptTables = { 0x4e : ("ACTUAL", True),
+                                                0x4f : ("OTHER", False),
+                                              }
+
+However it is much simpler to use the ParseEventInformationTable_Subset helper
+funciton to create it for you. For example, the same effect as above can be
+achieved with::
+
+    ParseEventInformationTable_Subset( actual_presentFollowing = True,
+                                       other_presentFollowing  = True,
+                                       actual_schedule         = False,
+                                       other_schedule          = False,
+                                     )
+
+Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections
+of the table have arrived, ParseNetworkInformationTable will parse the table
+and send it out of its "outbox" outbox.
+
+If the table is unchanged since last time it was parsed, then it will not be
+sent out. Parsed tables are only sent out when they are new or have just
+changed.
+
+Note that an EIT table is likely to arrive, and be parsed in lots of separate
+fragments. Because of the way the data format is defined, it is impossible for
+ParseEventInformationTable to know for certain when it has received everything!
+
+The parsed table is sent out as a dictionary data structure, like this (list of
+event descriptors abridged for brevity)::
+
+    {
+        'table_id'            : 78,
+        'table_type'          : 'EIT',
+        'current'             : 1,
+        'actual_other'        : 'ACTUAL',
+        'is_present_following': True,
+        'transport_stream_id' : 4100,
+        'original_network_id' : 9018,
+        'events': [
+            { 'event_id'      : 8735,
+              'running_status': 1,
+              'free_CA_mode'  : 0,
+              'starttime'     : [2006, 12, 22, 11, 0, 0],
+              'duration'      : (0, 30, 0),
+              'service_id'    : 4164
+              'descriptors': [
+                  (77, {'type': 'short_event', 'name': 'To Buy or Not to Buy', 'text': 'Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]', 'language_code': 'eng'}),
+                  (80, {'type': 'component', 'stream_content': 1, 'component_type': 3, 'text': 'Video 1', 'component_tag': 1, 'content,type': ('video', '16:9 aspect ratio without pan vectors, 25 Hz'), 'language_code': '   '}),
+                  (80, {'type': 'component', 'stream_content': 2, 'component_type': 3, 'text': 'Audio 2', 'component_tag': 2, 'content,type': ('audio', 'stereo (2 channel)'), 'language_code': 'eng'}),
+                  (80, {'type': 'component', 'stream_content': 3, 'component_type': 16, 'text': 'Subtitling 5', 'component_tag': 5, 'content,type': ('DVB subtitles (normal)', 'with no monitor aspect ratio criticality'), 'language_code': '   '}),
+                  (80, {'type': 'component', 'stream_content': 4, 'component_type': 1, 'text': 'Data 6', 'component_tag': 6, 'content,type': (4, 1), 'language_code': '   '}),
+                  
+                  .....
+                  
+                  (84, {'type': 'content', 'contents': '\xa0 '})
+              ],
+            }
+        ]
+    }
+
+The above example is an event for the service BBC ONE, broadcast at 10:06 GMT on
+22nd December 2006. It describes a 'present-following' event that doesn't start
+until 11:00 GMT. It is therefore describing the 'next' programme that will be
+on the channel/service.
+
+If this data is sent on through a PrettifyEventInformationTable component,
+then the equivalent output is a string containing this (again, abridged for
+brevity)::
+
+    EIT received:
+        Table ID                      : 78
+        Table is valid for            : CURRENT (valid)
+        Actual or Other n/w           : ACTUAL
+        Present-Following or Schedule : Present-Following
+        Transport stream id           : 4100
+        Original network id           : 9018
+        Events:
+            Service id : 4164
+                Running status         : 1 (NOT RUNNING)
+                Start datetime (UTC)   : 2006-12-22 11:00:00
+                Duration               : 00:30:00 (hh:mm:ss)
+                Scrambled?             : NO
+                Event descriptors:
+                    Descriptor 0x4d : short_event
+                        language_code : 'eng'
+                        name : 'To Buy or Not to Buy'
+                        text : 'Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]'
+                    Descriptor 0x50 : component
+                        component_tag : 1
+                        component_type : 3
+                        content,type : ('video', '16:9 aspect ratio without pan vectors, 25 Hz')
+                        language_code : '   '
+                        stream_content : 1
+                        text : 'Video 1'
+                    Descriptor 0x50 : component
+                        component_tag : 2
+                        component_type : 3
+                        content,type : ('audio', 'stereo (2 channel)')
+                        language_code : 'eng'
+                        stream_content : 2
+                        text : 'Audio 2'
+                    Descriptor 0x50 : component
+                        component_tag : 5
+                        component_type : 16
+                        content,type : ('DVB subtitles (normal)', 'with no monitor aspect ratio criticality')
+                        language_code : '   '
+                        stream_content : 3
+                        text : 'Subtitling 5'
+                    Descriptor 0x50 : component
+                        component_tag : 6
+                        component_type : 1
+                        content,type : (4, 1)
+                        language_code : '   '
+                        stream_content : 4
+                        text : 'Data 6'
+
+                    .....
+
+                    Descriptor 0x54 : content
+                        contents : '\xa0 '
+
+ParseEventInformationTable can collect the sections of, and then parse the
+various types of EIT table simultaneously.
+
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
+
+
+
+SimplifyEIT
+~~~~~~~~~~~
+
+
+
+Behaviour
+---------
+
+Send parsed event information data to the "inbox" inbox, and individual events,
+in a simplified form, will be sent out the "outbox" outbox one at a time. For
+example::
+
+    {
+        'event_id'       : 8735,
+        'when'           : 'NEXT',
+        'startdate'      : [2006, 12, 22],
+        'starttime'      : [11, 0, 0],
+        'duration'       : (0, 30, 0),
+        'service'        : 4164,
+        'transportstream': 4100,
+        'language_code'  : 'eng',
+        'name'           : 'To Buy or Not to Buy',
+        'description'    : 'Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]'
+    }
+
+The possible values of the 'when' field are::
+   * "NOW"        -- describes a programme that is happening NOW
+   * "NEXT"       -- describes a programme that follows the one happening now
+   * "SCHEDULED"  -- part of a schedule describing programmes happening over the next few days
+    
+If a shutdownMicroprocess or producerFinished message is received on the
+"control" inbox, then it will immediately be sent on out of the "signal" outbox
+and the component will then immediately terminate.
 
 """
 
@@ -39,6 +287,19 @@ def ParseEventInformationTable_Subset( actual_presentFollowing = True,
                                        actual_schedule         = False,
                                        other_schedule          = False,
                    ):
+    """\
+    ParseEventInformationTable_Subset([actual_presentFollowing][,other_presentFollowing][,actual_schedule][,other_schedule] ) -> new ParseEventInformationTable component
+
+    Returns a ParseEventInformationTable component, configured to parse the
+    table types specified, and ignore all others.
+    
+    Keyword arguments::
+
+    - actual_presentFollowing  -- If True, parse 'present-following' data for this multiplex (default=True)
+    - other_presentFollowing   -- If True, parse 'present-following' data for other multiplexes (default=False)
+    - actual_schedule          -- If True, parse 'schedule' data for this multiplex (default=False)
+    - other_schedule           -- If True, parse 'schedule' data for other multiplexes (default=False)
+    """
     acceptTables = {}
     if actual_presentFollowing:
         acceptTables[0x4e] = ("ACTUAL", True)
@@ -54,19 +315,21 @@ def ParseEventInformationTable_Subset( actual_presentFollowing = True,
 
 
 class ParseEventInformationTable(component):
-    """
-    Parses a EIT table.
-    
-    Receives table sections from PSI packets. Once all sections have been
-    gathered; parses the table and outputs a dictionary containing the contents.
+    """\
+    ParseEventInformationTable([acceptTables]) -> new ParseEventInformationTable component.
+
+    Send reconstructed PSI table sections to the "inbox" inbox. When a complete
+    table is assembled and parsed, the result is sent out of the "outbox" outbox
+    as a dictionary.
     
     Doesn't emit anything again until the version number of the table changes.
+
+    Use ParseEventInformationTable_Subset for simpler initialisation with
+    convenient presets.
     
-    Outputs both 'current' and 'next' tables.
-    
-    Can handle multiple EITs with multiple table id's all simultaneously. Those
-    table IDs must be registered in the initializer. Use
-    ParseEventInformationTable_Subset for convenient presets.
+    Keyword arguments::
+
+    - acceptTables  - dict of (table_id,string_description) mappings for tables to be accepted (default={0x4e:("ACTUAL",True)})
     """
     Inboxes = { "inbox" : "DVB PSI Packets from a single PID containing EIT table sections",
                 "control" : "Shutdown signalling",
@@ -212,8 +475,10 @@ class ParseEventInformationTable(component):
 
 class SimplifyEIT(component):
     """\
-    Component that simplifies EIT data, converting the table to simpler EIT
-    event messages.
+    SimplifyEIT() -> new SimplifyEIT component.
+
+    Send parsed EIT messages to the "inbox" inbox, and individual, simplified
+    events will be sent out the "outbox" outbox.
     """
     
     def shutdown(self):
