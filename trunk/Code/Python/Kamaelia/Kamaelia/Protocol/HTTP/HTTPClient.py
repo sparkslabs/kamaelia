@@ -165,7 +165,7 @@ class SingleShotHTTPClient(component):
         "signal"         : "UNUSED"
     }
         
-    def __init__(self, starturl, postbody = "", connectionclass = TCPClient):
+    def __init__(self, starturl, postbody = "", connectionclass = TCPClient, extraheaders = None):
         #print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
@@ -175,7 +175,10 @@ class SingleShotHTTPClient(component):
         self.connectionclass = connectionclass
         
         self.postbody = postbody
-        #print "Start url: " + starturl
+        if extraheaders is not None:
+            self.extraheaders = extraheaders
+        else:
+            self.extraheaders = {}
         
     def formRequest(self, url):
         """Craft a HTTP request string for the supplied url"""
@@ -195,9 +198,14 @@ class SingleShotHTTPClient(component):
         splituri["request"].append("Host: " + host + "\r\n")
         splituri["request"].append("User-agent: Kamaelia HTTP Client 0.3 (RJL)\r\n")
         splituri["request"].append("Connection: Keep-Alive\r\n") # keep-alive is a work around for lack of shutdown notification in TCPClient
+        for header in self.extraheaders:
+            splituri["request"].append("%s: %s\r\n" % (header, self.extraheaders[header]))
+        
         splituri["request"].append("\r\n") 
 
         splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
+
+        print splituri["request"]
         
         if self.postbody != "":
             splituri["request"].append(self.postbody)
@@ -334,7 +342,10 @@ class SingleShotHTTPClient(component):
 def makeSSHTTPClient(paramdict):
     """Creates a SingleShotHTTPClient for the given URL. Needed for Carousel."""
     # get the "url" and "postbody" keys from paramdict to use as the arguments of SingleShotHTTPClient
-    return SingleShotHTTPClient(paramdict.get("url", ""), paramdict.get("postbody", ""))
+    return SingleShotHTTPClient(paramdict.get("url", ""), 
+                                paramdict.get("postbody", ""),
+                                extraheaders = paramdict.get("extraheaders", None)
+                               )
 
 class SimpleHTTPClient(component):
     Inboxes = {
