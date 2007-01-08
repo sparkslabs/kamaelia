@@ -114,7 +114,7 @@ class ChannelNameLookupService(AdaptiveCommsComponent):
         if cmd=="ADD":
             # add (or fetch existing) outbox going to this destination
             try:
-                recipientOutbox, linkage, subscribedToNamess = self.subscriptions[dest]
+                recipientOutbox, linkage, subscribedToNames = self.subscriptions[dest]
             except KeyError:
                 recipientOutbox = self.addOutbox("outbox")
                 linkage = self.link( (self, recipientOutbox), dest)
@@ -447,10 +447,10 @@ Pipeline( Subscribe("PSI_Tables", [EIT_PID]),
           FilterOutNotCurrent(),
           SimplifyEIT(),
           NowNextProgrammeJunctionDetect(),
-          PublishTo("now&next"),
+          PublishTo("nowEvents"),
         ).activate()
 
-Backplane("now&next").activate()
+Backplane("nowEvents").activate()
 
 
 # ------------------------------------------------------------------------------
@@ -475,7 +475,7 @@ RegisterService( \
 
 def recordForMe(channel, programme, filename):
     return \
-        Pipeline( SubscribeTo("now&next"),
+        Pipeline( SubscribeTo("nowEvents"),
                   ProgrammeDetector( channel_name=channel, programme_name=programme,
                                      fromChannelLookup="LookupChannelName"),
                   ControllableRecorder( channel_name=channel,
