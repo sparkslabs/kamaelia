@@ -39,11 +39,11 @@ DMX_PES_SUBTITLE = cdmx.DMX_PES_SUBTITLE
 DMX_PES_PCR = cdmx.DMX_PES_PCR
 DMX_PES_OTHER = cdmx.DMX_PES_OTHER
 
-DMX_SCRAMBLING_EV = cdmx.DMX_SCRAMBLING_EV
-DMX_FRONTEND_EV = cdmx.DMX_FRONTEND_EV
+# DMX_SCRAMBLING_EV = cdmx.DMX_SCRAMBLING_EV
+# DMX_FRONTEND_EV = cdmx.DMX_FRONTEND_EV
 
-DMX_SCRAMBLING_OFF = cdmx.DMX_SCRAMBLING_OFF
-DMX_SCRAMBLING_ON = cdmx.DMX_SCRAMBLING_ON
+# DMX_SCRAMBLING_OFF = cdmx.DMX_SCRAMBLING_OFF
+# DMX_SCRAMBLING_ON = cdmx.DMX_SCRAMBLING_ON
 
 DMX_CHECK_CRC = cdmx.DMX_CHECK_CRC
 DMX_ONESHOT = cdmx.DMX_ONESHOT
@@ -155,16 +155,16 @@ cdef class Demux:
         global cdmx
         set_ioctl_int(self.fd, cdmx.DMX_SET_BUFFER_SIZE, size)
 
-    def get_event(self):
-        """Returns an event, if available."""
-        global cdmx
-        cdef cdmx.dmx_event e
-
-        e.event = 0
-        e.u.scrambling = 0
-        if ioctl(self.fd, cdmx.DMX_GET_EVENT, &e) == -1:
-            raise_ioerror()
-        return e.event, e.timeStamp, e.u.scrambling
+#    def get_event(self):
+#        """Returns an event, if available."""
+#        global cdmx
+#        cdef cdmx.dmx_event e
+#
+#        e.event = 0
+#        e.u.scrambling = 0
+#        if ioctl(self.fd, cdmx.DMX_GET_EVENT, &e) == -1:
+#            raise_ioerror()
+#        return e.event, e.timeStamp, e.u.scrambling
 
     def get_stc(self, num):
         global cdmx
