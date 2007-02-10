@@ -322,7 +322,6 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
 
         super(TopologyViewer, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
-        pygame.mixer.quit()
         
         if particleTypes == None:
             self.particleTypes = {"-":RenderingParticle}
