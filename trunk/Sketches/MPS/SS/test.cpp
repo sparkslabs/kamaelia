@@ -6,9 +6,9 @@ str *const_0, *const_1, *const_2, *const_3;
 
 __iter<int> *MT, *__13, *__14;
 int __15, i;
-component *c;
 postman *postie;
 str *__name__;
+Consumer *c;
 scheduler *myscheduler;
 Producer *p;
 
@@ -33,7 +33,39 @@ class scheduler
 
 class_ *cl_scheduler;
 
-int scheduler::activateMicroprocess(lambda0 some_gen, component *some_obj) {
+int scheduler::activateMicroprocess(lambda0 some_gen, microprocess *some_obj) {
+    __iter<int> *microthread;
+
+    microthread = some_gen(some_obj);
+    (this->newqueue)->append(microthread);
+    return 0;
+}
+
+int scheduler::activateMicroprocess(lambda1 some_gen, component *some_obj) {
+    __iter<int> *microthread;
+
+    microthread = some_gen(some_obj);
+    (this->newqueue)->append(microthread);
+    return 0;
+}
+
+int scheduler::activateMicroprocess(lambda2 some_gen, postman *some_obj) {
+    __iter<int> *microthread;
+
+    microthread = some_gen(some_obj);
+    (this->newqueue)->append(microthread);
+    return 0;
+}
+
+int scheduler::activateMicroprocess(lambda3 some_gen, Producer *some_obj) {
+    __iter<int> *microthread;
+
+    microthread = some_gen(some_obj);
+    (this->newqueue)->append(microthread);
+    return 0;
+}
+
+int scheduler::activateMicroprocess(lambda4 some_gen, Consumer *some_obj) {
     __iter<int> *microthread;
 
     microthread = some_gen(some_obj);
@@ -85,7 +117,7 @@ class postman
 
 class_ *cl_postman;
 
-postman::postman(Producer *source, str *sourcebox, component *sink, str *sinkbox) : microprocess(const_0) {
+postman::postman(Producer *source, str *sourcebox, Consumer *sink, str *sinkbox) : microprocess(const_0) {
     this->__class__ = cl_postman;
     
     this->source = source;
@@ -112,6 +144,11 @@ class Consumer
 
 class_ *cl_Consumer;
 
+Consumer::Consumer() : component() {
+    this->__class__ = cl_Consumer;
+    
+}
+
 void __init() {
     const_0 = new str("hello");
     const_1 = new str("inbox");
@@ -120,19 +157,20 @@ void __init() {
 
     __name__ = new str("__main__");
 
-    cl_postman = new class_("postman", 16, 16);
-    cl_Producer = new class_("Producer", 18, 18);
-    cl_microprocess = new class_("microprocess", 15, 20);
-    cl_component = new class_("component", 17, 19);
-    cl_scheduler = new class_("scheduler", 20, 20);
-    cl_Consumer = new class_("Consumer", 19, 19);
+    cl_postman = new class_("postman", 32, 32);
+    cl_Producer = new class_("Producer", 34, 34);
+    cl_microprocess = new class_("microprocess", 31, 36);
+    cl_component = new class_("component", 33, 35);
+    cl_scheduler = new class_("scheduler", 36, 36);
+    cl_Consumer = new class_("Consumer", 35, 35);
 
     p = (new Producer(const_3));
-    c = (new component());
+    c = (new Consumer());
     postie = (new postman(p, const_2, c, const_1));
     myscheduler = (new scheduler());
     myscheduler->activateMicroprocess(Consumer_main, c);
     myscheduler->activateMicroprocess(Producer_main, p);
+    myscheduler->activateMicroprocess(postman_main, postie);
     MT = scheduler_main(myscheduler);
 
     FOR_IN(i,MT,14)
@@ -218,6 +256,42 @@ __iter<int> *scheduler_main(scheduler *zelf) {
 
 }
 
+class __gen_postman_main : public __iter<int> {
+public:
+    postman *zelf;
+    str *d;
+    int __last_yield;
+
+    __gen_postman_main(postman *zelf) {
+        this->zelf = zelf;
+        __last_yield = -1;
+    }
+
+    int next() {
+        switch(__last_yield) {
+            case 0: goto __after_yield_0;
+            default: break;
+        }
+
+        while(1) {
+            __last_yield = 0;
+            return 1;
+            __after_yield_0:;
+            if ((zelf->source)->dataReady(zelf->sourcebox)) {
+                d = (zelf->source)->recv(zelf->sourcebox);
+                (zelf->sink)->send(d, zelf->sinkbox);
+            }
+        }
+        throw new StopIteration();
+    }
+
+};
+
+__iter<int> *postman_main(postman *zelf) {
+    return new __gen_postman_main(zelf);
+
+}
+
 class __gen_Producer_main : public __iter<int> {
 public:
     Producer *zelf;
@@ -254,10 +328,10 @@ class __gen_Consumer_main : public __iter<int> {
 public:
     int count;
     str *data;
-    component *zelf;
+    Consumer *zelf;
     int __last_yield;
 
-    __gen_Consumer_main(component *zelf) {
+    __gen_Consumer_main(Consumer *zelf) {
         this->zelf = zelf;
         __last_yield = -1;
     }
@@ -284,7 +358,7 @@ public:
 
 };
 
-__iter<int> *Consumer_main(component *zelf) {
+__iter<int> *Consumer_main(Consumer *zelf) {
     return new __gen_Consumer_main(zelf);
 
 }
