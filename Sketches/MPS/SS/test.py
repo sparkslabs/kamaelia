@@ -106,14 +106,13 @@ class Consumer(component):
 #
 
 p = Producer("Hello World")
-# c = Consumer()
-c = component()
+c = Consumer()
 postie = postman(p, "outbox", c, "inbox")
 
 myscheduler = scheduler()
 myscheduler.activateMicroprocess(Consumer_main,c)
 myscheduler.activateMicroprocess(Producer_main,p)
-# myscheduler.activateMicroprocess(postman_main,postie)
+myscheduler.activateMicroprocess(postman_main,postie)
 
 
 MT = scheduler_main(myscheduler)
