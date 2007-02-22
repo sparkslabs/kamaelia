@@ -13,11 +13,9 @@ class postman;
 class Producer;
 class Consumer;
 
-typedef __iter<int> *(*lambda0)(microprocess *);
-typedef __iter<int> *(*lambda1)(component *);
-typedef __iter<int> *(*lambda2)(postman *);
-typedef __iter<int> *(*lambda3)(Producer *);
-typedef __iter<int> *(*lambda4)(Consumer *);
+typedef __iter<int> *(*lambda0)(Consumer *);
+typedef __iter<int> *(*lambda1)(postman *);
+typedef __iter<int> *(*lambda2)(Producer *);
 
 extern class_ *cl_microprocess;
 class microprocess : public pyobj {
@@ -36,11 +34,8 @@ public:
     list<__iter<int> *> *newqueue;
     list<__iter<int> *> *active;
 
-    int activateMicroprocess(lambda0 some_gen, microprocess *some_obj);
-    int activateMicroprocess(lambda1 some_gen, component *some_obj);
-    int activateMicroprocess(lambda2 some_gen, postman *some_obj);
-    int activateMicroprocess(lambda3 some_gen, Producer *some_obj);
-    int activateMicroprocess(lambda4 some_gen, Consumer *some_obj);
+    template<class Klass>
+    int activateMicroprocess( __iter<int> *(*some_gen)(Klass *), Klass *some_obj);
     scheduler();
 };
 
