@@ -33,39 +33,8 @@ class scheduler
 
 class_ *cl_scheduler;
 
-int scheduler::activateMicroprocess(lambda0 some_gen, microprocess *some_obj) {
-    __iter<int> *microthread;
-
-    microthread = some_gen(some_obj);
-    (this->newqueue)->append(microthread);
-    return 0;
-}
-
-int scheduler::activateMicroprocess(lambda1 some_gen, component *some_obj) {
-    __iter<int> *microthread;
-
-    microthread = some_gen(some_obj);
-    (this->newqueue)->append(microthread);
-    return 0;
-}
-
-int scheduler::activateMicroprocess(lambda2 some_gen, postman *some_obj) {
-    __iter<int> *microthread;
-
-    microthread = some_gen(some_obj);
-    (this->newqueue)->append(microthread);
-    return 0;
-}
-
-int scheduler::activateMicroprocess(lambda3 some_gen, Producer *some_obj) {
-    __iter<int> *microthread;
-
-    microthread = some_gen(some_obj);
-    (this->newqueue)->append(microthread);
-    return 0;
-}
-
-int scheduler::activateMicroprocess(lambda4 some_gen, Consumer *some_obj) {
+template<class Klass>
+int scheduler::activateMicroprocess(__iter<int> *(*some_gen)(Klass *), Klass *some_obj) {
     __iter<int> *microthread;
 
     microthread = some_gen(some_obj);
