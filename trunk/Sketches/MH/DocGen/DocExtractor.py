@@ -72,21 +72,26 @@ class htmlRender(object):
         if debug:
             print "Wibble?"
         doclines=doc.split("\n")
-        while """<div class="document">""" not in doclines[0]:
+        if len(doclines) > 0:
+            while '<div class="document"' not in doclines[0]:
+                doclines = doclines[1:]
             doclines = doclines[1:]
-        doclines = doclines[1:]
-        while """</div>""" not in doclines[-1]:
-            doclines = doclines[:-1]
-        try:
-            while """</div>""" in doclines[-1]:
+            while """</div>""" not in doclines[-1]:
                 doclines = doclines[:-1]
-        except IndexError:
-            pass
+            try:
+                while """</div>""" in doclines[-1]:
+                    doclines = doclines[:-1]
+            except IndexError:
+                pass
         doc = "\n".join(doclines)
         return doc
 
     def divider(self):
         return "\n"
+    
+    def hardDivider(self):
+        return "\n<hr />\n"
+    
     def start(self): return "<html><body>\n"
     def stop(self): 
         return """\
@@ -140,6 +145,7 @@ class docFormatter(object):
             docstring = docstring[1:]
         while docstring[-1] == "\n":
             docstring = docstring[:-1]
+            
         pre = ""
         if main:
             pre = self.renderer.divider()
@@ -179,28 +185,42 @@ class docFormatter(object):
 
     def preamble(self): return self.renderer.start()
     def postamble(self): return self.renderer.stop()
+    
+    def formatModule(self, M):
+        return self.docString(M.__doc__, main=True)
+    
+    def hardDivider(self):
+        return self.renderer.hardDivider()
 
-formatter = docFormatter(htmlRender)
-
-debug = False
-if debug:
-  COMPONENTS = {
-    "Kamaelia.ReadFileAdaptor" : ("ReadFileAdaptor",)
-}
 def generateDocumentationFiles():
     for MODULE in COMPONENTS:
         module = __import__(MODULE, [], [], COMPONENTS[MODULE])
+        F = open(docdir+"/"+MODULE+".html", "w")
+        F.write(formatter.preamble())
+        
+        F.write(formatter.formatModule(module))
+        F.write(formatter.hardDivider())
+        
         for COMPONENT in COMPONENTS[MODULE]:
-            print
-            print "Processing: "+MODULE+"."+COMPONENT+" ..."
-            print "*" * len("Processing: "+MODULE+"."+COMPONENT+" ...")
-            F = open(docdir+"/"+MODULE+"."+COMPONENT+".html","w")
+            F.write('<a name="'+COMPONENT+'" />\n')
             X = getattr(module, COMPONENT)
-            F.write(formatter.preamble())
-            F.write("<h1>"+ MODULE+"."+COMPONENT+"</h1>\n")
             F.write(formatter.formatComponent(X))
-            F.write(formatter.postamble())
-            F.close()
+            
+        F.write(formatter.postamble())
+        F.close()
+        
+        
+#        for COMPONENT in COMPONENTS[MODULE]:
+#            print
+#            print "Processing: "+MODULE+"."+COMPONENT+" ..."
+#            print "*" * len("Processing: "+MODULE+"."+COMPONENT+" ...")
+#            F = open(docdir+"/"+MODULE+"."+COMPONENT+".html","w")
+#            X = getattr(module, COMPONENT)
+#            F.write(formatter.preamble())
+#            F.write("<h1>"+ MODULE+"."+COMPONENT+"</h1>\n")
+#            F.write(formatter.formatComponent(X))
+#            F.write(formatter.postamble())
+#            F.close()
 
 
 def formatFile(SectionStack,File,KamaeliaDocs):
@@ -318,14 +338,21 @@ def generateIndexFile():
 
 if __name__ == "__main__":
 
-    C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
-    CN = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponentsNested()
-    COMPONENTS = {}
-    for key in C.keys():
-        COMPONENTS[".".join(key)] = C[key]
-    
     docdir = "pydoc"
     
-    
+    formatter = docFormatter(htmlRender)
+
+    debug = False
+    if debug:
+        COMPONENTS = {
+            "Kamaelia.ReadFileAdaptor" : ("ReadFileAdaptor",)
+        }
+    else:
+        C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
+        CN = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponentsNested()
+        COMPONENTS = {}
+        for key in C.keys():
+            COMPONENTS[".".join(key)] = C[key]
+
     generateDocumentationFiles()
     generateIndexFile()
