@@ -59,7 +59,7 @@ from Axon.Ipc import producerFinished, shutdown
 from Kamaelia.Protocol.HTTP.HTTPParser import *
 from Kamaelia.Protocol.HTTP.HTTPClient import *
 from Kamaelia.Util.PureTransformer import PureTransformer
-from Kamaelia.IPC.BaseIPC import IPC
+from Kamaelia.BaseIPC import IPC
 
 def intval(mystring):
     try:
