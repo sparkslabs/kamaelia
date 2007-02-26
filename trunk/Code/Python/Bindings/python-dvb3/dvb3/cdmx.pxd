@@ -62,13 +62,13 @@ cdef extern from *:
         DMX_PES_SUBTITLE = DMX_PES_SUBTITLE0
         DMX_PES_PCR = DMX_PES_PCR0
 
-    ctypedef enum dmx_event_t:
-        DMX_SCRAMBLING_EV
-        DMX_FRONTEND_EV
+#    ctypedef enum dmx_event_t:
+#        DMX_SCRAMBLING_EV
+#        DMX_FRONTEND_EV
 
-    ctypedef enum dmx_scrambling_status_t:
-        DMX_SCRAMBLING_OFF
-        DMX_SCRAMBLING_ON
+#    ctypedef enum dmx_scrambling_status_t:
+#        DMX_SCRAMBLING_OFF
+#        DMX_SCRAMBLING_ON
 
     cdef struct dmx_filter:
         __u8            filter[DMX_FILTER_SIZE]
@@ -94,13 +94,13 @@ cdef extern from *:
         dmx_pes_type_t  pes_type
         __u32           flags
 
-    cdef struct dmx_event__u:
-        dmx_scrambling_status_t scrambling
+#    cdef struct dmx_event__u:
+#        dmx_scrambling_status_t scrambling
 
-    cdef struct dmx_event:
-        dmx_event_t     event
-        time_t          timeStamp
-        dmx_event__u    u
+#    cdef struct dmx_event:
+#        dmx_event_t     event
+#        time_t          timeStamp
+#        dmx_event__u    u
 
     ctypedef enum dmx_source_t:
         DMX_SOURCE_FRONT0 = 0
