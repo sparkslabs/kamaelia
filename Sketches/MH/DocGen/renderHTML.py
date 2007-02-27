@@ -8,6 +8,9 @@ from docutils import core
 
 
 class RenderHTML(object):
+    
+    extension = ".html"
+    
     def __init__(self, debug=False):
         super(RenderHTML,self).__init__()
         self.debug=debug
@@ -30,22 +33,12 @@ class RenderHTML(object):
             for i in range(len(lines)):
                 print i,":", repr(lines[i])
         somestring = somestring.replace("(*","(\*")
-        doc = core.publish_parts(somestring,writer_name="html")["whole"]
-        if self.debug:
-            print "Wibble?"
-        doclines=doc.split("\n")
-        if len(doclines) > 0:
-            while '<div class="document"' not in doclines[0]:
-                doclines = doclines[1:]
-            doclines = doclines[1:]
-            while """</div>""" not in doclines[-1]:
-                doclines = doclines[:-1]
-            try:
-                while """</div>""" in doclines[-1]:
-                    doclines = doclines[:-1]
-            except IndexError:
-                pass
-        doc = "\n".join(doclines)
+        parts = core.publish_parts(somestring,writer_name="html")
+        doc = parts["html_title"] \
+            + parts["html_subtitle"] \
+            + parts["docinfo"] \
+            + parts["fragment"]
+        
         return doc
 
     def divider(self):
@@ -53,6 +46,12 @@ class RenderHTML(object):
     
     def hardDivider(self):
         return "\n<hr />\n"
+    
+    def setAnchor(self,name):
+        return '\n<a name="'+name+'" />'
+    
+    def linkToAnchor(self,name,text):
+        return '<a href="#' + name +'">' + text + '</a>'
     
     def start(self): return "<html><body>\n"
     def stop(self): 

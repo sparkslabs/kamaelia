@@ -130,7 +130,7 @@ class docFormatter(object):
 def generateDocumentationFiles():
     for MODULE in COMPONENTS:
         module = __import__(MODULE, [], [], COMPONENTS[MODULE])
-        F = open(docdir+"/"+MODULE+".html", "w")
+        F = open(docdir+"/"+MODULE+formatter.renderer.extension, "w")
         F.write(formatter.preamble())
         
         F.write(formatter.componentList(COMPONENTS[MODULE]))
@@ -277,6 +277,7 @@ if __name__ == "__main__":
     docdir = "pydoc"
     
     formatter = docFormatter(RenderHTML)
+#    formatter = docFormatter(RenderPlaintext)
 
     debug = False
     if debug:
