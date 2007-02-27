@@ -192,17 +192,29 @@ class docFormatter(object):
     def hardDivider(self):
         return self.renderer.hardDivider()
 
+    def componentAnchor(self, C):
+        return '<a name="'+C+'" />\n'
+    
+    def componentList(self, C):
+        theList=""
+        for COMPONENT in C:
+            theList += "\n<br />"
+            theList += '<a href="#' + COMPONENT +'">' + COMPONENT + '</a>'
+        return self.paragraph("[[boxright] Components:"+theList+" ]")
+
+
 def generateDocumentationFiles():
     for MODULE in COMPONENTS:
         module = __import__(MODULE, [], [], COMPONENTS[MODULE])
         F = open(docdir+"/"+MODULE+".html", "w")
         F.write(formatter.preamble())
         
+        F.write(formatter.componentList(COMPONENTS[MODULE]))
         F.write(formatter.formatModule(module))
         F.write(formatter.hardDivider())
         
         for COMPONENT in COMPONENTS[MODULE]:
-            F.write('<a name="'+COMPONENT+'" />\n')
+            F.write(formatter.componentAnchor(COMPONENT))
             X = getattr(module, COMPONENT)
             F.write(formatter.formatComponent(X))
             
