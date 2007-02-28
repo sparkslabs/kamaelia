@@ -20,11 +20,16 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-Legacy stub for consoleEchoer component.
-
-The component now resides in Kamaelia.Util.Console
-... please use this in preference
+This is a deprecation stub for later removal.
 """
 
-from Kamaelia.Util.Console import ConsoleEchoer as consoleEchoer
+import Kamaelia.Support.Deprecate as Deprecate
+from Kamaelia.Util.Console import ConsoleEchoer as __ConsoleEchoer
 
+Deprecate.deprecationWarning("Use Kamaelia.Util.Console instead of Kamaelia.Util.ConsoleEcho")
+
+consoleEchoer = Deprecate.makeClassStub(
+    __ConsoleEchoer,
+    "Use Kamaelia.Util.Console:ConsoleEchoer instead of Kamaelia.Util.ConsoleEcho:consoleEchoer",
+    "WARN"
+    )
