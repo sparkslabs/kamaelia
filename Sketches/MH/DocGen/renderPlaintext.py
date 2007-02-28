@@ -8,12 +8,12 @@ class RenderPlaintext(object):
         super(RenderPlaintext,self).__init__()
         self.debug=debug
 
-    def itemList(self, items):
-        result = []
-        for item in items:
-            result.append("   "+ str(item[0])+ " : "+ str(item[1]))
-        return "\n  * ".join(result)+"\n"
+    def itemPairList(self, items):
+        return self.simpleList([ str(item[0])+" : "+str(item[1]) for item in items ])
 
+    def simpleList(self, items):
+        return "\n  * ".join(items)+"\n"
+    
     def heading(self, label, level=4):
         if level == 2: 
             u = "".join(["*" for x in label])
@@ -38,6 +38,9 @@ class RenderPlaintext(object):
     
     def linkToAnchor(self,name,text):
         return text+' (see: '+name+')'
+    
+    def linkTo(self,name,text):
+        return text
     
     def start(self): return ""
     def stop(self): return ""

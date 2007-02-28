@@ -15,11 +15,11 @@ class RenderHTML(object):
         super(RenderHTML,self).__init__()
         self.debug=debug
     
-    def itemList(self, items):
-        result = []
-        for item in items:
-            result.append("   "+ str(item[0])+ " : "+ str(item[1]))
-        return "<ul><li>"+ "\n<li>".join(result)+"\n</ul>"
+    def itemPairList(self, items):
+        return self.simpleList([ "<b>"+str(item[0])+"</b> : "+str(item[1]) for item in items ])
+
+    def simpleList(self, items):
+        return "<ul><li>"+ ("\n<li>".join(items))+"\n</ul>"
 
     def heading(self, label, level=4):
         if level == 2: return "<h2>" + label + "</h2>\n"
@@ -38,6 +38,7 @@ class RenderHTML(object):
             + parts["html_subtitle"] \
             + parts["docinfo"] \
             + parts["fragment"]
+        print core.publish_doctree(somestring).__class__
         
         return doc
 
@@ -52,6 +53,9 @@ class RenderHTML(object):
     
     def linkToAnchor(self,name,text):
         return '<a href="#' + name +'">' + text + '</a>'
+    
+    def linkTo(self,name,text):
+        return '<a href="' + name + '.html">' + text + '</a>'
     
     def start(self): return "<html><body>\n"
     def stop(self): 

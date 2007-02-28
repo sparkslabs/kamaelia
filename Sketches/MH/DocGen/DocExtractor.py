@@ -46,7 +46,7 @@ class docFormatter(object):
                 description = "Code uses old style inbox/outbox description - no metadata available"
             items.append((box, description))
 
-        return self.renderer.heading(label) + self.renderer.itemList(items) + self.renderer.divider()
+        return self.renderer.heading(label) + self.renderer.itemPairList(items) + self.renderer.divider()
 
     def name(self,name):
         return self.renderer.heading(name)
@@ -80,7 +80,7 @@ class docFormatter(object):
         return self.renderer.heading(header, 2)
 
     def paragraph(self, para):
-        return self.renderer.divider()+ textwrap.fill(para)+ self.renderer.divider()
+        return self.renderer.divider()+ "<p>"+textwrap.fill(para)+ self.renderer.divider()
 
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
@@ -117,14 +117,33 @@ class docFormatter(object):
         return self.renderer.hardDivider()
 
     def componentAnchor(self, C):
-        return '<a name="'+C+'" />\n'
+        return self.renderer.setAnchor(C)
+    
+    def moduleTrail(self, moduleName):
+        path = moduleName.split(".")
+        
+        trail = ""
+        accum = ""
+        firstPass=True
+        for element in path:
+            if not firstPass:
+                accum += "."
+            accum += element
+            
+            if not firstPass:
+                trail += " . "
+            trail += self.renderer.linkTo(accum, element)
+            
+            firstPass=False
+            
+        return self.paragraph(trail)
     
     def componentList(self, C):
-        theList=""
+        links = []
         for COMPONENT in C:
-            theList += "\n<br />"
-            theList += '<a href="#' + COMPONENT +'">' + COMPONENT + '</a>'
-        return self.paragraph("[[boxright] Components:"+theList+" ]")
+            links.append( self.renderer.linkToAnchor(COMPONENT,COMPONENT) )
+            
+        return self.paragraph("Components:"+self.renderer.simpleList(links))
 
 
 def generateDocumentationFiles():
@@ -133,7 +152,9 @@ def generateDocumentationFiles():
         F = open(docdir+"/"+MODULE+formatter.renderer.extension, "w")
         F.write(formatter.preamble())
         
+        F.write(formatter.moduleTrail(MODULE))
         F.write(formatter.componentList(COMPONENTS[MODULE]))
+        
         F.write(formatter.formatModule(module))
         F.write(formatter.hardDivider())
         
