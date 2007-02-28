@@ -38,7 +38,6 @@ class RenderHTML(object):
             + parts["html_subtitle"] \
             + parts["docinfo"] \
             + parts["fragment"]
-        print core.publish_doctree(somestring).__class__
         
         return doc
 
