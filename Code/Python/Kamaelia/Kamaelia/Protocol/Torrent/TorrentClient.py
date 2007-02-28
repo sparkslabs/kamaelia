@@ -17,6 +17,53 @@
 # (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 
+"""\
+===================================
+TorrentClient - a BitTorrent Client
+===================================
+
+This component is for downloading and uploading data using the peer-to-peer
+BitTorrent protocol. You MUST have the Mainline (official) BitTorrent client
+installed for any BitTorrent stuff to work in Kamaelia.
+
+See http://download.bittorrent.com/dl/?M=D
+
+
+
+Use TorrentPatron instead!
+--------------------------
+
+I should start by saying "DO NOT USE THIS COMPONENT YOURSELF"!
+
+This component wraps the Mainline (official) BitTorrent client, which
+unfortunately is not thread-safe (at least with the latest version - 4.20).
+If you run two instances of this client simultaneously, Python will die
+with an exception, or if you're really unlucky, a segfault.
+
+But despair not! There is a solution - use TorrentPatron instead.
+TorrentPatrons will organise the sharing of a single TorrentClient amongst
+themselves and expose exactly the same interface (except that the
+tickInterval optional argument cannot be set) with the key advantage
+that you can run as many of them as you want.
+
+For a description of the interfaces of TorrentClient see TorrentPatron
+
+
+
+How does it work?
+-----------------
+
+TorrentClient is a threadedcomponent that uses the libraries of the Mainline
+(official) BitTorrent client to provide BitTorrent functionality. As Mainline
+was designed to block (use blocking function calls) this makes it incompatible
+with the normal structure of an Axon component - it cannot yield regularly.
+As such it uses a threadedcomponent, allowing it to block with impunity.
+
+Each torrent is assigned a unique id (currently equal to the count of torrents
+seen but don't rely on it). Inboxes are checked periodically (every tickInterval
+seconds, where tickInterval is 5 by default)
+"""
+
 from __future__ import division
 import os
 os.environ["LANG"] = "en_GB.UTF-8"
@@ -56,45 +103,6 @@ from Axon.Component import component
 from Kamaelia.Protocol.Torrent.TorrentIPC import *
 from Kamaelia.Util.PureTransformer import PureTransformer
 
-"""\
-=================
-TorrentClient - a BitTorrent Client
-=================
-
-This component is for downloading and uploading data using the peer-to-peer
-BitTorrent protocol. You MUST have the Mainline (official) BitTorrent client
-installed for any BitTorrent stuff to work in Kamaelia.
-See http://download.bittorrent.com/dl/?M=D
-
-I should start by saying "DO NOT USE THIS COMPONENT YOURSELF".
-
-This component wraps the Mainline (official) BitTorrent client, which
-unfortunately is not thread-safe (at least with the latest version - 4.20).
-If you run two instances of this client simultaneously, Python will die
-with an exception, or if you're really unlucky, a segfault.
-
-But despair not! There is a solution - use TorrentPatron instead.
-TorrentPatrons will organise the sharing of a single TorrentClient amongst
-themselves and expose exactly the same interface (except that the
-tickInterval optional argument cannot be set) with the key advantage
-that you can run as many of them as you want.
-
-For a description of the interfaces of TorrentClient see TorrentPatron.py.
-
-How does it work?
------------------
-
-TorrentClient is a threadedcomponent that uses the libraries of the Mainline
-(official) BitTorrent client to provide BitTorrent functionality. As Mainline
-was designed to block (use blocking function calls) this makes it incompatible
-with the normal structure of an Axon component - it cannot yield regularly.
-As such it uses a threadedcomponent, allowing it to block with impunity.
-
-Each torrent is assigned a unique id (currently equal to the count of torrents
-seen but don't rely on it). Inboxes are checked periodically (every tickInterval
-seconds, where tickInterval is 5 by default)
-"""
-
 class MakeshiftTorrent(object):
     """While a torrent is started, an instance of this class is used in place of
     a real Torrent object (a class from Mainline) to store its metainfo"""
@@ -108,12 +116,12 @@ class TorrentClient(threadedcomponent):
     TorrentClient([tickInterval]) -> component capable of downloading/sharing torrents.
 
     Initialises the Mainline client.
-   
-    Arguments:
-    - [tickInterval=5] -- the interval in seconds at which TorrentClient checks inboxes
-    
     Uses threadedcomponent so it doesn't have to worry about blocking I/O or making
     Mainline yield periodically.
+   
+    Keyword arguments:
+    
+    - tickInterval -- the interval in seconds at which TorrentClient checks inboxes (default=5)
     """
     
     Inboxes = {
@@ -276,7 +284,7 @@ def BasicTorrentExplainer():
     return PureTransformer(lambda x : str(x) + "\n")
 
 
-# __kamaelia_components__  = ( TorrentClient, ) ### FIXME
+__kamaelia_components__  = ( TorrentClient, )
 __kamaelia_prefabs__  = ( BasicTorrentExplainer, )
 
 if __name__ == '__main__':
