@@ -39,12 +39,32 @@ def ComponentMeta(File):
     F = open(File)
     contents = F.readlines()
     F.close()
-    meta = [ X for X in contents if "__kamaelia_components__" in X and X.strip()[0] != "#"]
-    if meta != []:
-        if len(meta)>1:
-            print "WARNING: 2 component lines(!)"
-            return []
-        meta = parseComponentLine(meta[0])
+    # find line beginning with __kamaelia_components__
+    found = ""
+    while len(contents)>0:
+        line = contents.pop(0)
+        line = line.strip()
+        if "__kamaelia_components__" in line and line[0] != "#":
+            if found != "":
+                print "WARNING: 2 or more separate component lines(!)"
+                break
+            else:
+                found+=line.replace("\n"," ")
+                while ")" not in found:
+                    if len(contents)==0:
+                        print "WARNING: component line doesn't finish with a close bracket"
+                    else:
+                        line = contents.pop(0)
+                        line = line.strip()
+                        if line[0] != "#":
+                            found += line
+            
+    found = found.strip()
+    if found:
+        meta = parseComponentLine(found)
+    else:
+        meta = []
+
     return meta
 
 def SearchComponents(baseDirectory, Base):
