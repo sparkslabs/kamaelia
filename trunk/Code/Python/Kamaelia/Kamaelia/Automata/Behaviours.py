@@ -32,25 +32,32 @@ Example Usage
 -------------
 
 Generate values that bounce up and down between 0 and 1 in steps of 0.05::
+
     bouncingFloat(scale_speed=0.05*10)
 
 Generate (x,y) coordinates, starting at (50,50) that bounce within a 200x100 box
 with a 10 unit inside margin::
+
     cartesianPingPong(point=(50,50), width=200, height=100, border=10)
 
 Generate the angles for the seconds hand on an analog watch::
+
     loopingCounter(increment=360/60, modulo=360)
 
 Constantly generate the number 7::
+
     continuousIdentity(original=7)
 
 Constantly generate the string "hello"::
+
     continuousIdentity(original="hello")
 
 Constantly generate the value 0::
+
     continuousZero()
     
 Constantly generate the value 1::
+
     continuousOne()
 
 

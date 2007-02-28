@@ -22,15 +22,13 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=================
+===========
 HTTP Parser
-=================
+===========
 
 This component is for transforming HTTP requests or responses
 into multiple easy-to-use dictionary objects.
 
-Example Usage
--------------
 Unless you are implementing a new HTTP component you should not
 use this component directly. Either SimpleHTTPClient, HTTPServer (in
 conjuncton with SimpleServer) or SingleShotHTTPClient will
@@ -39,21 +37,27 @@ likely serve your needs.
 If you want to use it directly, note that it doesn't output strings
 but ParsedHTTPHeader, ParsedHTTPBodyChunk and ParsedHTTPEnd objects.
 
-If you want to play around with parsing HTTP responses: (like a client)
 
-pipeline(
-    ConsoleReader(),
-    HTTPParser(mode="response"),
-    ConsoleEchoer()
-).run()
 
-If you want to play around with parsing HTTP requests: (like a server)
+Example Usage
+-------------
 
-pipeline(
-    ConsoleReader(),
-    HTTPParser(mode="response"),
-    ConsoleEchoer()
-).run()
+If you want to play around with parsing HTTP responses: (like a client)::
+    
+    pipeline(
+        ConsoleReader(),
+        HTTPParser(mode="response"),
+        ConsoleEchoer()
+    ).run()
+
+If you want to play around with parsing HTTP requests: (like a server)::
+
+    pipeline(
+        ConsoleReader(),
+        HTTPParser(mode="response"),
+        ConsoleEchoer()
+    ).run()
+
 """
 
 from Axon.Component import component

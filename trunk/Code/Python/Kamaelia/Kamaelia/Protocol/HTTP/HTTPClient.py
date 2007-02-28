@@ -22,16 +22,27 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=================
+=======================
 Single-Shot HTTP Client
-=================
+=======================
 
 This component is for downloading a single file from an HTTP server.
 Pick up data received from the server on its "outbox" outbox.
 
+Generally you should use SimpleHTTPClient in preference to this.
+
+
+
 Example Usage
 -------------
-Generally you should use SimpleHTTPClient in preference to this.
+
+How to use it::
+
+    pipeline(
+        SingleShotHTTPClient("http://www.google.co.uk/"),
+        SomeComponentThatUnderstandsThoseMessageTypes()
+    ).run()
+
 If you want to use it directly, note that it doesn't output strings
 but ParsedHTTPHeader, ParsedHTTPBodyChunk and ParsedHTTPEnd like
 HTTPParser. This makes has the advantage of not buffering huge
@@ -39,37 +50,36 @@ files in memory but outputting them as a stream of chunks.
 (with plain strings you would not know the contents of the
 headers or at what point that response had ended!)
 
-pipeline(
-    SingleShotHTTPClient("http://www.google.co.uk/"),
-    SomeComponentThatUnderstandsThoseMessageTypes()
-).run()
-    
+
 
 How does it work?
 -----------------
+
 SingleShotHTTPClient accepts a URL parameter at its creation (to __init__).
 When activated it creates an HTTPParser instance and then connects
 to the webserver specified in the URL using a TCPClient component.
 It sends an HTTP request and then any response from the server is received
 by the HTTPParser.
 
-HTTPParser processes the response and outputs it in parts as:
+HTTPParser processes the response and outputs it in parts as::
 
-ParsedHTTPHeader,
-ParsedHTTPBodyChunk,
-ParsedHTTPBodyChunk,
-       ...
-ParsedHTTPBodyChunk,
-ParsedHTTPEnd
+    ParsedHTTPHeader,
+    ParsedHTTPBodyChunk,
+    ParsedHTTPBodyChunk,
+    ...
+    ParsedHTTPBodyChunk,
+    ParsedHTTPEnd
 
 If SingleShotHTTPClient detects that the requested URL is a redirect page
 (using the Location header) then it begins this cycle anew with the URL
 of the new page, otherwise the parts of the page output by HTTPParser are
 sent on to "outbox". 
 
-=================
+
+
+==================
 Simple HTTP Client
-=================
+==================
 
 This component downloads the pages corresponding to HTTP URLs received
 on "inbox" and outputs their contents (file data) as a message, one per
@@ -78,14 +88,19 @@ URL, to "outbox" in the order they were received.
 Example Usage
 -------------
 
-pipeline(
-    ConsoleReader(">>> ", ""),
-    SimpleHTTPClient(),
-    SimpleFileWriter("downloadedfile.txt"),
-).run()
+Type URLs, and they will be downloaded and placed, back to back in "downloadedfile.txt"::
+  
+    pipeline(
+        ConsoleReader(">>> ", ""),
+        SimpleHTTPClient(),
+        SimpleFileWriter("downloadedfile.txt"),
+    ).run()
 
+    
+    
 How does it work?
 -----------------
+
 SimpleHTTPClient uses the Carousel component to create a new
 SingleShotHTTPClient component for every URL requested. As URLs are
 handled sequentially, it has only one SSHC child at anyone time.

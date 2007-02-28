@@ -95,8 +95,7 @@ class Minimal(component):
     Arguments:
     -- request - the request dictionary object that spawned this component
     -- homedirectory - the path to prepend to paths requested
-    -- indexfilename - if a directory is requested, this file is checked for
-                       inside it, and sent if found
+    -- indexfilename - if a directory is requested, this file is checked for inside it, and sent if found
     """
     Inboxes = {
         "inbox"        : "UNUSED",

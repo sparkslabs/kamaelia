@@ -36,6 +36,7 @@ Example Usage
 -------------
 Regulating video to a constant framerate, buffering 2 seconds of data before
 starting to emit frames::
+
     Pipeline( RateControlledFileReader(...),
               DiracDecoder(),
               MessageRateLimit(messages_per_second=framerate, buffer=2*framerate),
@@ -79,7 +80,8 @@ Example Usage
 -------------
             
 Reading from a file at a fixed rate::
-    graphline( ctrl   = ByteRate_RequestControl(rate=1000, chunksize=32),
+
+    Graphline( ctrl   = ByteRate_RequestControl(rate=1000, chunksize=32),
                reader = PromptedFileReader(filename="myfile", readmode="bytes"),
                linkages = {
                     ("ctrl", "outbox") : ("reader","inbox"),
@@ -96,7 +98,8 @@ receives a shutdown message.
 
 
 Reading from a file at a varying rate (send new rates to the "inbox" inbox)::
-    graphline( ctrl   = VariableByteRate_RequestControl(rate=1000, chunksize=32),
+
+    Graphline( ctrl   = VariableByteRate_RequestControl(rate=1000, chunksize=32),
                reader = PromptedFileReader(filename="myfile", readmode="bytes"),
                linkages = {
                       ("self", "inbox") : ("ctrl", "inbox"),
@@ -175,7 +178,8 @@ Example Usage
 
 An app that reads data items from a file, then does something with then one at a
 time when the user clicks a visual button in pygame::
-    graphline( source   = RateControlledFileReader(..., readmode="lines"),
+
+    Graphline( source   = RateControlledFileReader(..., readmode="lines"),
                limiter  = OnDemandLimit(),
                trigger  = Button(caption="Click for next",msg="NEXT"),
                dest     = consumer(...),

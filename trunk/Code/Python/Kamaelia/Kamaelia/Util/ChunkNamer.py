@@ -22,22 +22,24 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=========================
+===========
 Chunk Namer
-=========================
+===========
 
 A component that labels each message with a unique filename for that message.
 e.g. "A" ... "B" ... --> ["chunk1", "A"] ... ["chunk2", "B"] ...
 
 Example Usage
 -------------
-Save each line entered to the console to a separate file:
 
-pipeline(
-    ConsoleReader(),
-    ChunkNamer("test", ".txt"),
-    WholeFileWriter()
-).run()
+Save each line entered to the console to a separate file::
+
+    pipeline(
+        ConsoleReader(),
+        ChunkNamer("test", ".txt"),
+        WholeFileWriter()
+    ).run()
+
 """
 
 from Axon.Component import component

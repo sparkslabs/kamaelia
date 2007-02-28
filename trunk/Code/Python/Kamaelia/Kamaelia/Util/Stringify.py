@@ -30,7 +30,9 @@ A simple component that takes data items and converts them to strings.
 
 Example Usage
 -------------
-::
+
+A simple pipeline::
+
     Pipeline( sourceOfNonStrings(),
               Stringify(),
               consumerThatWantsStrings(),

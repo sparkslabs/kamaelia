@@ -101,12 +101,14 @@ Example Usage
 
 Two consumers receiving the same data from a single consumer. Producer and
 consumers are encapsulated by PlugSplitter and Plug components respectively::
+
     mysplitter = PlugSplitter( producer() ).activate()
     
     Plug(mysplitter, consumer() ).activate()
     Plug(mysplitter, consumer() ).activate()
     
 The same, but the producer and consumers are not encapsulated::
+
     mysplitter = PlugSplitter()
     Pipeline( producer, mysplitter ).activate()
     
@@ -136,16 +138,20 @@ Add a destination by making a Plug component, specifying the PlugSplitter
 component to 'plug into'. See documentation for the Plug component for more
 information.
 
-Alternatively, you can add and remove destinations manually::
+Alternatively, you can add and remove destinations manually:
 
-- Add a destination by sending an addsink(...) message to the "configuration"
-  inbox of the component. If a 'sinkbox' inbox is specified in the message, then
+* Add a destination by sending an addsink(...) message to the "configuration"
+  inbox of the component.
+  
+  If a 'sinkbox' inbox is specified in the message, then
   PlugSplitter will wire up to it and forward to it any 'inbox'/'outbox' data.
   If a 'sinkcontrol' inbox is specified, then Plugsplitter will wire up to it
   and forward to it any 'control'/'signal' data.
   
-- Stop data being sent to a destination by sending a removesink(...) message to
-  the "configuration" inbox of the Splitter component. Splitter will then cease
+* Stop data being sent to a destination by sending a removesink(...) message to
+  the "configuration" inbox of the Splitter component.
+  
+  Splitter will then cease
   sending messages to the 'sinkbox' inbox specified in the message and will
   unwire from it.
 

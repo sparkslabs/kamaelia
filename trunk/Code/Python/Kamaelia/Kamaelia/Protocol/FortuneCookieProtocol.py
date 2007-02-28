@@ -31,10 +31,14 @@ characters/second) then disconnects.
 
 Example Usage
 -------------
-::
+
+A simple server that accepts connections on port 1500, sending a fortune cookie to
+any client that connects::
+
     >>> SimpleServer(protocol=FortuneCookieProtocol, port=1500).run()
 
-On a *nix client::
+On a unix/linux client::
+
     > telnet <server ip> 1500
     Trying <server ip>...
     Connected to <server ip>...

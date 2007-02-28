@@ -33,13 +33,14 @@ This component is useful because it allows another component to sleep,
 not using any CPU time, but waking periodically (components are unpaused
 when they are sent a message).
 
-Q. Why is it "cheap and cheerful"?
-A. Because it uses a thread just for itself. All clocks could share a
-   single thread if some services kung-fu was pulled.
-   Opening lots of threads is a bad thing - they have much greater
-   overhead than normal generator-based components. However, the 
-   one-thread-per-clock approach used here is many times shorter
-   and simpler than one using services.
+Why is it "cheap and cheerful"?
+
+...Because it uses a thread just for itself. All clocks could share a
+single thread if some services kung-fu was pulled.
+Opening lots of threads is a bad thing - they have much greater
+overhead than normal generator-based components. However, the 
+one-thread-per-clock approach used here is many times shorter
+and simpler than one using services.
 """
 
 import time

@@ -83,7 +83,7 @@ class Encoder(component):
     - bitrate        -- desired bitrate, eg 128000 for 128kbps
     - sample_rate    -- sample rate in Hz of the raw audio
     - channels       -- number of channels of the raw audio
-    - **otherparams  -- any other keyword arguments to be passed direct to PyMedia
+    - otherparams    -- any other keyword arguments to be passed direct to PyMedia
     """
     Inboxes = { "inbox"   : "Raw binary audio data as strings",
                 "control" : "Shutdown signalling",

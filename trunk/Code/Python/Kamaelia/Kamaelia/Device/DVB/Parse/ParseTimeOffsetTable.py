@@ -30,7 +30,7 @@ saving).
 
 The purpose of the TOT and details of the fields within in are defined in the
 DVB SI specification, including the possible 'descriptor' fields that feature in
-the table::
+the table:
 
 - ETSI EN 300 468 
   "Digital Video Broadcasting (DVB); Specification for Service Information (SI)

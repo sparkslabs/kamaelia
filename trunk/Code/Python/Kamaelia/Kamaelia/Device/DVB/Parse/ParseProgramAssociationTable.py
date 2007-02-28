@@ -28,7 +28,7 @@ ParseProgramAssociationTable parses a reconstructed PSI table from a DVB MPEG
 Transport Stream, and outputs a dictionary containing the data in the table.
 
 The purpose of the PAT and details of the fields within in are defined in the
-MPEG systems specification::
+MPEG systems specification:
 
 - ISO/IEC 13818-1 (aka "MPEG: Systems")
   "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" 

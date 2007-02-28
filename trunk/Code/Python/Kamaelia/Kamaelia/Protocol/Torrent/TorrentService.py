@@ -26,11 +26,15 @@
 # dependency of TorrentPatron!
 
 """\
-=================
-TorrentService - a service that co-ordinates the sharing of a single BitTorrent Client
-=================
+==========================
+BitTorrent Sharing Service
+==========================
 
-This component shares a single TorrentClient between several TorrentPatrons.
+The TorrentService component provides a service that allows the sharing of
+a single BitTorrent Client with more than one component that might want to use
+it.
+
+Use the TorrentPatron component to make use of BitTorrent through this service.
 
 Generally, you should not create a TorrentService yourself. If one is needed, one will
 be created by TorrentPatron. If a TorrentService already exists, creating one yourself
@@ -38,6 +42,8 @@ may crash Python (see the effects of creating two TorrentClient components in
 TorrentClient.py)
 
 The shutting down of this component (when it is no longer in use) is very ugly.
+
+
 
 How does it work?
 -----------------

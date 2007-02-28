@@ -34,12 +34,14 @@ applications.
 Example Usage
 -------------
 A simple console driven topology viewer::
+
     Pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               TopologyViewer(),
             ).run()
 
 Then at runtime try typing these commands to change the topology in real time::
+
     >>> DEL ALL
     >>> ADD NODE 1 "1st node" randompos -
     >>> ADD NODE 2 "2nd node" randompos -
@@ -95,6 +97,7 @@ Commands recognised are:
 
     [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
         Add a node, using:
+          
         - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
         - name          -- string name label for the particle
         - posSpec       -- string describing initial x,y (see _generateXY)
@@ -160,13 +163,14 @@ and immediately terminate.
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
 will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
- as it will be changed to provide cleaner termination at some point.
+as it will be changed to provide cleaner termination at some point.
 
 
 Customising the topology viewer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can customise:
+
 - the 'types' of particles (nodes)
 - visual appearance of particles (nodes) and the links between them;
 - the physics laws used to assist with layout
@@ -182,6 +186,7 @@ Use the particleTypes argument of the initialiser to specify classes that
 should be instantiated to render each type of particle (nodes). particleTypes 
 should be a dictionary mapping names for particle types to the respective 
 classes, for example::
+
     { "major" : BigParticle,  "minor"  : SmallParticle  }
 
 See below for information on how to write your own particle classes.
@@ -235,6 +240,7 @@ ascending numerical order.
 
 For example, Kamaelia.Visualisation.PhysicsGraph.RenderingParticle renders in
 two passes::
+
     def render(self, surface):
         yield 1
         # render lines for bonds *from* this particle *to* others

@@ -1,25 +1,49 @@
 #!/usr/bin/python
 """
-The purpose behind this component is to allow the following to occur:
+===========
+UnixProcess
+===========
 
-Pipeline(
-   dataSource(),
-   UnixProcess("command", *args),
-   dataSink(),
-).run()
+Launch another unix process and communicate with it via its standard input and
+output, by using the "inbox" and "outbox" of this component.
+
+
+Example Usage
+-------------
+
+The purpose behind this component is to allow the following to occur::
+
+    Pipeline(
+      dataSource(),
+      UnixProcess("command", *args),
+      dataSink(),
+    ).run()
+
+
+
+How to use it
+-------------
 
 More specificaly, the longer term interface of this component will be:
 
 UnixProcess:
-   inbox - data recieved here is sent to the program's stdin
-   outbox - data sent here is from the program's stdout
-   control - at some point we'll define a mechanism for describing
-      control messages - these will largely map to SIG* messages
-      though. We also need to signal how we close our writing pipe.
-      This can happen using the normal producerFinished message.
-   signal - this will be caused by things like SIGPIPE messages. What
-      this will look like is yet to be defined. (Let's see what works
-      first.
+
+* inbox - data recieved here is sent to the program's stdin
+* outbox - data sent here is from the program's stdout
+* control - at some point we'll define a mechanism for describing
+  control messages - these will largely map to SIG* messages
+  though. We also need to signal how we close our writing pipe.
+  This can happen using the normal producerFinished message.
+* signal - this will be caused by things like SIGPIPE messages. What
+  this will look like is yet to be defined. (Let's see what works
+  first.
+
+
+
+Python and platform compatibility
+---------------------------------
+
+This code is only really tested on Linux.
 
 Initially this will be python 2.4 only, but it would be nice to support
 older versions of python (eg 2.2.2 - for Nokia mobiles).
@@ -78,7 +102,7 @@ def makeNonBlocking(fd):
 
 class UnixProcess(Axon.Component.component):
     Inboxes = {
-            "inbox" : "We receive data here to send to the sub process",
+            "inbox" : "Strings containing data to send to the sub process",
             "control" : "We receive shutdown messages here",
             "stdinready" : "We're notified here when we can write to the sub-process",
             "stderrready" : "We're notified here when we can read errors from the sub-process",

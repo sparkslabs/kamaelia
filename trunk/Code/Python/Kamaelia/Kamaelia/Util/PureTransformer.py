@@ -20,9 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=================
+==========================
 Pure Transformer component
-=================
+==========================
 
 This component applies a function specified at its creation to messages
 received (a filter). If the function returns None, no message is sent,
@@ -31,12 +31,14 @@ otherwise the result of the function is sent to "outbox".
 Example Usage
 -------------
 
-To read in lines of text, convert to upper case and then write to the console.
-pipeline(
-    ConsoleReader(),
-    PureTransformer(lambda x : x.upper()),
-    ConsoleEchoer()
-).run()
+To read in lines of text, convert to upper case and then write to the console::
+
+    pipeline(
+        ConsoleReader(),
+        PureTransformer(lambda x : x.upper()),
+        ConsoleEchoer()
+    ).run()
+
 """
 
 from Axon.Component import component

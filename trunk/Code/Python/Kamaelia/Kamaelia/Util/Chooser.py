@@ -34,7 +34,9 @@ handle more than just lists - for example: infinite sequences.
 
 Example Usage
 -------------
+
 A simple slideshow::
+  
     items=[ "image1.png", "image2.png", "image3.png", ... ]
     
     Graphline( CHOOSER  = Chooser(items=imagefiles),
@@ -51,6 +53,7 @@ The chooser is driven by the 'next' and 'previous' Button components. Chooser
 then sends filenames to an Image component to display them.
 
 Another example: a forever looping carousel of files, read at 1MBit/s::
+
     def filenames():
         while 1:
             yield "file 1"

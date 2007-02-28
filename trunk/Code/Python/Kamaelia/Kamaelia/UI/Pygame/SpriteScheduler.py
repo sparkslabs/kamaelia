@@ -37,42 +37,42 @@ Example Usage
 Five sprites bouncing around the screen, that all freeze/unfreeze when the mouse is
 clicked::
 
-import pygame
-pygame.init()
-from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
-from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.UI.Pygame.EventHandler import EventHandler
-from Kamaelia.Physics.Behaviours import cartesianPingPong
-width, height = (800,600)
-
-width, height = (800,600)
-scr = pygame.display.set_mode((width,height), 0)
-bg  = pygame.image.load("background800x600imagefile")
-bg  = bg.convert()        # renders faster if in same pixformat
-
-sprites = []
-for i in range(0,5):
-    img = pygame.image.load("spriteimagefile")
-    img = img.convert()
-    newSprite = BasicSprite(image=img)
-    bouncing = cartesianPingPong(point=[50*i,40*i], width=width, height=height, border=100)
-    Graphline(sprite=newSprite, translation=bouncing,
-                linkages={ ("translation","outbox"):("sprite","translation") }
-                ).activate()
-    sprites.append(newSprite)
-
-eventargs = {"sprites":sprites}
-
-class MyEvents(EventHandler):
-    def __init__(self, args):
-        super(MyEvents, self).__init__()
-        self.sprites = args['sprites']
-    def mousebuttondown(self, pos, button, where):
-        for sprite in self.sprites:
-            sprite.togglePause()
-
-SpriteScheduler(eventargs, sprites, bg, scr, MyEvents).run()
+    import pygame
+    pygame.init()
+    from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
+    from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.UI.Pygame.EventHandler import EventHandler
+    from Kamaelia.Physics.Behaviours import cartesianPingPong
+    width, height = (800,600)
+    
+    width, height = (800,600)
+    scr = pygame.display.set_mode((width,height), 0)
+    bg  = pygame.image.load("background800x600imagefile")
+    bg  = bg.convert()        # renders faster if in same pixformat
+    
+    sprites = []
+    for i in range(0,5):
+        img = pygame.image.load("spriteimagefile")
+        img = img.convert()
+        newSprite = BasicSprite(image=img)
+        bouncing = cartesianPingPong(point=[50*i,40*i], width=width, height=height, border=100)
+        Graphline(sprite=newSprite, translation=bouncing,
+                    linkages={ ("translation","outbox"):("sprite","translation") }
+                    ).activate()
+        sprites.append(newSprite)
+    
+    eventargs = {"sprites":sprites}
+    
+    class MyEvents(EventHandler):
+        def __init__(self, args):
+            super(MyEvents, self).__init__()
+            self.sprites = args['sprites']
+        def mousebuttondown(self, pos, button, where):
+            for sprite in self.sprites:
+                sprite.togglePause()
+    
+    SpriteScheduler(eventargs, sprites, bg, scr, MyEvents).run()
 
 
 

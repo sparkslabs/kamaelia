@@ -22,15 +22,20 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=================
-TorrentPatron - a BitTorrent Client
-=================
+===================================
+TorrentPatron - A BitTorrent Client
+===================================
 
 You MUST have the Mainline (official) BitTorrent client installed for any
 BitTorrent stuff to work in Kamaelia.
+
 See http://download.bittorrent.com/dl/?M=D
 
-Known quirks:
+
+
+Known quirks
+------------
+  
 * Clear out your ~/.bittorrent/ directory if you get errors
   about torrents including files that are part of other torrents.
 * Files can only be downloaded to/uploaded from within the current directory
@@ -44,6 +49,8 @@ This component uses a TorrentService component to co-ordinate the sharing
 of a single TorrentClient between many TorrentPatrons. This is necessary
 as running more than one instance of TorrentClient will fail
 (see TorrentClient.py for a full explanation).
+
+
 
 How does it work?
 -----------------
@@ -69,10 +76,12 @@ Those used internally:
 Those used externally (i.e. seen/sent by user components):
 
 - Send to TorrentPatron:
+  
   * TIPCCreateNewTorrent - start a new torrent from the contents of a .torrent file
   * TIPCCloseTorrent - stop a running torrent
   
 - Sent by TorrentPatron:
+  
   * TIPCNewTorrentCreated - a new torrent has been started from your (oldest) TIPCCreateNewTorrent message
   * TIPCTorrentStartFail - the torrent associated with your (oldest) TIPCCreateNewTorrent message could not be started
   * TIPCTorrentAlreadyDownloading - the torrent associated with your (oldest) TIPCCreateNewTorrent message is already downloading

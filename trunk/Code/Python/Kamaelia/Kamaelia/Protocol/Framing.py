@@ -38,12 +38,14 @@ The DeChunker and DeFramer reverse the process.
 Example Usage
 -------------
 Framing messages for transport over a stream based connection (eg, TCP)::
+  
     Pipeline(MessageSource(...),   # emits message
              DataChunker(),
              TCPClient("<server ip>", 1500),
             ).activate()
 
 And on the server::
+  
     Pipeline(SingleServer(1500),
              DataDeChunker(),
              MessageReceiver(...)
@@ -52,6 +54,7 @@ And on the server::
              
 
 Packing data for transport over a link that may loose packets::
+  
     Pipeline(DataSource(...),     # emits (sequence_number, data) pairs
              Framer(),
              Chunker(),
@@ -59,6 +62,7 @@ Packing data for transport over a link that may loose packets::
             ).activate()
 
 At the receiver::
+  
     Pipeline(UnreliableTransportMechanismReceiver(),
              DeChunker(),
              DeFramer(),
@@ -74,6 +78,7 @@ How does it work?
 
 Framer / DeFramer
 ^^^^^^^^^^^^^^^^^
+
 Framer/DeFramer frame and deframe data pairs of the form (tag,data). 'data'
 should be the main payload, and 'tag' is suitable for something like a frame
 sequence number.
@@ -94,6 +99,7 @@ terminating.
 
 DataChunker / DataDeChunker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The DataChunker/DataDeChunker components chunk and dechunk the data by inserting
 'sync' sequences of characters to delimit chunks of data. Each message received
 by DataChunker on its "inbox" inbox is considered a chunk.

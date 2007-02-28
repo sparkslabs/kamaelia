@@ -109,6 +109,7 @@ Surfaces
 ^^^^^^^^
 To request a surface, send a dictionary to the "notify" inbox. The following
 keys are mandatory::
+
     {
         "DISPLAYREQUEST" : True,               # this is a 'new surface' request
         "size" : (width,height),               # pixels size for the new surface
@@ -116,6 +117,7 @@ keys are mandatory::
     }
 
 These keys are optional::
+
     {
         "position" : (left,top)                # location of the new surface in the window (default=arbitrary)
         "alpha" : 0 to 255,                    # alpha of the surface (255=opaque) (default=255)
@@ -129,6 +131,7 @@ and deregister any events you were listening to.
 
 To change the position your surface is rendered at, send a dictionary to the
 "notify" inbox containing the folling keys::
+
     {
         "CHANGEDISPLAYGEO" : True,             # this is a 'change geometry' request
         "surface" : surface,                   # the surface to affect
@@ -146,12 +149,14 @@ of specific pygame events.
 
 To request to listen to a given event, send a dictionary to the "notify" inbox,
 containing the following::
+
     {
         "ADDLISTENEVENT" : pygame_eventtype,     # example: pygame.KEYDOWN
         "surface" : your_surface,
     }
 
 To unsubscribe from a given event, send a dictionary containing::
+
     {
         "REMOVELISTENEVENT" : pygame_eventtype,
         "surface" : your_surface,
@@ -171,6 +176,7 @@ Video Overlays
 
 To request an overlay, send a dictionary to the "notify" inbox. The following
 keys are mandatory::
+
     {
         "OVERLAYREQUEST" : True,                      # this is a 'new overlay' request
         "size" : (width,height),                      # pixels size of the overlay
@@ -178,6 +184,7 @@ keys are mandatory::
     }
 
 These keys are optional::
+
     {
         "position" : (left,top),                      # location of the overlay (default=(0,0))
         "yuv" : (ydata,udata,vdata),                  # first frame of yuv data
@@ -202,6 +209,7 @@ Redraw requests
 
 To notify Pygame Display that it needs to redraw the display, send a dictionary
 containing the following keys to the "notify" inbox::
+
     {
         "REDRAW" : True,             # this is a redraw request
         "surface" : surface          # surface that has been changed

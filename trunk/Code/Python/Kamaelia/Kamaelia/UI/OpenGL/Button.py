@@ -95,17 +95,17 @@ class Button(OpenGLComponent):
 
     Keyword arguments:
 
-    -caption      -- Button caption (default="Button")
-    -bgcolour     -- Colour of surfaces behind caption (default=(244,244,244))
-    -fgcolour     -- Colour of the caption text (default=(0,0,0)
-    -sidecolour   -- Colour of side planes (default=(200,200,244))
-    -margin       -- Margin size in pixels (default=8)
-    -key          -- Key to activate button (default=None)
-    -fontsize     -- Font size for caption text (default=50)
-    -pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
-    -thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
-    -msg          -- Message which gets sent when button is activated (default="CLICK")
-        
+    - caption      -- Button caption (default="Button")
+    - bgcolour     -- Colour of surfaces behind caption (default=(244,244,244))
+    - fgcolour     -- Colour of the caption text (default=(0,0,0)
+    - sidecolour   -- Colour of side planes (default=(200,200,244))
+    - margin       -- Margin size in pixels (default=8)
+    - key          -- Key to activate button (default=None)
+    - fontsize     -- Font size for caption text (default=50)
+    - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
+    - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
+    - msg          -- Message which gets sent when button is activated (default="CLICK")
+    
     """
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""

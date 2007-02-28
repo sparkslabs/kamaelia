@@ -20,28 +20,31 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=================
+================================
 Sequential Transformer component
-=================
+================================
 
 This component applies all the functions supplied to incoming messages.
 If the output from the final function is None, no message is sent.
+
+
 
 Example Usage
 -------------
 
 To read in lines of text, convert to upper case, prepend "foo", and append "bar!"
-and then write to the console.
+and then write to the console::
+
     Pipeline(
         ConsoleReader(eol=""),
-        SequentialTransformer(
-                str,
-                str.upper,
-                lambda x : "foo" + x,
-                lambda x : x + "bar!\n"
-                ),
-        ConsoleEchoer()
+        SequentialTransformer( str,
+                               str.upper,
+                               lambda x : "foo" + x,
+                               lambda x : x + "bar!",
+                             ),
+        ConsoleEchoer(),
     ).run()
+
 """
 
 from Axon.Component import component

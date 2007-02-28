@@ -28,14 +28,14 @@ ParseProgramMapTable parses a reconstructed PSI table from a DVB MPEG
 Transport Stream, and outputs a dictionary containing the data in the table.
 
 The purpose of the PMT and details of the fields within in are defined in the
-MPEG systems specification::
+MPEG systems specification:
 
 - ISO/IEC 13818-1 (aka "MPEG: Systems")
   "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" 
   ISO / Motion Picture Experts Group
 
 The possible 'descriptor' fields that feature in the table are explained in the
-DVB SI specification::
+DVB SI specification:
 
 - ETSI EN 300 468 
   "Digital Video Broadcasting (DVB); Specification for Service Information (SI)

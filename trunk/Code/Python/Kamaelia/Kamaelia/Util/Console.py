@@ -33,7 +33,9 @@ a time.
 
 Example Usage
 -------------
+
 Whatever it typed is echoed back, a line at a time::
+
     Pipeline( ConsoleReader(),
               ConsoleEchoer()
             ).run()

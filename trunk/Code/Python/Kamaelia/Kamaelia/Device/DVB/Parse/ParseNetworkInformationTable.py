@@ -28,7 +28,7 @@ ParseNetworkInformationTable parses a reconstructed PSI table from a DVB MPEG
 Transport Stream, and outputs a dictionary containing the data in the table.
 
 The purpose of the NIT and details of the fields within in are defined in the
-DVB SI specification::
+DVB SI specification:
 
 - ETSI EN 300 468 
   "Digital Video Broadcasting (DVB); Specification for Service Information (SI)

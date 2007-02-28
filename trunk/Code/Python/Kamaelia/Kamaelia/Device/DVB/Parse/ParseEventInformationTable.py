@@ -32,7 +32,7 @@ typically used to drive Electronic Progamme Guides, scheduled recording and
 "now and next" information displays.
 
 The purpose of the EIT and details of the fields within in are defined in the
-DVB SI specification::
+DVB SI specification:
 
 - ETSI EN 300 468 
   "Digital Video Broadcasting (DVB); Specification for Service Information (SI)
@@ -90,18 +90,18 @@ Behaviour
 
 At initialisation, specify what sub tables you want ParseEventInformationTable
 to process (others will be ignored). Event information is grouped into sub
-tables according to where it is::
+tables according to where it is:
 
-   * 'Actual' data describes programmes broadcast in the same actual multiplex
-     as this data
-   * 'Other' data describes programmes being broadcast in other multiplexes
+* 'Actual' data describes programmes broadcast in the same actual multiplex
+  as this data
+* 'Other' data describes programmes being broadcast in other multiplexes
 
-...and what timeframe it relates to::
+...and what timeframe it relates to:
     
-   * 'present following' data describes the now showing (present) and next
-     (following) programme to be shown
-  * 'schedule' data describes programmes being shown later, typically over the
-    next 7 or 8 days.
+* 'present following' data describes the now showing (present) and next
+  (following) programme to be shown
+* 'schedule' data describes programmes being shown later, typically over the
+  next 7 or 8 days.
 
 Initialise ParseEventInformationTable by providing a dictionary mapping table
 ids, to be accepted, to (label, is-present-following-flag) pairs. For example,
@@ -262,9 +262,9 @@ example::
     }
 
 The possible values of the 'when' field are::
-   * "NOW"        -- describes a programme that is happening NOW
-   * "NEXT"       -- describes a programme that follows the one happening now
-   * "SCHEDULED"  -- part of a schedule describing programmes happening over the next few days
+* "NOW"        -- describes a programme that is happening NOW
+* "NEXT"       -- describes a programme that follows the one happening now
+* "SCHEDULED"  -- part of a schedule describing programmes happening over the next few days
     
 If a shutdownMicroprocess or producerFinished message is received on the
 "control" inbox, then it will immediately be sent on out of the "signal" outbox

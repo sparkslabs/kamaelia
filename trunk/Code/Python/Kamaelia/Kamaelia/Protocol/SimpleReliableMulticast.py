@@ -35,12 +35,14 @@ duplicates are removed. However it cannot recover lost data.
 Example Usage
 -------------
 Reliably transporting a file over multicast (assuming no packets are lost)::
+
     Pipeline(RateControlledFileReader("myfile"),
              SRM_Sender(),
              Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 
 On the client::
+
     class discardSeqnum(component):
         def main(self):
             while 1:
@@ -60,11 +62,13 @@ How does it work?
 -----------------
 
 SRM_Sender is a Pipeline of three components:
+
 - Annotator    -- annotates a data stream with sequence numbers
 - Framer       -- frames the data
 - DataChunker  -- inserts markers between frames
 
 SRM_Receiver is a Pipeline of three components:
+
 - DataDeChunker  -- recovers chunks based on markers
 - DeFramer       -- removes framing
 - RecoverOrder   -- sorts data by sequence numbers
