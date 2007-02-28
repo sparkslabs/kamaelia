@@ -148,6 +148,7 @@ class docFormatter(object):
 
 def generateDocumentationFiles():
     for MODULE in COMPONENTS:
+        print "Processing: "+MODULE
         module = __import__(MODULE, [], [], COMPONENTS[MODULE])
         F = open(docdir+"/"+MODULE+formatter.renderer.extension, "w")
         F.write(formatter.preamble())
