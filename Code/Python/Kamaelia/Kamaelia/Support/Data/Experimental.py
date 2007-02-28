@@ -74,7 +74,7 @@ def onDemandGraphFileParser_Prefab(filename):
     )
 
 __kamaelia_components__ = ( GraphSlideXMLComponent, )
-__kamaelia_prefab__ = ( onDemandGraphFileParser_Prefab, )
+__kamaelia_prefabs__ = ( onDemandGraphFileParser_Prefab, )
 
 
 if __name__ == "__main__":

@@ -171,6 +171,8 @@ class ParseTimeAndDateTable(component):
             yield 1
 
 
+__kamaelia_components__ = ( ParseTimeAndDateTable, )
+
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline

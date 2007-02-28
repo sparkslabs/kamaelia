@@ -141,6 +141,8 @@ class SubscribeTo(Axon.Component.component):
         return 0==len(self.childComponents())
 
 
+__kamaelia_components__ = ( Backplane, PublishTo, SubscribeTo, )
+            
 # deprecation stubs
 
 import Kamaelia.Support.Deprecate as Deprecate

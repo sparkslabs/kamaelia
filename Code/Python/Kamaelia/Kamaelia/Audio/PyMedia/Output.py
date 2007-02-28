@@ -133,3 +133,5 @@ class Output(threadedcomponent):
                 self.pause()
             
         self.snd.stop()
+
+__kamaelia_components__ = ( Output, )

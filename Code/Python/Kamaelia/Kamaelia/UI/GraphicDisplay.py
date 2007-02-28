@@ -20,9 +20,12 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+__kamaelia_components__ = ()
+
 try:
     from Kamaelia.UI.Pygame.Display import PygameDisplay as PygameDisplay
     have_pygame = True
+    __kamaelia_components__ = __kamaelia_components__ + ( PygameDisplay, )
 except ImportError:
     have_pygame = False
 
@@ -32,12 +35,11 @@ except ImportError:
 try:
     from Kamaelia.UI.OpenGL.Display import OpenGLDisplay as OpenGLDisplay
     have_opengl = True
+    __kamaelia_components__ = __kamaelia_components__ + ( OpenGLDisplay, )
 except ImportError:
     have_opengl = False
 
 #
 # TODO: allow update of the display manager service.
 #
-
-__kamaelia_components__  = ( PygameDisplay, )
 

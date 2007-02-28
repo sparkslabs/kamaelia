@@ -73,6 +73,7 @@ class EscapedListMarshalling:
     
     demarshall = staticmethod(demarshall)
     
+__kamaelia_prefabs__ = ( tokenlists_to_lines, lines_to_tokenlists, )
 
 
 if __name__=="__main__":

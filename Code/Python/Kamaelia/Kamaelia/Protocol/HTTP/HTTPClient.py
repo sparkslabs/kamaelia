@@ -457,7 +457,7 @@ class SimpleHTTPClient(component):
         yield 1
         return
 
-__kamaelia_components__  = (SimpleHTTPClient, SingleShotHTTPClient)
+__kamaelia_components__  = ( SimpleHTTPClient, SingleShotHTTPClient, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline

@@ -356,3 +356,4 @@ class RawAudioMixer(threadedcomponent):
         return "".join(output)
 
 
+__kamaelia_components__ = ( RawAudioMixer, )

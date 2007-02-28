@@ -65,6 +65,7 @@ class DVB_SoftDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.pause()
             yield 1
 
+__kamaelia_components__ = ( DVB_SoftDemuxer, )
 
 if __name__ == "__main__":
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor

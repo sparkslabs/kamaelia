@@ -294,4 +294,4 @@ class DiracEncoder(component):
 
             yield 1
 
-__kamaelia_components__ = ( DiracDecoder, DiracEncoder )
+__kamaelia_components__ = ( DiracDecoder, DiracEncoder, )

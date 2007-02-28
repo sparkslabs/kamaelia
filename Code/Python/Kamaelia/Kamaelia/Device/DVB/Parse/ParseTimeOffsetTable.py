@@ -197,6 +197,8 @@ class ParseTimeOffsetTable(component):
             yield 1
 
 
+__kamaelia_components__ = ( ParseTimeOffsetTable, )
+
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline

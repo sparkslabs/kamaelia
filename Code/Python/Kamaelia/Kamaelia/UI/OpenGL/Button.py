@@ -274,7 +274,7 @@ class Button(OpenGLComponent):
                 self.activated = False
 
 
-
+__kamaelia_components__ = ( Button, )
 
 if __name__=='__main__':
     from Kamaelia.Util.Console import ConsoleEchoer

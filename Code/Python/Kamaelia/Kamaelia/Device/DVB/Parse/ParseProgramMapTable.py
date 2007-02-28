@@ -333,6 +333,7 @@ class ParseProgramMapTable(component):
             self.pause()
             yield 1
 
+__kamaelia_components__ = ( ParseProgramMapTable, )
 
 if __name__ == "__main__":
     

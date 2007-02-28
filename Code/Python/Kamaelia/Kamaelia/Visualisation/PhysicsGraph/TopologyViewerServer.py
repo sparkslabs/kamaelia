@@ -117,5 +117,5 @@ def TextControlledTopologyViewer(**dictArgs):
                      ConsoleEchoer()
             )
 
-__kamaelia_prefab__ = ( TopologyViewerServer, TextControlledTopologyViewer)
+__kamaelia_prefabs__ = ( TopologyViewerServer, TextControlledTopologyViewer)
 

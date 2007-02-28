@@ -54,3 +54,5 @@ class UnseenOnly(PureTransformer):
         if not self.seen.get(msg, False):
             self.seen[msg] = True
             return msg
+
+__kamaelia_components__ = ( PureTransformer, )

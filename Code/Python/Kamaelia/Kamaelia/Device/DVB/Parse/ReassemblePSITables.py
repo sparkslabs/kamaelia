@@ -418,6 +418,9 @@ class ReassemblePSITablesService(AdaptiveCommsComponent):
             yield 1
 
 
+__kamaelia_components__ = ( ReassemblePSITables,
+                            ReassemblePSITablesService, )
+
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline

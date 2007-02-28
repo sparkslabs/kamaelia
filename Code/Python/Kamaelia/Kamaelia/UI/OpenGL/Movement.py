@@ -477,7 +477,7 @@ class SimpleBuzzer(Axon.Component.component):
             self.send( (r, r, r), "outbox")
 
 
-__kamaelia_components__ = (PathMover, WheelMover, SimpleRotator, SimpleBuzzer, )
+__kamaelia_components__ = (PathMover, WheelMover, SimpleRotator, SimpleMover, SimpleBuzzer, )
     
         
 if __name__=='__main__':

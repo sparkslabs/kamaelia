@@ -481,3 +481,12 @@ def pformat(lineprefix,key,value):
     leadin = lineprefix + " "*len(key)
     return lineprefix + key + "    " + pprint.pformat(value).replace("\n","\n" + leadin)
 
+
+__kamaelia_components__ = ( PrettifyProgramAssociationTable,
+                            PrettifyNetworkInformationTable,
+                            PrettifyProgramMapTable,
+                            PrettifyServiceDescriptionTable,
+                            PrettifyEventInformationTable,
+                            PrettifyTimeAndDateTable,
+                            PrettifyTimeOffsetTable, )
+

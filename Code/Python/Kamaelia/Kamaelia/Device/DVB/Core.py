@@ -201,6 +201,9 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                       except KeyError:
                           pass
 
+
+__kamaelia_components__ = ( DVB_Multiplex, DVB_Demuxer, )
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
