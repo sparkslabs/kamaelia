@@ -22,36 +22,40 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=================
+=====================
 Data Source component
-=================
+=====================
 
 This component outputs messages specified at its creation one after another.
 
 Example Usage
 -------------
 
-To output "hello" then "world":
-pipeline(
-    DataSource(["hello", "world"]),
-    ConsoleEchoer()
-).run()
+To output "hello" then "world"::
+  
+    pipeline(
+        DataSource(["hello", "world"]),
+        ConsoleEchoer()
+    ).run()
 
-=================
+    
+
+==========================
 Triggered Source component
-=================
+==========================
 
 Whenever this component receives a message on inbox, it outputs a certain message.
 
 Example Usage
 -------------
 
-To output "wibble" each time a line is entered to the console.
-pipeline(
-    ConsoleReader(),
-    TriggeredSource("wibble"),
-    ConsoleEchoer()
-).run()
+To output "wibble" each time a line is entered to the console::
+
+    pipeline(
+        ConsoleReader(),
+        TriggeredSource("wibble"),
+        ConsoleEchoer()
+    ).run()
 
 """
 

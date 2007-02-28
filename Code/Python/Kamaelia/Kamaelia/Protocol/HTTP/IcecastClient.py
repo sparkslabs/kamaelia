@@ -22,26 +22,33 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-===================
+======================================
 Icecast/SHOUTcast MP3 streaming client
-===================
+======================================
 
 This component uses HTTP to stream MP3 audio from a SHOUTcast/Icecast
 server.
 
-Example Usage
--------------
 IcecastClient fetches the combined audio and metadata stream from the
 HTTP server hosting the stream. IcecastDemux separates the audio data
 from the metadata in stream and IcecastStreamWriter writes the audio
 data to disk (discarding metadata).
 
-pipeline(
-    IcecastClient("http://64.236.34.97:80/stream/1049"),
-    IcecastDemux(),
-    IcecastStreamWriter("stream.mp3"),
-).run()
 
+
+Example Usage
+-------------
+
+Receive an Icecast/SHOUTcast stream, demultiplex it, and write it to a file::
+
+    pipeline(
+        IcecastClient("http://64.236.34.97:80/stream/1049"),
+        IcecastDemux(),
+        IcecastStreamWriter("stream.mp3"),
+    ).run()
+
+    
+    
 How does it work?
 -----------------
 The SHOUTcast/Icecast protocol is virtually identical to HTTP. As such,

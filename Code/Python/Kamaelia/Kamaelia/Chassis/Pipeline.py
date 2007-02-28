@@ -31,7 +31,9 @@ Pipeline) and encapsulates them as a single component.
 
 Example Usage
 -------------
-::
+
+A simple pipeline of 4 components::
+
     Pipeline(MyDataSource(...),
              MyFirstStageOfProcessing(...),
              MySecondStageOfProcessing(...),

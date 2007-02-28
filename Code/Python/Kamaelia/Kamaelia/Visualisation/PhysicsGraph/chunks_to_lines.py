@@ -34,10 +34,11 @@ Example usage
 -------------
 A system that connects to a server and receives fragmented text data, but then
 displays it a whole line at a time::
-	    Pipeline( TCPClient(host=..., port=...),
-              chunks_to_lines(),
-              ConsoleEcho()
-            ).run()
+
+    Pipeline( TCPClient(host=..., port=...),
+      chunks_to_lines(),
+      ConsoleEcho()
+    ).run()
             
 
             

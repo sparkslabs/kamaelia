@@ -23,29 +23,38 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=================
+====================
 UnseenOnly component
-=================
+====================
 
 This component forwards on any messages it receives that it has not
 seen before.
+
+
 
 Example Usage
 -------------
 
 Lines entered into this setup will only be duplicated on screen the
-first time they are entered.
+first time they are entered::
 
-pipeline(
-    ConsoleReader(),
-    UnseenOnly(),
-    ConsoleEchoer()
-).run()
+    pipeline(
+        ConsoleReader(),
+        UnseenOnly(),
+        ConsoleEchoer()
+    ).run()
 
 """
 from PureTransformer import PureTransformer
     
 class UnseenOnly(PureTransformer):
+    """\
+    UnseenOnly() -> new UnseenOnly component.
+    
+    Send items to the "inbox" inbox. Any items not "seen" already will be
+    forwarded out of the "outbox" outbox. Send the same thing two or more
+    times and it will only be sent on the first time.
+    """
     def __init__(self):
         super(UnseenOnly, self).__init__()
         self.seen = {}

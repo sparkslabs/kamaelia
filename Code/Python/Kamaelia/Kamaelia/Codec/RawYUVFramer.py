@@ -53,6 +53,7 @@ More Detail
 Receives raw yuv video data, as strings on its "inbox" inbox.
 
 Sends out individual frames packaged in a dictionary::
+
     {
       "yuv" : (y_data, u_data, v_data),  # a tuple of strings
       "size" : (width, height),          # in pixels
@@ -78,8 +79,8 @@ class RawYUVFramer(component):
 
     Keyword arguments:
     
-    - size = (width,height)        -- size of a video frame in pixels
-    - pixformat = "YUV420_Planar"  -- raw video data format
+    - size       -- (width,height) size of a video frame in pixels
+    - pixformat  -- raw video data format (default="YUV420_Planar")
     """
        
     def __init__(self, size, pixformat = "YUV420_planar"):

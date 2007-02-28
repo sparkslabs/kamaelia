@@ -33,7 +33,10 @@ allowing spaces to appear within a token.
 
 Example Usage
 -------------
-::
+
+A simple pieline that takes each line you type and splits it into a list of tokens,
+showing you the result::
+    
     Pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               ConsoleEchoer()

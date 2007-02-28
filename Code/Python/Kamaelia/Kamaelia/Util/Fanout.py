@@ -33,6 +33,7 @@ destinations.
 Example Usage
 -------------
 Output data source both to a file and to the console::
+
     Graphline( source  = MyDataSource(...),
                split   = Fanout(["toConsole","toFile"]),
                file    = SimpleFileWriter(filename="outfile"),

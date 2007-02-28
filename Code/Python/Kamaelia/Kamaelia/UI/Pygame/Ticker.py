@@ -33,8 +33,9 @@ is likely to change substantially in the near future.
 
 Example Usage
 -------------
-::
+
 Ticker displaying text from a file::
+
     Pipeline( RateControlledFileReader("textfile","lines",rate=1000),
               Ticker(position=(100,100))
             ).run()

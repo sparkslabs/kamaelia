@@ -34,6 +34,7 @@ Example Usage
 -------------
 Joining a PromtedFileReader and a rate control component to make a file reader
 that reads at a given rate::
+
    return Graphline(RC  = ByteRate_RequestControl(**rateargs),
                     RFA = PromptedFileReader(filename, readmode),
                     linkages = { ("RC",  "outbox")  : ("RFA", "inbox"),
@@ -51,6 +52,7 @@ child's outbox is pass-through to a named outbox on the graphline.
 
 How does it work?
 -----------------
+
 A Graphline component gives you a way of wiring up a system of components and
 then encapsulating th ewhole as a single component, with its own inboxes and
 outboxes.

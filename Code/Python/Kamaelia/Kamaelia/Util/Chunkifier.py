@@ -22,9 +22,9 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-=========================
+==========
 Chunkifier
-=========================
+==========
 
 A component that fixes the message size of an input stream to a given value,
 outputting blocks of that size when sufficient input has accumulated. This
@@ -36,11 +36,13 @@ Example Usage
 
 Chunkifying a console reader::
 
-pipeline(
-    ConsoleReader(eol=""),
-    Chunkifier(20),
-    ConsoleEchoer()
-).run()
+    pipeline(
+        ConsoleReader(eol=""),
+        Chunkifier(20),
+        ConsoleEchoer()
+    ).run()
+
+
 
 How does it work?
 -----------------
@@ -109,8 +111,7 @@ class Chunkifier(component):
     
     Keyword arguments:
     - chunksize  -- Chunk size in bytes
-    - nodelay    -- if set to True, partial chunks will be output rather
-                    than buffering up data while waiting for more to arrive.
+    - nodelay    -- if set to True, partial chunks will be output rather than buffering up data while waiting for more to arrive.
     """
     
     Inboxes = {

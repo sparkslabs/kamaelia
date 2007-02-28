@@ -35,6 +35,7 @@ Example Usage
 -------------
 
 Display that rotates rapidly through a set of images::
+
     imagefiles = [ "imagefile1", "imagefile2", ... ]
     
     class ChangeImage(Axon.Component.component):

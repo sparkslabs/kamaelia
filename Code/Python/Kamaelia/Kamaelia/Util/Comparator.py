@@ -32,6 +32,7 @@ contain match (pass an equality test).
 Example Usage
 -------------
 Compares contents of two files and prints "MISMATCH!" whenever one is found::
+
     class DetectFalse(component):
         def main(self):
             while 1:

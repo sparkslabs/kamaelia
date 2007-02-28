@@ -46,7 +46,7 @@ def ComponentMeta(File):
         line = line.strip()
         if "__kamaelia_components__" in line and line[0] != "#":
             if found != "":
-                print "WARNING: 2 or more separate component lines(!)"
+                print "WARNING: 2 or more separate component lines(!) in "+str(File)
                 break
             else:
                 found+=line.replace("\n"," ")

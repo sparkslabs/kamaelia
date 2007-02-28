@@ -56,10 +56,10 @@ Arguments to the constructor configure the appearance and behaviour of the
 button component:
 
 - If an output "msg" is not specified, the default is a tuple ("CLICK", id) where
-id is the self.id attribute of the component.
+  id is the self.id attribute of the component.
 
 - A pygame keycode can be specified that will also trigger the button as if it
-had been clicked
+  had been clicked
 
 - you can set the text label, colour, margin size and position of the button
 

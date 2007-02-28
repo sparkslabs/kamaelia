@@ -32,10 +32,14 @@ It simply copies its input to its output.
 
 Example Usage
 -------------
-::
+
+A simple server that accepts connections on port 1501, echoing back anything sent
+to it::
+
     >>> SimpleServer(protocol=EchoProtocol, port=1501).run()
 
-On a *nix client::
+On a unix/linux client::
+
     > telnet <server ip> 1501
     Trying <server ip>...
     Connected to <server ip>...

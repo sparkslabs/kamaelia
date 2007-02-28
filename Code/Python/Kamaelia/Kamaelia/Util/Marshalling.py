@@ -35,7 +35,9 @@ socket to transform the data to and from a form suitable for transport.
 
 Example usage
 -------------
-::
+
+Marshalling and demarshalling a stream of integers::
+
     class SerialiseInt:
 
         def marshall(int):
@@ -63,8 +65,9 @@ How does it work?
 
 When instantiating the Marshaller or DeMarshaller components, you provide an
 object (eg. class) containing these static methods:
-   * marshall(item) - returns the item serialised for transmission
-   * demarshall(item) - returns the original item, deserialised
+
+* marshall(item)    - returns the item serialised for transmission
+* demarshall(item)  - returns the original item, deserialised
 
 Marshaller requires only the marshall(...) static method, and DeMarshaller
 requires only demarshall(...).

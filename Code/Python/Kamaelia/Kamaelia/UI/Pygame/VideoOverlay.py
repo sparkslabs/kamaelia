@@ -31,7 +31,9 @@ service.
 
 Example Usage
 -------------
-::
+
+Read raw YUV data from a file and display it using VideoOverlay::
+
     imagesize = (352, 288)        # "CIF" size video
     fps = 15                      # framerate of video
     
@@ -81,6 +83,7 @@ pygame display.
 
 Fudge factor
 ^^^^^^^^^^^^
+
 The size of overlay requested by the VideoOverlay component is adjusted by a
 fudge factor.
 
@@ -90,6 +93,7 @@ displayed right. The value must be even, and preferably small. Odd values result
 in the picture being sheared/slanted.
 
 This problem rears itself when the following version numbers are aligned:
+  
 - SDL : 1.2.8
 - pygame : Anything up to/including 1.7.1prerelease
 - xorg : 6.8.2
@@ -106,6 +110,7 @@ UNCOMPRESSED FRAME FORMAT
 
 Uncompresed video frames must be encoded as dictionaries. VidoeOverlay requires
 the following entries::
+
     {
       "yuv" : (y_data, u_data, v_data)  # a tuple of strings
       "size" : (width, height)          # in pixels
