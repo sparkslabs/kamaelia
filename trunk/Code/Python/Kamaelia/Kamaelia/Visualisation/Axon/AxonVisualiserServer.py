@@ -136,4 +136,4 @@ def AxonVisualiser( **dictArgs):
 
 
 
-__kamaelia_prefab__  = ( AxonVisualiserServer, AxonVisualiser)
+__kamaelia_prefabs__  = ( AxonVisualiserServer, AxonVisualiser)

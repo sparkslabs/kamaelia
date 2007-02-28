@@ -147,3 +147,6 @@ class Encoder(component):
         data = mux.end()
         if data:
             self.send(data,"outbox")
+
+
+__kamaelia_components__ = ( Encoder, )

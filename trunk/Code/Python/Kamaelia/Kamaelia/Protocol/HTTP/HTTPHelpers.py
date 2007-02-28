@@ -51,6 +51,8 @@ class HTTPMakePostRequest(component):
 
             self.pause()
 
+__kamaelia_components__ = ( HTTPMakePostRequest, )
+            
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import pipeline

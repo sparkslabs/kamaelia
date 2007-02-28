@@ -121,3 +121,6 @@ class Input(threadedcomponent):
                 self.send(msg,"signal")
                 
         self.snd.stop()
+
+
+__kamaelia_components__ = ( Input, )

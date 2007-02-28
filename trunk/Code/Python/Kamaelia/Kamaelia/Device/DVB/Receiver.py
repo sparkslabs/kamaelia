@@ -116,6 +116,9 @@ def Receiver(frequency, feparams, card=0):
                       }
                     )
 
+
+__kamaelia_prefabs__ = ( Receiver, )
+
 if __name__=="__main__":
     
     import random

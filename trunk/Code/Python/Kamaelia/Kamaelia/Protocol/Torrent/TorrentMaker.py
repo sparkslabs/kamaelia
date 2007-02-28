@@ -132,6 +132,9 @@ class TorrentMaker(threadedcomponent):
             else:
                 time.sleep(2.0)
                 
+                
+__kamaelia_components__ = ( TorrentMaker, )
+                
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer

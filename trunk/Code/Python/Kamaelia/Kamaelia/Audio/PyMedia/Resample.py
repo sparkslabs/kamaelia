@@ -106,3 +106,6 @@ class Resample(component):
             if not shutdown:
                 self.pause()
             yield 1
+
+
+__kamaelia_components__ = ( Resample, )

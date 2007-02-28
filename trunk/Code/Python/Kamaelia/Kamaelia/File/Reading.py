@@ -479,7 +479,7 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
         )
 
 __kamaelia_components__ = ( PromptedFileReader, )
-__kamaelia_prefab__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
+__kamaelia_prefabs__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
 
 if __name__ == "__main__":
     pass

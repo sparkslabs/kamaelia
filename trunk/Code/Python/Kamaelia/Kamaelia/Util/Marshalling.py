@@ -183,7 +183,7 @@ class DeMarshaller(component):
                     self.send(msg, "signal")
                     done=True
 
-__kamaelia_components__  = ( Marshaller, DeMarshaller)
+__kamaelia_components__  = ( Marshaller, DeMarshaller, )
 
 
 

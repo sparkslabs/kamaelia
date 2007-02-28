@@ -88,3 +88,5 @@ class SpeexDecode(Axon.ThreadedComponent.threadedcomponent):
             if not shutdown:
                 self.pause()
 #            yield 1
+
+__kamaelia_components__ = ( SpeexEncode, SpeexDecode, )

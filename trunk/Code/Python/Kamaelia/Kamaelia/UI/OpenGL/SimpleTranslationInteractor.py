@@ -110,7 +110,7 @@ class SimpleTranslationInteractor(Interactor):
                     amount = (float(event.rel[0])/self.translationfactor, -float(event.rel[1])/self.translationfactor)
                     self.send(amount, "outbox")
 
-__kamaelia_components__ = (SimpleTranslationInteractor)
+__kamaelia_components__ = (SimpleTranslationInteractor,)
 
 if __name__=='__main__':
     from SimpleCube import *

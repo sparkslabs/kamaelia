@@ -233,7 +233,8 @@ class DemuxerService(AdaptiveCommsComponent):
                 del self.boxRefCount[outboxname]
                 
                 
-                
+__kamaelia_components__ = ( DemuxerService, )
+
 if __name__=="__main__":
     
     # a little test rig

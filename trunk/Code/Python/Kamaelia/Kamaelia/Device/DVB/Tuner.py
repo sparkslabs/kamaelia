@@ -229,3 +229,4 @@ class Tuner(threadedcomponent):
             return demuxers
 
 
+__kamaelia_components__ = ( Tuner, )

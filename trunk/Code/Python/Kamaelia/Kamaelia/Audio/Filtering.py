@@ -69,6 +69,8 @@ def convertback(data):
     return "".join(output)
 
 
+__kamaelia_components__ = ( LPF, )
+
 if __name__ == "__main__":
     import sys    
     from Kamaelia.Chassis.Pipeline import Pipeline

@@ -223,6 +223,9 @@ class ToService(component):
             yield 1
             
 
+__kamaelia_components__ = ( Subscribe, ToService, )
+__kamaelia_prefabs__    = ( RegisterService, )
+
 
 if __name__ == "__main__":
     

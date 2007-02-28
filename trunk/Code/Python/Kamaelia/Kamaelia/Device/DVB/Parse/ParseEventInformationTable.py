@@ -539,6 +539,10 @@ class SimplifyEIT(component):
             yield 1
             
 
+__kamaelia_components__ = ( ParseEventInformationTable,
+                            SimplifyEIT, )
+__kamaelia_prefabs__    = ( ParseEventInformationTable_Subset )
+            
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline

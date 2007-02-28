@@ -188,7 +188,7 @@ def SRM_Receiver():
     )
 
 __kamaelia_components__  = ( Annotator, RecoverOrder, )
-__kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
+__kamaelia_prefabs__ = ( SRM_Sender, SRM_Receiver)
     
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleEchoer

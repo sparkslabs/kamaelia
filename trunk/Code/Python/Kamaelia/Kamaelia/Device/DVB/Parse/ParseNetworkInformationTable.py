@@ -502,6 +502,11 @@ class ParseNetworkInformationTable(component):
             yield 1
 
 
+__kamaelia_components__ = ( ParseNetworkInformationTable, )
+__kamaelia_prefabs__    = ( ParseNetworkInformationTable_ActualNetwork,
+                            ParseNetworkInformationTable_OtherNetwork,
+                            ParseNetworkInformationTable_ActualAndOtherNetwork, )
+
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline

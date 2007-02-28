@@ -480,6 +480,13 @@ class SDT_to_SimpleServiceList(component):
             self.pause()
             yield 1
 
+            
+__kamaelia_components__ = ( ParseServiceDescriptionTable,
+                            SDT_to_SimpleServiceList )
+__kamaelia_prefabs__    = ( ParseServiceDescriptionTable_ActualTS,
+                            ParseServiceDescriptionTable_OtherTS,
+                            ParseServiceDescriptionTable_ActualAndOtherTS, )
+
 
 if __name__ == "__main__":
     

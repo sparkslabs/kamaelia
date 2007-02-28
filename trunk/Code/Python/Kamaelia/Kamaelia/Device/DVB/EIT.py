@@ -339,6 +339,8 @@ class TimeAndDatePacketParser(component):
             yield 1
 
 
+__kamaelia_components__ = ( PSIPacketReconstructor, EITPacketParser, NowNextChanges, NowNextServiceFilter, TimeAndDatePacketParser, )
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
