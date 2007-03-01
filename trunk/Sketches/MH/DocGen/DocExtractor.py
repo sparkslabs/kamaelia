@@ -21,6 +21,7 @@ import inspect
 import pprint
 import time
 from docutils import core
+from docutils import nodes
 import Kamaelia.Support.Data.Repository
 
 from renderHTML      import RenderHTML
@@ -35,7 +36,10 @@ class docFormatter(object):
         self.renderer = renderer(debug)
         self.debug = debug
 
-    def boxes(self,label, boxes):
+    def emptyTree(self):
+        return core.publish_doctree("")
+    
+    def boxes(self,componentName, label, boxes):
         items = []
         for box in boxes:
             try:
@@ -44,16 +48,24 @@ class docFormatter(object):
                 description = ""
             except TypeError:
                 description = "Code uses old style inbox/outbox description - no metadata available"
-            items.append((box, description))
+            items.append((str(box), str(description)))
 
-        return self.renderer.heading(label) + self.renderer.itemPairList(items) + self.renderer.divider()
-
-    def name(self,name):
-        return self.renderer.heading(name)
-
-    def methodName(self,name):
-        return self.renderer.heading(name,3)
-
+        docTree= nodes.section('',
+                ids   = ["section-"+componentName+"-"+label],
+                names = ["section-"+componentName+"-"+label],
+                *[ nodes.title('', label),
+                   nodes.bullet_list('',
+                      *[ nodes.list_item('', nodes.paragraph('', '',
+                                                 nodes.strong('', boxname),
+                                                 nodes.Text(" : "+boxdesc))
+                                             )
+                         for (boxname,boxdesc) in items
+                       ]
+                   ),
+                ]
+            )
+        return docTree
+    
     def docString(self,docstring, main=False):
         if docstring is None:
             docstring = " "
@@ -70,59 +82,77 @@ class docFormatter(object):
         while docstring[-1] == "\n":
             docstring = docstring[:-1]
             
-        pre = ""
-        if main:
-            pre = self.renderer.divider()
-
-        return pre + self.renderer.preformat(docstring)+ self.renderer.divider()
-
-    def SectionHeader(self, header):
-        return self.renderer.heading(header, 2)
-
-    def paragraph(self, para):
-        return self.renderer.divider()+ "<p>"+textwrap.fill(para)+ self.renderer.divider()
+        return core.publish_doctree(docstring).children
+#        pre = ""
+#        if main:
+#            pre = "\n"
+#
+#        return pre + self.renderer.preformat(docstring)+ "\n"
 
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
 
     def formatMethodDocStrings(self,X):
-        r = ""
+        docTree = self.emptyTree()
+        
         for method in sorted([x for x in inspect.classify_class_attrs(X) if x[2] == X and x[1] == "method"]):
             if method[0][-7:] == "__super":
                 continue
             methodHead = method[0]+self.formatArgSpec(inspect.getargspec(method[3]))
-            r += self.methodName(methodHead)+ self.docString(method[3].__doc__)
+            
+            docTree.append( nodes.section('',
+                                ids   = ["section-"+X.__name__+"-method-"+method[0]],
+                                names = ["section-"+X.__name__+"-method-"+method[0]],
+                                * [ nodes.title('', methodHead) ]
+                                  + self.docString(method[3].__doc__)
+                            )
+                          )
 
-        return r
+        return docTree.children
 
     def formatClassStatement(self, name, bases):
         return "class "+ name+"("+",".join([str(base)[8:-2] for base in bases])+")"
 
-    def formatComponent(self, X):
-        return self.SectionHeader(self.formatClassStatement(X.__name__, X.__bases__)) + \
-               self.docString(X.__doc__, main=True) + \
-               self.boxes("Inboxes", X.Inboxes) + \
-               self.boxes("Outboxes", X.Outboxes) + \
-               self.SectionHeader("Methods defined here")+ \
-               self.paragraph("[[boxright][[include][file=Components/MethodNote.html][croptop=1][cropbottom=1] ] ]") +\
-               self.formatMethodDocStrings(X)
-
-    def preamble(self): return self.renderer.start()
-    def postamble(self): return self.renderer.stop()
-    
-    def formatModule(self, M):
-        return self.docString(M.__doc__, main=True)
-    
-    def hardDivider(self):
-        return self.renderer.hardDivider()
-
-    def componentAnchor(self, C):
-        return self.renderer.setAnchor(C)
-    
-    def moduleTrail(self, moduleName):
+    def formatComponent(self, X, includeMethods=False):
+        CLASSNAME = self.formatClassStatement(X.__name__, X.__bases__)
+        CLASSDOC = self.docString(X.__doc__)
+        INBOXES = self.boxes(X.__name__,"Inboxes", X.Inboxes)
+        OUTBOXES = self.boxes(X.__name__,"Outboxes", X.Outboxes)
+        
+        if includeMethods:
+            METHODS = [ nodes.section('',
+                          nodes.title('', 'Methods defined here'),
+                          * self.formatMethodDocStrings(X)
+                        )
+                      ]
+        else:
+            METHODS = []
+        
+        docTree = self.emptyTree()
+        docTree.children.extend( [
+            nodes.section('',
+                ids   = ["section-"+X.__name__],
+                names = ["section-"+X.__name__],
+                * [ nodes.title('', CLASSNAME) ]
+                  + CLASSDOC
+                  + [ INBOXES,
+                      OUTBOXES,
+                    ]
+                  + METHODS
+            ),
+        ] )
+        return docTree
+        
+#    def componentAnchor(self, C):
+#        return self.renderer.setAnchor(C)
+#    
+    def formatModuleTrail(self, moduleName):
         path = moduleName.split(".")
         
-        trail = ""
+        trail = self.emptyTree()
+        trail.append( nodes.paragraph('') )
+        line = trail.children[0]
+        
         accum = ""
         firstPass=True
         for element in path:
@@ -131,54 +161,101 @@ class docFormatter(object):
             accum += element
             
             if not firstPass:
-                trail += " . "
-            trail += self.renderer.linkTo(accum, element)
+                line.append(nodes.Text(" . "))
+            URI = self.renderer.makeURI(accum)
+            line.append( nodes.reference('', element, refuri=URI) )
             
             firstPass=False
-            
-        return self.paragraph(trail)
+        
+        return trail
     
-    def componentList(self, C):
-        links = []
-        for COMPONENT in C:
-            links.append( self.renderer.linkToAnchor(COMPONENT,COMPONENT) )
+    def componentList(self, componentList):
+        docTree = self.emptyTree()
+        docTree.append( nodes.paragraph('', '', nodes.Text('Components')) )
+        docTree.append( nodes.bullet_list('',
+                          *[ nodes.list_item('',
+                                nodes.paragraph('', '', nodes.reference('', COMPONENT, refid='section-'+COMPONENT))
+                             )
+                             for COMPONENT in componentList ]
+                        )
+                      )
+                     
+        return docTree
+
+    def formatModule(self, moduleName, module, components):
+        
+        trailTree = self.formatModuleTrail(moduleName)
+        moduleTree = self.docString(module.__doc__, main=True)
+        moduleTree = self.promoteFirstTitle(moduleTree)
+        
+        allComponents = []
+        
+        componentTrees = {}
+        for component in components:
+            componentTrees[component.__name__] = self.formatComponent(component, includeMethods=False)
             
-        return self.paragraph("Components:"+self.renderer.simpleList(links))
+        for cname in sorted(componentTrees.keys()):
+            allComponents.extend(componentTrees[cname])
+        
+        componentListTree = self.componentList( sorted(componentTrees.keys()) )
+        
+        rootTree = self.emptyTree()
+        rootTree.extend(trailTree)
+        rootTree.extend(componentListTree)
+        rootTree.extend(moduleTree)
+        rootTree.extend( nodes.section('',
+                             id = [ 'section-ALL-COMPONENTS' ],
+                             name = [ 'section-ALL-COMPONENTS' ],
+                             * [ nodes.section('',
+                                   * [ nodes.title('', "The Components") ]
+                                   + allComponents
+                                 )
+                               ]
+                         )
+                       )
+
+#        print rootTree
+        return rootTree.children
+            
+    def promoteFirstTitle(self, docs):
+        """If first element in these docelements is a title, then put everything
+        below it into a section, to make sure they get nested to lower heading levels"""
+        if len(docs)>=1 and isinstance(docs[0],nodes.title):
+            docs = [ docs[0], nodes.section('', *docs[1:]) ]
+        return docs
 
 
-def generateDocumentationFiles():
-    for MODULE in COMPONENTS:
+
+def generateDocumentationFiles(filterString):
+    for MODULE in [M for M in COMPONENTS if filterString in M]:
         print "Processing: "+MODULE
+        
         module = __import__(MODULE, [], [], COMPONENTS[MODULE])
-        F = open(docdir+"/"+MODULE+formatter.renderer.extension, "w")
-        F.write(formatter.preamble())
+        components = [ getattr(module, c) for c in COMPONENTS[MODULE] ]
         
-        F.write(formatter.moduleTrail(MODULE))
-        F.write(formatter.componentList(COMPONENTS[MODULE]))
+        doctree  = formatter.formatModule(MODULE, module, components)
+        filename = formatter.renderer.makeFilename(MODULE)
+        output   = formatter.renderer.render(MODULE, doctree)
         
-        F.write(formatter.formatModule(module))
-        F.write(formatter.hardDivider())
-        
-        for COMPONENT in COMPONENTS[MODULE]:
-            F.write(formatter.componentAnchor(COMPONENT))
-            X = getattr(module, COMPONENT)
-            F.write(formatter.formatComponent(X))
-            
-        F.write(formatter.postamble())
+        F = open(docdir+"/"+filename, "w")
+        F.write(output)
         F.close()
         
-        
+#        F.write(formatter.preamble())
+#        
+#        F.write(formatter.moduleTrail(MODULE))
+#        F.write(formatter.componentList(COMPONENTS[MODULE]))
+#        
+#        F.write(formatter.formatModule(module))
+#        F.write(formatter.hardDivider())
+#        
 #        for COMPONENT in COMPONENTS[MODULE]:
-#            print
-#            print "Processing: "+MODULE+"."+COMPONENT+" ..."
-#            print "*" * len("Processing: "+MODULE+"."+COMPONENT+" ...")
-#            F = open(docdir+"/"+MODULE+"."+COMPONENT+".html","w")
+#            F.write(formatter.componentAnchor(COMPONENT))
 #            X = getattr(module, COMPONENT)
-#            F.write(formatter.preamble())
-#            F.write("<h1>"+ MODULE+"."+COMPONENT+"</h1>\n")
 #            F.write(formatter.formatComponent(X))
-#            F.write(formatter.postamble())
-#            F.close()
+#            
+#        F.write(formatter.postamble())
+#        F.close()
 
 
 def formatFile(SectionStack,File,KamaeliaDocs):
@@ -313,5 +390,10 @@ if __name__ == "__main__":
         for key in C.keys():
             COMPONENTS[".".join(key)] = C[key]
 
-    generateDocumentationFiles()
+    import sys
+    filterPattern = ""
+    if len(sys.argv)>1:
+        filterPattern = sys.argv[1]
+
+    generateDocumentationFiles(filterPattern)
     generateIndexFile()
