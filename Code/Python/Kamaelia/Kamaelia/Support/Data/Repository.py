@@ -35,7 +35,7 @@ def parseComponentLine(Line):
     components = [ x for x in Line[Line.find("(")+1:Line.rfind(")")].replace(" ", "").split(",") if x != ""]
     return components
 
-def ComponentMeta(File):
+def ComponentMeta(File, identifier="__kamaelia_components__"):
     F = open(File)
     contents = F.readlines()
     F.close()
@@ -44,7 +44,7 @@ def ComponentMeta(File):
     while len(contents)>0:
         line = contents.pop(0)
         line = line.strip()
-        if "__kamaelia_components__" in line and line[0] != "#":
+        if identifier in line and line[0] != "#":
             if found != "":
                 print "WARNING: 2 or more separate component lines(!) in "+str(File)
                 break
@@ -67,7 +67,7 @@ def ComponentMeta(File):
 
     return meta
 
-def SearchComponents(baseDirectory, Base):
+def SearchComponents(baseDirectory, Base, identifier="__kamaelia_components__"):
     Entries = os.listdir(baseDirectory)
     result = {}
     for Entry in Entries:
@@ -76,16 +76,16 @@ def SearchComponents(baseDirectory, Base):
         FullEntry = os.path.join(baseDirectory, Entry)
         if isPythonFile(baseDirectory, Entry):
 
-            meta = ComponentMeta(FullEntry)
+            meta = ComponentMeta(FullEntry, identifier)
             Entry = Entry[:-3]
             if meta:
                 result[ tuple( Base+[ Entry ] ) ] = meta
         elif os.path.isdir(FullEntry):
-            subtree = SearchComponents(FullEntry, Base+[Entry])
+            subtree = SearchComponents(FullEntry, Base+[Entry], identifier)
             result.update(subtree)
     return result
 
-def SearchComponentsNested(baseDirectory, result):
+def SearchComponentsNested(baseDirectory, result, identifier="__kamaelia_components__"):
     Entries = os.listdir(baseDirectory)
     for Entry in Entries:
         if Entry == "Repository.py":
@@ -93,7 +93,7 @@ def SearchComponentsNested(baseDirectory, result):
         FullEntry = os.path.join(baseDirectory, Entry)
         if isPythonFile(baseDirectory, Entry):
 
-            meta = ComponentMeta(FullEntry)
+            meta = ComponentMeta(FullEntry, identifier)
             Entry = Entry[:-3]
             if meta:
                 result[Entry] = meta
@@ -104,7 +104,7 @@ def SearchComponentsNested(baseDirectory, result):
                 except KeyError:
                     newresult = {}
                     result[Entry] = newresult
-                subtree = SearchComponentsNested(FullEntry, newresult)
+                subtree = SearchComponentsNested(FullEntry, newresult, identifier)
     return result
 
 def GetAllKamaeliaComponentsNested():
@@ -119,6 +119,19 @@ def GetAllKamaeliaComponents():
     installbase = os.path.dirname(Kamaelia.__file__)
     return SearchComponents(installbase, ["Kamaelia"] )
 
+def GetAllKamaeliaPrefabsNested():
+    import Kamaelia
+    installbase = os.path.dirname(Kamaelia.__file__)
+    base = { "Kamaelia" : {}}
+    SearchComponentsNested(installbase, base["Kamaelia"], "__kamaelia_prefabs__" )
+    return base
+
+def GetAllKamaeliaPrefabs():
+    import Kamaelia
+    installbase = os.path.dirname(Kamaelia.__file__)
+    return SearchComponents(installbase, ["Kamaelia"], "__kamaelia_prefabs__" )
+
+    
 if __name__ == "__main__":
     import pprint
     pprint.pprint(GetAllKamaeliaComponents(),None,4)
