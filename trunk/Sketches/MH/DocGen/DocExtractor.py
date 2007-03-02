@@ -3,18 +3,10 @@
 # This program generates Kamaelia's documentation directly from the
 # source. I am currently running this as follows:
 #
+# mkdir ./pydoc/
 # ./DocExtractor.py
-# cp index.html ../../Website/Components/.
-# cd tmp
-# cp * ../../../Website/Components/pydoc/.
 #
-# This is then checked into the repository as follows:
-#
-# cd ../../../Website/Components/pydoc
-# cvs add *html # produces warnings about double adds
-# cd ..
-# cvs ci
-#
+# documentation is placed into the "pydoc" subdirectory
 
 import textwrap
 import inspect
