@@ -260,36 +260,39 @@ class docFormatter(object):
                     parent.append(newItem)
                 self.buildTOC( n, parent[-1][-1], depth-1)
 
-        for item in items:
-            if len(item[1]) == 0:
-                item.remove(item[1])   # remove any empty bullet_list stubs
-            parent.append(item)
-
         return parent
         
-        toc = nodes.bullet_list('')
 
+    def formatIndex(self, indexName, subTree, depth):
+        return nodes.section('',
+#            nodes.title('', indexName),
+            self.formatModuleTrail(indexName),
+            self.generateIndex(subTree, depth=depth),
+            )
 
-        
-        tocEntry = nodes.list_item('')
-        
-        for n in srcTree.children:
-            if isinstance(n, nodes.title):
-                if len(tocEntry)>=1:
-                    toc.append(tocEntry)
-                tocEntry = nodes.list_item('')
-                tocEntry.append(nodes.paragraph('', '', *n.children))
-            elif isinstance(n, nodes.section):
-                subToc = self.buildTOC(n, depth-1)
-                if len(subToc)>=1:
-                    tocEntry.extend(subToc)
-        
-        if len(tocEntry)>=1:
-            toc.append(tocEntry)
+    def generateIndex(self, srcTree, parent=None, depth=99):
+        if parent is None:
+            parent = nodes.bullet_list()
+
+        if depth<=0:
+            return parent
+
+        items=nodes.section()
+
+        for name in sorted(srcTree.keys()):
+            uri = self.renderer.makeURI(name)
+            text = name.split(".")[-1]
+            newItem = nodes.list_item('',
+                nodes.paragraph('','', nodes.reference('', text, refuri=uri))
+                )
+            if srcTree[name]:  # if not empty, recurse
+                newItem.append(nodes.bullet_list())
+                self.generateIndex(srcTree[name], newItem[-1], depth-1)
+            parent.append(newItem)
+
+        return parent
             
-        return toc
-
-
+            
 def generateDocumentationFiles(filterString):
     MODULES = dict(COMPONENTS.items())
     MODULES.update(dict(PREFABS.items()))
@@ -312,134 +315,50 @@ def generateDocumentationFiles(filterString):
         F.write(output)
         F.close()
         
-#        F.write(formatter.preamble())
-#        
-#        F.write(formatter.moduleTrail(MODULE))
-#        F.write(formatter.componentList(COMPONENTS[MODULE]))
-#        
-#        F.write(formatter.formatModule(module))
-#        F.write(formatter.hardDivider())
-#        
-#        for COMPONENT in COMPONENTS[MODULE]:
-#            F.write(formatter.componentAnchor(COMPONENT))
-#            X = getattr(module, COMPONENT)
-#            F.write(formatter.formatComponent(X))
-#            
-#        F.write(formatter.postamble())
-#        F.close()
 
 
-def formatFile(SectionStack,File,KamaeliaDocs):
-    filepath = "/Components/pydoc/"+".".join(SectionStack+[File])
-    if len(KamaeliaDocs[File]) != 1 or File == "Experimental":
-        components = [ x for x in KamaeliaDocs[File] ]
-        components.sort()
-        components = [ "<a href='" +filepath+"." +x+".html'>"+x+"</a>" for x in components ]
-        return File + "("+ ", ".join(components) + ")"
-    else:
-        return "<a href='" +filepath+"." +KamaeliaDocs[File][0]+".html'>"+KamaeliaDocs[File][0]+"</a>"
 
+def generateIndices(depth=99):
 
-def sectionStart(Filehandle, indent, section):
-    if indent == "":
-        Filehandle.write("""\
-<div class="topsection">
-  <div class="sectionheader"> %s </div>
-  <div class="sectioncontent">
-""" % (section,) )
-    else:
-        Filehandle.write( """\
-<div class="subsection">
-  <div class="sectionheader"> %s </div>
-  <div class="sectioncontent">
-""" % (section,))
-
-
-def sectionEnd(Filehandle, indent):
-    Filehandle.write(indent+"</div></div>\n")
-
-def showSection(Filehandle, SectionStack, KamaeliaDocs,indent=""):
-    global count
-    sections = []
-    thissection = []
-#    if indent == "":
-#        Filehandle.write('<table border="0">\n<tr><td>\n')
-    for K in KamaeliaDocs.keys():
-        try:
-            KamaeliaDocs[K].keys()
-            sections.append(K)
-        except AttributeError:
-            thissection.append(K)
-
-
-    if indent != "":
-        if thissection != []:
-            if indent == "":
-                Filehandle.write('<div class="none">&nbsp;</div>\n<p>Other Components:\n<ul>\n')
+    # list of all leaf modules
+    MODULES = dict(COMPONENTS.items())
+    MODULES.update(dict(PREFABS.items()))
+    MODULES = MODULES.keys()
     
-            Filehandle.write( indent+"   ")
-            thissection.sort()
-            for File in thissection:
-                Filehandle.write( formatFile(SectionStack,File,KamaeliaDocs)+" ")
-            Filehandle.write("\n")
-            if indent == "":
-                Filehandle.write( '</ul>\n')
-
-    sections.sort()
-    for section in sections:
-        sectionStart(Filehandle, indent, section)
-        showSection(Filehandle, SectionStack+[section],KamaeliaDocs[section],indent+"   ")
-        sectionEnd(Filehandle, indent)
-
-    if indent == "":
-        if thissection != []:
-            if indent == "":
-                Filehandle.write( '<div class="none">&nbsp;</div>\n<p>Other Components:\n<ul>\n')
+    # now build a list of all module sub paths, eg A, A.B, A.B.C
+    MODULETREE = {}
+    INDEX = {}
+    for fullPath in MODULES:
+        parts = fullPath.split(".")
+        path = ""
+        currentNode = MODULETREE
+        for part in parts:
+            if path!="":
+                path+="."
+            path+=part
+            currentNode[path] = currentNode.get(path,{})
+            currentNode = currentNode.get(path,{})
+            if path not in INDEX and path not in MODULES:
+                INDEX[path] = currentNode
+                
+    # MODULETREE now contains a tree structure; at each node is the full path
+    # leading up to that point. This tree includes all leaves from MODULES
     
-            Filehandle.write( indent+"   ")
-            thissection.sort()
-            for File in thissection:
-                Filehandle.write( formatFile(SectionStack,File,KamaeliaDocs)+" ")
-            Filehandle.write("\n")
-            if indent == "":
-                Filehandle.write( '</ul>\n')
-
-
-def generateIndexFile():
-    F = open("index.html","w")
-    KamaeliaDocs = CN["Kamaelia"]
-    F.write("""\
-<html>
-<style>
-.topsection {
-              width: 50%;
-              float: left;
-              padding-top: 0.3em;
-            }
-.subsection { }
-.sectionheader {
-                 font-weight: bold;
-               }
-.sectioncontent { font-size: 0.9em;
-                  margin-left: 2em;
-                }
-.verticaldivider { float: bottom;
-                   width: 100%;
-                 }
-.none { width: 100%;
-        clear: both;
-</style>
-
-<body>
-"""+ """<P>Last Generated: %s
-""" % (time.asctime(),))
-
-    showSection(F,["Kamaelia"],KamaeliaDocs)
-
-    F.write("""\
-</body>
-</html>
-""")
+    # INDEX contains maps all partial paths, excluding modules, to subsets of
+    # the module tree structure
+    
+    for indexName in INDEX.keys():
+        print "Creating index: "+indexName
+        
+        doctree  = formatter.formatIndex(indexName, INDEX[indexName], depth)
+        filename = formatter.renderer.makeFilename(indexName)
+        output   = formatter.renderer.render(indexName, doctree)
+        
+        F = open(docdir+"/"+filename, "w")
+        F.write(output)
+        F.close()
+    
+    
 
 
 if __name__ == "__main__":
@@ -470,4 +389,4 @@ if __name__ == "__main__":
         filterPattern = sys.argv[1]
 
     generateDocumentationFiles(filterPattern)
-    generateIndexFile()
+    generateIndices(depth=2)
