@@ -112,6 +112,9 @@ class docFormatter(object):
 
     def formatClassStatement(self, name, bases):
         return "class "+ name+"("+",".join([str(base)[8:-2] for base in bases])+")"
+    
+    def formatPrefabStatement(self, name):
+        return "prefab: "+name
 
     def formatComponent(self, X, includeMethods=False):
         CLASSNAME = self.formatClassStatement(X.__name__, X.__bases__)
@@ -143,6 +146,22 @@ class docFormatter(object):
         ] )
         return docTree
         
+    def formatPrefab(self, X):
+        CLASSNAME = self.formatPrefabStatement(X.__name__)
+        CLASSDOC = self.docString(X.__doc__)
+        
+        docTree = self.emptyTree()
+        docTree.children.extend( [
+            nodes.section('',
+                ids   = ["section-"+X.__name__],
+                names = ["section-"+X.__name__],
+                * [ nodes.title('', CLASSNAME) ]
+                  + CLASSDOC
+            ),
+        ] )
+        
+        return docTree
+        
 #    def componentAnchor(self, C):
 #        return self.renderer.setAnchor(C)
 #    
@@ -171,7 +190,7 @@ class docFormatter(object):
     
     def componentList(self, componentList):
         docTree = self.emptyTree()
-        docTree.append( nodes.paragraph('', '', nodes.Text('Components')) )
+#        docTree.append( nodes.paragraph('', '', nodes.Text('Components and Prefabs')) )
         docTree.append( nodes.bullet_list('',
                           *[ nodes.list_item('',
                                 nodes.paragraph('', '', nodes.reference('', COMPONENT, refid='section-'+COMPONENT))
@@ -182,22 +201,26 @@ class docFormatter(object):
                      
         return docTree
 
-    def formatModule(self, moduleName, module, components):
+    def formatModule(self, moduleName, module, components, prefabs):
         
         trailTree = self.formatModuleTrail(moduleName)
         moduleTree = self.docString(module.__doc__, main=True)
         moduleTree = self.promoteFirstTitle(moduleTree)
         
-        allComponents = []
+        allDeclarations = []
         
-        componentTrees = {}
+        declarationTrees = {}
         for component in components:
-            componentTrees[component.__name__] = self.formatComponent(component, includeMethods=False)
+            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods=False)
             
-        for cname in sorted(componentTrees.keys()):
-            allComponents.extend(componentTrees[cname])
+        for prefab in prefabs:
+            assert(prefab.__name__ not in declarationTrees)
+            declarationTrees[prefab.__name__] = self.formatPrefab(prefab)
+            
+        for name in sorted(declarationTrees.keys()):
+            allDeclarations.extend(declarationTrees[name])
         
-        componentListTree = self.componentList( sorted(componentTrees.keys()) )
+        componentListTree = self.componentList( sorted(declarationTrees.keys()) )
         
         rootTree = self.emptyTree()
         rootTree.extend(trailTree)
@@ -207,8 +230,8 @@ class docFormatter(object):
                              id = [ 'section-ALL-COMPONENTS' ],
                              name = [ 'section-ALL-COMPONENTS' ],
                              * [ nodes.section('',
-                                   * [ nodes.title('', "The Components") ]
-                                   + allComponents
+                                   * [ nodes.title('', "Component/Prefab details") ]
+                                   + allDeclarations
                                  )
                                ]
                          )
@@ -227,13 +250,20 @@ class docFormatter(object):
 
 
 def generateDocumentationFiles(filterString):
-    for MODULE in [M for M in COMPONENTS if filterString in M]:
+    MODULES = dict(COMPONENTS.items())
+    MODULES.update(dict(PREFABS.items()))
+    MODULES = [M for M in MODULES.keys() if filterString in M]
+    for MODULE in MODULES:
         print "Processing: "+MODULE
         
-        module = __import__(MODULE, [], [], COMPONENTS[MODULE])
-        components = [ getattr(module, c) for c in COMPONENTS[MODULE] ]
+        cNames = COMPONENTS.get(MODULE,[])
+        pNames = PREFABS.get(MODULE,[])
         
-        doctree  = formatter.formatModule(MODULE, module, components)
+        module = __import__(MODULE, [], [], cNames+pNames)
+        components = [ getattr(module, c) for c in cNames ]
+        prefabs = [ getattr(module, p) for p in pNames ]
+        
+        doctree  = formatter.formatModule(MODULE, module, components, prefabs)
         filename = formatter.renderer.makeFilename(MODULE)
         output   = formatter.renderer.render(MODULE, doctree)
         
@@ -385,10 +415,13 @@ if __name__ == "__main__":
         }
     else:
         C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
-        CN = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponentsNested()
+        P = Kamaelia.Support.Data.Repository.GetAllKamaeliaPrefabs()
         COMPONENTS = {}
         for key in C.keys():
             COMPONENTS[".".join(key)] = C[key]
+        PREFABS = {}
+        for key in P.keys():
+            PREFABS[".".join(key)] = P[key]
 
     import sys
     filterPattern = ""
