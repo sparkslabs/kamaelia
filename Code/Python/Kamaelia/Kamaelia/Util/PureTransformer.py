@@ -32,8 +32,8 @@ Example Usage
 -------------
 
 To read in lines of text, convert to upper case and then write to the console::
-
-    pipeline(
+    
+    Pipeline(
         ConsoleReader(),
         PureTransformer(lambda x : x.upper()),
         ConsoleEchoer()

@@ -152,7 +152,7 @@ from Axon.Ipc import producerFinished,shutdownMicroprocess
 
 class NowNextServiceFilter(component):
     """\
-    NowNextServiceFilter(*services) -> new NowNextServiceFilter component.
+    NowNextServiceFilter(\*services) -> new NowNextServiceFilter component.
 
     Filters simplified events from Event Information Tables, only letting
     through those that match the service ids specified.    

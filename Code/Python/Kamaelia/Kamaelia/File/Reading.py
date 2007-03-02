@@ -395,7 +395,7 @@ def RateControlledFileReader(filename, readmode = "bytes", **rateargs):
     Keyword arguments:
     
     - readmode    -- "bytes" or "lines"
-    - **rateargs  -- arguments for ByteRate_RequestControl component constructor
+    - rateargs  -- arguments for ByteRate_RequestControl component constructor
     """
     return Graphline(RC  = ByteRate_RequestControl(**rateargs),
                     RFA = PromptedFileReader(filename, readmode),
@@ -462,7 +462,7 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
     
     Keyword arguments:
     - readmode = "bytes" or "lines"
-    - **rateargs = arguments for ByteRate_RequestControl component constructor
+    - rateargs = arguments for ByteRate_RequestControl component constructor
     """
     return Graphline(RC       = ByteRate_RequestControl(**rateargs),
                      CAR      = ReusableFileReader(readmode),
