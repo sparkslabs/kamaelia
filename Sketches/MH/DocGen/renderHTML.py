@@ -19,7 +19,7 @@ class RenderHTML(object):
         return docName + ".html"
     
     def makeURI(self, docName):
-        return "/"+self.makeFilename(docName)
+        return self.makeFilename(docName)
         
     def render(self, docName, docTree):
         if not isinstance(docTree, nodes.document):
