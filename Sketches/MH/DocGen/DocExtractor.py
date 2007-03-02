@@ -36,6 +36,13 @@ class docFormatter(object):
         self.renderer = renderer(debug)
         self.debug = debug
 
+    uid = 0
+
+    def genUniqueRef(self):
+        uid = str(self.uid)
+        self.uid+=1
+        return uid
+
     def emptyTree(self):
         return core.publish_doctree("")
     
@@ -82,7 +89,7 @@ class docFormatter(object):
         while docstring[-1] == "\n":
             docstring = docstring[:-1]
             
-        return core.publish_doctree(docstring).children
+        return nodes.section('', *core.publish_doctree(docstring).children)
 #        pre = ""
 #        if main:
 #            pre = "\n"
@@ -93,7 +100,7 @@ class docFormatter(object):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
 
     def formatMethodDocStrings(self,X):
-        docTree = self.emptyTree()
+        docTree = nodes.section('') #self.emptyTree()
         
         for method in sorted([x for x in inspect.classify_class_attrs(X) if x[2] == X and x[1] == "method"]):
             if method[0][-7:] == "__super":
@@ -108,7 +115,7 @@ class docFormatter(object):
                             )
                           )
 
-        return docTree.children
+        return docTree
 
     def formatClassStatement(self, name, bases):
         return "class "+ name+"("+",".join([str(base)[8:-2] for base in bases])+")"
@@ -130,37 +137,22 @@ class docFormatter(object):
                       ]
         else:
             METHODS = []
-        
-        docTree = self.emptyTree()
-        docTree.children.extend( [
-            nodes.section('',
-                ids   = ["component-"+X.__name__],
-                names = ["component-"+X.__name__],
-                * [ nodes.title('', CLASSNAME) ]
+
+        return nodes.section('',
+                * [ nodes.title('', CLASSNAME, ids=["component-"+X.__name__]) ]
                   + CLASSDOC
-                  + [ INBOXES,
-                      OUTBOXES,
-                    ]
+                  + [ INBOXES, OUTBOXES ]
                   + METHODS
-            ),
-        ] )
-        return docTree
+            )
         
     def formatPrefab(self, X):
         CLASSNAME = self.formatPrefabStatement(X.__name__)
         CLASSDOC = self.docString(X.__doc__)
         
-        docTree = self.emptyTree()
-        docTree.children.extend( [
-            nodes.section('',
-                ids   = ["component-"+X.__name__],
-                names = ["component-"+X.__name__],
-                * [ nodes.title('', CLASSNAME) ]
+        return nodes.section('',
+                * [ nodes.title('', CLASSNAME, ids=["component-"+X.__name__]) ]
                   + CLASSDOC
-            ),
-        ] )
-        
-        return docTree
+            )
         
 #    def componentAnchor(self, C):
 #        return self.renderer.setAnchor(C)
@@ -168,9 +160,8 @@ class docFormatter(object):
     def formatModuleTrail(self, moduleName):
         path = moduleName.split(".")
         
-        trail = self.emptyTree()
-        trail.append( nodes.paragraph('') )
-        line = trail.children[0]
+        trail = nodes.paragraph('')
+        line = trail
         
         accum = ""
         firstPass=True
@@ -189,29 +180,31 @@ class docFormatter(object):
         return trail
     
     def componentList(self, componentList):
-        docTree = self.emptyTree()
-#        docTree.append( nodes.paragraph('', '', nodes.Text('Components and Prefabs')) )
-        docTree.append( nodes.bullet_list('',
-                          *[ nodes.list_item('',
-                                nodes.paragraph('', '', nodes.reference('', COMPONENT, refid='component-'+COMPONENT))
-                             )
-                             for COMPONENT in componentList ]
-                        )
-                      )
-                     
-        return docTree
+        return nodes.section('',
+#            nodes.paragraph('', '', nodes.Text('Components and Prefabs')),
+            nodes.bullet_list('',
+                *[ nodes.list_item('',
+                       nodes.paragraph('', '',
+                         nodes.strong('', '',
+                           nodes.reference('', COMPONENT, refid='component-'+COMPONENT))
+                         )
+                       )
+                   for COMPONENT in componentList
+                 ]
+                )
+            )
 
     def formatModule(self, moduleName, module, components, prefabs):
         
         trailTree = self.formatModuleTrail(moduleName)
         moduleTree = self.docString(module.__doc__, main=True)
-        moduleTree = self.promoteFirstTitle(moduleTree)
+        toc = self.buildTOC(moduleTree, depth=3)
         
         allDeclarations = []
         
         declarationTrees = {}
         for component in components:
-            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods=False)
+            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods=True)
             
         for prefab in prefabs:
             assert(prefab.__name__ not in declarationTrees)
@@ -221,32 +214,80 @@ class docFormatter(object):
             allDeclarations.extend(declarationTrees[name])
         
         componentListTree = self.componentList( sorted(declarationTrees.keys()) )
-        
-        rootTree = self.emptyTree()
-        rootTree.extend(trailTree)
-        rootTree.extend(componentListTree)
-        rootTree.extend(moduleTree)
-        rootTree.extend( nodes.section('',
-                             id = [ 'component-declarations' ],
-                             name = [ 'component-declarations' ],
-                             * [ nodes.section('',
-                                   * [ nodes.title('', "Component/Prefab details") ]
-                                   + allDeclarations
-                                 )
-                               ]
-                         )
-                       )
 
-#        print rootTree
-        return rootTree.children
+        return nodes.section('',
+            trailTree,
+#            nodes.paragraph('', nodes.Text("Component/Prefab details")),
+            componentListTree,
+            nodes.paragraph('', nodes.Text("Explanations")),
+            toc,
+            nodes.transition(),
+            moduleTree,
+            nodes.transition(),
+            nodes.section('',
+                id = [ 'component-declarations' ],
+                name = [ 'component-declarations' ],
+                * [ nodes.title('', "Component/Prefab details"),
+                    nodes.section('',
+                        *allDeclarations
+                    )
+                  ]
+                )
+            )
             
-    def promoteFirstTitle(self, docs):
-        """If first element in these docelements is a title, then put everything
-        below it into a section, to make sure they get nested to lower heading levels"""
-        if len(docs)>=1 and isinstance(docs[0],nodes.title):
-            docs = [ docs[0], nodes.section('', *docs[1:]) ]
-        return docs
+    def buildTOC(self, srcTree, parent=None, depth=3):
+        """Recurse through a source document tree, building a table of contents"""
+        if parent is None:
+            parent = nodes.bullet_list()
 
+        if depth<=0:
+            return parent
+
+        items=nodes.section()
+        
+        for n in srcTree.children:
+            if isinstance(n, nodes.title):
+                refid = self.genUniqueRef()
+                n.attributes['ids'].append(refid)
+                newItem = nodes.list_item()
+                newItem.append(nodes.paragraph('','', nodes.reference('', refid=refid, *n.children)))
+                newItem.append(nodes.bullet_list())
+                parent.append(newItem)
+            elif isinstance(n, nodes.section):
+                if len(parent)==0:
+                    newItem = nodes.list_item()
+                    newItem.append(nodes.bullet_list())
+                    parent.append(newItem)
+                self.buildTOC( n, parent[-1][-1], depth-1)
+
+        for item in items:
+            if len(item[1]) == 0:
+                item.remove(item[1])   # remove any empty bullet_list stubs
+            parent.append(item)
+
+        return parent
+        
+        toc = nodes.bullet_list('')
+
+
+        
+        tocEntry = nodes.list_item('')
+        
+        for n in srcTree.children:
+            if isinstance(n, nodes.title):
+                if len(tocEntry)>=1:
+                    toc.append(tocEntry)
+                tocEntry = nodes.list_item('')
+                tocEntry.append(nodes.paragraph('', '', *n.children))
+            elif isinstance(n, nodes.section):
+                subToc = self.buildTOC(n, depth-1)
+                if len(subToc)>=1:
+                    tocEntry.extend(subToc)
+        
+        if len(tocEntry)>=1:
+            toc.append(tocEntry)
+            
+        return toc
 
 
 def generateDocumentationFiles(filterString):
