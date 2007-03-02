@@ -27,13 +27,12 @@ import Kamaelia.Support.Data.Repository
 from renderHTML      import RenderHTML
 from renderPlaintext import RenderPlaintext
 
-
-
+from Nodes import boxright
 
 class docFormatter(object):
     def __init__(self, renderer=RenderPlaintext,debug=False):
         super(docFormatter,self).__init__()
-        self.renderer = renderer(debug)
+        self.renderer = renderer
         self.debug = debug
 
     uid = 0
@@ -132,13 +131,18 @@ class docFormatter(object):
         if includeMethods:
             METHODS = [ nodes.section('',
                           nodes.title('', 'Methods defined here'),
+                          boxright('',
+                              nodes.paragraph('', '',
+                                nodes.Text("hello!!!!!")
+                                ),
+                          ),
                           * self.formatMethodDocStrings(X)
                         )
                       ]
         else:
             METHODS = []
 
-        return nodes.section('',
+        return nodes.container('',
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.__name__]) ]
                   + CLASSDOC
                   + [ INBOXES, OUTBOXES ]
@@ -149,14 +153,11 @@ class docFormatter(object):
         CLASSNAME = self.formatPrefabStatement(X.__name__)
         CLASSDOC = self.docString(X.__doc__)
         
-        return nodes.section('',
+        return nodes.container('',
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.__name__]) ]
                   + CLASSDOC
             )
         
-#    def componentAnchor(self, C):
-#        return self.renderer.setAnchor(C)
-#    
     def formatModuleTrail(self, moduleName):
         path = moduleName.split(".")
         
@@ -180,7 +181,7 @@ class docFormatter(object):
         return trail
     
     def componentList(self, componentList):
-        return nodes.section('',
+        return nodes.container('',
 #            nodes.paragraph('', '', nodes.Text('Components and Prefabs')),
             nodes.bullet_list('',
                 *[ nodes.list_item('',
@@ -232,7 +233,9 @@ class docFormatter(object):
                         *allDeclarations
                     )
                   ]
-                )
+                ),
+            nodes.transition(),
+            self.postscript(),
             )
             
     def buildTOC(self, srcTree, parent=None, depth=3):
@@ -268,6 +271,8 @@ class docFormatter(object):
 #            nodes.title('', indexName),
             self.formatModuleTrail(indexName),
             self.generateIndex(subTree, depth=depth),
+            nodes.transition(),
+            self.postscript(),
             )
 
     def generateIndex(self, srcTree, parent=None, depth=99):
@@ -291,6 +296,19 @@ class docFormatter(object):
             parent.append(newItem)
 
         return parent
+
+    def postscript(self):
+        return self.docString("""\
+            Feedback
+            --------
+            Got a problem with the documentation? Something unclear that could be clearer?
+            Want to help improve it? Constructive criticism is very welcome! (preferably in
+            the form of suggested rewording)
+            
+            Please leave you feedback
+            `here <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1142023701>`_
+            in reply to the documentation thread in the Kamaelia blog.
+            """)
             
             
 def generateDocumentationFiles(filterString):
@@ -365,7 +383,7 @@ if __name__ == "__main__":
 
     docdir = "pydoc"
     
-    formatter = docFormatter(RenderHTML)
+    formatter = docFormatter(RenderHTML(titlePrefix="Kamaelia docs : ",debug=False))
 #    formatter = docFormatter(RenderPlaintext)
 
     debug = False
