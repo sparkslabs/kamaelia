@@ -42,9 +42,6 @@ class docFormatter(object):
         self.uid+=1
         return uid
 
-    def emptyTree(self):
-        return core.publish_doctree("")
-    
     def boxes(self,componentName, label, boxes):
         items = []
         for box in boxes:
@@ -89,11 +86,6 @@ class docFormatter(object):
             docstring = docstring[:-1]
             
         return nodes.section('', *core.publish_doctree(docstring).children)
-#        pre = ""
-#        if main:
-#            pre = "\n"
-#
-#        return pre + self.renderer.preformat(docstring)+ "\n"
 
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
@@ -133,8 +125,11 @@ class docFormatter(object):
                           nodes.title('', 'Methods defined here'),
                           boxright('',
                               nodes.paragraph('', '',
-                                nodes.Text("hello!!!!!")
-                                ),
+                                  nodes.strong('', nodes.Text("Warning!"))
+                              ),
+                              nodes.paragraph('', '',
+                                  nodes.Text("You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.")
+                              ),
                           ),
                           * self.formatMethodDocStrings(X)
                         )
@@ -195,17 +190,17 @@ class docFormatter(object):
                 )
             )
 
-    def formatModule(self, moduleName, module, components, prefabs):
+    def formatModule(self, moduleName, module, components, prefabs, tocDepth, includeMethods):
         
         trailTree = self.formatModuleTrail(moduleName)
         moduleTree = self.docString(module.__doc__, main=True)
-        toc = self.buildTOC(moduleTree, depth=3)
+        toc = self.buildTOC(moduleTree, depth=tocDepth)
         
         allDeclarations = []
         
         declarationTrees = {}
         for component in components:
-            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods=True)
+            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods)
             
         for prefab in prefabs:
             assert(prefab.__name__ not in declarationTrees)
@@ -311,36 +306,36 @@ class docFormatter(object):
             """)
             
             
-def generateDocumentationFiles(filterString):
-    MODULES = dict(COMPONENTS.items())
-    MODULES.update(dict(PREFABS.items()))
-    MODULES = [M for M in MODULES.keys() if filterString in M]
+def generateDocumentationFiles(CONFIG):
+    MODULES = dict(CONFIG.components.items())
+    MODULES.update(dict(CONFIG.prefabs.items()))
+    MODULES = [M for M in MODULES.keys() if CONFIG.filterPattern in M]
     for MODULE in MODULES:
         print "Processing: "+MODULE
         
-        cNames = COMPONENTS.get(MODULE,[])
-        pNames = PREFABS.get(MODULE,[])
+        cNames = CONFIG.components.get(MODULE,[])
+        pNames = CONFIG.prefabs.get(MODULE,[])
         
         module = __import__(MODULE, [], [], cNames+pNames)
         components = [ getattr(module, c) for c in cNames ]
         prefabs = [ getattr(module, p) for p in pNames ]
         
-        doctree  = formatter.formatModule(MODULE, module, components, prefabs)
+        doctree  = formatter.formatModule(MODULE, module, components, prefabs, CONFIG.tocDepth, CONFIG.includeMethods)
         filename = formatter.renderer.makeFilename(MODULE)
         output   = formatter.renderer.render(MODULE, doctree)
         
-        F = open(docdir+"/"+filename, "w")
+        F = open(CONFIG.docdir+"/"+filename, "w")
         F.write(output)
         F.close()
         
 
 
 
-def generateIndices(depth=99):
+def generateIndices(CONFIG):
 
     # list of all leaf modules
-    MODULES = dict(COMPONENTS.items())
-    MODULES.update(dict(PREFABS.items()))
+    MODULES = dict(CONFIG.components.items())
+    MODULES.update(dict(CONFIG.prefabs.items()))
     MODULES = MODULES.keys()
     
     # now build a list of all module sub paths, eg A, A.B, A.B.C
@@ -368,29 +363,44 @@ def generateIndices(depth=99):
     for indexName in INDEX.keys():
         print "Creating index: "+indexName
         
-        doctree  = formatter.formatIndex(indexName, INDEX[indexName], depth)
+        doctree  = formatter.formatIndex(indexName, INDEX[indexName], CONFIG.treeDepth)
         filename = formatter.renderer.makeFilename(indexName)
         output   = formatter.renderer.render(indexName, doctree)
         
-        F = open(docdir+"/"+filename, "w")
+        F = open(CONFIG.docdir+"/"+filename, "w")
         F.write(output)
         F.close()
     
     
-
+class DocGenConfig(object):
+    def __init__(self):
+        super(DocGenConfig,self).__init__()
+        self.components = {}
+        self.prefabs = {}
+        self.debug=False
+        self.filterPattern=""
+        self.docdir="pydoc"
+        self.treeDepth=99
+        self.tocDepth=99
+        self.includeMethods=False
+        
 
 if __name__ == "__main__":
 
-    docdir = "pydoc"
+    import sys
+    
     
     formatter = docFormatter(RenderHTML(titlePrefix="Kamaelia docs : ",debug=False))
 #    formatter = docFormatter(RenderPlaintext)
+
+    config = DocGenConfig()
 
     debug = False
     if debug:
         COMPONENTS = {
             "Kamaelia.ReadFileAdaptor" : ("ReadFileAdaptor",)
         }
+        PREFABS = {}
     else:
         C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
         P = Kamaelia.Support.Data.Repository.GetAllKamaeliaPrefabs()
@@ -400,11 +410,17 @@ if __name__ == "__main__":
         PREFABS = {}
         for key in P.keys():
             PREFABS[".".join(key)] = P[key]
+    
+    config.components = COMPONENTS
+    config.prefabs    = PREFABS
+    config.docdir     = "pydoc"
 
-    import sys
-    filterPattern = ""
     if len(sys.argv)>1:
-        filterPattern = sys.argv[1]
+        config.filterPattern = sys.argv[1]
 
-    generateDocumentationFiles(filterPattern)
-    generateIndices(depth=2)
+    config.treeDepth=2
+    config.tocDepth=3
+    config.includeMethods=True
+        
+    generateDocumentationFiles(config)
+    generateIndices(config)
