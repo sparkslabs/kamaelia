@@ -51,8 +51,8 @@ class docFormatter(object):
             items.append((str(box), str(description)))
 
         docTree= nodes.section('',
-                ids   = ["section-"+componentName+"-"+label],
-                names = ["section-"+componentName+"-"+label],
+                ids   = ["component-"+componentName+"-"+label],
+                names = ["component-"+componentName+"-"+label],
                 *[ nodes.title('', label),
                    nodes.bullet_list('',
                       *[ nodes.list_item('', nodes.paragraph('', '',
@@ -101,8 +101,8 @@ class docFormatter(object):
             methodHead = method[0]+self.formatArgSpec(inspect.getargspec(method[3]))
             
             docTree.append( nodes.section('',
-                                ids   = ["section-"+X.__name__+"-method-"+method[0]],
-                                names = ["section-"+X.__name__+"-method-"+method[0]],
+                                ids   = ["component-"+X.__name__+"-method-"+method[0]],
+                                names = ["component-"+X.__name__+"-method-"+method[0]],
                                 * [ nodes.title('', methodHead) ]
                                   + self.docString(method[3].__doc__)
                             )
@@ -134,8 +134,8 @@ class docFormatter(object):
         docTree = self.emptyTree()
         docTree.children.extend( [
             nodes.section('',
-                ids   = ["section-"+X.__name__],
-                names = ["section-"+X.__name__],
+                ids   = ["component-"+X.__name__],
+                names = ["component-"+X.__name__],
                 * [ nodes.title('', CLASSNAME) ]
                   + CLASSDOC
                   + [ INBOXES,
@@ -153,8 +153,8 @@ class docFormatter(object):
         docTree = self.emptyTree()
         docTree.children.extend( [
             nodes.section('',
-                ids   = ["section-"+X.__name__],
-                names = ["section-"+X.__name__],
+                ids   = ["component-"+X.__name__],
+                names = ["component-"+X.__name__],
                 * [ nodes.title('', CLASSNAME) ]
                   + CLASSDOC
             ),
@@ -193,7 +193,7 @@ class docFormatter(object):
 #        docTree.append( nodes.paragraph('', '', nodes.Text('Components and Prefabs')) )
         docTree.append( nodes.bullet_list('',
                           *[ nodes.list_item('',
-                                nodes.paragraph('', '', nodes.reference('', COMPONENT, refid='section-'+COMPONENT))
+                                nodes.paragraph('', '', nodes.reference('', COMPONENT, refid='component-'+COMPONENT))
                              )
                              for COMPONENT in componentList ]
                         )
@@ -227,8 +227,8 @@ class docFormatter(object):
         rootTree.extend(componentListTree)
         rootTree.extend(moduleTree)
         rootTree.extend( nodes.section('',
-                             id = [ 'section-ALL-COMPONENTS' ],
-                             name = [ 'section-ALL-COMPONENTS' ],
+                             id = [ 'component-declarations' ],
+                             name = [ 'component-declarations' ],
                              * [ nodes.section('',
                                    * [ nodes.title('', "Component/Prefab details") ]
                                    + allDeclarations
