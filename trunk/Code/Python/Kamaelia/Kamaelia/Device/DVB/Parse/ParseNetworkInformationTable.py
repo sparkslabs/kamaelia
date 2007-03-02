@@ -528,6 +528,7 @@ if __name__ == "__main__":
               DVB_Demuxer({ NIT_PID:["outbox"]}),
               ReassemblePSITables(),
               ParseNetworkInformationTable_ActualNetwork(),
+              ConsoleEchoer(forwarder=True),
               PrettifyNetworkInformationTable(),
               ConsoleEchoer(),
             ).run()

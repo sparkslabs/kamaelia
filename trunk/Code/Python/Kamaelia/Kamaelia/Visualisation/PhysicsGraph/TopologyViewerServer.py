@@ -34,14 +34,17 @@ Example Usage
 -------------
 Visualiser that listens on port 1500 for a TCP connection through which
 it receives topology change data to render::
+    
     TopologyViewerServer( serverPort = 1500 ).run()
     
 A simple client to drive the visualiser::
+    
     Pipeline( ConsoleReader(),
               TCPClient( server=<address>, port=1500 ),
             ).run()
     
 Run the server, then run the client::
+    
     >>> DEL ALL
     >>> ADD NODE 1 "1st node" randompos -
     >>> ADD NODE 2 "2nd node" randompos -
@@ -60,6 +63,7 @@ How does it work?
 -----------------
 
 TopologyViewerServer is a Pipeline of the following components:
+    
 - Kamaelia.Internet.SingleServer
 - chunks_to_lines
 - lines_to_tokenlists

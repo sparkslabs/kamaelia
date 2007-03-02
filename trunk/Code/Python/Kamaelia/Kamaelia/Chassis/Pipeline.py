@@ -87,7 +87,7 @@ component = _Axon.Component.component
 
 class Pipeline(component):
    """\
-   Pipeline(*components) -> new Pipeline component.
+   Pipeline(\*components) -> new Pipeline component.
 
    Encapsulates the specified set of components and wires them up in a chain
    (a Pipeline) in the order you provided them.
