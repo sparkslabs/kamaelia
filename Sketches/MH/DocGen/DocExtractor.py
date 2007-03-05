@@ -128,13 +128,16 @@ class docFormatter(object):
                       ]
         else:
             METHODS = []
+            
+        trailTree = self.formatModuleTrail(X.__module__+"."+X.__name__)
 
-        return nodes.container('',
+        return \
+                nodes.section('',
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.__name__]) ]
                   + CLASSDOC
                   + [ INBOXES, OUTBOXES ]
                   + METHODS
-            )
+                )
         
     def formatPrefab(self, X):
         CLASSNAME = self.formatPrefabStatement(X.__name__)
@@ -159,7 +162,7 @@ class docFormatter(object):
             accum += element
             
             if not firstPass:
-                line.append(nodes.Text(" . "))
+                line.append(nodes.Text("."))
             URI = self.renderer.makeURI(accum)
             line.append( nodes.reference('', element, refuri=URI) )
             
@@ -167,21 +170,49 @@ class docFormatter(object):
         
         return trail
     
-    def componentList(self, componentList):
+    def componentList(self, components):
+        uris = {}
+        for component in components:
+            fullname = component.__module__ + "." + component.__name__
+            uris[component.__name__] = self.renderer.makeURI(fullname)
+        
         return nodes.container('',
 #            nodes.paragraph('', '', nodes.Text('Components and Prefabs')),
             nodes.bullet_list('',
                 *[ nodes.list_item('',
                        nodes.paragraph('', '',
                          nodes.strong('', '',
-                           nodes.reference('', COMPONENT, refid='component-'+COMPONENT))
+                           nodes.reference('', NAME, refuri=uris[NAME]))# refid='component-'+COMPONENT))
                          )
                        )
-                   for COMPONENT in componentList
+                   for NAME in sorted(uris.keys())
                  ]
                 )
             )
 
+    def formatComponentPage(self,moduleName, component, includeMethods):
+        return self.formatDeclarationPage(moduleName, self.formatComponent, [component, includeMethods])
+        
+    def formatPrefabPage(self,moduleName, prefab):
+        return self.formatDeclarationPage(moduleName, self.formatPrefab, [prefab])
+        
+    def formatDeclarationPage(self, name, method, args):
+        parentURI = self.renderer.makeURI(".".join(name.split(".")[:-1]))
+        trailTree = self.formatModuleTrail(name)
+        declarationTree = method(*args)
+        
+        return nodes.section('',
+            nodes.title('', '', *trailTree.children),
+            nodes.paragraph('', '',
+                nodes.Text("For examples and more explanations, see the "),
+                nodes.reference('', 'module level docs.', refuri=parentURI)
+                ),
+            nodes.transition(),
+            nodes.section('', *declarationTree),
+            nodes.transition(),
+            self.postscript(),
+            )
+           
     def formatModule(self, moduleName, module, components, prefabs, tocDepth, includeMethods):
         
         trailTree = self.formatModuleTrail(moduleName)
@@ -192,7 +223,11 @@ class docFormatter(object):
         
         declarationTrees = {}
         for component in components:
-            declarationTrees[component.__name__] = self.formatComponent(component, includeMethods)
+            cTrail = self.formatModuleTrail(moduleName+"."+component.__name__)
+            declarationTrees[component.__name__] = nodes.container('',
+                nodes.title('','', *cTrail.children),
+                    self.formatComponent(component, includeMethods)
+            )
             
         for prefab in prefabs:
             assert(prefab.__name__ not in declarationTrees)
@@ -201,28 +236,21 @@ class docFormatter(object):
         for name in sorted(declarationTrees.keys()):
             allDeclarations.extend(declarationTrees[name])
         
-        componentListTree = self.componentList( sorted(declarationTrees.keys()) )
+        componentListTree = self.componentList( components + prefabs )
 
-        return nodes.section('',
-            trailTree,
-#            nodes.paragraph('', nodes.Text("Component/Prefab details")),
-            componentListTree,
-            nodes.paragraph('', nodes.Text("Explanations")),
-            toc,
+        return nodes.container('',
+            nodes.section('',
+                nodes.title('','', *trailTree.children),
+                componentListTree,
+                nodes.paragraph('', nodes.Text("Explanations")),
+                toc,
+            ),
             nodes.transition(),
             moduleTree,
             nodes.transition(),
-            nodes.section('',
-                id = [ 'component-declarations' ],
-                name = [ 'component-declarations' ],
-                * [ nodes.title('', "Component/Prefab details"),
-                    nodes.section('',
-                        *allDeclarations
-                    )
-                  ]
-                ),
+            nodes.section('', *allDeclarations),
             nodes.transition(),
-            self.postscript(),
+            self.postscript() 
             )
             
     def buildTOC(self, srcTree, parent=None, depth=3):
@@ -256,7 +284,7 @@ class docFormatter(object):
     def formatIndex(self, indexName, subTree, depth):
         return nodes.section('',
 #            nodes.title('', indexName),
-            self.formatModuleTrail(indexName),
+            nodes.title('', '', *self.formatModuleTrail(indexName).children),
             self.generateIndex(subTree, depth=depth),
             nodes.transition(),
             self.postscript(),
@@ -320,6 +348,25 @@ def generateDocumentationFiles(CONFIG):
         F.write(output)
         F.close()
         
+        for component in components:
+            NAME = MODULE+"."+component.__name__
+            print "    Component: "+NAME
+            filename = formatter.renderer.makeFilename(NAME)
+            doctree = formatter.formatComponentPage(NAME, component, CONFIG.includeMethods)
+            output   = formatter.renderer.render(NAME, doctree)
+            F = open(CONFIG.docdir+"/"+filename, "w")
+            F.write(output)
+            F.close()
+
+        for prefab in prefabs:
+            NAME = MODULE+"."+prefab.__name__
+            print "    Prefab: "+NAME
+            filename = formatter.renderer.makeFilename(NAME)
+            doctree = formatter.formatPrefabPage(NAME, prefab)
+            output   = formatter.renderer.render(NAME, doctree)
+            F = open(CONFIG.docdir+"/"+filename, "w")
+            F.write(output)
+            F.close()
 
 
 
@@ -410,7 +457,7 @@ if __name__ == "__main__":
     if len(sys.argv)>1:
         config.filterPattern = sys.argv[1]
 
-    config.treeDepth=2
+    config.treeDepth=99
     config.tocDepth=3
     config.includeMethods=True
         
