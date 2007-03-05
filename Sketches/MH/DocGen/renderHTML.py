@@ -27,7 +27,7 @@ class RenderHTML(object):
     def render(self, docName, docTree):
         if not isinstance(docTree, nodes.document):
             root = core.publish_doctree('')
-            root.children = docTree
+            root.append(docTree)
             docTree = root
 
         docTree.attributes['title']=docName
