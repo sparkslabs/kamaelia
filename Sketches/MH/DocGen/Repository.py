@@ -27,6 +27,7 @@ from compiler import ast
 class KamaeliaModuleDocs(object):
     def __init__(self, source):
         super(KamaeliaModuleDocs,self).__init__()
+        source=source.rstrip()
         self.AST = compiler.parse(source)
 
         self.extractModuleDocString()
@@ -34,31 +35,31 @@ class KamaeliaModuleDocs(object):
         
         self.prefabs = []
         for prefabName in self.prefabNames:
-            doc = self.documentFunction(prefabName)
+            doc = self.documentNamedFunction(prefabName)
             self.prefabs.append(doc)
         
-#        self.components = []
-#        for componentNAme in self.componentNames:
-#            doc = self.documentComponent(componentName)
-#            self.components.append(doc)
+        self.components = []
+        for componentName in self.componentNames:
+            doc = self.documentNamedComponent(componentName)
+            self.components.append(doc)
         
 
     def extractModuleDocString(self):
         assert(isinstance(self.AST, ast.Module))
-        self.docString = self.AST.doc
+        self.docString = self.AST.doc or ""
 
     def findEntities(self):
         # find the __kamaelia_compoents__ declaration
         stmt = self.AST.getChildren()[1]
         assert(isinstance(stmt, ast.Stmt))
-        components = self.findAssignment( "__kamaelia_components__",
-                                          stmt,
-                                          [ast.Class, ast.Function, ast.Module]
-                                        )
-        prefabs    = self.findAssignment( "__kamaelia_prefabs__",
-                                          stmt,
-                                          [ast.Class, ast.Function, ast.Module]
-                                        )
+        components = self.findAssignments( "__kamaelia_components__",
+                                           stmt,
+                                           [ast.Class, ast.Function, ast.Module]
+                                         )
+        prefabs    = self.findAssignments( "__kamaelia_prefabs__",
+                                           stmt,
+                                           [ast.Class, ast.Function, ast.Module]
+                                         )
 
         # flatten the results
         components = _stringsInList(components)
@@ -69,7 +70,7 @@ class KamaeliaModuleDocs(object):
         self.prefabNames = dict([(x,x) for x in prefabs]).keys()
         
 
-    def findAssignment(self, target, node, ignores):
+    def findAssignments(self, target, node, ignores):
         # recurse to find an assignment statement for the given target
         # but ignoring any branches matching the node classes listed
         
@@ -85,32 +86,38 @@ class KamaeliaModuleDocs(object):
                         
             elif not isinstance(child, tuple(ignores)) and \
                      isinstance(child, ast.Node):
-                found += self.findAssignment(target, child, ignores)
+                found += self.findAssignments(target, child, ignores)
                 
         return found
 
-    def findFunction(self, target, node, ignores):
+    def findFunctions(self, target, node, ignores):
         # recurse to find a function statement for the given target
         # but ignoring any branches matching the node classes listed
+        
+        found=[]
         for child in node.getChildren():
             if isinstance(child, ast.Function):
-                if child.name == target:
-                    return child
+                if child.name == target or target == None:
+                    found.append(child)
             
             elif not isinstance(child, tuple(ignores)) and \
                      isinstance(child, ast.Node):
-                rval = self.findFunction(target, child, ignores)
-                if rval != None:
-                    return rval
-        return None
+                found += self.findFunctions(target, child, ignores)
+                
+        return found
     
-    def documentFunction(self, prefabName):
-        fnode = self.findFunction( prefabName,
-                                   self.AST.getChildren()[1],
-                                   [ast.Class, ast.Function, ast.Module]
-                                 )
-        name = fnode.name
-        doc = fnode.doc
+    def documentNamedFunction(self, prefabName):
+        fnode = self.findFunctions( prefabName,
+                                    self.AST.getChildren()[1],
+                                    [ast.Class, ast.Function, ast.Module]
+                                  )
+        assert(len(fnode)==1)
+        fnode=fnode[0]
+        assert(prefabName == fnode.name)
+        return self.documentFunction(fnode)
+        
+    def documentFunction(self, fnode):
+        doc = fnode.doc or ""
         # don't bother with argument default values since we'd need to reconstruct
         # potentially complex values
         argNames = [(argName,argName) for argName in fnode.argnames]
@@ -126,9 +133,76 @@ class KamaeliaModuleDocs(object):
         for j in range(len(fnode.defaults)-numVar-numKW):
             argNames[i] = ( argNames[i][0], "["+argNames[i][1]+"]" )
             i-=1
-        return (name, argNames, doc)
+            
+        return (fnode.name, argNames, doc)
+        
+    
+    def findClasses(self, target, node, ignores):
+        # recurse to find a function statement for the given target
+        # but ignoring any branches matching the node classes listed
+        
+        found=[]
+        for child in node.getChildren():
+            if isinstance(child, ast.Class):
+                if child.name == target:
+                    found.append(child)
+            
+            elif not isinstance(child, tuple(ignores)) and \
+                     isinstance(child, ast.Node):
+                found += self.findClasses(target, child, ignores)
+                
+        return found
+    
+    def findBoxDecl(self, codeNode, boxTypeName):
+        for child in codeNode:
+            if isinstance(child, ast.Assign):
+                assignStmt = child.getChildren()
+                lhs = assignStmt[0]
+                if isinstance(lhs, ast.AssName):
+                    if lhs.getChildren()[0] == boxTypeName:
+                        rhs = assignStmt[1]
+                        if isinstance(rhs, ast.Dict):
+                            return self.parseDictBoxes(rhs)
+                        elif isinstance(rhs, ast.List):
+                            return self.parseListBoxes(rhs)
+        return []
+                
+    def parseDictBoxes(self, dictNode):
+        boxes = []
+        for (lhs,rhs) in dictNode.items:
+            if isinstance(lhs, ast.Const) and isinstance(rhs, ast.Const):
+                name = lhs.value
+                desc = rhs.value
+                if isinstance(name, str) and isinstance(desc, str):
+                    boxes.append((name,desc))
+        return boxes
+                
+    def parseListBoxes(self, listNode):
+        boxes = []
+        for item in listNode.getChildren():
+            if isinstance(item, ast.Const):
+                name = item.value
+                if isinstance(name, str):
+                    boxes.append((name,''))
+        return boxes
+    
+    def documentNamedComponent(self, componentName):
+        cnode = self.findClasses( componentName,
+                                  self.AST.getChildren()[1],
+                                  [ast.Class, ast.Function, ast.Module]
+                                )
+        assert(len(cnode)==1)
+        cnode = cnode[0]
+        assert(componentName == cnode.name)
+        cDoc = cnode.doc or ""
+        inboxDoc  = self.findBoxDecl(cnode.code, "Inboxes")
+        outboxDoc = self.findBoxDecl(cnode.code, "Outboxes")
+        
+        methodNodes = self.findFunctions(None, cnode.code, [ast.Class, ast.Function, ast.Module])
+        methods = [self.documentFunction(node) for node in methodNodes]
         
 
+        return (componentName, cDoc, (inboxDoc, outboxDoc), methods)
 
 def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
@@ -152,12 +226,29 @@ def parseModule(source):
 
 if __name__ == "__main__":
     f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py","r")
+    #f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py","r")
+    #f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py","r")
     source = f.read()
     f.close()
 
     modDocs = KamaeliaModuleDocs(source)
 
-    #print modDocs.docString
+    print "MODULE:"
+    print modDocs.docString
+    
+    print 
+    print "PREFABS:"
     for (name,args,doc) in modDocs.prefabs:
         print name,args
-    
+        
+    print
+    print "COMPONENTS:"
+    for (componentName, cDoc, (inboxes, outboxes), methods) in modDocs.components:
+        print componentName
+        print "Inboxes:  ",inboxes
+        print "Outboxes: ",outboxes
+        for (name, args, doc) in methods:
+            argStr = ", ".join([arg[1] for arg in args])
+            argStr = argStr.replace(", [", "[, ")
+            print name + "(" + argStr + ")"
+        print
