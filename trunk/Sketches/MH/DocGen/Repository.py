@@ -32,6 +32,16 @@ class KamaeliaModuleDocs(object):
         self.extractModuleDocString()
         self.findEntities()
         
+        self.prefabs = []
+        for prefabName in self.prefabNames:
+            doc = self.documentFunction(prefabName)
+            self.prefabs.append(doc)
+        
+#        self.components = []
+#        for componentNAme in self.componentNames:
+#            doc = self.documentComponent(componentName)
+#            self.components.append(doc)
+        
 
     def extractModuleDocString(self):
         assert(isinstance(self.AST, ast.Module))
@@ -43,23 +53,20 @@ class KamaeliaModuleDocs(object):
         assert(isinstance(stmt, ast.Stmt))
         components = self.findAssignment( "__kamaelia_components__",
                                           stmt,
-                                          [ast.Class, ast.Function]
+                                          [ast.Class, ast.Function, ast.Module]
                                         )
         prefabs    = self.findAssignment( "__kamaelia_prefabs__",
                                           stmt,
-                                          [ast.Class, ast.Function]
+                                          [ast.Class, ast.Function, ast.Module]
                                         )
 
         # flatten the results
-        components = self.stringsInList(components)
-        prefabs    = self.stringsInList(prefabs)
+        components = _stringsInList(components)
+        prefabs    = _stringsInList(prefabs)
 
         # and remove any repeats (unlikely)
-        components = dict([(x,x) for x in components]).keys()
-        prefabs = dict([(x,x) for x in prefabs]).keys()
-        
-        print components
-        print prefabs
+        self.componentNames = dict([(x,x) for x in components]).keys()
+        self.prefabNames = dict([(x,x) for x in prefabs]).keys()
         
 
     def findAssignment(self, target, node, ignores):
@@ -82,21 +89,62 @@ class KamaeliaModuleDocs(object):
                 
         return found
 
-    def stringsInList(self, theList):
-        # flatten a tree structured list containing strings, or possibly ast nodes
-        
-        if isinstance(theList,ast.Node):
-            theList = theList.getChildren()
+    def findFunction(self, target, node, ignores):
+        # recurse to find a function statement for the given target
+        # but ignoring any branches matching the node classes listed
+        for child in node.getChildren():
+            if isinstance(child, ast.Function):
+                if child.name == target:
+                    return child
             
-        found = []
-        for item in theList:
-            if isinstance(item,str):
-                found.append(item)
-            elif isinstance(item, ast.Name):
-                found.append(item.name)
-            elif isinstance(item,(list,tuple,ast.Node)):
-                found.extend(stringsInList(item))
-        return found
+            elif not isinstance(child, tuple(ignores)) and \
+                     isinstance(child, ast.Node):
+                rval = self.findFunction(target, child, ignores)
+                if rval != None:
+                    return rval
+        return None
+    
+    def documentFunction(self, prefabName):
+        fnode = self.findFunction( prefabName,
+                                   self.AST.getChildren()[1],
+                                   [ast.Class, ast.Function, ast.Module]
+                                 )
+        name = fnode.name
+        doc = fnode.doc
+        # don't bother with argument default values since we'd need to reconstruct
+        # potentially complex values
+        argNames = [(argName,argName) for argName in fnode.argnames]
+        i=-1
+        numVar = fnode.varargs or 0
+        numKW  = fnode.kwargs or 0
+        for j in range(numKW):
+            argNames[i] = ( argNames[i][0], "**"+argNames[i][1] )
+            i-=1
+        for j in range(numVar):
+            argNames[i] = ( argNames[i][0], "*"+argNames[i][1] )
+            i-=1
+        for j in range(len(fnode.defaults)-numVar-numKW):
+            argNames[i] = ( argNames[i][0], "["+argNames[i][1]+"]" )
+            i-=1
+        return (name, argNames, doc)
+        
+
+
+def _stringsInList(theList):
+    # flatten a tree structured list containing strings, or possibly ast nodes
+    
+    if isinstance(theList,ast.Node):
+        theList = theList.getChildren()
+        
+    found = []
+    for item in theList:
+        if isinstance(item,str):
+            found.append(item)
+        elif isinstance(item, ast.Name):
+            found.append(item.name)
+        elif isinstance(item,(list,tuple,ast.Node)):
+            found.extend(stringsInList(item))
+    return found
 
 
 def parseModule(source):
@@ -110,3 +158,6 @@ if __name__ == "__main__":
     modDocs = KamaeliaModuleDocs(source)
 
     #print modDocs.docString
+    for (name,args,doc) in modDocs.prefabs:
+        print name,args
+    
