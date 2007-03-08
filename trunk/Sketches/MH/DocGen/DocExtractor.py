@@ -103,7 +103,10 @@ class docFormatter(object):
     def formatMethodDocStrings(self,X):
         docTree = nodes.section('') #self.emptyTree()
         
-        for method in sorted([x for x in inspect.classify_class_attrs(X) if x[2] == X and x[1] == "method"]):
+        methods = [x for x in inspect.classify_class_attrs(X) if x[2] == X and x[1] == "method"]
+        methods.sort()
+        
+        for method in methods:
             if method[0][-7:] == "__super":
                 continue
             methodHead = method[0]+self.formatArgSpec(inspect.getargspec(method[3]))
@@ -193,16 +196,19 @@ class docFormatter(object):
         for component in components:
             fullname = component.__module__ + "." + component.__name__
             uris[component.__name__] = self.renderer.makeURI(fullname)
+
+        componentNames = uris.keys()
+        componentNames.sort()
         
         return nodes.container('',
             nodes.bullet_list('',
                 *[ nodes.list_item('',
                        nodes.paragraph('', '',
                          nodes.strong('', '',
-                           nodes.reference('', NAME, refuri=uris[NAME]))# refid='component-'+COMPONENT))
+                           nodes.reference('', NAME, refuri=uris[NAME]))
                          )
                        )
-                   for NAME in sorted(uris.keys())
+                   for NAME in componentNames
                  ]
                 )
             )
@@ -249,8 +255,10 @@ class docFormatter(object):
         for prefab in prefabs:
             assert(prefab.__name__ not in declarationTrees)
             declarationTrees[prefab.__name__] = self.formatPrefab(prefab)
-            
-        for name in sorted(declarationTrees.keys()):
+
+        declNames = declarationTrees.keys()
+        declNames.sort()
+        for name in declNames:
             allDeclarations.extend(declarationTrees[name])
         
         componentListTree = self.componentList( components + prefabs )
@@ -330,28 +338,38 @@ class docFormatter(object):
 
         items=nodes.section()
 
-        for name in sorted(srcTree.keys()):
+        childNames = srcTree.keys()
+        childNames.sort()
+        for name in childNames:
             
             # build "(a,b,c)" style list of links to actual components/prefabs in the module
             # (if they exist)
-            componentsInside = []
+            moduleContents = []
             if self.config.showComponentsOnIndices:
                 if len(componentsAndPrefabs.get(name,[])) > 0:
-                    componentsInside.append(nodes.Text(" ( "))
+                    moduleContents.append(nodes.Text(" ( "))
                     first=True
-                    for cp in sorted(componentsAndPrefabs[name]):
+                    declarationNames = componentsAndPrefabs[name]
+                    declarationNames.sort()
+                    for declaration in declarationNames:
                         if not first:
-                            componentsInside.append(nodes.Text(", "))
+                            moduleContents.append(nodes.Text(", "))
                         first=False
-                        uri = self.renderer.makeURI(name+"."+cp)
-                        componentsInside.append(nodes.reference('', nodes.Text(cp), refuri=uri))
-                    componentsInside.append(nodes.Text(" )"))
-                
+                        uri = self.renderer.makeURI(name+"."+declaration)
+                        linkToDecl = nodes.reference('', nodes.Text(declaration), refuri=uri)
+                        moduleContents.append(linkToDecl)
+                    moduleContents.append(nodes.Text(" )"))
+
+            # now make the list item for this module
             uri = self.renderer.makeURI(name)
             text = name.split(".")[-1]
             newItem = nodes.list_item('',
-                nodes.paragraph('','', nodes.strong('', '', nodes.reference('', text, refuri=uri)), *componentsInside)
+                nodes.paragraph('','',
+                    nodes.strong('', '',nodes.reference('', text, refuri=uri)),
+                    *moduleContents
+                    )
                 )
+                
             if srcTree[name]:  # if not empty, recurse
                 newItem.append(nodes.bullet_list())
                 self.generateIndex(srcTree[name], componentsAndPrefabs, newItem[-1], depth-1)
