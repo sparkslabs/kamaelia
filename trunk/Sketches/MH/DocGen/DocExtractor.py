@@ -21,11 +21,29 @@ from renderPlaintext import RenderPlaintext
 
 from Nodes import boxright
 
+class DocGenConfig(object):
+    """Configuration object for documentation generation."""
+    def __init__(self):
+        super(DocGenConfig,self).__init__()
+        # NOTE: These settings are overridden in __main__ - modify them there,
+        #       not here
+        self.components = {}
+        self.prefabs = {}
+        self.debug=False
+        self.filterPattern=""
+        self.docdir="pydoc"
+        self.treeDepth=99
+        self.tocDepth=99
+        self.includeMethods=False
+        self.includeModuleDocString=False
+        self.showComponentsOnIndices=False
+
 class docFormatter(object):
-    def __init__(self, renderer=RenderPlaintext,debug=False):
+    def __init__(self, renderer=RenderPlaintext, config=DocGenConfig(), debug=False):
         super(docFormatter,self).__init__()
         self.renderer = renderer
         self.debug = debug
+        self.config = config
 
     uid = 0
 
@@ -106,13 +124,13 @@ class docFormatter(object):
     def formatPrefabStatement(self, name):
         return "prefab: "+name
 
-    def formatComponent(self, X, includeMethods=False):
+    def formatComponent(self, X):
         CLASSNAME = self.formatClassStatement(X.__name__, X.__bases__)
         CLASSDOC = self.docString(X.__doc__)
         INBOXES = self.boxes(X.__name__,"Inboxes", X.Inboxes)
         OUTBOXES = self.boxes(X.__name__,"Outboxes", X.Outboxes)
         
-        if includeMethods:
+        if self.config.includeMethods:
             METHODS = [ nodes.section('',
                           nodes.title('', 'Methods defined here'),
                           boxright('',
@@ -129,7 +147,7 @@ class docFormatter(object):
         else:
             METHODS = []
             
-        trailTree = self.formatModuleTrail(X.__module__+"."+X.__name__)
+        trailTree = self.formatTrail(X.__module__+"."+X.__name__)
 
         return \
                 nodes.section('',
@@ -148,7 +166,7 @@ class docFormatter(object):
                   + CLASSDOC
             )
         
-    def formatModuleTrail(self, moduleName):
+    def formatTrail(self, moduleName):
         path = moduleName.split(".")
         
         trail = nodes.paragraph('')
@@ -177,7 +195,6 @@ class docFormatter(object):
             uris[component.__name__] = self.renderer.makeURI(fullname)
         
         return nodes.container('',
-#            nodes.paragraph('', '', nodes.Text('Components and Prefabs')),
             nodes.bullet_list('',
                 *[ nodes.list_item('',
                        nodes.paragraph('', '',
@@ -190,16 +207,16 @@ class docFormatter(object):
                 )
             )
 
-    def formatComponentPage(self,moduleName, component, includeMethods):
-        return self.formatDeclarationPage(moduleName, self.formatComponent, [component, includeMethods])
+    def formatComponentPage(self,moduleName, component):
+        return self.formatDeclarationPage(moduleName, self.formatComponent, component)
         
     def formatPrefabPage(self,moduleName, prefab):
-        return self.formatDeclarationPage(moduleName, self.formatPrefab, [prefab])
+        return self.formatDeclarationPage(moduleName, self.formatPrefab, prefab)
         
-    def formatDeclarationPage(self, name, method, args):
+    def formatDeclarationPage(self, name, method, arg):
         parentURI = self.renderer.makeURI(".".join(name.split(".")[:-1]))
-        trailTree = self.formatModuleTrail(name)
-        declarationTree = method(*args)
+        trailTree = self.formatTrail(name)
+        declarationTree = method(arg)
         
         return nodes.section('',
             nodes.title('', '', *trailTree.children),
@@ -213,20 +230,20 @@ class docFormatter(object):
             self.postscript(),
             )
            
-    def formatModule(self, moduleName, module, components, prefabs, tocDepth, includeMethods):
+    def formatModule(self, moduleName, module, components, prefabs):
         
-        trailTree = self.formatModuleTrail(moduleName)
+        trailTree = self.formatTrail(moduleName)
         moduleTree = self.docString(module.__doc__, main=True)
-        toc = self.buildTOC(moduleTree, depth=tocDepth)
+        toc = self.buildTOC(moduleTree, depth=self.config.tocDepth)
         
         allDeclarations = []
         
         declarationTrees = {}
         for component in components:
-            cTrail = self.formatModuleTrail(moduleName+"."+component.__name__)
+            cTrail = self.formatTrail(moduleName+"."+component.__name__)
             declarationTrees[component.__name__] = nodes.container('',
                 nodes.title('','', *cTrail.children),
-                    self.formatComponent(component, includeMethods)
+                    self.formatComponent(component)
             )
             
         for prefab in prefabs:
@@ -253,11 +270,14 @@ class docFormatter(object):
             self.postscript() 
             )
             
-    def buildTOC(self, srcTree, parent=None, depth=3):
+    def buildTOC(self, srcTree, parent=None, depth=None):
         """Recurse through a source document tree, building a table of contents"""
         if parent is None:
             parent = nodes.bullet_list()
 
+        if depth==None:
+            depth=self.config.tocDepth
+            
         if depth<=0:
             return parent
 
@@ -281,16 +301,27 @@ class docFormatter(object):
         return parent
         
 
-    def formatIndex(self, indexName, subTree, depth):
+    def formatIndex(self, indexName, subTree, componentsAndPrefabs):
+        depth=self.config.treeDepth
+        
+        moduleTree = []
+        if self.config.includeModuleDocString:
+            docs = __import__(indexName+".__init__", [], [],["__doc__"]).__doc__
+            if docs and "This is a doc string" not in docs:
+                moduleTree = [ nodes.transition(),
+                            self.docString(docs) ]
+        
         return nodes.section('',
-#            nodes.title('', indexName),
-            nodes.title('', '', *self.formatModuleTrail(indexName).children),
-            self.generateIndex(subTree, depth=depth),
-            nodes.transition(),
-            self.postscript(),
+            * [ nodes.title('', '', *self.formatTrail(indexName).children),
+                self.generateIndex(subTree, componentsAndPrefabs, depth=depth),
+              ]
+            + moduleTree
+            + [ nodes.transition(),
+                self.postscript(),
+              ]
             )
 
-    def generateIndex(self, srcTree, parent=None, depth=99):
+    def generateIndex(self, srcTree, componentsAndPrefabs, parent=None, depth=99):
         if parent is None:
             parent = nodes.bullet_list()
 
@@ -300,14 +331,30 @@ class docFormatter(object):
         items=nodes.section()
 
         for name in sorted(srcTree.keys()):
+            
+            # build "(a,b,c)" style list of links to actual components/prefabs in the module
+            # (if they exist)
+            componentsInside = []
+            if self.config.showComponentsOnIndices:
+                if len(componentsAndPrefabs.get(name,[])) > 0:
+                    componentsInside.append(nodes.Text(" ( "))
+                    first=True
+                    for cp in sorted(componentsAndPrefabs[name]):
+                        if not first:
+                            componentsInside.append(nodes.Text(", "))
+                        first=False
+                        uri = self.renderer.makeURI(name+"."+cp)
+                        componentsInside.append(nodes.reference('', nodes.Text(cp), refuri=uri))
+                    componentsInside.append(nodes.Text(" )"))
+                
             uri = self.renderer.makeURI(name)
             text = name.split(".")[-1]
             newItem = nodes.list_item('',
-                nodes.paragraph('','', nodes.reference('', text, refuri=uri))
+                nodes.paragraph('','', nodes.strong('', '', nodes.reference('', text, refuri=uri)), *componentsInside)
                 )
             if srcTree[name]:  # if not empty, recurse
                 newItem.append(nodes.bullet_list())
-                self.generateIndex(srcTree[name], newItem[-1], depth-1)
+                self.generateIndex(srcTree[name], componentsAndPrefabs, newItem[-1], depth-1)
             parent.append(newItem)
 
         return parent
@@ -326,7 +373,7 @@ class docFormatter(object):
             """)
             
             
-def generateDocumentationFiles(CONFIG):
+def generateDocumentationFiles(formatter, CONFIG):
     MODULES = dict(CONFIG.components.items())
     MODULES.update(dict(CONFIG.prefabs.items()))
     MODULES = [M for M in MODULES.keys() if CONFIG.filterPattern in M]
@@ -340,7 +387,7 @@ def generateDocumentationFiles(CONFIG):
         components = [ getattr(module, c) for c in cNames ]
         prefabs = [ getattr(module, p) for p in pNames ]
         
-        doctree  = formatter.formatModule(MODULE, module, components, prefabs, CONFIG.tocDepth, CONFIG.includeMethods)
+        doctree  = formatter.formatModule(MODULE, module, components, prefabs)
         filename = formatter.renderer.makeFilename(MODULE)
         output   = formatter.renderer.render(MODULE, doctree)
         
@@ -352,7 +399,7 @@ def generateDocumentationFiles(CONFIG):
             NAME = MODULE+"."+component.__name__
             print "    Component: "+NAME
             filename = formatter.renderer.makeFilename(NAME)
-            doctree = formatter.formatComponentPage(NAME, component, CONFIG.includeMethods)
+            doctree = formatter.formatComponentPage(NAME, component)
             output   = formatter.renderer.render(NAME, doctree)
             F = open(CONFIG.docdir+"/"+filename, "w")
             F.write(output)
@@ -370,12 +417,14 @@ def generateDocumentationFiles(CONFIG):
 
 
 
-def generateIndices(CONFIG):
+def generateIndices(formatter, CONFIG):
 
     # list of all leaf modules
-    MODULES = dict(CONFIG.components.items())
-    MODULES.update(dict(CONFIG.prefabs.items()))
-    MODULES = MODULES.keys()
+    ALLITEMS = dict(CONFIG.components.items())
+    for (mod,prefabs) in CONFIG.prefabs.items():
+        ALLITEMS[mod] = ALLITEMS.get(mod,[])
+        ALLITEMS[mod].extend(prefabs)
+    MODULES = ALLITEMS.keys()
     
     # now build a list of all module sub paths, eg A, A.B, A.B.C
     MODULETREE = {}
@@ -402,7 +451,7 @@ def generateIndices(CONFIG):
     for indexName in INDEX.keys():
         print "Creating index: "+indexName
         
-        doctree  = formatter.formatIndex(indexName, INDEX[indexName], CONFIG.treeDepth)
+        doctree  = formatter.formatIndex(indexName, INDEX[indexName],ALLITEMS)
         filename = formatter.renderer.makeFilename(indexName)
         output   = formatter.renderer.render(indexName, doctree)
         
@@ -411,27 +460,11 @@ def generateIndices(CONFIG):
         F.close()
     
     
-class DocGenConfig(object):
-    def __init__(self):
-        super(DocGenConfig,self).__init__()
-        self.components = {}
-        self.prefabs = {}
-        self.debug=False
-        self.filterPattern=""
-        self.docdir="pydoc"
-        self.treeDepth=99
-        self.tocDepth=99
-        self.includeMethods=False
-        
-
 if __name__ == "__main__":
 
     import sys
     
     
-    formatter = docFormatter(RenderHTML(titlePrefix="Kamaelia docs : ",debug=False))
-#    formatter = docFormatter(RenderPlaintext)
-
     config = DocGenConfig()
 
     debug = False
@@ -460,6 +493,23 @@ if __name__ == "__main__":
     config.treeDepth=99
     config.tocDepth=3
     config.includeMethods=True
+    config.includeModuleDocString=False
+    config.showComponentsOnIndices=True
         
-    generateDocumentationFiles(config)
-    generateIndices(config)
+    renderer = RenderHTML(titlePrefix="Kamaelia docs : ",debug=False)
+    
+    if 0:
+        # automatically generate crosslinks when component names are seen
+        crossLinks = {}
+        for (m,cs) in COMPONENTS.items() + PREFABS.items():
+            for c in cs:
+                crossLinks[m+"."+c] = m+"."+c
+        for fullpath in crossLinks.keys():
+            shortened = fullpath.split(".")[-1]
+            crossLinks[shortened] = crossLinks[fullpath]
+        renderer.setAutoCrossLinks( crossLinks )
+    
+    formatter = docFormatter(renderer, config=config)
+
+    generateDocumentationFiles(formatter,config)
+    generateIndices(formatter,config)
