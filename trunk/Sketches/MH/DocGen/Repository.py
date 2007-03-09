@@ -59,14 +59,14 @@ class KamaeliaRepositoryDocs(object):
                 moduleName = filename[:-3]
                 modulePath = ".".join(base+[moduleName])
                 if filename == "__init__.py":
-                    flatModulePath = "".join(base)
+                    flatModulePath = base[:]
                 else:
-                    flatModulePath = modulePath
+                    flatModulePath = base+[moduleName]
                     
                 print "Parsing:",filepath
                 moduleDocs = KamaeliaModuleDocs(filepath)
                 
-                flatModules[flatModulePath] = moduleDocs
+                flatModules[tuple(flatModulePath)] = moduleDocs
                 nestedModules[moduleName] = moduleDocs
             
 
@@ -276,17 +276,65 @@ def _stringsInList(theList):
     return found
 
 
-def parseModule(source):
-    return KamaeliaModuleDocs(source)
+# METHODS PROVIDING
+# BACKWARD COMPATIBILITY WITH OLD Repository.py
 
+def GetAllKamaeliaComponentsNested(baseDir=None):
+    rDocs = KamaeliaRepositoryDocs(baseDir)
+    moduleTree = rDocs.nestedModules
+    reduced = _reduceToNames(moduleTree, keepComponents=True, keepPrefabs=False)
+    if reduced["Kamaelia"].has_key("Support"):
+        del reduced["Kamaelia"]["Support"]
+    return reduced
+
+def GetAllKamaeliaComponents(baseDir=None):
+    rDocs = KamaeliaRepositoryDocs(baseDir)
+    modules = rDocs.flatModules
+    return _reduceToNames(modules, keepComponents=True, keepPrefabs=False)
+
+def GetAllKamaeliaPrefabsNested(baseDir=None):
+    rDocs = KamaeliaRepositoryDocs(baseDir)
+    moduleTree = rDocs.nestedModules
+    reduced = _reduceToNames(moduleTree, keepComponents=False, keepPrefabs=True)
+    if reduced["Kamaelia"].has_key("Support"):
+        del reduced["Kamaelia"]["Support"]
+    return reduced
+    
+def GetAllKamaeliaPrefabs(baseDir=None):
+    rDocs = KamaeliaRepositoryDocs(baseDir)
+    modules = rDocs.flatModules
+    return _reduceToNames(modules, keepComponents=False, keepPrefabs=True)
+
+
+def _reduceToNames(tree, keepComponents=True, keepPrefabs=True):
+    output={}
+    for key in tree.keys():
+        value=tree[key]
+        if isinstance(value,dict):
+            output[key] = _reduceToNames(value, keepComponents, keepPrefabs)
+        elif isinstance(value, KamaeliaModuleDocs):
+            if key == "__init__":
+                continue
+            else:
+                items = []
+                if keepComponents:
+                    componentNames = [c[0] for c in value.components]
+                    items.extend(componentNames)
+                if keepPrefabs:
+                    prefabNames = [p[0] for p in value.prefabs]
+                    items.extend(prefabNames)
+                if len(items)>0:
+                    output[key] = items
+    return output
+    
+
+
+        
 if __name__ == "__main__":
-    f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py","r")
-    #f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py","r")
-    #f=open("/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py","r")
-    source = f.read()
-    f.close()
-
-    modDocs = KamaeliaModuleDocs(source)
+    file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py"
+    #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py"
+    #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
+    modDocs = KamaeliaModuleDocs(file)
 
     print "MODULE:"
     print modDocs.docString
@@ -307,3 +355,10 @@ if __name__ == "__main__":
             argStr = argStr.replace(", [", "[, ")
             print name + "(" + argStr + ")"
         print
+
+    import pprint
+    pprint.pprint(GetAllKamaeliaComponents(),None,4)
+    print
+    print "*******************************************************************"
+    print
+    pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
