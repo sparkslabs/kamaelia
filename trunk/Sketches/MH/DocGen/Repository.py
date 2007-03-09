@@ -43,6 +43,7 @@ class KamaeliaRepositoryDocs(object):
         
     def build(self,dirName,flatModules,nestedModules,base):
         dirEntries = os.listdir(dirName)
+        containsPythonFiles = False
         
         for filename in dirEntries:
             filepath = os.path.join(dirName, filename)
@@ -51,11 +52,15 @@ class KamaeliaRepositoryDocs(object):
             
             elif os.path.isdir(filepath):
                 subTree = {}
-                nestedModules[filename] = subTree
                 subBase = base + [filename]
-                self.build(filepath, flatModules, subTree, subBase)
+                foundPythonFiles = self.build(filepath, flatModules, subTree, subBase)
+                # only include if there was actually something in there!
+                if foundPythonFiles:
+                    containsPythonFiles = True
+                    nestedModules[filename] = subTree
                 
             elif isPythonFile(dirName, filename):
+                containsPythonFiles=True
                 moduleName = filename[:-3]
                 modulePath = ".".join(base+[moduleName])
                 if filename == "__init__.py":
@@ -68,7 +73,8 @@ class KamaeliaRepositoryDocs(object):
                 
                 flatModules[tuple(flatModulePath)] = moduleDocs
                 nestedModules[moduleName] = moduleDocs
-            
+
+        return containsPythonFiles
 
 
 def isPythonFile(Path, File):

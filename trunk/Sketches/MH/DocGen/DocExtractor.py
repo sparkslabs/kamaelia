@@ -319,9 +319,9 @@ class docFormatter(object):
         if self.config.includeModuleDocString:
             if subTree.has_key("__init__"):
                 docs = subTree["__init__"].docString
-            if docs and "This is a doc string" not in docs:
-                moduleTree = [ nodes.transition(),
-                            self.docString(docs) ]
+                if docs and ("This is a doc string" not in docs):
+                    moduleTree = [ nodes.transition(),
+                                   self.docString(docs) ]
         
         return nodes.section('',
             * [ nodes.title('', '', *self.formatTrail(indexName).children),
@@ -345,26 +345,29 @@ class docFormatter(object):
         childNames = srcTree.keys()
         childNames.sort()
         for name in [c for c in childNames if c != "__init__"]:
-            modPath = tuple(list(path)+[name])
-            thisMod = self.config.repository.flatModules[modPath]
-            modName = ".".join(modPath)
-            
-            # build "(a,b,c)" style list of links to actual components/prefabs in the module
-            # (if they exist)
             moduleContents = []
-            if self.config.showComponentsOnIndices:
-                declNames = [_.name for _ in thisMod.components + thisMod.prefabs]
-                if len(declNames)>0:
-                    moduleContents.append(nodes.Text(" ( "))
-                    first=True
-                    for declName in declNames:
-                        if not first:
-                            moduleContents.append(nodes.Text(", "))
-                        first=False
-                        uri = self.renderer.makeURI(modName+"."+declName)
-                        linkToDecl = nodes.reference('', nodes.Text(declName), refuri=uri)
-                        moduleContents.append(linkToDecl)
-                    moduleContents.append(nodes.Text(" )"))
+            
+            modPath = tuple(list(path)+[name])
+            modName = ".".join(modPath)
+
+            if self.config.repository.flatModules.has_key(modPath):
+                thisMod = self.config.repository.flatModules[modPath]
+                
+                # build "(a,b,c)" style list of links to actual components/prefabs in the module
+                # (if they exist)
+                if self.config.showComponentsOnIndices:
+                    declNames = [_.name for _ in thisMod.components + thisMod.prefabs]
+                    if len(declNames)>0:
+                        moduleContents.append(nodes.Text(" ( "))
+                        first=True
+                        for declName in declNames:
+                            if not first:
+                                moduleContents.append(nodes.Text(", "))
+                            first=False
+                            uri = self.renderer.makeURI(modName+"."+declName)
+                            linkToDecl = nodes.reference('', nodes.Text(declName), refuri=uri)
+                            moduleContents.append(linkToDecl)
+                        moduleContents.append(nodes.Text(" )"))
 
             # now make the list item for this module
             uri = self.renderer.makeURI(modName)
@@ -467,19 +470,55 @@ def generateIndices(formatter, CONFIG):
     
     
 if __name__ == "__main__":
-
     import sys
-    
     
     config = DocGenConfig()
 
+    cmdLineArgs = sys.argv[1:]
+    print cmdLineArgs
+    if not cmdLineArgs or "--help" in cmdLineArgs or "-h" in cmdLineArgs:
+        sys.stderr.write("\n".join([
+            "Usage:",
+            "",
+            "    "+sys.argv[0]+" [--help] [--filter <substr>] [<repositoryDir>]",
+            "",
+            "    --help             Display this help message",
+            "    --filter <substr>  Only build docs for components/prefabs for components",
+            "                       or modules who's full path contains <substr>",
+            "    <repositoryDir>    Use Kamaelia modules here instead of the installed ones",
+            "",
+            "",
+        ]))
+        sys.exit(0)
+
+    try:
+        if "--filter" in cmdLineArgs:
+            index = cmdLineArgs.index("--filter")
+            config.filterPattern = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+
+        if len(cmdLineArgs)==1:
+            REPOSITORYDIR = cmdLineArgs[0]
+        elif len(cmdLineArgs)==0:
+            REPOSITORYDIR = None
+        else:
+            raise
+    except:
+        sys.stderr.write("\n".join([
+            "Error in command line arguments.",
+            "Run with '--help' for info on command line arguments.",
+            "",
+            "",
+        ]))
+        sys.exit(1)
+    
+    sys.argv=sys.argv[0:0]
+        
     debug = False
-    REPOSITORY = Repository.KamaeliaRepositoryDocs(None)
+    REPOSITORY = Repository.KamaeliaRepositoryDocs(REPOSITORYDIR)
     config.repository=REPOSITORY
     config.docdir     = "pydoc"
-
-    if len(sys.argv)>1:
-        config.filterPattern = sys.argv[1]
 
     config.treeDepth=99
     config.tocDepth=3
