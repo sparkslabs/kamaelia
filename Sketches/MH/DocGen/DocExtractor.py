@@ -473,19 +473,29 @@ if __name__ == "__main__":
     import sys
     
     config = DocGenConfig()
+    config.docdir     = "pydoc"
+
+    urlPrefix=""
 
     cmdLineArgs = sys.argv[1:]
-    print cmdLineArgs
     if not cmdLineArgs or "--help" in cmdLineArgs or "-h" in cmdLineArgs:
         sys.stderr.write("\n".join([
             "Usage:",
             "",
-            "    "+sys.argv[0]+" [--help] [--filter <substr>] [<repositoryDir>]",
+            "    "+sys.argv[0]+" [--help] [--filter <substr>] [--urlprefix <prefix>] [--outdir <dir>] [<repositoryDir>]",
             "",
-            "    --help             Display this help message",
-            "    --filter <substr>  Only build docs for components/prefabs for components",
-            "                       or modules who's full path contains <substr>",
-            "    <repositoryDir>    Use Kamaelia modules here instead of the installed ones",
+            "    --help               Display this help message",
+            "",
+            "    --filter <substr>    Only build docs for components/prefabs for components",
+            "                         or modules who's full path contains <substr>",
+            "",
+            "    --urlprefix <prefix> Prefix for URLs - eg. a base dir: '/Components/pydoc/",
+            "                         (remember the trailing slash if you want one)",
+            "",
+            "    --outdir <dir>       Directory to put output into (default is 'pydoc')",
+            "                         directory must already exist (and be emptied)",
+            "",
+            "    <repositoryDir>      Use Kamaelia modules here instead of the installed ones",
             "",
             "",
         ]))
@@ -495,6 +505,18 @@ if __name__ == "__main__":
         if "--filter" in cmdLineArgs:
             index = cmdLineArgs.index("--filter")
             config.filterPattern = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+
+        if "--urlprefix" in cmdLineArgs:
+            index = cmdLineArgs.index("--urlprefix")
+            urlPrefix = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        if "--outdir" in cmdLineArgs:
+            index = cmdLineArgs.index("--outdir")
+            config.docdir = cmdLineArgs[index+1]
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
 
@@ -518,7 +540,6 @@ if __name__ == "__main__":
     debug = False
     REPOSITORY = Repository.KamaeliaRepositoryDocs(REPOSITORYDIR)
     config.repository=REPOSITORY
-    config.docdir     = "pydoc"
 
     config.treeDepth=99
     config.tocDepth=3
@@ -526,7 +547,9 @@ if __name__ == "__main__":
     config.includeModuleDocString=True
     config.showComponentsOnIndices=True
         
-    renderer = RenderHTML(titlePrefix="Kamaelia docs : ",debug=False)
+    renderer = RenderHTML(titlePrefix="Kamaelia docs : ",
+                          urlPrefix=urlPrefix,
+                          debug=False)
     
     if 0:
         # automatically generate crosslinks when component names are seen
