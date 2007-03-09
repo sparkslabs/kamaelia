@@ -317,8 +317,8 @@ class docFormatter(object):
         
         moduleTree = []
         if self.config.includeModuleDocString:
-            if subtree.has_key("__init__"):
-                docs = subtree["__init__"].docString
+            if subTree.has_key("__init__"):
+                docs = subTree["__init__"].docString
             if docs and "This is a doc string" not in docs:
                 moduleTree = [ nodes.transition(),
                             self.docString(docs) ]
@@ -484,7 +484,7 @@ if __name__ == "__main__":
     config.treeDepth=99
     config.tocDepth=3
     config.includeMethods=True
-    config.includeModuleDocString=False
+    config.includeModuleDocString=True
     config.showComponentsOnIndices=True
         
     renderer = RenderHTML(titlePrefix="Kamaelia docs : ",debug=False)
