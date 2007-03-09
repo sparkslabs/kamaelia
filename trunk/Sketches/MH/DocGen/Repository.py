@@ -143,7 +143,7 @@ class KamaeliaModuleDocs(object):
                 if isinstance(lhs, ast.AssName):
                     if lhs.getChildren()[0] == target:
                         rhs = assignStmt[1]
-                        found += rhs
+                        found.append(rhs)
                         
             elif not isinstance(child, tuple(ignores)) and \
                      isinstance(child, ast.Node):
@@ -224,7 +224,7 @@ class KamaeliaModuleDocs(object):
         return found
     
     def findBoxDecl(self, codeNode, boxTypeName):
-        for child in codeNode:
+        for child in codeNode.getChildren():
             if isinstance(child, ast.Assign):
                 assignStmt = child.getChildren()
                 lhs = assignStmt[0]
