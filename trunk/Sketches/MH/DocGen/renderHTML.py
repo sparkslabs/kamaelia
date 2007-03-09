@@ -11,10 +11,11 @@ import re
 
 class RenderHTML(object):
     
-    def __init__(self, debug=False, titlePrefix=""):
+    def __init__(self, debug=False, titlePrefix="", urlPrefix=""):
         super(RenderHTML,self).__init__()
         self.titlePrefix=titlePrefix
         self.debug=debug
+        self.urlPrefix=urlPrefix
         self.mappings={}
         
     def makeFilename(self, docName):
@@ -23,7 +24,7 @@ class RenderHTML(object):
         return docName + ".html"
     
     def makeURI(self, docName):
-        return self.makeFilename(docName)
+        return self.urlPrefix+self.makeFilename(docName)
         
     def setAutoCrossLinks(self, mappings):
         self.mappings = {}
