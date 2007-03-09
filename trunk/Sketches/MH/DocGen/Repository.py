@@ -22,13 +22,68 @@
 
 import compiler
 from compiler import ast
+import os
+
+class KamaeliaRepositoryDocs(object):
+    def __init__(self, baseDir=None):
+        super(KamaeliaRepositoryDocs,self).__init__()
+        if baseDir:
+            self.baseDir = baseDir
+        else:
+            import Kamaelia
+            self.baseDir = os.path.dirname(Kamaelia.__file__)
+            
+        flat={}
+        nested={"Kamaelia":{}}
+        self.build(self.baseDir, flat, nested["Kamaelia"], base=["Kamaelia"])
+        
+        self.flatModules = flat
+        self.nestedModules = nested
+        
+        
+    def build(self,dirName,flatModules,nestedModules,base):
+        dirEntries = os.listdir(dirName)
+        
+        for filename in dirEntries:
+            filepath = os.path.join(dirName, filename)
+            if filename == "Repository.py":
+                continue
+            
+            elif os.path.isdir(filepath):
+                subTree = {}
+                nestedModules[filename] = subTree
+                subBase = base + [filename]
+                self.build(filepath, flatModules, subTree, subBase)
+                
+            elif isPythonFile(dirName, filename):
+                moduleName = filename[:-3]
+                modulePath = ".".join(base+[moduleName])
+                if filename == "__init__.py":
+                    flatModulePath = "".join(base)
+                else:
+                    flatModulePath = modulePath
+                    
+                print "Parsing:",filepath
+                moduleDocs = KamaeliaModuleDocs(filepath)
+                
+                flatModules[flatModulePath] = moduleDocs
+                nestedModules[moduleName] = moduleDocs
+            
+
+
+def isPythonFile(Path, File):
+    FullEntry = os.path.join(Path, File)
+    if os.path.isfile(FullEntry):
+        if len(File) > 3:
+            if File[-3:] == ".py":
+                return True
+    return False
 
 
 class KamaeliaModuleDocs(object):
-    def __init__(self, source):
+    def __init__(self, filepath):
         super(KamaeliaModuleDocs,self).__init__()
-        source=source.rstrip()
-        self.AST = compiler.parse(source)
+        self.AST = compiler.parseFile(filepath)
 
         self.extractModuleDocString()
         self.findEntities()
@@ -191,7 +246,7 @@ class KamaeliaModuleDocs(object):
                                   self.AST.getChildren()[1],
                                   [ast.Class, ast.Function, ast.Module]
                                 )
-        assert(len(cnode)==1)
+        assert(len(cnode)>=1)
         cnode = cnode[0]
         assert(componentName == cnode.name)
         cDoc = cnode.doc or ""
@@ -217,7 +272,7 @@ def _stringsInList(theList):
         elif isinstance(item, ast.Name):
             found.append(item.name)
         elif isinstance(item,(list,tuple,ast.Node)):
-            found.extend(stringsInList(item))
+            found.extend(_stringsInList(item))
     return found
 
 
