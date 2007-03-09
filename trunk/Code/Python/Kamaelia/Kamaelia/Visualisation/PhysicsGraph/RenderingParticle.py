@@ -32,8 +32,10 @@ visualisation.
 
 Example Usage
 -------------
+
 A topology viewer where particles of type "-" are rendered by RenderingParticle
 instances::
+
     TopologyViewer( particleTypes = {"-":RenderingParticle},
                     laws = Kamaelia.Support.Particles.SimpleLaws(),
                   ).run()
@@ -45,6 +47,7 @@ types.
 
 How does it work?
 -----------------
+
 This object subclasses Kamaelia.Support.Particles.Particle and adds methods to
 support rendering.
 

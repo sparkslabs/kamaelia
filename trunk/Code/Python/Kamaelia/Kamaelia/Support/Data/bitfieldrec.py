@@ -20,6 +20,8 @@
 # -------------------------------------------------------------------------
 """
 Bit Field Record Support
+========================
+
 1. subclass bfrec
 2. Define a class var "fields"
 3. The value for this field should be a list of "field"s, created by calling the static method
@@ -28,9 +30,11 @@ Bit Field Record Support
 
    See  testBFR for an example.
 
-import bitfieldrec
-bfrec,field = bitfieldrec.bfrec,bitfieldrec.field
-reload(bitfieldrec)
+Usage::
+
+   >> import bitfieldrec
+   >> bfrec,field = bitfieldrec.bfrec,bitfieldrec.field
+   >> reload(bitfieldrec)
 
 Currently only supports packing. Does not support unpacking (yet).
 """

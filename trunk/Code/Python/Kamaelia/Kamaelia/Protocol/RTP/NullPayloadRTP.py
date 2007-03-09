@@ -20,26 +20,28 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
-Null Payload RTP Classes
-Null Payload Pre-Framer
+Null Payload RTP Classes.
+Null Payload Pre-Framer.
 Null Payload RTP Packet Stuffer - Same thing.
 
 This Null payload also assumes constant bit rate load.
 
 Subcomponents functionality:
-      FileControl: - Only if RFA internal - isn't
-         FileReader - only if internal - isn't
-         FileSelector - only if internal - isn't
-      Format Decoding
-      DataFramaing
-      Command Interpreter (Likely to be component core code)
+    
+* FileControl: - Only if RFA internal - isn't
+    * FileReader - only if internal - isn't
+    * FileSelector - only if internal - isn't
+* Format Decoding
+* DataFramaing
+* Command Interpreter (Likely to be component core code)
 """
 
 from Axon.Component import component, scheduler, newComponent
 """
 Null Payload PreFramer
 
-Inputs
+Inputs:
+
   * Recieves chunks of binary data
     * Each chunk has a potentially random length.
     * The "binary data" is in fact a python string
@@ -49,20 +51,24 @@ Inputs
     shut down" message from outside.
     - "control"
 
-Outputs
+Outputs:
+
   - "output"
   * Tuples of (Framed binary data chunk,timestamp)
      * The data chunk is passed on as a python string
      * Data chunk format:
+         
         +-+-+-+4+5+-+-+-+9...
         |length | binary data
         +-+-+-+-+-+-+-+-+-...
+        
      * The length part of the chunk is a long integer
        with the MSB in byte 1 and LSB in byte 4.
      * The length refers to the length of the binary data
        in the chunk, NOT the length of the chunk + the binary data.
 
 Issues:
+    
    * PreFramer should ensure where possible that it only sends
      whole chunks. That is equal sized, except for last chunk.
    * Binary chunks recieved from the file adapator may be
@@ -80,6 +86,7 @@ Issues:
    * RFA is external to the Pre-Framer.
 
 Requirements:
+    
    * Accept a predefined chunk size
    * Accept chunks of data & frame the data to this size
    * Timestamp the data chunk
@@ -88,7 +95,8 @@ Requirements:
       * timestamp of the beginning of this chunk for playback
    * Sends these tuples out it's output
 
-Environment
+Environment:
+    
    * Name of source - at __init__
    * Data Rate - at __init__
    * Chunksize - at __init__
@@ -97,7 +105,8 @@ Environment
    * Current Chunk, and size (implicit)
    * current timestamp (cumulative)
 
-Algorithm
+Algorithm:
+    
    * Note source
    * Note timestamp
    * Zero/Empty current chunk

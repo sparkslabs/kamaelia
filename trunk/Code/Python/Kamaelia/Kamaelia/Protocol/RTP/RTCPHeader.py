@@ -19,10 +19,14 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""RTP Header
+"""\
+RTP Header
+==========
+
 This class provides a representation of the fixed RTP Headers as per
 section 5.1 of RFC1889. The following attributes on an RTPHeader object
 represent the fields in the header:
+    
    version,padding, extension, CSRCCount, marker, payloadtype
    sequencenumber, timestamp, SSRC, CSRC
 
