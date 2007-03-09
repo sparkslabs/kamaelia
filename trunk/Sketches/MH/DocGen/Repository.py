@@ -80,6 +80,12 @@ def isPythonFile(Path, File):
     return False
 
 
+class KamaeliaComponentDocs(object): pass
+class KamaeliaPrefabDocs(object): pass
+KamaeliaFunctionDocs = KamaeliaPrefabDocs
+KamaeliaMethodDocs = KamaeliaPrefabDocs
+
+
 class KamaeliaModuleDocs(object):
     def __init__(self, filepath):
         super(KamaeliaModuleDocs,self).__init__()
@@ -175,7 +181,7 @@ class KamaeliaModuleDocs(object):
         doc = fnode.doc or ""
         # don't bother with argument default values since we'd need to reconstruct
         # potentially complex values
-        argNames = [(argName,argName) for argName in fnode.argnames]
+        argNames = [(str(argName),str(argName)) for argName in fnode.argnames]
         i=-1
         numVar = fnode.varargs or 0
         numKW  = fnode.kwargs or 0
@@ -188,8 +194,16 @@ class KamaeliaModuleDocs(object):
         for j in range(len(fnode.defaults)-numVar-numKW):
             argNames[i] = ( argNames[i][0], "["+argNames[i][1]+"]" )
             i-=1
-            
-        return (fnode.name, argNames, doc)
+        
+        argStr = ", ".join([arg for (_, arg) in argNames])
+        argStr = argStr.replace(", [", "[, ")
+        
+        theFunc = KamaeliaFunctionDocs()
+        theFunc.name = fnode.name
+        theFunc.args = argNames
+        theFunc.argString = argStr
+        theFunc.docString = doc
+        return theFunc
         
     
     def findClasses(self, target, node, ignores):
@@ -256,8 +270,13 @@ class KamaeliaModuleDocs(object):
         methodNodes = self.findFunctions(None, cnode.code, [ast.Class, ast.Function, ast.Module])
         methods = [self.documentFunction(node) for node in methodNodes]
         
-
-        return (componentName, cDoc, (inboxDoc, outboxDoc), methods)
+        theComp = KamaeliaComponentDocs()
+        theComp.name = componentName
+        theComp.docString = cDoc
+        theComp.inboxes = inboxDoc
+        theComp.outboxes = outboxDoc
+        theComp.methods = methods
+        return theComp
 
 def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
@@ -318,10 +337,10 @@ def _reduceToNames(tree, keepComponents=True, keepPrefabs=True):
             else:
                 items = []
                 if keepComponents:
-                    componentNames = [c[0] for c in value.components]
+                    componentNames = [c.name for c in value.components]
                     items.extend(componentNames)
                 if keepPrefabs:
-                    prefabNames = [p[0] for p in value.prefabs]
+                    prefabNames = [p.name for p in value.prefabs]
                     items.extend(prefabNames)
                 if len(items)>0:
                     output[key] = items
@@ -341,19 +360,17 @@ if __name__ == "__main__":
     
     print 
     print "PREFABS:"
-    for (name,args,doc) in modDocs.prefabs:
-        print name,args
+    for m in modDocs.prefabs:
+        print m.name, m.args
         
     print
     print "COMPONENTS:"
-    for (componentName, cDoc, (inboxes, outboxes), methods) in modDocs.components:
-        print componentName
-        print "Inboxes:  ",inboxes
-        print "Outboxes: ",outboxes
-        for (name, args, doc) in methods:
-            argStr = ", ".join([arg[1] for arg in args])
-            argStr = argStr.replace(", [", "[, ")
-            print name + "(" + argStr + ")"
+    for comp in modDocs.components:
+        print comp.name
+        print "Inboxes:  ",comp.inboxes
+        print "Outboxes: ",comp.outboxes
+        for meth in comp.methods:
+            print meth.name + "(" + meth.argString + ")"
         print
 
     import pprint
