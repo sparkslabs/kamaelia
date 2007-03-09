@@ -8,13 +8,13 @@ The naming here follows directories already created in /Sketches in the
 non-released namespace.
 """
 Namespaces = {
-    "MPS", ("Michael Sparks", "BBC", "ms_@users.sourceforge.net"),
-    "MH", ("Matt Hammond", "BBC", "mhrd@users.sourceforge.net"),
-    "RJL", ("Ryan Lothian", "", "celestialryan@gmail.com"),
-    "DL", ("Devendra Laulkar ", "", "devendralaulkar@gmail.com"),
-    "TG", ("Tom Gibson", "", "apexmerridian@users.sourceforge.net"),
-    "THF", ("Thomas Flanitzer", "", "t.flanitzer@gmx.at"),
-    "AM", ("Anagha Mudigonda", "", "anaghamudigonda@gmail.com"),
+    "MPS" : ("Michael Sparks", "BBC", "ms_@users.sourceforge.net"),
+    "MH"  : ("Matt Hammond", "BBC", "mhrd@users.sourceforge.net"),
+    "RJL" : ("Ryan Lothian", "", "celestialryan@gmail.com"),
+    "DL"  : ("Devendra Laulkar ", "", "devendralaulkar@gmail.com"),
+    "TG"  : ("Tom Gibson", "", "apexmerridian@users.sourceforge.net"),
+    "THF" : ("Thomas Flanitzer", "", "t.flanitzer@gmx.at"),
+    "AM"  : ("Anagha Mudigonda", "", "anaghamudigonda@gmail.com"),
 }
 
 # RELEASE: MPS
