@@ -32,9 +32,11 @@ gridlines on pass -1.
 
 Example Usage
 -------------
+
 Already used by Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.
 
 Rendering a grid in light grey with grid cell size of 100x100::
+    
     grid = GridRenderer(size=100, colour=(200,200,200))
     renderer = grid.render( <pygame surface> )
     for rendering_pass in renderer:
@@ -44,6 +46,7 @@ Rendering a grid in light grey with grid cell size of 100x100::
 
 How does it work?
 -----------------
+
 Instances of this class provide a render() generator that renders horizontal
 and vertical grid lines to conver the specified pygame surface. The colour and
 spacing of the grid lines are specified at initialisation.

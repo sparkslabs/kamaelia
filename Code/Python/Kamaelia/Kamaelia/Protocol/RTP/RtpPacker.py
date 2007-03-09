@@ -21,7 +21,10 @@
 # -------------------------------------------------------------------------
 """
 RtpPacker Component
+===================
+
 Takes data from a preframer:
+
    * Creates an RTP Header Object
    * Uses the timestamp & sample count to generate an RTP timestamp
 

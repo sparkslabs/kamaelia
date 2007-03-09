@@ -29,16 +29,23 @@ Kamaelia Deprecation infrastructure
 You can set a global environment variable - KAMAELIA_DEPRECATION_WARNINGS -
 to control debug warnings.
 
-Possible values of KAMAELIA_DEPRECATION_WARNINGS
+Possible values of KAMAELIA_DEPRECATION_WARNINGS:
 
-   Value     Action
-   -----     ------
-   (not set) This causes the default debug level for warnings -- (QUIET)
-   QUIET     Supresses all deprecation warnings
-   WARN      Display warning only for first usage of each deprecated entity
-   VERBOSE   Displays warning for all deprecations, including traceback for each
-   CRASH     Raises exception causing the component (and probably the
-             system) to crash - useful especially during testing
++-----------+------------------------------------------------------------------+
+| Value     | Action                                                           |
++===========+==================================================================+
+| (not set) | This causes the default debug level for warnings -- (QUIET)      |
++-----------+------------------------------------------------------------------+
+| QUIET     | Supresses all deprecation warnings                               |
++-----------+------------------------------------------------------------------+
+| WARN      | Display warning only for first usage of each deprecated entity   |
++-----------+------------------------------------------------------------------+
+| VERBOSE   | Displays warning for all deprecations, including traceback for   |
+|           | each                                                             |
++-----------+------------------------------------------------------------------+
+| CRASH     | Raises exception causing the component (and probably the system) |
+|           | to crash - useful especially during testing                      |
++-----------+------------------------------------------------------------------+
 
 """
 import os

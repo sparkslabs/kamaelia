@@ -25,6 +25,7 @@
 Base IPC class. Subclass it to create your own IPC classes.
 
 Set:
+
 - Its doc string as below so a string explanation can be generated for an
   instance of your subclass.
 - 'Parameters' to a list of named parameters you accept at creation, 

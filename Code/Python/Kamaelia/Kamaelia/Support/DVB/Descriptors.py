@@ -34,6 +34,7 @@ Example Usage
 -------------
 
 A simple loop to parse a set of descriptors stored consecutively in a string::
+    
     i=0
     while i < len(setOfDescriptors):
         parsed, i = parseDescriptor(i, setOfDescriptors)
@@ -51,6 +52,7 @@ Call the parseDescriptor() function, passing it the string containing the
 descriptor and the index of the beginning of the descriptor within the string.
 
 parseDescriptor() will return the parsed descriptor::
+            
     (tag, data)
         - tag = the ID of this descriptor type
         - data = dictionary containing the parsed descriptor data:
@@ -171,7 +173,7 @@ meanings. Used in 'component' descriptors::
 
 Private Data Specifiers
 -----------------------
-Specifiers defining various types of private data payload:
+Specifiers defining various types of private data payload::
     
     0x00000001 : "SES",
     0x00000002 : "BSkyB 1",
