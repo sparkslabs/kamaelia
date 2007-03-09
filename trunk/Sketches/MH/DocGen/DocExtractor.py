@@ -151,8 +151,6 @@ class docFormatter(object):
         else:
             METHODS = []
             
-        trailTree = self.formatTrail(X.module+"."+X.name)
-
         return \
                 nodes.section('',
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.name]) ]
@@ -165,7 +163,7 @@ class docFormatter(object):
         CLASSNAME = self.formatPrefabStatement(X.name)
         CLASSDOC = self.docString(X.docString)
         
-        return nodes.container('',
+        return nodes.section('',
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.name]) ]
                   + CLASSDOC
             )
@@ -255,7 +253,11 @@ class docFormatter(object):
             
         for prefab in prefabs:
             assert(prefab.name not in declarationTrees)
-            declarationTrees[prefab.name] = self.formatPrefab(prefab)
+            pTrail = self.formatTrail(moduleName+"."+prefab.name)
+            declarationTrees[prefab.name] = nodes.container('',
+                nodes.title('','', *pTrail.children),
+                    self.formatPrefab(prefab)
+            )
 
         declNames = declarationTrees.keys()
         declNames.sort()
