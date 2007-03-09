@@ -40,6 +40,10 @@ class RenderHTML(object):
             docTree = root
 
         docTree.attributes['title']=docName
+
+        # do this first, before we turn the boxright nodes into "[ [boxright] ... ]"
+        docTree.transformer.add_transform(squareBracketReplace_transform)
+        docTree.transformer.apply_transforms()
         
         docTree.transformer.add_transform(boxright_transform)
         docTree.transformer.add_transform(crosslink_transform, priority=None, mappings=self.mappings)
@@ -138,4 +142,12 @@ class crosslink_transform(docutils.transforms.Transform):
                     parent.insert(i, nodes.Text(head))
                 return True
         return False
-        
+
+class squareBracketReplace_transform(docutils.transforms.Transform):
+    default_priority=100
+
+    def apply(self):
+        for target in self.document.traverse(nodes.Text):
+            newText = target.replace("[","%91%")
+            newText = newText.replace("]","%93%")
+            target.parent.replace(target, newText)
