@@ -76,7 +76,8 @@ class DataSource(component):
         self.send(producerFinished(self), "signal")
         return
 
-TriggeredSource = lambda msg : PureTransformer(lambda r : msg)
+def TriggeredSource(msg):
+    return PureTransformer(lambda r : msg)
 
 __kamaelia_components__  = ( DataSource, )
 __kamaelia_prefabs__  = ( TriggeredSource, )
