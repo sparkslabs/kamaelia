@@ -14,7 +14,9 @@ import pprint
 import time
 from docutils import core
 from docutils import nodes
-import Kamaelia.Support.Data.Repository
+#import Kamaelia.Support.Data.Repository
+import Repository
+
 
 from renderHTML      import RenderHTML
 from renderPlaintext import RenderPlaintext
@@ -492,8 +494,10 @@ if __name__ == "__main__":
         }
         PREFABS = {}
     else:
-        C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
-        P = Kamaelia.Support.Data.Repository.GetAllKamaeliaPrefabs()
+#        C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
+#        P = Kamaelia.Support.Data.Repository.GetAllKamaeliaPrefabs()
+        C = Repository.GetAllKamaeliaComponents()
+        P = Repository.GetAllKamaeliaPrefabs()
         COMPONENTS = {}
         for key in C.keys():
             COMPONENTS[".".join(key)] = C[key]
