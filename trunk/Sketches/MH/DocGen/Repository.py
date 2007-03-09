@@ -64,7 +64,7 @@ class KamaeliaRepositoryDocs(object):
                     flatModulePath = base+[moduleName]
                     
                 print "Parsing:",filepath
-                moduleDocs = KamaeliaModuleDocs(filepath)
+                moduleDocs = KamaeliaModuleDocs(filepath, flatModulePath)
                 
                 flatModules[tuple(flatModulePath)] = moduleDocs
                 nestedModules[moduleName] = moduleDocs
@@ -87,7 +87,7 @@ KamaeliaMethodDocs = KamaeliaPrefabDocs
 
 
 class KamaeliaModuleDocs(object):
-    def __init__(self, filepath):
+    def __init__(self, filepath, modulePath):
         super(KamaeliaModuleDocs,self).__init__()
         self.AST = compiler.parseFile(filepath)
 
@@ -96,12 +96,12 @@ class KamaeliaModuleDocs(object):
         
         self.prefabs = []
         for prefabName in self.prefabNames:
-            doc = self.documentNamedFunction(prefabName)
+            doc = self.documentNamedFunction(prefabName, modulePath)
             self.prefabs.append(doc)
         
         self.components = []
         for componentName in self.componentNames:
-            doc = self.documentNamedComponent(componentName)
+            doc = self.documentNamedComponent(componentName, modulePath)
             self.components.append(doc)
         
 
@@ -167,7 +167,7 @@ class KamaeliaModuleDocs(object):
                 
         return found
     
-    def documentNamedFunction(self, prefabName):
+    def documentNamedFunction(self, prefabName, modulePath):
         fnode = self.findFunctions( prefabName,
                                     self.AST.getChildren()[1],
                                     [ast.Class, ast.Function, ast.Module]
@@ -175,9 +175,9 @@ class KamaeliaModuleDocs(object):
         assert(len(fnode)==1)
         fnode=fnode[0]
         assert(prefabName == fnode.name)
-        return self.documentFunction(fnode)
+        return self.documentFunction(fnode, modulePath)
         
-    def documentFunction(self, fnode):
+    def documentFunction(self, fnode, modulePath):
         doc = fnode.doc or ""
         # don't bother with argument default values since we'd need to reconstruct
         # potentially complex values
@@ -203,6 +203,7 @@ class KamaeliaModuleDocs(object):
         theFunc.args = argNames
         theFunc.argString = argStr
         theFunc.docString = doc
+        theFunc.module = ".".join(modulePath)
         return theFunc
         
     
@@ -244,7 +245,7 @@ class KamaeliaModuleDocs(object):
                 desc = rhs.value
                 if isinstance(name, str) and isinstance(desc, str):
                     boxes.append((name,desc))
-        return boxes
+        return dict(boxes)
                 
     def parseListBoxes(self, listNode):
         boxes = []
@@ -253,9 +254,9 @@ class KamaeliaModuleDocs(object):
                 name = item.value
                 if isinstance(name, str):
                     boxes.append((name,''))
-        return boxes
+        return list(boxes)
     
-    def documentNamedComponent(self, componentName):
+    def documentNamedComponent(self, componentName, modulePath):
         cnode = self.findClasses( componentName,
                                   self.AST.getChildren()[1],
                                   [ast.Class, ast.Function, ast.Module]
@@ -268,7 +269,7 @@ class KamaeliaModuleDocs(object):
         outboxDoc = self.findBoxDecl(cnode.code, "Outboxes")
         
         methodNodes = self.findFunctions(None, cnode.code, [ast.Class, ast.Function, ast.Module])
-        methods = [self.documentFunction(node) for node in methodNodes]
+        methods = [self.documentFunction(node, modulePath) for node in methodNodes]
         
         theComp = KamaeliaComponentDocs()
         theComp.name = componentName
@@ -276,6 +277,7 @@ class KamaeliaModuleDocs(object):
         theComp.inboxes = inboxDoc
         theComp.outboxes = outboxDoc
         theComp.methods = methods
+        theComp.module = ".".join(modulePath)
         return theComp
 
 def _stringsInList(theList):
@@ -353,7 +355,7 @@ if __name__ == "__main__":
     file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
-    modDocs = KamaeliaModuleDocs(file)
+    modDocs = KamaeliaModuleDocs(file,["Kamaelia","File","Reading"])
 
     print "MODULE:"
     print modDocs.docString
