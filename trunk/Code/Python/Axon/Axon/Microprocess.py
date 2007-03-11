@@ -276,6 +276,7 @@ class microprocess(Axon.AxonObject):
       if self.debugger.areDebugging("microprocess.stop", 1):
          self.debugger.debugmessage("microprocess.stop", "Microprocess STOPPED", self.id,self.name,self)
       self.__stopped = 1
+      self.scheduler = _nullscheduler
 
    def pause(self):
        """M.pause() - Pauses the microprocess.
