@@ -28,6 +28,7 @@ import thread,Queue,threading
 import time
 from Axon.Component import component
 from Axon.Scheduler import scheduler
+from Axon.AxonExceptions import noSpaceInBox
 
 class OneShotTo(component):
     def __init__(self,dst,msg):
@@ -48,6 +49,52 @@ class RecvFrom(component):
             yield 1
             if self.dataReady("inbox"):
                 self.rec.append(self.recv("inbox"))
+
+class ThreadedSender(threadedcomponent):
+    def __init__(self,*argl,**argd):
+        if "slow" in argd:
+            self.delay=argd["slow"]
+            del argd["slow"]
+        else:
+            self.delay=None
+        super(ThreadedSender,self).__init__(*argl,**argd)
+        self.feedback = Queue.Queue()
+        self.howManyToSend = Queue.Queue()
+    def main(self):
+        while 1:
+            qty = self.howManyToSend.get()
+            if qty<=0 or qty=="STOP":
+                return
+            else:
+                try:
+                    for i in xrange(qty):
+                        self.send(i,"outbox")
+                        if self.delay!=None:
+                            self.pause(self.delay)
+                    self.feedback.put("ALL SENT")
+                except noSpaceInBox:
+                    self.feedback.put(i)
+                except:
+                    raise
+
+class DoesNothingThread(threadedcomponent):
+    def main(self):
+        while 1:
+            self.pause()
+
+class DoesNothingComponent(component):
+    def main(self):
+        while 1:
+            self.pause()
+            yield 1
+
+def get(list,index,default):
+    try:
+        return list[index]
+    except IndexError:
+        return default
+
+
 
 class threadedcomponent_Test(unittest.TestCase):
     
@@ -211,6 +258,167 @@ class threadedcomponent_Test(unittest.TestCase):
                 errmsg=errmsg+" should not be entered by more than one thread at once."
                 self.fail(errmsg)
 
+
+    def test_ThereIsADefaultOutgoingQueueSize(self):
+        """There is a default limit on the number of messages that can queue up waiting to be sent out by the main thread."""
+        
+        sched=scheduler()
+        t=ThreadedSender().activate(Scheduler=sched)
+        
+        try:
+            s=sched.main()
+            for _ in range(0,10):
+                s.next()
+                
+            t.howManyToSend.put(99999)
+        
+            while t.feedback.qsize() == 0:
+                time.sleep(0.1)
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result > 0)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
+        
+    def test_CanSetOutgoingQueueSize(self):
+        """Setting the queue size in the initializer limits the number of messages that can queue up waiting to be sent out by the main thread."""
+       
+        QSIZE=20
+        sched=scheduler()
+        t=ThreadedSender(QSIZE).activate(Scheduler=sched)
+        
+        try:
+            s=sched.main()
+            for _ in range(0,10):
+                s.next()
+                
+            t.howManyToSend.put(99999)
+        
+            while t.feedback.qsize() == 0:
+                time.sleep(0.1)
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result==QSIZE)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
+        
+    def test_RestrictedInboxSize(self):
+        """Setting the inbox size means at most inbox_size+internal_queue_size messages can queue up before the sender receives a noSpaceInBox exception"""
+        
+        QSIZE=20
+        BSIZE=10
+        sched=scheduler()
+        t=DoesNothingThread(QSIZE).activate(Scheduler=sched)
+        t.inboxes['inbox'].setSize(BSIZE)
+        d=DoesNothingComponent().activate(Scheduler=sched)
+        d.link((d,"outbox"),(t,"inbox"))
+        
+        s=sched.main()
+        for _ in range(0,10):
+            s.next()
+        for _ in range(QSIZE+BSIZE):
+            d.send(object(),"outbox")
+            for __ in range(0,10):
+                s.next()
+        self.failUnlessRaises(noSpaceInBox, d.send, object(), "outbox")
+    
+    def test_NoSpaceInBoxExceptionsReachThread(self):
+        """If a threadedcomponent outbox is linked to a size restricted inbox, then the thread can send at most inbox_size+internal_queue_size messages before it receives a noSpaceInBox exception."""
+        
+        QSIZE=20
+        BSIZE=10
+        sched=scheduler()
+        t=ThreadedSender(QSIZE,slow=0.05)
+        d=DoesNothingComponent().activate(Scheduler=sched)
+        d.inboxes['inbox'].setSize(BSIZE)
+        d.link((t,"outbox"),(d,"inbox"))
+
+        s=sched.main()
+        for _ in range(0,10):
+            s.next()
+        
+        t.activate(Scheduler=sched)
+        
+        try:
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+        
+            while t.feedback.qsize() == 0:
+                s.next()
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == QSIZE+BSIZE)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
+
+    def test_TakingFromDestinationAllowsMoreToBeDelivered(self):
+        """"""
+        QSIZE=20
+        BSIZE=10
+        self.assert_(QSIZE > BSIZE)
+        sched=scheduler()
+        t=ThreadedSender(QSIZE)
+        d=DoesNothingComponent().activate(Scheduler=sched)
+        d.inboxes['inbox'].setSize(BSIZE)
+        d.link((t,"outbox"),(d,"inbox"))
+        
+        s=sched.main()
+        for _ in range(10):
+            s.next()
+        
+        t.activate(Scheduler=sched)
+        
+        try:
+            for _ in range(10):
+                s.next()
+            
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            
+            # wait for a response, verify it filled its in queue
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == QSIZE)
+            
+            # flush them through to the inbox queue of the destination
+            for _ in range(BSIZE*5):
+                s.next()
+            
+            # let the thread fill the newly free slots
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == BSIZE)
+            
+            
+            # collect messages
+            NUM_COLLECT = 0
+            while NUM_COLLECT < BSIZE/2:
+                while not d.dataReady("inbox"):
+                    s.next()
+                if d.dataReady("inbox"):
+                    d.recv("inbox")
+                    NUM_COLLECT += 1
+                
+            # let the main thread flush some message through from the thread
+            for _ in range(50):
+                s.next()
+                
+            t.howManyToSend.put(QSIZE+BSIZE+10)
+            
+            while t.feedback.qsize() == 0:
+                s.next()
+            
+            result = t.feedback.get()
+            self.assert_(result != "ALL SENT")
+            self.assert_(result == NUM_COLLECT)
+        except:
+            t.howManyToSend.put("STOP")
+            raise
 
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     

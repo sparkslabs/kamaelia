@@ -33,7 +33,7 @@ import unittest
 from Axon.Component import component
 from Axon.Scheduler import scheduler
 from Axon.Postoffice import postoffice
-
+from Axon.AxonExceptions import noSpaceInBox
 
 class Dummybox(list):
     def __init__(self,*argl,**argd):
@@ -359,7 +359,362 @@ class linkagechaining_Test(unittest.TestCase):
         self.verifyChain((a,"outbox"), (b,"inbox"))
         
 
+class UnpauseDetectionComponent(component):
+    def __init__(self):
+        super(UnpauseDetectionComponent,self).__init__()
+        self.unpaused=0
+    def main(self):
+        while 1:
+            self.pause()
+            yield 1
+            self.unpaused += 1
+
+class MessageDeliveryNotifications_Test(unittest.TestCase):
+    """\
+    Tests to check notification callbacks are correctly established and used for
+    message deliveries and collections.
+    """
     
+    def initComponents(self,qty):
+        scheduler.run = scheduler()
+        self.schedthread = scheduler.run.main()
+        return self.makeComponents(qty)
     
+    def makeComponents(self, qty):
+        return [UnpauseDetectionComponent().activate() for _ in range(0,qty)]
+    
+    def runForAWhile(self, cycles=100):
+        for _ in range(0,cycles):
+            self.schedthread.next()
+    
+    def test_NothingHappensIfNothingHappens(self):
+        """A paused component stays paused if nothing happens"""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"outbox"), (a,"inbox") )
+        self.assert_(a.unpaused==0 and b.unpaused==0)
+        self.runForAWhile()
+        self.assert_(a.unpaused==0 and b.unpaused==0)
+            
+    def test_ConsumerWokenByDelivery(self):
+        """A paused component is unpaused when a message is delivered to its inbox."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.assert_(b.unpaused==1)
+    
+    def test_ProducerNotWokenByDelivery(self):
+        """A paused component is not unpaused when it sends a message."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==0)
+    
+    def test_ProducerNotWokenByDelivery(self):
+        """A paused component is unpaused when a consumer picks up a message it has sent."""
+        a,b = self.initComponents(2)
+        a.link( (a,"outbox"), (b,"inbox") )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+    
+    def test_ChainOnlyFinalDestinationNotified(self):
+        """In a chain of linkages with more than one inbox, only the final destination is woken when a message is sent."""
+        a,b,c,d = self.initComponents(4)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"inbox"),  (c,"inbox"), passthrough=1 )
+        c.link( (c,"inbox"),  (d,"inbox"), passthrough=1 )
+        
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        
+        self.assert_(a.unpaused==0)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==0)
+        self.assert_(d.unpaused==1)
+        
+    def test_ChainOnlyOutboxHoldersNotified(self):
+        """In a chain of linkages, only the owners of outboxes are notified when a message is picked up."""
+        a,b,c,d = self.initComponents(4)
+        a.link( (a,"outbox"), (b,"inbox") )
+        b.link( (b,"inbox"),  (c,"inbox"), passthrough=1 )
+        c.link( (c,"inbox"),  (d,"inbox"), passthrough=1 )
+        
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==0)
+        self.assert_(d.unpaused==0)
+        
+    def test_AllOutboxOwnersNotified(self):
+        """In a chain of linkages, all owners of outboxes are notified when a message is picked up."""
+        a,b,c,d,e = self.initComponents(5)
+        a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        c.link( (c,"outbox"), (d,"inbox"),                )
+        d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==1)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+        
+    def test_LinkBrokenNoNotify(self):
+        """If the linkage chain breaks before a message is collected, the owners of outboxes that are no longer in the chain are not notified."""
+        a,b,c,d,e = self.initComponents(5)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.unlink(thelinkage=L2)
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==0)
+        self.assert_(b.unpaused==0)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+       
+    def test_LinkReestablishedNotify(self):
+        """If the linkage chain breaks and is then re-established before a message is collected, the owners of outboxes that are no longer in the chain are not notified, but ones that are will be."""
+        a,b,c,d,e = self.initComponents(5)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        b.unlink(thelinkage=L2)
+        self.runForAWhile()
+        b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )   # re-establish
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)  # reestablished
+        self.assert_(b.unpaused==1)  # reestablished
+        self.assert_(c.unpaused==1)  # stil linked
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+       
+    def test_LinkNewlyEestablishedNotify(self):
+        """If a message is sent, then a new linkage added before a message is collected, the owner of the newly linked in outbox will notified too."""
+        a,b,c,d,e,f = self.initComponents(6)
+        L1 = a.link( (a,"outbox"), (b,"outbox"), passthrough=2 )
+        L2 = b.link( (b,"outbox"), (c,"outbox"), passthrough=2 )
+        L3 = c.link( (c,"outbox"), (d,"inbox"),                )
+        L4 = d.link( (d,"inbox"),  (e,"inbox"),  passthrough=1 )
+       
+        self.runForAWhile()
+        a.send(object(),"outbox")
+        self.runForAWhile()
+        self.runForAWhile()
+        f.link( (f,"outbox"),(c,"outbox"), passthrough=2 )
+        self.runForAWhile()
+        a.unpaused = 0
+        b.unpaused = 0
+        c.unpaused = 0
+        d.unpaused = 0
+        e.unpaused = 0
+        f.unpaused = 0
+        d.recv("inbox")
+        self.runForAWhile()
+        self.assert_(a.unpaused==1)
+        self.assert_(b.unpaused==1)
+        self.assert_(c.unpaused==1)
+        self.assert_(d.unpaused==0)
+        self.assert_(e.unpaused==0)
+        self.assert_(f.unpaused==1)  # new one linked in, also gets notified
+       
+
+class SizeLimitedBoxes_Test(unittest.TestCase):
+    """\
+    Tests ability to limit the size of inboxes.
+    """
+    def initComponents(self,qty):
+        scheduler.run = scheduler()
+        self.schedthread = scheduler.run.main()
+        return self.makeComponents(qty)
+    
+    def makeComponents(self, qty):
+        return [UnpauseDetectionComponent().activate() for _ in range(0,qty)]
+    
+    def runForAWhile(self, cycles=100):
+        for _ in range(0,cycles):
+            self.schedthread.next()
+    
+    def test_smoketest(self):
+        """You can call mycomponent.inboxes[boxname].setSize(n) to set the box size."""
+        a, = self.initComponents(1)
+        a.inboxes['inbox'].setSize(5)
+        
+    def test_BoxSizeGetsLimited(self):
+        """Restrict the size of an inbox to 5 and you can send 5 messages to it without error."""
+        a,b = self.initComponents(2)
+        b.inboxes['inbox'].setSize(5)
+        
+        a.link((a,"outbox"),(b,"inbox"))
+        self.runForAWhile()
+        for _ in range(5):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        
+    def test_ExceedBoxSizeAndGetException(self):
+        """Send a 6th message to an inbox of size 5 and a noSpaceInBox exception will be thrown."""
+        a,b = self.initComponents(2)
+        b.inboxes['inbox'].setSize(5)
+        
+        a.link((a,"outbox"),(b,"inbox"))
+        self.runForAWhile()
+        for _ in range(5):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        self.failUnlessRaises(noSpaceInBox, a.send, object(), "outbox")
+        
+    def test_removingFromInboxAllowsYouToPutMoreIn(self):
+        """Collecting 3 items from a full inbox and you can put 3 more in before a noSpaceInBox exception is thrown."""
+        a,b = self.initComponents(2)
+        b.inboxes['inbox'].setSize(5)
+        
+        a.link((a,"outbox"),(b,"inbox"))
+        self.runForAWhile()
+        for _ in range(5):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        for _ in range(3):
+            b.recv("inbox")
+        self.runForAWhile()
+        for _ in range(3):
+            a.send(object(), "outbox")
+        self.failUnlessRaises(noSpaceInBox, a.send, object(), "outbox")
+        
+    def test_SizeLimitMidLinkageChainHasNoEffect(self):
+        """A size limited inbox that isn't the final destination in a linkage chain will not cause noSpaceInBox exceptions to be thrown."""
+        a,b,c = self.initComponents(3)
+        b.inboxes['inbox'].setSize(5)
+        
+        a.link((a,"outbox"), (b,"inbox"))
+        b.link((b,"inbox"), (c,"inbox"), passthrough=1)
+        self.runForAWhile()
+        for _ in range(10):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        
+    def test_SizeLimitMidLinkageChainComesIntoEffectIfChainBroken(self):
+        """A size limited inbox that becomes the final destination in a linkage chain (because a link is broken) causes noSpaceInBox exceptions to be thrown as if it had always been the final destination."""
+        a,b,c = self.initComponents(3)
+        b.inboxes['inbox'].setSize(5)
+        
+        L1=a.link((a,"outbox"), (b,"inbox"))
+        L2=b.link((b,"inbox"), (c,"inbox"), passthrough=1)
+        self.runForAWhile()
+        for _ in range(10):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        b.unlink(thelinkage=L2)
+        self.runForAWhile()
+        for _ in range(5):
+            a.send(object(), "outbox")
+        self.failUnlessRaises(noSpaceInBox, a.send, object(), "outbox")
+        
+    def test_SettingSizeLimitToNoneSetsToUnlimited(self):
+        """Setting a size limit of None mean the inbox size is unrestricted."""
+        a,b = self.initComponents(2)
+        b.inboxes['inbox'].setSize(None)
+        
+        a.link((a,"outbox"),(b,"inbox"))
+        self.runForAWhile()
+        for _ in range(9999):
+            a.send(object(), "outbox")
+        self.runForAWhile(9999)
+        
+    def test_TurningOffSizeLimit(self):
+        """Setting a size limit then later changing it to None turns off  inbox size restrictions."""
+        a,b = self.initComponents(2)
+        b.inboxes['inbox'].setSize(5)
+        L1=a.link((a,"outbox"), (b,"inbox"))
+        self.runForAWhile()
+        for _ in range(5):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        b.inboxes['inbox'].setSize(None)
+        self.runForAWhile()
+        for _ in range(500):
+            a.send(object(), "outbox")
+        self.runForAWhile()
+        
+    def test_AllProducersExperienceSameSizeLimit(self):
+        """All outboxes in a linkage chain sharing the same destination inbox will experience noSpaceInBox exceptions when and only when the destination inbox becomes full and any of them tries to send to it."""
+        a,b,c,d,e = self.initComponents(5)
+        e.inboxes['inbox'].setSize(4*4)
+        a.link((a,"outbox"),(e,"inbox"))
+        b.link((b,"outbox"),(e,"inbox"))
+        c.link((c,"outbox"),(b,"outbox"),passthrough=2)
+        d.link((d,"outbox"),(b,"outbox"),passthrough=2)
+        
+        self.runForAWhile()
+        i=0
+        while i < 100:
+            for X in [a,b,c,d]:
+                i+=1
+                if i <= e.inboxes['inbox'].getSize():
+                    X.send(object(),"outbox")
+                else:
+                    self.failUnlessRaises(noSpaceInBox, X.send, object(), "outbox")
+                self.runForAWhile()
+
+
+
 if __name__=='__main__':
    unittest.main()
