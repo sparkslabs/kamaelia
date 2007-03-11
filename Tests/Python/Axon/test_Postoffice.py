@@ -416,7 +416,7 @@ class MessageDeliveryNotifications_Test(unittest.TestCase):
         self.runForAWhile()
         self.assert_(a.unpaused==0)
     
-    def test_ProducerNotWokenByDelivery(self):
+    def test_ProducerWokenByCollection(self):
         """A paused component is unpaused when a consumer picks up a message it has sent."""
         a,b = self.initComponents(2)
         a.link( (a,"outbox"), (b,"inbox") )
