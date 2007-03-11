@@ -30,6 +30,7 @@ class nullsink(object):
         self.size = None
         self.tag = None
         self.showtransit = None
+        self.wakeOnPop = []   # callbacks for when a pop() happens
     def append(self, data):
         if self.showtransit:
             print "Discarding Delivery via [", self.tag, "] of ", repr(data)
@@ -49,6 +50,7 @@ class realsink(list):
         self.size = size
         self.tag = None
         self.showtransit = None
+        self.wakeOnPop = []   # callbacks for when a pop() happens
     def append(self,data):
         if self.showtransit:
             print "Delivery via [", self.tag, "] of ", repr(data)
@@ -60,21 +62,33 @@ class realsink(list):
     def setShowTransit(self,showtransit, tag):
         self.showtransit = showtransit
         self.tag = tag
+    def pop(self,index):
+        item = list.pop(self, index)
+        for n in self.wakeOnPop:
+            n()
+        return item
 
 
 class postbox(object):
     """\
-    postbox(storage) -> new postbox object.
+    postbox(storage,notify) -> new postbox object.
     
     Creates a postbox, using the specified storage as default storage. Storage
     should have the interface of list objects.
+    
+    Also takes optional notify callback, that will be called whenever an item is
+    taken out of a postbox further down the chain.
     """
     
-    def __init__(self, storage):
+    def __init__(self, storage, notify=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
         super(postbox,self).__init__()
         self.storage = storage
         self.sources = []
+        self.myNotifyOnPop = []
+        if notify != None:
+            self.myNotifyOnPop.append(notify)
+        self.target = None
         self._retarget()
         self.local_len = storage.__len__    # so compoent can specifically query local storage
     
@@ -85,17 +99,51 @@ class postbox(object):
         """\
         addsource(newsource) registers newsource as a source and tells it to
         'retarget' at this postbox.
+        
+        Also finds out from the new source who wants to be notified when messages are taken
+        out of postboxes, and updates records accordingly, and passes this info further down
+        the chain of linkages.
         """
         self.sources.append(newsource)       # XXX assuming not already linked from that source
-        newsource._retarget(self.sink)
+        newsource._retarget(self)
+        self._addnotifys(newsource.getnotifys())
         
     def removesource(self,oldsource):
         """\
         removesource(oldsource) deregisters oldsource as a source and tells it
         to 'retarget' at None (nothing).
+        
+        Also finds out from the old source who was being notified when messages are taken
+        out of postboxes, and updates records accordingly, and passes this info further down
+        the chain of linkages.
         """
         self.sources.remove(oldsource)
         oldsource._retarget(newtarget=None)
+        self._removenotifys(oldsource.getnotifys())
+        
+    def getnotifys(self):
+        return self.myNotifyOnPop + self.storage.wakeOnPop
+    
+    def _addnotifys(self, newnotifys):
+        """\
+        Updates the local storage's list of notification callbacks for when messages are
+        taken out of inboxes. Then recurses this info to this postbox's target, so it can
+        update too.
+        """
+        self.storage.wakeOnPop.extend(newnotifys)
+        if self.target != None:
+            self.target._addnotifys(newnotifys)
+        
+    def _removenotifys(self, oldnotifys):
+        """\
+        Updates the local storage's list of notification callbacks for when messages are
+        taken out of inboxes. Then recurses this info to this postbox's target, so it can
+        update too.
+        """
+        for n in oldnotifys:
+            self.storage.wakeOnPop.remove(n)
+        if self.target != None:
+            self.target._removenotifys(oldnotifys)
         
     def _retarget(self, newtarget=None):
         """\
@@ -105,9 +153,11 @@ class postbox(object):
         If newtarget is unspecified or None, target is default lol storage.
         """
         if newtarget==None:
+            self.target = None
             self.sink = self.storage
         else:
-            self.sink = newtarget
+            self.target = newtarget
+            self.sink = newtarget.sink
             # if i'm storing stuff, pass it on
             while len(self.storage):
                 self.sink.append(self.storage.pop(0))
@@ -118,7 +168,7 @@ class postbox(object):
         self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
         for source in self.sources:
-            source._retarget(newtarget=self.sink)
+            source._retarget(newtarget=self)
 
     def setSize(self, size):
         self.storage.size = size
@@ -132,7 +182,6 @@ class postbox(object):
     def isFull(self):
         return (self.sink.size != None) and (len(self) >= self.sink.size)
             
-thenullsink = nullsink()
 
 def makeInbox(notify, size = None):
     """Returns a postbox object suitable for use as an Axon inbox."""
@@ -141,8 +190,8 @@ def makeInbox(notify, size = None):
        result.setSize(size)
     return result
 
-def makeOutbox():
+def makeOutbox(notify):
     """Returns a postbox object suitable for use a an Axon outbox."""
-    return postbox(storage=thenullsink)
+    return postbox(storage=nullsink(), notify=notify)
 
 # RELEASE: MH, MPS

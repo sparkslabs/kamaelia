@@ -203,7 +203,7 @@ class component(microprocess):
       for boxname in self.Inboxes:
           self.inboxes[boxname] = makeInbox(notify=self.unpause)
       for boxname in self.Outboxes:
-          self.outboxes[boxname] = makeOutbox()
+          self.outboxes[boxname] = makeOutbox(notify=self.unpause)
 
       self.children = []
       self._callOnCloseDown = []

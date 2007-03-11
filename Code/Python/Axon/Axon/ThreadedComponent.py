@@ -164,6 +164,9 @@ class threadedcomponent(Component.component):
               while not self.outqueues[box].empty():
                   if not self.outboxes[box].isFull():
                       msg = self.outqueues[box].get()
+                      # wake *after* item is taken from queue, otherwise thread
+                      # might get there first and still think its full!
+                      self.threadWakeUp.set()
                       try:
                           self._nonthread_send(msg, box)
                       except noSpaceInBox, e:
@@ -176,7 +179,7 @@ class threadedcomponent(Component.component):
               msg = self.threadtoaxonqueue.get()
               self._handlemessagefromthread(msg)
 
-          if running and not stuffWaiting:
+          if running:
               Component.component.pause(self)
           
           yield 1
@@ -197,6 +200,7 @@ class threadedcomponent(Component.component):
        return self.inqueues[boxname].qsize()
 
    def recv(self,boxname="inbox"):
+       Component.component.unpause(self)
        return self.inqueues[boxname].get()
 
    def send(self,message, boxname="outbox"):
@@ -412,6 +416,7 @@ if __name__ == "__main__":
                 
                 t=time.time() + 0.2
                 while time.time() < t:
+                    time.sleep(0.02)
                     yield 1
                 
                 sys.stdout.write("                                        received "+str(r)+"\n")
@@ -447,7 +452,7 @@ if __name__ == "__main__":
                                 sys.stdout.flush()
                                 break
                             except noSpaceInBox:
-                                time.sleep(0.1)
+                                self.pause()
 
                 if not r:
                     break
@@ -473,7 +478,9 @@ if __name__ == "__main__":
                             sys.stdout.flush()
                             break
                         except noSpaceInBox:
-                            time.sleep(0.1)
+                            self.pause()
+                            print "Y"
+#                            time.sleep(0.1)
     
     t = ThreadedSender().activate()
     m = ThreadedMiddleMan().activate()
