@@ -127,9 +127,9 @@ class threadedcomponent(Component.component):
        """
 
        # start the thread
+       self._threadrunning = True
        self._thethread.start()
        running = True
-       self._threadrunning = True
        stuffWaiting = False
        while running or stuffWaiting:
           # decide if we need to stop...
