@@ -199,7 +199,7 @@ class threadedcomponent_Test(unittest.TestCase):
             def main(self):
                 for i in range(10):
                     linkage = self.link( (self,"outbox"),(self,"inbox") )
-                    self.unlink(linkage)
+                    self.unlink(thelinkage=linkage)
         
         sched=scheduler()
         t=ThreadedLinker().activate(Scheduler=sched)
@@ -230,6 +230,7 @@ class threadedcomponent_Test(unittest.TestCase):
                 return result
             
         t.postoffice.link = link_mock
+        t.postoffice.unlink = unlink_mock
         
         done=False
         for i in range(10):
@@ -238,7 +239,7 @@ class threadedcomponent_Test(unittest.TestCase):
             except StopIteration:
                 done=True
             linkage = t.link( (t,"signal"),(t,"control") )
-            t.unlink(linkage)
+            t.unlink(thelinkage=linkage)
         
         while not done:
             try:
