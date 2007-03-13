@@ -24,8 +24,8 @@
 Detecting the topology of a running Axon system
 ===============================================
 
-The Introspector component introspects the current local topology of an Axon
-system - that is what components there are and how they are wired up.
+The Introspector is a component that introspects the current local topology of
+an Axon system - that is what components there are and how they are wired up.
 
 It continually outputs any changes that occur to the topology.
 
@@ -33,7 +33,9 @@ It continually outputs any changes that occur to the topology.
 
 Example Usage
 -------------
+
 Introspect and display whats going on inside the system::
+    
     MyComplexSystem().activate()
     
     pipeline( Introspector(),
@@ -42,8 +44,8 @@ Introspect and display whats going on inside the system::
 
 
 
-How does it work?
------------------
+More detail
+-----------
 
 Once activated, this component introspects the current local topology of an Axon
 system.
@@ -70,25 +72,30 @@ Axon system, from one component to another.
 This topology change data is output as string containing one or more lines. It
 is output through the "outbox" outbox. Each line may be one of the following::
 
-* "DEL ALL\n"
+* "DEL ALL"
+
   - the first thing sent immediately after activation - to ensure that
     the receiver of this data understand that we are starting from nothing
 
-* "ADD NODE <id> <name> randompos component\n"
-  "ADD NODE <id> <name> randompos inbox\n"
-  "ADD NODE <id> <name> randompos outbox\n"
+* "ADD NODE <id> <name> randompos component"
+* "ADD NODE <id> <name> randompos inbox"
+* "ADD NODE <id> <name> randompos outbox"
+
   - an instruction to add a node to the topology, representing a component,
     inbox or outbox. <id> is a unique identifier. <name> is a 'friendly'
     textual label for the node.
 
 * "DEL NODE <id>"
+
   - an instruction to delete a node, specified by its unique id
     
 * "ADD LINK <id1> <id2>"
+
   - an instruction to add a link between the two identified nodes. The link is
     deemed to be directional, from <id1> to <id2>
 
 * "DEL LINK <id1> <id2>"
+
   - an instruction to delete any link between the two identified nodes. Again,
     the directionality is from <id1> to <id2>.
 
@@ -101,6 +108,25 @@ This component ignores anything arriving at its "inbox" inbox.
 
 If a shutdownMicroprocess message is received on the "control" inbox, it is sent
 on to the "signal" outbox and the component will terminate.
+
+
+
+How does it work?
+-----------------
+
+Every execution timeslice, Introspector queries its scheduler to obtain a list
+of all components. It then queries the postoffice in each component to build a
+picture of all linkages between components. It also builds a list of all inboxes
+and outboxes on each component.
+
+This is mapped to a list of nodes and linkages. Nodes being components and
+postboxes; and linkages being what postboxes belong to what components, and what
+postboxes are linked to what postboxes.
+
+This is compared against the nodes and linkages from the previous cycle of
+processing to determine what has changed. The changes are then output as a 
+sequence of "ADD NODE", "DEL NODE", "ADD LINK" and "DEL LINK" commands.
+
 """
 
 
