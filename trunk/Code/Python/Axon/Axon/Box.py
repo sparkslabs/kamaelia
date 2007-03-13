@@ -27,9 +27,18 @@ Axon postboxes
 The objects used to implement inboxes and outboxes. They store and handle
 linkages and delivery of messages from outbox to inbox.
 
-NOTE: Developers writing components should not interact with classes or methods
-in this module directly. They provide services used by the rest of Axon to
-implement inboxes, outboxes and linkages.
+THIS IS AN AXON INTERNAL! If you are writing components you do not need to
+understand this.
+
+Developers wishing to understand how Axon is implemented should read on with
+interest!
+
+
+
+How is this used in Axon?
+-------------------------
+
+Components create postboxes and use them as their inboxes and outboxes.
 
 
 
