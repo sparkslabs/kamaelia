@@ -19,16 +19,77 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""Kamaelia Concurrency Component Framework.
+"""\
+================
+Axon postoffices
+================
 
-POSTOFFICE
+A postoffice object looks after linkages. It can create and destroy them and
+keeps records of what ones currently exist. It hands out linkage objects that
+can be used as handles to later unlink (remove) the linkage.
 
-A post office creates and destroys linkages and looks after them for the duration
-of their existence. It hands out linkage objects that can be used as handles
-to layer deregister (remove) the linkage.
+THIS IS AN AXON INTERNAL! If you are writing components you do not need to
+understand this.
 
+Developers wishing to understand how Axon is implemented should read on with
+interest!
+
+
+
+How is this used in Axon?
+-------------------------
+
+Every component has its own postoffice. The component's link() and unlink()
+methods instruct the post office to create and remove linkages.
+
+When a component terminates, it asks its post office to remove any outstanding
+linkages.
+
+
+
+Example usage
+-------------
+
+Creating a link from an inbox to an outbox; a passthrough link from an inbox
+to another inbox; and a passthrough link from an outbox to another outbox::
+    
+    po = postoffice()
+    c0 = component()
+    c1 = component()
+    c2 = component()
+    c3 = component()
+
+    link1 = po.link((c1,"outbox"), (c2,"inbox"))
+    link2 = po.link((c2,"inbox"), (c3,"inbox"), passthrough=1)
+    link3 = po.link((c0,"outbox"), (c1,"outbox"), passthrough=2)
+
+Removing one of the linkages; then all linkages involving component c3; then all
+the rest::
+    
+    po.unlink(thelinkage=link3)
+    
+    po.unlink(thecomponent=c3)
+    
+    po.unlinkAll()
+
+
+
+More detail
+-----------
+
+A postoffice object keeps creates and destroys objects and keeps a record of
+which ones currently exist.
+
+The linkage object returned when a linkage is created serves only as a handle.
+It does not form any operation part of the linkage.
+
+Multiple postoffices can (in fact, will) exist in an Axon system. Each looks
+after its own collection of linkages. A linkage created at one postoffice will
+*not* be known to other postoffice objects.
 
 """
+
+
 import time
 
 from util import removeAll
@@ -60,12 +121,21 @@ class postoffice(object):
 
 
    def __str__(self):
-      "Provides a string representation of a postoffice, designed for debugging"
+      """Provides a string representation of a postoffice, designed for debugging"""
       result = "{{ POSTOFFICE: " + self.debugname
       result = result + "links " + self.linkages.__str__() + " }}"
       return result
 
    def link(self, source, sink, *optionalargs, **kwoptionalargs):
+       """\
+       link((component,boxname),(component,boxname),**otherargs) -> new linkage
+       
+       Creates a linkage from a named box on one component to a named box on
+       another. See linkage class for meanings of other arguments. A linkage
+       object is returned as a handle representing the linkage created.
+       
+       The linkage is registered with this postoffice.
+       """
        (sourcecomp, sourcebox) = source
        (sinkcomp, sinkbox) = sink
        thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,*optionalargs,**kwoptionalargs)
@@ -75,6 +145,8 @@ class postoffice(object):
 
    def unlink(self, thecomponent=None, thelinkage=None):
         """\
+        unlink([thecomponent][,thelinkage] -> destroys linkage(s).
+        
         Destroys the specified linkage, or linkages for the specified component.
         
         Note, it only destroys linkages registered in this postoffice.
