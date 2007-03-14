@@ -20,25 +20,20 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-==============
-Axon postboxes
-==============
+=====================================
+Axon postboxes - inboxes and outboxes
+=====================================
 
 The objects used to implement inboxes and outboxes. They store and handle
 linkages and delivery of messages from outbox to inbox.
 
-THIS IS AN AXON INTERNAL! If you are writing components you do not need to
-understand this.
+* Components create postboxes and use them as their inboxes and outboxes.
 
-Developers wishing to understand how Axon is implemented should read on with
-interest!
+*This is an Axon internal. If you are writing components you do not need to
+understand this as you will normally not use it directly.*
 
-
-
-How is this used in Axon?
--------------------------
-
-Components create postboxes and use them as their inboxes and outboxes.
+Developers wishing to use Axon in other ways or understand its implementation
+shoudl read on with interest!
 
 
 
@@ -57,7 +52,7 @@ Creating an outbox::
 
 Creating an inbox::
 
-    def inboxNofiy():
+    def inboxNotify():
         print "A new message has arrived at this inbox."
 
     myInbox = makeInbox(inboxNotify)
@@ -92,29 +87,37 @@ We can also remove one of those linkages::
 More detail
 -----------
 
-Internally inboxes and outboxes are implemented using these classes:
-
-* postbox
-* nullsink
-* realsink
+Call makeInbox() or makeOutbox() to make an inbox or outbox respectively.
 
 Both inboxes and outboxes are instances of the postbox class. postboxes provide
-a subset of the python list interface to let you add and remove items from them:
+a subset of the python list interface to let you add and remove items from it:
 
 * **postbox.append(data)** - ie. send a message
 * **postbox.pop(data)** - ie. collect a message
 * **postbox.__len__()** - ie. len(myPostbox)
 
+
+Inboxes
+~~~~~~~
+
 An inbox is a postbox with storage. Calling append() will put a message into
 that inbox. Calling len() will report the number of items in the inbox, and
 pop() will enable you to take items out.
+
+Inboxes can be size limited. If it becomes full then trying to append() will
+raise an Axon.noSpaceInBox exception.
+
+
+Outboxes
+~~~~~~~~
 
 An outbox is a postbox with no storage. Calling append() will silently discard
 the message. len() will report the box as containing zero items; and calling
 pop() will, as expected, raise an IndexError exception.
 
-Inboxes can be size limited. If it becomes full then trying to append() will
-raise an Axon.noSpaceInBox exception.
+
+Linking them together
+~~~~~~~~~~~~~~~~~~~~~
 
 Boxes can be wired together, so that posting a message to one actually results
 in the message appearing in another. Axon does this when you make a link between
@@ -145,6 +148,7 @@ will be lost!
 When a box is wired to another, it diverts calls to append() to the final
 destination instead of its own local storage; so A,B,C,D and E can be inboxes
 or outboxes - it doesn't matter.
+
 
 
 
