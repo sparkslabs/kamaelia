@@ -19,9 +19,10 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""Kamaelia Concurrency Component Framework.
-
-LINKAGES
+"""\
+========
+Linkages
+========
 
 Components only have input & output boxes. For data to get from a producer
 (eg a file reader) to a consumer (eg an encryption component) then the output
@@ -83,18 +84,22 @@ class linkage(AxonObject):
            self.getSinkbox().setSize(pipewidth)
  
     def sourcePair(self):
+        """Returns (component,boxname) tuple describing where this linkage goes from"""
         return self.source, self.sourcebox
  
     def sinkPair(self):
+        """Returns (component,boxname) tuple describing where this linkage goes to"""
         return self.sink, self.sinkbox
     
     def getSourcebox(self):
+        """Returns the box object that this linkage goes from."""
         if self.passthrough==1:
             return self.source.inboxes[self.sourcebox]
         else:
             return self.source.outboxes[self.sourcebox]
         
     def getSinkbox(self):
+        """Returns the box object that this linkage goes to."""
         if self.passthrough==2:
             return self.sink.outboxes[self.sinkbox]
         else:
@@ -104,10 +109,16 @@ class linkage(AxonObject):
         return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"
 
     def setSynchronous(self, pipewidth = None):
+        # should this be deprecated?
         self.getSinkbox().setSize(pipewidth)
         return self.getSinkbox().getSize()
 
     def setShowTransit(self, showtransit, tag):
+        """\
+        Set showTransit to True to cause debugging output whenever a message is
+        delivered along this linkage. The tag can be anything you want to
+        identify this occurrence.
+        """
         self.getSinkbox().setShowTransit(showtransit, tag)
 
 
