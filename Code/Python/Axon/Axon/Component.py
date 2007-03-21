@@ -19,104 +19,311 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""Kamaelia Concurrency Component Framework.
+"""\
+=====================================
+Components - the basic building block
+=====================================
 
-COMPONENTS
+A component is a microprocess with a microthread of control and input/output
+queues (inboxes and outboxes) connected by linkages to other components. Ie. it
+has code that runs whilst the component is active, and mechanisms for sending
+and receiving data to and from other components.
 
-A component is a microprocess with a microthread of control, input/output
-queues (inboxes/ outboxes) connected by linkages to other components, with
-postmen taking messages from output queues, passing them along linkages
-to inboxes.
+* A component is based on a microprocess - giving it its thread of execution.
 
-A microprocess is a class that supports parallel execution using microthreads.
+There are other variants on the basic component:
+    
+* Axon.AdaptiveCommsComponent.adaptivecommscomponent
+* Axon.ThreadedComponent.threadedcomponent
+* Axon.ThreadedComponent.threadedadaptivecommscomponent
 
-A microthread takes more explanation is a thread of control resulting from
-a function of the following form::
+If your component needs to block - eg. wait on a system call; then make it a
+'threaded' component. If it needs to change what inboxes or outboxes it has at
+runtime, then make it an 'adaptive' component.
 
-   def foo():
-      yield 1
-      while 1:
-         print "this"
-         yield 1
-         print "that"
 
-'bla = foo()' results in bla containing an intelligent function representing the
-thread of control *inside* the function - in this case inside the while loop - that
-remembers where the program counter was when control was yielded back
-to the caller. Repeated calls to 'bla' continue where you left off.
 
-First call to 'bla()' & you get "this" printed. Next time you get "that" then "this"
-printed (when you go back round the loop). The time after that, you get "that"
-then "this" printed, and so on.
+The basics of writing a component
+---------------------------------
 
-If you have 10 calls to 'foo()' you end up with 10 function calls that remember
-where they were in 'foo()', which run for a bit and then return control back to the
-caller. If you repeatedly call all of these function calls, you essentially end up
-with 'foo()' running 10 times in parallel. It's these special "position remembering"
-functions that get termed microthreads.
+Here's a simple example::
 
-Clearly in order to have a microthread, you have to have a piece of code
-capable of being called in this manner - ie it yields control back to it's caller
-periodically  - this is a what a microprocess in this context. An object that has
-a "special method" that can be treated in this manner.
+    class MyComponent(Axon.Component.component):
 
-A component puts a layer of wrapper on top of the microprocess, which adds
-in input & output queues (inboxes/outboxes). To make life easier, a component
-has some wrappers around the "special function" to make user code less
-obfuscated. The life cycle for a component runs as follows::
+        Inboxes = { "inbox"   : "Send the FOO objects to here",
+                    "control" : "NOT USED",
+                  }
+        Outboxes = { "outbox" : "Emits BAA objects from here",
+                     "signal" : "NOT USED",
+                   }
 
-myComponent = FooComponent()   # Calls Foo.__init__() constructor,
-                              # which must call super class constructor
+        def main(self):
+            while 1:
+                if self.dataReady("inbox"):
+                    msg = self.recv("inbox")
+                    result = ... do something to msg ...
+                    self.send(result, "outbox")
 
-'myComponent' gets activated.
+                yield 1
 
-When 'myComponent' is activated the following logic happens for the
-runtime of 'myComponent' ::
 
-   def runComponent(someComponent):
-      result = someComponent.initialiseComponent()
-      if result: yield result
-      result = 1
-      while result:
-         result = someComponent.mainBody()
-         if result: yield result
-      someComponent.closeDownComponent
-      yield result
-      # Component ceases running
+Or, more specifically:
 
-Dummy methods for the methods listed here are provided, so missing these
-out won't result in broken code. The upshot is a user component looks like this::
+1. **Subclass the component class**. Don't forget to call the superclass
+   initializer if you write your own __init__ method::
 
-   class myComponent(component):
-      count = 0
-      def __init__(self,somearg):
-         self.__class__.count = self.__class__.count + 1
-         self.somearg = somearg
-         self.Component() # !!!! Must happen if this method exists
+        class MyComponent(Axon.Component.component):
 
-      def initialiseComponent(self):
-         print "We can perform pre-loop initialisation here!"
-         print "If we created a new component here, we'd have"
-         print "     return newComponent[theComponent]"
-         print " as the last line of this function"
-         return 1
+            def __init__(self, myArgument, ...):
+                super(MyComponent, self).__init__()
+                ...
 
-      def mainLoop(self):
-         print "We're now in the main loop"
-         print "If we wanted to exit the loop, we return a false value"
-         print "at the end of this function"
-         print "If we want to continue round, we return a true, non-None,"
-         print "value. This component is set to run & run..."
-         return 1
+2. **Declare any inboxes or outboxes you expect it to have** - do this as
+   static members of the class called "Inbox" and "Outbox". They should be
+   dictionaries where the key is the box name and the value serves as documentation
+   describing what the box is for::
+
+        Inboxes = { "inbox"   : "Send the FOO objects to here",
+                    "control" : "NOT USED",
+                  }
+        Outboxes = { "outbox" : "Emits BAA objects from here",
+                     "signal" : "NOT USED",
+                   }
+
+   You can also do this as lists, but doing it as a dictionary with documentation
+   values is much more useful to people wanting to use your component.
+
+   If you don't specify any then you get the default "inbox" and "control"
+   inboxes and "outbox" and "signal" outboxes.
+
+3. **Write the main() method** - it must be a generator - namely just like an
+   ordinary method or function, but with 'yield' statements regularly
+   interspersed through it. This is the thread of execution in the component -
+   just use yield statements regularly so other components get time to execute.
+
+   If you need to know more, these might help you:
+   * `A tutorial on "How to write components" <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1113495151>`_
+   * `the Mini Axon tutorial <http://kamaelia.sourceforge.net/MiniAxon/>`_
+   * the Axon.Microprocess.microprocess class
+
+
+   
+Running a component
+-------------------
+
+Once you have written your component class; simply create instances and activate
+them; then start the scheduler to begin execution::
+
+    x = MyComponent()
+    y = MyComponent()
+    z = AnotherComponent()
+    x.activate()
+    y.activate()
+    z.activate()
+
+    scheduler.run.runThreads()
+
+If the scheduler is already running, then simply activating a component will
+start it executing.
+
+
+
+Communicating with other components
+-----------------------------------
+
+Components have inboxes and outboxes. The main() thread of execution in a
+component communicates with others by picking up messages that arrive in its
+inboxes and sending out messages to its outboxes. For example here is a simple
+component that echoes anything it receives to the console and also sends it on::
+
+    if self.dataReady("inbox"):
+        msg = self.recv("inbox")
+        print str(msg)
+        self.send(msg,"outbox")
+
+    yield 1
+
+Use the dataReady() method to find out if there is (one or more items of) data
+waiting at the inbox you name. recv() lets you collect a message from an inbox.
+Use the send() method to send a message to the outbox you name. There is also an
+anyReady() method that will tell you if *any* inbox has data waiting in it.
+
+A message gets from one component's outbox to another one's inbox if there is a
+linkage between them (going from the outbox to the inbox). A component can
+create and destroy linkages by using the link() and unlink() methods.
+For example::
+
+    src = RateControlledFileReader("myTextFile",readmode="lines")
+    dst = ConsoleEchoer()
+
+    lnk = self.link( (src,"outbox"), (dst,"inbox") )
+
+    self.addChildren(src,dst)    # we will be woken if they terminate
+    src.activate()
+    dst.activate()
+
+    while not dst._isStopped() and not src._isStopped():
+        self.pause()
+        yield 1
+
+    self.unlink(thelinkage = lnk)
+    self.removeChild(src)
+    self.removeChild(dst)
+    
+
+
+
+Child components
+----------------
+
+Component may sometimes create and activate other components. They can be
+adopted as children::
+
+    newComponent = FooComponent()
+    self.addChildren(newComponent)
+    newComponent.activate()
+
+Making a component your child means that::
+
+* you will be woken (if asleep) when your child terminates
+* the removeChild() method provides a convenient way to make sure any linkages
+  you have made involving that child are destroyed.
+* calling childComponents() lists all children you currently have
+
+Whether another component is your child or not, you can tell if it has
+terminated yet by calling its _isStopped() method.
+
+
+
+Going to sleep (pausing)
+------------------------
+
+When a component has nothing to do it can pause. This means it will not be
+executed again until it is woken up. Pausing is a good thing since it
+relinquishes cpu time for other parts of the system instead of just wasting it.
+
+**When would you want to pause?** - usually when there is nothing left waiting
+in any of your inboxes and there is nothing else for your component to do::
+
+    class Echoer(Axon.Component.component):
+
+        def main(self):
+            while 1:
+                if self.dataReady("inbox"):
+                    msg = self.recv("inbox")
+                    print str(msg)
+                    self.send(msg,"outbox")
+
+                if not self.anyReady():
+                    self.pause()
+
+                yield 1
+
+Calling the pause() method means that *at the next yield statement* your
+component will be put to sleep. It doesn't happen as soon as you call pause() -
+only when execution reaches the next ``yield``.
+
+**What will wake up a paused component?** - any of the following::
+
+* a message arriving at any inbox (even one with messages already waiting in it)
+* a message being collected from an inbox that is linked to one of our outboxes
+* a child component terminating
+
+Your component *cannot* wake itself up - only the actions of other components
+can cause it to be woken. Why? You try writing some code that stops executing
+(pauses) yet can issue a method call to ask to be woken! :-)
+
+
+
+Old style main thread
+---------------------
+
+Components also currently support an 'old' style for writing their main thread
+of execution. 
+
+**This way of writing components is likely to be deprecated in the near future.
+We suggest you write a main() method as a generator instead.**
+
+To do old-style; instead of writing a generator you write 3 functions - one for
+initialisation, main execution and termination. The thread of execution for the
+component is therefore effectively this::
+
+    self.initialiseComponent()
+    
+    while 1:
+        result = self.mainBody()
+        if not result:
+            break
+    
+    self.closeDownComponent()
+
+initialiseComponent() is called once when the component first starts to
+execute.
+
+
+mainLoop() is called every execution cycle whilst it returns a non zero
+value. If it returns a zero value then the component starts to shut down.
+
+closeDownComponent() is called when the component is about to shut down.
+
+A simple echo component might look like this::
+
+    class EchoComponent(Axon.Component.component):
+
+        def initialiseComponent(self):
+            # We can perform pre-loop initialisation here!
+            # In this case there is nothing really to do
+            return 1
+
+        def mainBody(self):
+            # We're now in the main loop
+            if self.dataReady("inbox"):
+                msg = self.recv("inbox")
+                print msg
+                self.send(msg,"outbox")
+
+            if not self.anyReady():
+                self.pause()
+
+            # If we wanted to exit the loop, we return a false value
+            # at the end of this function
+            # If we want to continue round, we return a true, non-None,
+            # value. This component is set to run & run...
+            return 1
 
       def closeDownComponent(self):
-         print "We can't get here since mainLoop above always returns true"
-         print "If it returned false however, we would get sent here for"
-         print "shutdown code."
-         print "After executing this, the component stops execution"
+            # We can't get here since mainLoop above always returns true
+            # If it returned false however, we would get sent here for
+            # shutdown code.
+            # After executing this, the component stops execution
+            return
 
-This creates a component class which has the default input/output boxes
-of "inbox" and "outbox".
+
+
+Internal Implementation
+-----------------------
+
+Component is a subclass of microprocess (from which it inherits the ability to
+have a thread of execution). It includes its own postoffice object for creating
+and destroying linkages. It has a collection of inboxes and outboxes.
+ 
+Attributes:
+
+* **Inboxes** and **Outboxes** - static members defining the list of names for
+  inboxes and outboxes a component should be given when it is created.
+          
+* **inboxes** and **outboxes** - the actual collections of inboxes and outboxes
+  that are set up when the component is initialised. Implemented as dictionaries
+  mapping names to the postbox objects.
+
+* **postoffice** - a postoffice object, used to create, destroy and manage
+  linkages.
+  
+* **children** - list of components registered as children of this component.
+
+* **_callOnCloseDown** - list of callback functions to be called when this
+  component terminates. Used to notify parents of children that their child has
+  terminated.
 
 """
 import time
@@ -134,66 +341,55 @@ from Ipc import *
 
 from Box import makeInbox,makeOutbox
 
-# Component - a microprocess with a bunch of input/output queues.
-#
-# It's only communication with the outside world should be through these
-# in/out queues, except for a minority of adaptor components that interact
-# with the outside world. (Think stdin/stout/stderr)
-#
-# All components you create should subclass the component class. At present
-# you should be doing subclassing directly in most cases. After performing
-# local component initialisation in your   '__init__' function, you should then
-# call your super class's (component's) '__init__' constructor to ensure that
-# the component is correctly configured. ie do this::
-#
-#    self.component()
-#
-# In order for your component to become active, you can either::
-#
-#    foo = myComponent()
-#    foo.activate()
-#
-# If the scheduler isn't already running. If the scheduler is running, then
-# you are creating a component from inside a component. In which case
-# at the end of your 'mainBody()' function you need to return the new component
-# in a message to the scheduler via::
-#
-#    return (newComponent([foo]);
-#
-# Which will then handle activation of the component.
-#
-# Life cycle of a component:
-#
-# 1. First your '__init__' method is called - this should set up the component,
-#     but not actually do any work, other than pure initialisation. (eg read in
-#     a file name from the arguments and store it locally, don't open it at that
-#     point)
-#
-# 2. Your object is then activated at some point. This provides you with a
-#     thread of control which you have to hand back. When your object is
-#     activated and has a thread of control, you can perform some initialisation,
-#     since the method 'initialiseComponent' is then called.
-#
-# 3. Your object goes into the main loop - your 'mainBody' function forms
-#     the body of this loop. If you return a 'newComponent' value, you can
-#     activate new components you create. If you return a false value (eg None),
-#     then your component will exit this mainloop and go into a closedown state.
-#
-# 4. Your 'closeDownComponent' method is called next if it exists.
-#
+
 
 class component(microprocess):
+   """\
+   Base class for an Axon component. Subclass to make your own.
+
+   A simple example::
+
+      class IncrementByN(Axon.Component.component):
+
+          Inboxes = { "inbox" : "Send numbers here",
+                      "control" : "NOT USED",
+                    }
+          Outboxes = { "outbox" : "Incremented numbers come out here",
+                       "signal" : "NOT USED",
+                     }
+
+          def __init__(self, N):
+              super(IncrementByN,self).__init__()
+              self.n = N
+
+          def main(self):
+              while 1:
+                  while self.dataReady("inbox"):
+                      value = self.recv("inbox")
+                      value = value + self.n
+                      self.send(value,"outbox")
+                      
+                  if not self.anyReady():
+                      self.pause()
+                      
+                  yield 1
+   """
+          
    Inboxes  = {"inbox" : "Default inbox for bulk data. Used in a pipeline much like stdin",
                "control" : "Secondary inbox often used for signals. The closest analogy is unix signals"
               }
+              
    Outboxes = {"outbox": "Default data out outbox, used in a pipeline much like stdout",
                "signal": "The default signal based outbox - kinda like stderr, but more for sending singal type signals",
-   }
+              }
+   
    Usescomponents=[]
 
    def __init__(self):
-      """You want to overide this method locally. You MUST call this superconstructor for
-      things to work however. The way you do this super(YourClass,self).__init__()
+      """You want to overide this method locally.
+
+      You MUST remember to call the superconstructor for things to work however.
+      The way you do this is: super(YourClass,self).__init__()
       """
       super(component, self).__init__()
       self.inboxes = dict()
@@ -219,7 +415,7 @@ class component(microprocess):
       return result
 
    def __addChild(self, child):
-      """'C.__addChild(component)' -
+      """\
       Register component as a child.
 
       This takes a child component, and adds it to the children list of this
@@ -244,38 +440,43 @@ class component(microprocess):
           raise e
 
    def addChildren(self,*children):
-      """'C.addChildren(list,of,components)' -
-      Register the components as children/subcomponents
-      This takes a list of children components and adds them to the children list of this
-      component. This is done by looping of the list and adding each one individually
-      by calling addChild. addChild has a number of effects internally described above."""
+      """\
+      Register the specified component(s) as children of this component
+
+      This component will be woken if any of its children terminate.
+
+      Note that any children still need to be activated!
+      """
       for child in children:
          self.__addChild(child)
 
    def removeChild(self, child):
-      """'C.removeChild(component)' -
+      """\
       Deregister component as a child.
 
       Removes the child component, and deregisters it from notifying us when it
-      terminates. You probably want to do this when you enter a closedown state
-      of some kind for either your component, or the child component.
+      terminates. Also removes any linkages this component has made that
+      involve this child.
 
-      You will want to call this function when shutting down child components of
-      your component.
+      You probably want to do this when you enter a closedown state
+      of some kind for either your component, or the child component.
       """
       removeAll(self.children, child)
       removeAll(child._callOnCloseDown, self.unpause)
       self.postoffice.unlink(thecomponent=child)
 
    def childComponents(self):
-      """'C.childComponents()' -
-      Simple accessor method, returns list of child components"""
+      """\
+      Returns list of child components
+      """
       return self.children[:]
 
    def anyReady(self):
-       """'C.anyReady()' -
-       test, returns true if any inbox has any data ready.
+       """\
+       Returns true if *any* inbox has any data waiting in it.
 
+       Used by a component to check an inbox for ready data.
+      
        You are unlikely to want to override this method.
        """
        for box in self.inboxes:
@@ -284,12 +485,13 @@ class component(microprocess):
        return False
 
    def dataReady(self,boxname="inbox"):
-      """'C.dataReady("boxname")' -
-      test, returns true if data is available in the requested inbox.
+      """\
+      Returns true if data is available in the requested inbox.
 
       Used by a component to check an inbox for ready data.
-      You will want to call this method to periodically check whether you've been
-      sent any messages to deal with!
+      
+      Call this method to periodically check whether you've been sent any
+      messages to deal with!
 
       You are unlikely to want to override this method.
       """
@@ -297,11 +499,17 @@ class component(microprocess):
 
 
    def link(self, source,sink,*optionalargs, **kwoptionalargs):
-      """'C.link(source,sink, ...)' -
-      create linkage between a source and sink.
+      """\
+      Creates a linkage from one inbox/outbox to another.
 
-      source is a tuple: (source_component, source_box)
-      sink is a tuple: (sink_component, sink_box)
+      -- source  - a tuple (component, boxname) of where the link should start from
+      -- sink    - a tuple (component, boxname) of where the link should go to
+
+      Other optional arguments:
+
+      - passthrough=0  - (the default) link goes from an outbox to an inbox
+      - passthrough=1  - the link goes from an inbox to another inbox
+      - passthrough=2  - the link goes from an outbox to another outbox
 
       See Axon.Postoffice.link(...) for more information.
       """
@@ -310,11 +518,22 @@ class component(microprocess):
 
 
    def unlink(self, thecomponent=None, thelinkage=None):
+       """\
+       Destroys all linkages to/from the specified component or destroys the
+       specific linkage specified.
+
+       Only destroys linkage(s) that were created *by* this component itself.
+       
+       Keyword arguments:
+       
+       - thecomponent -- None or a component object
+       - thelinakge   -- None or the linkage to remove
+       """
        return self.postoffice.unlink(thecomponent,thelinkage)
 
 
    def recv(self,boxname="inbox"):
-      """'C.recv("boxname")' -
+      """\
       returns the first piece of data in the requested inbox.
 
       Used by a component to recieve a message from the outside world.
@@ -326,11 +545,11 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      ### NEW
       return self.inboxes[boxname].pop(0)
 
+   
    def send(self,message, boxname="outbox"):
-      """'C.send(message, "boxname")' -
+      """\
       appends message to the requested outbox.
 
       Used by a component to send a message to the outside world.
@@ -344,14 +563,21 @@ class component(microprocess):
 
 
    def main(self):
-      """'C.main()' **You normally will not want to override or call this method**
-      This is the function that gets called by microprocess. If you override
-      this do so with care. If you don't do it properly, your initialiseComponent,
-      mainBody & closeDownComponent parts will not be called. Ideally you
-      should not NEED to override this method. You also should not call this
-      method directly since activate does this for you in order to create a
-      microthread of control.
+      """\
+      Override this method, writing your own main thread of control as a generator.
+      When the component is activated and the scheduler is running, this what
+      gets executed.
 
+      Write it as a python generator with regular yield statements returning a
+      non zero value.
+
+      If you do not override it, then a default main method exists instead that
+      will:
+
+      1. Call self.initialiseComponent()
+      2. Loop forever calling self.mainBody() yielding the return value each time
+         until mainBody() returns a False/zero result.
+      3. Call self.closeDownComponent()
       """
       result = self.initialiseComponent()
       if not result:
@@ -372,7 +598,14 @@ class component(microprocess):
    def closeDownComponent(self):
       """Stub method. **This method is designed to be overridden.** """
       return 1
+   
    def _closeDownMicroprocess(self):
+      """\
+      Overrides original in microprocess class.
+      
+      Ensures callbacks are deregistered, and all linkages created by
+      this component are destroyed.
+      """
       for callback in self._callOnCloseDown:
           callback()
       self.postoffice.unlinkAll()
