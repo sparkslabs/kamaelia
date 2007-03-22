@@ -261,7 +261,7 @@ initialiseComponent() is called once when the component first starts to
 execute.
 
 
-mainLoop() is called every execution cycle whilst it returns a non zero
+mainBody() is called every execution cycle whilst it returns a non zero
 value. If it returns a zero value then the component starts to shut down.
 
 closeDownComponent() is called when the component is about to shut down.
