@@ -117,8 +117,8 @@ microprocesses.
 Every yield statement in your generator hands back control, allowing Axon
 to schedule other microprocesses that may be running.
 
-You can yield any value you like; however if it evaluates to false (eg. False,
-0, [], None, etc), it is taken as meaning that your generator wishes to stop.
+You can yield any value you like except zero or False (which are reserved for
+future use).
 
 When a microprocess finishes, the scheduler calls its _closeDownMicroprocess()
 method. You can either override this in your subclass, or specify a
@@ -170,10 +170,14 @@ be viewed to have 2 different life cycles - that which an external user
 sees, and that which the microprocess sees.
 
 In terms of runtime life cycle viewed externally, a microprocess is created,
-activated, and then has its next method repeatedly called until a false
-value is returned, at which point the microprocess is deleted. In terms
+activated, and then has its next method repeatedly called until a StopIteration
+exception is raised, at which point the microprocess is deleted. In terms
 of a more traditional approach the next call approximates to a timeslice
 being allocated to a process/thread.
+
+The value returned by next() should be non-zero (reserved for future use). The
+scheduler calling next() may also recognise some specific values - see the
+Axon.Scheduler.scheduler class for more information.
 
 The runtime life cycle from the view of the microprocess stems from the
 fact that a generator wraps a thread of control, by effectively treating
