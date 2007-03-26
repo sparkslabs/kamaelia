@@ -61,6 +61,11 @@ Creating an inbox that is limited to holding 10 items::
 
     mySizeLimitedInbox = makeInbox(inboxNotify, size=10)
 
+Alternative syntax to do the same::
+
+    mySizeLimitedInbox = makeInbox(inboxNotify)
+    mySizeLimitedInbox.setSize(10)
+
 
 Adding/Removing Linkages
 ~~~~~~~~~~~~~~~~~~~~~~~~
