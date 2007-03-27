@@ -183,11 +183,13 @@ adopted as children::
     self.addChildren(newComponent)
     newComponent.activate()
 
-Making a component your child means that::
+Making a component your child means that:
 
 * you will be woken (if asleep) when your child terminates
+
 * the removeChild() method provides a convenient way to make sure any linkages
   you have made involving that child are destroyed.
+
 * calling childComponents() lists all children you currently have
 
 Whether another component is your child or not, you can tell if it has
@@ -223,7 +225,7 @@ Calling the pause() method means that *at the next yield statement* your
 component will be put to sleep. It doesn't happen as soon as you call pause() -
 only when execution reaches the next ``yield``.
 
-**What will wake up a paused component?** - any of the following::
+**What will wake up a paused component?** - any of the following:
 
 * a message arriving at any inbox (even one with messages already waiting in it)
 * a message being collected from an inbox that is linked to one of our outboxes

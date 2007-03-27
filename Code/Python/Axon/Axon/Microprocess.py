@@ -266,22 +266,23 @@ Internal flags/state
 * **id** and **name** - unique identifiers. No other Axon entity will have the
   same name or id.
 
-* **init** - a flag indicating if the microprocess has been correctly initialised.
+* **init** - a flag indicating if the microprocess has been correctly
+  initialised.
 
 * **stopped** - Indicates that the microprocess has run and since stopped.
 
-* **__thread** - the generator object that gets executed whenever next() is called.
-                 Is actually an internally created generator that wraps the one
-                 created by the main() method.
+* **__thread** - the generator object that gets executed whenever next() is
+  called. Is actually an internally created generator that wraps the one
+  created by the main() method.
 
 * **scheduler** - The scheduler that controls execution of this microprocess.
-                  When not yet activated a dummy scheduler (NullScheduler) is
-                  used instead.
+  When not yet activated a dummy scheduler (NullScheduler) is used instead.
 
-* **tracker** - The coordinating assistant tracker to be used by this microprocess.
+* **tracker** - The coordinating assistant tracker to be used by this
+  microprocess.
 
 * **debugger** - A local debugging object. (See the debug class docs for more
-                 detail)
+  detail)
 
 Note that the paused/awake state of a microprocess is something maintained and
 managed by the scheduler; not the microprocess itself.

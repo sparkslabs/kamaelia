@@ -586,20 +586,20 @@ class threadedcomponent(Component.component):
        return self.inqueues[boxname].get()
 
    def send(self,message, boxname="outbox"):
-      """\
-      appends message to the requested outbox.
+       """\
+       appends message to the requested outbox.
 
-      Used by the main() method to send a message to the outside world.
-      All comms goes via a named box/output queue
+       Used by the main() method to send a message to the outside world.
+       All comms goes via a named box/output queue
 
-      You will want to call this method to send messages.
-      
-      Raises Axon.AxonExceptions.noSpaceInBox if this outbox is linked to a
-      destination inbox that is full, or if your component is producing messages
-      faster than Axon can pass them on.
+       You will want to call this method to send messages.
+       
+       Raises Axon.AxonExceptions.noSpaceInBox if this outbox is linked to a
+       destination inbox that is full, or if your component is producing messages
+       faster than Axon can pass them on.
 
-      You are unlikely to want to override this method.
-      """
+       You are unlikely to want to override this method.
+       """
        try:
            self.outqueues[boxname].put_nowait(message)
            # wake up _localmain() so it can collect the message and send it on
