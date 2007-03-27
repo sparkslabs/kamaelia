@@ -101,7 +101,7 @@ can return any values it likes when it uses the ``yield`` statement. It is
 recommended to not yield zeros or other kinds of 'false' value as these are
 reserved for possible future special meaning.
 
-However, this scheduler does understand certain values that can be yielded::
+However, this scheduler does understand certain values that can be yielded:
 
 * **Axon.Ipc.newComponent** - a microprocess can yield this to ask the scheduler
   to activate a new component or microprocess::
@@ -128,11 +128,11 @@ However, this scheduler does understand certain values that can be yielded::
             while time.time() < t+1.0:
                 yield 1
 
-   This is a convenient way to modularise parts of your main() code. But there
-   is an important limitation with the current implementation:
+  This is a convenient way to modularise parts of your main() code. But there
+  is an important limitation with the current implementation:
 
-   * self.pause() will not cause the replacement generator to pause. (Where
-     'self' is the original microprocess - as in the example code above)
+  * self.pause() will not cause the replacement generator to pause. (Where
+    'self' is the original microprocess - as in the example code above)
 
 
 
