@@ -553,10 +553,13 @@ class component(microprocess):
       appends message to the requested outbox.
 
       Used by a component to send a message to the outside world.
-      All comms goes via a named box/output queue
+      All comms goes via a named box/output queue.
 
       You will want to call this method to send messages.
       
+      Raises Axon.AxonExceptions.noSpaceInBox if this outbox is linked to a
+      destination inbox that is full.
+
       You are unlikely to want to override this method.
       """
       self.outboxes[boxname].append(message)
