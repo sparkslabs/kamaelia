@@ -105,9 +105,9 @@ In addition, threadedadaptivecommscomponent also supports the extra methods in
 Axon.AdaptiveCommsComponent.adaptivecommscomponent:
                     
 * self.addInbox()
-* self.delInbox()
+* self.deleteInbox()
 * self.addOutbox()
-* self.delOutbox()
+* self.deleteOutbox()
 * *etc..*
 
 
@@ -267,8 +267,8 @@ propagate up to the separate thread, via the queue. The implementation of
 self.send() is designed to mimic the behaviour
 
 For other methods such as link(), unlink() and (in the case of
-threadedadaptivecommscomponent) addInbox(), delInbox(), addOutbox() and
-delOutbox(), the _localmain() microprocess also acts on the thread's behalf.
+threadedadaptivecommscomponent) addInbox(), deleteInbox(), addOutbox() and
+deleteOutbox(), the _localmain() microprocess also acts on the thread's behalf.
 The request to do something is sent to _localmain() through the thread safe
 queue self.threadtoaxonqueue. When the operation is complete, an acknowledgement
 is sent back via another queue self.axontothreadqueue::
@@ -300,6 +300,12 @@ responds with the return value.
 self.pause() is overridden and equivalent functionality reimplemented by
 blocking the thread on a threading.Event() object which can be signalled by
 _localmain() whenever the thread ought to wake up.
+
+
+The 'Adaptive' version does *not* ensure the resource tracking and retrieval
+methods thread safe. This is because it is assumed these will only be accessed
+internally by the component itself from within its separate thread. _localmain()
+does not touch these resources.
 
 
 XXX *TODO*: Thread shutdown - no true support for killing threads in python
@@ -670,39 +676,119 @@ class threadedcomponent(Component.component):
         else:
             return cmd(*argL,**argD)
 
+
+        
 class threadedadaptivecommscomponent(threadedcomponent, _AC):
-    def __init__(self,queuelengths=10):
-        threadedcomponent.__init__(self,queuelengths)
+    """\
+    threadedadaptivecommscomponent([queuelengths]) -> new threadedadaptivecommscomponent
+    
+    Base class for a version of an Axon adaptivecommscomponent that runs main()
+    in a separate thread (meaning it can, for example, block).
+    
+    Subclass to make your own.
+    
+    Internal queues buffer data between the thread and the Axon inboxes and
+    outboxes of the component. Set the default queue length at initialisation
+    (default=1000).
+    
+    Like an adaptivecommscomponent, inboxes and outboxes can be added and deleted
+    at runtime.
+    
+    A simple example::
+    
+        class IncrementByN(Axon.ThreadedComponent.threadedcomponent):
+    
+            Inboxes = { "inbox" : "Send numbers here",
+                        "control" : "NOT USED",
+                      }
+            Outboxes = { "outbox" : "Incremented numbers come out here",
+                        "signal" : "NOT USED",
+                       }
+    
+            def __init__(self, N):
+                super(IncrementByN,self).__init__()
+                self.n = N
+    
+            def main(self):
+                while 1:
+                    while self.dataReady("inbox"):
+                        value = self.recv("inbox")
+                        value = value + self.n
+                        self.send(value,"outbox")
+                        
+                    if not self.anyReady():
+                        self.pause()
+    """
+
+    def __init__(self,*argL,**argD):
+        threadedcomponent.__init__(self,*argL,**argD)
         _AC.__init__(self)
 
     def addInbox(self,*args):
+        """
+        Allocates a new inbox with name *based on* the name provided. If a box
+        with the suggested name already exists then a variant is used instead.
+    
+        Returns the name of the inbox added.
+        """
         return self._do_threadsafe(self._unsafe_addInbox, args, {})
     
     def deleteInbox(self,name):
+        """\
+        Deletes the named inbox. Any messages in it are lost.
+    
+        Try to ensure any linkages to involving this outbox have been destroyed -
+        not just ones created by this component, but by others too! Behaviour is
+        undefined if this is not the case, and should be avoided.
+        """
         return self._do_threadsafe(self._unsafe_deleteInbox, [name], {})
     
     def addOutbox(self,*args):
+        """\
+        Allocates a new outbox with name *based on* the name provided. If a box
+        with the suggested name already exists then a variant is used instead.
+    
+        Returns the name of the outbox added.
+        """
         return self._do_threadsafe(self._unsafe_addOutbox, args, {})
     
     def deleteOutbox(self,name):
+        """\
+        Deletes the named outbox.
+    
+        Try to ensure any linkages to involving this outbox have been destroyed -
+        not just ones created by this component, but by others too! Behaviour is
+        undefined if this is not the case, and should be avoided.
+        """
         return self._do_threadsafe(self._unsafe_deleteOutbox, [name], {})
         
     def _unsafe_addInbox(self,*args):
+        """\
+        Internal thread-unsafe code for adding an inbox.
+        """
+        # Use method from superclass to do it
         name = super(threadedadaptivecommscomponent,self).addInbox(*args)
+        # Also set up a corresponding queue to get data to the thread
         self.inqueues[name] = Queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteInbox(self,name):
+        # Use method from superclass to do it
         super(threadedadaptivecommscomponent,self).deleteInbox(name)
+        # Also remove the corresponding queue that gets data to the thread
         del self.inqueues[name]
     
     def _unsafe_addOutbox(self,*args):
+        # Use method from superclass to do it
         name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
+        # Also set up a corresponding queue to get data from the thread
         self.outqueues[name] = Queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteOutbox(self,name):
+        # Use method from superclass to do it
         super(threadedadaptivecommscomponent,self).deleteOutbox(name)
+        # Also remove the corresponding queue that gets data from the thread
         del self.outqueues[name]
 
 
