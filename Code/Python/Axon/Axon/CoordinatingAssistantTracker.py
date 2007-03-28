@@ -19,29 +19,133 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""Axon Component Framework.
+"""\
+===============================
 Co-ordinating Assistant Tracker
+===============================
 
 The co-ordinating assistant tracker is designed to allow components to
 register services and statistics they wish to make public to the rest of the
 system. Components can also query the co-ordinating assistant tracker to
 create linkages to specific services, and for specific global statistics.
 
+* A co-ordinating assistant tracker is shared between several/all components
+* Components can register an inbox as a service with a name
+* Components can retrieve a service by its name
+
+
+
+Accessing the Co-ordinating Assistant Tracker
+---------------------------------------------
+
+Co-ordinating assistant trackers are designed to work in a singleton manner;
+accessible via a local or class interface (though this is not enforced).
+
+The simplest way to obtain the global co-ordinating assistant tracker is via
+the getcat() class (static) method::
+    
+    theCAT = coordinatingassistanttracker.getcat()
+
+The first time this method is called, the co-ordinating assistant tracker is
+created. Subsequent calls, wherever they are made from, return that same
+instance.
+
+
+
+Services
+--------
+
+Components can register a named inbox on a component as a named service. This
+provides a way for a component to provide a service for other components - an
+inbox that another component can look up and create a linkage to.
+
+Registering a service is simple::
+
+    theComponent = MyComponentProvidingServiceOnItsInbox()
+    theComponent.activate()
+
+    theCAT = coordinatingassistanttracker.getcat()
+    theCAT.registerService("MY_SERVICE", theComponent, "inbox")
+
+Another component can then retrieve the service::
+
+    theCAT = coordinatingassistanttracker.getcat()
+    (comp, inboxname) = theCAT.retrieveService("MY_SERVICE")
+
+Because services are run by components - these by definition die and so also
+need to be de-registered::
+
+    theCAT = coordinatingassistanttracker.getcat()
+    theCAT.deRegisterService("MY_SERVICE")
+
+
+
+Tracking global statistics
+--------------------------
+
 Microprocesses can also use the co-ordinating assistant tracker to log/retrieve
-statistics/information. Co-ordinating assistant trackers are designed to work in
-a singleton manner accessible via a local or class interface.This singleton nature
-of the co-ordinatin assistant tracker is not enforced.
+statistics/information.
+
+Use the trackValue() method to initially start tracking a value under a given
+name::
+
+    value = ...
+
+    theCAT = coordinatingassistanttracker.getcat()
+    theCAT.trackValue("MY_VALUE", value)
+
+This can then be easily retrieved::
+
+    theCAT = coordinatingassistanttracker.getcat()
+    value= theCAT.retrieveValue("MY_VALUE")
+
+Call the updateValue() method (not the trackValue() method) to update the value
+being tracked::
+
+    newvalue = ...
+
+    theCAT = coordinatingassistanttracker.getcat()
+    theCAT.updateValue("MY_VALUE", newvalue)
+
+
+
+Hierarchy of co-ordinating assistant trackers
+---------------------------------------------
+
+Although at initialisation a parent co-ordinating assistant tracker can be
+specified; this is not currently used.
+
 """
 
 from idGen import strId
 #from Microprocess import microprocess
-from AxonExceptions import BadParentTracker, ServiceAlreadyExists, BadComponent, BadInbox, MultipleServiceDeletion, NamespaceClash, AccessToUndeclaredTrackedVariable
+from AxonExceptions import BadParentTracker
+from AxonExceptions import ServiceAlreadyExists
+from AxonExceptions import BadComponent
+from AxonExceptions import BadInbox
+from AxonExceptions import MultipleServiceDeletion
+from AxonExceptions import NamespaceClash
+from AxonExceptions import AccessToUndeclaredTrackedVariable
 
 
 #### class coordinatingassistanttracker(microprocess):
 class coordinatingassistanttracker(object):
+   """\
+   coordinatingassistanttracker([parent]) -> new coordinatingassistanttracker object.
+   
+   Co-ordinating assistant tracker object tracks values and
+   (component,inboxname) services under names.
+   
+   Keyword arguments:
+   
+   - parent  -- Optional. None, or a parent coordinatingassistanttracker object.
+   """
+   
    basecat = None
    def getcat(cls):
+      """\
+      Class method that returns a singleton coordinating assistant tracker (CAT).
+      """
       if not cls.basecat:
          cls.basecat = cls()
       return cls.basecat
@@ -63,14 +167,30 @@ class coordinatingassistanttracker(object):
          self._parent = None
 
    def informationItemsLogged(self):
+      """Returns list of names values are being tracked under."""
       return self._informationLogged.keys()
 
    def servicesRegistered(self):
-      """"Returns list of names of registered services"""
+      """Returns list of names of registered services"""
       return self._servicesRegistered.keys()
 
    def registerService(self, service, thecomponent, inbox):
-      "t.registerService('service',component,inbox) - Registers that a component is willing to offer a service over a specific inbox"
+      """\
+      Register a named inbox on a component as willing to offer a service with
+      the specified name.
+      
+      Keyword arguments:
+      
+      - service       -- the name for the service
+      - thecomponent  -- the component offering the service
+      - inbox         -- name of the inbox on the component
+      
+      Exceptions that may be raised:
+       
+      * Axon.AxonExceptions.ServiceAlreadyExists
+      * Axon.AxonExceptions.BadComponent
+      * Axon.AxonExceptions.BadInbox
+      """
       try:
          self._servicesRegistered[service] # We only add things if it doesn't exist
          raise ServiceAlreadyExists
@@ -84,14 +204,21 @@ class coordinatingassistanttracker(object):
             raise BadInbox(thecomponent, inbox)
 
    def deRegisterService(self, service):
-      """Services are run by components - these by definition die and need to be
-      de-registered"""
+      """\
+      Deregister a service that was previously registered.
+      
+      Raises Axon.AxonExceptions.MultipleServiceDeletion if the service is not/
+      no longer registered.
+      """
       try:
          del self._servicesRegistered[service]
       except KeyError:
          raise MultipleServiceDeletion
 
    def retrieveService(self,name):
+      """\
+      Retrieve the (component, inboxName) service with the specified name.
+      """
       service = self._servicesRegistered[name]
       return service
 #      try:
@@ -100,9 +227,14 @@ class coordinatingassistanttracker(object):
 #         raise AccessToUndeclaredTrackedVariable(name)
 
    def trackValue(self, name, value):
-      """Once we start tracking a value, we have it's value forever (for now). Adding
-      the same named value more than once causes a NamespaceClash to capture
-      problems between interacting components"""
+      """\
+      Track (record) the specified value under the specified name.
+      
+      Once we start tracking a value, we have it's value forever (for now).
+      Trying to track the same named value more than once causes an
+      Axon.AxonExceptions.NamespaceClash exception. This is done to capture
+      problems between interacting components
+      """
       try:
          self._informationLogged[name]
          raise NamespaceClash
@@ -110,6 +242,14 @@ class coordinatingassistanttracker(object):
          self._informationLogged[name]=value
 
    def updateValue(self,name, value):
+      """\
+      Update the value being tracked under the specified name with the new
+      value provided.
+      
+      Trying to update a value under a name that isn't yet being tracked results
+      in an Axon.AxonExceptions.AccessToUndeclaredTrackedVariable exception
+      being raised.
+      """
       try:
          self._informationLogged[name] # Forces failure if not being tracked
          self._informationLogged[name]=value
@@ -117,12 +257,20 @@ class coordinatingassistanttracker(object):
          raise AccessToUndeclaredTrackedVariable(name,value)
 
    def retrieveValue(self,name):
+      """\
+      Retrieve the value tracked (recorded) under the specified name.
+      
+      Trying to retrieve a value under a name that isn't yet being tracked
+      results in an Axon.AxonExceptions.AccessToUndeclaredTrackedVariable
+      exception being raised.
+      """
       try:
          return self._informationLogged[name]
       except KeyError:
          raise AccessToUndeclaredTrackedVariable(name)
 
    def main(self):
+      # redundant ... unless this class is modified to be a microprocess
       while 1:
          yield 1
 
