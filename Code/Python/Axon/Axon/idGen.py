@@ -19,6 +19,55 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+====================
+Unique ID generation
+====================
+
+The methods of the idGen class are used to generate unique IDs in various forms
+(numbers, strings, etc) which are used to give microprocesses and other Axon
+objects a unique identifier and name.
+
+* Every Axon.Microprocess.microprocess gets a unique ID
+* Axon.ThreadedComponent.threadedcomponent uses unique IDs to identify threads
+
+
+
+Generating a new unique ID
+--------------------------
+
+Do not use the idGen class defined in this module directly. Instead, use any
+of these module methods to obtain a unique ID:
+
+* **Axon.idGen.newId(thing)** - returns a unique identifier as a string based on
+  the class name of the object provided
+
+* **Axon.idGen.strId(thing)** - returns a unique identifier as a string based on
+  the class name of the object provided
+
+* **Axon.idGen.numId()** - returns a unique identifier as a number
+
+* **Axon.idGen.tupleId(thing)** - returns both the numeric and string versions
+  of a new unique id as a tuple (where the string version is based on the class
+  name of the object provided)
+
+Calling tupleId(thing) is *not* equivalent to calling numId() then strId(thing)
+because doing that would return two different id values! 
+
+Examples::
+
+    >>> x=Component.component()
+    >>> idGen.newId(x)
+    'Component.component_4'
+    >>> idGen.strId(x)
+    'Component.component_5'
+    >>> idGen.numId()
+    6
+    >>> idGen.tupleId(x)
+    (7, 'Component.component_7')
+
+"""
+
 
 import debug;
 debugger = debug.debug()
@@ -38,41 +87,56 @@ Debug = debugger.debug
 # tuple ids consists : '(the numerical id, the string id)'
 #
 class idGen(object):
-   "idGen() - idsequence generator"
+   """\
+   Unique ID creator.
+
+   Use numId(), strId(), and tupleId() methods to obtain unique IDs.
+   """
    lowestAllocatedId = 0
 
    def nextId(self):
-      """**INTERNAL** - 'IG.nextId()' - returns the next id,
-      incrementing the private class variable """
+      """\
+      **INTERNAL**
+
+      Returns the next unique id, incrementing the private class variable
+      """
       idGen.lowestAllocatedId = idGen.lowestAllocatedId +1
       return idGen.lowestAllocatedId
    next = nextId # pseudonym
 
    def idToString(self,thing,aNumId):
-      """**INTERNAL** - 'IG.idToString(thing,numId)' - Combines the
-      'str()' of the object's class with the id to form a string id"""
+      """\
+      **INTERNAL**
+       
+      Combines the 'str()' of the object's class with the id to form a string id
+      """
       # This next line takes <class '__main__.foo'>
       # and chops out the __main__.foo part
       r = str(thing.__class__)[8:][:-2] + "_" + str(aNumId)
       return r
 
    def numId(self):
-      """'IG.numId()' - Allocates & returns the next available id"""
+      """Allocates & returns the next available id"""
       result = self.nextId()
       assert Debug("idGen.numId", 1, "idGen.numId:", result)
       return result
 
    def strId(self,thing):
-      """'IG.strId(object)' - Allocates & returns the next available id
-      combined with the object's class name, in string form"""
+      """\
+      Allocates & returns the next available id combined with the object's
+      class name, in string form
+      """
       theId = self.nextId()
       strid = self.idToString(thing,theId)
       assert Debug("idGen.strId", 1, "idGen.strId:", strid)
       return strid
 
    def tupleId(self,thing):
-      """'IG.tupleId(thing)' -> (IG.numId(), IG.strId(thing)),
-      but with ids the same in num & str"""
+      """\
+      Allocates the next available id and returns it both as a tuple (num,str)
+      containing both the numeric version and a string version where it is
+      combined with the object's class name.
+      """
       theId = self.nextId()
       strId = self.idToString(thing,theId)
       assert Debug("idGen.tupleId", 1, "idGen.tupleId:", theId, strId)
