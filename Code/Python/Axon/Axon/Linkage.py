@@ -29,6 +29,9 @@ Components only have input & output boxes. For data to get from a producer
 of one component, the source component, must be linked to the input of
 another component, the sink component.
 
+* linkage objects are handles describing a linkage from one postbox to another
+* Axon.Postoffice.postoffice creates and destroys linkages
+
 All components have a postoffice object, this performs the creation and
 destruction of linkages. Ask it for a linkage between inboxes and outboxes and
 a linkage object is returned as a handle describing the linkage. When a message
