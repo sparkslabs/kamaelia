@@ -220,8 +220,8 @@ Communication between the thread and _localmain():
 * **threadtoaxonqueue** - thread safe queue for making requests to _localmain()
 * **axontothreadqueue** - thread safe queue for replies from _localmain()
 * **threadWakeUp** - thread safe event flag for waking up the thread if sleeping
-* **_threadId** - the thread ID of the thread
-* **_localThreadId** - the thread ID of _localmain()
+* **_threadId** - unique id that is given to the thread as its 'name'
+* **_localThreadId** - the thread id (name) of the thread _localmain() and the scheduler run in
 
 
 The relationship between _localmain() and the main() method (running in a
