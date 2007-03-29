@@ -25,9 +25,9 @@ Components - the basic building block
 =====================================
 
 A component is a microprocess with a microthread of control and input/output
-queues (inboxes and outboxes) connected by linkages to other components. Ie. it
-has code that runs whilst the component is active, and mechanisms for sending
-and receiving data to and from other components.
+queues (inboxes and outboxes) which can be connected by linkages to other
+components. Ie. it has code that runs whilst the component is active, and
+mechanisms for sending and receiving data to and from other components.
 
 * A component is based on a microprocess - giving it its thread of execution.
 
@@ -128,8 +128,8 @@ start it executing.
 
 
 
-Communicating with other components
------------------------------------
+Communicating with other components - creating linkages
+-------------------------------------------------------
 
 Components have inboxes and outboxes. The main() thread of execution in a
 component communicates with others by picking up messages that arrive in its
@@ -151,25 +151,42 @@ anyReady() method that will tell you if *any* inbox has data waiting in it.
 A message gets from one component's outbox to another one's inbox if there is a
 linkage between them (going from the outbox to the inbox). A component can
 create and destroy linkages by using the link() and unlink() methods.
-For example::
 
-    src = RateControlledFileReader("myTextFile",readmode="lines")
-    dst = ConsoleEchoer()
+For example, we could create a linkage from a component's outbox called "outbox"
+to a different component's inbox called "inbox"::
 
-    lnk = self.link( (src,"outbox"), (dst,"inbox") )
+    theLink = self.link( (self, "outbox"), (otherComponent, "inbox") )
 
-    self.addChildren(src,dst)    # we will be woken if they terminate
-    src.activate()
-    dst.activate()
+Using the handle that we were given, we can destroy that linkage later::
 
-    while not dst._isStopped() and not src._isStopped():
-        self.pause()
-        yield 1
+    self.unlink(theLinkage = theLink)
 
-    self.unlink(thelinkage = lnk)
-    self.removeChild(src)
-    self.removeChild(dst)
-    
+Linkage normally go from an outbox to an inbox - after all the whole idea is
+to get messages that one component sends to its own outbox to arrive at another
+component's inbox. However you can also create 'passthrough' linkages from an
+inbox to another inbox; or from an outbox to another outbox.
+
+This is particularly useful if you want to encapsulate a child component - hide
+it from view so other components only need to be wired up to you.
+
+For example, your component wants any data being sent to one of its inboxes to
+be forwarded automatically onto an inbox on the child. This is a type '1'
+passthrough linkage::
+
+    thelink = self.link( (self,"inbox"), (myChild,"inbox"), passthrough=1 )
+
+Or if you want anything a child sends to its outbox to be sent out of one of
+your own outboxes, which is a type '2' passthrough::
+
+    thelink = self.link( (myChild,"outbox"), (self,"outbox"), passthrough=2 )
+
+The alternative, of course, is to add extra inboxes and outboxes to communicate
+with the child, and to write a main() method that simply passes the data on.
+Passthrough linkages are more efficient and quicker to code!
+
+There is no performance penalty for delivering a message along a such a chain of
+linkages (eg. outbox ---> outbox ---> inbox ---> inbox ---> inbox). Axon
+resolves the chain and delivers straight to the final destination inbox!
 
 
 
@@ -194,6 +211,28 @@ Making a component your child means that:
 
 Whether another component is your child or not, you can tell if it has
 terminated yet by calling its _isStopped() method.
+
+For example, a component might want to create a child component, make a linkage
+to it then wait until that child terminates before cleaning it up::
+
+    src = RateControlledFileReader("myTextFile",readmode="lines")
+    dst = ConsoleEchoer()
+
+    lnk = self.link( (src,"outbox"), (dst,"inbox") )
+
+    self.addChildren(src,dst)    # we will be woken if they terminate
+    src.activate()
+    dst.activate()
+
+    while not dst._isStopped() and not src._isStopped():
+        self.pause()
+        yield 1
+
+    self.unlink(thelinkage = lnk)
+    self.removeChild(src)
+    self.removeChild(dst)
+    
+
 
 
 
