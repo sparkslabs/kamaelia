@@ -19,6 +19,76 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+=================================================
+Internal debugging support - debug output logging
+=================================================
+
+Provides a way to generate debugging (logging) output on standard output that
+can be filtered to just what is needed at the time.
+
+* Some Axon classes create/use write debug output using an instance of debug()
+* debug uses debugConfigFile.readConfig() to read a configuration for what
+  should and should not be output
+  
+
+
+How to use it
+-------------
+
+Create or obtain an instance of a debug object. For example: instantiate your
+own, or allow one to be passed in in your initialiser::
+
+    import Axon.debug
+    
+    class MyObject(object):
+
+        def __init__(self, debugger=None):
+            super(MyObject,self).__init__()
+            
+            if debug is not None:
+                self.debugger = debugger
+            else:
+                self.debugger = Axon.debug.debug()
+
+Then, call the note() method whenever you potentially want debugging output;
+specifying the "section name" and minimum debug level under which it should be
+reported::
+
+        def main(self):
+            while 1:
+                assert self.debugger.note("MyObject.main", 10, "loop begins")
+                if self.dataReady("inbox"):
+                    msg = self.recv("inbox")
+                    assert self.debugger.note("MyObject.main", 5, "received ", msg)
+                    ...
+                    
+                 ...
+                 yield 1
+                 ...
+
+Using different section names for different parts of your debugging output allow
+you to select which bits you are interested in.
+
+The note() method always returns True, meaning you can wrap it in an
+assert statement. If you then use python's "-O" command line flag, assert
+statements will be ignored, completely removing any performance overhead the
+due to the debugging output.
+                    
+When instantiating the debugger, dont' forget to supply it with a debug
+configuration file to tell it what section names exist and the minimum debug
+levels to report them under::
+                 
+    >>> debug = Axon.debug.debug()
+    >>> m = MyObject(debugger=debug)
+    >>> debug.useConfig("myDebugConfigFile")
+    >>> m.run()
+
+If you don't specify a debug configuration file then the debug object will
+attempt to find and use one itself.
+    
+"""
+
 
 import time
 import random
@@ -26,6 +96,18 @@ import debugConfigFile
 import debugConfigDefaults
 
 class debug(object):
+   """\
+   debug([assertBadDebug]) -> new debug object.
+
+   Object for outputting debugging output, filtered as required. Only outputs
+   debugging data for section names it recognises - as specified in a debug
+   config file.
+
+   Keyword arguments:
+
+   - assertBadDebug  -- Optional. If evaluates to true, then any debug output for an unrecognised section (as defined in the configuration) causes an exception (default=1)
+   """
+                    
    configs = None
    noConfig = True
    def __init__(self, assertBadDebug=1):
@@ -33,11 +115,20 @@ class debug(object):
       self.debugOn = True
 
    def readConfig(self,configFile="debug.conf"):
+      """\
+      **INTERNAL**
+      Reads specified debug configuration file.
+
+      Uses Axon.debugConfigFile
+      """
       result = debugConfigFile.readConfig(configFile)
       debug.noConfig = False
       return result
 
    def useConfig(self, filename="debug.conf"):
+      """\
+      Specify a configuration file to use.
+      """
       if (not debug.configs):
          try:
             debug.configs = self.readConfig(filename)
@@ -58,6 +149,10 @@ class debug(object):
                  # requested module - not an error
 
    def addDebugSection(self, section, level):
+         """\
+         Add a section name for which debug output can be generated, specifying
+         a maximum debug level for which there will be output.
+         """
          try:
             self.debugSections[section] = level
          except AttributeError:
@@ -65,17 +160,30 @@ class debug(object):
             self.debugSections[section] = level
 
    def addDebug(self, **debugSections):
+      """\
+      Add several debug sections. Each argument's name corresponds to a section
+      name fo rwhich debug output can be generated. The value is the maximum
+      debug level for which there will be output.
+      """
       sections = debugSections.keys()
       for section in sections:
          self.addDebugSection(section, debugSections[section])
 
    def increaseDebug(self, section):
+      """\
+      Increases the maximum debug level for which output will be generated for
+      the specified section.
+      """
       try:
          self.debugSections[section] = self.debugSections[section] + 5
       except KeyError:
          self.addDebugSection(section,5)
 
    def decreaseDebug(self, section):
+      """\
+      Decreases the maximum debug level for which output will be generated for
+      the specified section.
+      """
       try:
          self.debugSections[section] = self.debugSections[section] - 5
          if self.debugSections[section] < 0:
@@ -84,6 +192,13 @@ class debug(object):
          pass
 
    def setDebugSections(self,**debugSections):
+      """\
+      Set the debug sections. Replaces any existing ones.
+
+      Each argument's name corresponds to a section name fo rwhich debug output
+      can be generated. The value is the maximum debug level for which there
+      will be output.
+      """
       self.debugSections = debugSections
 
    def areDebugging(self,section,level):
@@ -105,10 +220,26 @@ class debug(object):
       print # Force new line
 
    def debug(self,section, level, *message):
-      """ Outputs *message if user set level is greater than requested level for given section
-      returns True. This allows debug to be used in assert statements to allow
-      lazy evaluation of expressions in *message so that they can disabled by
-      running the system using python's -O flag"""
+      """\
+      Output a debug message.
+
+      Specify the 'section' the debug message should come under. The user will
+      have specified the maximum 'level' to be outputted for that section.
+
+      * Use higher level numbers for more detailed debugging output.
+      * Use different section names for different parts of your code to allow
+        the user to select which sections they want output for
+
+      Always returns True, so can be used as argument to an assert statement.
+      This means you can then disable debugging output (and any associated
+      performance overhead) by using python's "-O" command line flag.
+
+      Keyword arguments:
+
+      - section   -- the section you want this debugging output classified under
+      - level     -- the level of detail of this debugging output (number)
+      - *message  -- objects to print as the debugging output
+      """
       try:
          if self.debugSections[section] >= level:
             print time.asctime(), "|", section, "|",
