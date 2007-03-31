@@ -30,63 +30,91 @@ can be filtered to just what is needed at the time.
 * Some Axon classes create/use write debug output using an instance of debug()
 * debug uses debugConfigFile.readConfig() to read a configuration for what
   should and should not be output
-  
+
+What debugging output actually gets output (and what is filtered out) is
+controlled by two things: what *section* the debugging output is under and the
+*level* of detail of a given piece of output.
+
+Each call to output debugging information specifies what section it belongs to
+and the level of detail it represents.
+
+The filtering of this is configured from a configuration file (see
+Axon.deugConfigFile for information on the format) which lists each expected
+section and the maximum level of detail that will be output for that section.
+
 
 
 How to use it
 -------------
 
-Create or obtain an instance of a debug object. For example: instantiate your
-own, or allow one to be passed in in your initialiser::
-
-    import Axon.debug
+Create a debug object::
     
-    class MyObject(object):
+    debugger = Axon.debug.debug()
+    
+Specify the configuration to use, either specifying a file, or letting the
+debugger choose its own defaults::
+    
+    debugger.useConfig(filename="my_debug_config_file")
+    
+Any subsequent debug objects you create will use the same configuration when
+you call their useConfig() method - irrespective of whether you specify a
+filename or not!
 
-        def __init__(self, debugger=None):
-            super(MyObject,self).__init__()
-            
-            if debug is not None:
-                self.debugger = debugger
-            else:
-                self.debugger = Axon.debug.debug()
-
-Then, call the note() method whenever you potentially want debugging output;
+Call the note() method whenever you potentially want debugging output;
 specifying the "section name" and minimum debug level under which it should be
 reported::
 
-        def main(self):
-            while 1:
-                assert self.debugger.note("MyObject.main", 10, "loop begins")
-                if self.dataReady("inbox"):
-                    msg = self.recv("inbox")
-                    assert self.debugger.note("MyObject.main", 5, "received ", msg)
-                    ...
-                    
-                 ...
-                 yield 1
-                 ...
+    while 1:
+        ...
+        assert self.debugger.note("MyObject.main", 10, "loop begins")
+        ...
+        if something_happened():
+            ...
+            assert self.debugger.note("MyObject.main", 5, "received ", msg)
+            ...
 
-Using different section names for different parts of your debugging output allow
-you to select which bits you are interested in.
+* Using different section names for different parts of your debugging output
+  allow you to select which bits you are interested in.
+
+* Use the 'level' number to indicate the level of detail of any given piece of
+  debugging output.
 
 The note() method always returns True, meaning you can wrap it in an
 assert statement. If you then use python's "-O" command line flag, assert
 statements will be ignored, completely removing any performance overhead the
 due to the debugging output.
-                    
-When instantiating the debugger, dont' forget to supply it with a debug
-configuration file to tell it what section names exist and the minimum debug
-levels to report them under::
-                 
-    >>> debug = Axon.debug.debug()
-    >>> m = MyObject(debugger=debug)
-    >>> debug.useConfig("myDebugConfigFile")
-    >>> m.run()
 
-If you don't specify a debug configuration file then the debug object will
-attempt to find and use one itself.
+
+
+Adjusting the configuration of individual debugger objects
+----------------------------------------------------------
+
+All debug objects share the same initial configuration - when you call their
+useConfig() method, all pick up the same configuration file that was specified
+on the first call.
+
+However, after the useConfig() call you can customise the configuration of
+individual debug objects.
+
+You can increase or decrease the maximum level of detail that will be output
+for a given section::
     
+    debugger.increaseDebug("MyObject.main")
+    debugger.decreaseDebug("MyObject.main")
+    
+You can add (or replace) the configuration for individual debugging sections -
+ie. (re)specify what the maximum level of detail will be for a given section::
+
+    debugger.addDebugSections()
+    
+Or you can replace the entire set::
+    
+    replacementSections = { "MyObject.main" : 10,
+                            "MyObject.init" : 5,
+                            ...
+                          }
+                          
+    debugger.addDebug(**replacementSections)
 """
 
 
@@ -127,7 +155,13 @@ class debug(object):
 
    def useConfig(self, filename="debug.conf"):
       """\
-      Specify a configuration file to use.
+      Instruct this object to set up its debugging configuration.
+      
+      If this, or another debug object has previously set it up, then that is
+      applied for this object; otherwise it is loaded from the specified file.
+      However, if no file is specified or the file could not be read, then
+      alternative defaults are used. This configuration is then used for all
+      future debug objects.
       """
       if (not debug.configs):
          try:
@@ -152,6 +186,8 @@ class debug(object):
          """\
          Add a section name for which debug output can be generated, specifying
          a maximum debug level for which there will be output.
+         
+         This does not affect the configuration of other debug objects.
          """
          try:
             self.debugSections[section] = level
@@ -164,6 +200,8 @@ class debug(object):
       Add several debug sections. Each argument's name corresponds to a section
       name fo rwhich debug output can be generated. The value is the maximum
       debug level for which there will be output.
+         
+      This does not affect the configuration of other debug objects.
       """
       sections = debugSections.keys()
       for section in sections:
@@ -173,6 +211,8 @@ class debug(object):
       """\
       Increases the maximum debug level for which output will be generated for
       the specified section.
+         
+      This does not affect the configuration of other debug objects.
       """
       try:
          self.debugSections[section] = self.debugSections[section] + 5
@@ -183,6 +223,8 @@ class debug(object):
       """\
       Decreases the maximum debug level for which output will be generated for
       the specified section.
+         
+      This does not affect the configuration of other debug objects.
       """
       try:
          self.debugSections[section] = self.debugSections[section] - 5
@@ -198,11 +240,16 @@ class debug(object):
       Each argument's name corresponds to a section name fo rwhich debug output
       can be generated. The value is the maximum debug level for which there
       will be output.
+         
+       This does not affect the configuration of other debug objects.
       """
       self.debugSections = debugSections
 
    def areDebugging(self,section,level):
-      """ Returns true if we are debugging this level, doesn't try to enforce correctness"""
+      """\
+      Returns true if we are debugging this level, doesn't try to enforce
+      correctness
+      """
       try:
          if self.debugSections[section] >= level:
             return True
@@ -213,7 +260,14 @@ class debug(object):
       return False
 
    def debugmessage(self, section, *message):
-      """ Always Outputs *message, section still required for offline filtering""" 
+      """\
+      Output a debug messge (never filtered)
+      
+      Keyword arguments:
+       
+      - section   -- 
+      - *message  -- object(s) to print as the debugging output
+      """ 
       print time.asctime(), "|", section, "|",
       for arg in message:
          print arg,
@@ -238,7 +292,7 @@ class debug(object):
 
       - section   -- the section you want this debugging output classified under
       - level     -- the level of detail of this debugging output (number)
-      - *message  -- objects to print as the debugging output
+      - *message  -- object(s) to print as the debugging output
       """
       try:
          if self.debugSections[section] >= level:
