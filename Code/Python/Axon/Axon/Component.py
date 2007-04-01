@@ -33,7 +33,7 @@ mechanisms for sending and receiving data to and from other components.
 
 There are other variants on the basic component:
     
-* Axon.AdaptiveCommsComponent.adaptivecommscomponent
+* Axon.AdaptiveCommsComponent.AdaptiveCommsComponent
 * Axon.ThreadedComponent.threadedcomponent
 * Axon.ThreadedComponent.threadedadaptivecommscomponent
 

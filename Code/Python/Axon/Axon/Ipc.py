@@ -197,7 +197,7 @@ class reactivate(ipc):
 
 class newComponent(ipc):
    """\
-   newComponent(*components) -> new newComponent ipc message.
+   newComponent(\*components) -> new newComponent ipc message.
    
    Message used to inform the scheduler of a new component that needs a thread
    of control and activating.
@@ -216,7 +216,7 @@ class newComponent(ipc):
 
 class shutdownMicroprocess(ipc):
    """\
-   shutdownMicroprocess(*microprocesses) -> new shutdownMicroprocess ipc message.
+   shutdownMicroprocess(\*microprocesses) -> new shutdownMicroprocess ipc message.
    
    Message used to indicate that the component recieving it should shutdown.
    Or to indicate to the scheduler a shutdown knockon from a terminating
