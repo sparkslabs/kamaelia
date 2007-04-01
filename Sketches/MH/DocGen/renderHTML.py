@@ -19,8 +19,8 @@ class RenderHTML(object):
         self.mappings={}
         
     def makeFilename(self, docName):
-        if docName=="Kamaelia":
-            docName="index"
+#        if docName=="Kamaelia":
+#            docName="index"
         return docName + ".html"
     
     def makeURI(self, docName):
