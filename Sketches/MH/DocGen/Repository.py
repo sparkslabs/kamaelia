@@ -24,21 +24,27 @@ import compiler
 from compiler import ast
 import os
 
-class KamaeliaRepositoryDocs(object):
-    def __init__(self, baseDir=None):
-        super(KamaeliaRepositoryDocs,self).__init__()
+class SourceTreeDocs(object):
+    def __init__(self, baseDir=None, rootName="Kamaelia", excludeFilenames=["Repository.py"]):
+        super(SourceTreeDocs,self).__init__()
+        
         if baseDir:
             self.baseDir = baseDir
         else:
             import Kamaelia
             self.baseDir = os.path.dirname(Kamaelia.__file__)
             
-        flat={}
-        nested={"Kamaelia":{}}
-        self.build(self.baseDir, flat, nested["Kamaelia"], base=["Kamaelia"])
+        self.excludeFilenames = excludeFilenames
+            
+        root=rootName.split(".")
+        self.flatModules={}
+        self.nestedModules={}
         
-        self.flatModules = flat
-        self.nestedModules = nested
+        nested=self.nestedModules
+        for node in root:
+            nested[node] = {}
+            nested=nested[node]
+        self.build(self.baseDir, self.flatModules, nested, base=root)
         
         
     def build(self,dirName,flatModules,nestedModules,base):
@@ -47,7 +53,7 @@ class KamaeliaRepositoryDocs(object):
         
         for filename in dirEntries:
             filepath = os.path.join(dirName, filename)
-            if filename == "Repository.py":
+            if filename in self.excludeFilenames:
                 continue
             
             elif os.path.isdir(filepath):
@@ -69,7 +75,7 @@ class KamaeliaRepositoryDocs(object):
                     flatModulePath = base+[moduleName]
                     
                 print "Parsing:",filepath
-                moduleDocs = KamaeliaModuleDocs(filepath, flatModulePath)
+                moduleDocs = ModuleDocs(filepath, flatModulePath)
                 
                 flatModules[tuple(flatModulePath)] = moduleDocs
                 nestedModules[moduleName] = moduleDocs
@@ -86,19 +92,22 @@ def isPythonFile(Path, File):
     return False
 
 
-class KamaeliaComponentDocs(object): pass
-class KamaeliaPrefabDocs(object): pass
-KamaeliaFunctionDocs = KamaeliaPrefabDocs
-KamaeliaMethodDocs = KamaeliaPrefabDocs
+class ClassDocs(object): pass
+class FunctionDocs(object): pass
+MethodDocs         = FunctionDocs
+KamaeliaPrefabDocs = FunctionDocs
+class KamaeliaComponentDocs(ClassDocs): pass
 
+ANY=object()
 
-class KamaeliaModuleDocs(object):
+class ModuleDocs(object):
     def __init__(self, filepath, modulePath):
-        super(KamaeliaModuleDocs,self).__init__()
+        super(ModuleDocs,self).__init__()
         self.AST = compiler.parseFile(filepath)
 
         self.extractModuleDocString()
-        self.findEntities()
+        self.findKamaeliaEntities()
+        self.findOtherEntities()
         
         self.prefabs = []
         for prefabName in self.prefabNames:
@@ -110,12 +119,22 @@ class KamaeliaModuleDocs(object):
             doc = self.documentNamedComponent(componentName, modulePath)
             self.components.append(doc)
         
+        self.classes = []
+        for className in self.otherClassNames:
+            doc = self.documentNamedClass(className, modulePath)
+            self.classes.append(doc)
+            
+        self.functions = []
+        for funcName in self.otherFunctionNames:
+            doc = self.documentNamedFunction(funcName, modulePath)
+            self.functions.append(doc)
+            
 
     def extractModuleDocString(self):
         assert(isinstance(self.AST, ast.Module))
         self.docString = self.AST.doc or ""
 
-    def findEntities(self):
+    def findKamaeliaEntities(self):
         # find the __kamaelia_compoents__ declaration
         stmt = self.AST.getChildren()[1]
         assert(isinstance(stmt, ast.Stmt))
@@ -129,12 +148,31 @@ class KamaeliaModuleDocs(object):
                                          )
 
         # flatten the results
-        components = _stringsInList(components)
-        prefabs    = _stringsInList(prefabs)
+        components = _stringsInList([x for (_,x) in components])
+        prefabs    = _stringsInList([x for (_,x) in prefabs])
 
         # and remove any repeats (unlikely)
         self.componentNames = dict([(x,x) for x in components]).keys()
         self.prefabNames = dict([(x,x) for x in prefabs]).keys()
+        
+    def findOtherEntities(self):
+        stmt = self.AST.getChildren()[1]
+        assert(isinstance(stmt, ast.Stmt))
+        
+        # find other class, method etc top level declarations in the source
+        functions = self.findFunctions(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
+        classes   = self.findClasses(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
+        
+        # convert from ast to name
+        functions = [func.getChildren()[1] for func in functions]
+        classes   = [clss.getChildren()[0] for clss in classes]
+        
+        # remove anything already matched up as being a prefab or component
+        functions = [name for name in functions if name not in self.prefabNames]
+        classes   = [name for name in classes   if name not in self.componentNames]
+
+        self.otherFunctionNames = functions
+        self.otherClassNames   = classes
         
 
     def findAssignments(self, target, node, ignores):
@@ -147,9 +185,10 @@ class KamaeliaModuleDocs(object):
                 assignStmt = child.getChildren()
                 lhs = assignStmt[0]
                 if isinstance(lhs, ast.AssName):
-                    if lhs.getChildren()[0] == target:
+                    lhsname = lhs.getChildren()[0]
+                    if lhsname == target or target==ANY:
                         rhs = assignStmt[1]
-                        found.append(rhs)
+                        found.append((lhsname,rhs))
                         
             elif not isinstance(child, tuple(ignores)) and \
                      isinstance(child, ast.Node):
@@ -164,7 +203,7 @@ class KamaeliaModuleDocs(object):
         found=[]
         for child in node.getChildren():
             if isinstance(child, ast.Function):
-                if child.name == target or target == None:
+                if child.name == target or target == ANY:
                     found.append(child)
             
             elif not isinstance(child, tuple(ignores)) and \
@@ -204,7 +243,7 @@ class KamaeliaModuleDocs(object):
         argStr = ", ".join([arg for (_, arg) in argNames])
         argStr = argStr.replace(", [", "[, ")
         
-        theFunc = KamaeliaFunctionDocs()
+        theFunc = FunctionDocs()
         theFunc.name = fnode.name
         theFunc.args = argNames
         theFunc.argString = argStr
@@ -220,7 +259,7 @@ class KamaeliaModuleDocs(object):
         found=[]
         for child in node.getChildren():
             if isinstance(child, ast.Class):
-                if child.name == target:
+                if child.name == target or target == ANY:
                     found.append(child)
             
             elif not isinstance(child, tuple(ignores)) and \
@@ -274,7 +313,7 @@ class KamaeliaModuleDocs(object):
         inboxDoc  = self.findBoxDecl(cnode.code, "Inboxes")
         outboxDoc = self.findBoxDecl(cnode.code, "Outboxes")
         
-        methodNodes = self.findFunctions(None, cnode.code, [ast.Class, ast.Function, ast.Module])
+        methodNodes = self.findFunctions(ANY, cnode.code, [ast.Class, ast.Function, ast.Module])
         methods = [self.documentFunction(node, modulePath) for node in methodNodes]
         
         theComp = KamaeliaComponentDocs()
@@ -285,6 +324,27 @@ class KamaeliaModuleDocs(object):
         theComp.methods = methods
         theComp.module = ".".join(modulePath)
         return theComp
+    
+    def documentNamedClass(self, className, modulePath):
+        cnode = self.findClasses( className,
+                                  self.AST.getChildren()[1],
+                                  [ast.Class, ast.Function, ast.Module, ast.If]
+                                )
+        assert(len(cnode)>=1)
+        cnode = cnode[0]
+        assert(className == cnode.name)
+        cDoc = cnode.doc or ""
+        
+        methodNodes = self.findFunctions(ANY, cnode.code, [ast.Class, ast.Function, ast.Module])
+        methods = [self.documentFunction(node, modulePath) for node in methodNodes]
+        
+        theClass = ClassDocs()
+        theClass.name = className
+        theClass.docString = cDoc
+        theClass.methods = methods
+        theClass.module = ".".join(modulePath)
+        return theClass
+
 
 def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
@@ -303,11 +363,12 @@ def _stringsInList(theList):
     return found
 
 
+
 # METHODS PROVIDING
 # BACKWARD COMPATIBILITY WITH OLD Repository.py
 
 def GetAllKamaeliaComponentsNested(baseDir=None):
-    rDocs = KamaeliaRepositoryDocs(baseDir)
+    rDocs = SourceTreeDocs(baseDir)
     moduleTree = rDocs.nestedModules
     reduced = _reduceToNames(moduleTree, keepComponents=True, keepPrefabs=False)
     if reduced["Kamaelia"].has_key("Support"):
@@ -315,12 +376,12 @@ def GetAllKamaeliaComponentsNested(baseDir=None):
     return reduced
 
 def GetAllKamaeliaComponents(baseDir=None):
-    rDocs = KamaeliaRepositoryDocs(baseDir)
+    rDocs = SourceTreeDocs(baseDir)
     modules = rDocs.flatModules
     return _reduceToNames(modules, keepComponents=True, keepPrefabs=False)
 
 def GetAllKamaeliaPrefabsNested(baseDir=None):
-    rDocs = KamaeliaRepositoryDocs(baseDir)
+    rDocs = SourceTreeDocs(baseDir)
     moduleTree = rDocs.nestedModules
     reduced = _reduceToNames(moduleTree, keepComponents=False, keepPrefabs=True)
     if reduced["Kamaelia"].has_key("Support"):
@@ -328,7 +389,7 @@ def GetAllKamaeliaPrefabsNested(baseDir=None):
     return reduced
     
 def GetAllKamaeliaPrefabs(baseDir=None):
-    rDocs = KamaeliaRepositoryDocs(baseDir)
+    rDocs = SourceTreeDocs(baseDir)
     modules = rDocs.flatModules
     return _reduceToNames(modules, keepComponents=False, keepPrefabs=True)
 
@@ -361,7 +422,7 @@ if __name__ == "__main__":
     file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
-    modDocs = KamaeliaModuleDocs(file,["Kamaelia","File","Reading"])
+    modDocs = ModuleDocs(file,["Kamaelia","File","Reading"])
 
     print "MODULE:"
     print modDocs.docString
