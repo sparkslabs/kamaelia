@@ -164,8 +164,8 @@ class ModuleDocs(object):
         classes   = self.findClasses(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
         
         # convert from ast to name
-        functions = [func.getChildren()[1] for func in functions]
-        classes   = [clss.getChildren()[0] for clss in classes]
+        functions = [func.name for func in functions]
+        classes   = [clss.name for clss in classes]
         
         # remove anything already matched up as being a prefab or component
         functions = [name for name in functions if name not in self.prefabNames]
