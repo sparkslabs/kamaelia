@@ -44,17 +44,16 @@ arrives in one of their inboxes).
 Base classes for building your own components
 ---------------------------------------------
 
-* **Component.component**
+* **Axon.Component**
 
-  - a basic component. Subclass it to write your own components.
+  - defines the basic component. Subclass it to write your own components.
 
-* **AdaptiveCommsComponent.adaptivecommscomponent**
+* **Axon.AdaptiveCommsComponent**
 
   - like a basic component but with facilties to let you add and remove inboxes
     and outboxes during runtime.
 
-* **ThreadedComponent.threadedcomponent**
-* **ThreadedComponent.threadedadaptivecommscomponent**
+* **Axon.ThreadedComponent**
 
   - like ordinary components, but which truly run in a separate thread - meaning
     they can perform blocking tasks (since they don't have to yield control to
@@ -65,12 +64,12 @@ Base classes for building your own components
 Underlying concurrency system
 -----------------------------
 
-* **Microprocess.microprocess**
+* **Axon.Microprocess**
 
   - Turns a python generator into a schedulable microprocess - something that
     can be started, paused, reawoken and stopped. Subclass it to make your own.
 
-* **Scheduler.scheduler**
+* **Axon.Scheduler**
 
   - Runs the microprocesses. Manages the starting, stopping, pausing
     and waking of them. Is also a microprocess itself!
@@ -80,14 +79,14 @@ Underlying concurrency system
 Services, statistics, Instrospection
 ------------------------------------
     
-* **CoordinatingAssistantTracker**
+* **Axon.CoordinatingAssistantTracker**
 
   - provides mechanisms for components to advertising and discover services they
     can provide for each other.
 
   - acts as a repository for collecting statistics from components in the system
 
-* **Introspector.Introspector**
+* **Axon.Introspector**
 
   - outputs live topology data describing what components there are in a
     running axon system and how they are linked together.
@@ -97,20 +96,24 @@ Services, statistics, Instrospection
 Exceptions, Messages and Misc
 -----------------------------
 
-* **AxonExceptions**
+* **Axon.Axon**
+
+  - base metaclass for key Axon classes
+
+* **Axon.AxonExceptions**
 
   - classes defining various exceptions in Axon.
   
-* **Ipc**
+* **Axon.Ipc**
 
   - classes defining various IPC messages in Axon used for signalling shutdown,
     errors, notifications, etc...
 
-* **idGen**
+* **Axon.idGen**
 
   - unique id value generation
 
-* **util**
+* **Axon.util**
 
   - various miscellaneous support utility methods
   
@@ -119,16 +122,16 @@ Exceptions, Messages and Misc
 Internals for implementing inboxes, outboxes and linkages
 ---------------------------------------------------------
 
-* **Box.postbox**
+* **Axon.Box**
 
   - The base implementation of inboxes and outboxes.
 
-* **Postoffice.postoffice**
+* **Axon.Postoffice**
 
   - All components have one of these for creating, destroying and tracking
     linkages.
 
-* **Linkage.linkage**
+* **Axon.Linkage**
 
   - handles used to describe linkages from one postbox to another
 
@@ -136,7 +139,22 @@ What, no Postman? Optimisations made to Axon have dropped the Postman.
 Inboxes and outboxes handle the delivery of messages themselves now.
 
 
+
+Debugging support
+-----------------
+
+* **Axon.debug**
+
+  - defines a debugging output object.
+  
+* **Axon.debugConfigFile**
+
+  - defines a method for loading a debugging configuration file that determines
+    what debugging output gets displayed and what gets filtered out.
     
+* **Axon.debugConfigDefaults**
+
+  - defines a method that supplies a default debugging configuration.
 """
 import Component
 import Ipc
