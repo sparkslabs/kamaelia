@@ -266,7 +266,7 @@ class debug(object):
       Keyword arguments:
        
       - section   -- 
-      - *message  -- object(s) to print as the debugging output
+      - \*message  -- object(s) to print as the debugging output
       """ 
       print time.asctime(), "|", section, "|",
       for arg in message:
@@ -292,7 +292,7 @@ class debug(object):
 
       - section   -- the section you want this debugging output classified under
       - level     -- the level of detail of this debugging output (number)
-      - *message  -- object(s) to print as the debugging output
+      - \*message  -- object(s) to print as the debugging output
       """
       try:
          if self.debugSections[section] >= level:

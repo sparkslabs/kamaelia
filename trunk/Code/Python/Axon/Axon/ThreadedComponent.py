@@ -35,8 +35,10 @@ limited ability to scale across multiple CPUs).
 If you don't need these capabilities, consider making your component an ordinary
 Axon.Component.component instead.
 
-* threadedcomponent - like an ordinary Axon.Component.component, but runs in its own thread
-* threadedadaptivecommscomponent - a threaded version of Axon.AdaptiveCommsComponent.adaptivecommscomponent
+* threadedcomponent - like an ordinary Axon.Component.component, but runs in its
+  own thread
+* threadedadaptivecommscomponent - a threaded version of
+  Axon.AdaptiveCommsComponent.AdaptiveCommsComponent
 
 
 
@@ -102,7 +104,7 @@ expect:
 
 
 In addition, threadedadaptivecommscomponent also supports the extra methods in
-Axon.AdaptiveCommsComponent.adaptivecommscomponent:
+Axon.AdaptiveCommsComponent.AdaptiveCommsComponent:
                     
 * self.addInbox()
 * self.deleteInbox()
