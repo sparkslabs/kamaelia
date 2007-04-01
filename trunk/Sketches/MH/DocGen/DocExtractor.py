@@ -33,10 +33,12 @@ class DocGenConfig(object):
         self.debug=False
         self.filterPattern=""
         self.docdir="pydoc"
+        self.docroot="Kamaelia"
         self.treeDepth=99
         self.tocDepth=99
         self.includeMethods=False
         self.includeModuleDocString=False
+        self.includeNonKamaeliaStuff=False
         self.showComponentsOnIndices=False
 
 class docFormatter(object):
@@ -126,7 +128,7 @@ class docFormatter(object):
     
     def formatPrefabStatement(self, name):
         return "prefab: "+name
-
+    
     def formatComponent(self, X):
         # no class bases available from repository scanner 
         CLASSNAME = self.formatClassStatement(X.name, []) #X.__bases__)
@@ -167,6 +169,30 @@ class docFormatter(object):
                 * [ nodes.title('', CLASSNAME, ids=["component-"+X.name]) ]
                   + CLASSDOC
             )
+        
+    def formatFunction(self, X):
+        functionHead = X.name + "(" + X.argString + ")"
+        return nodes.section('',
+                    ids   = ["function-"+X.name],
+                    names = ["function-"+X.name],
+                    * [ nodes.title('', functionHead) ]
+                        + self.docString(X.docString)
+                    )
+                            
+
+    def formatClass(self, X):
+        # no class bases available from repository scanner 
+        CLASSNAME = self.formatClassStatement(X.name, []) #X.__bases__)
+            
+        return \
+                nodes.section('',
+                    nodes.title('', CLASSNAME, ids=["class-"+X.name]),
+                    self.docString(X.docString),
+                    nodes.section('',
+                        nodes.title('', 'Methods defined here'),
+                        * self.formatMethodDocStrings(X)
+                    )
+                )
         
     def formatTrail(self, moduleName):
         path = moduleName.split(".")
@@ -218,6 +244,12 @@ class docFormatter(object):
     def formatPrefabPage(self,moduleName, prefab):
         return self.formatDeclarationPage(moduleName, self.formatPrefab, prefab)
         
+    def formatClassPage(self,moduleName, cls):
+        return self.formatDeclarationPage(moduleName, self.formatClass, cls)
+        
+    def formatFunctionPage(self,moduleName, function):
+        return self.formatDeclarationPage(moduleName, self.formatFunction, function)
+        
     def formatDeclarationPage(self, name, method, arg):
         parentURI = self.renderer.makeURI(".".join(name.split(".")[:-1]))
         trailTree = self.formatTrail(name)
@@ -235,7 +267,7 @@ class docFormatter(object):
             self.postscript(),
             )
            
-    def formatModule(self, moduleName, module, components, prefabs):
+    def formatModule(self, moduleName, module, components, prefabs, classes, functions):
         
         trailTree = self.formatTrail(moduleName)
         moduleTree = self.docString(module.docString, main=True)
@@ -259,12 +291,28 @@ class docFormatter(object):
                     self.formatPrefab(prefab)
             )
 
+        for cls in classes:
+            assert(cls.name not in declarationTrees)
+            cTrail = self.formatTrail(moduleName+"."+cls.name)
+            declarationTrees[cls.name] = nodes.container('',
+                nodes.title('','', *cTrail.children),
+                    self.formatClass(cls)
+            )
+
+        for function in functions:
+            assert(function.name not in declarationTrees)
+            fTrail = self.formatTrail(moduleName+"."+function.name)
+            declarationTrees[function.name] = nodes.container('',
+                nodes.title('','', *fTrail.children),
+                    self.formatFunction(function)
+            )
+
         declNames = declarationTrees.keys()
         declNames.sort()
         for name in declNames:
             allDeclarations.extend(declarationTrees[name])
         
-        componentListTree = self.componentList( components + prefabs )
+        componentListTree = self.componentList( components + prefabs + classes + functions )
 
         return nodes.container('',
             nodes.section('',
@@ -413,8 +461,14 @@ def generateDocumentationFiles(formatter, CONFIG):
         module     = CONFIG.repository.flatModules[MODULE]
         components = module.components
         prefabs    = module.prefabs
+        if CONFIG.includeNonKamaeliaStuff:
+            classes    = module.classes
+            functions  = module.functions
+        else:
+            classes = []
+            functions = []
         
-        doctree  = formatter.formatModule(moduleName, module, components, prefabs)
+        doctree  = formatter.formatModule(moduleName, module, components, prefabs, classes, functions)
         filename = formatter.renderer.makeFilename(moduleName)
         output   = formatter.renderer.render(moduleName, doctree)
         
@@ -441,8 +495,24 @@ def generateDocumentationFiles(formatter, CONFIG):
             F = open(CONFIG.docdir+"/"+filename, "w")
             F.write(output)
             F.close()
+            
+        for cls in classes:
+            NAME = moduleName+"."+cls.name
+            filename = formatter.renderer.makeFilename(NAME)
+            doctree = formatter.formatClassPage(NAME, cls)
+            output = formatter.renderer.render(NAME, doctree)
+            F = open(CONFIG.docdir+"/"+filename, "w")
+            F.write(output)
+            F.close()
 
-
+        for function in functions:
+            NAME = moduleName+"."+function.name
+            filename = formatter.renderer.makeFilename(NAME)
+            doctree = formatter.formatFunctionPage(NAME, function)
+            output = formatter.renderer.render(NAME, doctree)
+            F = open(CONFIG.docdir+"/"+filename, "w")
+            F.write(output)
+            F.close()
 
 def generateIndices(formatter, CONFIG):
 
@@ -497,6 +567,12 @@ if __name__ == "__main__":
             "    --outdir <dir>       Directory to put output into (default is 'pydoc')",
             "                         directory must already exist (and be emptied)",
             "",
+            "    --root <moduleRoot>  The module path leading up to the repositoryDir specified",
+            "                         eg. Kamaelia.File, if repositoryDir='.../Kamaelia/File/'",
+            "                         default='Kamaelia'",
+            "",
+            "    --notjustcomponents  Causes documentation for classes and functions too",
+            "",
             "    <repositoryDir>      Use Kamaelia modules here instead of the installed ones",
             "",
             "",
@@ -521,7 +597,18 @@ if __name__ == "__main__":
             config.docdir = cmdLineArgs[index+1]
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
-
+            
+        if "--root" in cmdLineArgs:
+            index = cmdLineArgs.index("--root")
+            config.docroot = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        if "--notjustcomponents" in cmdLineArgs:
+            index = cmdLineArgs.index("--notjustcomponents")
+            config.includeNonKamaeliaStuff=True
+            del cmdLineArgs[index]
+            
         if len(cmdLineArgs)==1:
             REPOSITORYDIR = cmdLineArgs[0]
         elif len(cmdLineArgs)==0:
@@ -540,7 +627,7 @@ if __name__ == "__main__":
     sys.argv=sys.argv[0:0]
         
     debug = False
-    REPOSITORY = Repository.KamaeliaRepositoryDocs(REPOSITORYDIR)
+    REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
     config.repository=REPOSITORY
 
     config.treeDepth=99
@@ -553,16 +640,21 @@ if __name__ == "__main__":
                           urlPrefix=urlPrefix,
                           debug=False)
     
-    if 0:
+    if 1:
         # automatically generate crosslinks when component names are seen
         crossLinks = {}
-        for (path,m) in REPOSITORY.flatModules():
-            for item in m.components + m.prefabs:
-                name=".".join(path+[item.name])
+        for (path,m) in REPOSITORY.flatModules.items():
+            items = m.components + m.prefabs
+            if config.includeNonKamaeliaStuff:
+                items += m.classes + m.functions
+            for item in items:
+                name=".".join(path)
                 crossLinks[name] = name
-        for fullpath in crossLinks.keys():
-            shortened = fullpath.split(".")[-1]
-            crossLinks[shortened] = crossLinks[fullpath]
+                name=".".join(list(path)+[item.name])
+                crossLinks[name] = name
+#        for fullpath in crossLinks.keys():
+#            shortened = fullpath.split(".")[-1]
+#            crossLinks[shortened] = crossLinks[fullpath]
         renderer.setAutoCrossLinks( crossLinks )
     
     formatter = docFormatter(renderer, config=config)
