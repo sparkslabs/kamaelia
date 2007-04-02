@@ -102,6 +102,7 @@ Or, more specifically:
    just use yield statements regularly so other components get time to execute.
 
    If you need to know more, these might help you:
+
    * `A tutorial on "How to write components" <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1113495151>`_
    * `the Mini Axon tutorial <http://kamaelia.sourceforge.net/MiniAxon/>`_
    * the Axon.Microprocess.microprocess class
@@ -134,7 +135,8 @@ Communicating with other components - creating linkages
 Components have inboxes and outboxes. The main() thread of execution in a
 component communicates with others by picking up messages that arrive in its
 inboxes and sending out messages to its outboxes. For example here is a simple
-component that echoes anything it receives to the console and also sends it on::
+block of code for the main() method of a component that echoes anything it
+receives to the console and also sends it on::
 
     if self.dataReady("inbox"):
         msg = self.recv("inbox")
@@ -161,7 +163,7 @@ Using the handle that we were given, we can destroy that linkage later::
 
     self.unlink(theLinkage = theLink)
 
-Linkage normally go from an outbox to an inbox - after all the whole idea is
+Linkages normally go from an outbox to an inbox - after all the whole idea is
 to get messages that one component sends to its own outbox to arrive at another
 component's inbox. However you can also create 'passthrough' linkages from an
 inbox to another inbox; or from an outbox to another outbox.
@@ -169,8 +171,8 @@ inbox to another inbox; or from an outbox to another outbox.
 This is particularly useful if you want to encapsulate a child component - hide
 it from view so other components only need to be wired up to you.
 
-For example, your component wants any data being sent to one of its inboxes to
-be forwarded automatically onto an inbox on the child. This is a type '1'
+For example, your component may want any data being sent to one of its inboxes
+to be forwarded automatically onto an inbox on the child. This is a type '1'
 passthrough linkage::
 
     thelink = self.link( (self,"inbox"), (myChild,"inbox"), passthrough=1 )
@@ -193,8 +195,8 @@ resolves the chain and delivers straight to the final destination inbox!
 Child components
 ----------------
 
-Component may sometimes create and activate other components. They can be
-adopted as children::
+Components can create and activate other components. They can adopt them as
+children::
 
     newComponent = FooComponent()
     self.addChildren(newComponent)
@@ -462,7 +464,7 @@ class component(microprocess):
       This takes a child component, and adds it to the children list of this
       component. It also registers to be woken up by the child if it terminates.
 
-      component. This has a number of effects internally, and includes
+      This has a number of effects internally, and includes
       registering the component as capable of recieving and sending messages.
       It doesn't give the child a thread of control however!
 
@@ -552,7 +554,7 @@ class component(microprocess):
       - passthrough=1  - the link goes from an inbox to another inbox
       - passthrough=2  - the link goes from an outbox to another outbox
 
-      See Axon.Postoffice.link(...) for more information.
+      See Axon.Postoffice.postoffice.link() for more information.
       """
 
       return self.postoffice.link(source, sink, *optionalargs, **kwoptionalargs)
@@ -568,7 +570,9 @@ class component(microprocess):
        Keyword arguments:
        
        - thecomponent -- None or a component object
-       - thelinakge   -- None or the linkage to remove
+       - thelinkage   -- None or the linkage to remove
+      
+       See Axon.Postoffice.postoffice.unlink() for more information.
        """
        return self.postoffice.unlink(thecomponent,thelinkage)
 

@@ -46,7 +46,7 @@ Just like writing an ordinary component
 ---------------------------------------
 
 This is nearly identical to writing an ordinary Axon.Component.component. For
-example::
+example this ordinary component::
 
     class MyComponent(Axon.Component.component):
 
@@ -99,7 +99,12 @@ expect:
 * self.anyReady()
 * self.recv()
 * self.send()
-* self.pause() - with extra optional 'timeout' argument to allow you to write
+
+*self.pause()* behaves slightly differently:
+
+* calling self.pause() pauses immediately - not at the next yield statement
+  (since there are no yield statements!)
+* self.pause() has an extra optional 'timeout' argument to allow you to write
   timer code that can be interrupted, for example, by incoming messages.
 
 

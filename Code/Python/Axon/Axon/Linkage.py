@@ -38,11 +38,11 @@ a linkage object is returned as a handle describing the linkage. When a message
 is sent to an outbox, it is immediately delivered along linkage(s) to the
 destination inbox.
 
-This is NOT the usual technique for software messaging. Normally you create
+This is *not* the usual technique for software messaging. Normally you create
 messages, addressed to something specific, and then the message handler delivers
 them.
 
-However the method of communication used here is the norm for _hardware_ systems,
+However the method of communication used here is the norm for *hardware* systems,
 and generally results in very pluggable components - the aim of this system,
 hence this design approach rather than the normal. This method of
 communication is also the norm for one form of software system - unix shell
@@ -112,6 +112,13 @@ class linkage(AxonObject):
         return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"
 
     def setSynchronous(self, pipewidth = None):
+        """\
+        Legacy method for setting the size limit on a linkage. Instead it sets
+        the size limit for the destination inbox. A pipewidth of None specifies
+        that there should be no limit.
+        
+        This method is likely to be deprecated soon.
+        """
         # should this be deprecated?
         self.getSinkbox().setSize(pipewidth)
         return self.getSinkbox().getSize()

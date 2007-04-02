@@ -72,8 +72,9 @@ Pausing and Waking microprocesses
 ---------------------------------
 
 The Scheduler supports the ability to, in a thread safe manner, pause and wake
-individual microprocesses. Because it is thread safe, any thread of execution
-can issue pause and wake requests for any scheduled microprocess.
+individual microprocesses under its control. Because it is thread safe, any
+thread of execution can issue pause and wake requests for any scheduled
+microprocess.
 
 The pauseThread() and wakeThread() methods submit requests to pause or wake
 microprocesses. The scheduler will process these when it is next able to - the
@@ -88,8 +89,8 @@ If no microprocesses are awake then the scheduler relinquishes cpu usage by
 blocking.
 
 If however this scheduler is itself being scheduled by another microprocess then
-it does not block. Ideally it should ask its scheduler to pause it. This
-functionality is not yet implemented.
+it does not block. Ideally it should ask its scheduler to pause it, but instead
+it busy-waits - self pausing functionality is not yet implemented.
 
 
 
@@ -114,7 +115,7 @@ However, this scheduler does understand certain values that can be yielded:
       
   This is simply an alternative to calling x.activate().
 
-* **Axon.Ipc.waitComplete** - this is a way for a microprocess to substitute
+* **Axon.Ipc.WaitComplete** - this is a way for a microprocess to substitute
   itself (temporarily) with another one that uses a new generator.
   For example::
 
@@ -168,8 +169,8 @@ Both these methods are thread safe.
 
 
 
-Debugging
----------
+Slowing down execution (for debugging)
+--------------------------------------
 
 It also has a slow motion mode designed to help with debugging & testing. Call
 runThreads() with the slowmo argument set to the number of seconds the scheduler
