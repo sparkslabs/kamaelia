@@ -232,24 +232,49 @@ class docFormatter(object):
 
         return title
         
-    def componentList(self, components):
+    def declarationsList(self, components, prefabs, classes, functions):
         uris = {}
+        prefixes = {}
+        postfixes = {}
+        
         for component in components:
             fullname = component.module + "." + component.name
             uris[component.name] = self.renderer.makeURI(fullname)
+            prefixes[component.name] = "component "
+            postfixes[component.name] = ""
+            
+        for prefab in prefabs:
+            fullname = prefab.module + "." + prefab.name
+            uris[prefab.name] = self.renderer.makeURI(fullname)
+            prefixes[prefab.name] = "prefab "
+            postfixes[prefab.name] = ""
+            
+        for cls in classes:
+            fullname = cls.module + "." + cls.name
+            uris[cls.name] = self.renderer.makeURI(fullname)
+            prefixes[cls.name] = "class "
+            postfixes[cls.name] = ""
+            
+        for function in functions:
+            fullname = function.module + "." + function.name
+            uris[function.name] = self.renderer.makeURI(fullname)
+            prefixes[function.name] = ""
+            postfixes[function.name] = "("+function.argString+")"
 
-        componentNames = uris.keys()
-        componentNames.sort()
+        declNames = uris.keys()
+        declNames.sort()
         
         return nodes.container('',
             nodes.bullet_list('',
                 *[ nodes.list_item('',
                        nodes.paragraph('', '',
                          nodes.strong('', '',
-                           nodes.reference('', NAME, refuri=uris[NAME]))
+                           nodes.Text(prefixes[NAME]),
+                           nodes.reference('', NAME, refuri=uris[NAME])),
+                           nodes.Text(postfixes[NAME]),
                          )
                        )
-                   for NAME in componentNames
+                   for NAME in declNames
                  ]
                 )
             )
@@ -337,7 +362,7 @@ class docFormatter(object):
         for name in declNames:
             allDeclarations.extend(declarationTrees[name])
         
-        componentListTree = self.componentList( components + prefabs + classes + functions )
+        componentListTree = self.declarationsList( components, prefabs, classes, functions )
 
         return nodes.container('',
             nodes.section('',
