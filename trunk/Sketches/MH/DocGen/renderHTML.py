@@ -11,11 +11,12 @@ import re
 
 class RenderHTML(object):
     
-    def __init__(self, debug=False, titlePrefix="", urlPrefix=""):
+    def __init__(self, debug=False, titlePrefix="", urlPrefix="",rawFooter=""):
         super(RenderHTML,self).__init__()
         self.titlePrefix=titlePrefix
         self.debug=debug
         self.urlPrefix=urlPrefix
+        self.rawFooter=rawFooter
         self.mappings={}
         
     def makeFilename(self, docName):
@@ -82,7 +83,7 @@ pre.literal-block, pre.doctest-block {
 """
     
     def footers(self,doc):
-        return "</body></html>\n"
+        return self.rawFooter+"</body></html>\n"
     
 
 
@@ -100,7 +101,7 @@ class boxright_transform(docutils.transforms.Transform):
             boxes.append(target)
         for box in boxes:
             box.replace_self( nodes.container('', *box.children) )
-        
+
 class crosslink_transform(docutils.transforms.Transform):
     default_priority=100
     
