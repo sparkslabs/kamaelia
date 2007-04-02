@@ -41,6 +41,7 @@ class DocGenConfig(object):
         self.includeNonKamaeliaStuff=False
         self.showComponentsOnIndices=False
         self.promoteModuleTitles=False
+        self.deemphasiseTrails=False
         self.pageFooter=""
 
 class docFormatter(object):
@@ -222,7 +223,15 @@ class docFormatter(object):
             firstPass=False
         
         return trail
-    
+
+    def formatTrailAsTitle(self, moduleName):
+        trailTree = self.formatTrail(moduleName)
+        title = nodes.title('', '', *trailTree.children)
+        if self.config.deemphasiseTrails:
+            title = nodes.section('', title)
+
+        return title
+        
     def componentList(self, components):
         uris = {}
         for component in components:
@@ -259,11 +268,12 @@ class docFormatter(object):
         
     def formatDeclarationPage(self, name, method, arg):
         parentURI = self.renderer.makeURI(".".join(name.split(".")[:-1]))
-        trailTree = self.formatTrail(name)
+        trailTitle = self.formatTrailAsTitle(name)
+        
         declarationTree = method(arg)
         
         return nodes.section('',
-            nodes.title('', '', *trailTree.children),
+            trailTitle,
             nodes.paragraph('', '',
                 nodes.Text("For examples and more explanations, see the "),
                 nodes.reference('', 'module level docs.', refuri=parentURI)
@@ -274,7 +284,7 @@ class docFormatter(object):
            
     def formatModule(self, moduleName, module, components, prefabs, classes, functions):
         
-        trailTree = self.formatTrail(moduleName)
+        trailTitle = self.formatTrailAsTitle(moduleName)
         moduleTree = self.docString(module.docString, main=True)
         
         if self.config.promoteModuleTitles and \
@@ -331,7 +341,7 @@ class docFormatter(object):
 
         return nodes.container('',
             nodes.section('',
-                nodes.title('','', *trailTree.children),
+                trailTitle,
                 ),
             nodes.section('',
                 * promotedTitle + \
@@ -390,6 +400,8 @@ class docFormatter(object):
         depth=self.config.treeDepth
 
         indexName = ".".join(path)
+
+        trailTitle = self.formatTrailAsTitle(indexName)
         
         moduleTree = nodes.container('')
         if self.config.includeModuleDocString:
@@ -408,7 +420,7 @@ class docFormatter(object):
             promotedTitle = []
 
         return nodes.section('',
-            * [ nodes.title('', '', *self.formatTrail(indexName).children) ]
+            * [ trailTitle ]
             + promotedTitle
             + [ self.generateIndex(path, subTree, depth=depth) ]
             + [ moduleTree ]
@@ -624,7 +636,9 @@ if __name__ == "__main__":
             "                           bottom of all pages",
             "",
             "    --promotetitles      Promote module level doc string titles to top of pages",
-            "                         generated.",
+            "                         generated. Also causes breadcrumb trails at the top of",
+            "                         pages to be reduced in emphasis slightly, so the title",
+            "                         properly stands out",
             "",
             "    --indexdepth         Depth (nesting levels) of indexes on non-module pages.",
             "                         Use 0 to suppress index all together",
@@ -668,6 +682,7 @@ if __name__ == "__main__":
         if "--promotetitles" in cmdLineArgs:
             index = cmdLineArgs.index("--promotetitles")
             config.promoteModuleTitles=True
+            config.deemphasiseTrails=True
             del cmdLineArgs[index]
 
         if "--footerinclude" in cmdLineArgs:
@@ -683,8 +698,6 @@ if __name__ == "__main__":
             assert(config.treeDepth >= 0)
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
-
-        
 
         if len(cmdLineArgs)==1:
             REPOSITORYDIR = cmdLineArgs[0]
