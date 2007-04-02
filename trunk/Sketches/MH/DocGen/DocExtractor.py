@@ -40,6 +40,8 @@ class DocGenConfig(object):
         self.includeModuleDocString=False
         self.includeNonKamaeliaStuff=False
         self.showComponentsOnIndices=False
+        self.promoteModuleTitles=False
+        self.pageFooter=""
 
 class docFormatter(object):
     def __init__(self, renderer=RenderPlaintext, config=DocGenConfig(), debug=False):
@@ -136,7 +138,7 @@ class docFormatter(object):
         INBOXES = self.boxes(X.name,"Inboxes", X.inboxes)
         OUTBOXES = self.boxes(X.name,"Outboxes", X.outboxes)
         
-        if self.config.includeMethods:
+        if self.config.includeMethods and len(X.methods):
             METHODS = [ nodes.section('',
                           nodes.title('', 'Methods defined here'),
                           boxright('',
@@ -183,15 +185,20 @@ class docFormatter(object):
     def formatClass(self, X):
         # no class bases available from repository scanner 
         CLASSNAME = self.formatClassStatement(X.name, []) #X.__bases__)
-            
+
+        if len(X.methods)>0:
+            METHODS = [ nodes.section('',
+                            nodes.title('', 'Methods defined here'),
+                            * self.formatMethodDocStrings(X)
+                        )
+                      ]
+        else:
+            METHODS = []
         return \
                 nodes.section('',
                     nodes.title('', CLASSNAME, ids=["class-"+X.name]),
                     self.docString(X.docString),
-                    nodes.section('',
-                        nodes.title('', 'Methods defined here'),
-                        * self.formatMethodDocStrings(X)
-                    )
+                    *METHODS
                 )
         
     def formatTrail(self, moduleName):
@@ -263,14 +270,22 @@ class docFormatter(object):
                 ),
             nodes.transition(),
             nodes.section('', *declarationTree),
-            nodes.transition(),
-            self.postscript(),
             )
            
     def formatModule(self, moduleName, module, components, prefabs, classes, functions):
         
         trailTree = self.formatTrail(moduleName)
         moduleTree = self.docString(module.docString, main=True)
+        
+        if self.config.promoteModuleTitles and \
+           len(moduleTree.children)>=1 and \
+           isinstance(moduleTree.children[0], nodes.title):
+            theTitle = moduleTree.children[0]
+            moduleTree.remove(theTitle)
+            promotedTitle = [ theTitle ]
+        else:
+            promotedTitle = []
+
         toc = self.buildTOC(moduleTree, depth=self.config.tocDepth)
         
         allDeclarations = []
@@ -317,16 +332,17 @@ class docFormatter(object):
         return nodes.container('',
             nodes.section('',
                 nodes.title('','', *trailTree.children),
-                componentListTree,
-                nodes.paragraph('', nodes.Text("Explanations")),
-                toc,
+                ),
+            nodes.section('',
+                * promotedTitle + \
+                  [ componentListTree,
+                    toc,
+                  ]
             ),
             nodes.transition(),
             moduleTree,
             nodes.transition(),
             nodes.section('', *allDeclarations),
-            nodes.transition(),
-            self.postscript() 
             )
             
     def buildTOC(self, srcTree, parent=None, depth=None):
@@ -357,6 +373,16 @@ class docFormatter(object):
                     parent.append(newItem)
                 self.buildTOC( n, parent[-1][-1], depth-1)
 
+        # go through parent promoting any doubly nested bullet_lists
+        for item in parent.children:
+            if isinstance(item.children[0], nodes.bullet_list):
+                sublist = item.children[0]
+                for subitem in sublist.children[:]:   # copy it so it isn't corrupted by what we're about to do
+                    sublist.remove(subitem)
+                    item.parent.insert(item.parent.index(item), subitem)
+                parent.remove(item)
+                
+            
         return parent
         
 
@@ -365,22 +391,27 @@ class docFormatter(object):
 
         indexName = ".".join(path)
         
-        moduleTree = []
+        moduleTree = nodes.container('')
         if self.config.includeModuleDocString:
             if subTree.has_key("__init__"):
                 docs = subTree["__init__"].docString
                 if docs and ("This is a doc string" not in docs):
-                    moduleTree = [ nodes.transition(),
-                                   self.docString(docs) ]
-        
+                    moduleTree =self.docString(docs)
+
+        if self.config.promoteModuleTitles and \
+           len(moduleTree.children)>=1 and \
+           isinstance(moduleTree.children[0], nodes.title):
+            theTitle = moduleTree.children[0]
+            moduleTree.remove(theTitle)
+            promotedTitle = [ theTitle ]
+        else:
+            promotedTitle = []
+
         return nodes.section('',
-            * [ nodes.title('', '', *self.formatTrail(indexName).children),
-                self.generateIndex(path, subTree, depth=depth),
-              ]
-            + moduleTree
-            + [ nodes.transition(),
-                self.postscript(),
-              ]
+            * [ nodes.title('', '', *self.formatTrail(indexName).children) ]
+            + promotedTitle
+            + [ self.generateIndex(path, subTree, depth=depth) ]
+            + [ moduleTree ]
             )
 
     def generateIndex(self, path, srcTree, parent=None, depth=99):
@@ -436,18 +467,19 @@ class docFormatter(object):
 
         return parent
 
-    def postscript(self):
-        return self.docString("""\
-            Feedback
-            --------
-            Got a problem with the documentation? Something unclear that could be clearer?
-            Want to help improve it? Constructive criticism is very welcome! (preferably in
-            the form of suggested rewording)
-            
-            Please leave you feedback
-            `here <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1142023701>`_
-            in reply to the documentation thread in the Kamaelia blog.
-            """)
+#    def postscript(self):
+#        return self.config.pageFooter.deepcopy()
+#        return self.docString("""\
+#            Feedback
+#            --------
+#            Got a problem with the documentation? Something unclear that could be clearer?
+#            Want to help improve it? Constructive criticism is very welcome! (preferably in
+#            the form of suggested rewording)
+#            
+#            Please leave you feedback
+#            `here <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1142023701>`_
+#            in reply to the documentation thread in the Kamaelia blog.
+#            """)
             
             
 def generateDocumentationFiles(formatter, CONFIG):
@@ -546,15 +578,30 @@ if __name__ == "__main__":
     
     config = DocGenConfig()
     config.docdir     = "pydoc"
+    config.treeDepth=99
+    config.tocDepth=3
+    config.includeMethods=True
+    config.includeModuleDocString=True
+    config.showComponentsOnIndices=True
+        
 
     urlPrefix=""
 
-    cmdLineArgs = sys.argv[1:]
+    cmdLineArgs = []
+
+    for arg in sys.argv[1:]:
+        if arg[:2] == "--" and len(arg)>2:
+            cmdLineArgs.append(arg.lower())
+        else:
+            cmdLineArgs.append(arg)
+    
     if not cmdLineArgs or "--help" in cmdLineArgs or "-h" in cmdLineArgs:
         sys.stderr.write("\n".join([
             "Usage:",
             "",
-            "    "+sys.argv[0]+" [--help] [--filter <substr>] [--urlprefix <prefix>] [--outdir <dir>] [<repositoryDir>]",
+            "    "+sys.argv[0]+" <arguments - see below>",
+            "",
+            "Only <repository dir> is mandatory, all other arguments are optional.",
             "",
             "    --help               Display this help message",
             "",
@@ -572,6 +619,15 @@ if __name__ == "__main__":
             "                         default='Kamaelia'",
             "",
             "    --notjustcomponents  Causes documentation for classes and functions too",
+            "",
+            "    --footerinclude <file> '<prefix><file>' will be specified as an include at the",
+            "                           bottom of all pages",
+            "",
+            "    --promotetitles      Promote module level doc string titles to top of pages",
+            "                         generated.",
+            "",
+            "    --indexdepth         Depth (nesting levels) of indexes on non-module pages.",
+            "                         Use 0 to suppress index all together",
             "",
             "    <repositoryDir>      Use Kamaelia modules here instead of the installed ones",
             "",
@@ -608,7 +664,28 @@ if __name__ == "__main__":
             index = cmdLineArgs.index("--notjustcomponents")
             config.includeNonKamaeliaStuff=True
             del cmdLineArgs[index]
-            
+
+        if "--promotetitles" in cmdLineArgs:
+            index = cmdLineArgs.index("--promotetitles")
+            config.promoteModuleTitles=True
+            del cmdLineArgs[index]
+
+        if "--footerinclude" in cmdLineArgs:
+            index = cmdLineArgs.index("--footerinclude")
+            location=cmdLineArgs[index+1]
+            config.pageFooter = "\n[include][location="+urlPrefix+location+" ] ]\n"
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+
+        if "--indexdepth" in cmdLineArgs:
+            index = cmdLineArgs.index("--indexdepth")
+            config.treeDepth = int(cmdLineArgs[index+1])
+            assert(config.treeDepth >= 0)
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+
+        
+
         if len(cmdLineArgs)==1:
             REPOSITORYDIR = cmdLineArgs[0]
         elif len(cmdLineArgs)==0:
@@ -630,15 +707,10 @@ if __name__ == "__main__":
     REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
     config.repository=REPOSITORY
 
-    config.treeDepth=99
-    config.tocDepth=3
-    config.includeMethods=True
-    config.includeModuleDocString=True
-    config.showComponentsOnIndices=True
-        
     renderer = RenderHTML(titlePrefix="Kamaelia docs : ",
                           urlPrefix=urlPrefix,
-                          debug=False)
+                          debug=False,
+                          rawFooter=config.pageFooter)
     
     if 1:
         # automatically generate crosslinks when component names are seen
