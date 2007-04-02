@@ -70,31 +70,31 @@ to that component. A linkage between two postboxes represents a linkage in the
 Axon system, from one component to another.
 
 This topology change data is output as string containing one or more lines. It
-is output through the "outbox" outbox. Each line may be one of the following::
+is output through the "outbox" outbox. Each line may be one of the following:
 
-* "DEL ALL"
+* `"DEL ALL"`
 
   - the first thing sent immediately after activation - to ensure that
     the receiver of this data understand that we are starting from nothing
 
-* "ADD NODE <id> <name> randompos component"
-* "ADD NODE <id> <name> randompos inbox"
-* "ADD NODE <id> <name> randompos outbox"
+* `"ADD NODE <id> <name> randompos component"`
+* `"ADD NODE <id> <name> randompos inbox"`
+* `"ADD NODE <id> <name> randompos outbox"`
 
   - an instruction to add a node to the topology, representing a component,
     inbox or outbox. <id> is a unique identifier. <name> is a 'friendly'
     textual label for the node.
 
-* "DEL NODE <id>"
+* `"DEL NODE <id>"`
 
   - an instruction to delete a node, specified by its unique id
     
-* "ADD LINK <id1> <id2>"
+* `"ADD LINK <id1> <id2>"`
 
   - an instruction to add a link between the two identified nodes. The link is
     deemed to be directional, from <id1> to <id2>
 
-* "DEL LINK <id1> <id2>"
+* `"DEL LINK <id1> <id2>"`
 
   - an instruction to delete any link between the two identified nodes. Again,
     the directionality is from <id1> to <id2>.

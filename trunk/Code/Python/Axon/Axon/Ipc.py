@@ -93,7 +93,7 @@ Knock-on shutdowns between microprocesses
 
 * Axon.Ipc.shutdownMicroprocess
 
-When a microprocess terminates, the scheduler calls its _closeDownMicroprocess()
+When a microprocess terminates, the scheduler calls its Axon.Microprocess.microprocess._closeDownMicroprocess()
 method. This method can return an Axon.Ipc.shutdownMicroprocess ipc object, for
 example::
 
@@ -185,8 +185,8 @@ class reactivate(ipc):
    """\
    reactivate(original) -> new reactivate ipc message.
 
-   Returned by microprocess._closeDownMicroprocess() to the scheduler to get
-   another microprocess reactivated.
+   Returned by Axon.Microprocess.microprocess._closeDownMicroprocess() to the
+   scheduler to get another microprocess reactivated.
    
    Keyword arguments:
 

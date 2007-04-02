@@ -43,6 +43,8 @@ accessible via a local or class interface (though this is not enforced).
 
 The simplest way to obtain the global co-ordinating assistant tracker is via
 the getcat() class (static) method::
+
+    from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker
     
     theCAT = coordinatingassistanttracker.getcat()
 
@@ -145,6 +147,8 @@ class coordinatingassistanttracker(object):
    def getcat(cls):
       """\
       Class method that returns a singleton coordinating assistant tracker (CAT).
+
+      Call this to get hold of the system's CAT.
       """
       if not cls.basecat:
          cls.basecat = cls()

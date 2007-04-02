@@ -110,7 +110,7 @@ that inbox. Calling len() will report the number of items in the inbox, and
 pop() will enable you to take items out.
 
 Inboxes can be size limited. If it becomes full then trying to append() will
-raise an Axon.noSpaceInBox exception.
+raise an Axon.AxonExceptions.noSpaceInBox exception.
 
 
 Outboxes
@@ -328,7 +328,7 @@ class realsink(list):
     A working piece of storage for postboxes, that behaves a bit like a list.
 
     Stores data given to it by calling append(), up to a limit after which
-    noSpaceInBox exceptions are raised.
+    Axon.AxonExceptions.noSpaceInBox exceptions are raised.
 
     Calls the 'notify' callback when append() is called.
     Calls any callbacks in the self.wakeOnPop list when pop() is called.
@@ -350,8 +350,8 @@ class realsink(list):
         
     def append(self,data):
         """\
-        Appends item to the list, or raises noSpaceInBox exception if the number
-        of items already meets the size limit.
+        Appends item to the list, or raises Axon.AxonExceptions.noSpaceInBox
+        exception if the number of items already meets the size limit.
 
         Calls self.notify() callback
         """
@@ -475,7 +475,7 @@ class postbox(object):
         retarget([newtarget]) aims requests at to this postbox at a different
         target.
         
-        If newtarget is unspecified or None, target is default lol storage.
+        If newtarget is unspecified or None, target is default local storage.
         """
         if newtarget==None:
             self.target = None

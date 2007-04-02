@@ -27,7 +27,7 @@
 An AdaptiveCommsComponent is just like an ordinary component but with the
 ability to create and destroy extra inboxes and outboxes whilst it is running.
 
-* An AdaptiveCommsComponent is based on an Axon.Component.Component
+* An AdaptiveCommsComponent is based on an Axon.Component.component
 
 There are other variants on the basic component:
     
@@ -133,7 +133,8 @@ you might want to clean up the resource you were using to track this too::
         for name in outboxes:
             self.deleteOutbox(name)
 
-        for linkage in info:
+        state,linkages = info[0], info[1:]
+        for linkage in linkages:
             self.unlink(thelinkage=linkage)
         
         self.ceaseTrackingResource(resource)
@@ -285,6 +286,9 @@ class AdaptiveCommsComponent(component, _AdaptiveCommsable):
    is running.
 
    Subclass to make your own.
+
+   See Axon.AdaptiveCommsComponent._AdaptiveCommsable for the extra methods that
+   this subclass of component has.
    """
    def __init__(self):
       component.__init__(self)

@@ -37,7 +37,7 @@ However this metaclass has been retained (and is still used) for possible future
 uses.
 
 * AxonObject is the base class for Axon.Microprocess.microprocess and
-  Axon.Linkage.linkage.
+  Axon.Linkage.linkage
 
 """
 
