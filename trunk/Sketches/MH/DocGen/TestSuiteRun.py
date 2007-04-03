@@ -34,6 +34,11 @@ Each output is then placed into a file in a specified directory.
 import re
 import os
 
+def writeOut(filename,data):
+    F=open(filename,"w")
+    F.write(data)
+    F.close()
+
 def processDirectory(suiteDir, outFilePath, filePattern):
     dirEntries = os.listdir(suiteDir)
 
@@ -54,10 +59,10 @@ def processDirectory(suiteDir, outFilePath, filePattern):
                 inpipe.close()
                 outpipe.close()
                 
-                F=open(outname,"w")
-                output, failures, errors = parseLines(lines)
-                F.write("".join(output))
-                F.close()
+                output, failures, msgs = parseLines(lines)
+                writeOut(outname+"...ok", "".join(output))
+                writeOut(outname+"...fail", "".join(failures))
+                writeOut(outname+"...msgs", "".join(msgs))
     
 pattern_ok   = re.compile("^(.*) \.\.\. ok\n$")
 pattern_fail = re.compile("^(.*) \.\.\. FAIL\n$")
@@ -65,7 +70,7 @@ pattern_fail = re.compile("^(.*) \.\.\. FAIL\n$")
 def parseLines(lines):
     out = []
     failures = []
-    errors = []
+    msgs = []
     
     state="LINES"
     for line in lines:
@@ -83,9 +88,9 @@ def parseLines(lines):
             if re.match("Ran \d+ tests? in \d*(\.\d+)?s\n$",line):
                 state="DONE"
             else:
-                errors.append(line)
+                msgs.append(line)
         
-    return out,failures,errors
+    return out,failures,msgs
 
 if __name__ == "__main__":
 
