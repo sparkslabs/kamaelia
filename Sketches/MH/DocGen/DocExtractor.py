@@ -12,6 +12,7 @@ import textwrap
 import inspect
 import pprint
 import time
+import os
 from docutils import core
 from docutils import nodes
 #import Kamaelia.Support.Data.Repository
@@ -43,6 +44,8 @@ class DocGenConfig(object):
         self.promoteModuleTitles=False
         self.deemphasiseTrails=False
         self.pageFooter=""
+        self.testOutputDir=None
+        self.testExtensions=[]
 
 class docFormatter(object):
     def __init__(self, renderer=RenderPlaintext, config=DocGenConfig(), debug=False):
@@ -202,6 +205,31 @@ class docFormatter(object):
                     *METHODS
                 )
         
+    def formatTests(self, moduleName):
+        if not self.config.testOutputDir:
+            return nodes.container('')
+        else:
+            docTree = nodes.container('')
+            for (ext,heading) in self.config.testExtensions:
+                filename = os.path.join(self.config.testOutputDir, moduleName+ext)
+                try:
+                    file=open(filename,"r")
+                    itemlist = nodes.bullet_list()
+                    foundSomething=False
+                    for line in file.readlines():
+                        line=line[:-1]   # strip of trailing newline
+                        itemlist.append(nodes.list_item('',nodes.paragraph('',line)))
+                        foundSomething=True
+                    if foundSomething:
+                        docTree.append(nodes.paragraph('', heading))
+                        docTree.append(itemlist)
+                    file.close()
+                except IOError:
+                    pass
+            if len(docTree.children)>0:
+                docTree.insert(0,nodes.title('', "Test documentation"))
+            return docTree
+    
     def formatTrail(self, moduleName):
         path = moduleName.split(".")
         
@@ -311,6 +339,12 @@ class docFormatter(object):
         
         trailTitle = self.formatTrailAsTitle(moduleName)
         moduleTree = self.docString(module.docString, main=True)
+        testsTree = self.formatTests(moduleName)
+        while len(testsTree.children)>0:
+            node=testsTree.children[0]
+            testsTree.remove(node)
+            moduleTree.append(node)
+            
         
         if self.config.promoteModuleTitles and \
            len(moduleTree.children)>=1 and \
@@ -668,6 +702,9 @@ if __name__ == "__main__":
             "    --indexdepth         Depth (nesting levels) of indexes on non-module pages.",
             "                         Use 0 to suppress index all together",
             "",
+            "    --includeTestOutput <dir> Incorporate test suite output",
+            "                        as found in the specified directory.",
+            "",
             "    <repositoryDir>      Use Kamaelia modules here instead of the installed ones",
             "",
             "",
@@ -721,6 +758,13 @@ if __name__ == "__main__":
             index = cmdLineArgs.index("--indexdepth")
             config.treeDepth = int(cmdLineArgs[index+1])
             assert(config.treeDepth >= 0)
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        if "--includetestoutput" in cmdLineArgs:
+            index = cmdLineArgs.index("--includetestoutput")
+            config.testOutputDir = cmdLineArgs[index+1]
+            config.testExtensions = [("...ok","Tests passed:"),("...fail","Tests failed:")]
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
 
