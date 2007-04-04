@@ -29,10 +29,13 @@ a path to the python library path to allow you to override where it'll be
 picking up modules from.
 
 Each output is then placed into a file in a specified directory.
+
+
 """
 
 import re
 import os
+import sys
 
 def writeOut(filename,data):
     F=open(filename,"w")
@@ -54,6 +57,8 @@ def processDirectory(suiteDir, outFilePath, filePattern):
                 nameFragment = match.group(1)
                 outname = outFilePath+"."+nameFragment
 
+                print "Running: "+filepath+" ..."
+                print
                 inpipe, outpipe = os.popen4(filepath+" -v")
                 lines = outpipe.readlines()
                 inpipe.close()
@@ -74,6 +79,7 @@ def parseLines(lines):
     
     state="LINES"
     for line in lines:
+        print line,
         if state=="LINES":
             if pattern_ok.match(line):
                 msg = pattern_ok.match(line).group(1)
@@ -94,13 +100,97 @@ def parseLines(lines):
 
 if __name__ == "__main__":
 
-    testSuiteDir = "/home/matteh/kamaelia/trunk/Tests/Python/Axon/"
-    testOutputDir = "/home/matteh/test_output"
-    moduleRoot = "Axon"
+    testSuiteDir  = None
+    testOutputDir = None
+    moduleRoot    = None
+    filePattern   = re.compile("^test_([^\.]*)\.py$")
+    
+    cmdLineArgs = []
 
-    filePattern=re.compile("^test_([^\.]*)\.py$")
+    for arg in sys.argv[1:]:
+        if arg[:2] == "--" and len(arg)>2:
+            cmdLineArgs.append(arg.lower())
+        else:
+            cmdLineArgs.append(arg)
+    
+    if not cmdLineArgs or "--help" in cmdLineArgs or "-h" in cmdLineArgs:
+        sys.stderr.write("\n".join([
+            "Usage:",
+            "",
+            "    "+sys.argv[0]+" <arguments - see below>",
+            "",
+            "Optional arguments:",
+            "",
+            "    --help               Display this help message",
+            "",
+            "    --codebase <dir>     The directory containing the codebase - will be",
+            "                         prepended to python's module path. Default is nothing.",
+            "",
+            "    --root <moduleRoot>  The module path leading up to the repositoryDir specified",
+            "                         eg. Axon, if testSuiteDir='.../Tests/Python/Axon/'",
+            "                         Default is the leaf directory name of the <testSuiteDir>",
+            "",
+            "Mandatory arguments:",
+            "",
+            "    --outdir <dir>       Directory to put output into (default is 'pydoc')",
+            "                         directory must already exist (and be emptied)",
+            "",
+            "    <testSuiteDir>       Use Kamaelia modules here instead of the installed ones",
+            "",
+            "",
+        ]))
+        sys.exit(0)
+
+    try:
+        if "--outdir" in cmdLineArgs:
+            index = cmdLineArgs.index("--outdir")
+            testOutputDir = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        if "--root" in cmdLineArgs:
+            index = cmdLineArgs.index("--root")
+            moduleRoot = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+        
+        if "--codebase" in cmdLineArgs:
+            index = cmdLineArgs.index("--codebase")
+            codeBaseDir = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        if len(cmdLineArgs)==1:
+            testSuiteDir = cmdLineArgs[0]
+        elif len(cmdLineArgs)==0:
+            testSuiteDir = None
+        else:
+            raise
+    except:
+        sys.stderr.write("\n".join([
+            "Error in command line arguments.",
+            "Run with '--help' for info on command line arguments.",
+            "",
+            "",
+        ]))
+        sys.exit(1)
+    
+    sys.argv=sys.argv[0:0]
+
+    assert(testSuiteDir)
+    assert(testOutputDir)
+
+    if moduleRoot is None:
+        # if no module root specified, strip down the test suite dir for the leaf directory name
+        moduleRoot = os.path.abspath(testSuiteDir)
+        moduleRoot = os.path.split(moduleRoot)[1]
+        assert(moduleRoot)
+        
+    if codeBaseDir is not None:
+        # if codebase is specified, set the pythonpath variable so it will
+        # be found by subsequent python apps we run
+        os.putenv("PYTHONPATH",codeBaseDir)
 
     outDir = os.path.join(testOutputDir,moduleRoot)   # ensure its already got the suffix
 
-    os.putenv("PYTHONPATH","/home/matteh/kamaelia/trunk/Code/Python/Axon/")
     processDirectory(testSuiteDir,outDir,filePattern)
