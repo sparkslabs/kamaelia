@@ -13,6 +13,7 @@ import inspect
 import pprint
 import time
 import os
+import StringIO
 from docutils import core
 from docutils import nodes
 #import Kamaelia.Support.Data.Repository
@@ -53,6 +54,7 @@ class docFormatter(object):
         self.renderer = renderer
         self.debug = debug
         self.config = config
+        self.errorCount=0
 
     uid = 0
 
@@ -104,7 +106,17 @@ class docFormatter(object):
         while len(docstring)>0 and docstring[-1] == "\n":
             docstring = docstring[:-1]
             
-        return nodes.section('', *core.publish_doctree(docstring).children)
+        warningStream=StringIO.StringIO()
+        overrides={"warning_stream":warningStream,"halt_level":99}
+        docTree=core.publish_doctree(docstring,settings_overrides=overrides)
+        warnings=warningStream.getvalue()
+        if warnings:
+            print "!!! Warnings detected:"
+            print warnings
+            self.errorCount+=1
+        warningStream.close()
+        
+        return nodes.section('', *docTree.children)
 
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
@@ -815,3 +827,10 @@ if __name__ == "__main__":
 
     generateDocumentationFiles(formatter,config)
     generateIndices(formatter,config)
+
+    if formatter.errorCount>0:
+        print "Errors occurred during docstring parsing/page generation."
+        sys.exit(2)
+    else:
+        sys.exit(0)
+        
