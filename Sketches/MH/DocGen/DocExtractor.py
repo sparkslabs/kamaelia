@@ -763,7 +763,7 @@ if __name__ == "__main__":
         if "--footerinclude" in cmdLineArgs:
             index = cmdLineArgs.index("--footerinclude")
             location=cmdLineArgs[index+1]
-            config.pageFooter = "\n[[include][file="+location+" ] ]\n"
+            config.pageFooter = "\n[[include][file="+location+"]]\n"
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
 
