@@ -703,8 +703,9 @@ if __name__ == "__main__":
             "",
             "    --notjustcomponents  Causes documentation for classes and functions too",
             "",
-            "    --footerinclude <file> '<prefix><file>' will be specified as an include at the",
-            "                           bottom of all pages",
+            "    --footerinclude <url> '<url>' will be specified as an include at the",
+            "                           bottom of all pages. Note that the 'prefix' is not",
+            "                           used for this, so you must specify an absolute path",
             "",
             "    --promotetitles      Promote module level doc string titles to top of pages",
             "                         generated. Also causes breadcrumb trails at the top of",
@@ -762,7 +763,7 @@ if __name__ == "__main__":
         if "--footerinclude" in cmdLineArgs:
             index = cmdLineArgs.index("--footerinclude")
             location=cmdLineArgs[index+1]
-            config.pageFooter = "\n[include][location="+urlPrefix+location+" ] ]\n"
+            config.pageFooter = "\n[include][location="+location+" ] ]\n"
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
 
