@@ -801,6 +801,10 @@ if __name__ == "__main__":
     debug = False
     REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
     config.repository=REPOSITORY
+    
+    import time
+    theTime=time.strftime("%d %b %Y at %H:%M:%S", time.gmtime())
+    config.pageFooter += "\n<p><i>-- Automatic documentation generator, "+theTime+"</i>\n"
 
     renderer = RenderHTML(titlePrefix="Kamaelia docs : ",
                           urlPrefix=urlPrefix,
