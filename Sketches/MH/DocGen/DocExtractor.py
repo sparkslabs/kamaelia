@@ -703,9 +703,9 @@ if __name__ == "__main__":
             "",
             "    --notjustcomponents  Causes documentation for classes and functions too",
             "",
-            "    --footerinclude <url> '<url>' will be specified as an include at the",
-            "                           bottom of all pages. Note that the 'prefix' is not",
-            "                           used for this, so you must specify an absolute path",
+            "    --footerinclude <file> '<file>' will be specified as an include at the",
+            "                           bottom of all pages. Note that this is relative to",
+            "                           the document base of the cerenity installation",
             "",
             "    --promotetitles      Promote module level doc string titles to top of pages",
             "                         generated. Also causes breadcrumb trails at the top of",
@@ -763,7 +763,7 @@ if __name__ == "__main__":
         if "--footerinclude" in cmdLineArgs:
             index = cmdLineArgs.index("--footerinclude")
             location=cmdLineArgs[index+1]
-            config.pageFooter = "\n[include][location="+location+" ] ]\n"
+            config.pageFooter = "\n[include][file="+location+" ] ]\n"
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
 
