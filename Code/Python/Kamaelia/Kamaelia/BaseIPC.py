@@ -24,17 +24,40 @@
 """\
 Base IPC class. Subclass it to create your own IPC classes.
 
-Set:
+When doing so, make sure you set the following:
 
-- Its doc string as below so a string explanation can be generated for an
+- Its doc string, so a string explanation can be generated for an
   instance of your subclass.
-- 'Parameters' to a list of named parameters you accept at creation, 
+- 'Parameters' class attribute to a list of named parameters you accept at creation, 
   prefixing optional parameters with "?", e.g. "?depth"
+
+
+
+For example
+-----------
+
+A custom IPC class to report a theft taking place! ::
+
+    class Theft(Kamaelia.BaseIPC.IPC):
+        \"\"\"Something has been stolen!\"\"\"
+        
+        Parameters = ["?who","what"]
+        
+So what happens when we use it? ::
+
+    >>> ipc = Theft(who="Sam", what="sweeties")
+    >>> ipc.__doc__
+    'Something has been stolen!'
+    >>> ipc.who
+    'Sam'
+    >>> ipc.what
+    'sweeties'
+
 
 """
 
 class IPC(object):
-    "explanation %(foo)s did %(bar)s"
+    """explanation %(foo)s did %(bar)s"""
     Parameters = [] # ["foo", "bar"]
     def __init__(self, **kwds):
         super(IPC, self).__init__()
