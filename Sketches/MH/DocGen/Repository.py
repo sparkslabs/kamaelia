@@ -400,7 +400,7 @@ def _reduceToNames(tree, keepComponents=True, keepPrefabs=True):
         value=tree[key]
         if isinstance(value,dict):
             output[key] = _reduceToNames(value, keepComponents, keepPrefabs)
-        elif isinstance(value, KamaeliaModuleDocs):
+        elif isinstance(value, ModuleDocs):
             if key == "__init__":
                 continue
             else:
