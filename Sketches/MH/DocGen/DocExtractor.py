@@ -1,12 +1,32 @@
 #!/usr/bin/python
 #
-# This program generates Kamaelia's documentation directly from the
-# source. I am currently running this as follows:
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
 #
-# mkdir ./pydoc/
-# ./DocExtractor.py
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
 #
-# documentation is placed into the "pydoc" subdirectory
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
+# Documentation extractor and writer
+#
+# A tool for generating Axon and Kamaelia documentation
+#
+#
+
+
 
 import textwrap
 import inspect
@@ -20,8 +40,7 @@ from docutils import nodes
 import Repository
 
 
-from renderHTML      import RenderHTML
-from renderPlaintext import RenderPlaintext
+from renderHTML import RenderHTML
 
 from Nodes import boxright
 
@@ -49,7 +68,7 @@ class DocGenConfig(object):
         self.testExtensions=[]
 
 class docFormatter(object):
-    def __init__(self, renderer=RenderPlaintext, config=DocGenConfig(), debug=False):
+    def __init__(self, renderer, config=DocGenConfig(), debug=False):
         super(docFormatter,self).__init__()
         self.renderer = renderer
         self.debug = debug
