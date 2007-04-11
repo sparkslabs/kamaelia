@@ -50,6 +50,60 @@ The specified codebase is pre-pended to the PYTHONPATH environment variable -
 causing python to look there before looking in its installed packages. This
 enables you to run tests against modules that aren't installed.
 
+
+
+Directory structure of the test suite
+-------------------------------------
+
+The directory and filenaming structure should mirror that of the code being
+tested if you want the output from running this tool to be usable for
+documentation generation. That way the filenames can be easily matched up
+so the documentation generator knows what tests go with what modules it is
+documenting.
+
+For example, for a source code base like this::
+
+    Axon/
+        Microprocess.py
+        Component.py
+        Support/
+            Misc.py
+            
+The corresponding tests should be in the same directory structure with matching
+test_XXX.py format filenames::
+
+    Axon/
+        test_Microprocess.py
+        test_Component.py
+        Support/
+            test_Misc.py
+
+
+
+Format of tests
+---------------
+
+Tests should be written using the python unittest framework and should execute
+when the source file containing them is run.
+
+A test file might typically look like this::
+
+    import unittest
+
+    class MyTest(unittest.TestCase):
+        ....
+
+    if __name__=="__main__":
+        unittest.main()
+
+In particular when supplied with the ``-v`` command line option, the output
+they produce should be in the same format as python unittest output.
+
+
+
+Format of the output
+--------------------
+
 Suppose the test suite consists of the following directory structure, and the
 ``--root`` is set to "A.B"::
 
@@ -91,26 +145,6 @@ For each test source file, three files are output:
 * ``XXX...msgs`` - any other messages output during the test being run
   (eg. reasons why particular tests failed)
 
-
-
-Format of tests
----------------
-
-Tests should be written using the python unittest framework and should execute
-when the source file containing them is run.
-
-A test file might typically look like this::
-
-    import unittest
-
-    class MyTest(unittest.TestCase):
-        ....
-
-    if __name__=="__main__":
-        unittest.main()
-
-In particular when supplied with the ``-v`` command line option, the output
-they produce should be in the same format as python unittest output.
 
 
 """
