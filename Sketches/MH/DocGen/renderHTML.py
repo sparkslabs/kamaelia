@@ -1,4 +1,34 @@
 #!/usr/bin/env python
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+========================
+Doctree to HTML Renderer
+========================
+
+Renderer for converting docutils document trees to HTML output with Kamaelia
+website specific directives, and automatic links for certain text patterns.
+
+
+"""
 
 import textwrap
 import inspect
@@ -10,6 +40,22 @@ import docutils
 import re
 
 class RenderHTML(object):
+    """\
+    RenderHTML([debug][,titlePrefix][,urlPrefix][,rawFooter]) -> new RenderHTML object
+
+    Renders docutils document trees to html with Kamaelia website specific
+    directives.
+
+    Also contains helper functions for determining filenames and URIs for
+    documents.
+
+    Keyword arguments::
+
+    - debug        -- Optional. True for debugging mode - currently does nothing (default=False)
+    - titlePrefix  -- Optional. Prefix for the HTML <head><title> (default="")
+    - urlPrefix    -- Optional. Prefix for all URLs. Should include a trailing slash if needed (default="")
+    - rawFooter    -- Optional. Footer text that will be appended just before the </body></html> tags (default="")
+    """
     
     def __init__(self, debug=False, titlePrefix="", urlPrefix="",rawFooter=""):
         super(RenderHTML,self).__init__()
@@ -20,21 +66,43 @@ class RenderHTML(object):
         self.mappings={}
         
     def makeFilename(self, docName):
-#        if docName=="Kamaelia":
-#            docName="index"
+        """\
+        Returns the file name for a given document name.
+
+        Eg. "Kamaelia.Chassis" will be mapped to something like "Kamaelia.Chassis.html"
+        """
         return docName + ".html"
     
     def makeURI(self, docName):
+        """\
+        Returns the URI for a given document name. Takes into account the url prefix.
+
+        Eg. "Kamaelia.Chassis" will be mapped to something like "/mydocs/Kamaelia.Chassis.html"
+        """
         return self.urlPrefix+self.makeFilename(docName)
         
     def setAutoCrossLinks(self, mappings):
+        """\
+        Set mapping for the automagic generation of hyperlinks between content.
+
+        Supply a dict of mappings mapping patterns (strings) to the fully qualified
+        entity name to be linked to.
+        """
         self.mappings = {}
         for (key,ref) in mappings.items():
-            pattern = re.compile("(?<![a-zA-Z0-9._])"+re.escape(key)+"(?![a-zA-Z0-9._])")
+            # compile as an RE - detects the pattern providing nothign preceeds it,
+            # and it is not part of a larger pattern, eg A.B is part of A.B.C
+            pattern=re.compile("(?<![a-zA-Z0-9._])"+re.escape(key)+"(?!\.?[a-zA-Z0-9_])")
+            # convert the destination to a URI
             uri = self.makeURI(ref)
             self.mappings[pattern] = uri
         
     def render(self, docName, docTree):
+        """\
+        Render the named document tree as HTML with Kamaelia website specific directives.
+
+        Returns string containing the entire HTML document.
+        """
         if not isinstance(docTree, nodes.document):
             root = core.publish_doctree('')
             root.append(docTree)
@@ -91,6 +159,10 @@ from Nodes import boxright
 
 
 class boxright_transform(docutils.transforms.Transform):
+    """\
+    Transform that replaces boxright nodes with the corresponding Kamaelia
+    website [[boxright] <child node content> ] directive
+    """
     default_priority=100
 
     def apply(self):
@@ -103,6 +175,11 @@ class boxright_transform(docutils.transforms.Transform):
             box.replace_self( nodes.container('', *box.children) )
 
 class crosslink_transform(docutils.transforms.Transform):
+    """\
+    Transform that searches text in the document for any of the patterns in the
+    supplied set of mappings. If a pattern is found it is converted to a
+    hyperlink
+    """
     default_priority=100
     
     def apply(self, mappings):
@@ -145,6 +222,10 @@ class crosslink_transform(docutils.transforms.Transform):
         return False
 
 class squareBracketReplace_transform(docutils.transforms.Transform):
+    """\
+    Transform that replaces square brackets in text with escape codes, so that
+    the Kamaelia website doesn't interpret them as directives
+    """
     default_priority=100
 
     def apply(self):
