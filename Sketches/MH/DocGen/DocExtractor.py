@@ -36,8 +36,7 @@ import os
 import StringIO
 from docutils import core
 from docutils import nodes
-#import Kamaelia.Support.Data.Repository
-import Repository
+from Kamaelia.Support.Data import Repository
 
 
 from renderHTML import RenderHTML
