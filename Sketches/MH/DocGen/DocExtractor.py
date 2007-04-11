@@ -822,7 +822,7 @@ if __name__ == "__main__":
     config.repository=REPOSITORY
     
     import time
-    theTime=time.strftime("%d %b %Y at %H:%M:%S", time.gmtime())
+    theTime=time.strftime("%d %b %Y at %H:%M:%S UTC/GMT", time.gmtime())
     config.pageFooter += "\n<p><i>-- Automatic documentation generator, "+theTime+"</i>\n"
 
     renderer = RenderHTML(titlePrefix="Kamaelia docs : ",
