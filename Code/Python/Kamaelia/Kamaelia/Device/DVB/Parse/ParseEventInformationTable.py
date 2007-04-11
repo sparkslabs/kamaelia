@@ -261,7 +261,8 @@ example::
         'description'    : 'Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]'
     }
 
-The possible values of the 'when' field are::
+The possible values of the 'when' field are:
+
 * "NOW"        -- describes a programme that is happening NOW
 * "NEXT"       -- describes a programme that follows the one happening now
 * "SCHEDULED"  -- part of a schedule describing programmes happening over the next few days
