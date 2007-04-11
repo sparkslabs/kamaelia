@@ -19,13 +19,141 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-#
-# Documentation extractor and writer
-#
-# A tool for generating Axon and Kamaelia documentation
-#
-#
+"""\
+==================================
+Documentation extractor and writer
+==================================
 
+A command line tool for generating Axon and Kamaelia documentation
+
+Features:
+
+* outputs HTML (with some simple additional directives for the wiki engine
+  behind the Kamaelia website)
+
+* python DocStrings are parsed as
+  `ReStructuredText<http://docutils.sourceforge.net/rst.html>`_ - permitting
+  rich formatting.
+
+* can document modules, classes, functions, components and prefabs
+
+* some customisation control over the output format
+
+* generates hierarchical indices of modules
+
+* fully qualified module, component, prefab, class and function names are
+  automagically converted to hyperlinks
+
+* can incorporate test suite output into documentation
+
+*This is not an Axon/Kamaelia system* - it is not built from components. However
+it is probably sufficiently useful to be classified as a 'tool'!
+
+
+
+Usage
+-----
+
+For help on command line options, use the ``--help`` option::
+
+    $> ./DocExtractor.py --help
+
+The command lines currently being used to generate Kamaelia and Axon
+documentation are as follows:
+
+For Kamaelia component docs for the website::
+
+    $> ./DocExtractor.py --urlprefix /Components/pydoc/                \
+                         --root Kamaelia                               \
+                         --footerinclude Components/pydoc-footer.html  \
+                         --outdir <outputDirName>                      \
+                         <repositoryDir> 
+
+For Axon docs for the website::
+
+    $> ./DocExtractor.py --urlprefix /Docs/Axon/                       \
+                         --promotetitles                               \
+                         --notjustcomponents                           \
+                         --indexdepth 0                                \
+                         --root Axon                                   \
+                         --footerinclude Docs/Axon-footer.html         \
+                         --outdir <outputDirName>                      \
+                         <repositoryDir> 
+
+Why differences?
+
+* The ``--notjustcomponents`` flag which ensures that the classes and functions
+  making up Axon are documented.
+
+* The remaining differences change the formatting and style:
+    
+  * ``promotetitles`` pushes module level doc string titles to the top of the
+    HTML pages generated - making them more prominent.
+
+  * ``indexDepth`` of 0 supresses the generation of indexes of modules in a
+    given subdir. Axon's ``__init__.py`` contains a comprehensive table of
+    contents of its own, so the index is not needed.
+
+
+
+Not quite plain HTML
+--------------------
+
+Although the output is primarily HTML, it does include Kamaelia website specific
+directives (of the form ``[[foo][attribute=value] blah blah ]``
+
+Since these directives use square brackets, any square brackets in the body text
+are replaced with escaped codes.
+
+
+
+Implementation Details
+----------------------
+
+Kamaelia.Support.Data.Repository is used to scan the specified code base and
+extract info and documentation about modules, classes, functions, components and
+prefabs.
+
+All python doc strings are fed through the
+`docutils <http://docutils.sourceforge.net/>`_ ReStructuredText parser to
+generate formatted HTML output.
+
+Internally individual documentation pages are built up entirely using docutils
+node structures (a convenient intermediate tree representation of the doucment)
+
+A separate renderer object is used to perform the final conversion to HTML, as
+well as resolve the automatic linking of fully qualified names. It also
+determines the appropriate filenames and URLs to use for individual pages and
+hyperlinks between them.
+
+A few bespoke extensions are added to the repertoire of docutils nodes to
+represent specific directives that need to appear in the final output. These
+are converted by the renderer object to final ``[[foo][bar=bibble] ...]``
+format.
+
+This is done this way to keep an unambiguous separation between directives and
+documentation text. If directives were dropped in as plain text earlier in the
+process then they might be confused with occurrences of square brackets in the
+actual documentation text.
+
+Code overview
+
+* The *DocGenConfig* class encapsulates configuration choices and also carries
+  the extracted repository info.
+
+* *__main__* invokes *generateDocumentationFiles()* and *generateIndices()* to
+  kick off the construction of all documentation files and index page files.
+
+* The actual formatting and generation of pages is performed by the *docFormatter*
+  class.
+
+  * *formatXXXPage()* methods return document node trees representing the final
+    pages to be converted to HTML and written to disk.
+
+  * Other *formatXXX()* methods construct fragments of the document tree.
+
+
+"""
 
 
 import textwrap
@@ -50,7 +178,6 @@ class DocGenConfig(object):
         # NOTE: These settings are overridden in __main__ - modify them there,
         #       not here
         self.repository = None
-        self.debug=False
         self.filterPattern=""
         self.docdir="pydoc"
         self.docroot="Kamaelia"
@@ -66,11 +193,19 @@ class DocGenConfig(object):
         self.testOutputDir=None
         self.testExtensions=[]
 
+        
 class docFormatter(object):
-    def __init__(self, renderer, config=DocGenConfig(), debug=False):
+    """\
+    docFormatter(renderer,config) -> new docFormatter object
+
+    Object that formats documentation - methods of this class return document
+    trees (docutils node format) documenting whatever was requested.
+
+    Requires the renderer object so it can determine URIs for hyperlinks.
+    """
+    def __init__(self, renderer, config):
         super(docFormatter,self).__init__()
         self.renderer = renderer
-        self.debug = debug
         self.config = config
         self.errorCount=0
 
@@ -82,6 +217,16 @@ class docFormatter(object):
         return uid
 
     def boxes(self,componentName, label, boxes):
+        """\
+        Format documentation for inboxes/outboxes. Returns a docutils document
+        tree fragment.
+
+        Keyword arguments:
+
+        - componentName  -- name of the component the boxes belong to
+        - label          -- typically "Inboxes" or "Outboxes"
+        - boxes          -- dict containing (boxname, boxDescription) pairs
+        """
         items = []
         for box in boxes:
             try:
@@ -109,6 +254,14 @@ class docFormatter(object):
         return docTree
     
     def docString(self,docstring, main=False):
+        """
+        Parses a doc string in ReStructuredText format and returns a docutils
+        document tree fragment.
+
+        Removes any innate indentation from the raw doc strings before parsing.
+        Also captures any warnings generated by parsing and writes them to
+        stdout, incrementing the self.errorCount flag.
+        """
         if docstring is None:
             docstring = " "
         lines = docstring.split("\n")
@@ -365,7 +518,7 @@ class docFormatter(object):
             nodes.section('', *declarationTree),
             )
            
-    def formatModule(self, moduleName, module, components, prefabs, classes, functions):
+    def formatModulePage(self, moduleName, module, components, prefabs, classes, functions):
         
         trailTitle = self.formatTrailAsTitle(moduleName)
         moduleTree = self.docString(module.docString, main=True)
@@ -485,7 +638,7 @@ class docFormatter(object):
         return parent
         
 
-    def formatIndex(self, path, subTree): #indexName, subTree, componentsAndPrefabs):
+    def formatIndexPage(self, path, subTree): #indexName, subTree, componentsAndPrefabs):
         depth=self.config.treeDepth
 
         indexName = ".".join(path)
@@ -568,20 +721,8 @@ class docFormatter(object):
 
         return parent
 
-#    def postscript(self):
-#        return self.config.pageFooter.deepcopy()
-#        return self.docString("""\
-#            Feedback
-#            --------
-#            Got a problem with the documentation? Something unclear that could be clearer?
-#            Want to help improve it? Constructive criticism is very welcome! (preferably in
-#            the form of suggested rewording)
-#            
-#            Please leave you feedback
-#            `here <http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1142023701>`_
-#            in reply to the documentation thread in the Kamaelia blog.
-#            """)
-            
+
+
             
 def generateDocumentationFiles(formatter, CONFIG):
     
@@ -601,7 +742,7 @@ def generateDocumentationFiles(formatter, CONFIG):
             classes = []
             functions = []
         
-        doctree  = formatter.formatModule(moduleName, module, components, prefabs, classes, functions)
+        doctree  = formatter.formatModulePage(moduleName, module, components, prefabs, classes, functions)
         filename = formatter.renderer.makeFilename(moduleName)
         output   = formatter.renderer.render(moduleName, doctree)
         
@@ -654,7 +795,7 @@ def generateIndices(formatter, CONFIG):
             indexName = ".".join(path)
             print "Creating index: "+indexName
             
-            doctree  = formatter.formatIndex(path,subtree)
+            doctree  = formatter.formatIndexPage(path,subtree)
             filename = formatter.renderer.makeFilename(indexName)
             output   = formatter.renderer.render(indexName, doctree)
             
@@ -719,11 +860,10 @@ if __name__ == "__main__":
             "                         eg. Kamaelia.File, if repositoryDir='.../Kamaelia/File/'",
             "                         default='Kamaelia'",
             "",
-            "    --notjustcomponents  Causes documentation for classes and functions too",
+            "    --notjustcomponents  Will generate documentation for classes and functions too",
             "",
-            "    --footerinclude <file> '<file>' will be specified as an include at the",
-            "                           bottom of all pages. Note that this is relative to",
-            "                           the document base of the cerenity installation",
+            "    --footerinclude <file> A directive will be included to specify '<file>'",
+            "                           as an include at the bottom of all pages.",
             "",
             "    --promotetitles      Promote module level doc string titles to top of pages",
             "                         generated. Also causes breadcrumb trails at the top of",
@@ -841,9 +981,6 @@ if __name__ == "__main__":
                 crossLinks[name] = name
                 name=".".join(list(path)+[item.name])
                 crossLinks[name] = name
-#        for fullpath in crossLinks.keys():
-#            shortened = fullpath.split(".")[-1]
-#            crossLinks[shortened] = crossLinks[fullpath]
         renderer.setAutoCrossLinks( crossLinks )
     
     formatter = docFormatter(renderer, config=config)

@@ -24,11 +24,93 @@
 Test suite outputter
 ====================
 
-Recurses over a directory containing unit test code. Runs each test, prepending
-a path to the python library path to allow you to override where it'll be
-picking up modules from.
+A command line tool for runs a set of unit tests (built on the python unittest
+framework) and separating the results into individual text files.
 
-Each output is then placed into a file in a specified directory.
+The resulting test output is suitable for inclusion by the DocExtractor.py
+documentation generator.
+
+* Recurses over a directory tree (the test suite) containing unit test code.
+
+* Outputs individual text files containing successes and failures
+
+* Can run tests against an alternate codebase (instead of whatever python
+  modules are installed)
+
+
+
+Usage
+-----
+
+To run the axon test suite you might use a command line like this::
+
+    $> ./TestSuiteRun.py testSuiteDir --outdir ./testoutput --root Axon --codebase ./trunk/Code/Python/Axon
+
+The specified codebase is pre-pended to the PYTHONPATH environment variable -
+causing python to look there before looking in its installed packages. This
+enables you to run tests against modules that aren't installed.
+
+Suppose the test suite consists of the following directory structure, and the
+``--root`` is set to "A.B"::
+
+    testSuiteDir/
+        not_a_test.py
+        test_Foo.py
+        test_Bar.py
+        subdir/
+            test_Bling.py
+        subdir2/
+            test_Burble.py
+
+Then the outputted files will be::
+
+    testoutput/
+        A.B.test_Foo...ok
+        A.B.test_Foo...fail
+        A.B.test_Foo...msgs
+        A.B.test_Bar...ok
+        A.B.test_Bar...fail
+        A.B.test_Bar...msgs
+        A.B.subdir.test_Bling...ok
+        A.B.subdir.test_Bling...fail
+        A.B.subdir.test_Bling...msgs
+        A.B.subdir2.test_Burble...ok
+        A.B.subdir2.test_Burble...fail
+        A.B.subdir2.test_Burble...msgs
+
+As you can see, the filenames mimick the directory structure. Only files with
+a name matching the pattern "test_XXX.py" are run. Anything else is considered
+to not be a test and is ignored.
+
+For each test source file, three files are output:
+
+* ``XXX...ok`` - description of each test that passed
+
+* ``XXX...fail`` - description of each test that failed
+
+* ``XXX...msgs`` - any other messages output during the test being run
+  (eg. reasons why particular tests failed)
+
+
+
+Format of tests
+---------------
+
+Tests should be written using the python unittest framework and should execute
+when the source file containing them is run.
+
+A test file might typically look like this::
+
+    import unittest
+
+    class MyTest(unittest.TestCase):
+        ....
+
+    if __name__=="__main__":
+        unittest.main()
+
+In particular when supplied with the ``-v`` command line option, the output
+they produce should be in the same format as python unittest output.
 
 
 """
@@ -38,11 +120,17 @@ import os
 import sys
 
 def writeOut(filename,data):
+    """Write data to the named file"""
     F=open(filename,"w")
     F.write(data)
     F.close()
 
 def processDirectory(suiteDir, outFilePath, filePattern):
+    """\
+    Recurse through test suite directory running any python files matching the
+    specified filename pattern (a compiled regular expression) and collecting
+    the output and splitting it into separate output text files.
+    """
     dirEntries = os.listdir(suiteDir)
 
     for filename in dirEntries:
@@ -73,7 +161,11 @@ pattern_ok   = re.compile("^(.*) \.\.\. ok\n$")
 pattern_fail = re.compile("^(.*) \.\.\. FAIL\n$")
     
 def parseLines(lines):
-    out = []
+    """\
+    Parse lines of output from a unittest run, separating them into
+    passes, failures and messages
+    """
+    passes = []
     failures = []
     msgs = []
     
@@ -83,7 +175,7 @@ def parseLines(lines):
         if state=="LINES":
             if pattern_ok.match(line):
                 msg = pattern_ok.match(line).group(1)
-                out.append(msg+"\n")
+                passes.append(msg+"\n")
             elif pattern_fail.match(line):
                 msg = pattern_fail.match(line).group(1)
                 failures.append(msg+"\n")
@@ -96,7 +188,7 @@ def parseLines(lines):
             else:
                 msgs.append(line)
         
-    return out,failures,msgs
+    return passes,failures,msgs
 
 if __name__ == "__main__":
 
@@ -124,7 +216,7 @@ if __name__ == "__main__":
             "    --help               Display this help message",
             "",
             "    --codebase <dir>     The directory containing the codebase - will be",
-            "                         prepended to python's module path. Default is nothing.",
+            "                         pre-pended to python's module path. Default is nothing.",
             "",
             "    --root <moduleRoot>  The module path leading up to the repositoryDir specified",
             "                         eg. Axon, if testSuiteDir='.../Tests/Python/Axon/'",
