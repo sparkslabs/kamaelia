@@ -34,8 +34,7 @@ from VideoSurface import RGBtoYUV
 from UnixProcess import UnixProcess
 
 sys.path.append("../audio/")
-from WAV import WavParser
-from ToWAV import WavWriter
+from WAV import WavParser, WavWriter
 
 #sys.path.append("../Sketcher/Whiteboard/")
 from TwoWaySplitter import TwoWaySplitter

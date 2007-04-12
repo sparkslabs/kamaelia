@@ -1,9 +1,44 @@
 #!/usr/bin/env python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+==========================================
+Reading and writing simple WAV audio files
+==========================================
+
+The WavParser and WavWriter components
+"""
+
+# WavWriter is based on ryan's PCMToWave component, modified to match WAVParser's formats for
+# conveying samplerate, channels etc
+#
+# also takes binary sample data, instead of integer samples
+
 
 from Axon.Component import component
-#from Axon.Ipc import WaitComplete
 from Axon.Ipc import shutdownMicroprocess, producerFinished
+from Axon.AxonExceptions import noSpaceInBox
+
 import struct
+import string
 
 
 class WavParser(component):
@@ -211,8 +246,97 @@ class WavParser(component):
 
 
 
+class WavWriter(component):
+    def __init__(self, channels, sample_format, sample_rate):
+        super(WavWriter, self).__init__()
+        if sample_format == "S8":
+            self.bitsPerSample = 8
+            self.bytespersample = 1
+        elif sample_format == "S16_LE":
+            self.bitsPerSample = 16
+            self.bytespersample = 2
+        else:
+            raise "WavWriter can't handle sample format "+str(sample_format)+" at the moment"
+        
+        self.samplingfrequency = sample_rate
+        self.channels = channels
+        
+    def handleControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+            elif isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+
+    def canStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, (producerFinished,shutdownMicroprocess))
+
+    def mustStop(self):
+        self.handleControl()
+        return isinstance(self.shutdownMsg, shutdownMicroprocess)
+    
+    def waitSend(self,data,boxname):
+        while 1:
+            try:
+                self.send(data,boxname)
+                return
+            except noSpaceInBox:
+                if self.mustStop():
+                    raise "STOP"
+                
+                self.pause()
+                yield 1
+                
+                if self.mustStop():
+                    raise "STOP"
+
+    def main(self):
+        self.shutdownMsg=None
+        
+        try:
+            #we don't know the length yet, so we say the file lasts an arbitrary (long) time 
+            riffchunk = "RIFF" + struct.pack("<L", 0x0) + "WAVE"
+            
+            bytespersecond = self.bytespersample * self.channels * self.samplingfrequency
+            
+            formatchunk = "fmt "
+            formatchunk += struct.pack("<L", self.bitsPerSample)
+            formatchunk += struct.pack("<H", 0x01) #PCM/Linear quantization
+            formatchunk += struct.pack("<H", self.channels) 
+            formatchunk += struct.pack("<L", self.samplingfrequency)
+            formatchunk += struct.pack("<L", bytespersecond)
+            formatchunk += struct.pack("<H", self.bytespersample * self.channels)
+            formatchunk += struct.pack("<H", self.bitsPerSample)
+        
+            datachunkheader = "data" + struct.pack("<L", 0x0) #again, an arbitrary (large) value
+            
+            for _ in self.waitSend(riffchunk + formatchunk + datachunkheader, "outbox"):
+                yield 1
+            
+            running = True
+            while running:
+                yield 1
+                
+                while self.dataReady("inbox"): # we accept binary sample data in strings
+                    sampledata = self.recv("inbox")
+                    for _ in self.waitSend(sampledata, "outbox"):
+                        yield 1
+                    
+                if self.canStop():
+                    raise "STOP"
+                        
+                self.pause()
+
+        except "STOP":
+            self.send(self.shutdownMsg,"signal")
+
+
+
 
 if __name__ == "__main__":
+    
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
@@ -220,9 +344,30 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Carousel import Carousel
     from Kamaelia.Chassis.Graphline import Graphline
     
+    from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.File.Writing import SimpleFileWriter
+
+    print "Reading in WAV file, parsing it, then writing it out as test.wav ..."
     Graphline(
-        SRC = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=44100*4),
-        #SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
+        READ  = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=1000000),
+        PARSE = WavParser(),
+        ENC   = Carousel(lambda meta : WavWriter(**meta)),
+        WRITE = SimpleFileWriter("test.wav"),
+        linkages = {
+            ("READ", "outbox") : ("PARSE", "inbox"),
+            ("PARSE", "outbox") : ("ENC", "inbox"),
+            ("PARSE", "all_meta") : ("ENC", "next"),
+            ("ENC", "outbox") : ("WRITE", "inbox"),
+            
+            ("READ", "signal") : ("PARSE", "control"),
+            ("PARSE", "signal") : ("ENC", "control"),
+            ("ENC", "signal") : ("WRITE", "control"),
+        },
+    ).run()
+
+    print "Reading in test.wav and playing it back ..."
+    Graphline(
+        SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
         WAV = WavParser(),
         DST = Carousel(lambda meta:     
             Output(sample_rate=meta['sample_rate'],format=meta['sample_format'],channels=meta['channels'])
@@ -235,3 +380,4 @@ if __name__ == "__main__":
             ("WAV","all_meta") : ("DST","next"),
         }
         ).run()
+
