@@ -36,7 +36,7 @@ from StopSelector import StopSelector
 
 from Kamaelia.Util.RateFilter import MessageRateLimit
 sys.path.append("../audio/")
-from WAV import WavParser
+from WAV import WAVParser
 
 from Kamaelia.Util.Console import ConsoleEchoer
 
@@ -53,7 +53,7 @@ Graphline( DECODE = UnixProcess(
                VideoOverlay(),
                ),
            AUDIO = Graphline(
-               PARSE = WavParser(),
+               PARSE = WAVParser(),
                OUT   = Carousel(lambda format :
                            Output(format['sample_rate'],format['channels'],format['sample_format']), boxsize=5),
                linkages = {

@@ -24,14 +24,124 @@
 Reading and writing simple WAV audio files
 ==========================================
 
-The WavParser and WavWriter components
+Read and write WAV file format audio data using the WAVParser and WAVWriter
+components, respectively.
+
+
+
+Example Usage
+-------------
+
+Playing a WAV file, where we don't know the format until we play it::
+    
+    from Kamaelia.Audio.PyMedia.Output import Output
+    from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Chassis.Carousel import Carousel
+        
+    def makeAudioOutput(format_info):
+        return Output( sample_rate = format_info['sample_rate'],
+                       format      = format_info['sample_format'],
+                       channels    = format_info['channels']
+                     )
+    
+    Graphline(
+        SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
+        WAV = WAVParser(),
+        DST = Carousel(makeAudioOutput),
+        linkages = {
+            ("SRC","outbox") : ("WAV","inbox"),
+            ("SRC","signal") : ("WAV","control"),
+            ("WAV","outbox") : ("DST","inbox"),
+            ("WAV","signal") : ("DST","control"),
+            ("WAV","all_meta") : ("DST","next"),
+        }
+        ).run()
+    
+Capturing audio and writing it to a WAV file::
+        
+    from Kamaelia.Audio.PyMedia.Input import Input
+    from Kamaelia.File.Writing import SimpleFileWriter
+    from Kamaelia.Chassis.Pipeline import Pipeline
+        
+    Pipeline( Input(sample_rate=44100, channels=2, format="S16_LE"),
+              WAVWriter(sample_rate=44100, channels=2, format="S16_LE"),
+              SimpleFileWriter("captured_audio.wav"),
+            ).run()
+
+
+
+WAVParser behaviour
+-------------------
+
+Send binary data as strings containing a WAV file to the "inbox" inbox.
+
+As soon as the format of the audio data is determined (from the headers) it is
+sent out the "all_meta" outbox as a dictionary, for example::
+
+    { "sample_format" : "S16_LE",
+      "channels"      : 2,
+      "sample_rate"   : 44100,
+    }
+    
+The individual components are also sent out the "sample_format", "channels" and
+"sample_rate" outboxes.
+
+The raw audio data from the incoming WAV data is sent out of the "outbox"
+outbox, until the end of the WAV file is reached. If the WAV headers specify an
+audio size of zero, then it is assumed to be of indefinite length, otherwise the
+value is assumed to be the actual size, and this component will terminate and
+send out a producerFinished() message when it thinks it has reached the end.
+
+This component supports sending the raw audio data to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data.
+
+If a producerFinished message is received on the "control" inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its "signal" outbox and terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox, this
+component will immediately send it on out of its "signal" outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.
+
+
+
+WAVWriter behaviour
+-------------------
+
+Initialise this component, specifying the format the audio data will be in.
+
+Send raw audio data (in the format you specified!) as binary strings to the
+"inbox" inbox, and this component will write it out as WAV file format data out
+of the "outbox" outbox.
+
+The WAV format headers will immediately be sent out of the "outbox" outbox as
+soon as this component is initialised and activated (ie. before you even start
+sending it audio data to write out). The size of the audio data is set to zero
+as the component has no way of knowing the duration of the audio.
+
+This component supports sending data out of its outbox to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data.
+
+If a producerFinished message is received on the "control" inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its "signal" outbox and terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox, this
+component will immediately send it on out of its "signal" outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.
+
+
+
+Development history
+-------------------
+
+WAVWriter is based on code by Ryn Lothian developed during summer 2006.
 """
-
-# WavWriter is based on ryan's PCMToWave component, modified to match WAVParser's formats for
-# conveying samplerate, channels etc
-#
-# also takes binary sample data, instead of integer samples
-
 
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
@@ -41,22 +151,40 @@ import struct
 import string
 
 
-class WavParser(component):
+class WAVParser(component):
+    """\
+    WAVParser() -> new WAVParser component.
+    
+    Send WAV format audio file data to its "inbox" inbox, and the raw audio
+    data will be sent out of the "outbox" outbox as binary strings. The format
+    of the audio data is also sent out of other outboxes as soon as it is
+    determined (before the data starts to flow).
+    """
+    
+    Inboxes = { "inbox"   : "Raw WAV file data",
+                "control" : "Shutdown signalling",
+              }
 
-    Outboxes = { "outbox":"",
-                 "signal":"",
-                 "sample_format":"",
-                 "channels":"",
-                 "sample_rate":"",
-                 "all_meta":"",
+    Outboxes = { "outbox"        : "Binary audio data strings",
+                 "signal"        : "Shutdown signalling",
+                 "sample_format" : "Sample format of the audio (eg. 'S16_LE')",
+                 "channels"      : "Number of channels in the audio",
+                 "sample_rate"   : "The sample rate of the audio",
+                 "all_meta"      : "Dict of 'sample_format', 'sample_rate', and 'channels'",
                }
 
     def __init__(self):
-        super(WavParser,self).__init__()
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(WAVParser,self).__init__()
         self.remainder = ""
         self.shutdownMsg = None
     
     def checkShutdown(self):
+        """\
+        Collects any new shutdown messages arriving at the "control" inbox, and
+        returns "NOW" if immediate shutdown is required, or "WHENEVER" if the
+        component can shutdown when it has finished processing pending data.
+        """
         while self.dataReady("control"):
             newMsg = self.recv("control")
             if isinstance(newMsg, shutdownMicroprocess):
@@ -71,6 +199,23 @@ class WavParser(component):
             return None
         
     def readline(self):
+        """\
+        Generator.
+        
+        Read up to the next newline char from the stream of chunks of binary
+        string data arriving at the "inbox" inbox.
+        
+        Any excess data is placed into self.remainder ready for the next call
+        to self.readline or self.readbytes.
+        
+        Data is only read from the inbox when required. It is not preemptively
+        fetched.
+        
+        The read data is placed into self.bytesread
+        
+        If a shutdown is detected, self.bytesread is set to "" and this
+        generator immediately returns.
+        """
         bytes = []
         newdata = self.remainder
         index = newdata.find("\x0a")
@@ -94,6 +239,23 @@ class WavParser(component):
     
     
     def readbytes(self,size):
+        """\
+        Generator.
+        
+        Read the specified number of bytes from the stream of chunks of binary
+        string data arriving at the "inbox" inbox.
+        
+        Any excess data is placed into self.remainder ready for the next call
+        to self.readline or self.readbytes.
+        
+        Data is only read from the inbox when required. It is not preemptively
+        fetched.
+        
+        The read data is placed into self.bytesread
+        
+        If a shutdown is detected, self.bytesread is set to "" and this
+        generator immediately returns.
+        """
         buf = [self.remainder]
         bufsize = len(self.remainder)
         while bufsize < size:
@@ -122,18 +284,44 @@ class WavParser(component):
         return
     
     def safesend(self, data, boxname):
+        """\
+        Generator.
+        
+        Sends data out of the named outbox. If the destination is full
+        (noSpaceInBox exception) then it waits until there is space and retries
+        until it succeeds.
+        
+        If a shutdownMicroprocess message is received, returns early.
+        """
         while 1:
             try:
                 self.send(data, boxname)
-                break
+                return
             except noSpaceInBox:
                 if self.checkShutdown() == "NOW":
                     return
                 self.pause()
                 yield 1
-    
+            
     
     def readuptobytes(self,size):
+        """\
+        Generator.
+        
+        Reads up to the specified number of bytes from any remainder, or (if 
+        there is no remainder) the next string that arrives at the "inbox" inbox
+        
+        Any excess data is placed into self.remainder ready for the next call
+        to self.readline or self.readbytes.
+        
+        Data is only read from the inbox when required. It is not preemptively
+        fetched.
+        
+        The read data is placed into self.bytesread
+        
+        If a shutdown is detected, self.bytesread is set to "" and this
+        generator immediately returns.
+        """
         while self.remainder == "":
             if self.dataReady("inbox"):
                 self.remainder = self.recv("inbox")
@@ -149,7 +337,6 @@ class WavParser(component):
         self.remainder = self.remainder[size:]
 
 
-    
     def main(self):
         # parse header
         for _ in self.readbytes(16): yield _
@@ -231,7 +418,8 @@ class WavParser(component):
                 for _ in self.readuptobytes(size): yield _
             else:
                 for _ in self.readuptobytes(32768): yield _
-            self.send(self.bytesread,"outbox")
+            for _ in self.safesend(self.bytesread,"outbox"): yield _
+
             size-=len(self.bytesread)
             if self.checkShutdown() == "NOW" or (self.checkShutdown() and self.bytesread==""):
                 self.send(self.shutdownMsg,"signal")
@@ -246,9 +434,16 @@ class WavParser(component):
 
 
 
-class WavWriter(component):
+class WAVWriter(component):
+    """\
+    WAVWriter(channels, sample_format, sample_rate) -> new WAVWriter component.
+    
+    Send raw audio data as binary strings to the "inbox" inbox and WAV format
+    audio data will be sent out of the "outbox" outbox as binary strings.
+    """
     def __init__(self, channels, sample_format, sample_rate):
-        super(WavWriter, self).__init__()
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(WAVWriter, self).__init__()
         if sample_format == "S8":
             self.bitsPerSample = 8
             self.bytespersample = 1
@@ -256,7 +451,7 @@ class WavWriter(component):
             self.bitsPerSample = 16
             self.bytespersample = 2
         else:
-            raise "WavWriter can't handle sample format "+str(sample_format)+" at the moment"
+            raise "WAVWriter can't handle sample format "+str(sample_format)+" at the moment"
         
         self.samplingfrequency = sample_rate
         self.channels = channels
@@ -350,8 +545,8 @@ if __name__ == "__main__":
     print "Reading in WAV file, parsing it, then writing it out as test.wav ..."
     Graphline(
         READ  = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=1000000),
-        PARSE = WavParser(),
-        ENC   = Carousel(lambda meta : WavWriter(**meta)),
+        PARSE = WAVParser(),
+        ENC   = Carousel(lambda meta : WAVWriter(**meta)),
         WRITE = SimpleFileWriter("test.wav"),
         linkages = {
             ("READ", "outbox") : ("PARSE", "inbox"),
@@ -368,7 +563,7 @@ if __name__ == "__main__":
     print "Reading in test.wav and playing it back ..."
     Graphline(
         SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
-        WAV = WavParser(),
+        WAV = WAVParser(),
         DST = Carousel(lambda meta:     
             Output(sample_rate=meta['sample_rate'],format=meta['sample_format'],channels=meta['channels'])
             ),
