@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import RawAudioMixer
+import Kamaelia.Audio.RawAudioMixer as RawAudioMixer
 from Axon.Scheduler import scheduler
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess,producerFinished
+import Axon.AxonExceptions
 
 import time
 import threading
