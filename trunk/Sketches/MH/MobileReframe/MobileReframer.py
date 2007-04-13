@@ -34,7 +34,7 @@ from VideoSurface import RGBtoYUV
 from UnixProcess import UnixProcess
 
 sys.path.append("../audio/")
-from WAV import WavParser, WavWriter
+from WAV import WAVParser, WAVWriter
 
 #sys.path.append("../Sketcher/Whiteboard/")
 from TwoWaySplitter import TwoWaySplitter
@@ -170,7 +170,7 @@ def SaveVideoFrames(tmpFilePath,edlfile):
 def SaveAudioFrames(frame_rate,tmpFilePath,edlfile):
     return \
         Graphline(
-            WAV = WavParser(),
+            WAV = WAVParser(),
             AUD = Carousel(
                 lambda ameta : AudioSplitterByFrames( frame_rate,
                                                       ameta['channels'],
@@ -208,7 +208,7 @@ def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFil
         FilterForWantedFrameNumbers(edlfile),
         InboxControlledCarousel( lambda (framenum, audiochunk) : \
             Pipeline( OneShot(audiochunk),
-                      WavWriter(channels,sample_format,sample_rate),
+                      WAVWriter(channels,sample_format,sample_rate),
                       SimpleFileWriter(tmpFilePath+("%08d.wav" % framenum)),
                     )
             ),
@@ -321,7 +321,7 @@ def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
         FRAME_LOADER = Carousel( lambda filename : 
                                  Graphline(
                                      READ = MaxSpeedFileReader(filename),
-                                     PARS = WavParser(),
+                                     PARS = WAVParser(),
                                      META = PublishTo(backplane_name),
                                      linkages = {
                                          ("READ","outbox") : ("PARS","inbox"),
@@ -353,7 +353,7 @@ def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
 def WriteToFiles():
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
-               AUDIO = WavWriter(2, "S16_LE", 48000),
+               AUDIO = WAVWriter(2, "S16_LE", 48000),
                TEST = SimpleFileWriter("test.yuv"),
                TESTA = SimpleFileWriter("test.wav"),
                linkages = {
@@ -401,7 +401,7 @@ def ReEncode(outFileName):
              
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
-               AUDIO = Carousel( lambda format : WavWriter(**format),
+               AUDIO = Carousel( lambda format : WAVWriter(**format),
                                  make1stRequest=False),
                ENCODE =  UnixProcess(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"},boxsizes={"inbox":2,"video":2,"audio":2}),
                DEBUG = ConsoleEchoer(),
