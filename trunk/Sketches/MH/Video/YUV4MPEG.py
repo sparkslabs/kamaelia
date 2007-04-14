@@ -68,7 +68,8 @@ See below for a description of the uncompressed frame data structure format.
 
 This component supports sending data out of its outbox to a size limited inbox.
 If the size limited inbox is full, this component will pause until it is able
-to send out the data,.
+to send out the data. Data will not be consumed from the inbox if this component
+is waiting to send to the outbox.
 
 If a producerFinished message is received on the "control" inbox, this component
 will complete parsing any data pending in its inbox, and finish sending any
@@ -96,7 +97,8 @@ size, otherwise the output data will not be valid YUV4MPEG.
 
 This component supports sending data out of its outbox to a size limited inbox.
 If the size limited inbox is full, this component will pause until it is able
-to send out the data,.
+to send out the data. Data will not be consumed from the inbox if this component
+is waiting to send to the outbox.
 
 If a producerFinished message is received on the "control" inbox, this component
 will complete parsing any data pending in its inbox, and finish sending any
