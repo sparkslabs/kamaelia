@@ -19,14 +19,33 @@
 # -------------------------------------------------------------------------
 #
 
-cdef extern from "ComputeMAD.c":
-    cdef double ComputeMAD( unsigned char *prev, unsigned char *curr, int size)
-
 
 cdef extern from "Python.h": 
     object PyString_FromStringAndSize(char *, int)
     cdef char* PyString_AsString(object)
 
+
+cdef double ComputeMAD(unsigned char *prev, unsigned char *curr, int size):
+    cdef unsigned int total
+
+    cdef unsigned char *prevpixel
+    cdef unsigned char *currpixel
+
+    total=0
+    prevpixel = prev + size
+    currpixel = curr + size
+
+    while (prevpixel > prev):
+        currpixel=currpixel-1
+        prevpixel=prevpixel-1
+
+        if prevpixel[0] > currpixel[0]:
+            total = total + (prevpixel[0] - currpixel[0])
+        else:
+            total = total + (currpixel[0] - prevpixel[0])
+    
+    return (<double>total) / (<double>(size))
+    
 
 def ComputeMeanAbsDiff(ydata1,ydata2):
     cdef unsigned char *y1
