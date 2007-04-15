@@ -27,8 +27,8 @@ from YUV4MPEG import FrameToYUV4MPEG
 from CropAndScale import CropAndScale
 
 sys.path.append("../pixformatConversion/")
-from VideoSurface import YUVtoRGB
-from VideoSurface import RGBtoYUV
+from PixFormatConversion import ToRGB_interleaved
+from PixFormatConversion import ToYUV420_planar
 
 #from Kamaelia.File.BetterReading import IntelligentFileReader
 from UnixProcess import UnixProcess

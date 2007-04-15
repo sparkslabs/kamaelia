@@ -9,7 +9,8 @@ from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 from Kamaelia.UI.Pygame.Button import Button
 from TwoWaySplitter import TwoWaySplitter
 
-from VideoSurface import VideoSurface, YUVtoRGB
+from VideoSurface import VideoSurface
+from PixFormatConversion import ToRGB_interleaved
 
 file = "../../../Code/Python/Kamaelia/Examples/VideoCodecs/Dirac/snowboard-jum-352x288x75.dirac.drc"
 framerate = 1
@@ -26,7 +27,7 @@ Graphline(
          SPLIT = TwoWaySplitter(),
          OVERLAY = VideoOverlay(),
          SURFACE = Pipeline(
-                  YUVtoRGB(),
+                  ToRGB_interleaved(),
                  VideoSurface(position=(0,300))
          ),
          linkages = {
