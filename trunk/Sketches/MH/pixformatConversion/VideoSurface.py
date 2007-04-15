@@ -24,167 +24,8 @@
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Ipc import WaitComplete
-from Axon.AxonExceptions import noSpaceInBox
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 import pygame
-
-
-from pixConvert import rgbi_to_yuv420p   # RGB_interleaved to YUV420_planar
-from pixConvert import yuv420p_to_rgbi   # YUV420_planar to RGB_interleaved
-from pixConvert import yuv422p_to_rgbi   # YUV422_planar to RGB_interleaved
-
-class YUVtoRGB(component):
-    
-    Inboxes =  { "inbox"   : "YUV video frame",
-                 "control" : "Shutdown signalling"
-               }
-    Outboxes = { "outbox"      : "RGB video frame",
-                 "signal"      : "Shutdown signalling",
-               }
-
-    def handleControl(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg, shutdownMicroprocess):
-                self.shutdownMsg = msg
-            elif isinstance(msg, shutdownMicroprocess):
-                self.shutdownMsg = msg
-
-    def canStop(self):
-        self.handleControl()
-        return isinstance(self.shutdownMsg, (producerFinished,shutdownMicroprocess))
-
-    def mustStop(self):
-        self.handleControl()
-        return isinstance(self.shutdownMsg, shutdownMicroprocess)
-    
-    def waitSend(self,data,boxname):
-        while 1:
-            try:
-                self.send(data,boxname)
-                return
-            except noSpaceInBox:
-                if self.mustStop():
-                    raise "STOP"
-                
-                self.pause()
-                yield 1
-                
-                if self.mustStop():
-                    raise "STOP"
-
-    def main(self):
-        """Main loop."""
-
-        self.shutdownMsg = None
-        
-        try:
-            while 1:
-                while self.dataReady("inbox"):
-                    
-                    frame = self.recv("inbox")
-                    Y,U,V = frame['yuv']
-                    W,H   = frame['size']
-                    newframe = {
-                        'size' : (W,H),
-                        "pixformat" : "RGB_interleaved",
-                    }
-                    if frame['pixformat'] == "YUV420_planar":
-                        newframe["rgb"] = yuv420p_to_rgbi(Y,U,V, W,H)
-                    elif frame['pixformat'] == "YUV422_planar":
-                        newframe["rgb"] = yuv422p_to_rgbi(Y,U,V, W,H)
-                        
-                    for key in frame.keys():
-                        if key not in newframe:
-                            newframe[key] = frame[key]
-                    
-                    for _ in self.waitSend(newframe,"outbox"):
-                        yield _
-    
-                if self.canStop():
-                    raise "STOP"
-    
-                self.pause()
-                yield 1
-
-        except "STOP":
-            self.send(self.shutdownMsg,"signal")
-
-
-class RGBtoYUV(component):
-    
-    Inboxes =  { "inbox"   : "RGB video frame",
-                 "control" : "Shutdown signalling"
-               }
-    Outboxes = { "outbox"      : "YUV video frame",
-                 "signal"      : "Shutdown signalling",
-               }
-
-    def handleControl(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) and not isinstance(self.shutdownMsg, shutdownMicroprocess):
-                self.shutdownMsg = msg
-            elif isinstance(msg, shutdownMicroprocess):
-                self.shutdownMsg = msg
-
-    def canStop(self):
-        self.handleControl()
-        return isinstance(self.shutdownMsg, (producerFinished,shutdownMicroprocess))
-
-    def mustStop(self):
-        self.handleControl()
-        return isinstance(self.shutdownMsg, shutdownMicroprocess)
-    
-    def waitSend(self,data,boxname):
-        while 1:
-            try:
-                self.send(data,boxname)
-                return
-            except noSpaceInBox:
-                if self.mustStop():
-                    raise "STOP"
-                
-                self.pause()
-                yield 1
-                
-                if self.mustStop():
-                    raise "STOP"
-
-    def main(self):
-        """Main loop."""
-        self.shutdownMsg = None
-
-        try:
-            while 1:
-    
-                while self.dataReady("inbox"):
-                    
-                    frame = self.recv("inbox")
-                    if frame['pixformat'] == "RGB_interleaved":
-                        rgb = frame['rgb']
-                        W,H = frame['size']
-                        newframe = {
-                            "yuv"       : rgbi_to_yuv420p(rgb, W,H),
-                            "size"      : (W,H),
-                            "pixformat" : "YUV420_planar",
-                            "chroma_size" : (W/2,H/2),
-                            }
-                        for key in frame.keys():
-                            if key not in newframe and key!="rgb":
-                                newframe[key] = frame[key]
-                        
-                        for _ in self.waitSend(newframe,"outbox"):
-                            yield _
-                        
-                if self.canStop():
-                    raise "STOP"
-                        
-                self.pause()
-                yield 1
-                
-        except "STOP":
-            self.send(self.shutdownMsg,"signal")
 
 
 class VideoSurface(component):
@@ -297,7 +138,7 @@ class VideoSurface(component):
 
 
 
-__kamaelia_components__  = ( YUVtoRGB, VideoSurface )
+__kamaelia_components__  = ( VideoSurface )
 
             
         
@@ -306,10 +147,12 @@ if __name__ == "__main__":
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
+    from PixFormatConversion import ToYUV420_planar
+    from PixFormatConversion import ToRGB_interleaved
     
 #    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
 #              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
-#              YUVtoRGB(),
+#              ToRGB_interleaved(),
 #              VideoSurface(),
 #            ).run()
             
@@ -317,9 +160,8 @@ if __name__ == "__main__":
             
     Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 2280960*8),
               DiracDecoder(),
-              YUVtoRGB(),
-              RGBtoYUV(),
-              YUVtoRGB(),
+              ToRGB_interleaved(),
+              ToYUV420_planar(),
+              ToRGB_interleaved(),
               VideoSurface(),
-#              VideoOverlay(),
             ).run()
