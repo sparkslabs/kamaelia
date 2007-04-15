@@ -211,3 +211,5 @@ class CropAndScale(component):
         newframe['size'] = self.newsize
     
         return newframe
+
+__kamaelia_components__  = ( CropAndScale )

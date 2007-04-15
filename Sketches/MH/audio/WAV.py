@@ -528,7 +528,7 @@ class WAVWriter(component):
             self.send(self.shutdownMsg,"signal")
 
 
-
+__kamaelia_components__ = ( WAVParser, WAVWriter, )
 
 if __name__ == "__main__":
     

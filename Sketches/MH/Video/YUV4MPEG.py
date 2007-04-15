@@ -634,6 +634,8 @@ class FrameToYUV4MPEG(component):
                 yield _
 
 
+__kamaelia_components__  = ( YUV4MPEGToFrame, FrameToYUV4MPEG, )
+
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
