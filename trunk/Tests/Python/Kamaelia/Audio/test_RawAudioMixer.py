@@ -173,6 +173,7 @@ class Test_RawAudioMixer(unittest.TestCase):
     # --------------------------------------------------------------------------
     
     def test_noInput_noOutput(self):
+        """If there is no input (no incoming audio data), there will be no output (no outgoing audio data)"""
         self.setup_test()
         try:
 
@@ -182,6 +183,7 @@ class Test_RawAudioMixer(unittest.TestCase):
 
 
     def test_singleSource(self):
+        """A single source of audio will pass through"""
         self.setup_test()
         try:
 
@@ -214,6 +216,7 @@ class Test_RawAudioMixer(unittest.TestCase):
             self.cleanup_test()
 
     def test_multiSource(self):
+        """Multiple sources of audio will be mixed"""
         self.setup_test()
         try:
 
