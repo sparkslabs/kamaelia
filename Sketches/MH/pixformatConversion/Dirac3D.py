@@ -4,7 +4,8 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Codec.Dirac import DiracDecoder
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Util.RateFilter import MessageRateLimit
-from VideoSurface import VideoSurface, YUVtoRGB
+from VideoSurface import VideoSurface
+from PixFormatConversion import ToRGB_interleaved
 
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
@@ -29,7 +30,7 @@ Pipeline(
          ReadFileAdaptor(file, readmode="bitrate",
                          bitrate = 300000*8/5),
          DiracDecoder(),
-         YUVtoRGB(),
+         ToRGB_interleaved(),
          MessageRateLimit(framerate, buffer=15),
          screen
 ).run()
