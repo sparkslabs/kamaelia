@@ -231,7 +231,26 @@ class AudioBuffer(object):
 
 
 class RawAudioMixer(threadedcomponent):
-    """Assuming mono signed 16 bit Little endian audio"""
+    """\
+    RawAudioMixer([sample_rate][,channels][,format][,readThreshold][,bufferingLimit][,readInterval]) -> new RawAudioMixer component.
+    
+    Mixes raw audio data from an unknown number of sources, that
+    can change at any time. Audio data from each source is buffered until a minimum
+    threshold amount, before it is included in the mix. The mixing operation is a
+    simple addition. Values are not scaled down.
+    
+    Send (uniqueSourceIdentifier, audioData) tuples to the "inbox" inbox and
+    mixed audio data will be sent out of the "outbox" outbox.
+    
+    Keyword arguments:
+    
+    - sample_rate     -- The sample rate of the audio in Hz (default=8000)
+    - channels        -- Number of channels in the audio (default=1)
+    - format          -- Sample format of the audio (default="S16_LE")
+    - readThreshold   -- Duration to buffer audio before it starts being used in seconds (default=1.0)
+    - bufferingLimit  -- Maximum buffer size for each audio source in seconds (default=2.0)
+    - readInterval    -- Time between each output chunk in seconds (default=0.1)
+    """
     
     def __init__(self, sample_rate=8000, channels=1, format="S16_LE",
                        readThreshold=1.0, bufferingLimit=2.0, readInterval=0.1):
