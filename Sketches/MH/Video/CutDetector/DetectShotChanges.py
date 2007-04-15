@@ -24,7 +24,7 @@
 Detecting cuts/shot changes in video
 ====================================
 
-CutDetector takes in (framenumber, videoframe) tuples on its "inbox" inbox and
+DetectShotChanges takes in (framenumber, videoframe) tuples on its "inbox" inbox and
 attempts to detect where shot changes have probably occurred in the sequence.
 When it thinks one has ocurred, a (framenumber, confidencevalue) tuple is sent
 out of the "outbox" outbox.
@@ -39,7 +39,7 @@ frame numbers (and confidence values) where cuts probably occur::
     Pipeline( RateControlledFileReader(..)
               YUV4MPEGToFrame(),
               TagWithSequenceNumber(),      # pair up frames with a frame number
-              CutDetector(threshold=0.85),
+              DetectShotChanges(threshold=0.85),
               ConsoleEchoer(),
             ).run()
             
@@ -128,9 +128,9 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import math
 
 
-class CutDetector(component):
+class DetectShotChanges(component):
     """\
-    CutDetector([threshold]) -> new CutDetector component.
+    DetectShotChanges([threshold]) -> new DetectShotChanges component.
     
     Send (framenumber, videoframe) tuples to the "inbox" inbox. Sends out
     (framenumber, confidence) to its "outbox" outbox when a cut has probably
@@ -142,7 +142,7 @@ class CutDetector(component):
     """
     
     def __init__(self, threshold=0.9):
-        super(CutDetector,self).__init__()
+        super(DetectShotChanges,self).__init__()
         
         self.C0     = [0.0] * 2    # 'cut' signal
         self.C1     = [0.0] * 2    # 'standard converted cut' signal
@@ -242,3 +242,4 @@ class CutDetector(component):
                 
         return -99,None
 
+__kamaelia_components__  = ( DetectShotChanges )

@@ -23,7 +23,7 @@
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-from CutDetector import CutDetector
+from DetectShotChanges import DetectShotChanges
 
 
 class FormatOutput(component):
@@ -94,7 +94,7 @@ if __name__=="__main__":
         files.pop(0)
     
     if len(files) != 1 or threshold is None or threshold<=0.0:
-        sys.stderr.write("Usage:\n\n    CutDetectorExample.py [--show] [threshold] videofile\n\n* threshold is a floating point value greater than zero (default=0.9)\n\n")
+        sys.stderr.write("Usage:\n\n    "+sys.argv[0]+" [--show] [threshold] videofile\n\n* threshold is a floating point value greater than zero (default=0.9)\n\n")
         sys.exit(1)
     
     
@@ -106,7 +106,7 @@ if __name__=="__main__":
         Pipeline( UnixProcess("ffmpeg -i "+infile+" -f yuv4mpegpipe -y /dev/stdout",32768),
                 2, YUV4MPEGToFrame(),
                 1, TagWithSequenceNumber(),
-                1, CutDetector(threshold),
+                1, DetectShotChanges(threshold),
                 FormatOutput(),
                 ConsoleEchoer(),
                 StopSelector(waitForTrigger=True),
