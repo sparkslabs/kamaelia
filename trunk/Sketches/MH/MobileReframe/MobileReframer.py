@@ -266,9 +266,9 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
                                      2, YUV4MPEGToFrame(),
                                      ),
                                  make1stRequest=False ),
-        REFRAMING = Pipeline( 2, YUVtoRGB(),
+        REFRAMING = Pipeline( 2, ToRGB_interleaved(),
                               2, CropAndScale(newsize, cropbounds),
-                              2, RGBtoYUV(),
+                              2, ToYUV420_planar(),
                             ),
         linkages = {
             ("FRAME_LOADER", "requestNext") : ("FILENAMES", "inbox"),
