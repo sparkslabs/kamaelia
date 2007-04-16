@@ -101,13 +101,13 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
-    from SAX import SAXPromptedParser
+    from SAX import XMLParser
     
     from Kamaelia.File.Reading import RateControlledFileReader
     
     Pipeline(
         RateControlledFileReader("TestEDL.xml",readmode="lines",rate=1000000),
-        SAXPromptedParser(freeRun=True),
+        XMLParser(),
         EDLParser(),
         ConsoleEchoer(),
     ).run()

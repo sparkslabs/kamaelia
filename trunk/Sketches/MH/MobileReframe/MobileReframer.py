@@ -16,7 +16,7 @@ from Kamaelia.File.Reading import RateControlledFileReader
 #from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
-from SAX import SAXPromptedParser
+from SAX import XMLParser
 from EDL import EDLParser
 
 import sys
@@ -125,7 +125,7 @@ def FilterForWantedFrameNumbers(edlfile):
     return Graphline(
         RANGESRC = Pipeline(
                        RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-                       SAXPromptedParser(freeRun=True),
+                       XMLParser(),
                        EDLParser(),
                        Filter(filter = ExtractRanges()),
                        Collate(),
@@ -145,7 +145,7 @@ def FilterForWantedFrameNumbers(edlfile):
 def DetermineMaxFrameNumber(edlfile):
     return Pipeline(
         RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-        SAXPromptedParser(freeRun=True),
+        XMLParser(),
         EDLParser(),
         SimpleDetupler("end"),
         Collate(),
@@ -237,7 +237,7 @@ def ReframeVideo(edlfile, tmpFilePath, width, height):
 def EditDecisionSource(edlfile):
     return Graphline( \
         PARSING = Pipeline( RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-                            SAXPromptedParser(freeRun=True),
+                            XMLParser(),
                             EDLParser(),
                           ),
         GATE = PromptedTurnstile(),
