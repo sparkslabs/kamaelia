@@ -19,7 +19,74 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+====================
+Pygame Video Surface
+====================
 
+Displays uncompressed RGB video data on a pygame surface using the Pygame
+Display service.
+
+
+
+Example Usage
+-------------
+
+Read raw YUV data from a file, convert it to interleaved RGB  and display it
+using VideoSurface::
+
+    imagesize = (352, 288)        # "CIF" size video
+    fps = 15                      # framerate of video
+    
+    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+             RawYUVFramer(imagesize),
+             MessageRateLimit(messages_per_second=fps, buffer=fps*2),
+             ToRGB_interleaved(),
+             VideoSurface(),
+            ).activate()
+
+RawYUVFramer is needed to frame raw YUV data into individual video frames.
+ToRGB_interleaved is needed to convert the 3 planes of Y, U and V data to a
+single plane containing RGB data interleaved (R, G, B, R, G, B, R, G, B, ...)
+
+
+
+How does it work?
+-----------------
+
+The component waits to receive uncompressed video frames from its "inbox" inbox.
+
+The frames must be encoded as dictionary objects in the format described below.
+
+When the first frame is received, the component notes the size and pixel format
+of the video data and requests an appropriate surface from the
+Pygame Display service component, to which video can be rendered.
+
+NOTE: Currently the only supported pixelformat is "RGB_interleaved".
+
+When subsequent frames of video are received the rgb data is rendered to the
+surface and the Pygame Display service is notified that the surface needs
+redrawing.
+
+At present, VideoSurface cannot cope with a change of pixel format or video
+size mid sequence.
+
+
+
+=========================
+UNCOMPRESSED FRAME FORMAT
+=========================
+
+Uncompresed video frames must be encoded as dictionaries. VideoSurface requires
+the following entries::
+
+    {
+      "rgb" : rgbdata                    # a string containing RGB video data
+      "size" : (width, height)           # in pixels
+      "pixformat" : "RGB_interleaved"    # format of raw video data
+    }
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -30,8 +97,18 @@ import pygame
 
 class VideoSurface(component):
     """\
-    Image() -> new VideoSurface component
+    VideoSurface([position]) -> new VideoSurface component
+
+    Displays a pygame surface using the Pygame Display service component, for
+    displaying RGB video frames sent to its "inbox" inbox.
     
+    The surface is sized and configured by the first frame of (uncompressed)
+    video data is receives.
+    
+
+    Keyword arguments:
+
+   - position      -- (x,y) pixels position of top left corner (default=(0,0))
     """
     
     Inboxes = { "inbox"    : "Video frame data structures containing RGB data",
@@ -44,14 +121,18 @@ class VideoSurface(component):
                  "display_signal" : "Outbox used for sending signals of various kinds to the display service"
                }
         
-    def __init__(self):
+    def __init__(self, position=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(VideoSurface, self).__init__()
         self.display = None
         
         self.size = None
         self.pixformat = None
-        self.position = (0,0)
+
+        if position is not None:
+            self.position = position
+        else:
+            self.position = (0,0)
 
 
     def shutdown(self):
@@ -163,5 +244,5 @@ if __name__ == "__main__":
               ToRGB_interleaved(),
               ToYUV420_planar(),
               ToRGB_interleaved(),
-              VideoSurface(),
+              VideoSurface((200,100)),
             ).run()
