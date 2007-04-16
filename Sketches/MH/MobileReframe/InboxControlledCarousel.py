@@ -76,3 +76,4 @@ def InboxControlledCarousel(*argv, **argd):
                       }
                     )
 
+__kamaelia_prefabs__ = ( InboxControlledCarousel, )

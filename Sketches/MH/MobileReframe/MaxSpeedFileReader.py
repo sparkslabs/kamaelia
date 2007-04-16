@@ -148,3 +148,6 @@ class MaxSpeedFileReader(component):
 
         except "STOP":
             self.send(self.shutdownMsg, "signal")
+
+
+__kamaelia_components__ = ( MaxSpeedFileReader, )

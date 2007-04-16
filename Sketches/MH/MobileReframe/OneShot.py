@@ -170,4 +170,6 @@ class TriggeredOneShot(component):
         self.send(self.msg,"outbox")
         yield 1
         self.send(producerFinished(self),"signal")
-            
+
+
+__kamaelia_components__ = ( OneShot, TriggeredOneShot, )

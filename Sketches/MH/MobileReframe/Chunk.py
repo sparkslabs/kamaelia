@@ -134,3 +134,4 @@ class Chunk(component):
             self.pause()
             yield 1
 
+__kamaelia_components__ = ( Chunk, )

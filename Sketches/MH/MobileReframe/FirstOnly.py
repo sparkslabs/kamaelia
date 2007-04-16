@@ -94,3 +94,4 @@ class FirstOnly(component):
             
         self.send(self.recv("control"),"signal")
         
+__kamaelia_components__ = ( FirstOnly, )
