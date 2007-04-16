@@ -76,6 +76,7 @@ terminate. It will not complete sending on any pending data.
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.AxonExceptions import noSpaceInBox
 
 class MaxSpeedFileReader(component):
     """\
