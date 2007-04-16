@@ -90,6 +90,65 @@ Will output the following (albeit without the newlines, added here for clarity):
     ('chars', u'    ')
     ('/element', u'EDL')
 
+
+    
+What does it output?
+--------------------
+
+What is output is effectively a simple, but useful, parsing of the XML. It
+is a set of messages representing a subset of the python SAX ContentHandler.
+All are in the form of a simple tuple where the first term is always the type
+of "thing" identified - 'document' start or finish, 'element' start or finish,
+or raw text characters:
+
+**``("document", )``**
+
+* Start of the XML document
+
+**``("/document", )``**
+
+* End of the XML document (not sent if shutdown with a shutdownMicroprocess()
+  message)
+
+**``("element", name, attributes)``**
+
+* Start tag for an element. ``name`` is the name of the element. ``attributes``
+  is a SAX attributes object - which behaves just like a dictionary - mapping
+  attribute names to strings of their values. For example::
+
+      ("element", "img", {"src":"/images/mypic.jpg"})
+
+**``("/element", name)``**
+
+* End tag for an element. ``name`` is the name of the element.
+
+**``("chars", textfragment)``**
+
+* Fragment of text from within an element. Note that the text contained in
+  a single element be comprised of multiple fragments. They will include
+  whitespace and newline characters.
+
+
+
+Behaviour
+---------
+
+Send chunks of text making up an XML document to this component's "inbox" inbox.
+The XML Parser used will output identified items from its "outbox" outbox.
+
+This component supports sending its output to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data.
+
+If a producerFinished message is received on the "control" inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its "signal" outbox and terminate.
+
+If a shutdownMicroprocess message is received on the "control" inbox, this
+component will immediately send it on out of its "signal" outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.
+
 """
 
 from Axon.Component import component
@@ -142,6 +201,7 @@ class XMLParser(component, handler.ContentHandler):
     def main(self):
         self.parser = make_parser('xml.sax.xmlreader.IncrementalParser')
         self.parser.setContentHandler(self)
+        self.documentStarted=False
         
         while 1:
 
@@ -169,6 +229,19 @@ class XMLParser(component, handler.ContentHandler):
             self.pause()
             yield 1
 
+        if self.documentStarted:
+            # close the parser, and flush any final messages ... unless of course
+            # we were told to stop NOW
+            self.parser.close()
+            while self.waitingEvents:
+                if self.checkShutdown() == "NOW":
+                    break
+                
+                for _ in self.safesend( self.waitingEvents.pop(0), "outbox"):
+                    yield _
+
+            
+
         self.send(self.shutdownMsg,"signal")
         return
 
@@ -195,6 +268,7 @@ class XMLParser(component, handler.ContentHandler):
     
 
     def startDocument(self):
+        self.documentStarted=True
         self.waitingEvents.append( ("document",) )
 
     def startElement(self, name, attrs):
