@@ -16,7 +16,7 @@ from Kamaelia.File.Reading import RateControlledFileReader
 #from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
-from SAX import XMLParser
+from XMLParser import XMLParser
 from EDL import EDLParser
 
 import sys

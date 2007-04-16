@@ -101,7 +101,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
-    from SAX import XMLParser
+    from XMLParser import XMLParser
     
     from Kamaelia.File.Reading import RateControlledFileReader
     
