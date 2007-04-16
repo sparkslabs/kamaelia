@@ -468,7 +468,7 @@ from Axon.Introspector import Introspector
 from Kamaelia.Internet.TCPClient import TCPClient
 
 Seq( "Decoding & separating frames...",
-     lambda : Graphline(
+     Graphline(
           MAXF = DetermineMaxFrameNumber(edlfile),
           DO = Carousel( lambda maxframe : 
               DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe),
@@ -485,7 +485,6 @@ Seq( "Decoding & separating frames...",
           },
           ),
      "Processing edits...",
-     lambda : 
         Graphline(
             REFRAMING = ReframeVideo(edlfile, tmpFilePath, output_width, output_height),
             SOUND     = PassThroughAudio(edlfile, tmpFilePath),
@@ -506,7 +505,7 @@ Seq( "Decoding & separating frames...",
             },
         ),
     "Cleaning up...",
-    lambda : StopSelector(),
+    StopSelector(),
     ).run()
 
 # clean up
