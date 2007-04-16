@@ -56,7 +56,7 @@ from Kamaelia.Util.Backplane import Backplane,PublishTo,SubscribeTo
 from Collate import Collate
 from Kamaelia.Util.Filter import Filter
 from RangeFilter import RangeFilter
-from Misc import Max
+from Max import Max
 from Kamaelia.Util.Detuple import SimpleDetupler
 
 sys.path.append("../Introspection/")

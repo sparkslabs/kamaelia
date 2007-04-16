@@ -191,6 +191,8 @@ class RangeFilter(component):
                     raise "STOP"
 
 
+__kamaelia_components__ = ( RangeFilter, )
+
 
 if __name__=="__main__":
     from Kamaelia.Util.DataSource import DataSource

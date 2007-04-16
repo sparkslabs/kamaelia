@@ -113,3 +113,4 @@ class Sync(component):
             self.send(data,"outbox")
 
 
+__kamaelia_components__ = ( Sync, )

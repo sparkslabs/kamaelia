@@ -210,6 +210,7 @@ class XMLParser(component, handler.ContentHandler):
         self.waitingEvents.append( ("/document",) )
 
 
+__kamaelia_components__ = ( XMLParser, )
 
 
 if __name__ == "__main__":

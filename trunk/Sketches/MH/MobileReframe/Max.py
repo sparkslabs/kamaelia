@@ -91,6 +91,9 @@ class Max(component):
             
             self.pause()
             yield 1
+
+__kamaelia_components__ = ( Max, )
+
             
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource

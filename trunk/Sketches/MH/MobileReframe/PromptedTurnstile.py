@@ -151,4 +151,5 @@ class PromptedTurnstile(component):
                 
         self.send(shutdownMsg, "signal")
 
-    
+
+__kamaelia_components__ = ( PromptedTurnstile, )

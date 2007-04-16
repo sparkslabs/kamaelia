@@ -622,6 +622,10 @@ class _FromFileHandle(component):
         else:
             self.send(self.shutdownMsg,"signal")
 
+
+__kamaelia_components__ = ( UnixProcess, )
+
+            
 if __name__=="__main__":
     class ChargenComponent(component):
         def main(self):

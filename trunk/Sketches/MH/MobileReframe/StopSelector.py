@@ -115,3 +115,4 @@ class StopSelector(component):
             self.send(producerFinished(self), "signal")
 
 
+__kamaelia_components__ = ( StopSelector, )

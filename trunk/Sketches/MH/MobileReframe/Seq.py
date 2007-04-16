@@ -51,6 +51,9 @@ class Seq(component):
         return 0==len(self.childComponents())
 
 
+__kamaelia_components__ = ( Seq, )
+
+
 if __name__=="__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Misc import OneShot

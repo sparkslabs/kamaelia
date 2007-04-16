@@ -94,7 +94,11 @@ class TwoWaySplitter(Axon.Component.component):
     
                 self.pause()
                 yield 1
-    
+
+
+__kamaelia_components__ = ( TwoWaySplitter, )
+
+
 if __name__ == "__main__":
     from Chassis import Graphline,Pipeline
     from Kamaelia.Util.DataSource import DataSource
