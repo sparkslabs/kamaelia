@@ -51,6 +51,7 @@ Behaviour
 ---------
 
 At initialisation, specify:
+    
   * the rate of the incoming data (eg. bytes/second)
   * the required rate of outgoing chunks of data
   * the minimum quanta size (see below)
