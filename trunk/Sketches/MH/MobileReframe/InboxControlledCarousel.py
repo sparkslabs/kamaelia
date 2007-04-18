@@ -62,7 +62,8 @@ The "data_inbox" inbox is equivalent to the "inbox" inbox of Carousel.
 
 """
 
-from Kamaelia.Chassis.Carousel import Carousel
+#from Kamaelia.Chassis.Carousel import Carousel
+from CarouselRewrite import Carousel
 from Kamaelia.Chassis.Graphline import Graphline
 
 def InboxControlledCarousel(*argv, **argd):
