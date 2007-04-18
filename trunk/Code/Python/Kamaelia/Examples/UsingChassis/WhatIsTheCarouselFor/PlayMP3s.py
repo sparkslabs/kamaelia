@@ -40,6 +40,7 @@ def makeAudioOutput(metadata):
                  metadata["format"]
                )
 def makePlayer(mp3filename):
+    print mp3filename
     return Graphline(
         READ = RateControlledFileReader( mp3filename, readmode="bytes", rate=256000/8),
         DECODE = Decoder("mp3"),
@@ -60,7 +61,7 @@ def makePlayer(mp3filename):
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
 
 Graphline( PLAYLIST = ForwardIteratingChooser(filenames),
-           PLAYER   = Carousel( makePlayer, make1stRequest=True ),
+           PLAYER   = Carousel( makePlayer, make1stRequest=False ),
            linkages = {
                ("PLAYER",   "requestNext") : ("PLAYLIST", "inbox"),
                ("PLAYLIST", "outbox")      : ("PLAYER",   "next"),
