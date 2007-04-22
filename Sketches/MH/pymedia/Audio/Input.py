@@ -48,6 +48,9 @@ audio capture device.
 
 It outputs to its "outbox" outbox raw binary audio data in strings.
 
+This component supports sending to a size limited inbox. If the size limited
+inbox is full, this component will pause until it is able to send out the data.
+
 This component will terminate if a shutdownMicroprocess or producerFinished
 message is sent to the "control" inbox. The message will be forwarded on out of
 the "signal" outbox just before termination.
