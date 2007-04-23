@@ -41,7 +41,7 @@ class GraphSlideXMLComponent(Axon.Component.component, GraphSlideXMLParser): # W
     def newSlide(self, _, slide):
         self.send(slide, "outbox")
     def main(self):
-        parser = make_parser('xml.sax.xmlreader.IncrementalParser')
+        parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
         parser.setContentHandler(self)
         while 1:
             while self.dataReady("inbox"):
