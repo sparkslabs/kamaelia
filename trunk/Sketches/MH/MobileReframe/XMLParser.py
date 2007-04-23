@@ -199,7 +199,7 @@ class XMLParser(component, handler.ContentHandler):
         
 
     def main(self):
-        self.parser = make_parser('xml.sax.xmlreader.IncrementalParser')
+        self.parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
         self.parser.setContentHandler(self)
         self.documentStarted=False
         
