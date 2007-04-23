@@ -21,7 +21,7 @@ class Producer(threadedcomponent):
     # Lazy timed source
     def main(self):
         for i in xrange(1000):
-            self.send(i, "outbox")
+            self.send(range(i), "outbox")
             time.sleep(1)
 
 Pipeline( Producer(),
