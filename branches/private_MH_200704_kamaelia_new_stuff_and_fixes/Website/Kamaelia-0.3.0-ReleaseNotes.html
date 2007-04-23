@@ -1,0 +1,184 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Release Notes</span></p>
+<p align="right"><span style="font-size:18pt">0.3.0</span></p>
+<p><span style="font-size:18pt;font-weight:600">Summary</span></p>
+<p><span style="font-size:14pt">New Examples</span></p>
+<li type="disc">7 new examples including:</li>
+<ul type="disc"><li>Simple reliable multicast based streamer using Ogg Vorbis.</li>
+<li>Dirac Player</li>
+<li>Dirac encode &amp; playback.</li>
+<li>Simple bouncing images game. Designed for very small children who are amused by things take beep and react when you press left/right mouse buttons.</li>
+<li>Simple example showing how to use the ticker (First developed for showing subtitles).</li>
+<li>Demonstration system showing how to use the new software chassis facility in the context of multiple chassis. </li></ul>
+<p></p>
+<p dir="ltr"><span style="font-size:14pt">New Tools, Notable Additions</span></p>
+<ul type="disc"><li>Visual tool for building Kamaelia pipelines</li>
+<li>Tk Support</li>
+<li>Video encode, decode and playback.</li></ul>
+<p></p>
+<p dir="ltr"><span style="font-size:14pt">New Packages &amp; Subsystems</span></p>
+<p>These names should provide you with a flavour of the new subsystems that have been added:</p>
+<ul type="disc"><li>Kamaelia.Codec</li>
+<li>Kamaelia.Chassis</li>
+<li>Kamaelia.File</li>
+<li>Kamaelia.UI.Tk</li>
+<li>Kamaelia.Internet.Simulate</li></ul>
+<p></p>
+<p><span style="font-size:14pt">Other Highlights</span></p>
+<ul type="disc"><li>Software chassis</li>
+<li>Tk integration. (The pipeline builder is a nice example of a tool this enables)</li>
+<li>Dirac encoded video decoders and encoders</li>
+<li>Support for video playback. (dirac &amp; YUV)</li>
+<li>Variety of pygame based components, including</li>
+<ul type="disc"><li>Tools for greater control over the pygame surface managed environment</li>
+<li>Tools for building simple games. (controlling sprite behaviour for example)</li></ul>
+<li>Much richer tools for file reading and writing</li>
+<ul type="disc"><li>Includes re-usable file readers.</li></ul>
+<li>More utilities for message filters and splitting of messages</li>
+<li>Basic tools for simuluating error conditions and failure rates for delivery of messages (Sufficient for simulating an unstable underlying internet infrastructure).</li></ul>
+<p>The test suite has been further extended in this release.</p>
+<p></p>
+<p><span style="font-size:18pt;font-weight:600">Detailed Changelog</span></p>
+<p><span style="font-size:14pt">Added Files:</span></p>
+<ul type="disc"><li>Examples/example10/SimpleDiracEncodeDecode.py</li>
+<ul type="disc"><li>Simple dirac base encode/decode chain.</li></ul>
+<li>Examples/example10/SimpleDiracPlayer.py</li>
+<ul type="disc"><li>Simple dirac player. Shows how to play a specific file.</li></ul>
+<li>Examples/example11/Ticker.py</li>
+<ul type="disc"><li>Simple example showing how to use the ticker. First developed for showing subtitles.</li></ul>
+<li>Examples/example12/SimpleMultiFileStreamer.py</li>
+<ul type="disc"><li>Simple streamer that repeatedly streams (3 times) the same audio file.</li>
+<li>This is a mainly a demonstration of how to use the JoinChooserToCarousel Chassis, and the FixedRateControlledReusableFileReader</li>
+<li>What really happens is a &quot;chooser&quot; takes a playlist of things to serve, and the filereader asks the chooser what file it should be reading next when it finishes reading a file.</li></ul>
+<li>Examples/example12/ClientStreamToFile.py</li>
+<ul type="disc"><li>Simple client for the above streamer</li></ul>
+<li dir="ltr">Examples/example4/MulticastStreamingSystem_SRM.py</li>
+<ul type="disc"><li>This is a modification to the multicast streaming system that uses the SimpleReliableMulticast protocol, to add a thin skein of reliability over multicast. Passes basic lab tests, but needs real world testing to be certain.</li></ul>
+<li>Examples/example9/Simplegame.py</li>
+<ul type="disc"><li>Simple bouncing images game. Designed for very small children who are amused by things take beep and react when you press left/right mouse buttons.</li>
+<li>Forms a demonstration of the new BasicSprite and SpriteScheduler components, along with the associated EventHandler code, which is a substantial subsystem. Shutdown of active bouncing sprites and their associated components controlling them is controlled by a fanout component. Also contains a nice demonstration of the flexibility of Graphline</li></ul>
+<li>Kamaelia/Chassis/Carousel.py</li>
+<ul type="disc"><li>A carousel chassis gets it's name from broadcast carousels.  A broadcast carousel is where a programme or set of programmes, is broadcast one after another after another, often on a loop. (The canonical UK example here is ceefax/teletext) Movie channels which show the same film over and over are another form of carousel. <br /><br />If this makes no sense, consider a file reader. It reads a file and then it's done. Logically we can create a component that receives a set of filenames (and perhaps other arguments) and then creates a file reader for each on, one after another. The output from the file reader is then made the output for that component. If a carousel is provided with a filereader component, this is precisely the functionality you get. You gain reusability from things that are not directly reusable and normally come to a halt.</li></ul>
+<li>Kamaelia/Chassis/ConnectedServer.py</li>
+<ul type="disc"><li>A chassis is a component that can have other components attached or plugin to it. The existing SimpleServer is just that - it takes a protocol handler class such that when a connection is made an instance of the protocol handler is created to handle the connection. This menas it has components attached to it. We also note that the SimpleServer is a special case of a connected server, as a result the old Kamaelia.SimpleServer.SimpleServer class now resides in Kamaelia.Chassis.ConnectedServer.SimpleServer</li></ul>
+<li>Kamaelia/Chassis/Prefab.py</li>
+<ul type="disc"><li>This will be a collection of functions that act as prefabs. That is they take a collection of arguments that will be linked up in a standardised way. This makes them a specialised form of chassis </li>
+<li>JoinChooserToCarousel Automated &quot;What are arguments should I use next time for my reusable component?&quot; prefab.<br /><br />Takes a carousel that will repeatedly create components of particular type. It asks the chooser what the arguments should be for the next item.<br /><br />Purpose of carousel :  Repeatedly creates a component.  It creates the component with a set of arguments.  The magic is that it can recieve those arguments on &quot;next&quot; inbox. Further magic: it can ask something else to give it it's &quot;next&quot; set of argument. Purpose of chooser :  To step through a list of things given to it. When asked &quot;what next&quot; it provides the next in the list.<br /><br />Combination, for example, allows you to wire up a playlist to something reusable that reads files at a given rate.</li></ul>
+<li>Kamaelia/Codec/Dirac.py</li>
+<ul type="disc"><li>Provides dirac encoding &amp; decoding components. The output of the dirac decoder matches that of the RawYUV framer</li></ul>
+<li>Kamaelia/Codec/RawYUVFramer.py</li>
+<ul type="disc"><li>Takes raw YUV data as read from a file and forms frames suitable for passing to (for example) a pygame video overlay.</li></ul>
+<li>Kamaelia/Data/Escape.py</li>
+<ul type="disc"><li>Contains data escaping functions used by the components that form the SimpleReliableMulticast protocol.</li></ul>
+<li>Kamaelia/Data/Rationals.py</li>
+<ul type="disc"><li>Data types &amp; conversion functions used by the Dirac encoder/decoder</li></ul>
+<li>Kamaelia/File/Reading.py</li>
+<ul type="disc"><li>Provide a variety of new tools for handling different file reading issues. These have not (yet) entirely replaced the original ReadFileAdaptor.</li></ul>
+<li>Kamaeli/File/Writing.py</li>
+<ul type="disc"><li>Initial tools for writing to files</li></ul>
+<li>Kamaelia/Internet/Simulate/BrokenNetwork.py</li>
+<ul type="disc"><li>Components created during testing of the simple reliable multicast. They force out of order lossy delivery with duplicates added.</li></ul>
+<li>Kamaelia/Protocol/Framing.py</li>
+<ul type="disc"><li>Deals with identifcation and verification that data frames are a certain size. (Assists detection of packetloss/duplication)</li>
+<li>Also provides chunking facilities for identifying start &amp; end points in a chunk</li></ul>
+<li>Kamaelia/Protocol/SimpleReliableMulticast.py</li>
+<ul type="disc"><li>Implements a simple protocol for introducing a level of reliability into multicast. Includes full coverage testing.</li></ul>
+<li>Kamaelia/UI/Pygame/BasicSprite.py</li>
+<ul type="disc"><li>Currently lower level than PygameDisplay related components</li>
+<li>Initial implementation of a sprite component which has a number of controls:</li>
+<ul type="disc"><li>Inboxes=[&quot;rotator&quot;, -- current rotation (in degrees)<br />                  &quot;translation&quot;, -- Control sprite's current position<br />                  &quot;scaler&quot;,  -- Control how large the sprite's inmage is scaled<br />                  &quot;imaging&quot;, -- Control which image is currently displayed.<br />                  &quot;inbox&quot;, <br />                  &quot;control&quot;]</li></ul></ul>
+<li>Kamaelia/UI/Pygame/EventHandler.py</li>
+<ul type="disc"><li>Currently lower level than PygameDisplay related components</li>
+<li>Simple tool for handling events</li></ul>
+<li>Kamaelia/UI/Pygame/KeyEvent.py</li>
+<ul type="disc"><li>Pygame display level component for ndependently handling key strokes. You may add a list of outboxes, and have a message sent to a given outbox when the key is pressed. This can be used for games, slideshows, and other things that are key activated.</li></ul>
+<li>Kamaelia/UI/Pygame/SpriteScheduler.py</li>
+<ul type="disc"><li>This is a specialised scheduler that provides sprites' logic with a timeslice by calling the sprite's update method. (Thereby also visually updating the sprite)</li></ul>
+<li>Kamaelia/UI/Pygame/VideoOverlay.py</li>
+<ul type="disc"><li>Provides a useful video playback tool. Video overlays can accept YUV data (as comes from many codecs) and display it without transformation.</li></ul>
+<li>Kamaelia/UI/Tk/TkWindow.py</li>
+<ul type="disc"><li>Provides the base level of integration required for TK based widgets. This allows for Tk based guis to be implemented and integrated trivially into Kamaelia with callbacks mapped to events. This was a simple first pass and has proved remarkably resilient.</li></ul>
+<li>Kamaelia/Util/Fanout.py</li>
+<ul type="disc"><li>Another simple splitter. The reason for allowing a variety of splitters is to see which approach/metaphor works best before limiting implementations. The usecases of each will need to be supportable by any resulting system.</li></ul>
+<li>Kamaelia/Util/FilterComponent.py</li>
+<ul type="disc"><li dir="ltr">Implements a generic filter system.</li></ul>
+<li dir="ltr">Kamaelia/Util/Marshalling.py</li>
+<ul type="disc"><li dir="ltr">The Marshalling/DeMarshalling Component is given a simple class. It then expects to be passed objects of that class, and then performs the following actions:  __str__ on an object and fromString on an object.  The idea is that you would place this between your logic and a network socket, which simply serialises and deserialises objects for transmission over the wire. The initial data format this is designed to work with is the MimeDict object.</li></ul>
+<li dir="ltr">Kamaelia/Util/RateFilter.py</li>
+<ul type="disc"><li dir="ltr">Provides a variety of tools for time based message limitation. Either in terms of byte count, raw message rate and so on. MessageRateLimit, ByteRate_RequestControl, VariableByteRate_RequestControl</li></ul>
+<li dir="ltr">Tools/VisualPipeBuilder.py</li>
+<ul type="disc"><li dir="ltr">Script that runs a pipebuilder. This is very much a version 0.1 tool, and only handles pipelines. It is however pretty useful. </li></ul>
+<li dir="ltr">Tools/PipeBuilder/BuildViewer.py</li>
+<ul type="disc"><li dir="ltr">Support file - builds a specialised topology viewer - for example using a crawling dashed line to indicate dataflow direction</li></ul>
+<li dir="ltr">Tools/PipeBuilder/GUI.py</li>
+<ul type="disc"><li dir="ltr">Builds the Tk based interface for the pipe builder. This includes the source code display window/widget and the main component display widget.</li></ul>
+<li dir="ltr">Tools/PipeBuilder/PipeBuild.py</li>
+<li dir="ltr">Tools/PipeBuilder/PipelineWriter.py</li>
+<ul type="disc"><li dir="ltr">Based on the topology, writes out python code.</li></ul></ul>
+<p dir="ltr"></p>
+<p><span style="font-size:14pt">Test suites Added:</span></p>
+<ul type="disc"><li>Kamaelia/Data/tests/test_Escape.py</li>
+<li>Kamaelia/Data/tests/test_Rationals.py</li>
+<li>Kamaelia/Protocol/test/test_framing.py</li>
+<li>Kamaelia/Util/test/test_Chooser.py</li>
+<li>Kamaelia/Util/test/test_Comparator.py</li>
+<li>Kamaelia/Util/test/test_ForwardIteratingChooser.py</li>
+<li>Kamaelia/Util/test/test_LossyConnector.py</li>
+<li>Kamaelia/Util/test/test_Marshalling.py</li>
+<li>Kamaelia/Util/test/test_RateControl.py</li>
+<li>Kamaelia/Util/test/test_Splitter.py</li>
+<li>Kamaelia/Util/test/test_TestResultComponent.py</li>
+<li>Kamaelia/Util/test/test_VariableRateControl.py</li></ul>
+<p></p>
+<p><span style="font-size:14pt">Changed files:</span></p>
+<ul type="disc"><li>setup.py</li>
+<ul type="disc"><li>Added:</li>
+<ul type="disc"><li>Kamaelia.Codec</li>
+<li>Kamaelia.Chassis</li>
+<li>Kamaelia.File</li>
+<li>Kamaelia.UI.Tk</li></ul></ul>
+<li>Examples/example8/slideshow.py</li>
+<ul type="disc"><li>Now looks in the local &quot;Slides&quot; directory for slides to show.</li></ul>
+<li>Kamaelia/SimpleServerComponent.py</li>
+<ul type="disc"><li>Changed to a stub file that for now has compatibility imports from the new location Kamaelia.Chassis.ConnectedServer</li></ul>
+<li>Kamaelia/SingleServer.py</li>
+<ul type="disc"><li dir="ltr">In/outboxes now documented as to purposes</li></ul>
+<li dir="ltr">Kamaelia/UI/PygameDisplay.py</li>
+<ul type="disc"><li dir="ltr">Support for overlays added</li>
+<li dir="ltr">Overlays are displayed *after* the other surfaces are rendered</li>
+<li dir="ltr">Display tries to be doublebuffered where possible</li></ul>
+<li dir="ltr">Kamaelia/UI/MH/DragHandler.py</li>
+<ul type="disc"><li dir="ltr">Issues in dragging resolved.</li></ul>
+<li dir="ltr">Kamaelia/UI/Pygame/Image.py</li>
+<ul type="disc"><li dir="ltr">Allows the user to add in extra arguments controlling the display for the image - if possible.</li>
+<li dir="ltr">Allows for scaling relative to  maximum aspect ratio.</li></ul>
+<li dir="ltr">Kamaelia/UI/Pygame/Ticker.py</li>
+<ul type="disc"><li dir="ltr">Outline colour now defaults to the bac kground colour if not given</li>
+<li dir="ltr">Starting of configurability for word playback</li>
+<li dir="ltr">Abiility to provide a logical position for the ticker on an abstract surface.</li>
+<li dir="ltr">Requests a display using the new &quot;Wait&quot; directive to the scheduler. This might actually have similarities to deferred generators in twisted. Need to look into.</li>
+<li dir="ltr">Better modularisation</li>
+<li dir="ltr">Allows for line oriented tickers - ie reach end of a line, start a new line style ticker (rather than subtitle style ticker)</li></ul>
+<li dir="ltr">Kamaelia/Util/Chooser.py</li>
+<ul type="disc"><li dir="ltr">ForwardIteratingChooser added.</li></ul>
+<li dir="ltr">Kamaelia/Util/Graphline.py</li>
+<ul type="disc"><li dir="ltr">Variety of changes to deal with shutdown of components within the graphline better.</li>
+<li dir="ltr">Key change is the graphline has changed from passive to active. This might need revisiting once this API/approach has stablised.</li></ul>
+<li dir="ltr">Kamaelia/Util/PipelineComponent.py</li>
+<ul type="disc"><li dir="ltr">Variety of changes to deal with shutdown of components within the pipeline better.</li>
+<li dir="ltr">Key change is the pipeline has changed from passive to active. This might need revisiting once this API/approach has stablised.</li></ul>
+<li dir="ltr">Kamaelia/Util/Splitter.py</li>
+<ul type="disc"><li dir="ltr">Merge of the test driven rewrite of splitter into here replacing the old implementation. Has the same API and passes the old tests, but also provdes a pluggable splitter system.</li></ul>
+<li dir="ltr">Kamaelia/Visualisation/Axon/PComponent.py</li>
+<ul type="disc"><li dir="ltr">Nicer abbreviation of component names in the introspector</li></ul>
+<li dir="ltr">Kamaelia/Visualisation/PhysicsGraph/ParticleDragger.py</li>
+<ul type="disc"><li dir="ltr">Allow overrideable information on selection of node/particle</li></ul>
+<li dir="ltr">Kamaelia/Visualisation/PhysicsGraph/RenderingParticle.py</li>
+<ul type="disc"><li dir="ltr">Optional naming of particles.</li></ul>
+<li dir="ltr">Kamaelia/Visualisation/PhysicsGraph/TopologyViewerComponent.py</li>
+<ul type="disc"><li dir="ltr">Added in facilitiy for querying the current topology the topology viewer is displaying.</li>
+<li dir="ltr">Also sends out a message when a particle is selected.</li></ul></ul>
+<p dir="ltr"></p>
+<p dir="ltr">Michael, October 2005</p>
+<p dir="ltr"></p>
+</body></html>

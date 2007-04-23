@@ -1,0 +1,757 @@
+0.5.1
+
+   Shutdown handling improved for internet components: CSA, TCPClient,
+   and TCPServer. Shutting down capability added to the Selector component.
+
+   Documentation improved for DVB components, and parsing added for date and
+   time DVB SI data.
+
+   Documentation added to RawAudioMixer, and pymedia audio components.
+
+   NEW EXAMPLES:
+
+   OPEN GL:
+    * Stub test code from the OpenGL components have been separated out as
+      lots of mini examples:
+
+      Moved Tools/Whiteboard/Tokenisation.py into
+         Kamaelia/Util/Tokenisation/Simple.py
+
+0.5.0
+
+   Kamaelia 0.5.0 adds a large number of new components, many of which have
+   been developed by students participating in Google's Summer Of Code 2006
+   Programme. There are many new examples demonstrating these new features.
+
+   Additionsfrom SoC 2006:
+    * Modular http web server and client
+    * BitTorrent client
+    * OpenGL display components
+
+   Other additions include:   
+    * PyMedia Audio IO and codec access
+    * Speex audio codec
+    * Audio mixing and filtering
+    * Improved Digital TV handling
+
+
+   NEW EXAMPLES:
+
+   HTTP spidering:
+    * Examples/SoC2006/RJL/HTTPSpider
+
+   BitTorrent:
+    * Examples/SoC2006/RJL/TorrentGUI
+    * Examples/SoC2006/RJL/TorrentSeeder
+
+   BitTorrent based peer to peer streaming:
+    * Examples/SoC2006/RJL/P2PStreamPeer
+    * Examples/SoC2006/RJL/P2PStreamSeed
+
+   OpenGL checkers board:
+    * Examples/SoC2006/THF/Checkers
+
+   OpenGL BitTorrent GUI:
+    * Examples/SoC2006/THF/TorrentOpenGLGUI
+
+   DVB Digital TV timeshifting tools:
+    * Examples/DVB_Systems/RecordNamedChanel.py
+    * Examples/DVB_Systems/PersonalVideoRecorder.py
+
+   
+   HTTP PROTOCOL SERVER AND CLIENT
+
+   New components add a modular HTTP server and client compoents, including
+   a Icecast/SHOUTcast client. The HTTP server is modular, and can be
+   configured to instantiate different protocol handler components depending
+   on the request URL.
+
+   For more details see: ./Examples/SoC2006/RJL/README-HTTP
+
+
+   BITTORRENT CLIENT INTEGRATION
+
+   These components add a fully fledged BitTorrent peer, capable of both
+   downloading and serving to peers.
+
+   These components require the BitTorrent _sources_ to be installed. It has
+   been tested with version 4.20.8 - use this version or later only.
+   Get the latest sources from: http://download.bittorrent.com/dl/?M=D
+
+   For more details see: ./Examples/SoC2006/RJL/README-BitTorrent      
+
+
+   OPEN GL DISPLAY
+
+   The range of Kamaelia UI capabilities now includes OpenGL. The design is
+   similar to the way the existing PyGame display components work: A Display
+   component provides a core display service and components wishing to
+   render an OpenGL object use the service it provides.
+
+   It includes an ability to 'wrap' existing PyGame components - enabling
+   them to be displayed as a rectangle within an OpenGL space and to be
+   interacted with (eg. they can receive mouse motion events, mapped back
+   from 3d onto the 2d surface)
+
+   A simple 'interactor' framework provides a way to script and control
+   motion and transformation of OpenGL components.
+
+   Components include: button, label, progress bar, and a 'wrapper' for
+   bringing existing PyGame components.
+
+
+   PYMEDIA AUDIO
+
+   A new Kamaelia.Audio namespace has been added. The first components to
+   populate this provide PyMedia based audio input, output, coding and
+   decoding.
+
+   PyMedia is a cross platform python library providing access to audio and
+   video capture, codecs and playback. Get it from: http://www.pymedia.org/
+
+   NOTE: With version 1.3.7.0 of pymedia, Linux users may experience segfaults
+         whilst using the audio input component. A patch exists for pymedia
+         to fix this. Get the patch here:
+             http://kamaelia.sf.net/t/pymedia_patch.tar.gz
+         
+
+   SPEEX CODING AND DECODING
+
+   A pair of components have been added that use the PySpeex library (version
+   0.2) to add Speex encoding and decoding:
+
+   Speex is an open source audio compresion format optimised for compressing
+   speech content to very low bitrates (eg. 10kbit/s). Get it from
+   http://www.speex.org
+
+
+   DIGITAL TERRESTRIAL TELEVISION (DVB-T)
+
+   There is now a wider set of Digital TV (DVB-T) support - with a richer
+   and more complete set of components for demultiplexing and processing
+   metadata within the stream.
+
+   To support this, some experimental code for making public services
+   (services registered under a name with the coordinating assistant tracker)
+   easier to create and use has been implemented.
+
+   Notable New Components:
+    * DVB tuner, demuxer and receiver.
+    * DVB data table reassembler
+    * Various DVB data table parsers and pretty printers
+
+   New Examples:
+    * A channel recorder that works out itself, from the name of the channel
+      what streams of data need recording from the broadcast multiplex.
+
+    * A personal video recorder that records programmes specified by
+      programme name and channel name.
+
+0.4.0
+
+   Kamaelia 0.4.0 is a consolidation, documentation and optimisation enhanced
+   release. Whilst there are a wide variety of new components, existing
+   functionality has been consolidated, and is now in use in a handful of
+   (beta) production systems.
+
+   Kamaelia 0.4.0 requires the use of Axon 1.5 (released at the same time as
+   this release).
+
+   Also, virtually all components now have highly detailed documentation inside
+   their sourcefiles. A (large) subset of this is available here:
+     * http://kamaelia.sourceforge.net/Components.html
+
+   The examples have been duplicated onto the website, and are here:
+     * http://kamaelia.sourceforge.net/Cookbook.html
+
+   Our tutorial for helping getting started is here:
+     * http://kamaelia.sourceforge.net/MiniAxon/
+
+   This has now been battle tested by a good few dozen people, and we feel is a
+   good introduction to Kamaelia's approach, and others have also stated they
+   find it a good way of understanding generators too. (even if they're not
+   interested in Kamaelia)
+
+   Notable New Components
+     * Tools for Timeshifting Digital TV (DVB-T handling to be precise)
+       These tools are only intended for use as legal under UK law, you need to
+       check locally if you can use them.
+     * A software data backplane
+     * Tools for piping data easily/trivially through external processes
+     * Tools for taking advantage of system optimisations allowing quiescent
+       behaviour. (both in terms of pygame & network based systems)
+     * Tools for using UDP
+
+   New Examples
+     * Tools for using UDP & SingleServer
+
+     * A collaborative whiteboard "sketcher" which is both a server to other
+       whiteboards and/or a client to other whiteboards. (Due to changes, when
+       not in use CPU usage for these is as close to zero as it can be for any
+       software) This is also a good example of usage of the backplane
+       component.
+       This application is particularly nice to use in conjunction with a
+       tablet PC!
+       An overview of the sketcher can be found on our systems page:
+
+     * http://kamaelia.sourceforge.net/Systems.html
+       (see Collaborative Whiteboarding)
+
+     * Examples for using the tools for timeshifting including:
+
+     * Tuning into a TV channel on Freeview and recording it to disk
+     * Dumping a DVB multiplex transport stream
+     * Demultiplexing a prestored DVB multiplex
+       A system for grabbing a TV channel and it's now & next information, such
+       that this can allow the programmes to be captured and transcoding as
+       individual programmes for watching later.
+       This is the core of the BBC Macro system (an internal prototype) that
+       can be seen here:
+
+     * http://bbc.kamaelia.org/cgi-bin/blog/blog.cgi
+
+   An overview of the architecture can be found here:
+
+     * http://kamaelia.sourceforge.net/KamaeliaMacro.html
+
+   Essentially, this allows you to build your own space efficient PVR.
+
+   General overview of other large scale changes
+
+   Massively improved documentation across the board (no file left untouched).
+   This is all largely in the form of pydoc based documentation, a fair chunk
+   of it is available at
+     * http://kamaelia.sourceforge.net/Components.html
+
+   However the documentation in those files goes further than that, including
+   many, many more examples than are even at:
+     * http://kamaelia.sourceforge.net/Cookbook.html
+
+   Large scale removal of cruft and change over to use pipelines and graphlines
+   where suitable. This is most noticable inside the examples.
+
+   Code quality of a number of pieces of code has been improved:
+     * A small number of components have been rewritten from the 3 callback
+       form into the generator form of component to simplify their
+       implementation.
+     * Shutdown handling is now more consistent.
+     * Some core components have been rewritten, test first, now that their
+       expected usage is clearer, making the system more dependable.
+     * Throughput handling has also generally been improved. Many locations
+       where the following was written:
+
+           if self.dataReady("inbox"):
+               d = self.recv("inbox")
+               e = SomeTransform(d)
+               self.send(e, "outbox")
+
+       We've discovered gain better throughput if you write:
+
+           while self.dataReady("inbox"):
+               d = self.recv("inbox")
+               e = SomeTransform(d)
+               self.send(e, "outbox")
+
+     * Improved handling of child components, specific examplars are pipeline &
+       graphline components.
+     * Increased use of .activate() and .run() methods rather than manually
+       using the Axon.Ipc.newComponent message of manually starting the
+       scheduler.
+     * Peppered through the code is some hints to improve introspection and
+       detection of components for both code generation and interactive
+       graphical pipeline builder applications. Example lines added to files:
+
+           __kamaelia_components__ = ( Annotator, RecoverOrder, )
+           __kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
+
+       These can be extracted using Kamaelia.Data.Repository
+
+   Pygame related changes
+     * Major changes to do with how components update the display. Specifically
+       they MUST send redraw requests through. This is akin to doing a flip for
+       the surfaces.
+     * A private _PygameEventSource has also been created.
+
+   These two changes combined allow the system to become quiescent, where
+   possible.
+     * A number of components now understand what to do if sent an alpha value
+       on an alphacontrol inbox.
+
+   Detailed Overview of other changes
+
+   Initial release, largely rewritten or includes new components:
+     * Examples/example13/UDP_demo.py
+     * Examples/example15/Macro.py
+     * Examples/example15/SingleChannelTransportStreamCapture.py
+     * Examples/example15/TransportStreamCapture.py
+     * Examples/example15/TransportStreamDemuxer.py
+     * Kamaelia/Codec/__init__.py
+     * Kamaelia/Community/__init__.py
+     * Kamaelia/Data/Repository.py
+     * Kamaelia/Data/tests/test_MimeDict.py
+     * Kamaelia/Device/__init__.py
+     * Kamaelia/Device/DVB/Core.py
+     * Kamaelia/Device/DVB/EIT.py
+     * Kamaelia/Device/DVB/__init__.py
+     * Kamaelia/File/UnixPipe.py
+     * Kamaelia/Internet/UDP.py
+     * Kamaelia/Util/Backplane.py
+     * Kamaelia/Util/Console.py
+     * Kamaelia/Support/Tk/Scrolling.py
+     * Kamaelia/Internet/ConnectedSocketAdapter.py
+     * Kamaelia/Internet/Selector.py
+     * Kamaelia/KamaeliaIPC.py
+     * Kamaelia/Util/RateFilter.py
+
+   Changed to take advantage of Axon changes allowing quiescent behaviour:
+     * Kamaelia/Internet/ConnectedSocketAdapter.py
+     * Kamaelia/Internet/Selector.py
+     * Kamaelia/Chassis/ConnectedServer.py
+
+   The selector and the CSA have been changed such that all socket specific
+   behaviour has been shifted out of the selector into the CSA. This allows
+   the selector to be used for files as well as sockets.
+
+     Kamaelia/Internet/TCPClient.py
+
+     Kamaelia/Internet/TCPServer.py
+
+     Kamaelia/UI/PygameDisplay.py
+
+     Kamaelia/UI/Pygame/Button.py
+
+     Kamaelia/Util/Introspector.py
+       Specifically, utilising an addition to scheduler's API to allow 'proper'
+       extraction of running components, without having to climb around
+       naughtily inside data structures.
+
+   New/Changed functionality to existing components:
+     * Kamaelia/Visualisation/PhysicsGraph/TopologyViewerComponent.py
+     * Kamaelia/Visualisation/PhysicsGraph/chunks_to_lines.py
+     * Kamaelia/UI/Pygame/Ticker.py
+     * Kamaelia/UI/Pygame/KeyEvent.py
+     * Tools/PipeBuilder/GUI.py
+     * Tools/VisualPipeBuilder.py (no longer uses a hardcoded list of
+       components)
+     * Examples/example10/SimpleDiracPlayer.py
+
+   Namespace cleanup:
+     * Kamaelia/Util/ConsoleEcho.py --> Kamaelia/Util/Console.py
+     * Kamaelia/SimpleServer.py --> Kamaelia/Chassis/ConnectedServer.py
+     * The marshalling code in util has had a similar change.
+
+0.3.0
+
+   Added Files:
+     * Examples/example10/SimpleDiracEncodeDecode.py
+
+     * Simple dirac base encode/decode chain.
+
+     Examples/example10/SimpleDiracPlayer.py
+     * Simple dirac player. Shows how to play a specific file.
+
+     Examples/example11/Ticker.py
+     * Simple example showing how to use the ticker. First developed for
+       showing subtitles.
+
+     Examples/example12/SimpleMultiFileStreamer.py
+     * Simple streamer that repeatedly streams (3 times) the same audio
+       file.
+     * This is a mainly a demonstration of how to use the
+       JoinChooserToCarousel Chassis, and the
+       FixedRateControlledReusableFileReader
+     * What really happens is a "chooser" takes a playlist of things to
+       serve, and the filereader asks the chooser what file it should be
+       reading next when it finishes reading a file.
+
+     Examples/example12/ClientStreamToFile.py
+     * Simple client for the above streamer
+
+     Examples/example4/MulticastStreamingSystem_SRM.py
+     * This is a modification to the multicast streaming system that uses
+       the SimpleReliableMulticast protocol, to add a thin skein of
+       reliability over multicast. Passes basic lab tests, but needs real
+       world testing to be certain.
+
+     Examples/example9/Simplegame.py
+     * Simple bouncing images game. Designed for very small children who are
+       amused by things take beep and react when you press left/right mouse
+       buttons.
+     * Forms a demonstration of the new BasicSprite and SpriteScheduler
+       components, along with the associated EventHandler code, which is a
+       substantial subsystem. Shutdown of active bouncing sprites and their
+       associated components controlling them is controlled by a fanout
+       component. Also contains a nice demonstration of the flexibility of
+       Graphline
+
+     Kamaelia/Chassis/Carousel.py
+     * A carousel chassis gets it's name from broadcast carousels. A
+       broadcast carousel is where a programme or set of programmes, is
+       broadcast one after another after another, often on a loop. (The
+       canonical UK example here is ceefax/teletext) Movie channels which
+       show the same film over and over are another form of carousel.
+       If this makes no sense, consider a file reader. It reads a file and
+       then it's done. Logically we can create a component that receives a
+       set of filenames (and perhaps other arguments) and then creates a
+       file reader for each on, one after another. The output from the file
+       reader is then made the output for that component. If a carousel is
+       provided with a filereader component, this is precisely the
+       functionality you get. You gain reusability from things that are not
+       directly reusable and normally come to a halt.
+
+     Kamaelia/Chassis/ConnectedServer.py
+     * A chassis is a component that can have other components attached or
+       plugin to it. The existing SimpleServer is just that - it takes a
+       protocol handler class such that when a connection is made an
+       instance of the protocol handler is created to handle the connection.
+       This menas it has components attached to it. We also note that the
+       SimpleServer is a special case of a connected server, as a result the
+       old Kamaelia.SimpleServer.SimpleServer class now resides in
+       Kamaelia.Chassis.ConnectedServer.SimpleServer
+
+     Kamaelia/Chassis/Prefab.py
+     * This will be a collection of functions that act as prefabs. That is
+       they take a collection of arguments that will be linked up in a
+       standardised way. This makes them a specialised form of chassis
+     * JoinChooserToCarousel Automated "What are arguments should I use next
+       time for my reusable component?" prefab.
+       Takes a carousel that will repeatedly create components of particular
+       type. It asks the chooser what the arguments should be for the next
+       item.
+       Purpose of carousel : Repeatedly creates a component. It creates the
+       component with a set of arguments. The magic is that it can recieve
+       those arguments on "next" inbox. Further magic: it can ask something
+       else to give it it's "next" set of argument. Purpose of chooser : To
+       step through a list of things given to it. When asked "what next" it
+       provides the next in the list.
+       Combination, for example, allows you to wire up a playlist to
+       something reusable that reads files at a given rate.
+
+     Kamaelia/Codec/Dirac.py
+     * Provides dirac encoding & decoding components. The output of the
+       dirac decoder matches that of the RawYUV framer
+
+     Kamaelia/Codec/RawYUVFramer.py
+     * Takes raw YUV data as read from a file and forms frames suitable for
+       passing to (for example) a pygame video overlay.
+
+     Kamaelia/Data/Escape.py
+     * Contains data escaping functions used by the components that form the
+       SimpleReliableMulticast protocol.
+
+     Kamaelia/Data/Rationals.py
+     * Data types & conversion functions used by the Dirac encoder/decoder
+
+     Kamaelia/File/Reading.py
+     * Provide a variety of new tools for handling different file reading
+       issues. These have not (yet) entirely replaced the original
+       ReadFileAdaptor.
+
+     Kamaeli/File/Writing.py
+     * Initial tools for writing to files
+
+     Kamaelia/Internet/Simulate/BrokenNetwork.py
+     * Components created during testing of the simple reliable multicast.
+       They force out of order lossy delivery with duplicates added.
+
+     Kamaelia/Protocol/Framing.py
+     * Deals with identifcation and verification that data frames are a
+       certain size. (Assists detection of packetloss/duplication)
+     * Also provides chunking facilities for identifying start & end points
+       in a chunk
+
+     Kamaelia/Protocol/SimpleReliableMulticast.py
+     * Implements a simple protocol for introducing a level of reliability
+       into multicast. Includes full coverage testing.
+
+     Kamaelia/UI/Pygame/BasicSprite.py
+     * Currently lower level than PygameDisplay related components
+     * Initial implementation of a sprite component which has a number of
+       controls:
+
+     * Inboxes=["rotator", -- current rotation (in degrees)
+       "translation", -- Control sprite's current position
+       "scaler", -- Control how large the sprite's inmage is scaled
+       "imaging", -- Control which image is currently displayed.
+       "inbox",
+       "control"]
+
+     Kamaelia/UI/Pygame/EventHandler.py
+     * Currently lower level than PygameDisplay related components
+     * Simple tool for handling events
+
+     Kamaelia/UI/Pygame/KeyEvent.py
+     * Pygame display level component for ndependently handling key strokes.
+       You may add a list of outboxes, and have a message sent to a given
+       outbox when the key is pressed. This can be used for games,
+       slideshows, and other things that are key activated.
+
+     Kamaelia/UI/Pygame/SpriteScheduler.py
+     * This is a specialised scheduler that provides sprites' logic with a
+       timeslice by calling the sprite's update method. (Thereby also
+       visually updating the sprite)
+
+     Kamaelia/UI/Pygame/VideoOverlay.py
+     * Provides a useful video playback tool. Video overlays can accept YUV
+       data (as comes from many codecs) and display it without
+       transformation.
+
+     Kamaelia/UI/Tk/TkWindow.py
+     * Provides the base level of integration required for TK based widgets.
+       This allows for Tk based guis to be implemented and integrated
+       trivially into Kamaelia with callbacks mapped to events. This was a
+       simple first pass and has proved remarkably resilient.
+
+     Kamaelia/Util/Fanout.py
+     * Another simple splitter. The reason for allowing a variety of
+       splitters is to see which approach/metaphor works best before
+       limiting implementations. The usecases of each will need to be
+       supportable by any resulting system.
+
+     Kamaelia/Util/FilterComponent.py
+     * Implements a generic filter system.
+
+     Kamaelia/Util/Marshalling.py
+     * The Marshalling/DeMarshalling Component is given a simple class. It
+       then expects to be passed objects of that class, and then performs
+       the following actions: __str__ on an object and fromString on an
+       object. The idea is that you would place this between your logic and
+       a network socket, which simply serialises and deserialises objects
+       for transmission over the wire. The initial data format this is
+       designed to work with is the MimeDict object.
+
+     Kamaelia/Util/RateFilter.py
+     * Provides a variety of tools for time based message limitation. Either
+       in terms of byte count, raw message rate and so on. MessageRateLimit,
+       ByteRate_RequestControl, VariableByteRate_RequestControl
+
+     Tools/VisualPipeBuilder.py
+     * Script that runs a pipebuilder. This is very much a version 0.1 tool,
+       and only handles pipelines. It is however pretty useful.
+
+     Tools/PipeBuilder/BuildViewer.py
+     * Support file - builds a specialised topology viewer - for example
+       using a crawling dashed line to indicate dataflow direction
+
+     Tools/PipeBuilder/GUI.py
+     * Builds the Tk based interface for the pipe builder. This includes the
+       source code display window/widget and the main component display
+       widget.
+
+     Tools/PipeBuilder/PipeBuild.py
+
+     Tools/PipeBuilder/PipelineWriter.py
+     * Based on the topology, writes out python code.
+
+   Test suites Added:
+     * Kamaelia/Data/tests/test_Escape.py
+     * Kamaelia/Data/tests/test_Rationals.py
+     * Kamaelia/Protocol/test/test_framing.py
+     * Kamaelia/Util/test/test_Chooser.py
+     * Kamaelia/Util/test/test_Comparator.py
+     * Kamaelia/Util/test/test_ForwardIteratingChooser.py
+     * Kamaelia/Util/test/test_LossyConnector.py
+     * Kamaelia/Util/test/test_Marshalling.py
+     * Kamaelia/Util/test/test_RateControl.py
+     * Kamaelia/Util/test/test_Splitter.py
+     * Kamaelia/Util/test/test_TestResultComponent.py
+     * Kamaelia/Util/test/test_VariableRateControl.py
+
+   Changed files:
+     * setup.py
+
+     * Added:
+
+     * Kamaelia.Codec
+     * Kamaelia.Chassis
+     * Kamaelia.File
+     * Kamaelia.UI.Tk
+
+     Examples/example8/slideshow.py
+     * Now looks in the local "Slides" directory for slides to show.
+
+     Kamaelia/SimpleServerComponent.py
+     * Changed to a stub file that for now has compatibility imports from
+       the new location Kamaelia.Chassis.ConnectedServer
+
+     Kamaelia/SingleServer.py
+     * In/outboxes now documented as to purposes
+
+     Kamaelia/UI/PygameDisplay.py
+     * Support for overlays added
+     * Overlays are displayed *after* the other surfaces are rendered
+     * Display tries to be doublebuffered where possible
+
+     Kamaelia/UI/MH/DragHandler.py
+     * Issues in dragging resolved.
+
+     Kamaelia/UI/Pygame/Image.py
+     * Allows the user to add in extra arguments controlling the display for
+       the image - if possible.
+     * Allows for scaling relative to maximum aspect ratio.
+
+     Kamaelia/UI/Pygame/Ticker.py
+     * Outline colour now defaults to the bac kground colour if not given
+     * Starting of configurability for word playback
+     * Abiility to provide a logical position for the ticker on an abstract
+       surface.
+     * Requests a display using the new "Wait" directive to the scheduler.
+       This might actually have similarities to deferred generators in
+       twisted. Need to look into.
+     * Better modularisation
+     * Allows for line oriented tickers - ie reach end of a line, start a
+       new line style ticker (rather than subtitle style ticker)
+
+     Kamaelia/Util/Chooser.py
+     * ForwardIteratingChooser added.
+
+     Kamaelia/Util/Graphline.py
+     * Variety of changes to deal with shutdown of components within the
+       graphline better.
+     * Key change is the graphline has changed from passive to active. This
+       might need revisiting once this API/approach has stablised.
+
+     Kamaelia/Util/PipelineComponent.py
+     * Variety of changes to deal with shutdown of components within the
+       pipeline better.
+     * Key change is the pipeline has changed from passive to active. This
+       might need revisiting once this API/approach has stablised.
+
+     Kamaelia/Util/Splitter.py
+     * Merge of the test driven rewrite of splitter into here replacing the
+       old implementation. Has the same API and passes the old tests, but
+       also provdes a pluggable splitter system.
+
+     Kamaelia/Visualisation/Axon/PComponent.py
+     * Nicer abbreviation of component names in the introspector
+
+     Kamaelia/Visualisation/PhysicsGraph/ParticleDragger.py
+     * Allow overrideable information on selection of node/particle
+
+     Kamaelia/Visualisation/PhysicsGraph/RenderingParticle.py
+     * Optional naming of particles.
+
+     Kamaelia/Visualisation/PhysicsGraph/TopologyViewerComponent.py
+     * Added in facilitiy for querying the current topology the topology
+       viewer is displaying.
+     * Also sends out a message when a particle is selected.
+
+   * Util/Marhsalling.py and Util/test/test_Marshalling.py added
+     Pipeline-able marhsalling/demarshalling components and some basic tests
+     Derived from Util/MarshallComponent.py
+   * UI/Pygame/VideoOverlay added and PygameDisplay extended to support it
+     providing video 'overlay' surface capabilities
+   * Codec/RawYUVFramer added to support 'framing' of raw yuv video frames
+   * Codec/Dirac added with Dirac video codec encoder and decoder components
+
+
+0.2.0
+
+Detailed:
+   * Util/FilterComponent A component to plug in filter objects to perform and
+   sort of filtering or general data processing on a data.  Not yet used by
+   the Subtitling related filter classes in Sketches.
+   * Util/Splitter added. This component allows a single outbox to be connected
+   to many inboxes.
+   * Util/test/test_Splitter added to test the above class.
+   * Util/LossyConnector added. Component drops messages if the outbox fills.
+   * Util/test/test_testSplitter added to test the above class.
+   * Util/test directory added.
+   * UI/ UI/Pygame directories added
+      * The "pygamedisplay" service now exists. Furthermore UI.Pygame.Ticker
+        is an example of a component that uses the pygamedisplay to
+        demonstrate how to have multiple objects on screen at once, acting
+        as if they're the only ones using the screen. This is still at a
+        very nascent stage, but should be indicative of future directions.
+        One clear thing that arises from this is that "pygamedisplay" is
+        currently the most basic one thinkable, and there could be many more
+        which effectively act as simple window managers. (However these
+        window managers know how to move, scale, position and rotate the
+        windows under their control...) (This could mean that these displays
+        could be much more candy than even Apple's "Expose" :)
+
+        Clients of the pygamedisplay service get back a raw surface to work
+        with :)
+
+TODO before 0.2.0 release:
+   * Add Tools directory at top level -- DONE
+      * Introspection viewer gets added here (as a "binary", support code
+        goes in main tree)
+      * axon_shell gets added here
+   * Introspector classes added -- DONE
+   * Change examples to use newstyle pipelines -- SOME DONE, DO REST IN 0.2.1
+   * Copy over Ciaran's examples into the examples directory -- LEAVE FOR 0.2.1 (too much stuff!)
+   * Copy over Colour class into Kamaelia.Data
+   * Find suitable homes for the Subtitling code examples -- 
+
+DESIRABLE before 0.2.0 release:
+   * Button widget. (click and sends message out "signal")  --  DONE
+   * Palette widget (think aggregation of Buttons) -- DESIRABLE, DEFER TO 0.2.1
+   * Image widget. (Can display an image, and when receives new one, just
+     displays it)  --  DONE
+      * Combo of these three would allow for simple slideshows to occur.  -- DONE
+   * Port sprite widget (from Sketches/OptimisationTest/simplegame.py to
+     main Kamaelia system) -- NOT NEEDED
+   * Ask Matt to implement a change to his physics engine to force objects
+     in his system to always stay inside a bounding box. -- NOT NEEDED
+   * Filtering of events for PygameDisplay clients. -- DONE
+
+0.1.2
+
+Additionally tested under Windows ME, 2000 and Mac OS X, and compatibility
+updates made.  An examples directory was added, with 3 examples - 2 of which
+are a basic audio streaming system (client and server). Ability to make
+simple multicast servers, clients and transceivers added.
+
+Detailed:
+   * Examples/example1 added (see below). "Fortune Cookie" server and client
+   * Examples/example2 added. This is an ogg vorbis server/client system
+   * Examples/example3 added. Server and client for a simple ogg vorbis
+     system.
+   * Examples/example4 added. Multicast based client/server ogg vorbis
+     streamer.
+   * Kamaelia.Data
+      * Created, and a few classes that belong there moved into there.
+   * Kamaelia.FortuneCookie_InternetHandlingTests
+      * Replaced by Kamaelia.Internet.test.test_TCPServerClientSystem
+      * Moved to Examples/example1
+
+   * Kamaelia.Internet.Multicast_transceiver
+      * Combination of the sender and receiver
+      * Tested, with test harness
+      * Sends all data received on its inbox to a given multicast group.
+      * Sends all data received on a given multicast group to its outbox.
+      * A transceiver MUST transmit and receive to the same group
+        For anything else you need to have separate senders and receivers
+        This may get separated out to a subdirectory.
+   * Kamaelia.Internet.Multicast_sender
+      * First version
+      * Sends all data received on its inbox to a given multicast group.
+   * Kamaelia.Internet.Multicast_receiver
+      * First version
+      * Sends all data received on a given multicast group to its outbox.
+   * Kamaelia.Util.Chargen
+      * First version
+      * Spits out a simple string continuously to its outbox
+   * Kamaelia.Util.ConsoleEcho
+   * Kamaelia.SimpleServerComponent
+      * Uses a KamaeliaIPC message instead of a string for shutdown
+   * Kamaelia.Util.NullSinkComponent
+      * Initial version. (May have name change)
+   * Kamaelia.KamaeliaIPC
+      * Removed debugging comment
+   * Kamaelia.Internet.ConnectedSocketAdapter
+      * Comment style change
+      * Changes aimed at windows error handling added and "toned" down
+   * Kamaelia.Internet.Selector
+      * Added a set selector function
+   * Kamaelia.Internet.TCPClient
+      * Debugging code removal
+      * Handles EWOULDBLOCK as well as EINPROGRESS.
+      * Socket shutdown changed to indicate both sides of the connection
+        closed. (shutdown(2) rather than shutdown(1))
+   * Kamaelia.Protocol.FortuneCookieProtocol
+      * Debugging comment removed.
+
+0.1.1 
+   Initial Release
