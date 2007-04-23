@@ -7,6 +7,8 @@ from Axon.ThreadedComponent import threadedcomponent
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Marshalling import *
 from Kamaelia.Util.Console import *
+from Kamaelia.Internet.SingleServer import SingleServer
+from Kamaelia.Internet.TCPClient import TCPClient
 
 class Serialiser(object):
     def marshall(item): return pickle.dumps(item)
@@ -14,8 +16,6 @@ class Serialiser(object):
 
     def demarshall(item): return pickle.loads(item)
     demarshall = staticmethod(demarshall)
-
-Backplane("inprocesscomms").activate()
 
 class Producer(threadedcomponent):
     # Lazy timed source
@@ -26,10 +26,10 @@ class Producer(threadedcomponent):
 
 Pipeline( Producer(),
           Marshaller(Serialiser),
-          PublishTo("inprocesscomms")
+          SingleServer(port=1500),
         ).activate()
 
-Pipeline( SubscribeTo("inprocesscomms"),
+Pipeline( TCPClient("127.0.0.1", 1500),
           DeMarshaller(Serialiser),
           ConsoleEchoer()
         ).run()
