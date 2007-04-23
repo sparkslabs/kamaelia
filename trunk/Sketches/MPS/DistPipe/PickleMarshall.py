@@ -7,7 +7,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Marshalling import *
 from Kamaelia.Util.Console import *
 
-class SerialiseInt(object):
+class Serialiser(object):
     def marshall(int): return str(int)
     marshall = staticmethod(marshall)
 
@@ -23,12 +23,12 @@ class Producer(threadedcomponent):
             time.sleep(1)
 
 Pipeline( Producer(),
-          Marshaller(SerialiseInt),
+          Marshaller(Serialiser),
           PublishTo("inprocesscomms")
         ).activate()
 
 Pipeline( SubscribeTo("inprocesscomms"),
-          DeMarshaller(SerialiseInt),
+          DeMarshaller(Serialiser),
           ConsoleEchoer()
         ).run()
 
