@@ -50,7 +50,7 @@ import time
 
 from Axon.Component import component
 
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
@@ -133,7 +133,7 @@ class PartsFilenameGenerator(component):
     - "http://www.example.com/4.torrent"
     - "http://www.example.com/5.torrent"
     """
-    def __init__(self, prefix, suffix = ".torrent")
+    def __init__(self, prefix, suffix = ".torrent"):
         self.prefix = prefix
         self.suffix = suffix
         super(self, PartsFilenameGenerator).__init__()
@@ -152,7 +152,7 @@ class PartsFilenameGenerator(component):
                     self.send(self.prefix + str(highestsofar) + self.suffix, "outbox")
             
             while self.dataReady("control"):
-                msg = self.recv("control"):
+                msg = self.recv("control")
                 if isinstance(msg, shutdown) or isinstance(msg, producerFinished):
                     self.send(producerFinished(self), "signal")
                     return
@@ -169,7 +169,7 @@ def P2PStreamer(torrentsfolder):
     # (torrentsfolder  + metafilename) every 60 seconds (the contents at the time of output, i.e.
     # it fetches the page every 60 seconds).
     
-    poller = pipeline(
+    poller = Pipeline(
         # This generates a message every 60 seconds to wake TriggeredSource
          # allowing us to poll the meta file without busy-waiting.
         CheapAndCheerfulClock(60.0),
@@ -193,7 +193,7 @@ def P2PStreamer(torrentsfolder):
     # As a whole, streamer acts like a normal streaming client, outputting the contents of
     # a stream to its outbox, although in much larger chunks with longer in between chunks
     # than for a typical stream.
-    streamer = pipeline(
+    streamer = Pipeline(
         # fetch the P2P-stream meta file every 60 seconds and send its contents on
         poller,
         
@@ -233,9 +233,9 @@ if __name__ == '__main__':
     # e.g. "http://my.server.example.org/radioFoo/"
     torrentsfolder = raw_input("P2P-stream meta folder (URL): ")
     
-    pipeline(
+    Pipeline(
         # fetch the stream using BitTorrent and HTTP - see above for details
-        streamer = P2PStreamer(torrentsfolder),
+        P2PStreamer(torrentsfolder),
         
         # write the stream to a file on disk
         SimpleFileWriter("myreconstructedstream.mp3")

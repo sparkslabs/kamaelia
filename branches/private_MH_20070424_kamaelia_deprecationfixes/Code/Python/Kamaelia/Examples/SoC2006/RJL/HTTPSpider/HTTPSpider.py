@@ -312,7 +312,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     from Kamaelia.Util.UnseenOnly import UnseenOnly    
-    from Kamaelia.Util.Fanout import fanout
+    from Kamaelia.Util.Fanout import Fanout
     
     urlprefix = raw_input("URL matching prefix: ") # e.g. "http://www.example.com/" to only download stuff from that domain
     
@@ -332,8 +332,8 @@ if __name__ == "__main__":
     
     Graphline(
         usersuppliedurls = ConsoleReader(eol=""),
-        splitter = fanout(["toHTTPClient", "toCorrectRelativeLinks"]),
-        splittertwo = fanout(["toSplitterOne", "toEchoer"]),
+        splitter = Fanout(["toHTTPClient", "toCorrectRelativeLinks"]),
+        splittertwo = Fanout(["toSplitterOne", "toEchoer"]),
         newlinesuffixadder = PureTransformer(lambda x : x + "\n"),
         httpclient = SimpleHTTPClient(),
         htmlprocessor = HTMLProcess(),
