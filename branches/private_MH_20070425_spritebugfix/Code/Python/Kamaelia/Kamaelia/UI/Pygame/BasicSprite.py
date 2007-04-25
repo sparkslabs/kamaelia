@@ -56,16 +56,16 @@ You can change the sprite image at any time by sending a new one to its
 This compnoent ignores messages on its "inbox" and "control" inboxes. It does
 not terminate, event when its shutdown() method is called (see below).
 
-The "signal" outbox is used to output status message strings: "unpause",
-"togglepause" and "shutdown".
+The "signal" outbox is used to output status message strings: "unfreeze",
+"togglefreeze" and "shutdown".
 
 This component does not register with the Pygame Display service and does not
 actually blit its sprite onto the display itself. It relies on a parent
 SpriteScheduler component - to which this component should be passed.
 
 SpriteScheduler calls the update() method of this component. which effectively
-supplants the role of the main() method. In addition, there are pause(),
-unpause() and togglePause() methods which will cause the component to pause -
+supplants the role of the main() method. In addition, there are freeze(),
+unfreeze() and toggleFreeze() methods which will cause the component to freeze -
 by stopping reading incoming messages from inboxes. There is also a shutdown()
 method that sends the string "shutdown" out of its "signal" outbox (but does not
 actually cause the component to terminate in any way).
@@ -82,9 +82,6 @@ Note that these method calls break the decoupling tenets of Kamaelia components.
 #             Nonononononononnononooo! Needs to move this code into its own
 #             main loop. Remove SpriteScheduler and update example 9 that
 #             relies on this! ... or some other form of fix. Anything but this!
-#
-#             Also the pause/unpause code does a different job to microprocess
-#             pausing, but name clashes.
 #
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -133,7 +130,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
       self.original = self.image
       self.rect = self.image.get_rect()
       self.rect.topleft = argd.get("position",(10,10))
-      self.paused = False
+      self.frozen = False
       self.update = self.sprite_logic().next
 
    def main(self):
@@ -142,7 +139,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
          yield 1
 
    def sprite_logic(self):
-      """Effectively the main loop. Listens for messages on inboxes and adjusts the sprite accordingly, unless 'paused'."""
+      """Effectively the main loop. Listens for messages on inboxes and adjusts the sprite accordingly, unless 'frozen'."""
       center = list(self.rect.center)
       self.image = self.original
       current = self.image
@@ -150,7 +147,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
       angle = 1
       pos = center
       while 1:
-         if not self.paused:
+         if not self.frozen:
             self.image = current
             if self.dataReady("imaging"):
                self.image = self.recv("imaging")
@@ -176,21 +173,21 @@ class BasicSprite(pygame.sprite.Sprite, component):
       """Send shutdown message"""
       self.send("shutdown", "signal")
       
-   def togglePause(self):
-      """Toggle between paused and unpaused states"""
-      if self.paused:
-         self.unpause()
+   def toggleFreeze(self):
+      """Toggle between frozen and unfrozen states"""
+      if self.frozen:
+         self.unfreeze()
       else:
-         self.pause()
+         self.freeze()
 
-   def unpause(self):
-      """Unset paused flag, and signal "unpause" """
-      self.paused = False
-      self.send("unpause", "signal")
+   def unfreeze(self):
+      """Unset frozen flag, and signal "unfreeze" """
+      self.frozen = False
+      self.send("unfreeze", "signal")
       
-   def pause(self):    
-      """Set paused flag, and signal "pause" """
-      self.paused = True
-      self.send("togglepause", "signal")
+   def freeze(self):
+      """Set frozen flag, and signal "togglefreeze" """
+      self.frozen = True
+      self.send("togglefreeze", "signal")
 
 __kamaelia_components__  = ( BasicSprite, )
