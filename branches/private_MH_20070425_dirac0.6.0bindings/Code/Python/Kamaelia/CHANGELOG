@@ -1,3 +1,6 @@
+   Dirac 0.6.0 release now supported by Dirac components (through 0.6.0
+   bindings)
+
 0.5.1
 
    Shutdown handling improved for internet components: CSA, TCPClient,
