@@ -1,3 +1,6 @@
+   Bugfixes to:
+    * Kamaelia.UI.Pygame.BasicSprite component.
+
 0.5.1
 
    Shutdown handling improved for internet components: CSA, TCPClient,

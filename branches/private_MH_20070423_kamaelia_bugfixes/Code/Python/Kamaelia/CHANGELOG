@@ -1,3 +1,11 @@
+   Bugfixes to:
+    * Kamaelia.Audio.PyMedia.Input component now works on win32
+    * Kamaelia.UI.Pygame.Display no longer freezes up on win32 & MacOSX
+    * "Show" example correctly now instantiates XML parser on win32 & MacOSX
+      including Kamaelia.Support.Data.Experimental XML graph parser
+      component
+    * Kamaelia.Util.Chooser components are now all quiescent when idle
+
 0.5.1
 
    Shutdown handling improved for internet components: CSA, TCPClient,
