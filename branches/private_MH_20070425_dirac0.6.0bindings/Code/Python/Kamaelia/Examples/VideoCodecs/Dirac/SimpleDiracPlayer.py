@@ -6,7 +6,12 @@ from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 
-file = "snowboard-jum-352x288x75.dirac.drc"
+import sys
+if len(sys.argv) != 2:
+    sys.stderr.write("Usage:\n   "+sys.argv[0]+" <dirac-file>\n\n")
+    sys.exit(1)
+
+file = sys.argv[1]
 framerate = 15
 
 Pipeline(
