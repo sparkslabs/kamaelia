@@ -1,0 +1,34 @@
+<html><body>
+<h1>Kamaelia.Util.Marshalling.Marshaller</h1>
+<h2>class Marshaller(Axon.Component.component)</h2>
+
+<p>Marshaller(klass) -&gt; new Marshaller component.</p>
+<p>A component for marshalling data (serialising it to a string).</p>
+<p>Keyword arguments:
+- klass  -- a class with static method: marshall(data) that returns the data, marshalled.</p>
+<h4>Inboxes</h4>
+<ul><li>   control : Shutdown signalling
+<li>   inbox : data to be marshalled
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : marshalled data
+<li>   signal : Shutdown signalling
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, klass)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>

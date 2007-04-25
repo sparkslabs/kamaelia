@@ -1,0 +1,50 @@
+<html><body>
+<h1>Kamaelia.Internet.TCPClient.TCPClient</h1>
+<h2>class TCPClient(Axon.Component.component)</h2>
+
+<p>TCPClient(host,port[,delay]) -&gt; component with a TCP connection to a server.</p>
+<p>Establishes a TCP connection to the specified server.</p>
+<p>Keyword arguments:
+- host     -- address of the server to connect to (string)
+- port     -- port number to connect on
+- delay    -- delay (seconds) after activation before connecting (default=0)</p>
+<h4>Inboxes</h4>
+<ul><li>   control : NOT USED
+<li>   inbox : data to send to the socket
+<li>   _socketFeedback : notifications from the ConnectedSocketAdapter
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : data received from the socket
+<li>   signal : socket errors
+<li>   _selectorSignal : communicating with a selectorComponent
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, host, port, delay)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<h3>runClient(self, sock)</h3>
+
+<h3>safeConnect(self, sock)</h3>
+<p>Connect to socket and handle possible errors that may occur.</p>
+<p>Returns True if successful, or False on failure. Unhandled errors are raised
+as exceptions.</p>
+<h3>setupCSA(self, sock)</h3>
+<p>setupCSA(sock) -&gt; new ConnectedSocketAdapter component</p>
+<p>Creates a ConnectedSocketAdapter component for the socket, and wires up to
+it. Also sends the CSA to the &quot;selector&quot; service.</p>
+<h3>waitCSAClose(self)</h3>
+<p>Returns True if a socketShutdown message is received on &quot;_socketFeedback&quot; inbox.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
