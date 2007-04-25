@@ -17,6 +17,8 @@ class Serialiser(object):
     def demarshall(item): return pickle.loads(item)
     demarshall = staticmethod(demarshall)
 
+def NetworkOutbox(port):
+    return
 class Producer(threadedcomponent):
     # Lazy timed source
     def main(self):
