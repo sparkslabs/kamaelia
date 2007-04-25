@@ -1,0 +1,35 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:12pt;font-family:Luxi Sans">
+<h1> A Network Testbed</h1>
+<ul type="disc"><div><span style="font-style:italic">Kamaelia is designed as a testbed for network experimentation using a component architecture designed to simplify creation and testing of new protocols for large scale media delivery systems.</span></div></ul>
+<p><span style="font-style:italic;font-weight:600">But what is it?</span></p>
+<p>A collection of python generators running concurrently linked via communications channels.</p>
+<p>The basic system is written in python using generators. Generators can be thought of as resumable functions. The approach for building components and systems is similar to using Unix command line pipes, CSP and hardware. Specifically you write small focussed components which only know about their local inputs and outputs. Interesting systems are then composed using linkages, creating networks of components linking outboxes to inboxes, in a similar way that unix pipelines create interesting systems by linking stdout to stdin between successive programs. </p>
+<p>This differs from many other systems like in that it doesn't use essentially a state machine based approach, rather relying on the python language to provide the basic concurrency requirements. This approach is however somewhat experimental, and at this stage not as efficient, however this will change. If you are looking to build a production system Kamaelia is probably not appropriate at present.</p>
+<p>Take a TCP server as an example. You have a generic TCP server component that accepts a protocol component. That server component handles then everything except the actual protocol. The work in creating (and hence testing and experimenting) is then limited to just writing your protocol. You don't have to consider basic network server scaling issues, you don't need to restructure your protocol to fit a framework (thereby making it more difficult to experiment with the protocol), you just write the protocol. You can also test the protocol in isolation from the network making protocol testing and compliance testing significantly simpler.</p>
+<p>ie the key difference from traditional software systems is that people are able to write new components and network protocols for the system using simple techniques to integrate with a larger testbed framework. The approach is inspired directly from the techniques used for asynchronous hardware construction. More documentation will be added as we do on, but for now there is documentation in the CVS tree. (See download below)</p>
+<p><a href="KamaeliaStatus.html"><span style="font-weight:600">What Stage Is The Project At ?</span></a></p>
+<p>We have recently made our code available as a CVS release for developers who are interested at this stage. We are slowly moving <a href="Docs/index.html">documentation </a>and material describing the motivation into both the website and documentation. The project changed to a largely test-first approach late in the project, and some test suites are being implemented. However the core of the system, Axon, we believe to be largely feature complete given that it's functionality has been driven by application spikes. The Kamaelia system itself is now largely complete for building TCP based servers - the most common class of network server. A small number of trivial example protocols are included.</p>
+<p><a href="Contact.html"><span style="font-weight:600">Email lists:</span></a></p>
+<ul type="disc"><li>General discussion:</li>
+<ul type="disc"><li><a href="http://lists.sourceforge.net/lists/listinfo/kamaelia-list">http://lists.sourceforge.net/lists/listinfo/kamaelia-list</a></li>
+<li>kamaelia-list@lists.sourceforge.net</li></ul>
+<li>Announcements:</li>
+<ul type="disc"><li><a href="http://lists.sourceforge.net/lists/listinfo/kamaelia-announce">http://lists.sourceforge.net/lists/listinfo/kamaelia-announce</a></li>
+<li>kamaelia-announce@lists.sourceforge.net</li></ul>
+<li>CVS commits:</li>
+<ul type="disc"><li><a href="http://lists.sourceforge.net/lists/listinfo/kamaelia-commits">http://lists.sourceforge.net/lists/listinfo/kamaelia-commits</a></li>
+<li>kamaelia-commits@lists.sourceforge.net</li></ul></ul>
+<p><a href="News.html"><span style="font-weight:600">News:</span></a></p>
+<ul type="disc"><li>14 December 2004 - Project release and upload to Sourceforge.</li>
+<li>20 December 2004 - <a href="c.l.p.a/200412.html">Announced</a> on comp.lang.python.announce</li>
+<li>24 December 2004 - Axon 1.0 (submodule) release. (Tagged as bp_AXON_1_0)</li>
+<li>5 January 2005 - Axon 1.0.1 released and <a href="c.l.p.a/20050105.html">announced</a></li>
+<li>10 January 2005 - Axon 1.0.2-series60 released, and <a href="c.l.p.a/20050110.html">announced</a> on c.l.p.a</li></ul>
+<p><a href="Download.html"><span style="font-weight:600">Download:</span></a></p>
+<ul type="disc"><li>Kamaelia is only available as a developer CVS release at present. Please go to the sourceforge project page and perform a CVS checkout, read the tests, and feel free to play/feedback:</li>
+<ul type="disc"><li><a href="http://sourceforge.net/projects/kamaelia">http://sourceforge.net/projects/kamaelia</a></li></ul>
+<li>A presentation on the motivations behind Kamaelia and basic design ideas was also been given in <a href="http://www.firenzeworldvision.it/">Firenze World Vision's</a> Streaming Workshop, organised by the <a href="http://www.miu-ft.org/">Media Innovation Unit</a>, <a href="http://www.firenzetecnologia.it/">Firenze Tecnologia</a></li>
+<ul type="disc"><li><a href="http://kamaelia.sourceforge.net/KamaeliaFirenze.sxi">Slides</a> (open office impress format)</li></ul></ul>
+<p><a href="Licensing.html"><span style="font-weight:600">Licensing:</span></a></p>
+<ul type="disc"><li>Kamaelia is released under the Mozilla trilicense scheme (MPL/GPL/LGPL). Specifically you may choose to accept either the Mozilla Public License 1.1, the GNU General Public License 2.0 or the Lesser General Public License 2.1. If commercial parties wish to discuss alternative licensing please contact us.</li></ul>
+</body></html>
