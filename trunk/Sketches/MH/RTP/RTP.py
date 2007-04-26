@@ -71,10 +71,10 @@ Save the payload from a stream of RTP packets being received from multicast
 address 224.168.2.9 on port 1600 down to a file::
 
     Pipeline( Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
-              SimpleDetupler(1),              # discard the source address
+              SimpleDetupler(1),                      # discard the source address
               RTPDeframer(),
-              RecoverOrder(),                 # uses sequence numbers
-              SimpleDetupler(1),              # discard the sequence number
+              RecoverOrder(bufsize=64, modulo=65536), # reorder packets
+              SimpleDetupler(1),                      # discard the sequence number
               SimpleDetupler("payload"),
               SimpleFileWriter("received_stream"),
             )
