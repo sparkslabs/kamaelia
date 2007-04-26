@@ -1,3 +1,6 @@
+   Bugfixes to:
+    * Kamaelia.UI.Pygame.BasicSprite component.
+
    Added Documentation generation tools for generating Axon and Kamaelia
    reference documentation - see their docstrings for more information.
 

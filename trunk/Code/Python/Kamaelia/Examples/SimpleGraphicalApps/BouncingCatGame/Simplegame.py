@@ -30,9 +30,9 @@
 #
 # Left mouse button - Add an image
 # Right mouse button - Remove an image (if over an image, that image)
-# Middle mouse button - pause/unpause a moving image if over an image
-# Key "P" - Pause all images. (Can still add new moving images)
-# Key "U" - Unpause all images.
+# Middle mouse button - freeze/unfreeze a moving image if over an image
+# Key "P" - Freeze (Pause) all images. (Can still add new moving images)
+# Key "U" - Unfreeze (Unpause) all images.
 # Key "T" - Pause all moving things, unpause all not moving things (toggle)
 # Key "Q" - Quit
 #
@@ -168,7 +168,7 @@ class MyGamesEvents(EventHandler):
             sprites = where.allsprites.sprites()
             for sprite in sprites:
                 if sprite.rect.collidepoint(*pos):
-                    sprite.togglePause()
+                    sprite.toggleFreeze()
         if button == 3:
            # Make a sprite disappear
            channel = cat_pop_wav.play()
@@ -191,17 +191,17 @@ class MyGamesEvents(EventHandler):
         if key == 112: # "P"
             # PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.pause()
+                sprite.freeze()
         if key == 113: # "Q"
             raise "QUIT"
         if key == 117: # "U"
             # UNPAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.unpause()
+                sprite.unfreeze()
         if key == 116: # "T"
             # Toggle PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.togglePause()
+                sprite.toggleFreeze()
 
 # screen_surface = pygame.display.set_mode(screensize, DOUBLEBUF|FULLSCREEN)
 screen_surface = pygame.display.set_mode(screensize, flags)

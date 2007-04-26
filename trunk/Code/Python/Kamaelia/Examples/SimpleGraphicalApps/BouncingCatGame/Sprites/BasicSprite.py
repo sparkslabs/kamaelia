@@ -42,7 +42,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
       self.original = self.image
       self.rect = self.image.get_rect()
       self.rect.topleft = argd.get("position",(10,10))
-      self.paused = False
+      self.frozen = False
       self.update = self.sprite_logic().next
 
    def main(self):
@@ -57,7 +57,7 @@ class BasicSprite(pygame.sprite.Sprite, component):
       angle = 1
       pos = center
       while 1:
-         if not self.paused:
+         if not self.frozen:
             self.image = current
             if self.dataReady("imaging"):
                self.image = self.recv("imaging")
@@ -80,15 +80,15 @@ class BasicSprite(pygame.sprite.Sprite, component):
          yield 1
    def shutdown(self):
       self.send("shutdown", "signal")
-   def togglePause(self):
-      if self.paused:
-         self.unpause()
+   def toggleFreeze(self):
+      if self.frozen:
+         self.unfreeze()
       else:
-         self.pause()
+         self.freeze()
 
-   def unpause(self):
-      self.paused = False
-      self.send("unpause", "signal")
-   def pause(self):    
-      self.paused = True
-      self.send("togglepause", "signal")
+   def unfreeze(self):
+      self.frozen = False
+      self.send("unfreeze", "signal")
+   def freeze(self):
+      self.frozen = True
+      self.send("togglefreeze", "signal")
