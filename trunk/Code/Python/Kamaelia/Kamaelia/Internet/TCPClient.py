@@ -126,6 +126,7 @@ class TCPClient(Axon.Component.component):
       self.delay=delay
       self.CSA = None
       self.sock = None
+      self.howDied = None
 
    def main(self):
       """Main loop."""
@@ -176,6 +177,11 @@ class TCPClient(Axon.Component.component):
       if self.dataReady("_socketFeedback"):
          message = self.recv("_socketFeedback")
          if isinstance(message, socketShutdown):
+            try:
+               socket, howdied = message
+               self.howDied = howdied
+            except TypeError:
+               self.howDied = None 
             return False
       return True
 
@@ -247,8 +253,10 @@ class TCPClient(Axon.Component.component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
+         # FIXME: Set self.howDied here as well
+         #
          pass
-         self.send(shutdownMicroprocess(self), "signal")
+      self.send(producerFinished(self,self.howDied), "signal")
 #          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
