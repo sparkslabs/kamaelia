@@ -22,6 +22,28 @@ from RecoverOrder import RecoverOrder
 
 from SoftDemux import DVB_SoftDemuxer
 
+import sys
+sys.path.append("../MobileReframe")
+from OneShot import OneShot
+from chunks_to_lines import chunks_to_lines
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Chassis.Pipeline import Pipeline
+
+    
+def GetRTPAddressFromSDP(sdp_url):
+    return \
+        Pipeline( OneShot(sdp_url),
+                  SimpleHTTPClient(),
+                  chunks_to_lines(),
+                  SDPParser(),
+                  PureTransformer(lambda session : \
+                      (session["connection"][2], session["media"][0]["media"][1])
+                  ),
+                )
+    
+
+
 pidfilter = {}
 for i in range(0,0x2000):
     pidfilter[i] = ["outbox"]

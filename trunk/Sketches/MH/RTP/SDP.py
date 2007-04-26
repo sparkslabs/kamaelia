@@ -143,6 +143,11 @@ class SdpParser(component):
         self.send(self.shutdownMsg,"signal")
 
     def sendOutParsedSDP(self,session):
+        # normalise it a bit first
+        if "connection" in session:
+            for media in session['media']:
+                media['connection'] = session['connection']
+                
         self.send(session,"outbox")
 
         
@@ -288,14 +293,14 @@ m=video 51372 RTP/AVP 99
 a=rtpmap:99 h263-1998/90000
 
 v=0
-o=bbcrd 1140190501 1140190501 IN IP4 132.185.224.80
-s=BBC ONE [H.264/AVC]
-i=Multicast trial service from BBC Research & Development Copyright (c) 2006 British Broadcasting Corporation
-a=x-qt-text-nam:BBC ONE [H.264/AVC]
-a=x-qt-text-aut:BBC Research & Development
-a=x-qt-text-cpy:Copyright (c) 2006 British Broadcasting Corporation
+o=bfcrd 1140190501 1140190501 IN IP4 132.185.224.80
+s=BFC ONE [H.264/AVC]
+i=Multicast trial service from the BBC! Get BFC FLURBLE here!
+a=x-qt-text-nam:BFC FLURBLE [H.264/AVC]
+a=x-qt-text-aut:BFC Research & Development
+a=x-qt-text-cpy:Copyright (c) 2006 British Flurbling Corporation
 u=http://www.bbc.co.uk/multicast/
-e=Multicast Support <multicast-tech@bbc.co.uk>
+e=Multicast Support <multicast-tech@bfc.co.uk>
 t=0 0
 c=IN IP4 233.122.227.151/32
 m=video 5150 RTP/AVP 33
