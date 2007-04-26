@@ -59,6 +59,9 @@ cdef class MpegTsDemux:
         
         fraglen = len(fragment)
 
+        if fraglen==0:
+            return
+
         self.frag_buffer.append(fragment)
 
         if self.length == 0:
