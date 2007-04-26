@@ -191,38 +191,9 @@ class RTPFramer(component):
         packet="".join(packet)
         return packet
 
-if 1:
-        class GroupTSPackets(component):
-            def main(self):
-                p=[]
-                while 1:
-                    while self.dataReady("inbox"):
-                        p.append(self.recv("inbox"))
-                        if len(p)==7:
-                            self.send( "".join(p), "outbox")
-                            p=[]
-                    self.pause()
-                    yield 1
+
         
-        class PrepForRTP(component):
-            def main(self):
-                starttime = time.time()
-                ssrc = random.randint(0,(2**32) - 1)
-                while 1:
-                    while self.dataReady("inbox"):
-                        payload=self.recv("inbox")
-                        timestamp = (time.time() - starttime) * 90000
-                        packet = {
-                            'payloadtype' : 33,   # MPEG 2 TS
-                            'payload'     : payload,
-                            'timestamp'   : int(timestamp),
-                            'ssrc'        : ssrc,
-                            }
-                        self.send(packet, "outbox")
-                        
-                    self.pause()
-                    yield 1
-        
+__kamaelia_components__ = ( RTPFramer, )
 
 
 if __name__ == "__main__":
