@@ -20,7 +20,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 
 from RecoverOrder import RecoverOrder
 
-from SoftDemux import DVB_SoftDemuxer
+from Kamaelia.Device.DVB.SoftDemux import DVB_SoftDemuxer
 import time
 import random
 
