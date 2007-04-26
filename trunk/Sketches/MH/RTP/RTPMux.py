@@ -8,7 +8,7 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 from Kamaelia.Util.Console import ConsoleEchoer
 import sys; sys.path.append("../DVB_Remuxing/")
 from ExtractPCR import AlignTSPackets
-from RTPFramer import RTPFramer, GroupTSPackets, PrepForRTP
+from RTPFramer import RTPFramer
 from RTPDeframer import RTPDeframer
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo, PublishTo
 
@@ -42,6 +42,36 @@ def GetRTPAddressFromSDP(sdp_url):
                   ),
                 )
     
+class GroupTSPackets(component):
+    def main(self):
+        p=[]
+        while 1:
+            while self.dataReady("inbox"):
+                p.append(self.recv("inbox"))
+                if len(p)==7:
+                    self.send( "".join(p), "outbox")
+                    p=[]
+            self.pause()
+            yield 1
+
+class PrepForRTP(component):
+    def main(self):
+        starttime = time.time()
+        ssrc = random.randint(0,(2**32) - 1)
+        while 1:
+            while self.dataReady("inbox"):
+                payload=self.recv("inbox")
+                timestamp = (time.time() - starttime) * 90000
+                packet = {
+                    'payloadtype' : 33,   # MPEG 2 TS
+                    'payload'     : payload,
+                    'timestamp'   : int(timestamp),
+                    'ssrc'        : ssrc,
+                    }
+                self.send(packet, "outbox")
+
+            self.pause()
+            yield 1
 
 
 pidfilter = {}

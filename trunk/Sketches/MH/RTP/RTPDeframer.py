@@ -169,7 +169,10 @@ class RTPDeframer(component):
                    'marker'      : hasMarker,
                  }
                )
-               
+
+
+__kamaelia_components__ = ( RTPDeframer, )
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
 #    from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
