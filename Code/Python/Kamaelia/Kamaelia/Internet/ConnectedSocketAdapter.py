@@ -131,6 +131,7 @@ class ConnectedSocketAdapter(component):
       self.crashOnBadDataToSend = crashOnBadDataToSend
       self.noisyErrors = noisyErrors
       self.selectorService = selectorService
+      self.howDied = False
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
@@ -156,7 +157,7 @@ class ConnectedSocketAdapter(component):
             self.sendQueue.append(data)
 
    def passOnShutdown(self):
-        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
+        self.send(socketShutdown(self,[self.socket,self.howDied]), "CreatorFeedback")
         self.send(shutdownCSA(self, (self,self.socket)), "signal")
 
    def _safesend(self, sock, data):

@@ -167,7 +167,8 @@ class TCPServer(Axon.Component.component):
       Sends a removeReader and removeWriter message to the selectorComponent.
       Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
       """
-      theComponent,sock = shutdownMessage.caller, shutdownMessage.message
+      theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
+      ### FIXME: Pass on how died as well in TCPServer!
       sock.close()
       
       # tell the selector about it shutting down
