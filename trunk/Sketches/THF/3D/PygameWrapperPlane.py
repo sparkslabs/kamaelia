@@ -360,7 +360,7 @@ button to erase your artwork.
     import sys;
     sys.path.append("../pygame/")
     from MagnaDoodle import *
-    sys.path.append("../../MPS/Paint/")
+    sys.path.append("../../MPS/Systems/Paint/")
     from Paint import *
 
     Display3D.getDisplayService()[0].overridePygameDisplay()
