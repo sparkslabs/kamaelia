@@ -214,6 +214,20 @@ containing the following keys to the "notify" inbox::
         "REDRAW" : True,             # this is a redraw request
         "surface" : surface          # surface that has been changed
     }
+
+
+
+Implementation Details
+----------------------
+
+You may notice that this module also contains a _PygameEventSource component.
+PygameDisplay uses this separate threaded component to notify it when pygame
+events occur - so that it can sleep quiescently when it has nothing to do.
+
+Unfortunately event handling itself cannot be done in the thread since pygame
+on many platforms (particularly win32) does not work properly if event handling
+and display creation is not done in the main thread of the program.
+
 """
 
 import pygame
@@ -226,6 +240,7 @@ _cat = Axon.CoordinatingAssistantTracker
 class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
+from Axon.AxonExceptions import noSpaceInBox
 import time
  
 class _PygameEventSource(threadedcomponent):
@@ -235,16 +250,25 @@ class _PygameEventSource(threadedcomponent):
     Inboxes = { "inbox" : "NOT USED",
                 "control" : "NOT USED",
               }
-    Outboxes = { "outbox" : "Pygame event objects, bundled into lists",
+    Outboxes = { "outbox" : "Wake up notifications - that there are pygame events waiting",
                  "signal" : "Not used",
                }
+
+    def __init__(self):
+        super(_PygameEventSource,self).__init__(queuelengths=1)
+        
+
     def main(self):
+        
         while 1:
             time.sleep(0.01)
-            eventlist = pygame.event.get()  # and get any others waiting
+            eventswaiting = pygame.event.peek()  # and get any others waiting
             
-            if eventlist:
-                self.send(eventlist,"outbox")
+            if eventswaiting:
+                try:
+                    self.send(True,"outbox")
+                except noSpaceInBox:
+                    pass # a notification is already queued - so no need to send another
             
 
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -498,8 +522,19 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    
    def handleEvents(self):
       # pre-fetch all waiting events in one go
-      while self.dataReady("events"):
-            events = self.recv("events")
+      events = []
+      if self.dataReady("events"):
+          while 1:
+              event = pygame.event.poll()
+              if event.type is pygame.NOEVENT:
+                  break
+              else:
+                  events.append(event)
+                
+          while self.dataReady("events"):
+                self.recv("events")
+
+      if len(events):
        
             for event in events:
                 if event.type in [ pygame.VIDEORESIZE, pygame.VIDEOEXPOSE ]:
@@ -545,11 +580,12 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """Main loop."""
       pygame.init()
       pygame.mixer.quit()
-      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
-      
+      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF)
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
+      self.inboxes["events"].setSize(1)   # prevent wakeup notifications from backlogging too much :)
       self.link( (eventsource,"outbox"), (self,"events") )
+
       
       while 1:
          self.needsRedrawing = False
