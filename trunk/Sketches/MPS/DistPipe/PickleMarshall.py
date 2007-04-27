@@ -92,7 +92,7 @@ def LocalNetworkPipelineLength3(source, transformer1, sink):
     NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).activate()
     return NetworkLinkage("127.0.0.1", 1502, "127.0.0.1", 1503)
 
-def LocalNetworkPipeline(source, transformer1, transformer2, sink):
+def ____LocalNetworkPipeline(source, transformer1, transformer2, sink):
     baseport = 1500
     Pipeline( makeComponent(source),
               NetworkOutbox(1500)
@@ -102,26 +102,46 @@ def LocalNetworkPipeline(source, transformer1, transformer2, sink):
               makeComponent(transformer1),
               NetworkOutbox(1502),
             ).activate()
+    NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).activate()
 
     Pipeline( NetworkInbox(1503),
               makeComponent(transformer2),
               NetworkOutbox(1504),
             ).activate()
+    NetworkLinkage("127.0.0.1", 1502, "127.0.0.1", 1503).activate()
 
     Pipeline( NetworkInbox(1505),
               makeComponent(sink)
             ).activate()
-
-    NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).activate()
-    NetworkLinkage("127.0.0.1", 1502, "127.0.0.1", 1503).activate()
     return NetworkLinkage("127.0.0.1", 1504, "127.0.0.1", 1505)
 
+def LocalNetworkPipeline(*components):
+    components = list(components)
+    baseport = 1500
+    source = components.pop(0)
+    Pipeline( makeComponent(source),
+              NetworkOutbox(baseport)
+            ).activate()
+    c = 0
+    for C in components:
+        c += 1
+        Pipeline( NetworkInbox(baseport+1),
+                  makeComponent(C),
+                  NetworkOutbox(baseport+2),
+                ).activate()
+        link = NetworkLinkage("127.0.0.1", baseport, "127.0.0.1", baseport+1)
+        if c != len(components):
+            link.activate()
+        baseport = baseport+2
+
+    return link
 
 if 1:
     LocalNetworkPipeline(
           "ExampleClasses:Producer()",
           "ExampleClasses:Transformer()",
           "ExampleClasses:Triangular()",
+          "ExampleClasses:Square()",
           "Kamaelia.Util.Console:ConsoleEchoer()"
     ).run()
 
