@@ -19,6 +19,10 @@
       component
     * Kamaelia.Util.Chooser components are now all quiescent when idle
 
+   Bugfixes to:
+    * Various example programs in /Code/Python/Kamaelia/Tools and Examples
+      to remove use of deprecated components.
+
 0.5.1
 
    Shutdown handling improved for internet components: CSA, TCPClient,

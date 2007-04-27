@@ -83,9 +83,9 @@ Typically for broadband this would be 180 kilobits/s = 22.5 kilobytes/s
 Your upload speed MUST be larger than this.
 """
 
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.Fanout import fanout
+from Kamaelia.Util.Fanout import Fanout
 
 from Kamaelia.Util.Chunkifier import Chunkifier
 from Kamaelia.Util.ChunkNamer import ChunkNamer
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         # to disk, creates a .torrent (BitTorrent metadata) file for
         # each chunk and then shares the chunks with clients using
         # the BitTorrent protocol (it 'seeds' each chunk)
-        streamin = pipeline(
+        streamin = Pipeline(
             # Icecast client that connects to a stream and outputs the raw stream data
             IcecastClient(streamurl),
             
@@ -150,10 +150,10 @@ if __name__ == '__main__':
         # send the .torrent file to the website that will host them and to
         # a TorrentPatron which will then upload the associated chunks
         # to peers (users that want to download the stream)
-        split = fanout(["toHTTP-POSTer", "toTorrentPatron"]),
+        split = Fanout(["toHTTP-POSTer", "toTorrentPatron"]),
         
         # fileupload uploads each message it receives to a script on a webserver.
-        fileupload = pipeline(
+        fileupload = Pipeline(
             # convert messages received to HTTP POST requests
             # for the URL trackerpostuploader
             # (with the contents of the message as the payload/request body)
