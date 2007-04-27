@@ -48,6 +48,9 @@ audio capture device.
 
 It outputs to its "outbox" outbox raw binary audio data in strings.
 
+This component supports sending to a size limited inbox. If the size limited
+inbox is full, this component will pause until it is able to send out the data.
+
 This component will terminate if a shutdownMicroprocess or producerFinished
 message is sent to the "control" inbox. The message will be forwarded on out of
 the "signal" outbox just before termination.
@@ -63,7 +66,6 @@ from Axon.ThreadedComponent import threadedcomponent
 import time
 from math import log
 
-import pymedia.muxer as muxer
 import pymedia.audio.acodec as acodec
 import pymedia.audio.sound as sound
 
@@ -111,15 +113,24 @@ class Input(threadedcomponent):
         
         shutdown=False
         while self.anyReady() or not shutdown:
-            raw = str(self.snd.getData())
-            self.send(raw,"outbox")
-            
             while self.dataReady("control"):
                 msg=self.recv("control")
                 if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                     shutdown=True
                 self.send(msg,"signal")
                 
+            raw = self.snd.getData()
+            if raw and len(raw):
+                data = str(raw)
+                while data:
+                    try:
+                        self.send(data,"outbox")
+                        data=None
+                    except noSpaceInBox:
+                        self.pause()
+            else:
+                self.pause(0.01)
+                    
         self.snd.stop()
 
 

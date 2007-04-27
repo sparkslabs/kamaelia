@@ -190,6 +190,9 @@ class Chooser(Axon.Component.component):
                   pass
 
          done = self.shutdown()
+         
+         if not done:
+             self.pause()
 
    
    def getCurrentChoice(self):
