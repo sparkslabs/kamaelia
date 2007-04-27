@@ -58,10 +58,10 @@ will be created. With a copy of this file, other users
 can download from you. 
 """
 
-from Kamaelia.Chassis.Pipeline import pipeline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Util.Fanout import fanout
+from Kamaelia.Util.Fanout import Fanout
 
 from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
 from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         # send the filename entered by the user to both the .torrent
         # maker and to the file writer to use as part of the filename
         # (so that it knows what to save the metadata as)
-        filenamesplitter = fanout(["toNamer", "toTorrentMaker"]),
+        filenamesplitter = Fanout(["toNamer", "toTorrentMaker"]),
         
         # makes the .torrent file (BitTorrent metadata)
         torrentmaker = TorrentMaker(trackerannounceurl), 
@@ -119,13 +119,13 @@ if __name__ == '__main__':
         torrentnamer = TwoSourceListifier(),
         
         # send the .torrent file data to both the seeder and the saver
-        torrentmetasplitter = fanout(["toTorrentPatron", "toNamer"]),
+        torrentmetasplitter = Fanout(["toTorrentPatron", "toNamer"]),
 
         # appends ".torrent" to the filename to give the .torrent filename
         suffixtorrent = PureTransformer(lambda x : x + ".torrent"),
         
         # output debugging messages, e.g. download progress
-        explainer = pipeline(
+        explainer = Pipeline(
             BasicTorrentExplainer(),
             ConsoleEchoer()
         ),
