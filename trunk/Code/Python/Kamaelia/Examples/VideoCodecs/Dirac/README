@@ -5,8 +5,8 @@ original dirac content included and pipe to a file rather than to a
 display. If your re-encode and re-encode you should expect the image to
 degrade. (like any lossy codec :)
 
-In order to use these encoders/decoders, you need to be using dirac 0.5.3,
-not any higher, not any lower, just those versions. This is due to the fact
+In order to use these encoders/decoders, you need to be using dirac 0.5.4,
+or 0.6.0. Other versions are not yet supported. This is due to the fact
 that the dirac bitstream isn't finalised yet.
 
 
