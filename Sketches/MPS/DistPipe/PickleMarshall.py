@@ -104,7 +104,8 @@ def LocalNetworkPipeline(*components):
             link.activate()
         baseport = baseport+2
 
-    return link
+    # returning the last link means the user can choose to start or activate
+    return link 
 
 if 1:
     LocalNetworkPipeline(
