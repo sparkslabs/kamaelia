@@ -22,29 +22,49 @@ class basedOnShutdownMicroprocess(shutdownMicroprocess):
     pass
 
 
-print "What is a shutdownNow?"
-s=shutdownNow()
-print type(s)
-print
-print isinstance(s,shutdownNow)
-print isinstance(s,shutdownMicroprocess)
-print isinstance(s,shutdown)
-print
+# install a wrapper for isinstance() to check for shutdownMicroprocess usage
+__original_isinstance = isinstance
 
-print "What is a shutdownMicroprocess"
-s=shutdownMicroprocess()
-print type(s)
-print
-print isinstance(s,shutdownNow)
-print isinstance(s,shutdownMicroprocess)
-print isinstance(s,shutdown)
+def __isinstance(instance, types):
+    if types == shutdownMicroprocess:
+        print "*** tsk tsk, not in an isinstance() call!!!"
+    else:
+        try:
+            if shutdownMicroprocess in types:
+                print "*** tsk tsk, not in an isinstance() call!!!"
+        except:
+            pass
+    return __original_isinstance(instance,types)
 
-print "What is a shutdownNow?"
-s=basedOnShutdownMicroprocess()
-print type(s)
-print
-print isinstance(s,shutdownNow)
-print isinstance(s,shutdownMicroprocess)
-print isinstance(s,shutdown)
-print
 
+isinstance = __isinstance
+if __name__ != "__main__":
+    __builtins__["isinstance"] = __isinstance
+    
+else:
+    print "What is a shutdownNow?"
+    s=shutdownNow()
+    print type(s)
+    print
+    print isinstance(s,shutdownNow)
+    print isinstance(s,shutdownMicroprocess)
+    print isinstance(s,shutdown)
+    print
+    
+    print "What is a shutdownMicroprocess"
+    s=shutdownMicroprocess()
+    print type(s)
+    print
+    print isinstance(s,shutdownNow)
+    print isinstance(s,shutdownMicroprocess)
+    print isinstance(s,shutdown)
+    
+    print "What is a shutdownNow?"
+    s=basedOnShutdownMicroprocess()
+    print type(s)
+    print
+    print isinstance(s,shutdownNow)
+    print isinstance(s,shutdownMicroprocess)
+    print isinstance(s,shutdown)
+    print
+    
