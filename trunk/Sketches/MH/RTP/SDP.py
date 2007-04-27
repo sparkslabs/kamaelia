@@ -24,10 +24,11 @@
 Session Description Protocol (SDP) Support
 ==========================================
 
-The SDPParser component parses Session Description Protocol (see RFC 4566) data
+The SDPParser component parses Session Description Protocol (see `RFC 4566`_) data
 sent to it as individual lines of text (not multiline strings) and outputs a
 dictionary containing the parsed session description.
 
+.. _`RFC 4566`: http://tools.ietf.org/html/rfc4566
 
 
 Example Usage
@@ -70,10 +71,10 @@ Then parsing will return this dictionary::
       'email'      : 'j.doe@example.com (Jane Doe)',
       'attribute'  : ['recvonly'],
       'media':
-          [ { 'media'     : ('audio', 49170, None, 'RTP/AVP', '0'),
+          [ { 'media'     : ('audio', 49170, 1, 'RTP/AVP', '0'),
               'connection': ('IN', 'IP4', '224.2.17.12', '127', 1)
             },
-            { 'media'     : ('video', 51372, None, 'RTP/AVP', '99'),
+            { 'media'     : ('video', 51372, 1, 'RTP/AVP', '99'),
               'connection': ('IN', 'IP4', '224.2.17.12', '127', 1),
               'attribute' : ['rtpmap:99 h263-1998/90000']
             }
@@ -121,6 +122,8 @@ The result of parsing SDP data is a dictionary mapping descriptive names of
 types to values:
 
  ======  ======================  ======================================================================
+ Session Description
+ ------------------------------------------------------------------------------------------------------
  Type    Dictionary key          Format of the value
  ======  ======================  ======================================================================
  v       "protocol_version"      version_number
@@ -137,11 +140,30 @@ types to values:
  c       "connection"            ("net_type", "addr_type", "addr", ttl, groupsize)
  z       "timezone adjustments"  [(adj-time,offset), (adj-time,offset), ...]
  k       "encryption"            ("method","value")
+ m       "media"                 [media-description, media-description, ... ]
+                                     see next table for media description structure
  ======  ======================  ======================================================================
 
 Note that 't' and 'r' lines are combined in the dictionary into a single
 "time" key containing both the start and end times specified in the 't' line
 and a list of any repeats specified in any 'r' lines present.
+
+The "media" key contains a list of media descriptions. Like for the overall
+session description, each is parsed into a dictionary, that will contain some
+or all of the following:
+
+ ======  ======================  ======================================================================
+ Media Descriptions
+ ------------------------------------------------------------------------------------------------------
+ Type    Dictionary key          Format of the value
+ ======  ======================  ======================================================================
+ m       "media"                 ("media-type", port-number, number-of-ports, "protocol", "format")
+ c       "connection"            ("net_type", "addr_type", "addr", ttl, groupsize)
+ b       "bandwidth"             (mode, bitspersecond)
+ i       "information"           "value"
+ k       "encryption"            ("method","value")
+ a       "attribute"             "value of attribute"
+ ======  ======================  ======================================================================
 
 Some lines are optional in SDP. If they are not included, then the parsed output
 will not contain the corresponding key.
@@ -408,7 +430,7 @@ def _parseline(line):
         media, port, numports, protocol, fmt = re.match("^(audio|video|text|application|message) +(\d+)(?:[/](\d+))? +([^ ]+) +(.+)$",value).groups()
         port=int(port)
         if numports is None:
-            numports==1
+            numports=1
         else:
             numports=int(numports)
         return type, 'media', (media,port,numports,protocol,fmt)
