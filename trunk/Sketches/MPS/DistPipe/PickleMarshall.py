@@ -74,7 +74,65 @@ def LocalNetworkPipelineLength2(source, sink):
 
     return NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501)
 
+def LocalNetworkPipelineLength3(source, transformer1, sink):
+    baseport = 1500
+    Pipeline( makeComponent(source),
+              NetworkOutbox(1500)
+            ).activate()
+
+    Pipeline( NetworkInbox(1501),
+              makeComponent(transformer1),
+              NetworkOutbox(1502),
+            ).activate()
+
+    Pipeline( NetworkInbox(1503),
+              makeComponent(sink)
+            ).activate()
+
+    NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).activate()
+    return NetworkLinkage("127.0.0.1", 1502, "127.0.0.1", 1503)
+
+def LocalNetworkPipeline(source, transformer1, transformer2, sink):
+    baseport = 1500
+    Pipeline( makeComponent(source),
+              NetworkOutbox(1500)
+            ).activate()
+
+    Pipeline( NetworkInbox(1501),
+              makeComponent(transformer1),
+              NetworkOutbox(1502),
+            ).activate()
+
+    Pipeline( NetworkInbox(1503),
+              makeComponent(transformer2),
+              NetworkOutbox(1504),
+            ).activate()
+
+    Pipeline( NetworkInbox(1505),
+              makeComponent(sink)
+            ).activate()
+
+    NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).activate()
+    NetworkLinkage("127.0.0.1", 1502, "127.0.0.1", 1503).activate()
+    return NetworkLinkage("127.0.0.1", 1504, "127.0.0.1", 1505)
+
+
 if 1:
+    LocalNetworkPipeline(
+          "ExampleClasses:Producer()",
+          "ExampleClasses:Transformer()",
+          "ExampleClasses:Triangular()",
+          "Kamaelia.Util.Console:ConsoleEchoer()"
+    ).run()
+
+if 0:
+    LocalNetworkPipelineLength3(
+          "ExampleClasses:Producer()",
+          "ExampleClasses:Transformer()",
+          "Kamaelia.Util.Console:ConsoleEchoer()"
+    ).run()
+
+if 0:
     LocalNetworkPipelineLength2(
           "ExampleClasses:Producer()",
           "Kamaelia.Util.Console:ConsoleEchoer()"
