@@ -134,7 +134,7 @@ if __name__=="__main__":
         Pipeline(
             SubscribeTo("VIDEO"),
             TagWithSequenceNumber(),
-            CutDetector(threshold),
+            DetectShotChanges(threshold),
             FormatOutput(),
             ConsoleEchoer(),
             ).activate()
