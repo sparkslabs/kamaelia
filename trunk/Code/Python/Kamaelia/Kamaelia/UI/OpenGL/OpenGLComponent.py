@@ -299,6 +299,9 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.applyTransforms()
             # frame function from derived objects
             self.frame()
+            while not self.anyReady():
+                self.pause()
+                yield 1
 
                                           
     def applyTransforms(self):
