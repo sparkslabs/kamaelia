@@ -20,6 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
+========================================
+Recover Order of Sequence Numbered Items
+========================================
 
 Recovers the order of data tagged with sequence numbers. Designed to cope with
 sequence numbers that have to eventually wrap.
