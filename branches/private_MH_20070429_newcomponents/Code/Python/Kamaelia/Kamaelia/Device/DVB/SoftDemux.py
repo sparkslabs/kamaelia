@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #import dvb3.soft_dmx
-from MpegTsDemux import MpegTsDemux
+from Kamaelia.Support.Optimised.MpegTsDemux import MpegTsDemux
 import Axon.AdaptiveCommsComponent
 import time
 
