@@ -132,20 +132,34 @@ class ConnectedSocketAdapter(component):
       self.noisyErrors = noisyErrors
       self.selectorService = selectorService
       self.howDied = False
+      self.connectionRECVLive = True
+      self.connectionSENDLive = True
+   
+   def shutdownSending(self):
+       self.socket.shutdown(socket.SHUT_WR)
+       self.connectionSENDLive = False
+   
+   def shutdownReceiving(self):
+       self.socket.shutdown(socket.SHUT_RD)
+       self.connectionRECVLive = False
+   
+   def shutdownBoth(self):
+       self.socket.shutdown(socket.SHUT_RDWR)
+       self.connectionRECVLive = False
+       self.connectionSENDLive = False
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
       if self.dataReady("control"):
           data = self.recv("control")
-          if isinstance(data, producerFinished):
-#              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
-              self.connectionRECVLive = False
-              self.connectionSENDLive = False
-              self.howDied = "producer finished"
+          if isinstance(data, producerFinished):  # BEHAVIOUR CHANGE: We can no longer SEND data # FIXME - what about "no more recv needed?"
+              self.shutdownSending()              # What about shutdown and finish sending data? Shutdown here is an open
+              self.howDied = "producer finished"  # issue, but let's put this in for a first approximation.
+          elif isinstance(data, shutdown): # No longer needed at all - should exit immediately
+              self.shutdownBoth()
+              self.howDied = "shutdown"
           elif isinstance(data, shutdownMicroprocess):
-#              print "Raising shutdown: ConnectedSocketAdapter recieved shutdownMicroprocess Message", self,data
-              self.connectionRECVLive = False
-              self.connectionSENDLive = False
+              self.shutdownBoth()
               self.howDied = "shutdown microprocess"
           else:
               pass # unrecognised message
@@ -233,11 +247,11 @@ class ConnectedSocketAdapter(component):
 
    def checkSocketStatus(self):
        if self.dataReady("ReadReady"):
-           self.receiving = True
+           self.receiving = True and self.connectionRECVLive # don't change to receiving if receiving isn't live!
            self.recv("ReadReady")
 
        if self.dataReady("SendReady"):
-           self.sending = True
+           self.sending = True and self.connectionSENDLive  # don't change to sending if sending isn't live!
            self.recv("SendReady")
 
    def canDoSomething(self):
@@ -254,10 +268,10 @@ class ConnectedSocketAdapter(component):
        # self.selectorService ...
        self.sending = True
        self.receiving = True
-       self.connectionRECVLive = True
-       self.connectionRECVLive = True
+       # self.connectionRECVLive = True # FIXME - this is probably actually about exceptional data (!)
+       self.connectionRECVLive = True 
        self.connectionSENDLive = True
-       while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
+       while self.connectionRECVLive or self.connectionSENDLive:
           yield 1
           self.checkSocketStatus() # To be written
           self.handleSendRequest() # Check for data, in our "inbox", to send to the socket, add to an internal send queue buffer.
