@@ -9,6 +9,7 @@ from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CA
 #
 class MSComponent(Axon.Component.component):
     def __init__(self, **args):
+        Inboxes = dict(self.Outboxes)
         super(MSComponent, self).__init__()
         self.__dict__.update(args)
 
