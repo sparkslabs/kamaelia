@@ -83,7 +83,7 @@ class EditorLogic(Axon.Component.component):
                     linkstart = node
                     linkmode = True
 
-TVC = TopologyViewerComponent(position=(0,0))
+TVC = TopologyViewerComponent(position=(0,0)).activate()
 Graphline(
     NEW = Button(caption="New Component", msg="NEXT", position=(72,8)),
     EDIT = Button(caption="Edit Component", msg="NEXT", position=(182,8)),
