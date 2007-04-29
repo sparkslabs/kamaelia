@@ -36,18 +36,21 @@ class LoggerService(MSComponent):
 
 class Filter(MSComponent):
     transform = lambda self,x: x
+    target = "outbox"
     def main(self):
-        print "INMAIN", type(self.outboxes["outbox"].sink)
-        print "INMAIN", self.outboxes["outbox"].append.__doc__
         while 1:
             for data in self.inboxcontents("inbox"):
                 d_ = self.transform(data)
-                print "DATA", d_.rstrip(), self.outboxes["outbox"].storage
-                self.send( d_, "outbox")
-                print "HUH?"
+                self.send( d_, self.target)
             yield 1
 
 class Logger(Filter):
+    Outboxes = {
+       "_tosubpipeline" : "outbox",
+       "outbox": "Foo",
+       "signal": "Bar",
+    }
+    target = "_tosubpipeline"
     SingleServiceComponent = SingleServiceUser
     Name="logger"
     Prefix = "(any) "
@@ -55,21 +58,8 @@ class Logger(Filter):
         return self.Prefix + x
     def __init__(self, **args):
        super(Logger, self).__init__(**args)
-       X = pipeline(
-            ConsoleEchoer(),
-            self.SingleServiceComponent(Name = self.Name)
-       ).activate()
-
-       print "BEFORE", type(self.outboxes["outbox"].sink)
-       print "BEFORE", self.outboxes["outbox"].append.__doc__
-       self.link((self,"outbox"), (X,"inbox"))
-       print "AFTER", type(self.outboxes["outbox"].sink)
-       print "AFTER", self.outboxes["outbox"].append.__doc__
-       self.outboxes["outbox"].setShowTransit(True, "FOO")
-
-#       print type(X.inboxes["inbox"].storage)
-#
-#       self.link((self,"signal"), (X,"control"))
+       X = self.SingleServiceComponent(Name = self.Name).activate()
+       self.link((self,"_tosubpipeline"), (X,"inbox"))
 
 import time
 
@@ -90,6 +80,14 @@ pipeline(
     TimeSource(),
     Logger(Prefix="pipeline2 : ")
 ).run()
+
+
+
+
+
+
+
+
 
 
 
