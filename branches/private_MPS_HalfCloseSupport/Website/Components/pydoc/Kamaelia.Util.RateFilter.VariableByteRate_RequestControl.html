@@ -1,0 +1,50 @@
+<html><body>
+<h1>Kamaelia.Util.RateFilter.VariableByteRate_RequestControl</h1>
+<h2>class VariableByteRate_RequestControl(Axon.Component.component)</h2>
+
+<p>ByteRate_RequestControl([rate][,chunksize][,chunkrate][,allowchunkaggregation]) -&gt; new ByteRate_RequestControl component.</p>
+<p>Controls rate of a data source by, at a controlled rate, emitting
+integers saying how much data to emit. Rate can be changed at runtime.</p>
+<p>Keyword arguments:
+- rate                   -- qty of data items per second (default=100000)
+- chunksize              -- None or qty of items per 'chunk' (default=None)
+- chunkrate              -- None or number of chunks per second (default=10)
+- allowchunkaggregation  -- if True, chunksize will be enlarged if 'catching up' is necessary (default=False)</p>
+<p>Specify either chunksize or chunkrate, but not both.</p>
+<h4>Inboxes</h4>
+<ul><li>   control : Shutdown signalling
+<li>   inbox : New rate
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : requests for 'n' items
+<li>   signal : Shutdown signalling
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, rate, chunksize, chunkrate, allowchunkaggregation)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>changeRate(self, newRate, now)</h3>
+<p>Change the rate.</p>
+<p>Guaranteed to not cause a glitch in the rate of output.</p>
+<h3>getChunksToSend(self, now)</h3>
+<p>Generator. Returns the size of chunks to be requested (if any) to
+'catch up' since last time this method was called.</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<h3>resetTiming(self, now)</h3>
+<p>Resets the timing variable used to determine when the next time to send
+a request is.</p>
+<h3>shutdown(self)</h3>
+<p>Returns True if shutdown message received.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
