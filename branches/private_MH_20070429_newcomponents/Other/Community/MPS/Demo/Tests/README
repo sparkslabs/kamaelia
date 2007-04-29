@@ -1,0 +1,11 @@
+Please name your testing files beginning with "test". If you do, your tests
+can be run automagically by typing "./runtests". For this version of the
+demo package, this is a bash shell script, but may be replaced by something
+more comprhensive in a later version.
+
+Rather than calling your file "1.t", etc, having a long name is a good thing
+since it's easier for someone else to see at a glance what you think you're
+testing.
+
+
+Michael.

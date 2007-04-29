@@ -1,0 +1,31 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Axon Release Notes</span></p>
+<p align="right"><span style="font-size:18pt">1.1.2</span></p>
+<p><span style="font-size:18pt;font-weight:600">Summary</span></p>
+<p>Instated use of ctypes to use posix.sched_yield during the main loop. This makes the system a *little* bit more other-system friendly.</p>
+<p>Added in the ability to do, effectively, blocking calls to other components. The best example using this at present in Kamaelia.UI.Pygame.Ticker</p>
+<p>Specifically you can ask the system to run a different microprocess in the place of the running one, and wait until it ends.</p>
+<ul type="disc"><div>[[pre] yield WaitComplete(<br />     self.requestDisplay(DISPLAYREQUEST=True,<br />                         callback = (self,&quot;control&quot;),<br />                         size = (self.render_area.width, self.render_area.height),<br />                         position = self.position<br />                         )<br /> )<br />]</div></ul>
+<p>Where self.requestDisplay is a generator with the following behaviour:</p>
+<ul type="disc"><div>[[pre]def requestDisplay(self, **argd):<br />       displayservice = PygameDisplay.getDisplayService()<br />       self.link((self,&quot;signal&quot;), displayservice)<br />       self.send(argd, &quot;signal&quot;)<br />       for _ in self.waitBox(&quot;control&quot;): yield 1 ## This could also be rewritten in this form :-)<br />       display = self.recv(&quot;control&quot;)<br />       self.display = display<br />]</div></ul>
+<p>This is experimental support that is likely to evolve with time. This does however allow effectively for a far more co-routine type behaviour than we had in place before - rather than generator type behaviour.</p>
+<p></p>
+<p><span style="font-size:18pt;font-weight:600">Detailed Changelog</span></p>
+<p><span style="font-size:14pt">Changed Files:</span></p>
+<p>Axon.Component.component:</p>
+<ul type="disc"><li>Added introspectable documentation to the purposes of the default inboxes and outboxes. component.Inboxes[&quot;inbox&quot;] gives you documentation on that inbox</li></ul>
+<p>Axon.Ipc.py:</p>
+<ul type="disc"><li>WaitComplete<br />New IPC class allowing components to signal to the scheduler that they'd like a generator started, run to completion and then control handed back to the original generator. This is similar, in a way, to call with continuation or similar to nesting yields in a system like greenlets, but having the stacking of frames essentially handled by main system.<br /><br />This is experimental support initially. This will probably become more generalised with time, but for the moment it's put in place to cover a specific use case - getting a pygame display. This is likely to be useful in a variety of locations however.<br /></li>
+<li>reactivate is a sister IPC function to reactivate the original generator (ie main()) when the call is finished.</li></ul>
+<p></p>
+<p>Axon/Microprocess.py:</p>
+<ul type="disc"><li>microprocess class constructor extended to allow a generator object to be be passed in as the __thread of control for the microprocess. This is to support the WaitComplete functionality. This means arbitrary generators can be embdedded into a microprocess and scheduled, without creating a new class for the generator. (This has scope for use outside the core of Kamaelia of course).<br /><br />It has also been extended to allow the addition of a closeDownValue. This is a value the scheduler can look at when the microprocess finishes and can decide what to do next. An example would be to reactivate a previous thread of control using the new 'IPC' message &quot;reactivate&quot;.</li></ul>
+<p></p>
+<p>Axon/Scheduler.py:</p>
+<ul type="disc"><li>A number of changes. The bulk of code change relates to code deletion. Specifically the deletion of debugging code that has not been need in over a year now. Clearly this could be re-instated easily in a targetted fashion, but for now is not needed.</li>
+<li>The addition of code supporting the new experimental WaitComplete functionality. (Experimental in terms of &quot;what can it do&quot;, not in terms of &quot;does it work&quot; - it works.)</li>
+<li>The instatement of the use of ctypes (conditional import) to allow the scheduler to periodically make a posix.sched_yield call.</li>
+<li>Change to add in a method for handleMicroprocessShutdownKnockon to handle shutdown of items postmen, and WaitComplete objects.</li>
+<li>self.time added - which means a generator can now find out system time by querying self.scheduler.time. It isn't clear if this is a good or bad idea as yet.</li></ul>
+<p></p>
+</body></html>
