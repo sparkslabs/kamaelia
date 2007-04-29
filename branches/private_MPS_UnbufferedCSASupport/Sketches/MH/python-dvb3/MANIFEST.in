@@ -1,0 +1,2 @@
+setup.py
+recursive-include dvb3 *.py *.pyx *.pxd

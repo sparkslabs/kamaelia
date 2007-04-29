@@ -1,0 +1,417 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:400">Release Notes</span></p>
+<p align="right"><span style="font-size:18pt">Kamaelia 0.2.0 </span></p>
+<p><span style="font-size:18pt;font-weight:600">SUMMARY</span></p>
+<p><span style="font-size:14pt">New Examples</span></p>
+<p>4 new examples showing of various new subsystem:</p>
+<ul type="disc"><li><span style="font-weight:600">Example 5</span> : An introspecting version of Examples 2/3. This creates a simple streaming system, and looks inside to see what components are running/active, and passes the resulting information over a network connection to an Axon Visualisation server.</li>
+<li><span style="font-weight:600">Example 6</span> : This is a simple/generic topology visualisation server. The server listens on port 1500, and accepts the following commands:</li>
+<ul type="disc"><div dir="ltr">ADD NODE id label auto -<br />ADD LINK id id<br />DEL NODE id<br />DEL ALL</div></ul>
+<div dir="ltr">As this stands this is pretty useful, but that's pretty much everything it does like this.</div>
+<li dir="ltr"><span style="font-weight:600">Example 7</span> : This shows how the visualisation subsystem can be extended to work in different ways. What this does by default when run is randomly create new nodes and new linkages quite quickly, allowing you to see how the system works.</li>
+<li dir="ltr"><span style="font-weight:600">Example 8</span> : Sample slideshow/presentation tool. Unlike traditional slideshow/presentation tools, you can modify this to run arbitrary components. An example of how this can work is provided - allowing stepping through some graph visualisations along with the presentation.</li></ul>
+<p dir="ltr"><span style="font-size:14pt">New Tools</span></p>
+<ul type="disc"><li><span style="font-weight:600">Axon Shell</span>. Implements a simple command line shell which allows experimentation with Axon systems - the shell runs a scheduler in the background. For a tutorial of use, see:</li>
+<ul type="disc"><li><a href="http://kamaelia.sourceforge.net/AxonShell.html">http://kamaelia.sourceforge.net/AxonShell.html</a></li></ul>
+<li><span style="font-weight:600">Axon Visualiser. </span>Implements a simple tool for looking inside (quite literally) running Axon/Kamaelia systems. This allows a very different style of debugging and can be extremely useful. Tutorial on its way!</li></ul>
+<p><span style="font-size:14pt">Graphlines and Pipelines</span></p>
+<p>These are probably the most useful additions to Kamaelia since 0.1.2. They are essentially syntactic sugar for building and working with systems of components, but make building interesting systems rapidly out of pre-existing components fun and easy. The pipelines follow the same sort of model as the Unix pipeline. Graphlines are something new, and like pipelines and all linkages may take <span style="font-style:italic">any</span> data along them.</p>
+<p>They're also probably best explained by example, so since these are release notes, I'll just present a couple of examples here.</p>
+<p>A graphline representing a simple presentation tool:</p>
+<ul type="disc"><div><span style="font-family:Courier">Graphline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">CHOOSER = Chooser(items = files),<br />IMAGE = Image(size=(800,600), position=(8,48)),<br />NEXT = Button(caption=&quot;Next&quot;, msg=&quot;NEXT&quot;, position=(72,8)),<br />PREVIOUS = Button(caption=&quot;Previous&quot;, msg=&quot;PREV&quot;,position=(8,8)),<br />FIRST = Button(caption=&quot;First&quot;, msg=&quot;FIRST&quot;,position=(256,8)),<br />LAST = Button(caption=&quot;Last&quot;, msg=&quot;LAST&quot;,position=(320,8)),<br />linkages = {</span></div>
+<ul type="disc"><div><span style="font-family:Courier">(&quot;NEXT&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;PREVIOUS&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;FIRST&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;LAST&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;CHOOSER&quot;,&quot;outbox&quot;) : (&quot;IMAGE&quot;,&quot;inbox&quot;),</span></div></ul>
+<div><span style="font-family:Courier">}</span></div></ul></ul>
+<p><span style="font-family:Courier">	).run()</span></p>
+<li type="disc">A pipeline representing a trivial multicast streaming server</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">ReadFileAdaptor(file_to_stream, readmode=&quot;bitrate&quot;, bitrate=400000, chunkrate=50),<br />SRM_Sender(),</span></div>
+<div dir="ltr"><span style="font-family:Courier">blockise(), # Ensure chunks small enough for multicasting!</span></div>
+<div dir="ltr"><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">).activate()</span></div></ul>
+<li type="disc">A pipeline representing a trivial multicast streaming client:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),<br />detuple(1),<br />SRM_Receiver(),<br />detuple(1),<br />VorbisDecode(),<br />AOAudioPlaybackAdaptor(),</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">).run()</span></div></ul>
+<p></p>
+<p dir="ltr"><span style="font-size:14pt">New Packages &amp; Subsystems</span></p>
+<p>These names should provide you with a flavour of the new subsystems that have been added:</p>
+<ul type="disc"><div>Kamaelia.Internet.Simulate<br />Kamaelia.UI<br />Kamaelia.UI.MH<br />Kamaelia.UI.Pygame<br />Kamaelia.Physics<br />Kamaelia.Physics.Simple<br />Kamaelia.Visualisation<br />Kamaelia.Visualisation.Axon<br />Kamaelia.Visualisation.PhysicsGraph</div></ul>
+<p><span style="font-size:14pt">New Components</span></p>
+<p>This section gives an overview of what's new in terms of actual new files.</p>
+<ul type="disc"><li>Examples/ -- example5, example6, example7, example8</li>
+<li>Kamaelia/Data/ -- MimeDict.py</li>
+<li>Kamaelia/Internet/ -- ThreadedTCPClient.py</li>
+<li>Kamaelia/ -- SingleServer.py</li>
+<li>Kamaelia/Physics/ -- __init__.py</li>
+<ul type="disc"><li>Kamaelia/Physics/Simple/ -- __init__.py, MultipleLaws.py, Particle.py, ParticleSystem.py, SimpleLaws.py, SpatialIndexer.py</li></ul>
+<li>Kamaelia/UI/ -- __init__.py, PygameDisplay.py</li>
+<ul type="disc"><li>Kamaelia/UI/Pygame/ -- Ticker.py, Multiclick.py, Image.py, Button.py</li>
+<li>Kamaelia/UI/MH/ -- __init__.py, PyGameApp.py, DragHandler.py</li></ul>
+<li>Kamaelia/Util/ -- Chooser.py, Comparator.py, Graphline.py, Introspector.py, LossyConnector.py, MarshallComponent.py, NullSinkComponent.py, passThrough.py, PipelineComponent.py, Splitter.py, TestResultComponent.py</li>
+<li>Kamaelia/Visualisation/ -- __init__.py</li>
+<ul type="disc"><li>Kamaelia/Visualisation/Axon/ -- __init__.py, AxonLaws.py, AxonVisualiserServer.py, ExtraWindowFurniture.py, PComponent.py, PPostbox.py</li>
+<li dir="ltr">Kamaelia/Visualisation/PhysicsGraph/ -- __init__.py, chunks_to_lines.py, lines_to_tokenlists.py, GridRenderer.py, ParticleDragger.py, RenderingParticle.py, TopologyViewerComponent.py, TopologyViewerServer.py</li></ul></ul>
+<p><span style="font-size:14pt">Changed &amp; Updated</span></p>
+<p>All updated siles &amp; classes at a glance:</p>
+<ul type="disc"><li>Examples/ -- example1, example2, example3, example4</li>
+<li>Kamaelia/Util/ -- ConsoleEcho.py, Chargen.py</li>
+<li>Kamaelia/Protocol/ -- AudioCookieProtocol.py, EchoProtocolComponent.py, FortuneCookieProtocol.py, HTTPServer.py</li>
+<li>Kamaelia-0.2.0/Kamaelia/ -- ReadFileAdaptor.py, SampleTemplateComponent.py, MimeRequestComponent.py, SimpleServerComponent.py, test/SynchronousLinks_SystemTest.py</li>
+<li>Kamaelia/Internet/ -- ConnectedSocketAdapter.py, Multicast_receiver.py, Multicast_sender.py, Multicast_transceiver.py, Selector.py, TCPClient.py, TCPServer.py, test/test_BasicMulticastSystem.py</li>
+<li>Docs/index.html</li></ul>
+<p><span style="font-weight:600">Large scale common changes</span></p>
+<ul type="disc"><li>All classes changed from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-size:18pt;font-weight:600">Detailed Release Notes</span></p>
+<p><span style="font-weight:600">Kamaelia-0.2.0/AUTHORS</span></p>
+<li type="disc">Modified</li>
+<ul type="disc"><li>Joseph Lord (Moved on from BBC R&amp;D)</li></ul>
+<p>Added</p>
+<ul type="disc"><li>Matt Hammond, BBC R&amp;D</li>
+<li>Ciaran Eaton (Pre-University Trainee @ BBC R&amp;D)</li>
+<li>Tom Gibson (Vacation Trainee @ BBC R&amp;D)</li>
+<li>Gintautas Miliauskas, Programmers of Vilnius- first external contributor (Debian Packaging!)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/CHANGELOG</span></p>
+<ul type="disc"><li>Overview of some of the key changes</li></ul>
+<p></p>
+<p><span style="font-size:18pt;font-weight:600">NEW STUFF!</span></p>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example5/</span></p>
+<ul type="disc"><li>This is a new example, it is an introspecting version of the SimpleStreamingSystem.py examples. This allows you to see inside a running streamer server and client system and see what's actually happening inside.</li>
+<li>It is essentially very similar to the old version of Example2, but with the addition of introspection components</li>
+<li>New files:</li>
+<ul type="disc"><li>IntrospectingSimpleStreamingSystem.py</li>
+<li>README</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example6/</span></p>
+<ul type="disc"><li>This is a new example - a topology visualiser. This takes textual commands from a single socket and renders the resulting graph.</li>
+<ul type="disc"><li>Example</li>
+<ul type="disc"><li>ADD NODE id1 label1 auto -</li>
+<li>ADD NODE id2 label2 auto -</li>
+<li>ADD LINK id1 id2</li></ul>
+<li>This draw and lays out and simple system linking 2 nodes, using a simple physics type engine for layout</li></ul>
+<li>New files:</li>
+<ul type="disc"><li>TopologyVisualiser.py</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example7/</span></p>
+<ul type="disc"><li>This is a more complex (new) example of using the topology/graph viewing code. It extends the system to add in some new node types/behaviour via the code in the BasicGraphVisualisation directory.</li>
+<li>New files:</li>
+<ul type="disc"><li>BasicGraphVisualisation.py</li>
+<li>BasicGraphVisualisation/__init__.py</li>
+<li>BasicGraphVisualisation/ParticleDragger.py</li>
+<li>BasicGraphVisualisation/PhysApp1.py</li>
+<li>BasicGraphVisualisation/VisibleParticle.py</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example8/</span></p>
+<ul type="disc"><li>Another new example - this one showing how to bolt together existing Pygame based components using the simplistic &quot;window&quot;  manager (more surface manage really) to place mutiple buttons, image viewers etc into a single display, and link them together tio form a simple slideshow tool, which can be used for presentations. Includes a small number of slides from the Europython talk about Kamaelia.</li>
+<li>This is also probably the nicest example (and the first example) of how a Graphline can be of real use to make a system more declarative and clearer.</li>
+<li>New files:</li>
+<ul type="disc"><li dir="ltr">slideshow.py - &quot;Just&quot; a slideshow/presentation tool</li>
+<li dir="ltr">topology.py - &quot;Just&quot; a slideshow/presentation tool for showing structural diagrams clearly, and maniupulable</li>
+<li dir="ltr">topology_slideshow.py - comination showing how one tool can be overlaid on top of another forming a more useful, more general tool for doing presentations.</li>
+<li>README</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.001.gif</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.016.gif</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.021.gif</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.030.gif</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.036.gif</li>
+<li dir="ltr">Slides/KamaeliaEuropython2005.039.gif</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/README</span></p>
+<ul type="disc"><li>Updated to document the 4 new examples. Copied here for convenience.</li>
+<ul type="disc"><li><span style="font-weight:600">Example 5</span> : An introspecting version of Examples 2/3. This creates a simple streaming system, and looks inside to see what components are running/active, and passes the resulting information over a network connection to an Axon Visualisation server.</li>
+<li><span style="font-weight:600">Example 6</span> : This is a simple/generic topology visualisation server. The server listens on port 1500, and accepts the following commands:</li>
+<ul type="disc"><div dir="ltr">ADD NODE id label auto -<br />ADD LINK id id<br />DEL NODE id<br />DEL ALL</div></ul>
+<div dir="ltr">As this stands this is pretty useful, but that's pretty much everything it does like this.</div>
+<li><span style="font-weight:600">Example 7</span> : This shows how the visualisation subsystem can be extended to work in different ways. What this does by default when run is randomly create new nodes and new linkages quite quickly, allowing you to see how the system works.</li>
+<li><span style="font-weight:600">Example 8</span> : Sample slideshow/presentation tool. Unlike traditional slideshow/presentation tools, you can modify this to run arbitrary components. An example of how this can work is provided - allowing stepping through some graph visualisations along with the presentation.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Data/MimeDict.py</span></p>
+<ul type="disc"><li>New data type for representing dictionaries as mime-like objects. Allows for simple transformation of a dict to a mime-like object (via <span style="font-family:Courier;font-weight:600">str()</span> ), and from a suitable string. This is designed to support implementing (via specialisation) HTTP, SMTP, and NNTP objects.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/ThreadedTCPClient.py</span></p>
+<ul type="disc"><li>New component</li>
+<ul type="disc"><li>This allows you to have a TCP Client running, but in a different thread. This allows for blocking actions.</li>
+<li>This is also probably the first/only usage to date of the threaded component class in Axon.</li>
+<li>There may therefore be minor issues with this class.</li></ul>
+<li>Provides the same interface from a component user perspective to the TCPClient.py class</li>
+<li>Originally written because at the time Nokia Series 60 mobiles only supported blocking sockets.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/__init__.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Introduction of a simple physics system for use with the topology viewer code. This may be in the wrong location, but it's an initial starting point</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/__init__.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Just the &quot;Simple&quot;, basic set of laws for now.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/MultipleLaws.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Physics code for forces between particles. Unbonded force acts between all non bonded particles. Bonded force acts between bonded particles. Contains the following classes: </li>
+<ul type="disc"><li>MultipleLaws(typesToLaws, defaultLaw = None):<br />Laws framework for systems containing multiple particle types<br /><br />typesToLaws = dictionary mapping particle type name pairs (type1, type2) to laws if you supply a pairing (t1, t2) it will also be applied to the case (t2,t1) without you needing to explicitly specify it. If you do, then your choice takes precedence.<br /><br />If you do not provide enough mappings to build a complete mapping from all types to all types, then the gaps will be automatically filled with mappings to defaultLaw.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/Particle.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Physics code for forces between particles. Unbonded force acts between all non bonded particles. Bonded force acts between bonded particles. Contains the following classes: </li>
+<ul type="disc"><li>Particle - Particle within a physics system with an arbitrary number of dimensions.<br /><br />Represents a particle that interacts with other particles. One set of forces are applied for those particles that are unbonded. Interactions between bonded particles are controlled by another set of forces.<br /><br />Bonds are bi-directional. Establishing a bond from A to B, will also establish it back from B to A. Similarly, breaking the bond will do so in both directions too.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/ParticleSystem.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Contains class:</li>
+<ul type="disc"><li>ParticleSystem(laws, initialParticles = [], initialTick = 0)<br />System of particles.<br />Maintains the set of particles and runs the physics simulation over them the specified laws.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/SimpleLaws.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li dir="ltr">Contains class:</li>
+<ul type="disc"><li dir="ltr">SimpleLaws(object):<br />Implements a simple set of physics laws for the particle system.<br />Repulsion force : force proportional to 1/distance_squared <br />bonds : force proportional to extension (Hook's law)<br /><br />All force strengths etc. are set up to vaguely sensible values on the basis of the specified bond length.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Physics/Simple/SpatialIndexer.py</span></p>
+<ul type="disc"><li>New subsystem</li>
+<li>Probably the most generally useful addition to the core of Kamaelia from the Physics subsytem. Provides a Spatial Indexer class that:</li>
+<ul type="disc"><li>Allows fast spatial lookups of entities - quickly find all entities within a given radius of a set of coordinates.<br />Optimised by specifying the most commonly used proximity distance. This affects the speed of lookups and the size of the internal data structure.<br />Entities must provide a getLoc() method that returns the coordinates as a tuple.<br />To first register entities or if they change coordinates, something must call updateLoc(&lt;entities&gt;). If entities are removed, something must call remove(&lt;entities&gt;)</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/SingleServer.py</span></p>
+<ul type="disc"><li>New component. This essentially can be used in the same manner as the server mode to &quot;netcat&quot;/&quot;nc&quot;. That is it can be used in a pipeline, anything received from the <span style="font-style:italic;font-weight:600">first</span> connection is forwarded to the outbox, anything received on the inbox is forwarded to that connection. It only handles one connection - hence the name &quot;<span style="font-weight:600">Single</span>Server&quot;</li>
+<li>Includes a simple example</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/__init__.py</span></p>
+<ul type="disc"><li>New subsystem for user interfaces. (Normally graphical user interfaces)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/MH/__init__.py</span></p>
+<ul type="disc"><li>An experimental pygame based application subsystem</li></ul>
+<li type="disc"><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/MH/DragHandler.py</span></li>
+<ul type="disc"><li>Part of an experimental pygame based application handler subsystem</li>
+<li>Examples 6,7 uses this class indirectly</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/MH/PyGameApp.py</span></p>
+<ul type="disc"><li>Base class for Pygame Applications. This component is expected to be inherited by components.</li>
+<li>Uses the new PygameDisplay service.</li>
+<li>Thus any component using a PyGameApp can be composed onto a shared display and not worry about how it's sharing the display, and not worry about whether it's connected to another display component or a sink, or a socket, etc.</li>
+<li>Used by example 5-8, and many components</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/Pygame/Button.py</span></p>
+<ul type="disc"><li>Part of the new Pygame subsystem</li>
+<li>Sits happily inside the PygameDisplay service</li>
+<li>Implements a simple button. When clicked, sends a message to it's outbox &quot;outbox&quot;</li>
+<li>Example 8 uses this component</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/Pygame/Image.py</span></p>
+<ul type="disc"><li>Part of the new Pygame subsystem</li>
+<li>Sits happily inside the PygameDisplay service</li>
+<li>Implements a image display component. </li>
+<ul type="disc"><li>When it receives a message on its inbox &quot;inbox&quot;, it assumes it's a new filename, loads the image associated with the filename and updates it's display surface.</li></ul>
+<li>Example 8 uses this component</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/Pygame/Multiclick.py</span></p>
+<ul type="disc"><li>Like button, but has different behaviours associated with different mouse buttons. Clicking a different button causes different messages to be sent. Can also be transparent to overlay other surfaces (this allows apparently global click handling)</li>
+<li>This is used by a number of example presentation tools</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/Pygame/Ticker.py</span></p>
+<ul type="disc"><li>Simple component that implements a simple &quot;ticking&quot; display - this can be used for display of text for presentations, subtitling (since the display can be transparent...) and autocue/teleprompter behaviour.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/UI/PygameDisplay.py</span></p>
+<ul type="disc"><li>Simple window/surface manager component.</li>
+<li>Registers a service called &quot;pygamedisplay&quot;, where components may request a display from.</li>
+<li>These displays are then blitted to the display once every tick of the PygameDisplay component</li>
+<li>Currently all events are global, but the pygame display could change that.</li>
+<li>Handles the farming out of pygame events to components as well.</li>
+<ul type="disc"><li>Events are sent as bundles to try and manage mousemoveevents sensibly. (Work still needed there though)</li></ul>
+<li>Simple tests of bouncing surfaces (tickers, images) round the screeen whilst the other components are running shows that this can happen without confusing the components using those displays. (Largely due to single writer semantics always being preserved)</li>
+<li>Conceptually very similar to a TCP Server / primary listen socket vs connected socket adaptor issue.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Chooser.py</span></p>
+<ul type="disc"><li>New component</li>
+<li dir="ltr">Chooses items out of a set, as directed by commands sent to its inbox<br />Emits the first item at initialisation, then whenever a command is received it emits another item (unless you're asking it to step beyond the start or end of the set)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Comparator.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>This class was originally written to assist in testing by making it easy to compare an expected data stream with that from the tested system. This is the current equality test between the two inputs.  It's been realised however that this can be generalised by making an overidable compare function to do the real work.  This is therefore a general system for combining two inputs into a single output!</li>
+<ul type="disc"><li>You override the &quot;combine&quot; method (the default compares a==b, and returns a boolean, but could be anything - for example summation, etc)</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Graphline.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>Provides syntactic sugar for making pipeline type systems trivial, but in the the form of arbitrary graphs, not just 1D pipes</li>
+<li>Example 8 provides the nice example:</li>
+<ul type="disc"><div><span style="font-family:Courier">Graphline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">CHOOSER = Chooser(items = files),<br />IMAGE = Image(size=(800,600), position=(8,48)),<br />NEXT = Button(caption=&quot;Next&quot;, msg=&quot;NEXT&quot;, position=(72,8)),<br />PREVIOUS = Button(caption=&quot;Previous&quot;, msg=&quot;PREV&quot;,position=(8,8)),<br />FIRST = Button(caption=&quot;First&quot;, msg=&quot;FIRST&quot;,position=(256,8)),<br />LAST = Button(caption=&quot;Last&quot;, msg=&quot;LAST&quot;,position=(320,8)),<br />linkages = {</span></div>
+<ul type="disc"><div><span style="font-family:Courier">(&quot;NEXT&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;PREVIOUS&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;FIRST&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;LAST&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),<br />(&quot;CHOOSER&quot;,&quot;outbox&quot;) : (&quot;IMAGE&quot;,&quot;inbox&quot;),</span></div></ul>
+<div><span style="font-family:Courier">}</span></div></ul>
+<div><span style="font-family:Courier">).run()</span></div></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Introspector.py</span></p>
+<ul type="disc"><li>New component. Much of the body of this will actually shift into Axon, but leave this component behind as a proxy.</li>
+<li>&quot;This component introspects the current local topology of an axon system.<br /><br />Local? This component examines its scheduler to find components and postmen. It then examines them to determine their inboxes and outboxes and the linkages between them.<br /><br />If this component is not active, then it will see no scheduler and will report nothing.<br /><br />The output is a description of the a graph topology, where components and postboxes are the nodes, and their relationships/linkages form the links between them. As the shape of the graph changes, this component relays only the changes.<br /><br />The output format is a stream of strings, designed to be fed to an AxonVisualiserServer component.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/LossyConnector.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>This implements a &quot;lossy connector&quot;. Currently much of Kamaelia works on the assumption that when you send to an outbox that there will always be space. However due to the existance of synchronised linkages, and maximum pipewidths, this may not actually be the case.</li>
+<li dir="ltr">This component can be used as an intemediary that may drop messages if there is not space. One example usage of this might be to limit the amount of data that may be allowed into your inbox, then place the lossy connector before your input. This might mean that messages are lost, but in some circumstances this may not be an issue. (eg faking realtime encoding using a slow encoder)</li>
+<li dir="ltr">If the recipient can receive the data fast enough this component essentially acts as a pass through.</li></ul>
+<p dir="ltr"><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/MarshallComponent.py</span></p>
+<ul type="disc"><li>New component</li>
+<li dir="ltr">Basic Marshalling Component<br />The Basic Marshalling Component is given a simple class. It then expects to be passed objects of that class, and then performs the following actions:</li>
+<ul type="disc"><li dir="ltr"> __str__ on an object</li>
+<li>fromString on an object</li></ul>
+<div></div>
+<div>The idea is that you would place this between your logic and a network socket, which simply serialises and deserialises objects for transmission over the wire. The initial data format this is designed to work with is the MimeDict object.<br /><br />For simplicity, this component expects to be given an entire object to marshall/demarshall. This requires the user to deal with framing of objects. It is expected that there will be a more complex marshaller that is capable of taking (say) a generator or component as an argument for the fromString static method.<br /><br />Since this is a bidirectional component we have the following boxes:</div>
+<ul type="disc"><li>control - on which we may receive a shutdown message</li>
+<li>signal - one which we will send shutdown messages</li>
+<li>demarshall - an inbox to which you send strings for demarshalling</li>
+<li dir="ltr">marshall - an inbox to which you send objects for marshalling</li>
+<li dir="ltr">demarshalled - an outbox which spits out demarshalled objects</li>
+<li dir="ltr">marshalled = an outbox which spits out marshalled strings</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/NullSinkComponent.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>Conceptually this provides the same device as the NULL device under windows, and /dev/null under Unix type systems</li>
+<li>Any data received is thrown away - EXCEPT shutdownMicroprocess and producerFinished messages. If either of these are received on the &quot;control&quot; inbox, then the component shuts down</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/passThrough.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>Simple passthrough component - a more generic version of the echoer component</li>
+<li>Used during the small test suite for Kamaelia.Util.Pipeline</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/PipelineComponent.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>Provides syntactic sugar for making pipeline type systems trivial.</li>
+<li>A nice example is from example 4, where 2 pipelines are put together to build a simplistic multicast streaming system as follows:</li>
+<ul type="disc"><li>Server:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">ReadFileAdaptor(file_to_stream, readmode=&quot;bitrate&quot;, bitrate=400000, chunkrate=50),<br />SRM_Sender(),</span></div>
+<div dir="ltr"><span style="font-family:Courier">blockise(), # Ensure chunks small enough for multicasting!</span></div>
+<div dir="ltr"><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">).activate()</span></div></ul>
+<li>Client</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),<br />detuple(1),<br />SRM_Receiver(),<br />detuple(1),<br />VorbisDecode(),<br />AOAudioPlaybackAdaptor(),</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">).run()</span></div></ul></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Splitter.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>This component is likely to be replaced by another component with a similar, but possibly different interface.</li>
+<li>This component allows the data from a single outbox to be sent to many inboxes. Tis version blocks all data if any of the outboxes have no space in them (in theory). Other versions could take other approaches such as dropping messages to those outboxes which are full.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/TestResultComponent.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>DO NOT USE IN LIVE SYSTEMS.  This class is largely intended for use is system testing and particularly unit testing of other components.  In the case of error or request it is intended to throw an exception stop the Axon system and jump back to the unit test.</li>
+<ul type="disc"><li dir="ltr">If this receives a FALSE value on it's inbox, this raises an <span style="font-family:Courier">AssertionError</span> - it only expects true values.</li>
+<li dir="ltr">If it receives a StopSystem exception on its inbox, it raises a StopSystemException.</li></ul></ul>
+<p dir="ltr"><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/__init__.py</span></p>
+<ul type="disc"><li>Base directory of the new visualisation/graphics subsystems</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/__init__.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/AxonLaws.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Selection of simple physics laws to help modelling how to lay out different visual elements in when visualising an Axon system using the physics code. (eg inboxes, outboxes, etc)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/AxonVisualiserServer.py</span></p>
+<ul type="disc"><li>New component</li>
+<li>Subclasses TopologyViewerServer</li>
+<li>Essentially runs a TopologyViewerServer with a collection of default rules some specialised particle types and specialised laws for dealing with laying out those particle types</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/ExtraWindowFurniture.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Draws some extra window furniture (logos, lines as appropriate) for the display.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/PComponent.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Particle that represents a component in the Axon visualisation subsystem</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/Axon/PPostbox.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Particle that represents an inbox/oubox (POSTBOX) in the Axon visualisation subsystem</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/__init__.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/chunks_to_lines.py</span></p>
+<ul type="disc"><li>New Component, related to providing a convenient interface to the topology subsystem</li>
+<li>Expects to receive non-line aligned data in chunks on its inbox &quot;inbox&quot; and spits out whole lines on its outbox &quot;outbox&quot;.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/lines_to_tokenlists.py</span></p>
+<ul type="disc"><li>New component - related to provide a convenient interface to the topology subststem.</li>
+<li>Takes in lines and outputs a list of tokens on each line.<br /><br />Tokens are separated by white space.<br /><br />Tokens can be encapsulated with single or double quote marks, allowing you to include white space. If you do this, backslashs should be used to escape a quote mark that you want to include within the token. Represent backslash with a double backslash.<br /><br />Example:</li>
+<ul type="disc"><div><span style="font-family:Courier">Hello world &quot;how are you&quot; 'john said &quot;hi&quot;' &quot;i replied \&quot;hi\&quot;&quot; end</span></div></ul>
+<div>Becomes:</div>
+<ul type="disc"><div><span style="font-family:Courier">[ 'Hello',<br />  'world', <br />  'how are you',<br />  'john said &quot;hi&quot;', <br />  'i replied &quot;hi&quot;',<br />  'end' ]</span></div></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/GridRenderer.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Simple grid drawing class facility. (used by the topology viewer)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/ParticleDragger.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Implements dragging of particles.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/RenderingParticle.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Version of Physics.Particle with added rendering functions. (Used to make a system visible, not just simulated)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/TopologyViewerComponent.py</span></p>
+<ul type="disc"><li>Part of the new visualisation/graphics subsystems</li>
+<li>Generic Topology Viewer Component<br /><br />Displays a topology in a pygame application. It can be interacted with by dragging nodes with the mouse.<br />Receives command tuples on its inbox. See handleCommunication() for command syntax.<br />Outputs diagnostic and error messages on its outbox <br />See keyDownHandler() for keyboard controls.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Visualisation/PhysicsGraph/TopologyViewerServer.py</span></p>
+<ul type="disc"><li>New component, Part of the new visualisation/graphics subsystems</li>
+<li>Builds a simple pipeline allowing the TopologyViewerComponent to take commands from a network connection and then update the display accordingly. This can be customised with new laws, particles etc, but can be used in it's basic form as a simple self laying out graph visualistaion tool.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/vorbisDecodeComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/PKG-INFO</span></p>
+<ul type="disc"><li>Automagically bumped by change to setup.py</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/setup.py</span></p>
+<ul type="disc"><li>Added packages:</li>
+<ul type="disc"><li>Kamaelia.Internet.Simulate</li>
+<li>Kamaelia.UI</li>
+<li>Kamaelia.UI.MH</li>
+<li>Kamaelia.UI.Pygame</li>
+<li>Kamaelia.Physics</li>
+<li>Kamaelia.Physics.Simple</li>
+<li>Kamaelia.Visualisation</li>
+<li>Kamaelia.Visualisation.Axon</li>
+<li>Kamaelia.Visualisation.PhysicsGraph</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Tools/axonshell.py</span></p>
+<ul type="disc"><li>New tool. Implements a simple command line shell which allows experimentation with Axon systems - the shell runs a scheduler in the background. For a tutorial of use, see:</li>
+<ul type="disc"><li><a href="http://kamaelia.sourceforge.net/AxonShell.html">http://kamaelia.sourceforge.net/AxonShell.html</a></li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Tools/AxonVisualiser.py</span></p>
+<ul type="disc"><li>New Tool. Implements a simple tool for looking inside (quite literally) running Axon/Kamaelia systems. This allows a very different style of debugging and can be extremely useful. Tutorial on its way!</li></ul>
+<p></p>
+<p><span style="font-size:18pt;font-weight:600">UPDATED AND CHANGED</span></p>
+<p></p>
+<p dir="ltr"><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/ToStringComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/ConsoleEcho.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Change to the way objects can be sent to the console. Specifically the change is to allow the use of the __repr__ method of objects instead of the __str__ method - by calling repr() and str() respectively</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Util/Chargen.py</span></p>
+<ul type="disc"><li>Copyright notice added (ie grants permissions not otherwise available)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/test/SynchronousLinks_SystemTest.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/SimpleServerComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Variety of small changes relating to shutdown messages</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Protocol/AudioCookieProtocol.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Protocol/EchoProtocolComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Protocol/FortuneCookieProtocol.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Additional comments</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Protocol/HTTPServer.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>NB: this is incomplete and a work in progress (may change completely)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/ReadFileAdaptor.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/SampleTemplateComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/MimeRequestComponent.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/test/test_BasicMulticastSystem.py</span></p>
+<ul type="disc"><li>Minor change wrt use of the scheduler</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/__init__.py</span></p>
+<ul type="disc"><li>Whitespace change</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/ConnectedSocketAdapter.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>When the connection dies, for any reason, send a <span style="font-family:Courier;font-weight:600">shutdownCSA</span> message to the signal outbox, rather than a <span style="font-family:Courier;font-weight:600">socketShutdown</span> message</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/Multicast_receiver.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<ul type="disc"><li>This class will probably change in the next release to being a factory rather than a class, providing Multicast_transceiver with some default arguments.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/Multicast_sender.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<ul type="disc"><li>This class will probably change in the next release to being a factory rather than a class, providing Multicast_transceiver with some default arguments.</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/Multicast_transceiver.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Better handling when our sending fails first time round.</li>
+<ul type="disc"><li>Code is written on the assumption of send failure, not on the assumption of success</li></ul></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/Selector.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>wireOutComponent rewritten. This removes any  lookup table entries, unwires the component, and deletes any special in/outboxes created.</li>
+<li>Small bugfix related to wiring in components using the service</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/TCPClient.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Kamaelia/Internet/TCPServer.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>When shutting down, tell the selector that we're shutting down</li>
+<li>When shutting down, any protocol handlers that we're shutting down</li>
+<li>Linkage changes - signal has been split into _selectorSignal and protocolHandlerSignal</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example4/README</span></p>
+<ul type="disc"><li>A note, essentially recommending installing ctypes on systems running Linux.</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example1/FortuneCookie_ServerClient.py</span></p>
+<ul type="disc"><li>Changed to use the new pipeline syntactic sugar</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example1/README</span></p>
+<ul type="disc"><li>Whitespace change</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example2/README</span></p>
+<ul type="disc"><li>Whitespace change</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example2/SimpleStreamingSystem.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Change from using a wrapper component for testing to using standalone components and the new pipeline syntactic sugar</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example3/README</span></p>
+<ul type="disc"><li>Updated comment regarding the recommendation to using Axon 1.1.1, this makes the system much more self friendly - since the scheduler provides hints to the OS essentially saying &quot;you can interrupt now if you like&quot;</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example3/SimpleStreamer.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li>Change from using a wrapper component for testing to using simple standalone components</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example3/SimpleStreamingClient.py</span></p>
+<ul type="disc"><li>Change from using a wrapper component for testing to using standalone components and the new pipeline syntactic sugar</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example4/MulticastStreamingClient.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Examples/example4/MulticastStreamingSystem.py</span></p>
+<ul type="disc"><li>Change from using self.__super to using super(klass, self) ... on the advice of Michele Simionato</li>
+<li dir="ltr">Change from using a wrapper component for testing to using multiple simple pipelines (syntactic sugar)</li></ul>
+<p><span style="font-weight:600">Kamaelia-0.2.0/Docs/index.html</span></p>
+<ul type="disc"><li>Minor changes caused by changes to packaging</li></ul>
+<p></p>
+</body></html>

@@ -1,0 +1,52 @@
+<html><body>
+<h1>Kamaelia.UI.Pygame.Image.Image</h1>
+<h2>class Image(Axon.Component.component)</h2>
+
+<p>Image([image][,position][,bgcolour][,size][,displayExtra][,maxpect]) -&gt; new Image component</p>
+<p>Pygame image display component. Image, and other properties can be changed at runtime.</p>
+<p>Keyword arguments:
+- image         -- Filename of image (default=None)
+- position      -- (x,y) pixels position of top left corner (default=(0,0))
+- bgcolour      -- (r,g,b) background colour (behind the image if size&gt;image size)
+- size          -- (width,height) pixels size of the area to render the iamge in (default=image size or (240,192) if no image specified)
+- displayExtra  -- dictionary of any additional args to pass in request to PygameDisplay service
+- maxpect       -- (xscale,yscale) scaling to apply to image (default=no scaling)</p>
+<h4>Inboxes</h4>
+<ul><li>   control : Shutdown messages: shutdownMicroprocess or producerFinished
+<li>   bgcolour : Set the background colour
+<li>   callback : Receive callbacks from PygameDisplay
+<li>   inbox : Filename of (new) image
+<li>   events : Place where we recieve events from the outside world
+<li>   alphacontrol : Alpha (transparency) of the image (value 0..255)
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : NOT USED
+<li>   signal : Shutdown signalling: shutdownMicroprocess or producerFinished
+<li>   display_signal : Outbox used for sending signals of various kinds to the display service
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, image, position, bgcolour, size, displayExtra, maxpect)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>blitToSurface(self)</h3>
+<p>Blits the background colour and image file to the surface</p>
+<h3>fetchImage(self, newImage)</h3>
+<p>Load image from specified filename.</p>
+<p>self.size is set to image dimensions if self.size is None.</p>
+<p>Image is scaled by self.maxpect if self.maxpect evaluates to True.</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<h3>waitBox(self, boxname)</h3>
+<p>Generator. yield's 1 until data is ready on the named inbox.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
