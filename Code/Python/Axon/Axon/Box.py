@@ -477,23 +477,27 @@ class postbox(object):
         
         If newtarget is unspecified or None, target is default local storage.
         """
+#        print "OK here", self
         if newtarget==None:
             self.target = None
             self.sink = self.storage
+#            print "NOT HERE"
         else:
             self.target = newtarget
             self.sink = newtarget.sink
             # if i'm storing stuff, pass it on
             while len(self.storage):
                 self.sink.append(self.storage.pop(0))
-        
+
         # make calling these methods go direct to the sink
         self.append         = self.sink.append
         self.pop            = self.sink.pop
         self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
+#        print "B4 propagate the change back up the chain", type(self.sink)
         for source in self.sources:
             source._retarget(newtarget=self)
+#        print "AFTER propagate the change back up the chain", type(self.sink)
 
     def setSize(self, size):
         """\
