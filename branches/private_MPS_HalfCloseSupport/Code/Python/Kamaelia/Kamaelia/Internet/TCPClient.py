@@ -113,6 +113,7 @@ class TCPClient(Axon.Component.component):
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
+                "_signal"        :  "to pass on shutdown messages to the connected socket adapter",
                 "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
 
               }
@@ -164,7 +165,7 @@ class TCPClient(Axon.Component.component):
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
       
-      self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
+#      self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
       self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
@@ -264,6 +265,7 @@ class TCPClient(Axon.Component.component):
        while self.dataReady("control"):
            msg = self.recv("control")
            self.send(msg,"signal")
+           self.send(msg,"_signal") # also pass on to connected socket adapter!
            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                return True
        return False
