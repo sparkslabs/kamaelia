@@ -152,6 +152,7 @@ class ConnectedSocketAdapter(component):
       self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 131072)
       print self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
       print self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
+      self.howDied=False
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
@@ -177,7 +178,7 @@ class ConnectedSocketAdapter(component):
             self.sendQueue.append(data)
 
    def passOnShutdown(self):
-        self.send(socketShutdown(self,self.socket), "CreatorFeedback")
+        self.send(socketShutdown(self,[self.socket,self.howDied]), "CreatorFeedback")
         self.send(shutdownCSA(self, (self,self.socket)), "signal")
 
    def _safesend(self, sock, data):
