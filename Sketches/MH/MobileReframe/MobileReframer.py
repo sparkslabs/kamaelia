@@ -76,11 +76,11 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
     except:
         pass
     
- #   mplayer = "mplayer -frames 200 -mc 0 -really-quiet -vo yuv4mpeg:file="+vidpipe+" -ao pcm:waveheader:file="+audpipe+" "+inFileName.replace(" ","\ ")
     mplayer = "ffmpeg -vframes %d -i %s -f yuv4mpegpipe -y %s -f wav -y %s" % ((maxframe*1.1+2),inFileName.replace(" ","\ "),vidpipe,audpipe)
+    print mplayer
     
     return Graphline(
-            MPLAYER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
+            DECODER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
             FRAMES = YUV4MPEGToFrame(),
             SPLIT = TwoWaySplitter(),
             FIRST = FirstOnly(),
@@ -89,28 +89,31 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
 #            DEBUG = ConsoleEchoer(),
 #            MONITOR = Profiler(10.0, 0.1),
             linkages = {
-                ("MPLAYER","video") : ("FRAMES","inbox"),
+                ("DECODER","video") : ("FRAMES","inbox"),
                 ("FRAMES","outbox") : ("SPLIT","inbox"),
                 ("SPLIT","outbox") : ("VIDEO","inbox"),
                 
                 ("SPLIT","outbox2") : ("FIRST","inbox"),
                 ("FIRST","outbox") : ("AUDIO","next"),
-                ("MPLAYER","audio") : ("AUDIO","inbox"),
+                ("DECODER","audio") : ("AUDIO","inbox"),
                 
-                ("MPLAYER","signal") : ("FRAMES","control"),
+                ("DECODER","signal") : ("FRAMES","control"),
                 ("FRAMES","signal") : ("SPLIT","control"),
                 ("SPLIT","signal") : ("VIDEO","control"),
                 ("SPLIT","signal2") : ("FIRST","control"),
                 ("FIRST","signal") : ("AUDIO","control"),
                 ("AUDIO","signal") : ("","signal"),
                 
-#                ("MPLAYER","outbox") : ("DEBUG","inbox"),
-#                ("MPLAYER","error") : ("DEBUG","inbox"),
+#                ("DECODER","outbox") : ("DEBUG","inbox"),
+#                ("DECODER","error") : ("DEBUG","inbox"),
 #                ("MONITOR","outbox") : ("DEBUG","inbox"),
                 },
             boxsizes = {
                 ("FRAMES", "inbox") : 2,
                 ("SPLIT",  "inbox") : 1,
+                ("FIRST", "inbox") : 2,
+                ("VIDEO", "inbox") : 2,
+                ("AUDIO", "inbox") : 10,
                 }
             )
         
@@ -388,15 +391,7 @@ def ReEncode(outFileName):
     audpipe=audpipe.replace(" ","\ ")
     outFileName=outFileName.replace(" ","\ ")
     
-#    encoder = "cat "+vidpipe+" > test2.yuv"
     encoder = "ffmpeg -f yuv4mpegpipe -i "+vidpipe+" -f wav -i "+audpipe+" -y "+outFileName
-#    encoder = ( "mencoder -audiofile "+audpipe+" "+vidpipe +
-#                " -ovc lavc -oac mp3lame" +
-#                " -ffourcc DX50 -lavcopts acodec=mp3:vbitrate=200:abitrate=128" +
-#                " -mc 0 -noskip" +
-#                " -cache 16384 -audiofile-cache 500" + # -really-quiet" +
-#                " -o "+outFileName
-#              )
     print encoder
              
     return Graphline( \
