@@ -246,10 +246,6 @@ class Ticker(Axon.Component.component):
     alpha = -1
     while 1:
        self.handleAlpha()
-#       if self.dataReady("alphacontrol"):
-#            alpha = self.recv("alphacontrol")
-#            print "BOING", alpha
-#            self.display.set_alpha(alpha)
        if self.dataReady("control"):
           if self.dataReady("control"):
               data = self.recv("control")
@@ -269,16 +265,19 @@ class Ticker(Axon.Component.component):
           for line in lines:
               word = line
               words = line.split()
-              if len(words) == 0:
-                  if blankcount:
-                      blankcount = 0
-                      self.send( {"CHANGEDISPLAYGEO": True,
-                                  "surface" : self.display,
-                                  "position":(108,60)
-                                 },
-                                "signal")
-                  else:
-                      blankcount = 1
+#              if len(words) == 0:
+#
+# Purpose of this code is lost in time.
+#
+#                  if blankcount:
+#                      blankcount = 0
+#                      self.send( {"CHANGEDISPLAYGEO": True,
+#                                  "surface" : self.display,
+#                                  "position":(108,60)
+#                                 },
+#                                "signal")
+#                  else:
+#                      blankcount = 1
               for word in words:
                   while time.time() - last < self.delay:
                      self.handleAlpha()                     
