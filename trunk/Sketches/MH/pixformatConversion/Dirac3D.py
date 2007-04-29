@@ -14,7 +14,7 @@ from Kamaelia.UI.OpenGL.SkyGrassBackground import SkyGrassBackground
 from Kamaelia.UI.OpenGL.Movement import SimpleRotator
 
 file = "../../../Code/Python/Kamaelia/Examples/VideoCodecs/Dirac/snowboard-jum-352x288x75.dirac.drc"
-framerate = 3
+framerate = 15
 
 # override pygame display service
 ogl_display = OpenGLDisplay.getDisplayService()
