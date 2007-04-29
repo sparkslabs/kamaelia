@@ -79,7 +79,7 @@ if __name__ == "__main__":
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
     from Kamaelia.Audio.RawAudioMixer import RawAudioMixer
 
-    sys.path.append("../../Tools/Whiteboard")
+    sys.path.append("../../Tools/Whiteboard/Whiteboard")
     from Entuple import Entuple
     
     Pipeline( Input(sample_rate=8000, channels=1, format="S16_LE"),
