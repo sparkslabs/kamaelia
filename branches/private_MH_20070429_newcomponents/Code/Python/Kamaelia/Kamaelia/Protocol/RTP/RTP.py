@@ -37,8 +37,11 @@ back out again. They do not understand the specifics of each payload type.
 You must determine for yourself the correct values for each field (eg. payload
 type, timestamps, CSRCS, etc).
 
-See RFC 3550 and 3551 for information on the RTP speecification and the meaning
-and formats of fields in RTP packets.
+See `RFC 3550`_ and `RFC 3551`_ for information on the RTP speecification and
+the meaning and formats of fields in RTP packets.
+
+.. _`RFC 3550`: http://tools.ietf.org/html/rfc3550
+.. _`RFC 3551`: http://tools.ietf.org/html/rfc3551
 
 
 
