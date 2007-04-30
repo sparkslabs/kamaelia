@@ -44,6 +44,11 @@ setup(
               libraries = [],
               include_dirs = [],
              ),
+    Extension("Kamaelia.Support.Optimised.Video.PixFormatConvert",
+              ["Kamaelia/Support/Optimised/Video/PixFormatConvert.pyx"],
+              libraries = [],
+              include_dirs = [],
+             ),
     ],
   cmdclass = {'build_ext': build_ext},
   long_description = """\
