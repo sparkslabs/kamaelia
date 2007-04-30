@@ -101,11 +101,64 @@ The carousel will shutdown in response to an Axon.Ipc.shutdownMicroprocess or
 Axon.Ipc.producerFinished message. It will also terminate any child component
 in the same way as described above.
 
+
+Identical in functionality to Kamaelia.Chassis.Carousel, except instead of
+sending orders to a "next" inbox, send them to the "inbox" inbox instead.
+
+Data that would have been sent to the "inbox" inbox can be sent to the
+"data_inbox" inbox instead.
+
+
+
+=========================
+Inbox Controlled Carousel
+=========================
+
+Identical in functionality to Kamaelia.Chassis.Carousel, except instead of
+sending orders to a "next" inbox, send them to the "inbox" inbox instead.
+
+Data that would have been sent to the "inbox" inbox can be sent to the
+"data_inbox" inbox instead.
+
+This variation is sometimes easier to wire up with other components since it
+can be dropped straight into a Pipeline.
+
+
+
+Example Usage
+-------------
+
+Decoding a Dirac video file and saving each frame in a separate file::
+
+    Pipeline(
+        RateControlledFileReader("video.dirac", ... ),
+        DiracDecoder(),
+        TagWithSequenceNumber(),
+        InboxControlledCarousel(
+            lambda (seqnum, frame) :
+                Pipeline( OneShot(frame),
+                          FrameToYUV4MPEG(),
+                          SimpleFileWriter("%08d.yuv4mpeg" % seqnum),
+                        )
+            ),
+        )
+
+
+
+Behaviour
+---------
+
+This component behaves identically to Kamaelia.Chassis.Carousel.
+
+The "inbox" inbox is equivalent to the "next" inbox of Carousel.
+The "data_inbox" inbox is equivalent to the "inbox" inbox of Carousel.
+
 """
 
 import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, newComponent
+from Kamaelia.Chassis.Graphline import Graphline
 
 
 class Carousel(component):
@@ -241,7 +294,27 @@ class Carousel(component):
         return False
 
 
+
+def InboxControlledCarousel(*argv, **argd):
+    """\
+    Carousel(<<arguments>>) -> new Carousel component
+        
+    Just like a Kamaelia.Chassis.Carousel.Carousel except use the "inbox" inbox
+    in place of the "next" inbox; and "data_inbox" instead of "inbox".
+    """
+    return Graphline( CAROUSEL = Carousel( *argv, **argd ),
+                      linkages = {
+                          ("", "inbox")   : ("CAROUSEL", "next"),
+                          ("", "data_inbox") : ("CAROUSEL", "inbox"),
+                          ("", "control") : ("CAROUSEL", "control"),
+                          ("CAROUSEL", "outbox") : ("", "outbox"),
+                          ("CAROUSEL", "signal") : ("", "signal"),
+                      }
+                    )
+
+
 __kamaelia_components__ = ( Carousel, )
+__kamaelia_prefabs__ = ( InboxControlledCarousel, )
 
 if __name__ == "__main__":
     pass
