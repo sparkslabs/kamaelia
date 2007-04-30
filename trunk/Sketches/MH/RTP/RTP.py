@@ -49,17 +49,24 @@ Read MPEG Transport Stream packets (188 bytes each) from a file in groups of 7
 at a time (to fill an RTP packet) and send them in RTP packets over multicast to
 224.168.2.9 on port 1600::
 
-    SSRCID = random.randint(0,(2**32) - 1)        # unique ID for this source
+    class PrePackage(Axon.Component.component):
+        def main(self):
+            SSRCID = random.randint(0,(2**32) - 1)      # random unique ID for this source
+            while 1:
+                while self.dataReady("inbox"):
+                    recvData = self.recv("inbox")
+                    self.send(
+                      { 'payloadtype' : 33,             # type 33 for MPEG 2 TS
+                        'payload'     : recvData,
+                        'timestamp'   : time.time() * 90000,
+                        'ssrc'        : SSRCID,
+                      },
+                      "outbox")
+                yield 1
+                
     
     Pipeline( RateControlledFileReader("transportstream",chunksize=7*188),
-              PureTransformer(lambda recvData:
-                  {
-                      'payloadtype' : 33,             # type 33 for MPEG 2 TS
-                      'payload'     : recvData,
-                      'timestamp'   : time.time() * 90000,
-                      'ssrc'        : SSRCID,
-                  }
-              ),
+              PrePackage(),
               RTPFramer(),
               Multicast_Transceiver(("0.0.0.0", 0, "224.168.2.9", 1600)
 
