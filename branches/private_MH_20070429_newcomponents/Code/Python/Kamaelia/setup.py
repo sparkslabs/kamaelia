@@ -64,6 +64,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Visualisation",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.PhysicsGraph",
+                  "Kamaelia.XML",
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
