@@ -92,7 +92,7 @@ class RateChunker(component):
     
     Alters the chunksize of incoming data to match a desired chunkrate.
     
-    Keyword arguments::
+    Keyword arguments:
     
     - datarate    -- rate of the incoming data
     - quantasize  -- minimum granularity with which the data can be split
