@@ -5,28 +5,11 @@
 #
 # In order for a seperate thread to communicate information into a kamaelia system,
 # we must have Queue objects that carry all communications, meaning something like 
-# a threadedcomponent turned inside out.
-#
-#
-#
-#
-#            +------------------------------------------+
-#            |            the outside world             |
-#            |                                          |
-#            |              +-----------+               |
-#            |              | scheduled |               |
-#  (STDIN) INBOX -------> inbox       outbox -------> OUTBOX (STDOUT)
-#            |  inqueue     | component |  outqueue     |
-#            |              +-----------+               |
-#            +------------------------------------------+
-#
-#
-#
+# a threadedcomponent or a UnixProcess turned inside out.
 #
 
 
-
-from Axon.Component import component
+from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 import Queue, copy, threading
@@ -38,84 +21,94 @@ class schedulerThread(threading.Thread):
     def __init__(self,slowmo=0):
         self.slowmo = slowmo
         threading.Thread.__init__(self)
-        self.setDaemon(True) # Die when the interactive shell dies
+        self.setDaemon(True) # Die when the caller dies
     def run(self):
        scheduler.run.runThreads(slowmo = self.slowmo)
 
 
-class Componentwrapper(component):
+class Componentwrapper(AdaptiveCommsComponent):
     def __init__(self, childcomponent):
+        super(Componentwrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
-        self.inqueues = dict()
-        self.outqueues = dict()
-        self.addChildren(childcomponent)
+        self.inqueues = dict() # queue for data traversing from stdin to a component's inbox
+        self.outqueues = dict()# queue for data traversing from stdout to a component's outbox
+        self.addChildren(self.child)
+        self.child.activate()
 
-        # create a queue for every inbox or outbox on the target component we need to wrap around.
-        # It would be nice if we could just read/write to the target component's boxes directly.
-        # in this case, we need 2 sets of queues. In one, the source is our inqueues and the sink 
-        # is the inboxes of the target component.
-        # In othe other, the source is the outboxes of the target component and the sink is our outqueues.
+        # todo: insert a control linking here.
 
+        # Inspect our child, and whatever inboxes it has, give ourselves an outbox of the same name.
+        # This is an ugly hack. It would better to have a custom mapping so that the componentwrapper's "outbox" 
+        # sends to the child's "inbox" like every other kamaelia component.
 
-        for box in self.component.inboxes.iterkeys():
+        for box in self.child.inboxes.iterkeys():
             self.inqueues[box] = Queue.Queue(self.queuelengths)
-        for box in self.component.outboxes.iterkeys():
+            if box != self.addOutbox(box):
+                raise "box name taken when encapsulating! This really ought not to happen!"
+            self.link((self, box), (self.child, box))
+            # this leads to the confusing situation where we have an outbox called "inbox"
+            # having all the box names the same between parent and child makes this programmatically easier.
+
+        for box in self.child.outboxes.iterkeys():
             self.outqueues[box] = Queue.Queue(self.queuelengths)
-
-        # insert code here to hook them up correctly.
-
-        super(Componentwrapper, self).__init__()
-
+            if box != self.addInbox(box):
+                raise "box name taken when encapsulating! This really ought not to happen!"
+            self.link((self.child, box), (self, box))
 
 
     def main(self):
         while True:
-            stuffWaiting = False
             for box, queue in self.inqueues.iteritems():
                 # to aid a lack of confusion, this is where information would traverse from stdin to a component's inbox.
                 while not queue.empty():
-                    if not self.child.inboxes[box].isFull():
+                    if not self.outboxes[box].isFull():
                         msg = queue.get()
                         try:
-                            self.child.send(msg, box) # WRONG
+                            self.send(msg, box)
                         except noSpaceInBox, e:
                             raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                    else:
-                        stuffWaiting = True
-                        break
+                    else: break
+
 
             for box, queue in self.outqueues.iteritems():
                 # to aid a lack of confusion, this is where information would traverse from a component's outbox to stdout.
-                while self.component.dataReady(box):
+                while self.dataReady(box):
                     if not queue.full():
-                        msg = self.child.recv(box) # WRONG
-                        self.inqueues[box].put(msg)
-                    else:
-                        stuffWaiting = True
-                        break
-            if not stuffWaiting: self.pause() # go to sleep unless we know we have un-processed data.
+                        msg = self.recv(box)
+                        queue.put(msg)
+                    else: break # permit a horrible backlog to build up inside our boxes. What could go wrong?
             yield 1
 
 class Likefile(object):
     def __init__(self, componenttowrap):
         self.component = Componentwrapper(componenttowrap)
         self.component.activate()
+        self.alive = True
+
     def get(self, boxname):
-        return self.component.outqueues[boxname].get()
+        if self.alive: return self.component.outqueues[boxname].get_nowait()
+        else: raise "shutdown was previously called!"
+
     def put(self, msg, boxname):
-        self.component.inqueues[boxname].put(msg)
+        if self.alive: self.component.inqueues[boxname].put_nowait(msg)
+        else: raise "shutdown was previously called!"
 
-background = schedulerThread(slowmo=0.01)
+    def shutdown(self):
+        # put shutdown code here
+        pass
 
-background.start()
 
-from helloworld import Reverser
-import time
 
-p = Likefile(Reverser())
-
-while True:
-    p.put("hello, world", "inbox")
-    time.sleep(1)
-    print p.get("outbox")
+if __name__ == "__main__":
+    background = schedulerThread(slowmo=0.01)
+    background.start()
+    from helloworld import Reverser
+    import time
+    
+    p = Likefile( Reverser() )
+    while True:
+        p.put("hello, world", "inbox")
+        time.sleep(0.5) # longer than axon's slowdown period
+        reversed = p.get("outbox")
+        print "hello world, reversed, is:" , reversed
