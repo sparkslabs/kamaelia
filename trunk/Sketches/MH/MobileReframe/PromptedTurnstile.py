@@ -152,4 +152,83 @@ class PromptedTurnstile(component):
         self.send(shutdownMsg, "signal")
 
 
-__kamaelia_components__ = ( PromptedTurnstile, )
+
+class PromptedBlockingTurnstile(component):
+    
+    Inboxes = { "inbox" : "Data items",
+                "next"  : "Requests to send out items",
+                "control" : "Shutdown signalling"
+              }
+              
+    Outboxes = { "outbox" : "Data items",
+                 "signal" : "Shutdown signalling",
+               }
+
+    def checkShutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+                self.mustStop=True
+                self.canStop=True
+            elif isinstance(msg, producerFinished):
+                if not isinstance(self.shutdownMsg, shutdownMicroprocess):
+                    self.shutdownMsg = msg
+                    self.canStop=True
+        return self.canStop, self.mustStop
+                
+               
+    def main(self):
+        self.shutdownMsg = None
+        self.canStop = False
+        self.mustStop = False
+
+        try:
+            while 1:
+    
+                while self.dataReady("inbox"):
+                    canStop, mustStop = self.checkShutdown()
+                    if mustStop:
+                        raise "STOP"
+
+                    # ok, so there is data waiting to be emitted, so now we must wait for the 'next' signal
+                    while not self.dataReady("next"):
+                        canStop, mustStop = self.checkShutdown()
+                        if mustStop:
+                            raise "STOP"
+                        self.pause()
+                        yield 1
+                    self.recv("next")
+    
+                    data = self.recv("inbox")
+                    while 1:
+                        try:
+                            self.send(data,"outbox")
+                            break
+                        except noSpaceInBox:
+                            canStop, mustStop = self.checkShutdown()
+                            if mustStop:
+                                raise "STOP"
+                            self.pause()
+                            yield 1
+    
+                canStop, mustStop = self.checkShutdown()
+                if canStop or mustStop:
+                    raise "STOP"
+
+                if not self.dataReady("inbox") and not self.dataReady("control"):
+                    self.pause()
+                    
+                yield 1
+            
+        except "STOP":
+            if self.shutdownMsg:
+                self.send(self.shutdownMsg,"signal")
+            else:
+                self.send(producerFinished(),"signal")
+            return
+                        
+        self.send(producerFinished(),"signal")
+
+        
+__kamaelia_components__ = ( PromptedTurnstile, PromptedBlockingTurnstile, )
