@@ -19,11 +19,12 @@ class Reverser(component):
             else: self.pause()
             yield 1
 
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.Console import ConsoleEchoer
-
-thepipe = Pipeline(HelloPusher(), Reverser(), ConsoleEchoer()).activate()
 
 # thepipe = Pipeline(HelloPusher(), Reverser(), ConsoleEchoer()).run()
 
-scheduler.run.runThreads()
+if __name__ == "__main__":
+    
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Console import ConsoleEchoer
+    thepipe = Pipeline(HelloPusher(), Reverser(), ConsoleEchoer()).activate()
+    scheduler.run.runThreads()
