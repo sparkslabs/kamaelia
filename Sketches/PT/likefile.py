@@ -9,10 +9,11 @@
 #
 
 
-from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
+from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent, component
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
-import Queue, copy, threading
+import Axon
+import Queue, threading, time
 queuelengths = 1000
 
 
@@ -31,12 +32,12 @@ class Componentwrapper(AdaptiveCommsComponent):
         super(Componentwrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
-        self.inqueues = dict() # queue for data traversing from stdin to a component's inbox
-        self.outqueues = dict()# queue for data traversing from stdout to a component's outbox
+        self.inqueues = dict() # queue for data traversing from, e.g, stdin to a component's inbox
+        self.outqueues = dict()# queue for data traversing from, e.g, stdout to a component's outbox
         self.addChildren(self.child)
-        self.child.activate()
 
-        # todo: insert a control linking here.
+        # any shutdown signals sent to the child ought to propogate back to us and stop us as well.
+        self.link((self.child, "signal"), (self, "control"))
 
         # Inspect our child, and whatever inboxes it has, give ourselves an outbox of the same name.
         # This is an ugly hack. It would better to have a custom mapping so that the componentwrapper's "outbox" 
@@ -56,6 +57,7 @@ class Componentwrapper(AdaptiveCommsComponent):
                 raise "box name taken when encapsulating! This really ought not to happen!"
             self.link((self.child, box), (self, box))
 
+        self.child.activate() # allegedly threadsafe?
 
     def main(self):
         while True:
@@ -63,7 +65,7 @@ class Componentwrapper(AdaptiveCommsComponent):
                 # to aid a lack of confusion, this is where information would traverse from stdin to a component's inbox.
                 while not queue.empty():
                     if not self.outboxes[box].isFull():
-                        msg = queue.get()
+                        msg = queue.get_nowait()
                         try:
                             self.send(msg, box)
                         except noSpaceInBox, e:
@@ -76,18 +78,24 @@ class Componentwrapper(AdaptiveCommsComponent):
                 while self.dataReady(box):
                     if not queue.full():
                         msg = self.recv(box)
-                        queue.put(msg)
+                        queue.put_nowait(msg)
                     else: break # permit a horrible backlog to build up inside our boxes. What could go wrong?
             yield 1
 
-class Likefile(object):
+class likeFile(object):
     def __init__(self, componenttowrap):
-        self.component = Componentwrapper(componenttowrap)
-        self.component.activate()
+        self.component = Componentwrapper(componenttowrap) # this instantiation might be threadsafe?
+        self.component.activate() # allegedly threadsafe
         self.alive = True
 
-    def get(self, boxname):
-        if self.alive: return self.component.outqueues[boxname].get_nowait()
+    def get(self, boxname, blocking = False):
+        # this dictionary lookup of a queue is technically not threadsafe, but the only time the dict
+        # is modified is during instantiation, which is in the current thread.
+        if self.alive: 
+            if blocking: return self.component.outqueues[boxname].get()
+            else:
+                try: return self.component.outqueues[boxname].get_nowait()
+                except Queue.Empty: return
         else: raise "shutdown was previously called!"
 
     def put(self, msg, boxname):
@@ -95,20 +103,23 @@ class Likefile(object):
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
-        # put shutdown code here
-        pass
-
+        if self.alive: self.component.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess())
+        else: raise "shutdown was previously called!"
 
 
 if __name__ == "__main__":
     background = schedulerThread(slowmo=0.01)
     background.start()
     from helloworld import Reverser
-    import time
-    
-    p = Likefile( Reverser() )
+
+    p = likeFile( Reverser() ) # allegedly threadsafe
     while True:
-        p.put("hello, world", "inbox")
-        time.sleep(0.5) # longer than axon's slowdown period
-        reversed = p.get("outbox")
-        print "hello world, reversed, is:" , reversed
+        try: 
+            p.put("hello, world", "inbox")
+            time.sleep(0.5) # longer than axon's slowmo
+            reversed = p.get("outbox")
+            print "hello world, reversed, is:" , reversed
+        except KeyboardInterrupt:
+            p.shutdown()
+            time.sleep(0.1)
+            break
