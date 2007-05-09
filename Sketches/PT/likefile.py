@@ -14,9 +14,14 @@ from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 import Axon
 import Queue, threading, time
+from Axon.Component import component
 queuelengths = 1000
 
-
+class dummyComponent(component):
+    def main(self):
+        while True:
+            self.pause()
+            yield 1
 
 class schedulerThread(threading.Thread):
     def __init__(self,slowmo=0):
@@ -24,7 +29,8 @@ class schedulerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
     def run(self):
-       scheduler.run.runThreads(slowmo = self.slowmo)
+        dummyComponent().activate()
+        scheduler.run.runThreads(slowmo = self.slowmo)
 
 
 class Componentwrapper(AdaptiveCommsComponent):
@@ -57,9 +63,10 @@ class Componentwrapper(AdaptiveCommsComponent):
                 raise "box name taken when encapsulating! This really ought not to happen!"
             self.link((self.child, box), (self, box))
 
-        self.child.activate() # allegedly threadsafe?
+
 
     def main(self):
+        self.child.activate()
         while True:
             for box, queue in self.inqueues.iteritems():
                 # to aid a lack of confusion, this is where information would traverse from stdin to a component's inbox.
