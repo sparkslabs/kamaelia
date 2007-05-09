@@ -29,11 +29,11 @@ class schedulerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
     def run(self):
-        dummyComponent().activate()
+        dummyComponent().activate() # to keep the scheduler from exiting immediately.
         scheduler.run.runThreads(slowmo = self.slowmo)
 
 
-class Componentwrapper(AdaptiveCommsComponent):
+class Componentwrapper(component):
     def __init__(self, childcomponent):
         super(Componentwrapper, self).__init__()
         self.queuelengths = queuelengths
@@ -42,49 +42,46 @@ class Componentwrapper(AdaptiveCommsComponent):
         self.outqueues = dict()# queue for data traversing from, e.g, stdout to a component's outbox
         self.addChildren(self.child)
 
-        # any shutdown signals sent to the child ought to propogate back to us and stop us as well.
-        self.link((self.child, "signal"), (self, "control"))
+        # for now, these are hard-coded.
+        # this means, e.g. our own outbox is linked to the child's inbox. childSink:parentSource
+        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
 
-        # Inspect our child, and whatever inboxes it has, give ourselves an outbox of the same name.
-        # This is an ugly hack. It would better to have a custom mapping so that the componentwrapper's "outbox" 
-        # sends to the child's "inbox" like every other kamaelia component.
+        # this means, e.g. the child's outbox is linked to our own inbox. childSource:parentSink
+        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
 
-        for box in self.child.inboxes.iterkeys():
-            self.inqueues[box] = Queue.Queue(self.queuelengths)
-            if box != self.addOutbox(box):
-                raise "box name taken when encapsulating! This really ought not to happen!"
-            self.link((self, box), (self.child, box))
-            # this leads to the confusing situation where we have an outbox called "inbox"
-            # having all the box names the same between parent and child makes this programmatically easier.
+        for childSink, parentSource in self.childInboxMapping.iteritems():
+            self.inqueues[childSink] = Queue.Queue(self.queuelengths)
+            self.link((self, parentSource),(self.child, childSink))
 
-        for box in self.child.outboxes.iterkeys():
-            self.outqueues[box] = Queue.Queue(self.queuelengths)
-            if box != self.addInbox(box):
-                raise "box name taken when encapsulating! This really ought not to happen!"
-            self.link((self.child, box), (self, box))
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            self.outqueues[childSource] = Queue.Queue(self.queuelengths)
+            self.link((self.child, childSource),(self, parentSink))
 
-
+        # note to self: this can be slightly optimised by making self.outqueues/self.inqueues keyed by the parentSource/parentSink,
+        # avoiding an extra lookup below in the box mapping iteritems()
 
     def main(self):
         self.child.activate()
         while True:
-            for box, queue in self.inqueues.iteritems():
-                # to aid a lack of confusion, this is where information would traverse from stdin to a component's inbox.
+            for childSink, parentSource in self.childInboxMapping.iteritems():
+                queue = self.inqueues[childSink]
+                # to aid a lack of confusion, this is where information would traverse from stdin to a child component's inbox.
                 while not queue.empty():
-                    if not self.outboxes[box].isFull():
+                    if not self.outboxes[parentSource].isFull():
                         msg = queue.get_nowait()
                         try:
-                            self.send(msg, box)
+                            self.send(msg, parentSource)
                         except noSpaceInBox, e:
                             raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
                     else: break
 
 
-            for box, queue in self.outqueues.iteritems():
-                # to aid a lack of confusion, this is where information would traverse from a component's outbox to stdout.
-                while self.dataReady(box):
+            for childSource, parentSink in self.childOutboxMapping.iteritems():
+                queue = self.outqueues[childSource]
+                # to aid a lack of confusion, this is where information would traverse from a child component's outbox to stdout.
+                while self.dataReady(parentSink):
                     if not queue.full():
-                        msg = self.recv(box)
+                        msg = self.recv(parentSink)
                         queue.put_nowait(msg)
                     else: break # permit a horrible backlog to build up inside our boxes. What could go wrong?
             yield 1
@@ -92,7 +89,7 @@ class Componentwrapper(AdaptiveCommsComponent):
 class likeFile(object):
     def __init__(self, componenttowrap):
         self.component = Componentwrapper(componenttowrap) # this instantiation might be threadsafe?
-        self.component.activate() # allegedly threadsafe
+        self.component.activate() # allegedly threadsafe.
         self.alive = True
 
     def get(self, boxname, blocking = False):
