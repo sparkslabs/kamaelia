@@ -20,10 +20,7 @@ class Reverser(component):
             yield 1
 
 
-# thepipe = Pipeline(HelloPusher(), Reverser(), ConsoleEchoer()).run()
-
 if __name__ == "__main__":
-    
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     thepipe = Pipeline(HelloPusher(), Reverser(), ConsoleEchoer()).activate()
