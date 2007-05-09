@@ -1,0 +1,43 @@
+<html><body>
+<h1>Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.lines_to_tokenlists</h1>
+<h2>class lines_to_tokenlists(Axon.Component.component)</h2>
+
+<p>lines_to_tokenlists() -&gt; new lines_to_tokenlists component.</p>
+<p>Takes individual lines of text and separates them into white
+space separated tokens. Tokens can be enclosed with single or
+double quote marks.</p>
+<h4>Inboxes</h4>
+<ul><li>   control : Shutdown signalling
+<li>   inbox : Individual lines of text
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : list of tokens making up the line of text
+<li>   signal : Shutdown signalling
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>lineToTokens(self, line)</h3>
+<p>linesToTokens(line) -&gt; list of tokens.</p>
+<p>Splits a line into individual white-space separated tokens.
+Tokens can be enclosed in single or double quotes to allow spaces
+to be used in them.</p>
+<p>Escape backslash and single or double quotes by prefixing them
+with a backslash <em>only</em> if used within an quote encapsulated string.</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<h3>shutdown(self)</h3>
+<p>Returns True if a shutdownMicroprocess or producerFinished message was received.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
