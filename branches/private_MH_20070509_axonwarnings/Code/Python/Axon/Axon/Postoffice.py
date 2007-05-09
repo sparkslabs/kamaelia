@@ -96,6 +96,7 @@ from util import removeAll
 from idGen import strId, numId
 from debug import debug
 from AxonExceptions import AxonException
+from AxonExceptions import BoxAlreadyLinkedToDestination
 from Linkage import linkage
 
 class postoffice(object):
