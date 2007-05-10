@@ -1,4 +1,7 @@
 1.5.1 -> 1.x.x
+    An exception is now raised if you try to create a linkage going
+    from an inbox/outbox that already has a linkage going from it.
+
     Waking up of producer components re-introduced (bugfix)
 
     * When a component collects a message from an inbox; all producer
