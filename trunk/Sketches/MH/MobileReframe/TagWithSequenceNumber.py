@@ -24,8 +24,8 @@
 Tags items with an incrementing sequence number
 ===============================================
 
-TagWithSequenceNumber tags items with a sequence numbers, starting with  0, 1, 
-2, 3, ... etc.
+TagWithSequenceNumber tags items with a sequence numbers, for example:  0, 1, 
+2, 3, ... etc. The default initial value of the sequence is a 0.
 
 It takes in items on its "inbox" inbox and outputs (seqnum, item) tuples on its
 "outbox" outbox. 
@@ -35,11 +35,11 @@ It takes in items on its "inbox" inbox and outputs (seqnum, item) tuples on its
 Example Usage
 -------------
 
-Tagging frames from a Dirac video file with a frame number::
+Tagging frames from a Dirac video file with a frame number, starting with 1::
     
     Pipeline( RateControlledFileReader("videofile.dirac", readmode="bytes", rate=... ),
               DiracDecoder(),
-              TagWithSequenceNumber(),
+              TagWithSequenceNumber(initial=1),
               ...
             )
 
@@ -47,6 +47,8 @@ Tagging frames from a Dirac video file with a frame number::
 
 Behaviour
 ---------
+
+At initialisation, specify the initial sequence number to use.
 
 Send an item to TagWithSequenceNumber's "inbox" inbox, and it will send 
 (seqnum, item) to its "outbox" outbox.
@@ -79,15 +81,18 @@ class TagWithSequenceNumber(component):
     Outboxes = { "outbox" : "Items tagged with a sequence number, in the form (seqnum, item)",
                  "signal" : "Shutdown signalling",
                }
+               
+    def __init__(self, initial=0):
+        super(TagWithSequenceNumber,self).__init__()
+        self.initial=initial
     
     def main(self):
         """Main loop"""
-        index = 0
+        index = self.initial
         while 1:
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 self.send( (index,msg), "outbox")
-#                print index
                 index+=1
                 
             while self.dataReady("control"):
