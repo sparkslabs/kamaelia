@@ -21,65 +21,139 @@
 # -------------------------------------------------------------------------
 #
 
+import sys
+if len(sys.argv)!=2:
+    sys.stderr.write("Usage:\n\n    "+sys.argv[0]+" <videofile>\n\n")
+    sys.exit(1)
+else:
+    infile=sys.argv[1]
+    infile=infile.replace(" ","\ ")
+
+    
+
+
 from Kamaelia.Util.Detuple import SimpleDetupler
 
-import sys
-sys.path.append("../Video/")
-from YUV4MPEG import YUV4MPEGToFrame
+from Kamaelia.Codec.YUV4MPEG import YUV4MPEGToFrame
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 from Kamaelia.Audio.PyMedia.Output import Output
+#from Output import Output
 
 import sys
 from UnixProcess import UnixProcess
 from Chassis import Pipeline,Graphline,Carousel
+from InboxControlledCarousel import InboxControlledCarousel
 from StopSelector import StopSelector
 
-from Kamaelia.Util.RateFilter import MessageRateLimit
-sys.path.append("../audio/")
-from WAV import WAVParser
+#from Kamaelia.Util.RateFilter import MessageRateLimit
+from Kamaelia.Util.RateFilter import ByteRate_RequestControl
+#from ByteRate_RequestControl import ByteRate_RequestControl
+from Kamaelia.Util.Detuple import SimpleDetupler
+from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
+from Kamaelia.Util.FirstOnly import FirstOnly
+from Kamaelia.Util.PureTransformer import PureTransformer
+#from Kamaelia.Util.PromptedTurnstile import PromptedTurnstile
+from PromptedTurnstile import PromptedTurnstile
+from Kamaelia.Codec.WAV import WAVParser
 
 from Kamaelia.Util.Console import ConsoleEchoer
 
-infile="/home/matteh/Documents/Skylife presentation/Daily Politics.avi"
-infile=infile.replace(" ","\ ")
+from Kamaelia.UI.Pygame.Display import PygameDisplay
+
+from Kamaelia.Video.PixFormatConversion import ToRGB_interleaved
+from Kamaelia.UI.Pygame.VideoSurface import VideoSurface
+
+import pygame
+
+sys.path.append("../Introspection")
+from Profiling import Profiler
+Profiler().activate()
+
+def FrameRateLimitedPlayback(player):
+    def RateLimitedPlayback(frame):
+        fps = frame["frame_rate"]
+        x,y = tuple(frame["size"])
+        print "Frames per second:",fps
+        print "(width,height):",(x,y)
+        
+        pgd = PygameDisplay(width=x,height=y).activate()
+        PygameDisplay.setDisplayService(pgd)
+
+        return Graphline( \
+            LIMIT = PromptedTurnstile(),
+            RATE  = ByteRate_RequestControl(rate=fps, chunksize=1.0, allowchunkaggregation=False),
+            PLAY  = player,
+            linkages = {
+                ("",      "inbox" ) : ("LIMIT", "inbox"),
+                ("LIMIT", "outbox") : ("PLAY",  "inbox"),
+                ("PLAY",  "outbox") : ("",      "outbox"),
+                
+                ("RATE", "outbox" ) : ("LIMIT", "next"),
+
+                ("",      "control") : ("RATE",  "control"),
+                ("RATE",  "signal" ) : ("LIMIT", "control"),
+                ("LIMIT", "signal" ) : ("PLAY",  "control"),
+                ("PLAY",  "signal" ) : ("",      "signal"),
+            },
+            boxsizes = {
+                ("LIMIT","inbox") : 2,
+            },
+        )
+
+    return Graphline(\
+        SPLIT = TwoWaySplitter(),
+        FIRST = FirstOnly(),
+        PLAY  = Carousel(RateLimitedPlayback),
+        linkages = {
+            ("",      "inbox"  ) : ("SPLIT", "inbox"),
+            ("SPLIT", "outbox" ) : ("FIRST", "inbox"),
+            ("FIRST", "outbox" ) : ("PLAY",  "next"),
+            
+            ("SPLIT", "outbox2") : ("PLAY",  "inbox"),
+            ("PLAY",  "outbox" ) : ("",      "outbox"),
+        
+            ("",      "control") : ("SPLIT", "control"),
+            ("SPLIT", "signal" ) : ("FIRST", "control"),
+            ("SPLIT", "signal2") : ("PLAY",  "control"),
+            ("PLAY",  "signal" ) : ("",      "signal"),
+        },
+        boxsizes = {
+            ("SPLIT","inbox") : 1,
+        },
+    )
 
 Graphline( DECODE = UnixProcess(
                "ffmpeg -i "+infile+" -f yuv4mpegpipe -y vidpipe.yuv -f wav -y audpipe.wav",
-               outpipes={"vidpipe.yuv":"video","audpipe.wav":"audio"}
+               outpipes={"vidpipe.yuv":"video","audpipe.wav":"audio"},
+               buffersize=131072,
                ),
            VIDEO = Pipeline(
-               2,  YUV4MPEGToFrame(),
-               50, MessageRateLimit(25,25),
-               VideoOverlay(),
+               1, YUV4MPEGToFrame(),
+               FrameRateLimitedPlayback(VideoOverlay()),
                ),
            AUDIO = Graphline(
                PARSE = WAVParser(),
                OUT   = Carousel(lambda format :
-                           Output(format['sample_rate'],format['channels'],format['sample_format']), boxsize=5),
+                   Output(format['sample_rate'],format['channels'],format['sample_format'],maximumLag=0.5)),
                linkages = {
                    ("","inbox")         : ("PARSE","inbox"),
                    ("PARSE","outbox")   : ("OUT","inbox"),
                    ("PARSE","all_meta") : ("OUT","next"),
-                           
+                          
                    ("","control")     : ("PARSE","control"),
                    ("PARSE","signal") : ("OUT","control"),
                    ("OUT", "signal")  : ("","signal"),
                },
-               boxsizes = { ("PARSE","inbox") : 2, },
+               boxsizes = { ("PARSE","inbox") : 5, },
                ),
            DEBUG = ConsoleEchoer(),
            linkages = {
                ("DECODE", "video") : ("VIDEO", "inbox"),
                ("DECODE", "audio") : ("AUDIO", "inbox"),
                ("DECODE", "outbox") : ("DEBUG", "inbox"),
+#               ("DECODE", "error") : ("DEBUG", "inbox"),
                        
                ("DECODE", "signal") : ("AUDIO", "control"),
                ("AUDIO", "signal") : ("VIDEO", "control"),
            },
         ).run()
-            
-            
-            
-    
-    
-    
