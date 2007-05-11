@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#
 # (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -21,39 +21,24 @@
 # -------------------------------------------------------------------------
 #
 
-import sys
-if len(sys.argv)!=2:
-    sys.stderr.write("Usage:\n\n    "+sys.argv[0]+" <videofile>\n\n")
-    sys.exit(1)
-else:
-    infile=sys.argv[1]
-    infile=infile.replace(" ","\ ")
-
-    
-
-
 from Kamaelia.Util.Detuple import SimpleDetupler
 
 from Kamaelia.Codec.YUV4MPEG import YUV4MPEGToFrame
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
 from Kamaelia.Audio.PyMedia.Output import Output
-#from Output import Output
 
-import sys
-from UnixProcess import UnixProcess
-from Chassis import Pipeline,Graphline,Carousel
-from InboxControlledCarousel import InboxControlledCarousel
-from StopSelector import StopSelector
+from Kamaelia.File.UnixProcess2 import UnixProcess2
+from Kamaelia.Experimental.Chassis import Pipeline
+from Kamaelia.Experimental.Chassis import Graphline
+from Kamaelia.Experimental.Chassis import Carousel
+from Kamaelia.Experimental.Chassis import InboxControlledCarousel
 
-#from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
-#from ByteRate_RequestControl import ByteRate_RequestControl
 from Kamaelia.Util.Detuple import SimpleDetupler
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 from Kamaelia.Util.FirstOnly import FirstOnly
 from Kamaelia.Util.PureTransformer import PureTransformer
-#from Kamaelia.Util.PromptedTurnstile import PromptedTurnstile
-from PromptedTurnstile import PromptedTurnstile
+from Kamaelia.Util.PromptedTurnstile import PromptedTurnstile
 from Kamaelia.Codec.WAV import WAVParser
 
 from Kamaelia.Util.Console import ConsoleEchoer
@@ -65,9 +50,15 @@ from Kamaelia.UI.Pygame.VideoSurface import VideoSurface
 
 import pygame
 
-sys.path.append("../Introspection")
-from Profiling import Profiler
-Profiler().activate()
+import sys
+if len(sys.argv)!=2:
+    sys.stderr.write("Usage:\n\n    "+sys.argv[0]+" <videofile>\n\n")
+    sys.exit(1)
+else:
+    infile=sys.argv[1]
+    infile=infile.replace(" ","\ ")
+
+
 
 def FrameRateLimitedPlayback(player):
     def RateLimitedPlayback(frame):
@@ -122,7 +113,7 @@ def FrameRateLimitedPlayback(player):
         },
     )
 
-Graphline( DECODE = UnixProcess(
+Graphline( DECODE = UnixProcess2(
                "ffmpeg -i "+infile+" -f yuv4mpegpipe -y vidpipe.yuv -f wav -y audpipe.wav",
                outpipes={"vidpipe.yuv":"video","audpipe.wav":"audio"},
                buffersize=131072,
