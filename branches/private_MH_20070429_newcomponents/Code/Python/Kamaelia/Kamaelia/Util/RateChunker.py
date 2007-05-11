@@ -84,7 +84,7 @@ component then immediately terminates.
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-
+from Axon.AxonExceptions import noSpaceInBox
 
 class RateChunker(component):
     """\
@@ -114,6 +114,23 @@ class RateChunker(component):
         self.quanta    = quantasize
         self.chunkrate = chunkrate
         
+        self.shutdownMsg = None
+        self.mustStop = False
+        self.canStop = False
+        
+    def checkShutdown(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess):
+                self.shutdownMsg = msg
+                self.mustStop=True
+                self.canStop=True
+            elif isinstance(msg, producerFinished):
+                if not isinstance(msg, shutdownMicroprocess):
+                    self.shutdownMsg = msg
+                    self.canStop=True
+        return self.canStop, self.mustStop
+    
     def main(self):
         """Main loop"""
         
@@ -123,26 +140,43 @@ class RateChunker(component):
         count=0
         
         buffer = ""
-        while 1:
-            while self.dataReady("inbox"):
-                newdata=self.recv("inbox")
-                buffer += newdata
+        try:
+            while 1:
+                while self.dataReady("inbox"):
+                    newdata=self.recv("inbox")
+                    buffer += newdata
+                    
+                    while len(buffer) >= (int(nextChunk)*self.quanta):
+                        amount = (int(nextChunk)*self.quanta)
+                        toSend = buffer[:amount]
+                        buffer = buffer[amount:]
+                        nextChunk = nextChunk - int(nextChunk) + quantaPerChunk
+                        while 1:
+                            try:
+                                self.send(toSend,"outbox")
+                                break
+                            except noSpaceInBox:
+                                can,must = self.checkShutdown()
+                                if must:
+                                    raise "STOP"
+                                else:
+                                    self.pause()
+                                    yield 1
+                            
+                        count=count+1
+            
+                can,must = self.checkShutdown()
                 
-                while len(buffer) >= (int(nextChunk)*self.quanta):
-                    amount = (int(nextChunk)*self.quanta)
-                    toSend = buffer[:amount]
-                    buffer = buffer[amount:]
-                    nextChunk = nextChunk - int(nextChunk) + quantaPerChunk
-                    self.send(toSend,"outbox")
-                    count=count+1
-        
-            while  self.dataReady("control"):
-                msg = self.recv("control")
-                self.send(msg,"signal")
-                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
-                    return
-                
-            self.pause()
-            yield 1
+                if can or must:
+                    raise "STOP"
+                else:
+                    self.pause()
+                    yield 1
+                    
+        except "STOP":
+            if self.shutdownMsg:
+                self.send(self.shutdownMsg, "signal")
+            else:
+                self.send(producerFinished(), "signal")
 
 __kamaelia_components__ = ( RateChunker, )
