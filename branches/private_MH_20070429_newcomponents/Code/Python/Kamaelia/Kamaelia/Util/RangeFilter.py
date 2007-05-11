@@ -120,7 +120,6 @@ class RangeFilter(component):
                     index = item[0]
                     if self.inRange(index):
                         for _ in self.waitSend(item,"outbox"): yield _
-                        print self.name+" : Got",index
                     
                 if self.canStop():
                     raise "STOP"
@@ -223,5 +222,3 @@ if __name__=="__main__":
               RangeFilter( [ (1,5), (8,12) ] ),
               ConsoleEchoer(),
             ).run()
-
-    print

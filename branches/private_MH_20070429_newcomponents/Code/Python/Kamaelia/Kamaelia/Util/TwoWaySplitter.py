@@ -114,7 +114,6 @@ class TwoWaySplitter(Axon.Component.component):
         except "STOP":
             self.send(self.shutdownMsg,"signal")
             self.send(self.shutdownMsg,"signal2")
-            print "done"
 
             
     def handleControl(self):

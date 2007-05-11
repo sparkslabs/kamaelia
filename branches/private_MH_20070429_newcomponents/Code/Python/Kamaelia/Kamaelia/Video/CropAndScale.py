@@ -164,7 +164,7 @@ class CropAndScale(component):
 
     def main(self):
         self.shutdownMsg = None
-        i=0
+        
         try:
             while 1:
                 while self.dataReady("inbox"):
@@ -172,8 +172,6 @@ class CropAndScale(component):
                     newframe = self.processFrame(frame)
                     for _ in self.waitSend(newframe, "outbox"):
                         yield _
-                    print i
-                    i+=1
     
                 if self.canStop():
                     raise "STOP"

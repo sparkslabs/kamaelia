@@ -140,7 +140,6 @@ class RateChunker(component):
                 msg = self.recv("control")
                 self.send(msg,"signal")
                 if isinstance(msg,(producerFinished,shutdownMicroprocess)):
-                    print "Chunked",count,"chunks"
                     return
                 
             self.pause()
