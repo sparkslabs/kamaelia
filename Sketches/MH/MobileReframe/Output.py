@@ -72,7 +72,7 @@ from Kamaelia.Support.PyMedia.AudioFormats import pyMediaFormat2format
 from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
 
 
-class Output(threadedcomponent):
+class _Output(threadedcomponent):
     """\
     Output([sample_rate][,channels][,format]) -> new Output component.
     
@@ -85,53 +85,49 @@ class Output(threadedcomponent):
     - channels     -- Number of channels (default = 2)
     - format       -- Sample format (default = "S16_LE")
     """
-    def __init__(self, sample_rate=44100, channels=2, format="S16_LE", maximumLag = 0.0):
+    def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(Output,self).__init__()
+        super(_Output,self).__init__(queuelengths=20)
         
         pformat = format2PyMediaFormat[format]
         self.snd = sound.Output(sample_rate, channels, pformat)
         
-        self.chunksize = sample_rate/40    # no idea why, but it seems we need to pass to pymedia chunks of a sufficiently short duration to prevent playback artefacts
-        mask = 4*channels-1
-        # round to nearest power of 2
-        self.chunksize = 2**int(log(self.chunksize)/log(2))
-        
-        self.maxLag = int(maximumLag * sample_rate * channels * format2BytesPerSample[format])
-        
+
     def main(self):
-        
-        CHUNKSIZE=self.chunksize
-        shutdown=False
-        while self.anyReady() or not shutdown:
-            buffer = []
-            buffersize = 0
+        while 1:
             
             while self.dataReady("inbox"):
-                chunk = self.recv("inbox")
-                buffer.append(chunk)
-                buffersize += len(chunk)
+                self.snd.play(self.recv("inbox"))
                 
-            if self.maxLag > 0:
-                while buffersize > self.maxLag:
-#                    print "reducing",buffersize
-                    buffersize -= len(buffer[0])
-                    del buffer[0]
-#                print buffersize
-                
-            for chunk in buffer:
-                for i in range(0,len(chunk),CHUNKSIZE):
-                    self.snd.play(chunk[i:i+CHUNKSIZE])
-            
             while self.dataReady("control"):
                 msg=self.recv("control")
                 if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                    shutdown=True
+                    self.snd.stop()
+                    return
                 self.send(msg,"signal")
-                
-            if not shutdown:
-                self.pause()
-            
-        self.snd.stop()
+        
+            self.pause()
+        
+        
 
-__kamaelia_components__ = ( Output, )
+from Chassis import Pipeline
+from RateChunker import RateChunker
+
+def Output(sample_rate=44100, channels=2, format="S16_LE", maximumLag = 0.0):
+    # no idea why, but it seems we need to pass to pymedia chunks of a
+    # sufficiently short duration to prevent playback artefacts
+    chunksize = sample_rate/40
+    # round to nearest power of 2
+    chunksize = 2**int(log(chunksize)/log(2))
+    
+    datarate = chunksize
+    chunkrate = 1
+    quantasize = 1
+    
+    return Pipeline(
+        10, RateChunker(datarate, quantasize, chunkrate),
+        10, _Output(sample_rate, channels, format)
+    )
+
+__kamaelia_prefabs__ = ( Output, )
+#__kamaelia_components__ = ( Output, )
