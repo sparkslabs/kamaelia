@@ -3,64 +3,53 @@
 # NOTE: this code is unstable* if run without the wake-on-message-removal
 # bugfix to Axon.
 
-from TagWithSequenceNumber import TagWithSequenceNumber
-from OneShot import OneShot
-from OneShot import TriggeredOneShot
-from InboxControlledCarousel import InboxControlledCarousel
-from StopSelector import StopSelector
-from PromptedTurnstile import PromptedTurnstile
-#from Kamaelia.Chassis.Pipeline import Pipeline
-#from Kamaelia.Chassis.Graphline import Graphline
-#from Kamaelia.Chassis.Carousel import Carousel
+from Kamaelia.Util.TagWithSequenceNumber import TagWithSequenceNumber
+from Kamaelia.Util.OneShot import OneShot
+from Kamaelia.Util.OneShot import TriggeredOneShot
+from Kamaelia.Util.PromptedTurnstile import PromptedTurnstile
 from Kamaelia.File.Reading import RateControlledFileReader
-#from Kamaelia.File.Reading import PromptedFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.Chooser import ForwardIteratingChooser
-from XMLParser import XMLParser
-from EDL import EDLParser
+from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
-import sys
-sys.path.append("../Video/")
+from Kamaelia.Codec.YUV4MPEG import YUV4MPEGToFrame
+from Kamaelia.Codec.YUV4MPEG import FrameToYUV4MPEG
+from Kamaelia.Video.CropAndScale import CropAndScale
 
-from YUV4MPEG import YUV4MPEGToFrame
-from YUV4MPEG import FrameToYUV4MPEG
-from CropAndScale import CropAndScale
+from Kamaelia.Video.PixFormatConversion import ToRGB_interleaved
+from Kamaelia.Video.PixFormatConversion import ToYUV420_planar
 
-sys.path.append("../pixformatConversion/")
-from PixFormatConversion import ToRGB_interleaved
-from PixFormatConversion import ToYUV420_planar
+from Kamaelia.File.UnixProcess2 import UnixProcess2
 
-#from Kamaelia.File.BetterReading import IntelligentFileReader
-from UnixProcess import UnixProcess
+from Kamaelia.Codec.WAV import WAVParser, WAVWriter
 
-sys.path.append("../audio/")
-from WAV import WAVParser, WAVWriter
+from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
-#sys.path.append("../Sketcher/Whiteboard/")
-from TwoWaySplitter import TwoWaySplitter
-
-from FirstOnly import FirstOnly
-from Chunk import Chunk
-from Sync import Sync
+from Kamaelia.Util.FirstOnly import FirstOnly
+from Kamaelia.Util.RateChunker import RateChunker
+from Kamaelia.Util.Sync import Sync
 
 from Kamaelia.Util.Console import ConsoleEchoer
 
-from Chassis import Pipeline
-from Chassis import Graphline
-from Chassis import Carousel
+from Kamaelia.Experimental.Chassis import Pipeline
+from Kamaelia.Experimental.Chassis import Graphline
+from Kamaelia.Experimental.Chassis import Carousel
+from Kamaelia.Experimental.Chassis import InboxControlledCarousel
 
-from MaxSpeedFileReader import MaxSpeedFileReader
+from Kamaelia.File.MaxSpeedFileReader import MaxSpeedFileReader
 
 from Kamaelia.Util.Backplane import Backplane,PublishTo,SubscribeTo
 
-from Collate import Collate
+from Kamaelia.Util.Collate import Collate
 from Kamaelia.Util.Filter import Filter
-from RangeFilter import RangeFilter
-from Max import Max
+from Kamaelia.Util.RangeFilter import RangeFilter
+from Kamaelia.Util.Max import Max
 from Kamaelia.Util.Detuple import SimpleDetupler
 
-sys.path.append("../Introspection/")
-from Profiling import Profiler
+from StopSelector import StopSelector
+from EDL import EDLParser
+
+import sys
 
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
@@ -76,11 +65,11 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
     except:
         pass
     
-    mplayer = "ffmpeg -vframes %d -i %s -f yuv4mpegpipe -y %s -f wav -y %s" % ((maxframe*1.1+2),inFileName.replace(" ","\ "),vidpipe,audpipe)
+    mplayer = "ffmpeg -vframes %d -i %s -f yuv4mpegpipe -y %s -f wav -y %s" % ((maxframe+25),inFileName.replace(" ","\ "),vidpipe,audpipe)
     print mplayer
     
     return Graphline(
-            DECODER = UnixProcess(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
+            DECODER = UnixProcess2(mplayer, 2000000, {vidpipe:"video",audpipe:"audio"}),
             FRAMES = YUV4MPEGToFrame(),
             SPLIT = TwoWaySplitter(),
             FIRST = FirstOnly(),
@@ -128,7 +117,7 @@ def FilterForWantedFrameNumbers(edlfile):
     return Graphline(
         RANGESRC = Pipeline(
                        RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-                       XMLParser(),
+                       SimpleXMLParser(),
                        EDLParser(),
                        Filter(filter = ExtractRanges()),
                        Collate(),
@@ -148,7 +137,7 @@ def FilterForWantedFrameNumbers(edlfile):
 def DetermineMaxFrameNumber(edlfile):
     return Pipeline(
         RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-        XMLParser(),
+        SimpleXMLParser(),
         EDLParser(),
         SimpleDetupler("end"),
         Collate(),
@@ -158,13 +147,14 @@ def DetermineMaxFrameNumber(edlfile):
 def SaveVideoFrames(tmpFilePath,edlfile):
     return \
         Pipeline(
-            TagWithSequenceNumber(),
-            FilterForWantedFrameNumbers(edlfile),
-            InboxControlledCarousel( lambda (framenum, frame) : \
+            1, TagWithSequenceNumber(),
+            1, FilterForWantedFrameNumbers(edlfile),
+            1, InboxControlledCarousel( lambda (framenum, frame) : \
                 Pipeline( OneShot(frame),
-                          FrameToYUV4MPEG(),
-                          SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
-                        )
+                          1, FrameToYUV4MPEG(),
+                          1, SimpleFileWriter(tmpFilePath+("%08d.yuv" % framenum)),
+                        ),
+                boxsize=1,
                 ),
         )
 
@@ -194,26 +184,30 @@ def SaveAudioFrames(frame_rate,tmpFilePath,edlfile):
                 
                 ("", "control") : ("WAV", "control"),
                 ("WAV", "signal") : ("AUD", "control"),
-            }
+            },
+            boxsizes = {
+                ("WAV", "inbox") : 10,
+                ("AUD", "inbox") : 10,
+            },
         )
                                               
-
 
 def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath,edlfile):
     from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
     
     quantasize = format2BytesPerSample[sample_format] * channels
     audioByteRate = quantasize*sample_rate
-    
+
     return Pipeline(
-        Chunk(datarate=audioByteRate, quantasize=quantasize, chunkrate=framerate),
-        TagWithSequenceNumber(),
-        FilterForWantedFrameNumbers(edlfile),
-        InboxControlledCarousel( lambda (framenum, audiochunk) : \
-            Pipeline( OneShot(audiochunk),
-                      WAVWriter(channels,sample_format,sample_rate),
-                      SimpleFileWriter(tmpFilePath+("%08d.wav" % framenum)),
-                    )
+        10, RateChunker(datarate=audioByteRate, quantasize=quantasize, chunkrate=framerate),
+        1, TagWithSequenceNumber(),
+        1, FilterForWantedFrameNumbers(edlfile),
+        1, InboxControlledCarousel( lambda (framenum, audiochunk) : \
+            Pipeline( 1, OneShot(audiochunk),
+                      1, WAVWriter(channels,sample_format,sample_rate),
+                      1, SimpleFileWriter(tmpFilePath+("%08d.wav" % framenum)),
+                    ),
+                    boxsize=1,
             ),
         )
 
@@ -240,7 +234,7 @@ def ReframeVideo(edlfile, tmpFilePath, width, height):
 def EditDecisionSource(edlfile):
     return Graphline( \
         PARSING = Pipeline( RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
-                            XMLParser(),
+                            SimpleXMLParser(),
                             EDLParser(),
                           ),
         GATE = PromptedTurnstile(),
@@ -398,7 +392,7 @@ def ReEncode(outFileName):
                VIDEO = FrameToYUV4MPEG(),
                AUDIO = Carousel( lambda format : WAVWriter(**format),
                                  make1stRequest=False),
-               ENCODE =  UnixProcess(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"},boxsizes={"inbox":2,"video":2,"audio":2}),
+               ENCODE =  UnixProcess2(encoder,buffersize=327680,inpipes={vidpipe:"video",audpipe:"audio"},boxsizes={"inbox":2,"video":2,"audio":2}),
                DEBUG = ConsoleEchoer(),
                linkages = {
                    ("","audioformat") : ("AUDIO","next"),
