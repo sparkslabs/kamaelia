@@ -59,6 +59,20 @@ inbox::
 
     Carousel( MyComponent(), boxsize=5 )
 
+Decoding a Dirac video file and saving each frame in a separate file::
+
+    Pipeline(
+        RateControlledFileReader("video.dirac", ... ),
+        DiracDecoder(),
+        TagWithSequenceNumber(),
+        InboxControlledCarousel(
+            lambda (seqnum, frame) :
+                Pipeline( OneShot(frame),
+                          FrameToYUV4MPEG(),
+                          SimpleFileWriter("%08d.yuv4mpeg" % seqnum),
+                        )
+            ),
+        )
 
 
 More details
@@ -89,6 +103,12 @@ component (created by the factory function), then specify it using the
 
 Again, if you don't specify a "boxsizes" argument, then behaviour is identical
 to that of the normal Carousel component.
+
+*InboxControlledCarousel* behaves identically to Carousel.
+
+The "inbox" inbox is equivalent to the "next" inbox of Carousel.
+The "data_inbox" inbox is equivalent to the "inbox" inbox of Carousel.
+
 
 """
 
@@ -179,6 +199,18 @@ def Carousel(componentFactory, make1stRequest=False, boxsize=None):
     return _Carousel(newComponentFactory, make1stRequest)
 
 
+
+def InboxControlledCarousel(*argv, **argd):
+    
+    return Graphline( CAROUSEL = Carousel( *argv, **argd ),
+                      linkages = {
+                          ("", "inbox")   : ("CAROUSEL", "next"),
+                          ("", "data_inbox") : ("CAROUSEL", "inbox"),
+                          ("", "control") : ("CAROUSEL", "control"),
+                          ("CAROUSEL", "outbox") : ("", "outbox"),
+                          ("CAROUSEL", "signal") : ("", "signal"),
+                      }
+                    )
 
 __kamaelia_prefabs__ = ( Pipeline, Graphline, Carousel, )
 
