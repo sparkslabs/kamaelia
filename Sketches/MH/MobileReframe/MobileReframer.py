@@ -24,7 +24,126 @@
 Reframing of videos for mobile devices
 ======================================
 
+This is a command line tool that decodes a video clip; applies edit decisisions
+(cutting, cropping and scaling); and re-encodes it. The idea is to cut and crop
+video to make it suitable for playback on a small screen mobile device by
+zooming in onto just the important bit - such as the face of the interviewee.
 
+You supply a set of edit decisions in an XML file, and the MobileReframer will
+apply those to the source video file you provide, creating a new output video
+file with the resolution you specify
+
+
+
+Getting Started
+---------------
+
+You can find the Mobile Reframer itself in /Sketches/MH/MobileReframe in the
+trunk of the subversion repository.
+
+
+Pre-requisites
+~~~~~~~~~~~~~~
+
+You must have an installed copy of the command line ffmpeg tool, which can be
+obtained from here. Make sure you have all the codecs you need of course!
+
+
+Running MobileReframer.py
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Run MobileReframer.py from the command line and you'll get usage information::
+
+    > ./MobileReframer.py
+
+    Usage:
+        MobileReframer.py <infile> <edlfile> <outfile> width height <tmpdir>
+
+    * width and height are even numbered pixel dimensions for output video
+
+So, for example, if you run it with the following command line::
+
+    ./MobileReframer.py myVideo.avi myEditDecisions.xml theResult.avi 240 160 /tmp/mobile_reframer_scratch
+
+This will apply the edit decisions in the xml file to the input video file and
+produce a result that is 240x160 pixels.
+
+Note that you need to specify a temporary working directory for mobile reframer
+to use, since it needs somewhere to decompress video frames into. This temporary
+directory should not be being used by any other programs, including other
+instances of MobileReframer, and there should be enough free disk space to hold,
+in the worst case, the whole input video file when decompressed to raw frames
+and audio.
+
+
+
+Writing the edit decision XML file
+----------------------------------
+
+Write your edit decisions in an XML file, like this::
+
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+    <EDL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="MobileReframe.xsd">
+
+        <FileID>File identifier</FileID>
+
+        <Edit>
+            <Start frame="0"  />
+            <End   frame="24" />
+            <Crop  x1="0" y1="0" x2="400" y2="100" />
+        </Edit>
+        <Edit>
+             frame="25" />
+               frame="49" />
+              x1="80" y1="40" x2="480" y2="140" />
+        </Edit>
+
+    </EDL>
+
+The format is pretty simple: simply specify a set of 'edits', in the order you
+want them to appear in the resulting video.
+
+Each edit is a chunk of the input video specified by a start and end frame
+number, and then the bit of the video you want it cropped down to. Frames are
+numbered from zero, and coordinates are specified in pixels where (0,0) is the
+top left corner.
+
+For example perhaps, for frames 25 to 49 inclusive (a 2 second chunk that starts
+4 seconds into the video, assuming 25fps video) we want the video to be cropped
+to a region in the lower left of the image::
+
+    +-----------------------------------------+
+    |(0,0)                                    |
+    |                                         |
+    |          Throw this bit away            |
+    |                                         |
+    |     +---------------------+             |
+    |     |(100,150)            |             |
+    |     |                     |             |
+    |     |  Crop to this bit   |             |
+    |     |                     |             |
+    |     |            (500,450)|             |
+    |     +---------------------+             |
+    |                                         |
+    |                                (719,575)|
+    +-----------------------------------------+
+
+Then to achieve this we would write, as part of our edit decisions::
+
+    <Edit>
+        <Start frame="25" />
+        <End   frame="49" />
+        <Crop  x1="100" y1="150" x2="500" y2="450" />
+    </Edit>
+
+You can write your edit decisions in any order - you don't have to preserve the
+chronological order of the original video. For example, perhaps the video you
+are editing has 10 seconds of titles 30 seconds in from the start. Your edit
+decisions could specify that the output video should start with a few seconds of
+those titles, then return to something closer to the beginning.
+
+You don't have to use the whole video - you can use your edit decisions to cut
+a video down into a shorter one.
 """
 
 from Kamaelia.Util.TagWithSequenceNumber import TagWithSequenceNumber
@@ -79,6 +198,30 @@ import sys
 
 # 1) decode video to individual frames
 def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
+    """\
+    Prefab.
+    
+    Decompresses audio and video from the specified file (using ffmpeg) and
+    saves them as individual files into the provided temp directory. Only
+    reads up to maxframes frames from the video file.
+    
+    Arguments:
+    
+    - inFileName   -- The video file to be decompressed
+    - tmpFilePath  -- temp directory into which frames of audio and video should be saved
+    - edlfile      -- full filepathname of the EDL xml file
+    - maxframe     -- the number of frames to decompress
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     vidpipe = tmpFilePath+"vidPipe.yuv"
     try:
         os.remove(vidpipe)
@@ -127,6 +270,28 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
             )
         
 def FilterForWantedFrameNumbers(edlfile):
+    """\
+    Prefab.
+    
+    Send messages of the form (framenum, data) to the "inbox" inbox. Items with
+    a frame number that isn't in the edit decision list are dropped. Other items
+    with frame numbers that are in the edit decision list are passed through out
+    of the "outbox" outbox.
+    
+    Arguments:
+    
+    - edlfile  -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- (framenum, data) items to be filtered
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- items not filtered out
+    - "signal"  -- Shutdown signalling
+    """
     class ExtractRanges(object):
         def filter(self, edit):
             try:
@@ -155,6 +320,27 @@ def FilterForWantedFrameNumbers(edlfile):
         )
         
 def DetermineMaxFrameNumber(edlfile):
+    """\
+    Prefab.
+    
+    "outbox" sends out the highest frame number referenced in the EDL xml file.
+    Then terminates immediately and sends out a producerFinished() message from
+    the "signal" outbox.
+    
+    Arguments:
+    
+    - edlfile  -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- sends out the highest frame number referenced in the EDL file
+    - "signal"  -- Shutdown signalling
+    """
     return Pipeline(
         RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
         SimpleXMLParser(),
@@ -165,6 +351,31 @@ def DetermineMaxFrameNumber(edlfile):
         )
         
 def SaveVideoFrames(tmpFilePath,edlfile):
+    """\
+    Prefab.
+    
+    Saves video frames sent to the "inbox" inbox into the specified temp
+    directory. Only saves those frames actually referenced in the EDL file.
+    
+    Frames are saved in individual files in YUV4MPEG2 format. They are named
+    sequentially "00000001.yuv", "00000002.yuv", "00000003.yuv", etc - being
+    assigned frame numbers as they arrive, starting at 1.
+    
+    Arguments:
+    
+    - tmpFilePath  -- temp directory into which frames should be saved
+    - edlfile      -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- video frames to be saved
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     return \
         Pipeline(
             1, TagWithSequenceNumber(),
@@ -181,6 +392,33 @@ def SaveVideoFrames(tmpFilePath,edlfile):
 
 
 def SaveAudioFrames(frame_rate,tmpFilePath,edlfile):
+    """\
+    Prefab.
+    
+    Saves WAV audio data sent to the "inbox" inbox into the specified temp
+    directory. Chunks the audio into frames, as per the specified frame-rate.
+    Only saves those frames actually referenced in the EDL file.
+    
+    Frames are saved in individual files in WAV format. They are named
+    sequentially "00000001.wav", "00000002.wav", "00000003.wav", etc - being
+    assigned frame numbers as they arrive, starting at 1.
+    
+    Arguments:
+    
+    - frame_rate   -- the frame rate to chunk the audio into for saving
+    - tmpFilePath  -- temp directory into which frames should be saved
+    - edlfile      -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- WAV format audio data
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     return \
         Graphline(
             WAV = WAVParser(),
@@ -213,6 +451,37 @@ def SaveAudioFrames(frame_rate,tmpFilePath,edlfile):
                                               
 
 def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFilePath,edlfile):
+    """\
+    Prefab.
+    
+    Saves raw audio data in the specified (chanels,sample_rate,sample_format)
+    format sent to the "inbox" inbox into the specified temp
+    directory. Chunks the audio into frames, as per the specified frame-rate.
+    Only saves those frames actually referenced in the EDL file.
+    
+    Frames are saved in individual files in WAV format. They are named
+    sequentially "00000001.wav", "00000002.wav", "00000003.wav", etc - being
+    assigned frame numbers as they arrive, starting at 1.
+    
+    Arguments:
+    
+    - frame_rate   -- the frame rate to chunk the audio into for saving
+    - channels     -- number of channels in the audio data
+    - sample_rate  -- sample rate of the audio data
+    - sample_format  -- sample format of the audio data
+    - tmpFilePath  -- temp directory into which frames should be saved
+    - edlfile      -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- raw audio data
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     from Kamaelia.Support.PyMedia.AudioFormats import format2BytesPerSample
     
     quantasize = format2BytesPerSample[sample_format] * channels
@@ -235,6 +504,30 @@ def AudioSplitterByFrames(framerate, channels, sample_rate, sample_format,tmpFil
 # 2) reframe, writing out sequences
 
 def ReframeVideo(edlfile, tmpFilePath, width, height):
+    """\
+    Prefab.
+    
+    Goes through the specified edit decision list file and reads in video frames
+    applying the reframing instructions in sequence. Outputs the reframed video
+    frames out of the "outbox" outbox.
+    
+    Arguments:
+    
+    - tmpFilePath  -- temp directory into which video frames have been saved
+    - edlfile      -- full filepathname of the EDL xml file
+    - width        -- width (in pixels) for output video frames
+    - height       -- height (in pixels) for output video frames
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     return Graphline( \
         GET_EDL = EditDecisionSource(edlfile),
         REFRAMER = Carousel( lambda edit : ProcessEditDecision(tmpFilePath, edit, width, height),
@@ -252,6 +545,37 @@ def ReframeVideo(edlfile, tmpFilePath, width, height):
         )
 
 def EditDecisionSource(edlfile):
+    """\
+    Prefab.
+    
+    Reads in the edit decisions from the edit decision list file; then sends
+    then out, one at a time, out of the "outbox" outbox whenever a message is
+    sent to the "inbox" inbox. The message sent to the inbox does not matter.
+    
+    Edit decisions are of the form::
+    
+        { "start"  : start frame number for this edit decision
+          "end"    : end frame number for this edit decision
+          "left"   : left edge to crop to (in pixels)
+          "top"    : top edge to crop to (in pixels)
+          "right"  : right edge to crop to (in pixels)
+          "bottom" : bottom edge to crop to (in pixels)
+        }
+    
+    Arguments:
+    
+    - edlfile      -- full filepathname of the EDL xml file
+    
+    Inboxes:
+    
+    - "inbox"    -- Messages to trigger sending out of edit decisions
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- Individual edit decisions
+    - "signal"  -- Shutdown signalling
+    """
     return Graphline( \
         PARSING = Pipeline( RateControlledFileReader(edlfile,readmode="lines",rate=1000000),
                             SimpleXMLParser(),
@@ -270,6 +594,29 @@ def EditDecisionSource(edlfile):
         } )
 
 def ProcessEditDecision(tmpFilePath, edit, width, height):
+    """\
+    Prefab.
+    
+    Applies an edit decision - reading in the relevant video frames and applying
+    the reframing. Outputs the reframed video frames out of the "outbox" outbox.
+    
+    Arguments:
+    
+    - tmpFilePath  -- temp directory into which video frames have been saved
+    - edit         -- the edit instruction (dictionary containing: "start","end","left","top","right","bottom")
+    - width        -- width (in pixels) for output video frames
+    - height       -- height (in pixels) for output video frames
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     print " Video segment: ",edit
     filenames = [ tmpFilePath+"%08d.yuv" % i for i in range(edit["start"], edit["end"]+1) ]
     newsize = (width,height)
@@ -304,6 +651,29 @@ def ProcessEditDecision(tmpFilePath, edit, width, height):
 
 
 def PassThroughAudio(edlfile, tmpFilePath):
+    """\
+    Prefab.
+    
+    Goes through the specified edit decision list file and reads in the audio
+    frames corresponding to the video frames referred to in the reframing
+    instructions in sequence. Outputs the audio frames out of the "outbox"
+    outbox.
+    
+    Arguments:
+    
+    - edlfile      -- full filepathname of the EDL xml file
+    - tmpFilePath  -- temp directory into which video frames have been saved
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- raw audio data, chunked by frames
+    - "signal"  -- Shutdown signalling
+    """
     backplane_name = "AUDIO_FORMAT"
     return Graphline( \
         GET_EDL = EditDecisionSource(edlfile),
@@ -330,6 +700,28 @@ def PassThroughAudio(edlfile, tmpFilePath):
         )
 
 def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
+    """\
+    Prefab.
+    
+    For a particular edit decision; reads in the audio frames corresponding to
+    the video frames referred to in the reframing instructions in sequence.
+    Outputs the audio frames out of the "outbox" outbox.
+    
+    Arguments:
+    
+    - edlfile      -- full filepathname of the EDL xml file
+    - tmpFilePath  -- temp directory into which video frames have been saved
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    
+    Outboxes:
+    
+    - "outbox"  -- raw audio data, chunked by frames
+    - "signal"  -- Shutdown signalling
+    """
     print " Audio segment: ",edit
     filenames = [ tmpFilePath+"%08d.wav" % i for i in range(edit["start"], edit["end"]+1) ]
     
@@ -368,6 +760,26 @@ def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
 
 # 3) concatenate sequences and reencode
 def WriteToFiles():
+    """\
+    Prefab.
+    
+    Takes in audio and video frames and writes them as a single YUV4MPEG2 and
+    WAV files ("test.yuv" and "test.wav").
+    
+    Used for testing
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    - "video"    -- Video frames to be saved
+    - "audio"    -- Auio frames to be saved
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     return Graphline( \
                VIDEO = FrameToYUV4MPEG(),
                AUDIO = WAVWriter(2, "S16_LE", 48000),
@@ -389,6 +801,24 @@ def WriteToFiles():
            )
     
 def ReEncode(outFileName):
+    """\
+    Prefab.
+    
+    Takes in audio and video frames and encodes them to a compressed video file
+    using ffmpeg to do the compression.
+    
+    Inboxes:
+    
+    - "inbox"    -- NOT USED
+    - "control"  -- Shutdown signalling
+    - "video"    -- Video frames to be saved
+    - "audio"    -- Auio frames to be saved
+    
+    Outboxes:
+    
+    - "outbox"  -- NOT USED
+    - "signal"  -- Shutdown signalling
+    """
     vidpipe = tmpFilePath+"vidPipe2.yuv"
     try:
         os.remove(vidpipe)
