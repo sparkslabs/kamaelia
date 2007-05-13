@@ -1,7 +1,31 @@
 #!/usr/bin/env python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+======================================
+Reframing of videos for mobile devices
+======================================
 
-# NOTE: this code is unstable* if run without the wake-on-message-removal
-# bugfix to Axon.
+
+"""
 
 from Kamaelia.Util.TagWithSequenceNumber import TagWithSequenceNumber
 from Kamaelia.Util.OneShot import OneShot
@@ -35,6 +59,7 @@ from Kamaelia.Experimental.Chassis import Pipeline
 from Kamaelia.Experimental.Chassis import Graphline
 from Kamaelia.Experimental.Chassis import Carousel
 from Kamaelia.Experimental.Chassis import InboxControlledCarousel
+from Kamaelia.Chassis.Seq import Seq
 
 from Kamaelia.File.MaxSpeedFileReader import MaxSpeedFileReader
 
@@ -48,6 +73,7 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 
 from StopSelector import StopSelector
 from EDL import EDLParser
+
 
 import sys
 
@@ -75,8 +101,6 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
             FIRST = FirstOnly(),
             VIDEO = SaveVideoFrames(tmpFilePath,edlfile),
             AUDIO = Carousel(lambda vformat: SaveAudioFrames(vformat['frame_rate'],tmpFilePath,edlfile)),
-#            DEBUG = ConsoleEchoer(),
-#            MONITOR = Profiler(10.0, 0.1),
             linkages = {
                 ("DECODER","video") : ("FRAMES","inbox"),
                 ("FRAMES","outbox") : ("SPLIT","inbox"),
@@ -92,10 +116,6 @@ def DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe):
                 ("SPLIT","signal2") : ("FIRST","control"),
                 ("FIRST","signal") : ("AUDIO","control"),
                 ("AUDIO","signal") : ("","signal"),
-                
-#                ("DECODER","outbox") : ("DEBUG","inbox"),
-#                ("DECODER","error") : ("DEBUG","inbox"),
-#                ("MONITOR","outbox") : ("DEBUG","inbox"),
                 },
             boxsizes = {
                 ("FRAMES", "inbox") : 2,
@@ -250,7 +270,7 @@ def EditDecisionSource(edlfile):
         } )
 
 def ProcessEditDecision(tmpFilePath, edit, width, height):
-    print " V ",edit
+    print " Video segment: ",edit
     filenames = [ tmpFilePath+"%08d.yuv" % i for i in range(edit["start"], edit["end"]+1) ]
     newsize = (width,height)
     cropbounds = (edit["left"], edit["top"], edit["right"], edit["bottom"])
@@ -310,7 +330,7 @@ def PassThroughAudio(edlfile, tmpFilePath):
         )
 
 def PassThroughAudioSegment(tmpFilePath, edit, backplane_name):
-    print " A ",edit
+    print " Audio segment: ",edit
     filenames = [ tmpFilePath+"%08d.wav" % i for i in range(edit["start"], edit["end"]+1) ]
     
     return Graphline( \
@@ -451,10 +471,6 @@ try:
 except:
     pass
 
-from Seq import Seq
-
-from Axon.Introspector import Introspector
-from Kamaelia.Internet.TCPClient import TCPClient
 
 Seq( "Decoding & separating frames...",
      Graphline(
@@ -463,7 +479,6 @@ Seq( "Decoding & separating frames...",
               DecodeAndSeparateFrames(inFileName, tmpFilePath, edlfile,maxframe),
           ),
           STOP = TriggeredOneShot(""),
-#          PROF = Profiler(),
           linkages = {
               ("MAXF","outbox"):("DO","next"),
               ("DO","outbox"):("","outbox"),
@@ -478,8 +493,6 @@ Seq( "Decoding & separating frames...",
             REFRAMING = ReframeVideo(edlfile, tmpFilePath, output_width, output_height),
             SOUND     = PassThroughAudio(edlfile, tmpFilePath),
             ENCODING  = ReEncode(outFileName),
-#            PROF = Profiler(),
-#            INTROSPECT = Pipeline(Introspector(),TCPClient("r44116",1601)),
         linkages = {
             ("REFRAMING","outbox") : ("ENCODING","video"),
             ("SOUND","outbox") : ("ENCODING","audio"),
