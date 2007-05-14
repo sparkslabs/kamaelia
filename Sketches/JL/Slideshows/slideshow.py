@@ -26,6 +26,8 @@ from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Chooser_jlei import Chooser
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Console import ConsoleEchoer
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import os
 
@@ -48,7 +50,10 @@ g = Graphline(
      FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
      LAST = Button(caption="Last", msg="LAST",position=(320,8)),
      RANDOM = Button(caption="Random", msg="RANDOM", position=(500,8)), 
-     keys = KeyEvent( key_events = {K_esc: ('ESC', "outbox")}),
+     #KeyEvent stuff
+     keys = KeyEvent( key_events = {K_esc: (shutdownMicroprocess(), "outbox")}),
+     output = ConsoleEchoer(),
+     
      linkages = {
         ("NEXT","outbox") : ("CHOOSER","inbox"),
         ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
@@ -56,11 +61,13 @@ g = Graphline(
         ("LAST","outbox") : ("CHOOSER","inbox"),
 	("RANDOM", "outbox") : ("CHOOSER", "inbox"),
         ("CHOOSER","outbox") : ("IMAGE","inbox"),
-	("keys", "outbox") : ("CHOOSER", "inbox")
+#	("keys", "outbox") : ("output", "inbox")
+        ("keys", "outbox") : ("IMAGE", "control")
      }
 )
 
 g.run()
 
 # 6 May 2007 -- escape message isn't being sent to Chooser inbox
+# 14 May 2007 -- closes pygame window, but not cleanly.
 
