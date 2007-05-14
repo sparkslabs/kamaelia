@@ -281,7 +281,27 @@ class Test_Carousel(unittest.TestCase):
         
             self.runFor(cycles=10)
 
+    def test_terminatingCarouselWithChildPassesSignalToChildToo(self):
+
+        for IPC in (producerFinished,):
+            self.setup_test()
             
+            # create new child
+            self.runFor(cycles=5)
+            self.sendToNext("BLAH")
+            self.runFor(cycles=50)
+
+            # send shutdown to Carousel
+            self.sendToControl(IPC())
+            self.runFor(cycles=5)
+
+            # did the child get it
+            msg = self.children[-1].recv("control")
+            self.assert_(isinstance(msg,IPC), "Child should also receive a "+IPC.__class__.__name__+" request")
+            self.children[-1].stopNow=True
+            self.runFor(cycles=5)
+                
+        
 if __name__ == "__main__":
     unittest.main()
     
