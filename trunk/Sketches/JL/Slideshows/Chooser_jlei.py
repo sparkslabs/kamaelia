@@ -183,9 +183,9 @@ class Chooser(Axon.Component.component):
                send = self.gotoFirst()
             elif msg == "LAST":
                send = self.gotoLast()
-	    elif msg == "RANDOM":
-	       pass
-	       send = self.gotoRandom()
+            elif msg == "RANDOM":
+                pass
+                send = self.gotoRandom()
             else:
                send = False
 
