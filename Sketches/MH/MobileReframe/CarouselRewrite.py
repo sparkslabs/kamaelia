@@ -193,7 +193,7 @@ class Carousel(component):
                 mustStop, pleaseStop = self.checkControl()
                 
                 if mustStop and not alreadyTerminatingChild:
-                    self.shutdownchild(mustStop)
+                    self.shutdownChild(mustStop)
                     alreadyTerminatingChild=True
                 
                 elif self.dataReady("next") and not alreadyTerminatingChild:
