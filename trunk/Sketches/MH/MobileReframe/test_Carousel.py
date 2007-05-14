@@ -1,4 +1,24 @@
 #!/usr/bin/env python
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
 # test suite for Carousel
 
@@ -118,9 +138,10 @@ class Test_Carousel(unittest.TestCase):
 
 
     def test_byDefaultDoesNothing(self):
+        """Carousel initialises. By default it does nothing."""
         self.setup_test()
 
-        self.runFor(cycles=1000)
+        self.runFor(cycles=100)
 
         self.assert_(self.children==[], "Carousel should create no children")
         self.assert_(not self.dataReadyOutbox(), "Carousel should have sent nothing to its 'outbox' outbox")
@@ -129,9 +150,10 @@ class Test_Carousel(unittest.TestCase):
         self.assert_(not self.carousel._isStopped(), "Carousel should still be running")
         
     def test_canAskToMake1stRequest(self):
+        """If the make1stRequest argument is set to True at initialisation, Carousel sends a "NEXT" message out of its "requestNext" outbox after it has started up."""
         self.setup_test(make1stRequest=True)
 
-        self.runFor(cycles=1000)
+        self.runFor(cycles=5)
 
         self.assert_(self.children==[], "Carousel should create no children")
         self.assert_(not self.dataReadyOutbox(), "Carousel should have sent nothing to its 'outbox' outbox")
@@ -140,13 +162,14 @@ class Test_Carousel(unittest.TestCase):
         self.assert_(not self.carousel._isStopped(), "Carousel should still be running")
 
     def test_shutsDownWhenToldToAndIdle(self):
+        """When idle, with no child; a shutdownMicroprocess or producerFinished message will cause Carousel to terminate."""
         for IPC in (producerFinished, shutdownMicroprocess):
             self.setup_test()
     
-            self.runFor(cycles=1000)
+            self.runFor(cycles=100)
             self.sendToControl(IPC())
             self.assert_(not self.carousel._isStopped(), "Carousel should still be running")
-            self.runFor(cycles=1000)
+            self.runFor(cycles=100)
     
             got=self.collectSignal()
             self.assert_(len(got)==1 and isinstance(got[0],IPC), "Carousel should send a "+IPC.__class__.__name__+" message out its 'signal' outbox")
@@ -169,6 +192,7 @@ class Test_Carousel(unittest.TestCase):
         
             
     def test_messageToNextSpawnsChild(self):
+        """Messages sent to the "next" inbox trigger the factory function, leading to the creation and activation of a child component."""
         self.setup_test()
         self.runFor(cycles=5)
         self.sendToNext("BLAH")
@@ -179,6 +203,7 @@ class Test_Carousel(unittest.TestCase):
         self.assert_(self.children[-1].wasActivated, "The child should have been activated")
 
     def test_childTerminationTriggersRequestNext(self):
+        """When a child terminates; the Carousel sends a "NEXT" message out of its "requestNext" outbox."""
         self.setup_test()
         self.runFor(cycles=5)
         self.sendToNext("BLAH")
@@ -190,6 +215,7 @@ class Test_Carousel(unittest.TestCase):
         self.assert_(self.collectRequestNext()==["NEXT"], "Carousel should have sent a single 'NEXT' to its 'requestNext' outbox")
         
     def test_childShutdownSignalDoesntTriggerRequest(self):
+        """If the child sends out a producerFinished or shutdownMicroprocess message out of its "signal" outbox; the Carousel does not send out a message from its "requestNext" outbox in response."""
         for IPC in (producerFinished,shutdownMicroprocess):
             self.setup_test()
             self.runFor(cycles=5)
@@ -202,6 +228,7 @@ class Test_Carousel(unittest.TestCase):
             self.assert_(self.collectRequestNext()==[], "Carousel should have not sent anything 'requestNext' outbox")
         
     def test_ChildReceivesShutdownSignal(self):
+        """A shutdownMicroprocess or producerFinished message sent to the "control" inbox of the Carousel gets passed onto the "control" inbox of the child."""
         for IPC in (producerFinished,shutdownMicroprocess):
             self.setup_test()
             self.runFor(cycles=5)
@@ -216,6 +243,7 @@ class Test_Carousel(unittest.TestCase):
             self.assert_(isinstance(msg,IPC), "Child should have received a "+IPC.__class__.__name__+" message out its 'control' inbox")
         
     def test_nextRequestStartsNewchildOnceCurrentHasTerminated(self):
+        """A message sent to the "next" inbox starts a new child; but only once the current child has terminated."""
         self.setup_test()
         self.runFor(cycles=5)
         self.sendToNext("BLAH")
@@ -234,6 +262,7 @@ class Test_Carousel(unittest.TestCase):
             self.assert_(self.children[-1].wasActivated and not self.children[-1]._isStopped(), "The new child should be active and running")
 
     def test_dataReachesChildInbox(self):
+        """Any messages sent to the "inbox" inbox of the Carousel gets sent on tot the "inbox" inbox of the child component."""
         self.setup_test()
         self.runFor(cycles=5)
         self.sendToNext("BLAH")
@@ -251,6 +280,7 @@ class Test_Carousel(unittest.TestCase):
 
 
     def test_dataReachesCarouselOutbox(self):
+        """Any mesasges sent out of the "outbox" outbox of a child emerges from the "outbox" outbox of the Carousel."""
         self.setup_test()
 
         self.runFor(cycles=5)
@@ -267,6 +297,7 @@ class Test_Carousel(unittest.TestCase):
             self.runFor(cycles=10)
 
     def test_childSignalIgnored(self):
+        """Messages coming out of the child's "signal" outbox are ignored. They do not emerge from the "signal" outbox of the Carousel."""
         self.setup_test()
 
         self.runFor(cycles=5)
@@ -282,6 +313,7 @@ class Test_Carousel(unittest.TestCase):
             self.runFor(cycles=10)
 
     def test_terminatingCarouselWithChildPassesSignalToChildToo(self):
+        """If a producerFinshed or shutdownMicroprocess is sent to a Carousel's "control" inbox, it is passed onto the child's "control" inbox."""
 
         for IPC in (producerFinished,shutdownMicroprocess):
             self.setup_test()
@@ -302,6 +334,7 @@ class Test_Carousel(unittest.TestCase):
             self.runFor(cycles=5)
                 
     def test_carouselDoesntTerminateUntilChildHas(self):
+        """Carousel doesn't terminate (in response to producerFinished or shutdownMicroprocess) until the child has terminated."""
 
         for IPC in (producerFinished,shutdownMicroprocess):
             self.setup_test()
@@ -329,7 +362,37 @@ class Test_Carousel(unittest.TestCase):
             self.assert_(self.carousel._isStopped())
             self.assert_(self.children[-1]._isStopped())
                 
-
+    def test_queuedNextsFinishedIfProducerFinished(self):
+        """If a producerFinished() is received, but there are still messages queued on 'NEXT', those messages are processed (and children created) first. *Then* the Carousel terminates."""
+        
+        self.setup_test()
+        
+        self.runFor(cycles=5)
+        self.sendToNext("BLAH")
+        self.runFor(cycles=50)
+        
+        self.sendToControl(producerFinished())
+        for i in range(1,10):
+            self.sendToNext("BLAH")
+            
+        self.runFor(cycles=1000)
+        self.assert_(len(self.children)==1)
+        self.assert_(not self.carousel._isStopped())
+        
+        for i in range(0,9):
+            self.assert_(self.children[i].wasActivated)
+            self.assert_(not self.children[i]._isStopped())
+            msg=self.children[i].recv("control")
+            self.assert_(isinstance(msg,(shutdownMicroprocess,producerFinished)))
+            self.children[i].stopNow=True
+            
+            while len(self.children)<=i+1:
+                self.runFor(cycles=1)
+                
+            while not self.children[-1].wasActivated:
+                self.runFor(cycles=1)
+                
+        
         
 if __name__ == "__main__":
     unittest.main()
