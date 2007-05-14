@@ -23,6 +23,7 @@
 
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
+from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Chooser_jlei import Chooser
 from Kamaelia.Chassis.Graphline import Graphline
 
@@ -32,13 +33,14 @@ path = "Slides"
 extn = ".gif"
 allfiles = os.listdir(path)
 files = list()
+K_esc = 27
 for fname in allfiles:
     if fname[-len(extn):]==extn:
         files.append(os.path.join(path,fname))
 
 files.sort()
 
-Graphline(
+g = Graphline(
      CHOOSER = Chooser(items = files),
      IMAGE = Image(size=(800,600), position=(8,48)),
      NEXT = Button(caption="Next", msg="NEXT", position=(72,8)),
@@ -46,6 +48,7 @@ Graphline(
      FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
      LAST = Button(caption="Last", msg="LAST",position=(320,8)),
      RANDOM = Button(caption="Random", msg="RANDOM", position=(500,8)), 
+     keys = KeyEvent( key_events = {K_esc: ('ESC', "outbox")}),
      linkages = {
         ("NEXT","outbox") : ("CHOOSER","inbox"),
         ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
@@ -53,5 +56,11 @@ Graphline(
         ("LAST","outbox") : ("CHOOSER","inbox"),
 	("RANDOM", "outbox") : ("CHOOSER", "inbox"),
         ("CHOOSER","outbox") : ("IMAGE","inbox"),
+	("keys", "outbox") : ("CHOOSER", "inbox")
      }
-).run()
+)
+
+g.run()
+
+# 6 May 2007 -- escape message isn't being sent to Chooser inbox
+
