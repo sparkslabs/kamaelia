@@ -283,7 +283,7 @@ class Test_Carousel(unittest.TestCase):
 
     def test_terminatingCarouselWithChildPassesSignalToChildToo(self):
 
-        for IPC in (producerFinished,):
+        for IPC in (producerFinished,shutdownMicroprocess):
             self.setup_test()
             
             # create new child
@@ -301,6 +301,35 @@ class Test_Carousel(unittest.TestCase):
             self.children[-1].stopNow=True
             self.runFor(cycles=5)
                 
+    def test_carouselDoesntTerminateUntilChildHas(self):
+
+        for IPC in (producerFinished,shutdownMicroprocess):
+            self.setup_test()
+            
+            # create new child
+            self.runFor(cycles=5)
+            self.sendToNext("BLAH")
+            self.runFor(cycles=50)
+
+            # send shutdown to Carousel
+            self.sendToControl(IPC())
+            self.runFor(cycles=50)
+
+            # did the child get it
+            msg = self.children[-1].recv("control")
+            self.assert_(isinstance(msg,IPC), "Child should also receive a "+IPC.__class__.__name__+" request")
+
+            # carousel and child should still be running
+            self.assert_(not self.carousel._isStopped())
+            self.assert_(not self.children[-1]._isStopped())
+            
+            self.children[-1].stopNow=True
+            self.runFor(cycles=5)
+            
+            self.assert_(self.carousel._isStopped())
+            self.assert_(self.children[-1]._isStopped())
+                
+
         
 if __name__ == "__main__":
     unittest.main()
