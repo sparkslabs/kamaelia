@@ -34,6 +34,8 @@ Example Usage
 -------------
 
 Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
+
+    fom pygame.locals import *
   
     Graphline( output = ConsoleEchoer(),
                keys = KeyEvent( key_events={ K_1 : (1,"numbers"),
@@ -51,6 +53,8 @@ Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
                             ("keys","letters"):("output","inbox")
                           }
              ).run()
+
+The symbols *K_1*, *K_2*, etc are keycodes defined in defined in *pygame.locals*.
 
 
 
