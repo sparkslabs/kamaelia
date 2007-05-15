@@ -172,8 +172,7 @@ def Graphline(linkages = None, boxsizes = None,**components):
     return g
 
 
-#from Kamaelia.Chassis.Carousel import Carousel as _Carousel
-from CarouselRewrite import Carousel as _Carousel
+from Kamaelia.Chassis.Carousel import Carousel as _Carousel
 
 def Carousel(componentFactory, make1stRequest=False, boxsize=None):
     """\
@@ -212,5 +211,5 @@ def InboxControlledCarousel(*argv, **argd):
                       }
                     )
 
-__kamaelia_prefabs__ = ( Pipeline, Graphline, Carousel, )
+__kamaelia_prefabs__ = ( Pipeline, Graphline, Carousel, InboxControlledCarousel, )
 

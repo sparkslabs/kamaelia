@@ -24,8 +24,7 @@
 
 import unittest
 
-#from Kamaelia.Chassis.Carousel import Carousel
-from CarouselRewrite import Carousel
+from Kamaelia.Chassis.Carousel import Carousel
 
 from Axon.Component import component
 from Axon.Scheduler import scheduler
