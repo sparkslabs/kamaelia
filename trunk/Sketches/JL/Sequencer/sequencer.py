@@ -11,10 +11,9 @@ class sequencer(component):
         print self.findNext()
         
     def main(self):
-        for i in range(20):
+        while True:
             yield 1
             self.printNext()
-        yield -1
         
 class fibonacciSequencer(sequencer):
     def __init__(self):
@@ -27,6 +26,16 @@ class fibonacciSequencer(sequencer):
         self.n = self.n_1
         self.n_1 = val + self.n_1
         return val
+    
+    def main(self):
+        i = 0
+        while i < 20:
+            yield 1
+            self.printNext()
+            i = i+1
+        self._closeDownMicroprocess()
+            
+                
         
 class naturals(sequencer):
     def __init__(self):
