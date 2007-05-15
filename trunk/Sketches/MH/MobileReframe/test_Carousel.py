@@ -363,7 +363,7 @@ class Test_Carousel(unittest.TestCase):
             self.assert_(self.children[-1]._isStopped())
                 
     def test_queuedNextsFinishedIfProducerFinished(self):
-        """If a producerFinished() is received, but there are still messages queued on 'NEXT', those messages are processed (and children created) first. *Then* the Carousel terminates."""
+        """If a producerFinished() is received, but there are still messages queued on the 'next' inbox, those messages are processed (and children created) first. *Then* the Carousel terminates."""
         
         self.setup_test()
         
@@ -392,7 +392,31 @@ class Test_Carousel(unittest.TestCase):
             while not self.children[-1].wasActivated:
                 self.runFor(cycles=1)
                 
+    def test_queuedNextsAbortedIfShutdownMicroprocess(self):
+        """If a shutdownMicroprocess() is received, any messages queued on the 'next' inbox are discarded; and Carousel shuts down as soon as any current child has terminated."""
+            
+        self.setup_test()
         
+        self.runFor(cycles=5)
+        self.sendToNext("BLAH")
+        self.runFor(cycles=50)
+        
+        self.sendToControl(shutdownMicroprocess())
+        for i in range(1,10):
+            self.sendToNext("BLAH")
+            
+        self.runFor(cycles=50)
+        self.assert_(len(self.children)==1, "Should only be the one child")
+        self.assert_(not self.carousel._isStopped(), "Carousel shouldn't have stopped until the child has")
+        msg=self.children[-1].recv("control")
+        self.assert_(isinstance(msg,(shutdownMicroprocess,producerFinished)))
+
+        self.children[-1].stopNow=True
+        self.runFor(cycles=2)
+        
+        self.assert_(len(self.children)==1, "Should only be the one child")
+        self.assert_(self.carousel._isStopped(), "Carousel should have terminated")
+        self.assert_(self.children[0]._isStopped(), "Child should have terminated")
         
 if __name__ == "__main__":
     unittest.main()
