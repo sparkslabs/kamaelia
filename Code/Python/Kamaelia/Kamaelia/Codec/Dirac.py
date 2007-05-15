@@ -120,6 +120,7 @@ UNCOMPRESSED FRAME FORMAT
 
 Uncompresed video frames are output by the decoder, as dictionaries. Each
 contains the following entries::
+
     {
       "yuv" : (y_data, u_data, v_data)  # a tuple of strings
       "size" : (width, height)          # in pixels
