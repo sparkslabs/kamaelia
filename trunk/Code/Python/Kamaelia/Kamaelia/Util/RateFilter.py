@@ -313,11 +313,14 @@ class ByteRate_RequestControl(component):
                  "signal" : "Shutdown signalling"
                }
    
-    def __init__(self, rate=100000, chunksize=None, chunkrate=10, allowchunkaggregation = False):
+    def __init__(self, rate=100000, chunksize=None, chunkrate=None, allowchunkaggregation = False):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ByteRate_RequestControl, self).__init__()
     
         self.rate = rate
+        
+        if chunksize is None and chunkrate is None:
+            chunksize=max(1,rate/1000)               # a sensible-ish default
     
         if not chunksize is None:
             self.chunksize = chunksize
@@ -328,6 +331,9 @@ class ByteRate_RequestControl(component):
     
         else:
             raise ValueError("chunksize or chunkrate must be specified, but not both or neither")
+            
+        if self.chunksize < 1.0:
+            raise ValueError("chunksize cannot be less than 1, specify a sensible chunkrate or chunksize")
     
         self.timestep = 1.0 / float(chunkrate)
     
