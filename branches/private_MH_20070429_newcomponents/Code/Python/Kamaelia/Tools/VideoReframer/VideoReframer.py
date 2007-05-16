@@ -46,7 +46,7 @@ obtained from here. Make sure you have all the codecs you need of course!
 
 
 Running VideoReframer.py
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Run VideoReframer.py from the command line and you'll get usage information::
 
