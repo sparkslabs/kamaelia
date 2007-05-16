@@ -38,7 +38,7 @@ Example Usage
 
 How to use it::
 
-    pipeline(
+    Pipeline(
         SingleShotHTTPClient("http://www.google.co.uk/"),
         SomeComponentThatUnderstandsThoseMessageTypes()
     ).run()
@@ -90,7 +90,7 @@ Example Usage
 
 Type URLs, and they will be downloaded and placed, back to back in "downloadedfile.txt"::
   
-    pipeline(
+    Pipeline(
         ConsoleReader(">>> ", ""),
         SimpleHTTPClient(),
         SimpleFileWriter("downloadedfile.txt"),
@@ -390,7 +390,6 @@ class SimpleHTTPClient(component):
         self.link((self, "_carouselsignal"),      (self.carousel, "control"))
         self.link((self.carousel, "outbox"),      (self, "_carouselinbox"))
         self.link((self.carousel, "requestNext"), (self, "_carouselready"))        
-        self.carousel.activate()
         
     def cleanup(self):
         """Destroy child components and send producerFinished when we quit."""    
@@ -406,6 +405,7 @@ class SimpleHTTPClient(component):
     def main(self):
         """Main loop."""
         self.debug("SimpleHTTPClient.main()\n")
+        self.carousel.activate()
         finished = False
 
         while not finished:
