@@ -1,23 +1,12 @@
 #!/usr/bin/env python
 
-
-# test of likefile functionality.
-
-
 from likefile import likeFile, schedulerThread
 from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
-import time, Kamaelia
-from helloworld import Reverser
 
-
-
-
+# the setup
 schedulerThread(slowmo = 0.01).start()
+p = likeFile(SimpleHTTPClient())
 
-theComponentToWrap = SimpleHTTPClient
-#theComponentToWrap = Reverser
-page = []
-p = likeFile(theComponentToWrap())
 p.put("http://google.com", "inbox")
 p.put("http://slashdot.org", "inbox")
 p.put("http://whatismyip.org", "inbox")
