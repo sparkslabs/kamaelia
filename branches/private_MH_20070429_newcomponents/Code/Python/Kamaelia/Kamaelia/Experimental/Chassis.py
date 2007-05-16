@@ -176,7 +176,7 @@ from Kamaelia.Chassis.Carousel import Carousel as _Carousel
 
 def Carousel(componentFactory, make1stRequest=False, boxsize=None):
     """\
-    Carousel(componentFactory,[make1stRequest]) -> new Carousel component
+    Carousel(componentFactory[,make1stRequest][,boxSize]) -> new Carousel component
     
     Create a Carousel component that makes child components one at a time (in
     carousel fashion) using the supplied factory function.
@@ -200,6 +200,18 @@ def Carousel(componentFactory, make1stRequest=False, boxsize=None):
 
 
 def InboxControlledCarousel(*argv, **argd):
+    """\
+    InboxControlledCarousel(componentFactory[,make1stRequest][,boxSize]) -> new Carousel component
+    
+    Create an InboxControlledCarousel component that makes child components one at a time (in
+    carousel fashion) using the supplied factory function.
+    
+    Keyword arguments:
+    
+    - componentFactory -- function that takes a single argument and returns a component
+    - make1stRequest   -- if True, Carousel will send an initial "NEXT" request. (default=False)
+    - boxsize          -- size limit for "inbox" inbox of the created child component
+    """
     
     return Graphline( CAROUSEL = Carousel( *argv, **argd ),
                       linkages = {
