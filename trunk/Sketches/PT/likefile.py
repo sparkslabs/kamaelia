@@ -33,9 +33,9 @@ class schedulerThread(threading.Thread):
         scheduler.run.runThreads(slowmo = self.slowmo)
 
 
-class Componentwrapper(component):
+class componentWrapper(component):
     def __init__(self, childcomponent):
-        super(Componentwrapper, self).__init__()
+        super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
         self.inqueues = dict() # queue for data traversing from, e.g, stdin to a component's inbox
@@ -88,7 +88,7 @@ class Componentwrapper(component):
 
 class likeFile(object):
     def __init__(self, componenttowrap):
-        self.component = Componentwrapper(componenttowrap) # this instantiation might be threadsafe?
+        self.component = componentWrapper(componenttowrap) # this instantiation might be threadsafe?
         self.component.activate() # allegedly threadsafe.
         self.alive = True
 
