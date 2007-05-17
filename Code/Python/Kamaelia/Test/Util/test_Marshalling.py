@@ -23,7 +23,7 @@
 
 import unittest
 import sys ; sys.path.append("..")
-from Marshalling import Marshaller, DeMarshaller
+from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
 class SerialiseInt:
 
