@@ -1,5 +1,7 @@
    Bugfixes to:
     * Kamaelia.UI.Pygame.BasicSprite component.
+    * Kamaelia.Util.RateFilter.ByteRate_RequestControl component.
+    * Kamaelia.Protocol.HTTP.HTTPClient.SimpleHTTPClient component.
 
    Added Documentation generation tools for generating Axon and Kamaelia
    reference documentation - see their docstrings for more information.
