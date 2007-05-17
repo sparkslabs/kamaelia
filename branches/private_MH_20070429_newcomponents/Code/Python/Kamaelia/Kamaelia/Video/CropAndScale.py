@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -40,9 +40,9 @@ is the region (100,100) ->(400,300), scaled up to 720x576::
 
     Pipeline( RateControlledFileReader("input.yuv4mpeg", ... ),
               YUV4MPEGToFrame(),
-              YUVtoRGB(),
+              ToRGB_interleaved(),
               CropAndScale(newsize=(720,576), cropbounds=(100,100,400,300)),
-              RGBtoYUV(),
+              ToYUV420_planar(),
               FrameToYUV4MPEG(),
               SimpleFileWriter("cropped_and_scaled.yuv4mpeg"),
             ).run()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -161,7 +161,7 @@ __kamaelia_components__ = ( TwoWaySplitter, )
 
 
 if __name__ == "__main__":
-    from Chassis import Graphline,Pipeline
+    from Kamaelia.Experimental.Chassis import Graphline,Pipeline
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Util.RateFilter import MessageRateLimit
     from Kamaelia.Util.Console import ConsoleEchoer
