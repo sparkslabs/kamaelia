@@ -26,7 +26,7 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-from Kamaelia.Internet.Selector import selectorComponent
+from Kamaelia.Internet.Selector import Selector as selectorComponent
 from Axon.Component import component
 import Kamaelia.Internet.Selector
 from Axon.AxonExceptions import ServiceAlreadyExists
