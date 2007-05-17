@@ -1,3 +1,40 @@
+
+   NEW TOOLS:
+
+   Simple Video Player:
+    * plays the sound and pictures from a video file
+
+   Video Reframer:
+    * applies an XML edit decision list to cut, crop and scale a video sequence;
+      reframing the content for other use.
+
+   Video Shot Change Detector:
+    * outputs an XML file describing the frame indices at which shot changes
+      probably occur in a sequence of video
+
+
+   NEW COMPONENTS:
+
+    * WAV format parsing and writing
+    * YUV4MPEG2 format parsing and writing
+    * Additional UnixProcess component with named pipe support
+    * Various simple utility components
+    * Pygame Video Surfaces (as opposed to overlays)
+    * YUV to/from RGB video frame pixel format conversion
+    * SDP parsing
+    * RTP packet parsing and writing
+    * Out of order packet reordering
+    * "Maximum speed" file reading
+    * Simple XML parsing
+    * Video shot change detection
+    * Video frame cropping and scaling
+    * Experimental Pipeline/Graphline/Carousel support for size limited inboxes
+    * Sequencing of tasks (Seq component)
+
+
+   Bugfixes to:
+    * Kamaelia.Chassis.Carousel component - rewrite to fix shutdown behaviour.
+
    Bugfixes to:
     * Kamaelia.UI.Pygame.BasicSprite component.
 
