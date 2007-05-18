@@ -20,7 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 #
-"""
+"""\
 =======================
 IRC Logging Bot
 =======================
@@ -128,7 +128,7 @@ class IRCClient(component):
             self.send("PASS %s\r\n" % password)
         if not username:
             username = nick
-        self.send ("USER %s %s %s :%s\r\n" % (username, nick, nick, "Kamaelia IRC Bot"), "outbox")
+        self.send ("USER %s :%s\r\n" % (username, "Kamaelia IRC Bot"), "outbox")
         self.logging = True
 
     def main(self):
@@ -144,7 +144,8 @@ class IRCClient(component):
             
             if self.dataReady("inbox"):
                 command = self.recv("inbox")
-                self.MapIPCToFunction(command.__class__)(command) # get the appropriate function for that type of message and pass the message to it
+		#so can be shut down 
+                self.MapIPCToFunction[command.__class__](command) # get the appropriate function for that type of message and pass the message to it
                 self.send(command, "outbox")
                 
             elif self.dataReady("_tcpcontrol"):
@@ -202,3 +203,27 @@ class IRCClient(component):
                         self.send(msg, "heard")
             else:
                 self.pause()
+
+print "initializing variables"
+
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Util.PureTransformer import PureTransformer
+host = 'localhost'
+port = 50000
+nick = 'ryan'
+pwd = ''
+user = 'jinna'
+ipcNick = IRCIPCChangeNick(nick="bonkers")
+ipcDisconnect = IRCIPCDisconnect()
+str2ipcMap = {
+		'ipcNick':ipcNick,
+		'ipcDisconnect':ipcDisconnect
+		}
+transformer = PureTransformer(lambda strMsg : str2ipcMap[strMsg.rstrip()])
+
+#from ryans_irc_client import *
+
+if __name__ == '__main__':
+	print "running"
+	Pipeline(ConsoleReader(), transformer, IRCClient(host, port, nick, pwd, user), ConsoleEchoer()).run()
