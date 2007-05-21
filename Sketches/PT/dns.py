@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,13 +32,14 @@ be placed on "signal" in the form (hostname, error code).
 Example Usage
 -------------
 
-Type hostnames, and they will be resolved and printed out.
+Type hostnames, and they will be resolved and printed out::
 
-    pipeline(
+    Pipeline(
         ConsoleReader(">>> ", ""),
         GetHostByName(),
         ConsoleEchoer(),
     ).run()
+
 
 How does it work?
 -----------------
@@ -49,9 +50,12 @@ can block without problems. Note that although all requests are processed
 sequentially, this may not always be the case, and should not be relied on,
 hence returning the hostname along with the IP address.
 
+If this component recieves producerFinished or shutdown on the "signal" inbox, 
+it will emit a producerFinished on the "control" outbox, and shut down.
 """
+
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdown
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 import socket
 
 class GetHostByName(threadedcomponent):
@@ -67,7 +71,7 @@ class GetHostByName(threadedcomponent):
 
     def main(self):
         if self.oneShot:
-            self.doLookup(self, oneShot)
+            self.doLookup(self.oneShot)
             self.send(producerFinished(self), "signal")
             return
         while True:
@@ -77,7 +81,7 @@ class GetHostByName(threadedcomponent):
                     self.send(returnval, "outbox")
             while self.dataReady("control"):
                 msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
+                if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                     self.send(producerFinished(self), "signal")
                     return
             self.pause()
