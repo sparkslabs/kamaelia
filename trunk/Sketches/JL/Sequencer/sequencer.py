@@ -5,20 +5,21 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 class sequencer(component):
 #Inboxes: inbox, control
 #Outboxes: outbox, signal
-
+    n = 5
     def __init__(self):
         super(sequencer, self).__init__()
-        self.run = True
+        self.running = True
         
     def findNext(self):
-        return 1
+        self.n += 1
+        return self.n
     
     def printNext(self):
         print self.findNext()
         
     def main(self):
-        while self.run:
-            yield 1
+        while self.running:
+##            self.send('message', 'outbox')
             if self.dataReady("control"):
                 msg = self.recv("control")
                 print "received control message: ", msg
@@ -30,17 +31,11 @@ class sequencer(component):
                 print "received inbox message: ", msg
                 if msg == "NEXT":
                     self.send(self.findNext(), 'outbox')
+            yield 1
 
     def shutdown(self):
-        raise "Received control message"
-##        self._callOnCloseDown() #doesn't do anything right now
-##        self.run = False
-##        self.send(producerFinished(), "signal") #should be taken care of in _callOnCloseDown?
-
-    def run(self):
-        from Axon.Scheduler import scheduler
-        self.activate()
-        scheduler.run.runThreads()
+        self.running = False
+        self.send(producerFinished(), "signal")
 
                 
 class fibonacciSequencer(sequencer):
