@@ -34,11 +34,7 @@ class SimplePeer(BasicPeer):
         while 1:
             while self.dataReady("inbox"):
                 data = self.recv()
-                for x in xrange(1000):
-                    sent = sock.sendto(data*4000, (self.receiver_addr, self.receiver_port) )
-                    if sent < len(data*4000):
-                        print "ARRRGH"
-                        raise "Woo!"
+                sent = sock.sendto(data, (self.receiver_addr, self.receiver_port) )
                 yield 1
 
             self.receive_packet(sock)
