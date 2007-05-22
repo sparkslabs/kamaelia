@@ -443,7 +443,7 @@ class threadedcomponent_Test(unittest.TestCase):
             self.assert_(n>0, "Thread (and scheduler) should have stopped by now")
     
     def test_localprocessterminatesOnlyIfOutqueueFlushed(self):
-        """threadedcomponent ensures that if the thread terminates, any messages still pending in outqueues (waiting to be sent out of outboxes) get sent"""
+        """threadedcomponent ensures that if the thread terminates, any messages still pending in outqueues (waiting to be sent out of outboxes) get sent, even if it is held up for a while by noSpaceInBox exceptions"""
         class Test(threadedcomponent):
             def __init__(self):
                 super(Test,self).__init__(queuelengths=5)
@@ -459,20 +459,36 @@ class threadedcomponent_Test(unittest.TestCase):
 
         sched=scheduler()
         t=Test()
-        r=RecvFrom((t,"outbox"))
+        r=DoesNothingComponent()
+        r.link((t,"outbox"),(r,"inbox"))
+        r.inboxes["inbox"].setSize(1)
         r.activate(Scheduler=sched)
         t.activate(Scheduler=sched)
         s=sched.main()
         
-        n=50
         for n in range(0,50):
             time.sleep(0.05)
             s.next()
 
-        self.assert_(t._isStopped(), "Thread component should have finished by now")
+        self.assert_(not t._isStopped(), "Thread component should not have finished yet")
+        self.assert_(r.dataReady("inbox"), "Should be data waiting at the receiver's inbox")
+        
+        # now relax the inbox size restriction and start receiving items
+        r.inboxes["inbox"].setSize(999)
+        r.recv("inbox")
+        count=1
+        
+        for _ in range(0,50):
+            time.sleep(0.05)
+            s.next()
 
-        # should expect to have received all t.n items that were sent by t
-        self.assert_(len(r.rec)==t.count)
+        # should expect to have received all t.count items sent
+        while r.dataReady("inbox"):
+            count=count+1
+            r.recv("inbox")
+        
+        self.assert_(count==t.count)
+        self.assert_(t._isStopped(), "Thread component should have finished by now")
         
 
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
