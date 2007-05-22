@@ -76,22 +76,22 @@ to forward a child's outbox to a named outbox of the Graphline. For example::
 
     Graphline( child = MyComponent(...),
                linkages = { ...
-                            ("self", "foo") : ("child", "bar"),
+                            ("self", "inbox") : ("child", "bar"),
                             ... }
              )
 
-... is interpreted as meaning you want to forward the "foo" inbox of the
+... is interpreted as meaning you want to forward the "inbox" inbox of the
 Graphline to the "bar" inbox of the component referred to as "child".
 Similarly::
 
     Graphline( child = MyComponent(...),
                linkages = { ...
-                            ("child", "fwibble") : ("self", "plig"),
+                            ("child", "fwibble") : ("self", "outbox"),
                             ... }
              )
 
 ...is interpreted as wishing to forward the "fwibble" outbox of the component
-referred to as "child" to the "plig" outbox of the Graphline component.
+referred to as "child" to the "outbox" outbox of the Graphline component.
 
 Any inbox or outbox you name on the Graphline component is created if it does
 not already exist. For example, you might want the Graphline to have a "video"
