@@ -1,5 +1,129 @@
 #!/usr/bin/python
 #
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+=====================
+Simple UDP components
+=====================
+
+These components provide simple support for sending and receiving UDP packets.
+
+*Note* that this components are deemed somewhat experimental.
+
+
+
+Example Usage
+-------------
+
+Send console input to port 1500 of myserver.com and receive packets locally on
+port 1501 displaying their contents (and where they came from) on the console::
+    
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.Console import ConsoleReader
+    from Kamaelia.Internet.UDP import SimplePeer
+    
+    Pipeline( ConsoleReader(),
+              SimplePeer("127.0.0.1", 1501, "myserver.com", 1500),
+              ConsoleEchoer(),
+            ).run()
+
+
+Sends data from a data source as UDP packets, changing between 3 different
+destinations, once per second::
+
+    class DestinationSelector(component):
+        def main(self):
+            while 1:
+                for dest in [ ("server1.com",1500),
+                              ("server2.com",1500),
+                              ("server3.com",1500), ]:
+                    self.send(dest,"outbox")
+                next=time.time()+1.0
+                while time.time() < next:
+                    yield 1
+                    
+    Graphline( \
+        SOURCE = MyDataSource(),
+        SELECT = DestinationSelector(),
+        UDP    = TargettedPeer(),
+        linkages = {
+            ("SOURCE", "outbox") : ("UDP", "inbox"),
+            ("SELECT", "outbox") : ("UDP", "target"),
+        }
+    ).run()
+
+Send UDP packets containing "hello" to several different servers, all on port
+1500::
+    
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.DataSource import DataSource
+    from Kamaelia.Internet.UDP import PostboxPeer
+    
+    Pipeline(
+        DataSource( [ ("myserver1.com",1500,"hello"),
+                      ("myserver2.com",1500,"hello"),
+                      ("myserver3.com",1500,"hello"),
+                    ]
+                    ),
+        PostboxPeer(),
+    ).run()
+
+
+
+Behaviour
+---------
+
+When any of these components receive a UDP packet on the local address and port
+they are bound to; they send out a tuple (data,(host,port)) out of their
+"outbox" outboxes. 'data' is a string containing the payload of the packet.
+(host,port) is the address of the sender/originator of the packet.
+
+SimplePeer is the simplest to use. Any data sent to its "inbox" inbox is sent
+as a UDP packet to the destination (receiver) specified at initialisation.
+
+TargettedPeer behaves identically to SimplePeer; however the destination
+(receiver) it sends UDP packets to can be changed by sending a new (host,port)
+tuple to its "target" inbox.
+
+PostboxPeer does not have a fixed destination (receiver) to which it sends UDP
+packets. Send (host,port,data) tuples to its "inbox" inbox to arrange for a UDP
+packet containing the specified data to be sent to the specified (host,port).
+
+None of these components terminate. They ignore any messages sent to their
+"control" inbox and do not send anything out of their "signal" outbox.
+
+
+
+Implementation Details
+----------------------
+
+SimplePeer, TargettedPeer and PostboxPeer are all derived from the base class
+BasicPeer. BasicPeer provides some basic code for receiving from a socket.
+
+Although technically BasicPeer is a component, it is not a usable one as it
+does not implement a main() method.
+"""
+
+#
 # Experimental code, not to be moved into release tree without
 # documentation. (Strictly not to be moved into release tree!)
 #
@@ -9,16 +133,61 @@ import Axon
 
 # ---------------------------- # SimplePeer
 class BasicPeer(Axon.Component.component):
+    """\
+    BasicPeer() -> new BasicPeer component.
+    
+    Base component from which others are derived in this module. Not properly
+    functional on its own and so *should not be used* directly.
+    """
+    
+    Inboxes = { "inbox" : "NOT USED",
+                "control" : "NOT USED",
+              }
+    Outboxes = { "outbox" : "(data,(host,port)) tuples for each packet received",
+                 "signal" : "NOT USED",
+               }
+    
     def receive_packet(self, sock):
-            try:
-                message = sock.recvfrom(1024)
-            except socket.error, e:
-                pass
-            else:
-                self.send(message,"outbox") # format ( data, addr )
+        """\
+        Tries to receive from socket. Any data received is sent out of the 
+        "outbox" outbox. Any socket errors are absorbed.
+        
+        Arguments:
+    
+        - sock  -- bound socket object to receive from
+        """
+        try:
+            message = sock.recvfrom(1024)
+        except socket.error, e:
+            pass
+        else:
+            self.send(message,"outbox") # format ( data, addr )
+
  
 
 class SimplePeer(BasicPeer):
+    """\
+    SimplePeer([localaddr][,localport][,receiver_addr][,receiver_port]) -> new SimplePeer component.
+    
+    A simple component for receiving and transmitting UDP packets. It binds to
+    the specified local address and port - from which it will receive packets
+    and sends packets to a receiver on the specified address and port.
+    
+    Arguments:
+    
+    - localaddr      -- Optional. The local addresss (interface) to bind to. (default="0.0.0.0")
+    - localport      -- Optional. The local port to bind to. (default=0)
+    - receiver_addr  -- Optional. The address the receiver is bound to - to which packets will be sent. (default="0.0.0.0")
+    - receiver_port  -- Optional. The port the receiver is bound on - to which packets will be sent. (default=0)
+    """
+    
+    Inboxes = { "inbox" : "Raw binary string data packets to be sent to the destination (receiver host,port)",
+                "control" : "NOT USED",
+              }
+    Outboxes = { "outbox" : "(data,(host,port)) tuples for each packet received",
+                 "signal" : "NOT USED",
+               }
+    
     def __init__(self, localaddr="0.0.0.0", localport=0, receiver_addr="0.0.0.0", receiver_port=0):
         super(SimplePeer, self).__init__()
         self.localaddr = localaddr
@@ -42,13 +211,30 @@ class SimplePeer(BasicPeer):
 
 # ---------------------------- # TargetedPeer
 class TargettedPeer(BasicPeer):
+    """\
+    TargettedPeer([localaddr][,localport][,receiver_addr][,receiver_port]) -> new TargettedPeer component.
+    
+    A simple component for receiving and transmitting UDP packets. It binds to
+    the specified local address and port - from which it will receive packets
+    and sends packets to a receiver on the specified address and port.
+    
+    Can change where it is sending to by sending the new (addr,port) receiver
+    address to the "target" inbox.
+    
+    Arguments:
+    
+    - localaddr      -- Optional. The local addresss (interface) to bind to. (default="0.0.0.0")
+    - localport      -- Optional. The local port to bind to. (default=0)
+    - receiver_addr  -- Optional. The address the receiver is bound to - to which packets will be sent. (default="0.0.0.0")
+    - receiver_port  -- Optional. The port the receiver is bound on - to which packets will be sent. (default=0)
+    """
     Inboxes = {
         "inbox" : "Data recieved here is sent to the reciever addr/port",
-        "target" : "Data receieved here changes the receiver addr/port data is tuple form: (addr, port)",
+        "target" : "Data receieved here changes the receiver addr/port data is tuple form: (host, port)",
         "control" : "Not listened to", # SMELL: This is actually a bug!
     }
     Outboxes = {
-        "outbox" : "Data received on the socket is passed out here, form: ((addr, port), data)",
+        "outbox" : "Data received on the socket is passed out here, form: (data,(host, port))",
         "signal" : "No data sent to", # SMELL: This is actually a bug!
     }
     def __init__(self, localaddr="0.0.0.0", localport=0, receiver_addr="0.0.0.0", receiver_port=0):
@@ -84,17 +270,23 @@ class TargettedPeer(BasicPeer):
 # ---------------------------- # PostboxPeer
 class PostboxPeer(BasicPeer):
     """\
-    A postbox peer recieves messages formed of 3 parts:
-        (addr, port, data)
-
-    The postbox peer then takes care of delivery of these UDP messages to the recipient.
+    PostboxPeer([localaddr][,localport]) -> new PostboxPeer component.
+    
+    A simple component for receiving and transmitting UDP packets. It binds to
+    the specified local address and port - from which it will receive packets.
+    Sends packets to individually specified destinations
+    
+    Arguments:
+    
+    - localaddr      -- Optional. The local addresss (interface) to bind to. (default="0.0.0.0")
+    - localport      -- Optional. The local port to bind to. (default=0)
     """
     Inboxes = {
-        "inbox" : "Data recieved here is sent to the reciever addr/port",
+        "inbox" : "Send (host,port,data) tuples here to send a UDP packet to (host,port) containing data",
         "control" : "Not listened to", # SMELL: This is actually a bug!
     }
     Outboxes = {
-        "outbox" : "Data received on the socket is passed out here, form: ((addr, port), data)",
+        "outbox" : "Data received on the socket is passed out here, form: ((host, port), data)",
         "signal" : "No data sent to", # SMELL: This is actually a bug!
     }
     def __init__(self, localaddr="0.0.0.0", localport=0):
@@ -115,7 +307,7 @@ class PostboxPeer(BasicPeer):
             self.receive_packet(sock)
             yield 1
 
-__kamaelia_components__  = ( BasicPeer, SimplePeer, TargettedPeer, PostboxPeer, )
+__kamaelia_components__  = ( SimplePeer, TargettedPeer, PostboxPeer, )
 
 if __name__=="__main__":
     class DevNull(Axon.Component.component):
