@@ -435,6 +435,7 @@ class threadedcomponent_Test(unittest.TestCase):
         
         for i in range(0,10):
             t._deliver(object(),"inbox")        # fill the inbox with more data than the internal queues can hold
+        t._deliver(object(),"control")
             
         n=50
         for s in sched.main():
