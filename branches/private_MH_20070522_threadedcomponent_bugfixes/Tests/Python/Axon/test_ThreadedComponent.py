@@ -422,7 +422,7 @@ class threadedcomponent_Test(unittest.TestCase):
             raise
 
     def test_localprocessterminatesifInQueueFull(self):
-        """_localmain() microprocess termintes when the thread terminates, even if data is clogged in one of the inqueues"""
+        """threadedcomponent terminates when the thread terminates, even if data is clogged in one of the inqueues"""
         class Test(threadedcomponent):
             def __init__(self):
                 super(Test,self).__init__(queuelengths=5)
@@ -442,7 +442,38 @@ class threadedcomponent_Test(unittest.TestCase):
             n=n-1
             self.assert_(n>0, "Thread (and scheduler) should have stopped by now")
     
+    def test_localprocessterminatesOnlyIfOutqueueFlushed(self):
+        """threadedcomponent ensures that if the thread terminates, any messages still pending in outqueues (waiting to be sent out of outboxes) get sent"""
+        class Test(threadedcomponent):
+            def __init__(self):
+                super(Test,self).__init__(queuelengths=5)
+            def main(self):
+                self.count=0
+                while 1:
+                    try:
+                        self.send(object(),"outbox")
+                        self.count=self.count+1
+                    except noSpaceInBox:
+                        # outqueue is clearly full now, so lets terminate quick!
+                        return
 
+        sched=scheduler()
+        t=Test()
+        r=RecvFrom((t,"outbox"))
+        r.activate(Scheduler=sched)
+        t.activate(Scheduler=sched)
+        s=sched.main()
+        
+        n=50
+        for n in range(0,50):
+            time.sleep(0.05)
+            s.next()
+
+        self.assert_(t._isStopped(), "Thread component should have finished by now")
+
+        # should expect to have received all t.n items that were sent by t
+        self.assert_(len(r.rec)==t.count)
+        
 
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
