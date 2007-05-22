@@ -94,7 +94,17 @@ Similarly::
 referred to as "child" to the "plig" outbox of the Graphline component.
 
 Any inbox or outbox you name on the Graphline component is created if it does
-not already exist.
+not already exist. For example, you might want the Graphline to have a "video"
+and an "audio" inbox::
+
+    Graphline( videoHandler = MyVideoComponent(),
+               audioHandler = MyAudioComponent(),
+               linkages = { ...
+                            ("self", "video") : ("videoHandler", "inbox"),
+                            ("self", "audio") : ("audioHandler", "inbox"),
+                            ...
+                          }
+             )
 
 The Graphline component will always have inboxes "inbox" and "control" and
 outboxes "outbox" and "signal", even if you do not specify any linkages to them.
