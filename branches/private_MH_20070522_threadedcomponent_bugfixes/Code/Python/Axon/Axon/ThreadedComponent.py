@@ -509,7 +509,8 @@ class threadedcomponent(Component.component):
           msgcount = self.threadtoaxonqueue.qsize()
           
           stuffWaiting = False
-          
+
+
           for box in self.inboxes:
               while self._nonthread_dataReady(box):
                   if not self.inqueues[box].full():
@@ -517,7 +518,7 @@ class threadedcomponent(Component.component):
                       self.inqueues[box].put(msg)
                       self.threadWakeUp.set()     # wake a paused main()
                   else:
-                      stuffWaiting = True
+#                      stuffWaiting = True
                       break
                   
           for box in self.outboxes:
