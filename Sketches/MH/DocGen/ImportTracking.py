@@ -161,6 +161,10 @@ if __name__ == "__main__":
     print "-----MAPPINGS:"
     pprint.pprint(imports)
     print "-----CLASSES:"
-    pprint.pprint(classes)
+    for cls in classes:
+        bases = classes[cls]
+        print "class ",cls,"..."
+        print "   parsing says bases are:",bases
+        print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(cls).__bases__]
     print "-----"
     
