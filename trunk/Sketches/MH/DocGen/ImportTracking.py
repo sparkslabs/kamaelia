@@ -29,6 +29,7 @@ class Test5(foo): # derives from Kamaelia.Chassis.Pipeline.Pipeline
 
 (alpha,beta) = (flurble, foo)
 [gamma,delta] = (alpha,beta)
+epsilon, theta = gamma,object
 
 import Kamaelia.Chassis.Graphline as Graphline, Kamaelia.Chassis.Carousel as Carousel
 
@@ -72,14 +73,46 @@ if __name__ == "__main__":
         name = node.name
         bases = node.bases
         resolvedBases = []
-        print name,bases
         for base in bases:
             expBase = parseName(base)
-            print "!!",expBase,base
             resolvedBase = matchToImport(imports,expBase)
             resolvedBases.append(resolvedBase)
         classes[name] = resolvedBases
         imports[name] = name  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
+        
+    def parse_Assign(node, imports):
+        print node.nodes
+        print node.expr
+        for target in node.nodes:
+            # for each assignment target, go clamber through mapping against the assignment expression
+            # we'll only properly parse things with a direct 1:1 mapping
+            # if, for example, the assignment relies on understanding the value being assigned, eg. (a,b) = c
+            # then we'll silently fail
+            assignments = mapAssign(target,node.expr)
+            resolvedAssignments = []
+            for (target,expr) in assignments:
+                resolved = matchToImport(imports,expr)
+                resolvedAssignments.append((target,resolved))
+            for (target,expr) in resolvedAssignments:
+                imports[target] = expr
+
+            
+    def mapAssign(target, expr):
+        assignments = []
+        if isinstance(target, ast.AssName):
+            if isinstance(expr, (ast.Name, ast.Getattr)):
+                assignments.append( (parseName(target), parseName(expr)) )
+        elif isinstance(target, (ast.AssTuple, ast.AssList)):
+            if isinstance(expr, (ast.Tuple, ast.List)):
+                targets = target.nodes
+                exprs = expr.nodes
+                if len(targets)==len(exprs):
+                    for i in range(0,len(targets)):
+                        assignments.extend(mapAssign(targets[i],exprs[i]))
+        else:
+            pass
+        return assignments
+
     
     def chaseThrough(node, imports,classes):
         for node in node.getChildren():
@@ -90,21 +123,25 @@ if __name__ == "__main__":
                 # parse imports to recognise what symbols are mapped to what imported things
                 parse_Import(node, imports)
             elif isinstance(node, ast.Class):
+                # classes need to be parsed so we can work out base classes
                 parse_Class(node, imports,classes)
-                pass  # classes need to be parsed so we can work out base classes
             elif isinstance(node, ast.Assign):
-                pass  # parse assignments that map stuff thats been imported to new names
+                # parse assignments that map stuff thats been imported to new names
+                parse_Assign(node, imports)
+            elif isinstance(node, ast.AugAssign):
+                # definitely ignore these
+                pass
             else:
                 pass  # ignore everything else for the moment
         return
         
     def parseName(node):
-        if isinstance(node, ast.Name):
+        if isinstance(node, (ast.Name, ast.AssName)):
             return node.name
-        elif isinstance(node, ast.Getattr):
+        elif isinstance(node, (ast.Getattr, ast.AssAttr)):
             return ".".join([parseName(node.expr), node.attrname])
         else:
-            return node.__class__.__name__
+            return None
         
     def matchToImport(imports,name):
         # go through imports, if we find one that matches the root of the name
