@@ -29,9 +29,12 @@ class Test5(foo): # derives from Kamaelia.Chassis.Pipeline.Pipeline
 
 (alpha,beta) = (flurble, foo)
 [gamma,delta] = (alpha,beta)
-epsilon, theta = gamma,object
+(epsilon, theta) = gamma,(object,object)
 
 import Kamaelia.Chassis.Graphline as Graphline, Kamaelia.Chassis.Carousel as Carousel
+
+class Test5(epsilon):
+    pass
 
 # ------------------------------------------------------------------------------
 
