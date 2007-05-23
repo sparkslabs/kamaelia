@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+# ------------------------------------------------------------------------------
+# Test Content
+
+from Axon.Component import component
+import Axon.ThreadedComponent
+
+class Test(object):
+    pass
+
+class Test2(component):
+    pass
+
+class Test3(Axon.ThreadedComponent.threadedcomponent):
+    pass
+
+import Axon.ThreadedComponent as bibble
+
+flurble = bibble.threadedcomponent
+
+class Test4(flurble): # derives from Axon.ThreadedComponent.threadedcomponent
+    pass
+
+from Kamaelia.Chassis.Pipeline import Pipeline as foo
+
+class Test5(foo): # derives from Kamaelia.Chassis.Pipeline.Pipeline
+    pass
+
+(alpha,beta) = (flurble, foo)
+[gamma,delta] = (alpha,beta)
+
+import Kamaelia.Chassis.Graphline as Graphline, Kamaelia.Chassis.Carousel as Carousel
+
+# ------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    import sys
+    sourcefile = sys.argv[0]
+
+    import compiler
+    from compiler import ast
+
+    # now lets try to sequentially traverse the AST and track imports (and
+    # name reassignments of them) so we can eventually determine what the base
+    # classes of declared classes are
+
+    AST = compiler.parseFile(sourcefile)
+    root = AST.getChildren()[1]           # root statement node
+
+    imports = {}
+    
+    def parse_From(node, imports):
+        sourceModule, items = node.getChildren()
+        for (name, destName) in items:
+            mapsTo = ".".join([sourceModule,name])
+            if destName == None:
+                destName = name
+            imports[destName] = mapsTo
+            
+    def parse_Import(node, imports):
+        items = node.getChildren()[0]
+
+        for (name,destName) in items:
+            if destName == None:
+                destName = name
+            imports[destName] = name
+    
+    def chaseThrough(node, imports):
+        for node in node.getChildren():
+            if isinstance(node, ast.From):
+                # parse "from ... import"s to recognise what symbols are mapped to what imported things
+                parse_From(node, imports)
+            elif isinstance(node, ast.Import):
+                # parse imports to recognise what symbols are mapped to what imported things
+                parse_Import(node, imports)
+            elif isinstance(node, ast.Class):
+                pass  # classes need to be parsed so we can work out base classes
+            elif isinstance(node, ast.Assign):
+                pass  # parse assignments that map stuff thats been imported to new names
+            else:
+                pass  # ignore everything else for the moment
+        return
+        
+    chaseThrough(root, imports)
+    
+    import pprint
+    print "-----"
+    pprint.pprint(imports)
+    print "-----"
+    
