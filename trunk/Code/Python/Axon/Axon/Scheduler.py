@@ -66,6 +66,9 @@ The runThreads() method is the way of bootstrapping the scheduler. Being a
 microprocess, it needs something to schedule it! The runThreads() method does
 exactly that.
 
+The activate() method is fully thread-safe. It can handle multiple simultaneous
+callers from different threads to the one the scheduler is running in.
+
 
 
 Pausing and Waking microprocesses
@@ -78,8 +81,9 @@ microprocess.
 
 The pauseThread() and wakeThread() methods submit requests to pause or wake
 microprocesses. The scheduler will process these when it is next able to - the
-requests are queued rather than processed immediately, as a simple way to ensure
-thread safety).
+requests are queued rather than processed immediately. This is done to ensure
+thread safety. It can handle multiple simultaneous callers from different
+threads to the one the scheduler is running in.
 
 Pausing a microprocess means the scheduler removes it from its 'run queue'. This
 means that it no longer executes that microprocess. Waking it puts it back into
