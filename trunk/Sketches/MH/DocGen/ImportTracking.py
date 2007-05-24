@@ -200,7 +200,24 @@ class DeclarationTracker(object):
                 symbolName+="."
                 if symbolName == name[:len(symbolName)]:
                     return UNKNOWN(".".join([resolved["name"], name[len(symbolName):]]))
-        return UNKNOWN(name)
+        # not matched against existing resolution table, what else...
+        if name in dir(__builtins__):
+            return UNKNOWN("__builtins__."+name)
+        else:
+            return UNKNOWN(name)
+
+    def listAllClasses(self):
+        return [name for (name,info) in self.resolvesTo.items() if info["type"] == "CLASS"]
+
+    def listAllFunctions(self):
+        return [name for (name,info) in self.resolvesTo.items() if info["type"] == "FUNCTION"]
+
+    def getClassBasesNames(self,classname):
+        info = self.resolvesTo[classname]
+        if not info["type"]=="CLASS":
+            raise IndexError("Referenced symbol was not directly determined to be a class")
+        else:
+            return [base["name"] for base in info["bases"]]
 
 if __name__ == "__main__":
 
@@ -224,19 +241,17 @@ if __name__ == "__main__":
     print "-----MAPPINGS:"
     pprint.pprint(d.resolvesTo)
     print "-----CLASSES:"
-    for classname,info in d.resolvesTo.items():
-        if info["type"] == "CLASS":
-            bases = info["bases"]
-            print "class ",classname,"..."
-            print "   parsing says bases are:",[base["name"] for base in bases]
-            print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
+    for classname in d.listAllClasses():
+        bases = d.getClassBasesNames(classname)
+        print "class ",classname,"..."
+        print "   parsing says bases are:",bases
+        print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
     print "-----FUNCTIONS:"
-    for funcname,info in d.resolvesTo.items():
-        if info["type"] == "FUNCTION":
-            print "function ",funcname,"...",
-            if eval(funcname).__class__.__name__ == "function":
-                print "YES"
-            else:
-                print "NO"
+    for funcname in d.listAllFunctions():
+        print "function ",funcname,"...",
+        if eval(funcname).__class__.__name__ == "function":
+            print "YES"
+        else:
+            print "NO"
     print "-----"
     
