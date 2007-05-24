@@ -202,7 +202,7 @@ class DeclarationTracker(object):
                     return UNKNOWN(".".join([resolved["name"], name[len(symbolName):]]))
         # not matched against existing resolution table, what else...
         if name in dir(__builtins__):
-            return UNKNOWN("__builtins__."+name)
+            return UNKNOWN("__builtin__."+name)
         else:
             return UNKNOWN(name)
 
