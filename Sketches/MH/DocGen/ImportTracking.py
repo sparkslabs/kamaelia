@@ -50,6 +50,11 @@ Test9 = Test8
 Test10 = Test8
 Test10 = "hello"
 
+from Nodes import boxright
+
+class Test11(boxright):
+    pass
+
 # ------------------------------------------------------------------------------
 
 import compiler
@@ -80,13 +85,26 @@ def UNPARSED(ast=None):
            }
            
 class DeclarationTracker(object):
-    def __init__(self):
+    def __init__(self,localModules={}):
+        """\
+        Arguments:
+
+        - localModules  -- a dict mapping modules in the local path of this one to their full module path
+
+        eg. if the module being parsed is foo.bibble and other modules exist called "foo.bar", "foo.plig" and "foo.boing.yoyo"
+        then we should provide a dictionary { "bar":"foo.bar", "plig":"foo.plig", "boing.yoyo":"foo.boing.yoyo" }
+        so import statements can be checked against this.
+        """
         super(DeclarationTracker,self).__init__()
         self.resolvesTo = {}
+        self.localModules = localModules
 
     def parse_From(self, node):
         sourceModule, items = node.getChildren()
         for (name, destName) in items:
+            # check if this is actually a local module
+            if sourceModule in self.localModules:
+                sourceModule=self.localModules[sourceModule]
             mapsTo = ".".join([sourceModule,name])
             if destName == None:
                 destName = name
@@ -96,6 +114,8 @@ class DeclarationTracker(object):
         items = node.getChildren()[0]
 
         for (name,destName) in items:
+            if name in self.localModules:
+                name = self.localModules[name]
             if destName == None:
                 destName = name
             self.resolvesTo[destName] = UNKNOWN(name)
@@ -236,7 +256,11 @@ if __name__ == "__main__":
     AST = compiler.parseFile(sourcefile)
     root = AST.getChildren()[1]           # root statement node
 
-    d = DeclarationTracker()
+    localModules = {
+        "Nodes" : "Pretend.there.is.a.module.path.Nodes",
+        }
+    
+    d = DeclarationTracker(localModules)
     d.chaseThrough(root)
     
     import pprint
