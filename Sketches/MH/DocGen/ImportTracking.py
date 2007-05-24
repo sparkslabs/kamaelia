@@ -47,11 +47,21 @@ class Test7(Test6):
 import compiler
 from compiler import ast
 
+def UNKNOWN(name):
+    return { "name" : name,
+             "type" : "UNKNOWN",
+           }
+
+def CLASS(name,bases):
+    return { "name"  : name,
+             "type"  : "CLASS",
+             "bases" : bases,
+           }
+
 class DeclarationTracker(object):
     def __init__(self):
         super(DeclarationTracker,self).__init__()
         self.resolvesTo = {}
-        self.classes    = {}
 
     def parse_From(self, node):
         sourceModule, items = node.getChildren()
@@ -59,7 +69,7 @@ class DeclarationTracker(object):
             mapsTo = ".".join([sourceModule,name])
             if destName == None:
                 destName = name
-            self.resolvesTo[destName] = mapsTo
+            self.resolvesTo[destName] = UNKNOWN(mapsTo)
 
     def parse_Import(self, node):
         items = node.getChildren()[0]
@@ -67,7 +77,7 @@ class DeclarationTracker(object):
         for (name,destName) in items:
             if destName == None:
                 destName = name
-            self.resolvesTo[destName] = name
+            self.resolvesTo[destName] = UNKNOWN(name)
 
     def parse_Class(self, node):
         name = node.name
@@ -75,10 +85,9 @@ class DeclarationTracker(object):
         resolvedBases = []
         for base in bases:
             expBase = self.parseName(base)
-            resolvedBase = self.matchToImport(expBase)
+            resolvedBase = self.matchToSymbolName(expBase)
             resolvedBases.append(resolvedBase)
-        self.classes[name] = resolvedBases
-        self.resolvesTo[name] = name  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
+        self.resolvesTo[name] = CLASS(name,resolvedBases)  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
 
     def parse_Assign(self, node):
         for target in node.nodes:
@@ -89,15 +98,19 @@ class DeclarationTracker(object):
             assignments = self.mapAssign(target,node.expr)
             resolvedAssignments = []
             for (target,expr) in assignments:
-                resolved = self.matchToImport(expr)
+                resolved = self.matchToSymbolName(expr)
                 resolvedAssignments.append((target,resolved))
+                
             for (target,expr) in resolvedAssignments:
                 self.resolvesTo[target] = expr
-                if expr in self.classes.keys():
-                    self.classes[target] = self.classes[expr]
 
 
     def mapAssign(self, target, expr):
+        """\
+        Correlate each term on the lhs to the respective term on the rhs of the assignment.
+
+        Return a list of pairs (lhs, rhs) not yet resolved - just the names
+        """
         assignments = []
         if isinstance(target, ast.AssName):
             if isinstance(expr, (ast.Name, ast.Getattr)):
@@ -143,17 +156,17 @@ class DeclarationTracker(object):
         else:
             return None
 
-    def matchToImport(self,name):
+    def matchToSymbolName(self,name):
         # go through resolvesTo, if we find one that matches the root of the name
         # then resolve it
-        for (importName,resolved) in self.resolvesTo.items():
-            if importName == name:
+        for (symbolName,resolved) in self.resolvesTo.items():
+            if symbolName == name:
                 return resolved
             else:
-                importName+="."
-                if importName == name[:len(importName)]:
-                    return ".".join([resolved, name[len(importName):]])
-        return name
+                symbolName+="."
+                if symbolName == name[:len(symbolName)]:
+                    return UNKNOWN(".".join([resolved["name"], name[len(symbolName):]]))
+        return UNKNOWN(name)
 
 if __name__ == "__main__":
 
@@ -177,10 +190,11 @@ if __name__ == "__main__":
     print "-----MAPPINGS:"
     pprint.pprint(d.resolvesTo)
     print "-----CLASSES:"
-    for cls in d.classes:
-        bases = d.classes[cls]
-        print "class ",cls,"..."
-        print "   parsing says bases are:",bases
-        print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(cls).__bases__]
+    for classname,info in d.resolvesTo.items():
+        if info["type"] == "CLASS":
+            bases = info["bases"]
+            print "class ",classname,"..."
+            print "   parsing says bases are:",[base["name"] for base in bases]
+            print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
     print "-----"
     
