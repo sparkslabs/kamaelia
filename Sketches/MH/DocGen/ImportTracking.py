@@ -55,6 +55,8 @@ Test10 = "hello"
 import compiler
 from compiler import ast
 
+import __builtin__ as BUILTINS
+
 def UNKNOWN(name):
     return { "name" : name,
              "type" : "UNKNOWN",
@@ -201,7 +203,7 @@ class DeclarationTracker(object):
                 if symbolName == name[:len(symbolName)]:
                     return UNKNOWN(".".join([resolved["name"], name[len(symbolName):]]))
         # not matched against existing resolution table, what else...
-        if name in dir(__builtins__):
+        if name in dir(BUILTINS):
             return UNKNOWN("__builtin__."+name)
         else:
             return UNKNOWN(name)
