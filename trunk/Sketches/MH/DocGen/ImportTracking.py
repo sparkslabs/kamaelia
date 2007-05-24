@@ -71,6 +71,12 @@ def FUNCTION(name):
              "type" : "FUNCTION",
            }
 
+def UNPARSED(ast=None):
+    return { "name" : "",
+             "type" : "UNPARSED",
+             "ast"  : ast,
+           }
+           
 class DeclarationTracker(object):
     def __init__(self):
         super(DeclarationTracker,self).__init__()
@@ -111,7 +117,10 @@ class DeclarationTracker(object):
             assignments = self.mapAssign(target,node.expr)
             resolvedAssignments = []
             for (target,expr) in assignments:
-                resolved = self.matchToSymbolName(expr)
+                if isinstance(expr,str):
+                    resolved = self.matchToSymbolName(expr)
+                else:
+                    resolved = expr
                 resolvedAssignments.append((target,resolved))
                 
             for (target,expr) in resolvedAssignments:
@@ -126,8 +135,11 @@ class DeclarationTracker(object):
         """
         assignments = []
         if isinstance(target, ast.AssName):
+            targetname = self.parseName(target)
             if isinstance(expr, (ast.Name, ast.Getattr)):
-                assignments.append( (self.parseName(target), self.parseName(expr)) )
+                assignments.append( (targetname, self.parseName(expr)) )
+            else:
+                assignments.append( (targetname, UNPARSED(expr)) )
         elif isinstance(target, (ast.AssTuple, ast.AssList)):
             if isinstance(expr, (ast.Tuple, ast.List)):
                 targets = target.nodes
@@ -135,8 +147,13 @@ class DeclarationTracker(object):
                 if len(targets)==len(exprs):
                     for i in range(0,len(targets)):
                         assignments.extend(self.mapAssign(targets[i],exprs[i]))
+                else:
+                    for i in range(0,len(targets)):
+                        assignments.append( (targetname, UNPARSED()) )
+            else:
+                pass # dont know what to do with this term on the lhs of the assignment
         else:
-            pass
+            pass # dont know what to do with this term on the lhs of the assignment
         return assignments
 
     def parse_Function(self, node):
