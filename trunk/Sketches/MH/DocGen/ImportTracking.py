@@ -36,6 +36,9 @@ import Kamaelia.Chassis.Graphline as Graphline, Kamaelia.Chassis.Carousel as Car
 class Test5(epsilon):
     pass
 
+
+Test6 = Test5
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -83,9 +86,7 @@ if __name__ == "__main__":
         classes[name] = resolvedBases
         imports[name] = name  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
         
-    def parse_Assign(node, imports):
-        print node.nodes
-        print node.expr
+    def parse_Assign(node, imports, classes):
         for target in node.nodes:
             # for each assignment target, go clamber through mapping against the assignment expression
             # we'll only properly parse things with a direct 1:1 mapping
@@ -98,6 +99,8 @@ if __name__ == "__main__":
                 resolvedAssignments.append((target,resolved))
             for (target,expr) in resolvedAssignments:
                 imports[target] = expr
+                if expr in classes.keys():
+                    classes[target] = classes[expr]
 
             
     def mapAssign(target, expr):
@@ -130,7 +133,7 @@ if __name__ == "__main__":
                 parse_Class(node, imports,classes)
             elif isinstance(node, ast.Assign):
                 # parse assignments that map stuff thats been imported to new names
-                parse_Assign(node, imports)
+                parse_Assign(node, imports,classes)
             elif isinstance(node, ast.AugAssign):
                 # definitely ignore these
                 pass
