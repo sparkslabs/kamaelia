@@ -42,6 +42,10 @@ Test6 = Test5
 class Test7(Test6):
     pass
 
+def Test8():
+    pass
+
+Test9 = Test8
 # ------------------------------------------------------------------------------
 
 import compiler
@@ -56,6 +60,11 @@ def CLASS(name,bases):
     return { "name"  : name,
              "type"  : "CLASS",
              "bases" : bases,
+           }
+
+def FUNCTION(name):
+    return { "name" : name,
+             "type" : "FUNCTION",
            }
 
 class DeclarationTracker(object):
@@ -126,6 +135,8 @@ class DeclarationTracker(object):
             pass
         return assignments
 
+    def parse_Function(self, node):
+        self.resolvesTo[node.name] = FUNCTION(node.name)
 
     def chaseThrough(self, node):
         for node in node.getChildren():
@@ -138,6 +149,8 @@ class DeclarationTracker(object):
             elif isinstance(node, ast.Class):
                 # classes need to be parsed so we can work out base classes
                 self.parse_Class(node)
+            elif isinstance(node, ast.Function):
+                self.parse_Function(node)
             elif isinstance(node, ast.Assign):
                 # parse assignments that map stuff thats been imported to new names
                 self.parse_Assign(node)
@@ -196,5 +209,13 @@ if __name__ == "__main__":
             print "class ",classname,"..."
             print "   parsing says bases are:",[base["name"] for base in bases]
             print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
+    print "-----FUNCTIONS:"
+    for funcname,info in d.resolvesTo.items():
+        if info["type"] == "FUNCTION":
+            print "function ",funcname,"...",
+            if eval(funcname).__class__.__name__ == "function":
+                print "YES"
+            else:
+                print "NO"
     print "-----"
     
