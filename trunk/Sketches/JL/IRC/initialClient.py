@@ -50,8 +50,6 @@ class ircClient:
         sock.send(commandify('NICK', self.nick))
         uname_, host_, server_, realname_ = attachColon(self.uname, self.host, self.server, self.realname)
         sock.send(commandify('USER', uname_, host_, server_, realname_))
-        time.sleep(1.0)
-        self.flushOutput()
         
 ##    def mainLoop(self):
 ##        print
@@ -59,7 +57,7 @@ class ircClient:
 ##        self.mainLoop()
         
     def say(self, chan, text):
-        self.sock.send(commandify('PRIVMSG', chan, text))
+        self.sock.send(commandify('PRIVMSG', chan, ':' + text))
 
     def flushOutput(self): #new
         print self.sock.recv(self.bufsize)
@@ -69,8 +67,24 @@ class ircClient:
 
 if __name__ == '__main__':
     nick = 'jollyolst'
-    cli = ircClient(nick, realname='user', bufsize = 4000)
+    cli = ircClient(nick, uname='test_user1', bufsize = 4000)
     channel = '#kamtest'
+    time.sleep(0.5)
+    cli.flushOutput()
     cli.join(channel)
+    time.sleep(0.9)
     cli.say(channel, 'hello, I am a python client')
+    cli.say(channel, 'What?')
     cli.sock.close()
+
+if 0:
+    nick = 'guesswho'
+    cli = ircClient(nick, uname='test_user2', bufsize = 4000)
+    channel = '#kamtest'
+    time.sleep(0.5)
+    cli.join(channel)
+    time.sleep(0.5)
+    cli.say(channel, 'No -- I am your father.')
+    cli.flushOutput()
+    cli.sock.close()
+    

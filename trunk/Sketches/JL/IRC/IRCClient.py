@@ -31,7 +31,7 @@ class channel(object):
    """\
       This is an ugly hack - the send here is one helluvahack. 
       (works with a socket and a component. It's deliberate but
-      ugly as hell"""
+      ugly as hell""" #...I thought the idea of a channel object was clever. --Jinna
    # Sock here is currently a component, and default inbox
    def __init__(self, sock, channel):
       self.sock = sock
@@ -59,8 +59,8 @@ class IRC_Client(_Axon.Component.component):
       it needs to handle the chat session multiplexing that happens by
       default in IRC. There are MANY ways this could be achieved.
    """
-   Inboxes = ["inbox", "control", "talk", "topic"]
-   Outboxes = ["outbox", "signal", "heard" ]
+   Inboxes = {"inbox":"", "control":"", "talk":"", "topic":""}
+   Outboxes = {"outbox":"", "signal":"", "heard":"" }
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
                       defaultChannel="#kamaeliatest"):
@@ -104,7 +104,7 @@ class IRC_Client(_Axon.Component.component):
          elif self.dataReady("topic"):
              newtopic = self.recv("topic")
              self.channels[self.defaultChannel].topic(newtopic)
-         elif self.dataReady("inbox"):
+         elif self.dataReady("inbox"): #if received messages 
             lines = self.recv()
             if "\r" in lines:
                 lines.replace("\r","\n")
@@ -121,9 +121,9 @@ class IRC_Client(_Axon.Component.component):
                 elif "PING" in data:
                     reply = "PONG" + data[data.find("PING")+4:]
                     self.send(reply+"\r\n")
-
+                    
          if data.find(self.nick) != -1:
-            if data.find("LEAVE") != -1:
+            if data.find("LEAVE") != -1: #slash notation not implemented? 
                break
 
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
@@ -147,7 +147,7 @@ class SimpleIRCClient(_Axon.Component.component):
        "control" : "Shutdown control/info",
        "topic" : "Change topic on the channel",
    }
-   Outboxes = ["outbox", "signal"]
+   Outboxes = {"outbox":"", "signal":""}
    def __init__(self, host="127.0.0.1",
                       port=6667,
                       nick="kamaeliabot",
@@ -168,36 +168,35 @@ class SimpleIRCClient(_Axon.Component.component):
 
       host = self.host
 
-      client = TCPClient(host,port)
-      clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
+##      client = TCPClient(host,port)
+##      clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
 
 
-##      subsystem = Graphline(
-##          SELF   = self,
-##          CLIENT = TCPClient(host,port),
-##          PROTO  = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel),
-##          linkages = {
-##              ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
-##              ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
-##              ("PROTO"  , "heard")  : ("SELF", "outbox"),
-##              ("SELF"  , "inbox") : ("PROTO" , "talk"),
-##              ("SELF"  , "topic") : ("PROTO" , "topic"),
-##              ("SELF"  , "control") : ("PROTO" , "control"),
-##              ("PROTO"  , "signal") : ("CLIENT", "control"),
-##              ("CLIENT" , "signal") : ("SELF" , "signal"),
-##          }
-##      )
+      subsystem = Graphline(
+          CLIENT = TCPClient(host,port),
+          PROTO  = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel),
+          linkages = {
+              ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
+              ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
+              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. 
+              ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
+              ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
+              ("SELF"  , "control") : ("PROTO" , "control"),
+              ("PROTO"  , "signal") : ("CLIENT", "control"),
+              ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
+          }
+      )
 
-      self.link((client,"outbox"), (clientProtocol,"inbox"))
-      self.link((clientProtocol,"outbox"), (client,"inbox"))
-
-      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
-      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
-      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
-      
-      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
-      self.link((clientProtocol, "signal"), (client, "control"))
-      self.link((client, "signal"), (self, "signal"), passthrough=2)
+##      self.link((client,"outbox"), (clientProtocol,"inbox"))
+##      self.link((clientProtocol,"outbox"), (client,"inbox"))
+##
+##      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
+##      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
+##      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
+##      
+##      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
+##      self.link((clientProtocol, "signal"), (client, "control"))
+##      self.link((client, "signal"), (self, "signal"), passthrough=2)
 
 ##      self.addChildren(subsystem)
       yield _Axon.Ipc.newComponent(*(self.children))
@@ -211,7 +210,7 @@ if __name__ == '__main__':
    from Kamaelia.UI.Pygame.Ticker import Ticker
    from Kamaelia.Chassis.Pipeline import Pipeline
 
-   pipeline(
+   Pipeline(
        ConsoleReader(),
        SimpleIRCClient(host="127.0.0.1", nick="kamaeliabot", defaultChannel="#kamtest"),
        Ticker(render_right = 800,render_bottom = 600),
