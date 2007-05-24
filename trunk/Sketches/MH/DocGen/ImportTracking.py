@@ -55,6 +55,11 @@ from Nodes import boxright
 class Test11(boxright):
     pass
 
+epsilon = boxright
+
+class Test12(epsilon):
+    pass
+
 # ------------------------------------------------------------------------------
 
 import compiler
