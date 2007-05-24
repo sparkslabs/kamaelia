@@ -173,7 +173,7 @@ class Graphline(component):
                  # add inbox to list, and copy any description text (if it exists)
                  try:
                      self.Inboxes[sourceBox] = toComponent.Inboxes[toBox]
-                 except KeyError, IndexError:
+                 except KeyError, IndexError, TypeError:
                      self.Inboxes[sourceBox] = ""
 
          if toComponent == self:
@@ -181,7 +181,7 @@ class Graphline(component):
                  # add outbox to list, and copy any description text (if it exists)
                  try:
                      self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
-                 except KeyError, IndexError:
+                 except KeyError, IndexError, TypeError:
                      self.Outboxes[toBox] = ""
       
    def main(self):
