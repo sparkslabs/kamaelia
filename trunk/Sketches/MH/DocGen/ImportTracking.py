@@ -46,6 +46,10 @@ def Test8():
     pass
 
 Test9 = Test8
+
+Test10 = Test8
+Test10 = "hello"
+
 # ------------------------------------------------------------------------------
 
 import compiler
