@@ -59,37 +59,37 @@ if __name__ == "__main__":
     AST = compiler.parseFile(sourcefile)
     root = AST.getChildren()[1]           # root statement node
 
-    imports = {}
+    resolvesTo = {}
     classes = {}
     
-    def parse_From(node, imports):
+    def parse_From(node, resolvesTo):
         sourceModule, items = node.getChildren()
         for (name, destName) in items:
             mapsTo = ".".join([sourceModule,name])
             if destName == None:
                 destName = name
-            imports[destName] = mapsTo
+            resolvesTo[destName] = mapsTo
             
-    def parse_Import(node, imports):
+    def parse_Import(node, resolvesTo):
         items = node.getChildren()[0]
 
         for (name,destName) in items:
             if destName == None:
                 destName = name
-            imports[destName] = name
+            resolvesTo[destName] = name
             
-    def parse_Class(node, imports,classes):
+    def parse_Class(node, resolvesTo,classes):
         name = node.name
         bases = node.bases
         resolvedBases = []
         for base in bases:
             expBase = parseName(base)
-            resolvedBase = matchToImport(imports,expBase)
+            resolvedBase = matchToImport(resolvesTo,expBase)
             resolvedBases.append(resolvedBase)
         classes[name] = resolvedBases
-        imports[name] = name  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
+        resolvesTo[name] = name  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
         
-    def parse_Assign(node, imports, classes):
+    def parse_Assign(node, resolvesTo, classes):
         for target in node.nodes:
             # for each assignment target, go clamber through mapping against the assignment expression
             # we'll only properly parse things with a direct 1:1 mapping
@@ -98,10 +98,10 @@ if __name__ == "__main__":
             assignments = mapAssign(target,node.expr)
             resolvedAssignments = []
             for (target,expr) in assignments:
-                resolved = matchToImport(imports,expr)
+                resolved = matchToImport(resolvesTo,expr)
                 resolvedAssignments.append((target,resolved))
             for (target,expr) in resolvedAssignments:
-                imports[target] = expr
+                resolvesTo[target] = expr
                 if expr in classes.keys():
                     classes[target] = classes[expr]
 
@@ -123,20 +123,20 @@ if __name__ == "__main__":
         return assignments
 
     
-    def chaseThrough(node, imports,classes):
+    def chaseThrough(node, resolvesTo,classes):
         for node in node.getChildren():
             if isinstance(node, ast.From):
                 # parse "from ... import"s to recognise what symbols are mapped to what imported things
-                parse_From(node, imports)
+                parse_From(node, resolvesTo)
             elif isinstance(node, ast.Import):
-                # parse imports to recognise what symbols are mapped to what imported things
-                parse_Import(node, imports)
+                # parse resolvesTo to recognise what symbols are mapped to what imported things
+                parse_Import(node, resolvesTo)
             elif isinstance(node, ast.Class):
                 # classes need to be parsed so we can work out base classes
-                parse_Class(node, imports,classes)
+                parse_Class(node, resolvesTo,classes)
             elif isinstance(node, ast.Assign):
                 # parse assignments that map stuff thats been imported to new names
-                parse_Assign(node, imports,classes)
+                parse_Assign(node, resolvesTo,classes)
             elif isinstance(node, ast.AugAssign):
                 # definitely ignore these
                 pass
@@ -152,10 +152,10 @@ if __name__ == "__main__":
         else:
             return None
         
-    def matchToImport(imports,name):
-        # go through imports, if we find one that matches the root of the name
+    def matchToImport(resolvesTo,name):
+        # go through resolvesTo, if we find one that matches the root of the name
         # then resolve it
-        for (importName,resolved) in imports.items():
+        for (importName,resolved) in resolvesTo.items():
             if importName == name:
                 return resolved
             else:
@@ -164,11 +164,11 @@ if __name__ == "__main__":
                     return ".".join([resolved, name[len(importName):]])
         return name
     
-    chaseThrough(root, imports, classes)
+    chaseThrough(root, resolvesTo, classes)
     
     import pprint
     print "-----MAPPINGS:"
-    pprint.pprint(imports)
+    pprint.pprint(resolvesTo)
     print "-----CLASSES:"
     for cls in classes:
         bases = classes[cls]
