@@ -419,7 +419,7 @@ class SourceTreeDocs(object):
                 newPath = list(pathToHere) + [name]
 
                 # copy items that lie in teh same subtree
-                subsetOfNames = [item for item in namesBelowHere if item[:len(newPath)] == newPath]
+                subsetOfNames = [item for item in namesBelowHere if list(item[:len(newPath)]) == newPath]
 
                 self._build(subtree[name], newPath, subsetOfNames)
                     
@@ -470,6 +470,8 @@ class KamaeliaComponentDocs(ClassDocs):
 
 ANY=object()
 
+from ImportTracking import DeclarationTracker
+
 class ModuleDocs(object):
     """\
     ModuleDocs(filepath, modulePath) -> new ModuleDocs object.
@@ -495,6 +497,17 @@ class ModuleDocs(object):
 
     def buildAndResolve(self, pathToHere, namesBelowHere):
         self._extractModuleDocString()
+
+        # convert to a dictionary that maps what the module paths relative to this location are, to the full module paths
+        localNames = {}
+        for name in namesBelowHere:
+            local = ".".join(name[len(pathToHere):])
+            full = ".".join(name)
+            localNames[local]=full
+            
+        self.tracker = DeclarationTracker(localNames)
+        self.tracker.chaseThrough(self._AST.node)
+        
         self._findKamaeliaEntities()
         self._findOtherEntities()
         
@@ -525,16 +538,27 @@ class ModuleDocs(object):
 
     def _findKamaeliaEntities(self):
         # find the __kamaelia_compoents__ declaration
-        stmt = self._AST.getChildren()[1]
-        assert(isinstance(stmt, ast.Stmt))
-        components = self._findAssignments( "__kamaelia_components__",
-                                           stmt,
-                                           [ast.Class, ast.Function, ast.Module]
-                                         )
-        prefabs    = self._findAssignments( "__kamaelia_prefabs__",
-                                           stmt,
-                                           [ast.Class, ast.Function, ast.Module]
-                                         )
+        if "__kamaelia_components__" in self.tracker.listAllSymbols():
+            components = self.tracker.getSymbolAst("__kamaelia_components__")
+            components = [ ("", components) ]
+        else:
+            components = []
+
+        if "__kamaelia_prefabs__" in self.tracker.listAllSymbols():
+            prefabs = self.tracker.getSymbolAst("__kamaelia_prefabs__")
+            prefabs = [ ("", prefabs) ]
+        else:
+            prefabs = []
+#        stmt = self._AST.node
+#        assert(isinstance(stmt, ast.Stmt))
+#        components = self._findAssignments( "__kamaelia_components__",
+#                                           stmt,
+#                                           [ast.Class, ast.Function, ast.Module]
+#                                         )
+#        prefabs    = self._findAssignments( "__kamaelia_prefabs__",
+#                                           stmt,
+#                                           [ast.Class, ast.Function, ast.Module]
+#                                         )
 
         # flatten the results
         components = _stringsInList([x for (_,x) in components])
@@ -545,7 +569,7 @@ class ModuleDocs(object):
         self._prefabNames = dict([(x,x) for x in prefabs]).keys()
         
     def _findOtherEntities(self):
-        stmt = self._AST.getChildren()[1]
+        stmt = self._AST.node
         assert(isinstance(stmt, ast.Stmt))
         
         # find other class, method etc top level declarations in the source
@@ -601,7 +625,7 @@ class ModuleDocs(object):
     
     def _documentNamedFunction(self, prefabName, modulePath):
         fnode = self._findFunctions( prefabName,
-                                    self._AST.getChildren()[1],
+                                    self._AST.node,
                                     [ast.Class, ast.Function, ast.Module]
                                   )
         assert(len(fnode)==1)
@@ -689,7 +713,7 @@ class ModuleDocs(object):
     
     def _documentNamedComponent(self, componentName, modulePath):
         cnode = self._findClasses( componentName,
-                                  self._AST.getChildren()[1],
+                                  self._AST.node,
                                   [ast.Class, ast.Function, ast.Module]
                                 )
         assert(len(cnode)>=1)
@@ -713,7 +737,7 @@ class ModuleDocs(object):
     
     def _documentNamedClass(self, className, modulePath):
         cnode = self._findClasses( className,
-                                  self._AST.getChildren()[1],
+                                  self._AST.node,
                                   [ast.Class, ast.Function, ast.Module, ast.If]
                                 )
         assert(len(cnode)>=1)

@@ -247,6 +247,12 @@ class DeclarationTracker(object):
         else:
             return [base["name"] for base in info["bases"]]
 
+    def listAllSymbols(self):
+        return self.resolvesTo.keys()
+
+    def getSymbolAst(self,name):
+        return self.resolvesTo[name]["ast"]
+
 if __name__ == "__main__":
 
     
@@ -265,7 +271,7 @@ if __name__ == "__main__":
     # classes of declared classes are
 
     AST = compiler.parseFile(sourcefile)
-    root = AST.getChildren()[1]           # root statement node
+    root = AST.node           # root statement node is a module, get the children
 
     localModules = {
         "Nodes" : "Pretend.there.is.a.module.path.Nodes",
