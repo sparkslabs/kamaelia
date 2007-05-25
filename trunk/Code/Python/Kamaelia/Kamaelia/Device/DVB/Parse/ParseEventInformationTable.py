@@ -542,7 +542,7 @@ class SimplifyEIT(component):
 
 __kamaelia_components__ = ( ParseEventInformationTable,
                             SimplifyEIT, )
-__kamaelia_prefabs__    = ( ParseEventInformationTable_Subset )
+__kamaelia_prefabs__    = ( ParseEventInformationTable_Subset, )
             
 if __name__ == "__main__":
     
