@@ -70,17 +70,20 @@ import __builtin__ as BUILTINS
 def UNKNOWN(name):
     return { "name" : name,
              "type" : "UNKNOWN",
+             "ast"  : None,
            }
 
-def CLASS(name,bases):
+def CLASS(ast,name,bases):
     return { "name"  : name,
              "type"  : "CLASS",
              "bases" : bases,
+             "ast"   : ast,
            }
 
-def FUNCTION(name):
+def FUNCTION(ast,name):
     return { "name" : name,
              "type" : "FUNCTION",
+             "ast"  : ast,
            }
 
 def UNPARSED(ast=None):
@@ -131,7 +134,7 @@ class DeclarationTracker(object):
             expBase = self.parseName(base)
             resolvedBase = self.matchToSymbolName(expBase)
             resolvedBases.append(resolvedBase)
-        self.resolvesTo[name] = CLASS(name,resolvedBases)  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
+        self.resolvesTo[name] = CLASS(node,name,resolvedBases)  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
 
     def parse_Assign(self, node):
         for target in node.nodes:
@@ -182,7 +185,7 @@ class DeclarationTracker(object):
         return assignments
 
     def parse_Function(self, node):
-        self.resolvesTo[node.name] = FUNCTION(node.name)
+        self.resolvesTo[node.name] = FUNCTION(node,node.name)
 
     def chaseThrough(self, node):
         for node in node.getChildren():
@@ -249,7 +252,12 @@ if __name__ == "__main__":
     
 
     import sys
-    sourcefile = sys.argv[0]
+    if len(sys.argv)==2:
+        sourcefile = sys.argv[1]
+        check=False
+    else:
+        sourcefile = sys.argv[0]
+        check=True
 
 
     # now lets try to sequentially traverse the AST and track imports (and
@@ -268,19 +276,30 @@ if __name__ == "__main__":
     
     import pprint
     print "-----MAPPINGS:"
+    print
     pprint.pprint(d.resolvesTo)
-    print "-----CLASSES:"
+    print
+    print "-----CLASSES IDENTIFIED:"
+    print
     for classname in d.listAllClasses():
         bases = d.getClassBasesNames(classname)
         print "class ",classname,"..."
         print "   parsing says bases are:",bases
-        print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
+        if check:
+            print "   bases actually are:    ",[base.__module__+"."+base.__name__ for base in eval(classname).__bases__]
+    print
     print "-----FUNCTIONS:"
+    print
     for funcname in d.listAllFunctions():
-        print "function ",funcname,"...",
-        if eval(funcname).__class__.__name__ == "function":
-            print "YES"
+        print "function ",funcname,
+        if check:
+            print "...",
+            if eval(funcname).__class__.__name__ == "function":
+                print "YES"
+            else:
+                print "NO"
         else:
-            print "NO"
+            print
+    print
     print "-----"
     
