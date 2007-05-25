@@ -38,7 +38,6 @@ class Test_GetHostByName(unittest.TestCase):
         Axon.Scheduler.scheduler.run = self.scheduler
 
     def setup_tests(self, lookupargs = None):
-        """It is necessary not to use the setUp """
         self.lookup = GetHostByName(lookupargs).activate(Scheduler = self.scheduler)
         self.inSrc = Dummy()
         self.inSrc.link((self.inSrc,"outbox"), (self.lookup,"inbox"))
@@ -68,6 +67,7 @@ class Test_GetHostByName(unittest.TestCase):
         return self.outDest.recv("control")
 
     def runUntil(self, timeout = 1):
+        """Runs the scheduler until the lookup component emits a message of some description"""
         thetime = time.time()
         while not self.dataReadyAny():
             self.run.next()
@@ -76,7 +76,7 @@ class Test_GetHostByName(unittest.TestCase):
 
 
     def compareLookup(self, hostname, fail = False):
-        """compares a direct call to gethostbyname() with the result of a 
+        """Compares a direct call to gethostbyname() with the result of a 
         previously-inserted call to the component which has now processed
         it. set fail to True or False to determine whether the lookup 
         should fail or work, or any other value (such as None) to test 
@@ -90,6 +90,7 @@ class Test_GetHostByName(unittest.TestCase):
             if fail == False: warnings.warn("%s expected to be resolvable, isn't. Perhaps you are offline? Tests may not be comprehensive." % hostname) #self.fail("hostname %s not resolvable!" % hostname)
 
     def checkStop(self, stopped):
+        """Checks to make sure that the lookup component has ended when we think it should."""
         time.sleep(0.01) # let the thread have a chance to die.
         try:
             for i in xrange(0, 100):
@@ -98,6 +99,7 @@ class Test_GetHostByName(unittest.TestCase):
         self.failUnless(self.lookup._isStopped() == stopped)
 
     def testLinearSucceed(self):
+        """A non-existent hostname lookup will fail sanely."""
         self.setup_tests()
         hostname = "slashdot.org"
         self.sendToInbox(hostname)
@@ -107,6 +109,7 @@ class Test_GetHostByName(unittest.TestCase):
         self.checkStop(stopped = False)
 
     def testLinearFail(self):
+        """A hostname lookup will succeed sanely."""
         self.setup_tests()
         hostname = "Q" + md5.new("slashdot.org").hexdigest() # this is not likely to be a valid hostname
         self.sendToInbox(hostname)
@@ -115,6 +118,7 @@ class Test_GetHostByName(unittest.TestCase):
         self.checkStop(stopped = False)
 
     def testLinearShutdown(self):
+        """A producerFinished() shutdown signal will be handled properly."""
         self.setup_tests()
         self.sendToControl(producerFinished())
         self.runUntil()
@@ -122,6 +126,7 @@ class Test_GetHostByName(unittest.TestCase):
         self.checkStop(stopped = True)
 
     def testLinearShutdown2(self):
+        """A shutdownMicroprocess() shutdown signal will be handled properly."""
         self.setup_tests()
         self.sendToControl(shutdownMicroprocess())
         self.runUntil()
@@ -129,8 +134,16 @@ class Test_GetHostByName(unittest.TestCase):
         self.checkStop(stopped = True)
 
     def testLinearTypicalUsage(self):
-        pass
-        # insert a typical usecase here. 10 or 15 sequential lookups, some to the same host, some of which fail.
+        self.setup_tests()
+        """A typical usage pattern is tested. 10 or 15 sequential lookups, some to the same host, some of which fail."""
+        hostlist = ["slashdot.org", "kamaelia.sourceforge.net", "bbc.co.uk", "bbc.co.uk", 
+        "somehostnamethatimadeupinthehopeitfails.co", "192.168.0.1",
+        "♖♘♗♕♔♗♘♖"] # now it's just getting silly
+        for host in hostlist:
+            self.sendToInbox(host)
+        for host in hostlist:
+            self.runUntil()
+            self.compareLookup(host, fail = None) # either win or lose, doesn't matter, what matters is consistency
 
     def OneShot(self, hostname, fail = False):
         self.setup_tests(hostname)
@@ -141,8 +154,10 @@ class Test_GetHostByName(unittest.TestCase):
         self.checkStop(stopped = True)
 
     def testOneShotFail(self):
+        """A non-existent hostname lookup will fail sanely - one-shot version."""
         self.OneShot("Q" + md5.new("slashdot.org").hexdigest(), fail = True) # this is an unlikely hostname
     def testOneShotSucceed(self):
+        """A hostname lookup will succeed sanely - one-shot version."""
         self.OneShot("slashdot.org", fail = False)
 
     
