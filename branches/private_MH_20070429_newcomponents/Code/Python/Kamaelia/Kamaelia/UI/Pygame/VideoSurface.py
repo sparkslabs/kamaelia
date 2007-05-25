@@ -219,7 +219,7 @@ class VideoSurface(component):
 
 
 
-__kamaelia_components__  = ( VideoSurface )
+__kamaelia_components__  = ( VideoSurface, )
 
             
         

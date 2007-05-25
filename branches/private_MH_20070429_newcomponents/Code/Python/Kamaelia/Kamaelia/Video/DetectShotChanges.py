@@ -242,4 +242,4 @@ class DetectShotChanges(component):
                 
         return -99,None
 
-__kamaelia_components__  = ( DetectShotChanges )
+__kamaelia_components__  = ( DetectShotChanges, )

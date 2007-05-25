@@ -210,4 +210,4 @@ class CropAndScale(component):
     
         return newframe
 
-__kamaelia_components__  = ( CropAndScale )
+__kamaelia_components__  = ( CropAndScale, )
