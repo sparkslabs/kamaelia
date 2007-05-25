@@ -357,15 +357,16 @@ class SourceTreeDocs(object):
             nested[node] = {}
             nested=nested[node]
 
-        # recurse through the source directories building docs
-        self._build(self.baseDir, self.flatModules, nested, base=root)
+        # recurse through the source directories ingesting them
+        self._ingest(self.baseDir, self.flatModules, nested, base=root)
+        self._build(self.nestedModules, [], self.flatModules)
         
         
-    def _build(self,dirName,flatModules,nestedModules,base):
+    def _ingest(self,dirName,flatModules,nestedModules,base):
         """\
         **Internal method**
         
-        Recursively scans the code base specified by dirName and documents any
+        Recursively scans the code base specified by dirName and ingests any
         modules found. Skips any filenames specified for exclusion at
         initialisation.
 
@@ -386,7 +387,7 @@ class SourceTreeDocs(object):
             elif os.path.isdir(filepath):
                 subTree = {}
                 subBase = base + [filename]
-                foundPythonFiles = self._build(filepath, flatModules, subTree, subBase)
+                foundPythonFiles = self._ingest(filepath, flatModules, subTree, subBase)
                 # only include if there was actually something in there!
                 if foundPythonFiles:
                     containsPythonFiles = True
@@ -409,6 +410,26 @@ class SourceTreeDocs(object):
 
         return containsPythonFiles
 
+    def _build(self, subtree, pathToHere, namesBelowHere):
+        # iterate/recurse through the modules ingested and get each to build its
+        # documentation, resolving references to other modules too
+
+        for name in subtree:
+            if isinstance(subtree[name], dict):
+                newPath = list(pathToHere) + [name]
+
+                # copy items that lie in teh same subtree
+                subsetOfNames = {}
+                for itemname in namesBelowHere.keys():
+                    if itemname[:len(newPath)] == newPath:
+                        subsetOfNames[itemname] = namesBelowHere[itemname]
+
+                self._build(subtree[name], newPath, subsetOfNames)
+                    
+            else:
+                moduleDocObj = subtree[name]
+                moduleDocObj.buildAndResolve(pathToHere, namesBelowHere)
+        
 
 def isPythonFile(Path, File):
     """Returns True if the specified file looks like it is a python source file"""
@@ -466,36 +487,42 @@ class ModuleDocs(object):
     Keyword arguments:
 
     - filepath    -- full filepath of the python source file
-    - modulePath  -- tuple of the path of this module, eg ("Kamaelia","File","Reading")
+    - modulePath  -- tuple of the path of this module, eg ("Kamaelia","File","Reading") or ("Kamaelia","Chassis") ... note there's not "__init__"
     """
     def __init__(self, filepath, modulePath):
         super(ModuleDocs,self).__init__()
+        self.modulePath = modulePath
+        assert("__init__" not in modulePath)
+        assert("__init__.py" not in modulePath)
+
         self._AST = compiler.parseFile(filepath)
 
+
+    def buildAndResolve(self, pathToHere, namesBelowHere):
         self._extractModuleDocString()
         self._findKamaeliaEntities()
         self._findOtherEntities()
         
         self.prefabs = []
         for prefabName in self._prefabNames:
-            doc = self._documentNamedFunction(prefabName, modulePath)
+            doc = self._documentNamedFunction(prefabName, self.modulePath)
             self.prefabs.append(doc)
         
         self.components = []
         for componentName in self._componentNames:
-            doc = self._documentNamedComponent(componentName, modulePath)
+            doc = self._documentNamedComponent(componentName, self.modulePath)
             self.components.append(doc)
         
         self.classes = []
         for className in self._otherClassNames:
-            doc = self._documentNamedClass(className, modulePath)
+            doc = self._documentNamedClass(className, self.modulePath)
             self.classes.append(doc)
             
         self.functions = []
         for funcName in self._otherFunctionNames:
-            doc = self._documentNamedFunction(funcName, modulePath)
+            doc = self._documentNamedFunction(funcName, self.modulePath)
             self.functions.append(doc)
-            
+
 
     def _extractModuleDocString(self):
         assert(isinstance(self._AST, ast.Module))
@@ -851,6 +878,7 @@ if __name__ == "__main__":
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
     modDocs = ModuleDocs(file,["Kamaelia","File","Reading"])
+    modDocs.buildAndResolve(["Kamaelia","File","Reading"],{})
 
     print "MODULE:"
     print modDocs.docString
@@ -876,3 +904,11 @@ if __name__ == "__main__":
     print "*******************************************************************"
     print
     pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
+    print
+    print "*******************************************************************"
+    print
+    rDocs = SourceTreeDocs(None)
+    pprint.pprint(rDocs.flatModules)
+    print
+    pprint.pprint(rDocs.nestedModules)
+    print
