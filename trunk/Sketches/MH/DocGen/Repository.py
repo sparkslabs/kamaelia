@@ -359,7 +359,7 @@ class SourceTreeDocs(object):
 
         # recurse through the source directories ingesting them
         self._ingest(self.baseDir, self.flatModules, nested, base=root)
-        self._build(self.nestedModules, [], self.flatModules)
+        self._build(self.nestedModules, [], self.flatModules.keys())
         
         
     def _ingest(self,dirName,flatModules,nestedModules,base):
@@ -419,10 +419,7 @@ class SourceTreeDocs(object):
                 newPath = list(pathToHere) + [name]
 
                 # copy items that lie in teh same subtree
-                subsetOfNames = {}
-                for itemname in namesBelowHere.keys():
-                    if itemname[:len(newPath)] == newPath:
-                        subsetOfNames[itemname] = namesBelowHere[itemname]
+                subsetOfNames = [item for item in namesBelowHere if item[:len(newPath)] == newPath]
 
                 self._build(subtree[name], newPath, subsetOfNames)
                     
@@ -492,8 +489,6 @@ class ModuleDocs(object):
     def __init__(self, filepath, modulePath):
         super(ModuleDocs,self).__init__()
         self.modulePath = modulePath
-        assert("__init__" not in modulePath)
-        assert("__init__.py" not in modulePath)
 
         self._AST = compiler.parseFile(filepath)
 
