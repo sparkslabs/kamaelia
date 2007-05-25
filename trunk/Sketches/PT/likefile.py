@@ -1,30 +1,30 @@
 #!/usr/bin/env python
+"""
+Note 1: Threadsafeness of activate().
 
-# parts of this may look strangely familiar to anyone who wrote ThreadedComponent :)
-#
-#
-# In order for a seperate thread to communicate information into a kamaelia system,
-# we must have Queue objects that carry all communications, meaning something like 
-# a threadedcomponent or a UnixProcess turned inside out.
-#
+when a component is activated, it calls the method inherited from microprocess, which calls _addThread(self)
+on an appropriate scheduler. _addThread calls wakeThread, which places the request on a threadsafe queue.
 
+"""
 
-from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent, component
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
-import Axon
-import Queue, threading, time
-from Axon.Component import component
-queuelengths = 1000
+import Queue, threading, time, copy, Axon
+queuelengths = 0
 
-class dummyComponent(component):
+class dummyComponent(Axon.Component.component):
+    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
     def main(self):
         while True:
             self.pause()
             yield 1
 
 class schedulerThread(threading.Thread):
+    """A python thread which runs a scheduler."""
+    thread = None
     def __init__(self,slowmo=0):
+        if schedulerThread.thread: raise "only one scheduler for now can be run!"
+        schedulerThread.thread = self
         self.slowmo = slowmo
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
@@ -33,7 +33,7 @@ class schedulerThread(threading.Thread):
         scheduler.run.runThreads(slowmo = self.slowmo)
 
 
-class componentWrapper(component):
+class componentWrapper(Axon.Component.component):
     def __init__(self, childcomponent):
         super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
@@ -60,6 +60,7 @@ class componentWrapper(component):
         # note to self: this can be slightly optimised by making self.outqueues/self.inqueues keyed by the parentSource/parentSink,
         # avoiding an extra lookup below in the box mapping iteritems()
 
+
     def main(self):
         self.child.activate()
         while True:
@@ -73,7 +74,8 @@ class componentWrapper(component):
                             self.send(msg, parentSource)
                         except noSpaceInBox, e:
                             raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                    else: break
+                    else: # if the component's inboxes are full, do something here. Preferably not succeed.
+                        break
 
 
             for childSource, parentSink in self.childOutboxMapping.iteritems():
@@ -88,27 +90,30 @@ class componentWrapper(component):
 
 class likeFile(object):
     def __init__(self, componenttowrap):
-        self.component = componentWrapper(componenttowrap) # this instantiation might be threadsafe?
-        self.component.activate() # allegedly threadsafe.
+        component = componentWrapper(componenttowrap)
+        self.inqueues = copy.copy(component.inqueues)
+        self.outqueues = copy.copy(component.outqueues)
+        # reaching into the component like this is threadsafe since it has not been activated yet, and __init__
+        # runs in the current thread
+        component.activate() # threadsafe, see note 1
         self.alive = True
 
-    def get(self, boxname, blocking = False):
-        # this dictionary lookup of a queue is technically not threadsafe, but the only time the dict
-        # is modified is during instantiation, which is in the current thread.
+    def get(self, boxname):
         if self.alive: 
-            if blocking: return self.component.outqueues[boxname].get()
-            else:
-                try: return self.component.outqueues[boxname].get_nowait()
-                except Queue.Empty: return
+            return self.outqueues[boxname].get()
         else: raise "shutdown was previously called!"
 
     def put(self, msg, boxname):
-        if self.alive: self.component.inqueues[boxname].put_nowait(msg)
+        if self.alive: self.inqueues[boxname].put_nowait(msg)
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
-        if self.alive: self.component.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess())
+        if self.alive: self.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess())
         else: raise "shutdown was previously called!"
+        self.alive = False
+
+    def __del__(self):
+        if self.alive: self.shutdown()
 
 
 if __name__ == "__main__":
