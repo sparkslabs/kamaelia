@@ -105,8 +105,8 @@ class DeclarationTracker(object):
         self.localModules = localModules
 
     def parse_From(self, node):
-        sourceModule, items = node.getChildren()
-        for (name, destName) in items:
+        sourceModule = node.modname
+        for (name, destName) in node.names:
             # check if this is actually a local module
             if sourceModule in self.localModules:
                 sourceModule=self.localModules[sourceModule]
@@ -116,9 +116,7 @@ class DeclarationTracker(object):
             self.resolvesTo[destName] = UNKNOWN(mapsTo)
 
     def parse_Import(self, node):
-        items = node.getChildren()[0]
-
-        for (name,destName) in items:
+        for (name,destName) in node.names:
             if name in self.localModules:
                 name = self.localModules[name]
             if destName == None:
