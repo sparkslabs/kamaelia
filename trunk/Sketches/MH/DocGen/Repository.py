@@ -549,13 +549,11 @@ class ModuleDocs(object):
         found=[]
         for child in node.getChildren():
             if isinstance(child, ast.Assign):
-                assignStmt = child.getChildren()
-                lhs = assignStmt[0]
-                if isinstance(lhs, ast.AssName):
-                    lhsname = lhs.getChildren()[0]
-                    if lhsname == target or target==ANY:
-                        rhs = assignStmt[1]
-                        found.append((lhsname,rhs))
+                for lhs in child.nodes:
+                    if isinstance(lhs, ast.AssName):
+                        if lhs.name == target or target==ANY:
+                            rhs = child.expr
+                            found.append((lhs.name, rhs))
                         
             elif not isinstance(child, tuple(ignores)) and \
                      isinstance(child, ast.Node):
@@ -638,11 +636,10 @@ class ModuleDocs(object):
     def _findBoxDecl(self, codeNode, boxTypeName):
         for child in codeNode.getChildren():
             if isinstance(child, ast.Assign):
-                assignStmt = child.getChildren()
-                lhs = assignStmt[0]
+                lhs = child.nodes[0]
                 if isinstance(lhs, ast.AssName):
-                    if lhs.getChildren()[0] == boxTypeName:
-                        rhs = assignStmt[1]
+                    if lhs.name == boxTypeName:
+                        rhs = child.expr
                         if isinstance(rhs, ast.Dict):
                             return self._parseDictBoxes(rhs)
                         elif isinstance(rhs, ast.List):
@@ -661,7 +658,7 @@ class ModuleDocs(object):
                 
     def _parseListBoxes(self, listNode):
         boxes = []
-        for item in listNode.getChildren():
+        for item in listNode.nodes:
             if isinstance(item, ast.Const):
                 name = item.value
                 if isinstance(name, str):
@@ -717,7 +714,7 @@ def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
     
     if isinstance(theList,ast.Node):
-        theList = theList.getChildren()
+        theList = theList.nodes
         
     found = []
     for item in theList:
