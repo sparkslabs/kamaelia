@@ -60,6 +60,11 @@ epsilon = boxright
 class Test12(epsilon):
     pass
 
+import Nodes
+
+class Test13(Nodes.boxright):
+    pass
+
 # ------------------------------------------------------------------------------
 
 import compiler
@@ -121,10 +126,12 @@ class DeclarationTracker(object):
     def parse_Import(self, node):
         for (name,destName) in node.names:
             if name in self.localModules:
-                name = self.localModules[name]
+                fullname = self.localModules[name]
+            else:
+                fullname = name
             if destName == None:
                 destName = name
-            self.resolvesTo[destName] = UNKNOWN(name)
+            self.resolvesTo[destName] = UNKNOWN(fullname)
 
     def parse_Class(self, node):
         name = node.name
@@ -216,7 +223,7 @@ class DeclarationTracker(object):
         elif isinstance(node, (ast.Getattr, ast.AssAttr)):
             return ".".join([self.parseName(node.expr), node.attrname])
         else:
-            return None
+            return ""
 
     def matchToSymbolName(self,name):
         # go through resolvesTo, if we find one that matches the root of the name
