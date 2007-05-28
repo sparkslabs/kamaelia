@@ -311,6 +311,7 @@ introspection of the codebase but then throw most of the information away.
 import compiler
 from compiler import ast
 import os
+import sys
 
 class SourceTreeDocs(object):
     """\
@@ -402,7 +403,7 @@ class SourceTreeDocs(object):
                 else:
                     flatModulePath = base+[moduleName]
                     
-                print "Parsing:",filepath
+                print "Ingesting:",filepath
                 moduleDocs = ModuleDocs(filepath, flatModulePath)
                 
                 flatModules[tuple(flatModulePath)] = moduleDocs
@@ -424,6 +425,7 @@ class SourceTreeDocs(object):
                 self._build(subtree[name], newPath, subsetOfNames)
                     
             else:
+                print "Parsing:", ".".join(pathToHere+[name])
                 moduleDocObj = subtree[name]
                 moduleDocObj.buildAndResolve(pathToHere, namesBelowHere)
         
@@ -502,7 +504,7 @@ class ModuleDocs(object):
         localNames = {}
         for name in namesBelowHere:
             local = ".".join(name[len(pathToHere):])
-            full = ".".join(name)
+            full = ".".join(list(name))
             localNames[local]=full
             
         self.tracker = DeclarationTracker(localNames)
@@ -540,53 +542,35 @@ class ModuleDocs(object):
         # find the __kamaelia_compoents__ declaration
         if "__kamaelia_components__" in self.tracker.listAllSymbols():
             components = self.tracker.getSymbolAst("__kamaelia_components__")
-            components = [ ("", components) ]
         else:
             components = []
 
         if "__kamaelia_prefabs__" in self.tracker.listAllSymbols():
             prefabs = self.tracker.getSymbolAst("__kamaelia_prefabs__")
-            prefabs = [ ("", prefabs) ]
         else:
             prefabs = []
-#        stmt = self._AST.node
-#        assert(isinstance(stmt, ast.Stmt))
-#        components = self._findAssignments( "__kamaelia_components__",
-#                                           stmt,
-#                                           [ast.Class, ast.Function, ast.Module]
-#                                         )
-#        prefabs    = self._findAssignments( "__kamaelia_prefabs__",
-#                                           stmt,
-#                                           [ast.Class, ast.Function, ast.Module]
-#                                         )
 
         # flatten the results
-        components = _stringsInList([x for (_,x) in components])
-        prefabs    = _stringsInList([x for (_,x) in prefabs])
+        try:
+            components = _stringsInList(components)
+        except:
+            sys.stderr.write("!!! Unable to parse '__kamaelia_components__' declaration.")
+            components = []
+        try:
+            prefabs = _stringsInList(prefabs)
+        except:
+            sys.stderr.write("!!! Unable to parse '__kamaelia_prefabs__' declaration.")
+            prefabs = []
 
         # and remove any repeats (unlikely)
         self._componentNames = dict([(x,x) for x in components]).keys()
         self._prefabNames = dict([(x,x) for x in prefabs]).keys()
+        print "cnames:",self._componentNames
+        print "pnames:",self._prefabNames
         
     def _findOtherEntities(self):
-        stmt = self._AST.node
-        assert(isinstance(stmt, ast.Stmt))
-        
-        # find other class, method etc top level declarations in the source
-        functions = self._findFunctions(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
-        classes   = self._findClasses(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
-        
-        # convert from ast to name
-        functions = [func.name for func in functions]
-        classes   = [clss.name for clss in classes]
-        
-        # remove anything already matched up as being a prefab or component
-        functions = [name for name in functions if name not in self._prefabNames]
-        classes   = [name for name in classes   if name not in self._componentNames]
-
-        self._otherFunctionNames = functions
-        self._otherClassNames   = classes
-        
+        self._otherFunctionNames = [name for name in self.tracker.listAllFunctions() if name not in self._prefabNames]
+        self._otherClassNames = [name for name in self.tracker.listAllClasses() if name not in self._componentNames]
 
     def _findAssignments(self, target, node, ignores):
         # recurse to find an assignment statement for the given target
@@ -624,13 +608,7 @@ class ModuleDocs(object):
         return found
     
     def _documentNamedFunction(self, prefabName, modulePath):
-        fnode = self._findFunctions( prefabName,
-                                    self._AST.node,
-                                    [ast.Class, ast.Function, ast.Module]
-                                  )
-        assert(len(fnode)==1)
-        fnode=fnode[0]
-        assert(prefabName == fnode.name)
+        fnode = self.tracker.getSymbolAst(prefabName)
         return self._documentFunction(fnode, modulePath)
         
     def _documentFunction(self, fnode, modulePath):
@@ -662,22 +640,6 @@ class ModuleDocs(object):
         theFunc.module = ".".join(modulePath)
         return theFunc
 
-    
-    def _findClasses(self, target, node, ignores):
-        # recurse to find a function statement for the given target
-        # but ignoring any branches matching the node classes listed
-        
-        found=[]
-        for child in node.getChildren():
-            if isinstance(child, ast.Class):
-                if child.name == target or target == ANY:
-                    found.append(child)
-            
-            elif not isinstance(child, tuple(ignores)) and \
-                     isinstance(child, ast.Node):
-                found += self._findClasses(target, child, ignores)
-                
-        return found
     
     def _findBoxDecl(self, codeNode, boxTypeName):
         for child in codeNode.getChildren():
@@ -712,13 +674,8 @@ class ModuleDocs(object):
         return list(boxes)
     
     def _documentNamedComponent(self, componentName, modulePath):
-        cnode = self._findClasses( componentName,
-                                  self._AST.node,
-                                  [ast.Class, ast.Function, ast.Module]
-                                )
-        assert(len(cnode)>=1)
-        cnode = cnode[0]
-        assert(componentName == cnode.name)
+        cnode = self.tracker.getSymbolAst(componentName)
+        
         cDoc = cnode.doc or ""
         inboxDoc  = self._findBoxDecl(cnode.code, "Inboxes")
         outboxDoc = self._findBoxDecl(cnode.code, "Outboxes")
@@ -728,6 +685,7 @@ class ModuleDocs(object):
         
         theComp = KamaeliaComponentDocs()
         theComp.name = componentName
+        theComp.bases = self.tracker.getClassBasesNames(componentName)
         theComp.docString = cDoc
         theComp.inboxes = inboxDoc
         theComp.outboxes = outboxDoc
@@ -736,13 +694,8 @@ class ModuleDocs(object):
         return theComp
     
     def _documentNamedClass(self, className, modulePath):
-        cnode = self._findClasses( className,
-                                  self._AST.node,
-                                  [ast.Class, ast.Function, ast.Module, ast.If]
-                                )
-        assert(len(cnode)>=1)
-        cnode = cnode[0]
-        assert(className == cnode.name)
+        cnode = self.tracker.getSymbolAst(className)
+
         cDoc = cnode.doc or ""
         
         methodNodes = self._findFunctions(ANY, cnode.code, [ast.Class, ast.Function, ast.Module])
@@ -750,6 +703,7 @@ class ModuleDocs(object):
 
         theClass = ClassDocs()
         theClass.name = className
+        theClass.bases = self.tracker.getClassBasesNames(className)
         theClass.docString = cDoc
         theClass.methods = methods
         theClass.module = ".".join(modulePath)
@@ -758,9 +712,12 @@ class ModuleDocs(object):
 
 def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
-    
-    if isinstance(theList,ast.Node):
+    if isinstance(theList, (ast.Tuple,ast.List)):
         theList = theList.nodes
+    elif isinstance(theList, (list,tuple)):
+        theList = theList
+    else:
+        raise "Not a tuple or list"
         
     found = []
     for item in theList:

@@ -164,7 +164,8 @@ import os
 import StringIO
 from docutils import core
 from docutils import nodes
-from Kamaelia.Support.Data import Repository
+#from Kamaelia.Support.Data import Repository
+import Repository
 
 
 from renderHTML import RenderHTML
@@ -313,14 +314,14 @@ class docFormatter(object):
         return docTree
 
     def formatClassStatement(self, name, bases):
-        return "class "+ name+"("+",".join([str(base)[8:-2] for base in bases])+")"
+        return "class "+ name+"("+", ".join(bases)+")"
     
     def formatPrefabStatement(self, name):
         return "prefab: "+name
     
     def formatComponent(self, X):
         # no class bases available from repository scanner 
-        CLASSNAME = self.formatClassStatement(X.name, []) #X.__bases__)
+        CLASSNAME = self.formatClassStatement(X.name, X.bases) #X.__bases__)
         CLASSDOC = self.docString(X.docString)
         INBOXES = self.boxes(X.name,"Inboxes", X.inboxes)
         OUTBOXES = self.boxes(X.name,"Outboxes", X.outboxes)
@@ -371,7 +372,7 @@ class docFormatter(object):
 
     def formatClass(self, X):
         # no class bases available from repository scanner 
-        CLASSNAME = self.formatClassStatement(X.name, []) #X.__bases__)
+        CLASSNAME = self.formatClassStatement(X.name, X.bases)
 
         if len(X.methods)>0:
             METHODS = [ nodes.section('',
