@@ -42,6 +42,7 @@ on an appropriate scheduler. _addThread calls wakeThread, which places the reque
 
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Queue, threading, time, copy, Axon
 queuelengths = 0
 
@@ -50,12 +51,17 @@ class dummyComponent(Axon.Component.component):
     Currently this object prevents the scheduler from cleanly exiting."""
     def main(self):
         while True:
-            self.pause()
+            if schedulerThread.dummyneeded.acquire(False):
+                return # we're no longer needed to keep the scheduler alive
+            # self.pause()
+            # pause will not make the system consume less resources,
+            # since the scheduler will loop continually even if all components are paused.
             yield 1
 
 class schedulerThread(threading.Thread):
     """A python thread which runs a scheduler."""
     lock = threading.Lock()
+    dummyneeded = threading.Lock()
     def __init__(self,slowmo=0):
         if not schedulerThread.lock.acquire(False):
             raise "only one scheduler for now can be run!"
@@ -63,6 +69,7 @@ class schedulerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
     def run(self):
+        schedulerThread.dummyneeded.acquire()
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
         scheduler.run.runThreads(slowmo = self.slowmo)
         schedulerThread.lock.release()
@@ -111,6 +118,8 @@ class componentWrapper(Axon.Component.component):
                             self.send(msg, parentSource)
                         except noSpaceInBox, e:
                             raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                        if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
+                            return # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
                     else: # if the component's inboxes are full, do something here. Preferably not succeed.
                         break
 
@@ -130,7 +139,7 @@ class LikeFile(object):
     def __init__(self, componenttowrap):
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
-            raise "no running scheduler found! Did you start one?"
+            raise "no running scheduler found! Did you end all running components?"
         component = componentWrapper(componenttowrap)
         self.inqueues = copy.copy(component.inqueues)
         self.outqueues = copy.copy(component.outqueues)
@@ -138,6 +147,7 @@ class LikeFile(object):
         # runs in the current thread
         component.activate() # threadsafe, see note 1
         self.alive = True
+        schedulerThread.dummyneeded.release() # kill the dummy component that was keeping the scheduler alive, now that we've activated another component.
 
     def get(self, boxname):
         if self.alive: 
@@ -149,7 +159,12 @@ class LikeFile(object):
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
-        if self.alive: self.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess())
+        """Will send terminatory signals to the wrapped component, and shut down the componentWrapper.
+        Due to the way axon handles component shutdown, this may never terminate the scheduler thread. It would be nice if it did."""
+        if self.alive: 
+            self.inqueues["control"].put_nowait(Axon.Ipc.shutdown()) # legacy support.
+            self.inqueues["control"].put_nowait(Axon.Ipc.producerFinished())
+            self.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess()) # should be last, this is what we honour
         else: raise "shutdown was previously called!"
         self.alive = False
 
@@ -158,18 +173,16 @@ class LikeFile(object):
 
 
 if __name__ == "__main__":
-    background = schedulerThread(slowmo=0.01)
-    background.start()
-    from helloworld import Reverser
+    background = schedulerThread(slowmo=0.01).start()
+    time.sleep(0.1)
+    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    import time
 
-    p = LikeFile( Reverser() )
-    while True:
-        try: 
-            p.put("hello, world", "inbox")
-            time.sleep(0.5) # longer than axon's slowmo
-            reversed = p.get("outbox")
-            print "hello world, reversed, is:" , reversed
-        except KeyboardInterrupt:
-            p.shutdown()
-            time.sleep(0.1)
-            break
+    p = LikeFile(SimpleHTTPClient())
+    p.put("http://google.com", "inbox")
+    p.put("http://slashdot.org", "inbox")
+    p.put("http://whatismyip.org", "inbox")
+    google = p.get("outbox")
+    slashdot = p.get("outbox")
+    whatismyip = p.get("outbox")
+    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
