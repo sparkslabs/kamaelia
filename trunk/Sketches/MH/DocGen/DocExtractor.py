@@ -239,8 +239,8 @@ class docFormatter(object):
             items.append((str(box), str(description)))
 
         docTree= nodes.section('',
-                ids   = ["component-"+componentName+"-"+label],
-                names = ["component-"+componentName+"-"+label],
+                ids   = ["symbol-"+componentName+"."+label],
+                names = ["symbol-"+componentName+"."+label],
                 *[ nodes.title('', label),
                    nodes.bullet_list('',
                       *[ nodes.list_item('', nodes.paragraph('', '',
@@ -304,14 +304,62 @@ class docFormatter(object):
             methodHead = method.name + "(" + method.argString + ")"
             
             docTree.append( nodes.section('',
-                                ids   = ["component-"+X.name+"-method-"+method.name],
-                                names = ["component-"+X.name+"-method-"+method.name],
+                                ids   = ["symbol-"+X.name+"."+method.name],
+                                names = ["symbol-"+X.name+"."+method.name],
                                 * [ nodes.title('', methodHead) ]
                                   + self.docString(method.docString)
                             )
                           )
 
         return docTree
+
+    def formatInheritedMethods(self,CLASS):
+        docTree = nodes.section('')
+        
+        overrides = [method.name for method in CLASS.methods] # copy of list of existing method names
+        
+        for baseName in CLASS.bases:
+            basePathFragments = baseName.split(".")
+            baseModuleName = tuple(basePathFragments[:-1])
+            if baseModuleName == tuple():
+                baseModuleName = tuple(CLASS.module.split("."))
+                baseName = ".".join(baseModuleName)+"."+baseName
+            baseClassName = basePathFragments[-1]
+
+            base=None
+            try:
+                baseModule = self.config.repository.flatModules[baseModuleName]
+                try:
+                    base = [b for b in baseModule.classes if b.name==baseClassName][0]
+                except ValueError:
+                    pass
+            except KeyError:
+                pass
+
+            if base is not None:
+                # work out which methods haven't been already overriden
+                methodList = []
+                for method in base.methods:
+                    if method.name not in overrides:
+                        overrides.append(method.name)
+                        uri = self.renderer.makeURI(baseName,"symbol-"+baseClassName+"."+method.name)
+                        methodList.append(nodes.list_item('',
+                            nodes.paragraph('','',
+                                nodes.reference('', nodes.Text(method.name), refuri=uri),
+                                nodes.Text("(" + method.argString + ")"),
+                                ),
+                            )
+                        )
+
+                if len(methodList)>0:
+                    docTree.append( nodes.section('',
+                        nodes.title('', "Methods inherited from "+baseName+" :"),
+                        nodes.bullet_list('', *methodList),
+                        )
+                    )
+                        
+        return docTree
+                            
 
     def formatClassStatement(self, name, bases):
         return "class "+ name+"("+", ".join(bases)+")"
@@ -345,7 +393,7 @@ class docFormatter(object):
             
         return \
                 nodes.section('',
-                * [ nodes.title('', CLASSNAME, ids=["component-"+X.name]) ]
+                * [ nodes.title('', CLASSNAME, ids=["symbol-"+X.name]) ]
                   + CLASSDOC
                   + [ INBOXES, OUTBOXES ]
                   + METHODS
@@ -356,15 +404,15 @@ class docFormatter(object):
         CLASSDOC = self.docString(X.docString)
         
         return nodes.section('',
-                * [ nodes.title('', CLASSNAME, ids=["component-"+X.name]) ]
+                * [ nodes.title('', CLASSNAME, ids=["symbol-"+X.name]) ]
                   + CLASSDOC
             )
         
     def formatFunction(self, X):
         functionHead = X.name + "(" + X.argString + ")"
         return nodes.section('',
-                    ids   = ["function-"+X.name],
-                    names = ["function-"+X.name],
+                    ids   = ["symbol-"+X.name],
+                    names = ["symbol-"+X.name],
                     * [ nodes.title('', functionHead) ]
                         + self.docString(X.docString)
                     )
@@ -386,6 +434,7 @@ class docFormatter(object):
                 nodes.section('',
                     nodes.title('', CLASSNAME, ids=["class-"+X.name]),
                     self.docString(X.docString),
+                    self.formatInheritedMethods(X),
                     *METHODS
                 )
         
