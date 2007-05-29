@@ -1,25 +1,25 @@
 #!/usr/bin/env python
-#
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
-#     All Rights Reserved.
-#
-# You may only modify and redistribute this under the terms of any of the
-# following licenses(2): Mozilla Public License, V1.1, GNU General
-# Public License, V2.0, GNU Lesser General Public License, V2.1
-#
-# (1) Kamaelia Contributors are listed in the AUTHORS file and at
-#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
-#     not this notice.
-# (2) Reproduced in the COPYING file, and at:
-#     http://kamaelia.sourceforge.net/COPYING
-# Under section 3.5 of the MPL, we are using this text since we deem the MPL
-# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
-# notice is prohibited.
-#
-# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
-# to discuss alternative licensing.
-# -------------------------------------------------------------------------
-#
+##
+## (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+##     All Rights Reserved.
+##
+## You may only modify and redistribute this under the terms of any of the
+## following licenses(2): Mozilla Public License, V1.1, GNU General
+## Public License, V2.0, GNU Lesser General Public License, V2.1
+##
+## (1) Kamaelia Contributors are listed in the AUTHORS file and at
+##     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+##     not this notice.
+## (2) Reproduced in the COPYING file, and at:
+##     http://kamaelia.sourceforge.net/COPYING
+## Under section 3.5 of the MPL, we are using this text since we deem the MPL
+## notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+## notice is prohibited.
+##
+## Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+## to discuss alternative licensing.
+## -------------------------------------------------------------------------
+
 
 import Axon as _Axon
 from Kamaelia.Internet.TCPClient import TCPClient
@@ -140,69 +140,26 @@ class IRC_Client(_Axon.Component.component):
                return True
        return False
 
-class SimpleIRCClient(_Axon.Component.component):
-   "Sample integration of the IRCClient into a networked environment"
-   Inboxes = {
-       "inbox" : "Stuff that's being said on the channel",
-       "control" : "Shutdown control/info",
-       "topic" : "Change topic on the channel",
-   }
-   Outboxes = {"outbox":"", "signal":""}
-   def __init__(self, host="127.0.0.1",
-                      port=6667,
-                      nick="kamaeliabot",
-                      nickinfo="Kamaelia",
-                      defaultChannel="#kamaeliatest",
-                      IRC_Handler=IRC_Client):
-      self.__super.__init__()
-      self.host = host
-      self.port = port
-      self.nick = nick
-      self.nickinfo = nickinfo
-      self.defaultChannel = defaultChannel
-      self.IRC_Handler = IRC_Handler
-
-   def main(self):
-      import random
-      port=self.port
-
-      host = self.host
-
-##      client = TCPClient(host,port)
-##      clientProtocol = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel)
-
-
-      subsystem = Graphline(
-          CLIENT = TCPClient(host,port),
-          PROTO  = self.IRC_Handler(self.nick, self.nickinfo, self.defaultChannel),
-          linkages = {
+def SimpleIRCClientPrefab(host="127.0.0.1",
+                          port=6667,
+                          nick="kamaeliabot",
+                          nickinfo="Kamaelia",
+                          defaultChannel="#kamaeliatest",
+                          IRC_Handler=IRC_Client):
+    return Graphline(
+        CLIENT = TCPClient(host, port),
+        PROTO = IRC_Handler(nick, nickinfo, defaultChannel),
+        linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
-              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. 
+              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
               ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
               ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
-              ("SELF"  , "control") : ("PROTO" , "control"),
+              ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
-          }
-      )
-
-##      self.link((client,"outbox"), (clientProtocol,"inbox"))
-##      self.link((clientProtocol,"outbox"), (client,"inbox"))
-##
-##      self.link((clientProtocol, "heard"), (self, "outbox"), passthrough=2)
-##      self.link((self, "inbox"), (clientProtocol, "talk"), passthrough=1)
-##      self.link((self, "topic"), (clientProtocol, "topic"), passthrough=1)
-##      
-##      self.link((self, "control"), (clientProtocol, "control"), passthrough=1)
-##      self.link((clientProtocol, "signal"), (client, "control"))
-##      self.link((client, "signal"), (self, "signal"), passthrough=2)
-
-##      self.addChildren(subsystem)
-      yield _Axon.Ipc.newComponent(*(self.children))
-      while 1:
-         self.pause()
-         yield 1
+              }
+        )
 
 if __name__ == '__main__':
    from Axon.Scheduler import scheduler
@@ -212,6 +169,7 @@ if __name__ == '__main__':
 
    Pipeline(
        ConsoleReader(),
-       SimpleIRCClient(host="127.0.0.1", nick="kamaeliabot", defaultChannel="#kamtest"),
+       SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
        Ticker(render_right = 800,render_bottom = 600),
    ).run()
+
