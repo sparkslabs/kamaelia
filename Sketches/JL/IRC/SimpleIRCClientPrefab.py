@@ -4,7 +4,7 @@ import Axon as _Axon
 from IRCClient import *
 from Kamaelia.Internet.TCPClient import TCPClient
 
-def SimpleIRCClientPrefab(host="irc.freenode.net",
+def SimpleIRCClientPrefab(host="127.0.0.1",
                           port=6667,
                           nick="kamaeliabot",
                           nickinfo="Kamaelia",
@@ -25,14 +25,15 @@ def SimpleIRCClientPrefab(host="irc.freenode.net",
               }
         )
 
-#from SimpleIRCClientPrefab import *
 if __name__ == '__main__':
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    from Kamaelia.Util.PureTransformer import PureTransformer
-    bot = SimpleIRCClientPrefab(nick="SimpleIRCClient", nickinfo="testing SimpleIRCClientPrefab")
-    display_helper = PureTransformer(lambda x: str(x) + "\n")
-    Pipeline(ConsoleReader(), bot, display_helper, ConsoleEchoer()).run()
-    
-    
-    
+   from Axon.Scheduler import scheduler
+   from Kamaelia.Util.Console import ConsoleReader
+   from Kamaelia.UI.Pygame.Ticker import Ticker
+   from Kamaelia.Chassis.Pipeline import Pipeline
+
+   Pipeline(
+       ConsoleReader(),
+       SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
+       Ticker(render_right = 800,render_bottom = 600),
+   ).run()
+
