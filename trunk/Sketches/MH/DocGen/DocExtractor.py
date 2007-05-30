@@ -389,6 +389,7 @@ class docFormatter(object):
                   + CLASSDOC
                   + [ INBOXES, OUTBOXES ]
                   + METHODS
+                  + [ self.formatInheritedMethods(X) ]
                 )
         
     def formatPrefab(self, X):
@@ -426,8 +427,7 @@ class docFormatter(object):
                 nodes.section('',
                     nodes.title('', CLASSNAME, ids=["class-"+X.name]),
                     self.docString(X.docString),
-                    self.formatInheritedMethods(X),
-                    *METHODS
+                    * METHODS + [self.formatInheritedMethods(X)]
                 )
         
     def formatTests(self, moduleName):
