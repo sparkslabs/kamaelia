@@ -361,6 +361,7 @@ class SourceTreeDocs(object):
         # recurse through the source directories ingesting them
         self._ingest(self.baseDir, self.flatModules, nested, base=root)
         self._build(self.nestedModules, [], self.flatModules.keys())
+        self._resolve()
         
         
     def _ingest(self,dirName,flatModules,nestedModules,base):
@@ -427,8 +428,34 @@ class SourceTreeDocs(object):
             else:
                 print "Parsing:", ".".join(pathToHere+[name])
                 moduleDocObj = subtree[name]
-                moduleDocObj.buildAndResolve(pathToHere, namesBelowHere)
+                moduleDocObj.build(pathToHere, namesBelowHere)
+
+    def _resolve(self):
+        for (name,module) in self.flatModules.iteritems():
+            module.resolve(self)
+
+    def findSymbolByName(self, fullPathName):
+        if isinstance(fullPathName, str):
+            fullPathName = tuple(fullPathName.split("."))
+
+        modulePath = fullPathName
+        remainder  = ()
+        while len(modulePath) > 0:
+            if modulePath in self.flatModules:
+                
+                module = self.flatModules[modulePath]
+                if len(remainder)==0:
+                    return module
+                else:
+                    return module.findSymbolByName(remainder)
+
+            else:
+                remainder  = (modulePath[-1], ) + remainder
+                modulePath = modulePath[:-1]
+
         
+
+        raise ValueError("Could not find the named symbol")
 
 def isPythonFile(Path, File):
     """Returns True if the specified file looks like it is a python source file"""
@@ -447,7 +474,15 @@ class ClassDocs(object):
     See module level docs for information on the attributes this will be loaded
     up with.
     """
-    pass
+    def findSymbolByName(self,name):
+        if len(name)>1:
+            raise ValueError("Can't find symbol in class")
+        else:
+            name = name[0]
+            for method in self.methods:
+                if method.name == name:
+                    return method
+            raise ValueError("Can't find method matching this symbol in this class.")
 
 class FunctionDocs(object):
     """\
@@ -456,7 +491,8 @@ class FunctionDocs(object):
     See module level docs for information on the attributes this will be loaded
     up with.
     """
-    pass
+    def findSymbolByNAme(self,name):
+        raise ValueError("Can't find symbol in function/method/prefab")
 
 MethodDocs         = FunctionDocs
 KamaeliaPrefabDocs = FunctionDocs
@@ -497,7 +533,7 @@ class ModuleDocs(object):
         self._AST = compiler.parseFile(filepath)
 
 
-    def buildAndResolve(self, pathToHere, namesBelowHere):
+    def build(self, pathToHere, namesBelowHere):
         self._extractModuleDocString()
 
         # convert to a dictionary that maps what the module paths relative to this location are, to the full module paths
@@ -533,6 +569,61 @@ class ModuleDocs(object):
             doc = self._documentNamedFunction(funcName, self.modulePath)
             self.functions.append(doc)
 
+        self.symbols = {}
+        for symbol in self.prefabs+self.components+self.classes+self.functions:
+            self.symbols[symbol.name]=symbol
+
+    def resolve(self, allModules):
+        # for all classes, determine the full method resolution order
+        for klass in self.classes:
+            try:
+                klass.allBasesInMethodResolutionOrder = self.determineMRO(klass, allModules)
+            except "FAILURE":
+                klass.allBasesInMethodResolutionOrder = []
+
+    def determineMRO(self, klass, sourceTree):
+        # C3 method resolution order algorithm
+        order = [klass]
+        bases = []
+        for baseName in klass.bases:
+            try:
+                base = sourceTree.findSymbolByName(baseName)
+                bases.append(base)
+            except (IndexError,ValueError):
+                try:
+                    base = sourceTree.findSymbolByName(".".join(self.modulePath+[baseName]))
+                    bases.append(base)
+                except (IndexError,ValueError):
+                    pass
+                
+        mergedBases = [self.determineMRO(base,sourceTree) for base in bases]
+        mergedBases.extend([[base] for base in bases])
+        while len(mergedBases) > 0:
+            for baselist in mergedBases:
+                head = baselist[0]
+                foundElsewhere = [True for merged in mergedBases if (head in merged[1:])]
+                if foundElsewhere == []:
+                    order.append(head)
+                    for baselist in mergedBases:
+                        if baselist[0]==head:
+                            del baselist[0]
+                    mergedBases = [baselist for baselist in mergedBases if baselist != []]
+                    break
+            if foundElsewhere:
+                raise "FAILURE"
+        return order
+
+    def findSymbolByName(self, name):
+        if isinstance(name, str):
+            name = tuple(name.split("."))
+
+        if name[0] in self.symbols:
+            if len(name)==1:
+                return self.symbols[name[0]]
+            else:
+                return self.symbols[name[0]].findSymbolByName(name[1:])
+        else:
+            raise ValueError("Couldn't find "+str(name)+" in this module")
 
     def _extractModuleDocString(self):
         assert(isinstance(self._AST, ast.Module))
@@ -707,6 +798,7 @@ class ModuleDocs(object):
         theClass.docString = cDoc
         theClass.methods = methods
         theClass.module = ".".join(modulePath)
+        theClass.fullPathName = theClass.module+"."+className
         return theClass
 
 
