@@ -580,6 +580,12 @@ class ModuleDocs(object):
                 klass.allBasesInMethodResolutionOrder = self.determineMRO(klass, allModules)
             except "FAILURE":
                 klass.allBasesInMethodResolutionOrder = []
+                
+        for component in self.components:
+            try:
+                component.allBasesInMethodResolutionOrder = self.determineMRO(component, allModules)
+            except "FAILURE":
+                component.allBasesInMethodResolutionOrer = []
 
     def determineMRO(self, klass, sourceTree):
         # C3 method resolution order algorithm
@@ -656,8 +662,6 @@ class ModuleDocs(object):
         # and remove any repeats (unlikely)
         self._componentNames = dict([(x,x) for x in components]).keys()
         self._prefabNames = dict([(x,x) for x in prefabs]).keys()
-        print "cnames:",self._componentNames
-        print "pnames:",self._prefabNames
         
     def _findOtherEntities(self):
         self._otherFunctionNames = [name for name in self.tracker.listAllFunctions() if name not in self._prefabNames]
@@ -729,6 +733,7 @@ class ModuleDocs(object):
         theFunc.argString = argStr
         theFunc.docString = doc
         theFunc.module = ".".join(modulePath)
+        theFunc.fullPathName = theFunc.module+"."+fnode.name
         return theFunc
 
     
@@ -782,6 +787,7 @@ class ModuleDocs(object):
         theComp.outboxes = outboxDoc
         theComp.methods = methods
         theComp.module = ".".join(modulePath)
+        theComp.fullPathName = theComp.module+"."+componentName
         return theComp
     
     def _documentNamedClass(self, className, modulePath):
