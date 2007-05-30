@@ -313,7 +313,7 @@ class docFormatter(object):
 
         return docTree
 
-    def formatInheritedMethods(self,CLASS):
+    def formatInheritedMethods(self,CLASS,subBranch=False):
         docTree = nodes.section('')
         
         overrides = [method.name for method in CLASS.methods] # copy of list of existing method names
@@ -351,12 +351,22 @@ class docFormatter(object):
                             )
                         )
 
+                # now recurse to see what that base inherits
+                subtree = self.formatInheritedMethods(base,subBranch=True)
+                if len(subtree.children) > 0:
+                    methodList.append(nodes.list_item('', nodes.paragraph('','',*subtree.children)))
+                
                 if len(methodList)>0:
+                    if not subBranch:
+                        title = nodes.title('', "Methods inherited from "+baseName+" :")
+                    else:
+                        title = nodes.paragraph('', '', nodes.strong('', "Methods inherited from "+baseName+" :"))
                     docTree.append( nodes.section('',
-                        nodes.title('', "Methods inherited from "+baseName+" :"),
+                        title,
                         nodes.bullet_list('', *methodList),
                         )
                     )
+
                         
         return docTree
                             
