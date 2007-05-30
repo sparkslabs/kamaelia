@@ -13,11 +13,10 @@ def mro(klass):
             foundElsewhere = [True for merged in mergedBases if (head in merged[1:])]
             if foundElsewhere == []:
                 order.append(head)
-                for baselist in mergedBases[:]:
+                for baselist in mergedBases:
                     if baselist[0]==head:
                         del baselist[0]
-                        if baselist==[]:
-                            mergedBases.remove(baselist)
+                mergedBases = [baselist for baselist in mergedBases if baselist != []]
                 break
         if foundElsewhere:
             raise "Failed. Unable to resolve method resolution order."
