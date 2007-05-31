@@ -33,7 +33,7 @@ class Test5(foo): # derives from Kamaelia.Chassis.Pipeline.Pipeline
 
 import Kamaelia.Chassis.Graphline as Graphline, Kamaelia.Chassis.Carousel as Carousel
 
-class Test5(epsilon):
+class Test5a(epsilon):
     pass
 
 
@@ -48,6 +48,7 @@ def Test8():
 Test9 = Test8
 
 Test10 = Test8
+Test10a=Test10
 Test10 = "hello"
 
 from Nodes import boxright
@@ -83,6 +84,9 @@ class Test14(object):
 class Test18(Axon):
     pass
 
+Test19 = Test14
+Test14 = None
+    
 # ------------------------------------------------------------------------------
 
 import compiler
@@ -90,51 +94,52 @@ from compiler import ast
 
 import __builtin__ as BUILTINS
 
-def UNKNOWN(name):
-    return { "name" : name,
-             "type" : "UNKNOWN",
-             "ast"  : None,
-             "subsymbols" : {},
-           }
-
-def CLASS(ast,name,bases):
-    return { "name"  : name,
-             "type"  : "CLASS",
-             "bases" : bases,
-             "ast"   : ast,
-             "subsymbols" : {},
-           }
-
-def FUNCTION(ast,name):
-    return { "name" : name,
-             "type" : "FUNCTION",
-             "ast"  : ast,
-             "subsymbols" : {},
-           }
 
 def UNPARSED(ast=None):
-    return { "name" : "",
-             "type" : "UNPARSED",
+    return { "type" : "UNPARSED",
              "ast"  : ast,
-             "subsymbols" : {},
            }
-           
-class DeclarationTracker(object):
-    def __init__(self,localModules={}):
-        """\
-        Arguments:
 
-        - localModules  -- a dict mapping modules in the local path of this one to their full module path
 
-        eg. if the module being parsed is foo.bibble and other modules exist called "foo.bar", "foo.plig" and "foo.boing.yoyo"
-        then we should provide a dictionary { "bar":"foo.bar", "plig":"foo.plig", "boing.yoyo":"foo.boing.yoyo" }
-        so import statements can be checked against this.
-        """
-        super(DeclarationTracker,self).__init__()
-        self.resolvesTo = {}
-        self.localModules = localModules
+class Scope(object):
 
-    def parse_From(self, node, localScope):
+    def __init__(self, type="Module", ASTChildren=None, imports=None, localModules={}, rootScope=None):
+        super(Scope,self).__init__()
+
+        self.symbols={}
+        self.type=type
+        if imports is not None:
+            self.imports=imports
+        else:
+            self.imports=ImportScope("")
+        self.localModules=localModules
+        if rootScope is not None:
+            self.rootScope=rootScope
+        else:
+            self.rootScope=self
+
+        if ASTChildren is None or ASTChildren==[]:
+            return
+        
+        # parse the AST
+        for node in ASTChildren:
+            if isinstance(node, ast.From): 
+                self._parse_From(node)            # parse "from ... import"s to recognise what symbols are mapped to what imported things
+            elif isinstance(node, ast.Import):
+                self._parse_Import(node)          # parse resolvesTo to recognise what symbols are mapped to what imported things
+            elif isinstance(node, ast.Class):
+                self._parse_Class(node)           # classes need to be parsed so we can work out base classes
+            elif isinstance(node, ast.Function):
+                self._parse_Function(node)
+            elif isinstance(node, ast.Assign):
+                self._parse_Assign(node)          # parse assignments that map stuff thats been imported to new names
+            elif isinstance(node, ast.AugAssign):
+                pass                              # definitely ignore these
+            else:
+                pass                              # ignore everything else for the moment
+        return
+
+    def _parse_From(self,node):
         sourceModule = node.modname
         for (name, destName) in node.names:
             # check if this is actually a local module
@@ -143,49 +148,53 @@ class DeclarationTracker(object):
             mapsTo = ".".join([sourceModule,name])
             if destName == None:
                 destName = name
-            self.resolvesTo[localScope+destName] = UNKNOWN(mapsTo)
 
-    def parse_Import(self, node, localScope):
+            theImport=self.imports.find(mapsTo)
+            self.assign(destName, theImport)
+
+    def _parse_Import(self, node):
         for (name,destName) in node.names:
             if name in self.localModules:
                 fullname = self.localModules[name]
             else:
                 fullname = name
             if destName == None:
-                destName = name
-            self.resolvesTo[localScope+destName] = UNKNOWN(fullname)
-
-    def parse_Class(self, node, localScope):
-        name = node.name
-        bases = node.bases
-        resolvedBases = []
-        for base in bases:
-            expBase = self.parseName(base)
-            resolvedBase = self.matchToSymbolName(expBase,localScope)
-            resolvedBases.append(resolvedBase)
-        self.resolvesTo[localScope+name] = CLASS(node,name,resolvedBases)  # XXX LOCAL NAME, DOES IT NEED SCOPING CONTEXT?
-#        self.chaseThrough(node.code, localScope=localScope+name+".")
-
-    def parse_Assign(self, node, localScope):
+                self.imports.find(fullname) # force creation of the full item - looking it up in an import asserts its existence
+                head=fullname.split(".")[0]
+                theImport=self.imports.find(head)
+                self.assign(head,theImport)
+            else:
+                theImport=self.imports.find(fullname)
+                self.assign(destName, theImport)
+        
+    def _parse_Class(self, node):
+        self.assign(node.name, ClassScope(node,self.imports,self.localModules,self.rootScope,self))
+        
+    def _parse_Function(self, node):
+        self.assign(node.name, FunctionScope(node,self.imports,self.localModules,self.rootScope))
+        
+    def _parse_Assign(self, node):
         for target in node.nodes:
             # for each assignment target, go clamber through mapping against the assignment expression
             # we'll only properly parse things with a direct 1:1 mapping
             # if, for example, the assignment relies on understanding the value being assigned, eg. (a,b) = c
             # then we'll silently fail
-            assignments = self.mapAssign(target,node.expr)
+            assignments = self._mapAssign(target,node.expr)
             resolvedAssignments = []
             for (target,expr) in assignments:
                 if isinstance(expr,str):
-                    resolved = self.matchToSymbolName(expr,localScope)
+                    try:
+                        resolved = self.find(expr)
+                    except ValueError:
+                        resolved = UnparsedScope(expr,self.imports,self.localModules,self.rootScope)
                 else:
-                    resolved = expr
+                    resolved = UnparsedScope(expr,self.imports,self.localModules,self.rootScope)
                 resolvedAssignments.append((target,resolved))
                 
             for (target,expr) in resolvedAssignments:
-                self.resolvesTo[localScope+target] = expr
+                self.assign(target,expr)
 
-
-    def mapAssign(self, target, expr):
+    def _mapAssign(self, target, expr):
         """\
         Correlate each term on the lhs to the respective term on the rhs of the assignment.
 
@@ -193,9 +202,9 @@ class DeclarationTracker(object):
         """
         assignments = []
         if isinstance(target, ast.AssName):
-            targetname = self.parseName(target)
+            targetname = self._parse_Name(target)
             if isinstance(expr, (ast.Name, ast.Getattr)):
-                assignments.append( (targetname, self.parseName(expr)) )
+                assignments.append( (targetname, self._parse_Name(expr)) )
             else:
                 assignments.append( (targetname, UNPARSED(expr)) )
         elif isinstance(target, (ast.AssTuple, ast.AssList)):
@@ -204,7 +213,7 @@ class DeclarationTracker(object):
                 exprs = expr.nodes
                 if len(targets)==len(exprs):
                     for i in range(0,len(targets)):
-                        assignments.extend(self.mapAssign(targets[i],exprs[i]))
+                        assignments.extend(self._mapAssign(targets[i],exprs[i]))
                 else:
                     for i in range(0,len(targets)):
                         assignments.append( (targetname, UNPARSED()) )
@@ -214,77 +223,175 @@ class DeclarationTracker(object):
             pass # dont know what to do with this term on the lhs of the assignment
         return assignments
 
-    def parse_Function(self, node, localScope):
-        self.resolvesTo[localScope+node.name] = FUNCTION(node,node.name)
-
-    def chaseThrough(self, node, localScope=""):
-        for node in node.getChildren():
-            if isinstance(node, ast.From):
-                # parse "from ... import"s to recognise what symbols are mapped to what imported things
-                self.parse_From(node, localScope)
-            elif isinstance(node, ast.Import):
-                # parse resolvesTo to recognise what symbols are mapped to what imported things
-                self.parse_Import(node, localScope)
-            elif isinstance(node, ast.Class):
-                # classes need to be parsed so we can work out base classes
-                self.parse_Class(node, localScope)
-            elif isinstance(node, ast.Function):
-                self.parse_Function(node, localScope)
-            elif isinstance(node, ast.Assign):
-                # parse assignments that map stuff thats been imported to new names
-                self.parse_Assign(node, localScope)
-            elif isinstance(node, ast.AugAssign):
-                # definitely ignore these
-                pass
-            else:
-                pass  # ignore everything else for the moment
-        return
-            
-    def parseName(self,node):
+    def _parse_Name(self,node):
         if isinstance(node, (ast.Name, ast.AssName)):
             return node.name
         elif isinstance(node, (ast.Getattr, ast.AssAttr)):
-            return ".".join([self.parseName(node.expr), node.attrname])
+            return ".".join([self._parse_Name(node.expr), node.attrname])
         else:
             return ""
+        
+    def resolveName(self,provisionalName):
+        return provisionalName
 
-    def matchToSymbolName(self,name,localScope):
-        # go through resolvesTo, if we find one that matches the root of the name
-        # then resolve it
-        for (symbolName,resolved) in self.resolvesTo.items():
-            if symbolName == name:
-                return resolved
-        for (symbolName,resolved) in self.resolvesTo.items():
-            symbolName+="."
-            if symbolName == name[:len(symbolName)]:
-                return UNKNOWN(".".join([resolved["name"], name[len(symbolName):]]))
-        # if there's a local scope, try again using that
-        if localScope!="":
-            return self.matchToSymbolName(localScope+name,"")
-        # not matched against existing resolution table, what else...
-        if name in dir(BUILTINS):
-            return UNKNOWN("__builtin__."+name)
+    def find(self, name, checkRoot=True):
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if head in self.symbols:
+            found=self.symbols[head]
+            if tail=="":
+                return found
+            else:
+                return found.find(tail,checkRoot=False)
         else:
-            return UNKNOWN(name)
+            if checkRoot and self.rootScope != self:
+                return self.rootScope.find(name,checkRoot=False)
+        raise ValueError("Cannot find it!")
+
+    def assign(self, name, value, checkRoot=True):
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if tail=="":
+            self.symbols[head]=value
+        else:
+            if head in self.symbols:
+                self.symbols[head].assign(tail,value,checkRoot=False)
+            else:
+                if checkRoot and self.rootScope != self:
+                    return self.rootScope.assign(name,value,checkRoot=False)
+            raise ValueError("Cannot assign to this!")
+
+    def listAllClasses(self,recurseDepth=0):
+        return self.listAllMatching(ClassScope,recurseDepth)
             
-    def listAllClasses(self):
-        return [name for (name,info) in self.resolvesTo.items() if info["type"] == "CLASS"]
+    def listAllFunctions(self,recurseDepth=0):
+        return self.listAllMatching(FunctionScope,recurseDepth)
+            
+    def listAllMatching(self,types,recurseDepth=0):
+        found=[]
+        for symbol in self.symbols:
+            item=self.symbols[symbol]
+            if isinstance(item,types):
+                found.append((symbol,item))
+            if recurseDepth>0:
+                subfound=item.listAllMatching(types,recurseDepth-1)
+                for (name,thing) in subfound:
+                    found.append((symbol+"."+name,thing))
+        return found
+            
+class ModuleScope(Scope):
+    def __init__(self, AST, imports, localModules={}, rootScope=None):
+        super(ModuleScope,self).__init__("Module",AST.node.nodes,imports,localModules,None)
+        self.doc = AST.doc
 
-    def listAllFunctions(self):
-        return [name for (name,info) in self.resolvesTo.items() if info["type"] == "FUNCTION"]
 
-    def getClassBasesNames(self,classname):
-        info = self.resolvesTo[classname]
-        if not info["type"]=="CLASS":
-            raise IndexError("Referenced symbol was not directly determined to be a class")
+class ClassScope(Scope):
+    def __init__(self, AST, imports, localModules, rootScope, parentScope):
+        super(ClassScope,self).__init__("Class",AST.code,imports,localModules,rootScope)
+
+        self.doc = AST.doc
+        # parse bases
+        self.bases = []
+        for baseName in AST.bases:
+            parsedBaseName=self._parse_Name(baseName)
+            try:
+                base=parentScope.find(parsedBaseName)
+                resolvedBaseName = base.resolveName(parsedBaseName)
+            except ValueError:
+                base=None
+                resolvedBaseName = parsedBaseName
+            self.bases.append((resolvedBaseName,base))
+        
+
+class FunctionScope(Scope):
+    def __init__(self, AST, imports, localModules, rootScope):
+        super(FunctionScope,self).__init__("Class",None,imports,localModules,rootScope) # don't bother parsing function innards
+
+        self.doc = AST.doc
+        # parse arguments
+        argNames = [(str(argName),str(argName)) for argName in AST.argnames]
+        i=-1
+        numVar = AST.varargs or 0
+        numKW  = AST.kwargs or 0
+        for j in range(numKW):
+            argNames[i] = ( argNames[i][0], "**"+argNames[i][1] )
+            i-=1
+        for j in range(numVar):
+            argNames[i] = ( argNames[i][0], "*"+argNames[i][1] )
+            i-=1
+        for j in range(len(AST.defaults)-numVar-numKW):
+            argNames[i] = ( argNames[i][0], "["+argNames[i][1]+"]" )
+            i-=1
+        
+        argStr = ", ".join([arg for (_, arg) in argNames])
+        argStr = argStr.replace(", [", "[, ")
+        
+        self.args = argNames
+        self.argString = argStr
+
+class ImportScope(Scope):
+    def __init__(self,importPathName="",imports=None):
+        if importPathName=="" and imports==None:
+            imports=self
+        super(ImportScope,self).__init__("Module",None,imports,[],None)  # its an opaque imported module, no local modules, etc to concern ourselves with
+        
+        self.doc = ""
+        self.importPathName=importPathName
+        
+    def resolveName(self,provisionalName):
+        return self.importPathName
+
+    def find(self,name,checkRoot=False):
+        # we assume the symbol exists(!), so if it is referenced, we create a placeholder for it (if one doesn't already exist)
+        # shouldn't check in root scope of this parsing, since, as an import, this *is* the new root (its a new module)
+        checkRoot=False
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if head not in self.symbols:
+            if self.importPathName:
+                fullname=self.importPathName+"."+head
+            else:
+                fullname=head
+            self.assign(head, ImportScope(fullname,self.imports))
+            
+        found=self.symbols[head]
+        if tail=="":
+            return found
         else:
-            return [base["name"] for base in info["bases"]]
+            return found.find(tail,checkRoot=False)
 
-    def listAllSymbols(self):
-        return self.resolvesTo.keys()
+    def assign(self, name, value, checkRoot=False):
+        # we assume the symbol exists(!), so if it is referenced, we create a placeholder for it (if one doesn't already exist)
+        checkRoot=False
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
 
-    def getSymbolAst(self,name):
-        return self.resolvesTo[name]["ast"]
+        if tail=="":
+            self.symbols[head]=value
+        else:
+            if head not in self.symbols:
+                if self.importPathName:
+                    fullname=self.importPathName+"."+head
+                else:
+                    fullname=head
+                self.assign(head, ImportScope(fullname,self.imports))
+            self.symbols[head].assign(tail,value,checkRoot=False)
+    
+class UnparsedScope(Scope):
+    def __init__(self, AST, imports, localModules, rootScope):
+        super(UnparsedScope,self).__init__("Unparsed",AST,imports,localModules,rootScope)
+        self.doc=""
+        self.ast=AST
+        
+
+
 
 if __name__ == "__main__":
 
@@ -304,24 +411,25 @@ if __name__ == "__main__":
     # classes of declared classes are
 
     AST = compiler.parseFile(sourcefile)
-    root = AST.node           # root statement node is a module, get the children
+    root = AST           # root statement node is a module, get the children
 
     localModules = {
         "Nodes" : "Pretend.there.is.a.module.path.Nodes",
         }
     
-    d = DeclarationTracker(localModules)
-    d.chaseThrough(root)
+    d = ModuleScope(root,None,localModules)
     
     import pprint
     print "-----MAPPINGS:"
     print
-    pprint.pprint(d.resolvesTo)
+    for (name,data) in d.listAllMatching(object,recurseDepth=5):
+        print name
     print
+    print d.find("Graphline.Inboxes").ast
     print "-----CLASSES IDENTIFIED:"
     print
-    for classname in d.listAllClasses():
-        bases = d.getClassBasesNames(classname)
+    for (classname,data) in d.listAllClasses(recurseDepth=2):
+        bases = [name for (name,_) in data.bases]
         print "class ",classname,"..."
         print "   parsing says bases are:",bases
         if check:
@@ -329,8 +437,8 @@ if __name__ == "__main__":
     print
     print "-----FUNCTIONS:"
     print
-    for funcname in d.listAllFunctions():
-        print "function ",funcname,
+    for (funcname,data) in d.listAllFunctions(recurseDepth=2):
+        print "function ",funcname,"(",data.argString,")",
         if check:
             print "...",
             if eval(funcname).__class__.__name__ in ["function","instancemethod"]:
@@ -341,4 +449,17 @@ if __name__ == "__main__":
             print
     print
     print "-----"
+#     print
+#     for (name,data) in d.listAllMatching(object,recurseDepth=5):
+#         print name
+#         print " ...","(",data.__class__.__name__,")"
+#         print " ...",data.resolveName(name)
+#     print
+#     print "-----"
+#     for (name,data) in d.imports.listAllMatching(object,recurseDepth=5):
+#         print name
+#         print " ...","(",data.__class__.__name__,")"
+#         print " ...",data.resolveName(name)
+#     print
+#     print "-----"
     
