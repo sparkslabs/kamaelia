@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 ##
 ## (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 ##     All Rights Reserved.
@@ -25,7 +25,7 @@
 # The purpose of this version is to try out the IF model of message parsing.
 # The purpose of this version is to try out a more general IF model -- one
 #  general path for messages via IRC and one general path for messages received
-#  from the local user. It relays all received data to its "heard" outbox,
+#  from the local user. It relays all received data to its "privmsg" outbox,
 #  in the form (msgtype, sender, recipient, body)
 
 import Axon as _Axon
@@ -33,12 +33,13 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import string
-    
+from Kamaelia.Util.Console import ConsoleEchoer
+
 class channel(object):
    """\
       This is an ugly hack - the send here is one helluvahack. 
       (works with a socket and a component. It's deliberate but
-      ugly as hell""" #...I thought the idea of a channel object was clever. --Jinna
+      ugly as hell""" 
    # Sock here is currently a component, and default inbox
    def __init__(self, sock, channel):
       self.sock = sock
@@ -67,7 +68,14 @@ class IRC_Client(_Axon.Component.component):
       default in IRC. There are MANY ways this could be achieved.
    """
    Inboxes = {"inbox":"", "control":"", "talk":"", "topic":""}
-   Outboxes = {"outbox":"", "signal":"", "heard":"", "commands":"inbox for non PRIVMSGs" }
+   Outboxes = {"outbox":"",
+               "signal":"",
+               "privmsg":"",
+               "nonPrivmsg":"outbox for non PRIVMSGs",
+               "notice": "outbox for received notices. Currently not used.",
+               "ERR" : "outbox for received errors. Currently not used.",
+               "RPL" : "outbox for received RPLs. Currently not used."}
+   
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
                       defaultChannel="#kamaeliatest"):
@@ -98,9 +106,10 @@ class IRC_Client(_Axon.Component.component):
       return chan
 
    def main(self):
-      "Handling here is pretty naff really :-)"
+      "Handling here is still in progress. :)"
       self.login(self.nick, self.nickinfo)
       self.channels[self.defaultChannel] = self.join(self.defaultChannel)
+      self.channels['CONSOLE'] = channel(ConsoleEchoer(), 'CONSOLE') #temporary hack
       seen_VERSION = False
 
       while not self.shutdown():
@@ -108,13 +117,17 @@ class IRC_Client(_Axon.Component.component):
          if self.dataReady("talk"):
             data = self.recv("talk")
             self.channels[self.defaultChannel].say(data)
+            self.channels['CONSOLE'].say(data) #temporary hack
+            if data.find(self.nick) != -1:
+                if data.find("LEAVE") != -1:
+                   break
+            
          elif self.dataReady("topic"):
              newtopic = self.recv("topic")
              self.channels[self.defaultChannel].topic(newtopic)
          elif self.dataReady("inbox"): #if received messages 
              self.handleMessage(self.recv("inbox"))
              
-#This is only around until I figure out why seen_VERSION is set.  
 ##                if "PRIVMSG" in data:
 ##                    if data[0] == ":":
 ##                        data = data[1:]
@@ -122,15 +135,8 @@ class IRC_Client(_Axon.Component.component):
 ##                        seen_Version = True
 ##                    else:
 ##                        data = data[data.find(":")+1:]
-##                        self.send(data, "heard")
-##                elif "PING" in data:
-##                    reply = "PONG" + data[data.find("PING")+4:]
-##                    self.send(reply+"\r\n")
+##                        self.send(data, "privmsg")
                     
-         if data.find(self.nick) != -1:
-            if data.find("LEAVE") != -1: #slash notation not implemented? 
-               break
-
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
             self.pause() # Wait for response :-)
          yield 1
@@ -145,30 +151,31 @@ class IRC_Client(_Axon.Component.component):
         lines = lines.split("\n")
         for one_line in lines:
             if self.parseable(one_line):
+                print one_line
                 data = self.parseIRCMessage(one_line)
-                print data
-                self.send(data, "heard")
             elif len(one_line) > 0:
-                self.send('Unknown message format: ' + one_line, "heard")
+                self.send('Malformed message: ' + one_line, "privmsg")
                 
             if data:
                 (msgtype, sender, recipient, body) = data
                 if msgtype == 'PRIVMSG':
-                    self.send(data, 'heard')
+                    #if 'ACTION' in body:
+                    self.send(data, 'privmsg')
                 elif msgtype == 'PING' or 'PING' in body:
                     if msgtype == 'PING':
                         reply = ("PONG " + sender)
                     else:
                         reply = ("PONG " + body[body.find("PING")+4:])
                     self.send(reply + '\r\n')
-                    self.send(data, 'commands')
+                    self.send(data, "nonPrivmsg")
+                else:
+                    self.send(data, "nonPrivmsg")
                 
                     
 
 
    def parseable(self, line):
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
-            print "Malformed message:", line
             return False
         return len(line) > 0
        
@@ -217,7 +224,7 @@ class IRC_Client(_Axon.Component.component):
                return True
        return False
 
-def SimpleIRCClientPrefab(host="127.0.0.1",
+def ComplexIRCClientPrefab(host="127.0.0.1",
                           port=6667,
                           nick="kamaeliabot",
                           nickinfo="Kamaelia",
@@ -229,25 +236,34 @@ def SimpleIRCClientPrefab(host="127.0.0.1",
         linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
-              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
+              ("PROTO"  , "privmsg")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
               ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
               ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
               ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
+              ("PROTO", "nonPrivmsg") : ("SELF", "nonPrivmsg") #passthrough
               }
         )
 
 if __name__ == '__main__':
-    from Axon.Scheduler import scheduler
     from Kamaelia.Util.Console import ConsoleReader
     from Kamaelia.UI.Pygame.Ticker import Ticker
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from  Kamaelia.Util.PureTransformer import PureTransformer
-    Pipeline(
-        ConsoleReader(),
-        SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        PureTransformer(lambda x: str(x)),
-        Ticker(render_right = 800,render_bottom = 600),
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Util.PureTransformer import PureTransformer
+    Graphline(
+        reader = ConsoleReader(),
+        irc = ComplexIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
+        stringer1 = PureTransformer(lambda x: str(x)),
+        stringer2 = PureTransformer(lambda x: str(x)),
+        display1 = Ticker(render_right = 400,render_bottom = 300),
+        display2 = Ticker(render_right = 400,render_bottom = 300, position = (440, 0)),
+        linkages = {
+            ("reader", "outbox") : ("irc", "inbox"),
+            ("irc", "outbox") : ("stringer1", "inbox"),
+            ("stringer1", "outbox") : ("display1", "inbox"),
+            ("irc", "nonPrivmsg") : ("stringer2", "inbox"),
+            ("stringer2", "outbox") : ("display2", "inbox")
+            }
+            
     ).run()
-
