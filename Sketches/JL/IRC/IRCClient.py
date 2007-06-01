@@ -30,6 +30,8 @@
 
 import Axon as _Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Chassis.Graphline import Graphline
 import string
 
 class channel(object):
@@ -75,12 +77,14 @@ class IRC_Client(_Axon.Component.component):
    
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
-                      defaultChannel="#kamaeliatest"):
+                      defaultChannel="#kamaeliatest",
+                      sendAsString = False):
       self.__super.__init__()
       self.nick = nick
       self.nickinfo = nickinfo
       self.defaultChannel = defaultChannel
       self.channels = {}
+      self.sendAsString = sendAsString
 
    def login(self, nick, nickinfo, password = None, username=None):
       """Should be abstracted out as far as possible.
@@ -156,7 +160,7 @@ class IRC_Client(_Axon.Component.component):
                 if msgtype == 'PRIVMSG':
                     #if 'ACTION' in body:
                     self.send(data, 'privmsg')
-                elif msgtype == 'PING' or 'PING' in body:
+                elif msgtype == 'PING' or 'PING ' in body:
                     if msgtype == 'PING':
                         reply = ("PONG " + sender)
                     else:
@@ -166,9 +170,6 @@ class IRC_Client(_Axon.Component.component):
                 else:
                     self.send(data, "nonPrivmsg")
                 
-                    
-
-
    def parseable(self, line):
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
             return False
@@ -211,10 +212,55 @@ class IRC_Client(_Axon.Component.component):
             return body[1:]
         else:
             return body
-        
+
+   def send(self,message, boxname="outbox"):
+      """\
+      Overrides and calls Axon.Component.component.send.
+      If self.sendAsString is true, this method casts the message as a string before sending it on. 
+      
+      Raises Axon.AxonExceptions.noSpaceInBox if this outbox is linked to a
+      destination inbox that is full.
+      """
+      if self.sendAsString:
+          message = str(message)
+      super(IRC_Client, self).send(message, boxname)
+      
    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                return True
        return False
+
+      
+def SimpleIRCClientPrefab(host="127.0.0.1",
+                          port=6667,
+                          nick="kamaeliabot",
+                          nickinfo="Kamaelia",
+                          defaultChannel="#kamaeliatest",
+                          IRC_Handler=IRC_Client):
+    return Graphline(
+        CLIENT = TCPClient(host, port),
+        PROTO = IRC_Handler(nick, nickinfo, defaultChannel, sendAsString=True),
+        linkages = {
+              ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
+              ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
+              ("PROTO"  , "privmsg")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
+              ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
+              ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
+              ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
+              ("PROTO"  , "signal") : ("CLIENT", "control"),
+              ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
+              }
+        )
+
+if __name__ == '__main__':
+    from Axon.Scheduler import scheduler
+    from Kamaelia.Util.Console import ConsoleReader
+    from Kamaelia.UI.Pygame.Ticker import Ticker
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    Pipeline(
+        ConsoleReader(),
+        SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
+        Ticker(render_right = 800,render_bottom = 600),
+    ).run()
