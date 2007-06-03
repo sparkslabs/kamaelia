@@ -293,50 +293,49 @@ class docFormatter(object):
     def formatArgSpec(self, argspec):
         return pprint.pformat(argspec[0]).replace("[","(").replace("]",")").replace("'","")
 
-    def formatMethodDocStrings(self,X):
-        docTree = nodes.section('') #self.emptyTree()
+    def formatMethodDocStrings(self,className,X):
+        docTree = nodes.section('')
         
-        methods = X.methods
+        methods = X.listAllFunctions()
         methods.sort()
         
         
-        for method in methods:
-            methodHead = method.name + "(" + method.argString + ")"
+        for (methodname,method) in methods:
+            methodHead = methodname + "(" + method.argString + ")"
             
             docTree.append( nodes.section('',
-                                ids   = ["symbol-"+X.name+"."+method.name],
-                                names = ["symbol-"+X.name+"."+method.name],
+                                ids   = ["symbol-"+className+"."+methodname],
+                                names = ["symbol-"+className+"."+methodname],
                                 * [ nodes.title('', methodHead) ]
-                                  + self.docString(method.docString)
+                                  + self.docString(method.doc)
                             )
                           )
 
         return docTree
 
-    def formatInheritedMethods(self,CLASS):
+    def formatInheritedMethods(self,className,CLASS):
         docTree = nodes.section('')
         
-        overrides = [method.name for method in CLASS.methods] # copy of list of existing method names
-
+        overrides = [name for (name,method) in CLASS.listAllFunctions()] # copy of list of existing method names
         for base in CLASS.allBasesInMethodResolutionOrder:
-            baseName = base.fullPathName
-            basePathFragments = baseName.split(".")
-            baseModuleName = tuple(basePathFragments[:-1])
-            if baseModuleName == tuple():
-                baseModuleName = tuple(CLASS.module.split("."))
-                baseName = ".".join(baseModuleName)+"."+baseName
-            baseClassName = basePathFragments[-1]
-
-            if base is not None:
+            if isinstance(base,ClassScope):
+                moduleName=base.module
+                findName=moduleName[len(self.config.docroot+"."):]
+                module=self.config.repository.find(findName)
+                try:
+                    className=module.locate(base)
+                except ValueError:
+                    continue
+                
                 # work out which methods haven't been already overriden
                 methodList = []
-                for method in base.methods:
-                    if method.name not in overrides:
-                        overrides.append(method.name)
-                        uri = self.renderer.makeURI(baseName,"symbol-"+baseClassName+"."+method.name)
+                for (name,method) in base.listAllFunctions():
+                    if name not in overrides:
+                        overrides.append(name)
+                        uri = self.renderer.makeURI(moduleName,"symbol-"+className+"."+name)
                         methodList.append(nodes.list_item('',
                             nodes.paragraph('','',
-                                nodes.reference('', nodes.Text(method.name), refuri=uri),
+                                nodes.reference('', nodes.Text(name), refuri=uri),
                                 nodes.Text("(" + method.argString + ")"),
                                 ),
                             )
@@ -344,7 +343,7 @@ class docFormatter(object):
 
                 if len(methodList)>0:
                     docTree.append( nodes.section('',
-                        nodes.title('', "Methods inherited from "+baseName+" :"),
+                        nodes.title('', "Methods inherited from "+moduleName+"."+className+" :"),
                         nodes.bullet_list('', *methodList),
                         )
                     )
@@ -354,19 +353,23 @@ class docFormatter(object):
                             
 
     def formatClassStatement(self, name, bases):
-        return "class "+ name+"("+", ".join(bases)+")"
+        baseNames=[]
+        for baseName,base in bases:
+            baseNames.append(baseName)
+            print baseName,base
+        return "class "+ name+"("+", ".join(baseNames)+")"
     
     def formatPrefabStatement(self, name):
         return "prefab: "+name
     
-    def formatComponent(self, X):
+    def formatComponent(self, moduleName, name, X):
         # no class bases available from repository scanner 
-        CLASSNAME = self.formatClassStatement(X.name, X.bases) #X.__bases__)
-        CLASSDOC = self.docString(X.docString)
-        INBOXES = self.boxes(X.name,"Inboxes", X.inboxes)
-        OUTBOXES = self.boxes(X.name,"Outboxes", X.outboxes)
+        CLASSNAME = self.formatClassStatement(name, X.bases)
+        CLASSDOC = self.docString(X.doc)
+        INBOXES = self.boxes(name,"Inboxes", X.inboxes)
+        OUTBOXES = self.boxes(name,"Outboxes", X.outboxes)
         
-        if self.config.includeMethods and len(X.methods):
+        if self.config.includeMethods and len(X.listAllFunctions()):
             METHODS = [ nodes.section('',
                           nodes.title('', 'Methods defined here'),
                           boxright('',
@@ -377,57 +380,56 @@ class docFormatter(object):
                                   nodes.Text("You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.")
                               ),
                           ),
-                          * self.formatMethodDocStrings(X)
+                          * self.formatMethodDocStrings(name,X)
                         )
                       ]
         else:
             METHODS = []
-            
+
         return \
                 nodes.section('',
-                * [ nodes.title('', CLASSNAME, ids=["symbol-"+X.name]) ]
+                * [ nodes.title('', CLASSNAME, ids=["symbol-"+name]) ]
                   + CLASSDOC
                   + [ INBOXES, OUTBOXES ]
                   + METHODS
-                  + [ self.formatInheritedMethods(X) ]
+                  + [ self.formatInheritedMethods(name,X) ]
                 )
         
-    def formatPrefab(self, X):
-        CLASSNAME = self.formatPrefabStatement(X.name)
-        CLASSDOC = self.docString(X.docString)
+    def formatPrefab(self, moduleName, name, X):
+        CLASSNAME = self.formatPrefabStatement(name)
+        CLASSDOC = self.docString(X.doc)
         
         return nodes.section('',
-                * [ nodes.title('', CLASSNAME, ids=["symbol-"+X.name]) ]
+                * [ nodes.title('', CLASSNAME, ids=["symbol-"+name]) ]
                   + CLASSDOC
             )
         
-    def formatFunction(self, X):
-        functionHead = X.name + "(" + X.argString + ")"
+    def formatFunction(self, moduleName, name, X):
+        functionHead = name + "(" + X.argString + ")"
         return nodes.section('',
-                    ids   = ["symbol-"+X.name],
-                    names = ["symbol-"+X.name],
+                    ids   = ["symbol-"+name],
+                    names = ["symbol-"+name],
                     * [ nodes.title('', functionHead) ]
-                        + self.docString(X.docString)
+                        + self.docString(X.doc)
                     )
                             
 
-    def formatClass(self, X):
-        # no class bases available from repository scanner 
-        CLASSNAME = self.formatClassStatement(X.name, X.bases)
+    def formatClass(self, moduleName, name, X):
+        CLASSNAME = self.formatClassStatement(name, X.bases)
 
-        if len(X.methods)>0:
+        if len(X.listAllFunctions()):
             METHODS = [ nodes.section('',
                             nodes.title('', 'Methods defined here'),
-                            * self.formatMethodDocStrings(X)
+                            * self.formatMethodDocStrings(name,X)
                         )
                       ]
         else:
             METHODS = []
         return \
                 nodes.section('',
-                    nodes.title('', CLASSNAME, ids=["class-"+X.name]),
-                    self.docString(X.docString),
-                    * METHODS + [self.formatInheritedMethods(X)]
+                    nodes.title('', CLASSNAME, ids=["symbol-"+name]),
+                    self.docString(X.doc),
+                    * METHODS + [self.formatInheritedMethods(name,X)]
                 )
         
     def formatTests(self, moduleName):
@@ -455,8 +457,8 @@ class docFormatter(object):
                 docTree.insert(0,nodes.title('', "Test documentation"))
             return docTree
     
-    def formatTrail(self, moduleName):
-        path = moduleName.split(".")
+    def formatTrail(self, fullPathName):
+        path = fullPathName.split(".")
         
         trail = nodes.paragraph('')
         line = trail
@@ -477,42 +479,38 @@ class docFormatter(object):
         
         return trail
 
-    def formatTrailAsTitle(self, moduleName):
-        trailTree = self.formatTrail(moduleName)
+    def formatTrailAsTitle(self, fullPathName):
+        trailTree = self.formatTrail(fullPathName)
         title = nodes.title('', '', *trailTree.children)
         if self.config.deemphasiseTrails:
             title = nodes.section('', title)
 
         return title
         
-    def declarationsList(self, components, prefabs, classes, functions):
+    def declarationsList(self, moduleName, components, prefabs, classes, functions):
         uris = {}
         prefixes = {}
         postfixes = {}
         
-        for component in components:
-            fullname = component.module + "." + component.name
-            uris[component.name] = self.renderer.makeURI(fullname)
-            prefixes[component.name] = "component "
-            postfixes[component.name] = ""
+        for (name,component) in components:
+            uris[name] = self.renderer.makeURI(moduleName+"."+name)
+            prefixes[name] = "component "
+            postfixes[name] = ""
             
-        for prefab in prefabs:
-            fullname = prefab.module + "." + prefab.name
-            uris[prefab.name] = self.renderer.makeURI(fullname)
-            prefixes[prefab.name] = "prefab "
-            postfixes[prefab.name] = ""
+        for (name,prefab) in prefabs:
+            uris[name] = self.renderer.makeURI(moduleName+"."+name)
+            prefixes[name] = "prefab "
+            postfixes[name] = ""
             
-        for cls in classes:
-            fullname = cls.module + "." + cls.name
-            uris[cls.name] = self.renderer.makeURI(fullname)
-            prefixes[cls.name] = "class "
-            postfixes[cls.name] = ""
+        for (name,cls) in classes:
+            uris[name] = self.renderer.makeURI(moduleName+"."+name)
+            prefixes[name] = "class "
+            postfixes[name] = ""
             
-        for function in functions:
-            fullname = function.module + "." + function.name
-            uris[function.name] = self.renderer.makeURI(fullname)
-            prefixes[function.name] = ""
-            postfixes[function.name] = "("+function.argString+")"
+        for (name,function) in functions:
+            uris[name] = self.renderer.makeURI(moduleName+"."+name)
+            prefixes[name] = ""
+            postfixes[name] = "("+function.argString+")"
 
         declNames = uris.keys()
         declNames.sort()
@@ -532,23 +530,23 @@ class docFormatter(object):
                 )
             )
 
-    def formatComponentPage(self,moduleName, component):
-        return self.formatDeclarationPage(moduleName, self.formatComponent, component)
+    def formatComponentPage(self, moduleName, name, component):
+        return self.formatDeclarationPage(moduleName, name, self.formatComponent, component)
         
-    def formatPrefabPage(self,moduleName, prefab):
-        return self.formatDeclarationPage(moduleName, self.formatPrefab, prefab)
+    def formatPrefabPage(self, moduleName, name, prefab):
+        return self.formatDeclarationPage(moduleName, name, self.formatPrefab, prefab)
         
-    def formatClassPage(self,moduleName, cls):
-        return self.formatDeclarationPage(moduleName, self.formatClass, cls)
+    def formatClassPage(self, moduleName, name, cls):
+        return self.formatDeclarationPage(moduleName, name, self.formatClass, cls)
         
-    def formatFunctionPage(self,moduleName, function):
-        return self.formatDeclarationPage(moduleName, self.formatFunction, function)
+    def formatFunctionPage(self, moduleName, name, function):
+        return self.formatDeclarationPage(moduleName, name, self.formatFunction, function)
         
-    def formatDeclarationPage(self, name, method, arg):
-        parentURI = self.renderer.makeURI(".".join(name.split(".")[:-1]))
-        trailTitle = self.formatTrailAsTitle(name)
+    def formatDeclarationPage(self, moduleName, name, method, item):
+        parentURI = self.renderer.makeURI(item.module)
+        trailTitle = self.formatTrailAsTitle(moduleName+"."+name)
         
-        declarationTree = method(arg)
+        itemDocTree = method(moduleName, name, item)
         
         return nodes.section('',
             trailTitle,
@@ -557,13 +555,13 @@ class docFormatter(object):
                 nodes.reference('', 'module level docs.', refuri=parentURI)
                 ),
             nodes.transition(),
-            nodes.section('', *declarationTree),
+            nodes.section('', *itemDocTree),
             )
            
     def formatModulePage(self, moduleName, module, components, prefabs, classes, functions):
         
         trailTitle = self.formatTrailAsTitle(moduleName)
-        moduleTree = self.docString(module.docString, main=True)
+        moduleDocTree = self.docString(module.doc, main=True)
         testsTree = self.formatTests(moduleName)
         while len(testsTree.children)>0:
             node=testsTree.children[0]
@@ -572,72 +570,84 @@ class docFormatter(object):
             
         
         if self.config.promoteModuleTitles and \
-           len(moduleTree.children)>=1 and \
-           isinstance(moduleTree.children[0], nodes.title):
-            theTitle = moduleTree.children[0]
-            moduleTree.remove(theTitle)
+           len(moduleDocTree.children)>=1 and \
+           isinstance(moduleDocTree.children[0], nodes.title):
+            theTitle = moduleDocTree.children[0]
+            moduleDocTree.remove(theTitle)
             promotedTitle = [ theTitle ]
         else:
             promotedTitle = []
 
-        toc = self.buildTOC(moduleTree, depth=self.config.tocDepth)
+        toc = self.buildTOC(moduleDocTree, depth=self.config.tocDepth)
         
         allDeclarations = []
         
-        declarationTrees = {}
-        for component in components:
-            cTrail = self.formatTrail(moduleName+"."+component.name)
-            declarationTrees[component.name] = nodes.container('',
-                nodes.title('','', *cTrail.children),
-                    self.formatComponent(component)
-            )
+        declarationTrees = []
+        for (name,component) in components:
+            cTrail = self.formatTrail(moduleName+"."+name)
+            declarationTrees.append((
+                name,
+                nodes.container('',
+                    nodes.title('','', *cTrail.children),
+                    self.formatComponent(moduleName,name,component)
+                    )
+                 ))
             
-        for prefab in prefabs:
-            assert(prefab.name not in declarationTrees)
-            pTrail = self.formatTrail(moduleName+"."+prefab.name)
-            declarationTrees[prefab.name] = nodes.container('',
-                nodes.title('','', *pTrail.children),
-                    self.formatPrefab(prefab)
-            )
+        for (name,prefab) in prefabs:
+            pTrail = self.formatTrail(moduleName+"."+name)
+            declarationTrees.append((
+                name,
+                nodes.container('',
+                    nodes.title('','', *pTrail.children),
+                    self.formatPrefab(moduleName,name,prefab)
+                    )
+                ))
 
-        for cls in classes:
-            assert(cls.name not in declarationTrees)
-            cTrail = self.formatTrail(moduleName+"."+cls.name)
-            declarationTrees[cls.name] = nodes.container('',
+        for (name,cls) in classes:
+            cTrail = self.formatTrail(moduleName+"."+name)
+            declarationTrees.append((
+                name,
+                nodes.container('',
                 nodes.title('','', *cTrail.children),
-                    self.formatClass(cls)
-            )
+                    self.formatClass(moduleName,name,cls)
+                    )
+                ))
 
-        for function in functions:
-            assert(function.name not in declarationTrees)
-            fTrail = self.formatTrail(moduleName+"."+function.name)
-            declarationTrees[function.name] = nodes.container('',
-                nodes.title('','', *fTrail.children),
-                    self.formatFunction(function)
-            )
+        for (name,function) in functions:
+            fTrail = self.formatTrail(moduleName+"."+name)
+            declarationTrees.append((
+                name,
+                nodes.container('',
+                    nodes.title('','', *fTrail.children),
+                    self.formatFunction(moduleName,name,function)
+                    )
+                ))
 
-        declNames = declarationTrees.keys()
-        declNames.sort()
-        for name in declNames:
-            allDeclarations.extend(declarationTrees[name])
+        declarationTrees.sort()   # sort by name
+        concatenatedDeclarations=[]
+        for (name,tree) in declarationTrees:
+            concatenatedDeclarations.extend(tree)
         
-        componentListTree = self.declarationsList( components, prefabs, classes, functions )
-
+        componentListTree = self.declarationsList( moduleName, components, prefabs, classes, functions )
+        
+        if len(module.listAllModules()) > 0:
+            subModuleIndex = self.generateIndex(moduleName,module,self.config.treeDepth)
+        else:
+            subModuleIndex = []
         return nodes.container('',
             nodes.section('',
                 trailTitle,
                 ),
-            nodes.section('',
-                * promotedTitle + \
-                  [ componentListTree,
-                    toc,
-                  ]
-            ),
-            nodes.transition(),
-            moduleTree,
-            nodes.transition(),
-            nodes.section('', *allDeclarations),
-            )
+             nodes.section('',
+                 * promotedTitle + \
+                   [ componentListTree] + \
+                   subModuleIndex + \
+                   [ toc ]
+             ),
+             moduleDocTree,
+             nodes.transition(),
+             nodes.section('', *concatenatedDeclarations),
+             )
             
     def buildTOC(self, srcTree, parent=None, depth=None):
         """Recurse through a source document tree, building a table of contents"""
@@ -680,183 +690,123 @@ class docFormatter(object):
         return parent
         
 
-    def formatIndexPage(self, path, subTree): #indexName, subTree, componentsAndPrefabs):
-        depth=self.config.treeDepth
-
-        indexName = ".".join(path)
-
-        trailTitle = self.formatTrailAsTitle(indexName)
-        
-        moduleTree = nodes.container('')
-        if self.config.includeModuleDocString:
-            if subTree.has_key("__init__"):
-                docs = subTree["__init__"].docString
-                if docs and ("This is a doc string" not in docs):
-                    moduleTree =self.docString(docs)
-
-        if self.config.promoteModuleTitles and \
-           len(moduleTree.children)>=1 and \
-           isinstance(moduleTree.children[0], nodes.title):
-            theTitle = moduleTree.children[0]
-            moduleTree.remove(theTitle)
-            promotedTitle = [ theTitle ]
-        else:
-            promotedTitle = []
-
-        return nodes.section('',
-            * [ trailTitle ]
-            + promotedTitle
-            + [ self.generateIndex(path, subTree, depth=depth) ]
-            + [ moduleTree ]
-            )
-
-    def generateIndex(self, path, srcTree, parent=None, depth=99):
-        if parent is None:
-            parent = nodes.bullet_list()
-
+    def generateIndex(self, pathToHere, module, depth=99):
         if depth<=0:
-            return parent
-
-        items=nodes.section()
-
-        childNames = srcTree.keys()
-        childNames.sort()
-        for name in [c for c in childNames if c != "__init__"]:
-            moduleContents = []
+            return []
+        
+        tree=[]
+        children = module.listAllModules()
+        children.sort()
+        
+        if pathToHere!="":
+            pathToHere=pathToHere+"."
+        
+        for subModuleName,submodule in children:
+            moduleContents=[]
             
-            modPath = tuple(list(path)+[name])
-            modName = ".".join(modPath)
-
-            if self.config.repository.flatModules.has_key(modPath):
-                thisMod = self.config.repository.flatModules[modPath]
-                
-                # build "(a,b,c)" style list of links to actual components/prefabs in the module
-                # (if they exist)
-                if self.config.showComponentsOnIndices:
-                    declNames = [_.name for _ in thisMod.components + thisMod.prefabs]
-                    if len(declNames)>0:
-                        moduleContents.append(nodes.Text(" ( "))
-                        first=True
-                        for declName in declNames:
-                            if not first:
-                                moduleContents.append(nodes.Text(", "))
-                            first=False
-                            uri = self.renderer.makeURI(modName+"."+declName)
-                            linkToDecl = nodes.reference('', nodes.Text(declName), refuri=uri)
-                            moduleContents.append(linkToDecl)
-                        moduleContents.append(nodes.Text(" )"))
-
-            # now make the list item for this module
-            uri = self.renderer.makeURI(modName)
-            text = name
-            newItem = nodes.list_item('',
+            if self.config.showComponentsOnIndices:
+                moduleContains=[name for (name,item) in module.listAllComponentsAndPrefabs()]
+                if len(moduleContains)>0:
+                    moduleContains.sort()
+                    moduleContents.append(nodes.Text(" ( "))
+                    first=True
+                    for name in moduleContains:
+                        if not first:
+                            moduleContents.append(nodes.Text(", "))
+                        first=False
+                        uri = self.renderer.makeURI(pathToHere+subModuleName+"."+name)
+                        linkToDecl = nodes.reference('', nodes.Text(name), refuri=uri)
+                        moduleContents.append(linkToDecl)
+                    moduleContents.append(nodes.Text(" )"))
+            
+            uri=self.renderer.makeURI(pathToHere+subModuleName)
+            tree.append( nodes.list_item('',
                 nodes.paragraph('','',
-                    nodes.strong('', '',nodes.reference('', text, refuri=uri)),
+                    nodes.strong('', '',nodes.reference('', subModuleName, refuri=uri)),
                     *moduleContents
-                    )
-                )
-                
-            if isinstance(srcTree[name],dict):  # if not empty, recurse
-                newItem.append(nodes.bullet_list())
-                self.generateIndex(modPath, srcTree[name], newItem[-1], depth-1)
-            parent.append(newItem)
+                ),
+                *self.generateIndex(pathToHere+subModuleName, submodule,depth-1)
+            ) )
 
-        return parent
+        if len(tree):
+            return [ nodes.bullet_list('', *tree) ]
+        else:
+            return []
+
 
 
 
             
 def generateDocumentationFiles(formatter, CONFIG):
-    
-    MODULES = [ K for K in CONFIG.repository.flatModules.keys() \
-                if CONFIG.filterPattern in ".".join(K) ]
-    for MODULE in MODULES:
-        moduleName = ".".join(MODULE)
+    for (moduleName,module) in CONFIG.repository.listAllModulesIncSubModules():
+        
         print "Processing: "+moduleName
+        
+        components=module.listAllComponents()
+        prefabs=module.listAllPrefabs()
 
-        module     = CONFIG.repository.flatModules[MODULE]
-        components = module.components
-        prefabs    = module.prefabs
         if CONFIG.includeNonKamaeliaStuff:
-            classes    = module.classes
-            functions  = module.functions
+            classes    = [X for X in module.listAllClasses() if X not in components]
+            functions  = [X for X in module.listAllFunctions() if X not in prefabs]
         else:
             classes = []
             functions = []
         
-        doctree  = formatter.formatModulePage(moduleName, module, components, prefabs, classes, functions)
-        filename = formatter.renderer.makeFilename(moduleName)
-        output   = formatter.renderer.render(moduleName, doctree)
-        
-        F = open(CONFIG.docdir+"/"+filename, "w")
-        F.write(output)
-        F.close()
-        
-        for component in components:
-            NAME = moduleName+"."+component.name
-            print "    Component: "+NAME
-            filename = formatter.renderer.makeFilename(NAME)
-            doctree = formatter.formatComponentPage(NAME, component)
-            output   = formatter.renderer.render(NAME, doctree)
-            F = open(CONFIG.docdir+"/"+filename, "w")
-            F.write(output)
-            F.close()
-
-        for prefab in prefabs:
-            NAME = moduleName+"."+prefab.name
-            print "    Prefab: "+NAME
-            filename = formatter.renderer.makeFilename(NAME)
-            doctree = formatter.formatPrefabPage(NAME, prefab)
-            output   = formatter.renderer.render(NAME, doctree)
-            F = open(CONFIG.docdir+"/"+filename, "w")
-            F.write(output)
-            F.close()
-            
-        for cls in classes:
-            NAME = moduleName+"."+cls.name
-            filename = formatter.renderer.makeFilename(NAME)
-            doctree = formatter.formatClassPage(NAME, cls)
-            output = formatter.renderer.render(NAME, doctree)
-            F = open(CONFIG.docdir+"/"+filename, "w")
-            F.write(output)
-            F.close()
-
-        for function in functions:
-            NAME = moduleName+"."+function.name
-            filename = formatter.renderer.makeFilename(NAME)
-            doctree = formatter.formatFunctionPage(NAME, function)
-            output = formatter.renderer.render(NAME, doctree)
-            F = open(CONFIG.docdir+"/"+filename, "w")
-            F.write(output)
-            F.close()
-
-def generateIndices(formatter, CONFIG):
-
-    def generate(formatter, CONFIG, subtree, path):
-        if path != []:
-            indexName = ".".join(path)
-            print "Creating index: "+indexName
-            
-            doctree  = formatter.formatIndexPage(path,subtree)
-            filename = formatter.renderer.makeFilename(indexName)
-            output   = formatter.renderer.render(indexName, doctree)
+        if CONFIG.filterPattern in moduleName:
+            doctree  = formatter.formatModulePage(moduleName, module, components, prefabs, classes, functions)
+            filename = formatter.renderer.makeFilename(moduleName)
+            output   = formatter.renderer.render(moduleName, doctree)
             
             F = open(CONFIG.docdir+"/"+filename, "w")
             F.write(output)
             F.close()
         
-        for (name,leaf) in subtree.items():
-            if isinstance(leaf, dict):
-                generate(formatter, CONFIG, leaf, path+[name])
-            else:
-                # must be module documentation object
-                pass
+        for (name,component) in components:
+            NAME=moduleName+"."+name
+            if CONFIG.filterPattern in NAME:
+                print "    Component: "+NAME
+                filename = formatter.renderer.makeFilename(NAME)
+                doctree = formatter.formatComponentPage(moduleName, name, component)
+                output   = formatter.renderer.render(NAME, doctree)
+                F = open(CONFIG.docdir+"/"+filename, "w")
+                F.write(output)
+                F.close()
 
-    generate(formatter, CONFIG, CONFIG.repository.nestedModules, [])
-    
+        for (name,prefab) in prefabs:
+            NAME=moduleName+"."+name
+            if CONFIG.filterPattern in NAME:
+                print "    Prefab: "+NAME
+                filename = formatter.renderer.makeFilename(NAME)
+                doctree = formatter.formatPrefabPage(moduleName, name, prefab)
+                output   = formatter.renderer.render(NAME, doctree)
+                F = open(CONFIG.docdir+"/"+filename, "w")
+                F.write(output)
+                F.close()
+            
+        for (name,cls) in classes:
+            NAME=moduleName+"."+name
+            if CONFIG.filterPattern in NAME:
+                print "    Class: "+NAME
+                filename = formatter.renderer.makeFilename(NAME)
+                doctree = formatter.formatClassPage(moduleName, name, cls)
+                output = formatter.renderer.render(NAME, doctree)
+                F = open(CONFIG.docdir+"/"+filename, "w")
+                F.write(output)
+                F.close()
 
-    
-    
+        for (name,function) in functions:
+            NAME=moduleName+"."+name
+            if CONFIG.filterPattern in NAME:
+                print "    Function: "+NAME
+                filename = formatter.renderer.makeFilename(NAME)
+                doctree = formatter.formatFunctionPage(moduleName, name, function)
+                output = formatter.renderer.render(NAME, doctree)
+                F = open(CONFIG.docdir+"/"+filename, "w")
+                F.write(output)
+                F.close()
+
+
+
 if __name__ == "__main__":
     import sys
     
@@ -999,7 +949,12 @@ if __name__ == "__main__":
     sys.argv=sys.argv[0:0]
         
     debug = False
-    REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
+#    REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
+    REPOSITORY=Repository.ModuleDoc( moduleName=config.docroot,
+                                     filePath=REPOSITORYDIR,
+                                     localModules={},
+                                   )
+    REPOSITORY.resolve(roots={config.docroot:REPOSITORY})
     config.repository=REPOSITORY
     
     import time
@@ -1011,24 +966,23 @@ if __name__ == "__main__":
                           debug=False,
                           rawFooter=config.pageFooter)
     
-    if 1:
-        # automatically generate crosslinks when component names are seen
-        crossLinks = {}
-        for (path,m) in REPOSITORY.flatModules.items():
-            items = m.components + m.prefabs
-            if config.includeNonKamaeliaStuff:
-                items += m.classes + m.functions
-            for item in items:
-                name=".".join(path)
-                crossLinks[name] = name
-                name=".".join(list(path)+[item.name])
-                crossLinks[name] = name
-        renderer.setAutoCrossLinks( crossLinks )
+    # automatically generate crosslinks when component names are seen
+    crossLinks = {}
+    from ImportTracking import ClassScope,FunctionScope,ModuleScope,ImportScope
+    wantedTypes=(ClassScope,FunctionScope,ModuleScope,)
+    for (fullPathName,item) in REPOSITORY.listAllMatching(recurseDepth=99,noRecurseTypes=ImportScope,types=wantedTypes):
+        if config.includeNonKamaeliaStuff \
+        or isinstance(item,ModuleScope) \
+        or getattr(item,"isComponent",False) \
+        or getattr(item,"isPrefab",False):
+            fullPathName = REPOSITORY.module+"."+fullPathName
+            crossLinks[fullPathName] = fullPathName
+    renderer.setAutoCrossLinks( crossLinks )
     
     formatter = docFormatter(renderer, config=config)
 
     generateDocumentationFiles(formatter,config)
-    generateIndices(formatter,config)
+#    generateIndices(formatter,config)
 
     if formatter.errorCount>0:
         print "Errors occurred during docstring parsing/page generation."
