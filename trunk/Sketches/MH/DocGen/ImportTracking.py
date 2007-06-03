@@ -95,12 +95,6 @@ from compiler import ast
 import __builtin__ as BUILTINS
 
 
-def UNPARSED(ast=None):
-    return { "type" : "UNPARSED",
-             "ast"  : ast,
-           }
-
-
 class Scope(object):
 
     def __init__(self, type="Module", ASTChildren=None, imports=None, localModules={}, rootScope=None):
@@ -186,7 +180,7 @@ class Scope(object):
                     try:
                         resolved = self.find(expr)
                     except ValueError:
-                        resolved = UnparsedScope(expr,self.imports,self.localModules,self.rootScope)
+                        resolved = UnparsedScope(ast.Name(expr),self.imports,self.localModules,self.rootScope)
                 else:
                     resolved = UnparsedScope(expr,self.imports,self.localModules,self.rootScope)
                 resolvedAssignments.append((target,resolved))
@@ -206,7 +200,7 @@ class Scope(object):
             if isinstance(expr, (ast.Name, ast.Getattr)):
                 assignments.append( (targetname, self._parse_Name(expr)) )
             else:
-                assignments.append( (targetname, UNPARSED(expr)) )
+                assignments.append( (targetname, expr) )
         elif isinstance(target, (ast.AssTuple, ast.AssList)):
             if isinstance(expr, (ast.Tuple, ast.List)):
                 targets = target.nodes
@@ -216,7 +210,7 @@ class Scope(object):
                         assignments.extend(self._mapAssign(targets[i],exprs[i]))
                 else:
                     for i in range(0,len(targets)):
-                        assignments.append( (targetname, UNPARSED()) )
+                        assignments.append( (targetname, exprs) )
             else:
                 pass # dont know what to do with this term on the lhs of the assignment
         else:
@@ -250,6 +244,17 @@ class Scope(object):
                 return self.rootScope.find(name,checkRoot=False)
         raise ValueError("Cannot find it!")
 
+    def locate(self,value):
+        for symbol in self.symbols:
+            if value==self.symbols[symbol]:
+                return symbol
+        for symbol in self.symbols:
+            try:
+                return symbol+"."+self.symbols[symbol].locate(value)
+            except ValueError:
+                pass
+        raise ValueError("Can't locate it!")
+
     def assign(self, name, value, checkRoot=True):
         segmented=name.split(".")
         head=segmented[0]
@@ -265,35 +270,78 @@ class Scope(object):
                     return self.rootScope.assign(name,value,checkRoot=False)
             raise ValueError("Cannot assign to this!")
 
-    def listAllClasses(self,recurseDepth=0):
-        return self.listAllMatching(ClassScope,recurseDepth)
+    def listAllClasses(self,**options):
+        return self.listAllMatching(ClassScope,**options)
             
-    def listAllFunctions(self,recurseDepth=0):
-        return self.listAllMatching(FunctionScope,recurseDepth)
+    def listAllFunctions(self,**options):
+        return self.listAllMatching(FunctionScope,**options)
+    
+    def listAllModules(self,**options):
+        return self.listAllMatching(ModuleScope,**options)
+    
+    def listAllNonImports(self,**options):
+        return self.listAllNotMatching((ImportScope,ModuleScope),**options)
             
-    def listAllMatching(self,types,recurseDepth=0):
+    def listAllMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        if noRecurseTypes==None:
+            noRecurseTypes=(ModuleScope,)
         found=[]
         for symbol in self.symbols:
             item=self.symbols[symbol]
             if isinstance(item,types):
                 found.append((symbol,item))
-            if recurseDepth>0:
-                subfound=item.listAllMatching(types,recurseDepth-1)
+            if recurseDepth>0 and not isinstance(item,noRecurseTypes):
+                subfound=item.listAllMatching(types,noRecurseTypes,recurseDepth-1)
                 for (name,thing) in subfound:
                     found.append((symbol+"."+name,thing))
         return found
             
+    def listAllNotMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        if noRecurseTypes==None:
+            noRecurseTypes=(ModuleScope,)
+        found=[]
+        for symbol in self.symbols:
+            item=self.symbols[symbol]
+            if not isinstance(item,types):
+                found.append((symbol,item))
+            if recurseDepth>0 and not isinstance(item,noRecurseTypes):
+                subfound=item.listAllMatching(types,noRecurseTypes,recurseDepth-1)
+                for (name,thing) in subfound:
+                    found.append((symbol+"."+name,thing))
+        return found
+                
+    def resolve(self,_resolvePass=None,roots={}):
+        if _resolvePass==None:
+            self.resolve(_resolvePass=1,roots=roots)
+            self.resolve(_resolvePass=2,roots=roots)
+        else:
+            for (name,item) in self.symbols.items():
+                try:
+                    item.resolve(_resolvePass=_resolvePass,roots=roots)
+                except AttributeError:
+                    # item doesn't have a 'resolve' method
+                    pass
+            
 class ModuleScope(Scope):
-    def __init__(self, AST, imports, localModules={}, rootScope=None):
-        super(ModuleScope,self).__init__("Module",AST.node.nodes,imports,localModules,None)
-        self.doc = AST.doc
+    def __init__(self, AST, localModules={}):
+        super(ModuleScope,self).__init__("Module",AST.node.nodes,None,localModules,None)
+        self.ast=AST
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
 
 
 class ClassScope(Scope):
     def __init__(self, AST, imports, localModules, rootScope, parentScope):
         super(ClassScope,self).__init__("Class",AST.code,imports,localModules,rootScope)
+        self.ast=AST
 
-        self.doc = AST.doc
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
+        
         # parse bases
         self.bases = []
         for baseName in AST.bases:
@@ -306,12 +354,87 @@ class ClassScope(Scope):
                 resolvedBaseName = parsedBaseName
             self.bases.append((resolvedBaseName,base))
         
+    def resolve(self,_resolvePass=None,roots={}):
+        super(ClassScope,self).resolve(_resolvePass,roots)
+        if _resolvePass==1 and len(roots):
+            # resolve bases that are imports that could actually be classes in one of the root hierarchies
+            newBases = []
+            for baseName,base in self.bases:
+                history=[]
+                baseNameFrags = baseName.split(".")
+                # chase through the (chain of) imports to see if we can find them
+                # in the documentation object tree roots provided
+                while isinstance(base,ImportScope) or base is None:
+                    history.append(baseName)
+                        
+                    success=False
+                    for rootName,rootMod in roots.items():
+                        rootNameFrags=rootName.split(".")
+                        head=baseNameFrags[:len(rootNameFrags)]
+                        tail=baseNameFrags[len(rootNameFrags):]
+                        if rootNameFrags == head:
+                            try:
+                                base=rootMod.find(".".join(tail))
+                                baseName=baseName
+                                success=True
+                            except ValueError:
+                                continue
+                        if baseName in history:
+                            continue
+                    
+                    if not success:
+                        # ok, hit a dead end
+                        break
+                    if baseName in history:
+                        # ok, we've gone circular
+                        break
+                            
+                newBases.append((baseName,base))
 
+            self.bases=newBases
+        
+        elif _resolvePass==2:
+            # now determine the method resolution order
+            self.allBasesInMethodResolutionOrder = _determineMRO(self)
+            super(ClassScope,self).resolve(_resolvePass,roots)
+
+def _determineMRO(klass):
+    order=[klass]
+    if not isinstance(klass,ClassScope):
+        return order
+    
+    bases=[]
+    for baseName,base in klass.bases:
+        bases.append(base)
+        
+    mergedBases = [_determineMRO(base) for base in bases]
+    mergedBases.extend([[base] for base in bases])
+    while len(mergedBases) > 0:
+        for baselist in mergedBases:
+            head = baselist[0]
+            foundElsewhere = [True for merged in mergedBases if (head in merged[1:])]
+            if foundElsewhere == []:
+                order.append(head)
+                for baselist in mergedBases:
+                    if baselist[0]==head:
+                        del baselist[0]
+                mergedBases = [baselist for baselist in mergedBases if baselist != []]
+                break
+        if foundElsewhere:
+            raise "FAILURE"
+    return order
+    
+    
 class FunctionScope(Scope):
     def __init__(self, AST, imports, localModules, rootScope):
         super(FunctionScope,self).__init__("Class",None,imports,localModules,rootScope) # don't bother parsing function innards
+        self.ast=AST
 
-        self.doc = AST.doc
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
+        
         # parse arguments
         argNames = [(str(argName),str(argName)) for argName in AST.argnames]
         i=-1
@@ -417,7 +540,8 @@ if __name__ == "__main__":
         "Nodes" : "Pretend.there.is.a.module.path.Nodes",
         }
     
-    d = ModuleScope(root,None,localModules)
+    d = ModuleScope(root,localModules)
+    d.resolve()
     
     import pprint
     print "-----MAPPINGS:"
@@ -425,10 +549,9 @@ if __name__ == "__main__":
     for (name,data) in d.listAllMatching(object,recurseDepth=5):
         print name
     print
-    print d.find("Graphline.Inboxes").ast
     print "-----CLASSES IDENTIFIED:"
     print
-    for (classname,data) in d.listAllClasses(recurseDepth=2):
+    for (classname,data) in d.listAllClasses(recurseDepth=5):
         bases = [name for (name,_) in data.bases]
         print "class ",classname,"..."
         print "   parsing says bases are:",bases
@@ -437,7 +560,7 @@ if __name__ == "__main__":
     print
     print "-----FUNCTIONS:"
     print
-    for (funcname,data) in d.listAllFunctions(recurseDepth=2):
+    for (funcname,data) in d.listAllFunctions(recurseDepth=5):
         print "function ",funcname,"(",data.argString,")",
         if check:
             print "...",
