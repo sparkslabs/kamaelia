@@ -24,27 +24,27 @@ def ComplexIRCClientPrefab(host="127.0.0.1",
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
               ("PROTO", "nonPrivmsg") : ("SELF", "nonPrivmsg"), #passthrough
-              ("SPLIT", "toGraphline") : ("SELF", "sentCopy"), #passthrough
+              ("SPLIT", "toGraphline") : ("SELF", "sendCopy"), #passthrough
               ("SPLIT", "toTCP") : ("CLIENT", "inbox")
               }
         )
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader
-    from Kamaelia.UI.Pygame.Ticker import Ticker
+    from NiceTickerPrefab import NiceTickerPrefab as NiceTicker
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.PureTransformer import PureTransformer
     Graphline(
         reader = ConsoleReader(),
         irc = ComplexIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        display1 = Ticker(render_right = 400,render_bottom = 300),
-        display2 = Ticker(render_right = 400,render_bottom = 300, position = (440, 0)),
-        display3 = Ticker(render_right = 400,render_bottom = 300, position = (0, 340)),
+        display1 = NiceTicker(render_right = 400,render_bottom = 300),
+        display2 = NiceTicker(render_right = 400,render_bottom = 300, position = (440, 0)),
+        display3 = NiceTicker(render_right = 400,render_bottom = 300, position = (0, 340)),
         linkages = {
             ("reader", "outbox") : ("irc", "inbox"),
             ("irc", "outbox") : ("display1", "inbox"),
             ("irc", "nonPrivmsg") : ("display2", "inbox"),
-            ("irc", "sentCopy") : ("display3", "inbox")
+            ("irc", "sendCopy") : ("display3", "inbox")
             }
             
     ).run()
