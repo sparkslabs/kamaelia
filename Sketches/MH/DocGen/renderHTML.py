@@ -100,6 +100,12 @@ class RenderHTML(object):
             # convert the destination to a URI
             uri = self.makeURI(ref)
             self.mappings[pattern] = uri
+            
+    def addAutoLinksToURI(self, mappings):
+        for (key,uri) in mappings.items():
+            pattern=re.compile("(?<![a-zA-Z0-9._])"+re.escape(key)+"(?!\.?[a-zA-Z0-9_])")
+            self.mappings[pattern] = uri
+        
         
     def render(self, docName, docTree):
         """\
