@@ -193,6 +193,8 @@ class DocGenConfig(object):
         self.pageFooter=""
         self.testOutputDir=None
         self.testExtensions=[]
+        self.dumpSymbolsTo=None
+        self.loadSymbolsFrom=[]
 
         
 class docFormatter(object):
@@ -356,7 +358,6 @@ class docFormatter(object):
         baseNames=[]
         for baseName,base in bases:
             baseNames.append(baseName)
-            print baseName,base
         return "class "+ name+"("+", ".join(baseNames)+")"
     
     def formatPrefabStatement(self, name):
@@ -806,7 +807,87 @@ def generateDocumentationFiles(formatter, CONFIG):
                 F.close()
 
 
+def dumpSymbols(formatter, CONFIG, theTime, filename, cmdLineArgs):
+    print "Dumping symbols to file '"+filename+"' ..."
+    allClasses=[]
+    allPrefabs=[]
+    allComponents=[]
+    allFunctions=[]
+    allModules=[]
+    
+    for (moduleName,module) in CONFIG.repository.listAllModulesIncSubModules():
+        uri=formatter.renderer.makeURI(moduleName)
+        allModules.append((moduleName,uri))
+        
+        components=module.listAllComponents()
+        prefabs=module.listAllPrefabs()
 
+        if CONFIG.includeNonKamaeliaStuff:
+            classes    = [X for X in module.listAllClasses() if X not in components]
+            functions  = [X for X in module.listAllFunctions() if X not in prefabs]
+        else:
+            classes = []
+            functions = []
+            
+        for (name,item) in classes:
+            NAME=moduleName+"."+name
+            URI=formatter.renderer.makeURI(NAME)
+            allClasses.append((NAME,URI))
+            
+        for (name,item) in prefabs:
+            NAME=moduleName+"."+name
+            URI=formatter.renderer.makeURI(NAME)
+            allPrefabs.append((NAME,URI))
+            
+        for (name,item) in components:
+            NAME=moduleName+"."+name
+            URI=formatter.renderer.makeURI(NAME)
+            allComponents.append((NAME,URI))
+            
+        for (name,item) in functions:
+            NAME=moduleName+"."+name
+            URI=formatter.renderer.makeURI(NAME)
+            allFunctions.append((NAME,URI))
+            
+    
+    F=open(filename,"wb")
+    F.write(";\n")
+    F.write("; Kamaelia documentation extractor symbol dump\n")
+    F.write("; (generated on "+theTime+" )\n")
+    F.write(";\n")
+    F.write("; Command line args for build were:\n")
+    F.write(";      "+" ".join(cmdLineArgs)+"\n")
+    F.write(";\n")
+    F.write("\n")
+    
+    F.write("[COMPONENTS]\n\n")
+    for (name,uri) in allComponents:
+        F.write(name+"="+uri+"\n")
+    F.write("\n")
+    
+    F.write("[PREFABS]\n\n")
+    for (name,uri) in allPrefabs:
+        F.write(name+"="+uri+"\n")
+    F.write("\n")
+    
+    F.write("[CLASSES]\n\n")
+    for (name,uri) in allClasses:
+        F.write(name+"="+uri+"\n")
+    F.write("\n")
+    
+    F.write("[FUNCTIONS]\n\n")
+    for (name,uri) in allFunctions:
+        F.write(name+"="+uri+"\n")
+    F.write("\n")
+    
+    F.write("[MODULES]\n\n")
+    for (name,uri) in allModules:
+        F.write(name+"="+uri+"\n")
+    F.write("\n")
+    F.write("\n")
+    
+    
+    
 if __name__ == "__main__":
     import sys
     
@@ -867,6 +948,10 @@ if __name__ == "__main__":
             "",
             "    --includeTestOutput <dir> Incorporate test suite output",
             "                        as found in the specified directory.",
+            "",
+            "    --dumpSymbolsTo <file> Dumps catalogue of major symbols (classes, components, ",
+            "                           prefabs, functions) to the specified file, along with",
+            "                           the URLs they map to.",
             "",
             "    <repositoryDir>      Use Kamaelia modules here instead of the installed ones",
             "",
@@ -930,6 +1015,18 @@ if __name__ == "__main__":
             config.testExtensions = [("...ok","Tests passed:"),("...fail","Tests failed:")]
             del cmdLineArgs[index+1]
             del cmdLineArgs[index]
+            
+        if "--dumpsymbolsto" in cmdLineArgs:
+            index = cmdLineArgs.index("--dumpsymbolsto")
+            config.dumpSymbolsTo = cmdLineArgs[index+1]
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
+            
+        while "--linktosymbols" in cmdLineArgs:
+            index = cmdLineArgs.index("--linktosymbols")
+            config.loadSymbolsFrom.append(cmdLineArgs[index+1])
+            del cmdLineArgs[index+1]
+            del cmdLineArgs[index]
 
         if len(cmdLineArgs)==1:
             REPOSITORYDIR = cmdLineArgs[0]
@@ -946,6 +1043,7 @@ if __name__ == "__main__":
         ]))
         sys.exit(1)
     
+    args=sys.argv
     sys.argv=sys.argv[0:0]
         
     debug = False
@@ -977,12 +1075,29 @@ if __name__ == "__main__":
         or getattr(item,"isPrefab",False):
             fullPathName = REPOSITORY.module+"."+fullPathName
             crossLinks[fullPathName] = fullPathName
+            
     renderer.setAutoCrossLinks( crossLinks )
+    
+    # also add crosslinks for any referenced external files of symbols
+    for filename in config.loadSymbolsFrom:
+        import ConfigParser
+        cfg=ConfigParser.ConfigParser()
+        cfg.optionxform = str  # make case sensitive
+        if not cfg.read(filename):
+            raise "Could not find symbol file: "+filename
+        renderer.addAutoLinksToURI(dict(cfg.items("CLASSES")))
+        renderer.addAutoLinksToURI(dict(cfg.items("FUNCTIONS")))
+        renderer.addAutoLinksToURI(dict(cfg.items("COMPONENTS")))
+        renderer.addAutoLinksToURI(dict(cfg.items("PREFABS")))
+        renderer.addAutoLinksToURI(dict(cfg.items("MODULES")))
+        print cfg.items("CLASSES")
     
     formatter = docFormatter(renderer, config=config)
 
     generateDocumentationFiles(formatter,config)
-#    generateIndices(formatter,config)
+
+    if config.dumpSymbolsTo is not None:
+        dumpSymbols(formatter, config, theTime, config.dumpSymbolsTo, args)
 
     if formatter.errorCount>0:
         print "Errors occurred during docstring parsing/page generation."
