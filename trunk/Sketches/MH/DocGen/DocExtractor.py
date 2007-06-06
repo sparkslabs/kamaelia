@@ -162,6 +162,7 @@ import pprint
 import time
 import os
 import StringIO
+import ConfigParser
 from docutils import core
 from docutils import nodes
 #from Kamaelia.Support.Data import Repository
@@ -807,17 +808,47 @@ def generateDocumentationFiles(formatter, CONFIG):
                 F.close()
 
 
-def dumpSymbols(formatter, CONFIG, theTime, filename, cmdLineArgs):
+def dumpSymbols(makeURI, CONFIG, filename, theTime="", cmdLineArgs=[]):
+    """\
+    Dumps symbols from the repository to a text file - classes, functions, prefabs,
+    components and modules. Includes, for each, the URL for the corresponding
+    piece of generated documentation.
+    
+    This data can therefore be read in by another documentation build to allow
+    cross links to be generated.
+    
+    Arguments:
+    
+    - makeURI      -- function for transforming symbols to the corresponding URI they should map to
+    - CONFIG       -- configuration object
+    - filename     -- filename to dump to
+    - theTime      -- Optional. String describing the time of this documentation build.
+    - cmdLineArgs  -- Optional. The command line args used to invoke this build.
+    """
     print "Dumping symbols to file '"+filename+"' ..."
-    allClasses=[]
-    allPrefabs=[]
-    allComponents=[]
-    allFunctions=[]
-    allModules=[]
+    F=open(filename,"wb")
+    F.write(";\n")
+    F.write("; Kamaelia documentation extractor symbol dump\n")
+    if theTime:
+        F.write("; (generated on "+theTime+" )\n")
+    if cmdLineArgs:
+        F.write(";\n")
+        F.write("; Command line args for build were:\n")
+        F.write(";      "+" ".join(cmdLineArgs)+"\n")
+    F.write(";\n")
+    F.write("\n")
+    cfg=ConfigParser.ConfigParser()
+    cfg.optionxform = str  # make case sensitive
+    
+    cfg.add_section("COMPONENTS")
+    cfg.add_section("PREFABS")
+    cfg.add_section("CLASSES")
+    cfg.add_section("FUNCTIONS")
+    cfg.add_section("MODULES")
     
     for (moduleName,module) in CONFIG.repository.listAllModulesIncSubModules():
-        uri=formatter.renderer.makeURI(moduleName)
-        allModules.append((moduleName,uri))
+        uri=makeURI(moduleName)
+        cfg.set("MODULES", option=moduleName, value=uri)
         
         components=module.listAllComponents()
         prefabs=module.listAllPrefabs()
@@ -831,62 +862,26 @@ def dumpSymbols(formatter, CONFIG, theTime, filename, cmdLineArgs):
             
         for (name,item) in classes:
             NAME=moduleName+"."+name
-            URI=formatter.renderer.makeURI(NAME)
-            allClasses.append((NAME,URI))
+            URI=makeURI(NAME)
+            cfg.set("CLASSES", option=NAME, value=URI)
             
         for (name,item) in prefabs:
             NAME=moduleName+"."+name
-            URI=formatter.renderer.makeURI(NAME)
-            allPrefabs.append((NAME,URI))
+            URI=makeURI(NAME)
+            cfg.set("PREFABS", option=NAME, value=URI)
             
         for (name,item) in components:
             NAME=moduleName+"."+name
-            URI=formatter.renderer.makeURI(NAME)
-            allComponents.append((NAME,URI))
+            URI=makeURI(NAME)
+            cfg.set("COMPONENTS", option=NAME, value=URI)
             
         for (name,item) in functions:
             NAME=moduleName+"."+name
-            URI=formatter.renderer.makeURI(NAME)
-            allFunctions.append((NAME,URI))
+            URI=makeURI(NAME)
+            cfg.set("FUNCTIONS", option=NAME, value=URI)
             
-    
-    F=open(filename,"wb")
-    F.write(";\n")
-    F.write("; Kamaelia documentation extractor symbol dump\n")
-    F.write("; (generated on "+theTime+" )\n")
-    F.write(";\n")
-    F.write("; Command line args for build were:\n")
-    F.write(";      "+" ".join(cmdLineArgs)+"\n")
-    F.write(";\n")
-    F.write("\n")
-    
-    F.write("[COMPONENTS]\n\n")
-    for (name,uri) in allComponents:
-        F.write(name+"="+uri+"\n")
-    F.write("\n")
-    
-    F.write("[PREFABS]\n\n")
-    for (name,uri) in allPrefabs:
-        F.write(name+"="+uri+"\n")
-    F.write("\n")
-    
-    F.write("[CLASSES]\n\n")
-    for (name,uri) in allClasses:
-        F.write(name+"="+uri+"\n")
-    F.write("\n")
-    
-    F.write("[FUNCTIONS]\n\n")
-    for (name,uri) in allFunctions:
-        F.write(name+"="+uri+"\n")
-    F.write("\n")
-    
-    F.write("[MODULES]\n\n")
-    for (name,uri) in allModules:
-        F.write(name+"="+uri+"\n")
-    F.write("\n")
-    F.write("\n")
-    
-    
+    cfg.write(F)
+    F.close()
     
 if __name__ == "__main__":
     import sys
@@ -1052,7 +1047,6 @@ if __name__ == "__main__":
     sys.argv=sys.argv[0:0]
         
     debug = False
-#    REPOSITORY = Repository.SourceTreeDocs(baseDir=REPOSITORYDIR,rootName=config.docroot)
     REPOSITORY=Repository.ModuleDoc( moduleName=config.docroot,
                                      filePath=REPOSITORYDIR,
                                      localModules={},
@@ -1085,7 +1079,7 @@ if __name__ == "__main__":
     
     # also add crosslinks for any referenced external files of symbols
     for filename in config.loadSymbolsFrom:
-        import ConfigParser
+        print "Reading symbol links from '%s' ..." % filename
         cfg=ConfigParser.ConfigParser()
         cfg.optionxform = str  # make case sensitive
         if not cfg.read(filename):
@@ -1095,14 +1089,13 @@ if __name__ == "__main__":
         renderer.addAutoLinksToURI(dict(cfg.items("COMPONENTS")))
         renderer.addAutoLinksToURI(dict(cfg.items("PREFABS")))
         renderer.addAutoLinksToURI(dict(cfg.items("MODULES")))
-        print cfg.items("CLASSES")
     
     formatter = docFormatter(renderer, config=config)
 
     generateDocumentationFiles(formatter,config)
 
     if config.dumpSymbolsTo is not None:
-        dumpSymbols(formatter, config, theTime, config.dumpSymbolsTo, args)
+        dumpSymbols(formatter.renderer.makeURI, config, config.dumpSymbolsTo, theTime, args)
 
     if formatter.errorCount>0:
         print "Errors occurred during docstring parsing/page generation."
