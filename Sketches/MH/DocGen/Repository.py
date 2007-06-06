@@ -77,67 +77,77 @@ Detailed introspections::
 
 We can ask for a complete introspection of the current Kamaelia installation::
     
-   >>> docTree=Repository.SourceTreeDocs()
+   >>> docTree=Repository.ModuleDoc("Kamaelia","/usr/lib/python/site-packages/Kamaelia")
+   >>> docTree.resolve(roots={"Kamaelia":docTree})
 
 And look up a particular module::
 
-   >>> m=docTree.flatModules[('Kamaelia','Util','Console')]
+   >>> m=docTree.find("Util.Console")
    >>> m
-   <Kamaelia.Support.Data.Repository.ModuleDocs object at 0x2aaaac4c7790>
+  <Repository.ModuleDoc object at 0x40403b0c>
    
 Then find components declared in that module::
 
-   >>> c=m.components[0]
+   >>> cs=m.listAllComponents()
+   >>> cs
+   [('ConsoleReader', <Repository.ClassScope object at 0x41511bac>), ('ConsoleEchoer', <Repository.ClassScope object at 0x4115990c>)]
+   >>> (name,c)=cs[0]
+   >>> name
+   'ConsoleReader'
    >>> c
-   <Kamaelia.Support.Data.Repository.KamaeliaComponentDocs object at 0x2aaaac6d61d0>
+   <Repository.ClassScope object at 0x41511bac>
     
 And look at properties of that component::
-    >>> c.name
-    'ConsoleEchoer'
+    
     >>> c.module
     'Kamaelia.Util.Console'
     >>> c.inboxes
-    {'control': 'Shutdown signalling', 'inbox': 'Stuff that will be echoed to standard output'}
+    {'control': 'NOT USED', 'inbox': 'NOT USED'}
     >>> c.outboxes
-    {'outbox': "Stuff forwarded from 'inbox' inbox (if enabled)", 'signal': 'Shutdown signalling'}
-    >>> print c.docString
-       ConsoleEchoer([forwarder][,use_repr]) -> new ConsoleEchoer component.
+    {'outbox': 'Lines that were typed at the console', 'signal': 'NOT USED'}
+    >>> print c.doc
+    ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
     
-       A component that outputs anything it is sent to standard output (the
-       console).
+    Component that provides a console for typing in stuff. Each line is output
+    from the "outbox" outbox one at a time.
     
-       Keyword arguments:
+    Keyword arguments:
     
-       - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
-       - use_repr   -- use repr() instead of str() if True (default=False)
+    - prompt  -- Command prompt (default=">>> ")
+    - eol     -- End of line character(s) to put on end of every line outputted (default is newline)
     
 This includes methods defined in it::
 
-    >>> meth=c.methods[0]
-    >>> meth.name
+    >>> c.listAllFunctions()
+    [('main', <Repository.FunctionScope object at 0x4166822c>), ('__init__', <Repository.FunctionScope object at 0x4166224c>)]
+    >>> name,f=c.listAllFunctions()[1]
+    >>> name
     '__init__'
-    >>> meth.module
-    'Kamaelia.Util.Console'
-    >>> meth.docString
+    >>> f
+    <Repository.FunctionScope object at 0x4166224c>
+    
+We can look at the docs for the function:
+    
+    >>> f.doc
     'x.__init__(...) initializes x; see x.__class__.__doc__ for signature'
-
+    
 We can ask for a string summarising the method's arguments::
-
-    >>> meth.argString
-    'self[, forwarder][, use_repr]'
-
+    
+    >>> f.argString
+    'self[, prompt][, eol]'
+    
 Or a list naming each argument, consisting of (argname, summary-representation)
 pairs::
     
-    >>> meth.args
-    [('self', 'self'), ('forwarder', '[forwarder]'), ('use_repr', '[use_repr]')]
+    >>> f.args
+    [('self', 'self'), ('prompt', '[prompt]'), ('eol', '[eol]')]
 
 
 
 Obtaining introspection data
 ----------------------------
 
-To get a detailed introspection you create a SourceTreeDocs object. You can
+To get a detailed introspection you create a ModuleDoc object. You can
 either point it at a specific directory, or just let it introspect the currently
 installed Kamaelia repository.
 
@@ -147,10 +157,12 @@ Kamaelia.Chassis directory; you should explain that the root name is
 "Kamaelia.Chassis". Or if, for example, you are using this code to document
 Axon, you would specify a root name of "Axon".
 
-Finally you can also specify a list of filenames to be excluded.
+After instantiating your ModuleDoc object; remember to call its "resolve" method
+to allow it to resolve references to base classes, and determine method the
+resolution order for classes.
 
 
-    
+
 How are components and prefabs detected?
 ----------------------------------------
 
@@ -168,106 +180,33 @@ simple list of strings giving the names of the components/prefabs present.
 Structure of detailed introspections
 ------------------------------------
 
-The SourceTreeDoc object contains dictionaries pointing you at various ModuleDocs
-objects. These in turn contain ClassDocs, FunctionDocs, PrefabDocs and ComponentDocs
-objects. ComponentDocs and ClassDocs objects will contain MethodDocs objects:
+The introspection is a hierarchy of Scope objects, each representing a delcaration
+scope - such as a module, class, function, etc. These are built up to reflect
+the structure of the library if it is imported.
 
-* SourceTreeDoc object
-
-  * ModuleDocs objects
-  
-    * ComponentDocs objects
+* ModuleDoc objects represent each module. They may contain:
     
-      * MethodDocs objects
-      
-    * PrefabDocs objects
+    * Other ModuleDoc objects
     
-    * ClassDocs objects
+    * ImportScope objects
     
-      * MethodDocs objects
-      
-    * FunctionDocs objects
+    * ClassScope objects (representing classes and components)
+    
+    * FunctionScope objects (repesenting functions and prefabs)
+    
+    * UnparsedScope objects (anything that wasn't parsed)
+    
+ClassScope and FunctionScope objects may also contain any of these. For example,
+methods in a class will be represented as FunctionScope objects within the
+ClassScope object.
+    
+The find() method of any given scope can be used to lookup a symbol in that scope,
+or its children. For example, you could call find() on the "Kamaelia.Chassis"
+ModuleDoc object with the argument "Graphline.Graphline" to retrieve the graphline
+component (its full path is "Kamaelia.Chassis.Graphline.Graphline")
 
-**SourceTreeDocs** objects have the following attributes:
-
-* *nestedModules* - a nested set of dictionaries reflecting the structure of
-  modules. At each level, the key is the module name. The value is a list of
-  other dicts and ModuleDocs objects.
-
-  For example, nestedModules["Kamaelia"]["Chassis"]["Pipeline"] would return
-  the ModuleDocs object documenting the module Kamaelia.Chassis.Pipeline
-
-* *flatModules* - a simple flat dictionary. The keys are tuples giving the
-  full path of the module. The value is a corresponding ModuleDocs object.
-
-  For example the key ("Kamaelia","Chassis","Pipeline") will return a
-  ModuleDocs object documenting the module Kamaelia.Chassis.Pipeline
-
-  
-**ModuleDocs** objects contain the following attributes:
-
-* *docString* - the python doc string for the module
-
-* *components* - list of KamaeliaComponentDocs objects describing prefabs
-  defined in this module
-
-* *prefabs* - list of KamaeliaPrefabDocs objects describing prefabs defined in
-  this module
-  
-* *classes* - list of ClassDocs objects describing non-component classes
-  defined in this module
-
-* *functions* - list of FunctionDocs objects describing functions defined in
-  this module (not including prefabs)
-
-  
-**KamaeliaComponentDocs** objects contain the following attributes:
-
-* *name* - the name of the component (eg. "Pipeline")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.Chassis.Pipeline"
-  
-* *docString* - the python doc string for the component
-
-* *inboxes* and *outboxes* - dicts mapping inbox/outbox names to any associated
-  documentation string or an empty string. For example: {"inbox":"Send data here"}
-
-* *methods* - list of MethodDocs objects describing methods defined in this
-  component (basically the same as FunctionDocs objects)
-
-  
-**KamaeliaPrefabDocs**, **FunctionDocs** and **MethodDocs** objects are all, in practice,
-the same format. They contain the following attributes:
-
-* *name* - the name of the prefabs (eg. "RateControlledFileReader")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.File.Reading"
-
-* *docString* - the python doc string for the prefab
-
-* *argString* - a string representation of the arguments the function/method/prefab
-  takes. Square brackets are used to indicate optionality, and single and
-  double asterisks to indicate argument and dictionary lists (as in normal
-  python syntax). For example: "self, \*components"
-
-* *args* - an ordered list detailing the individual arguments the
-  function/method/prefab takes. Each tuple is a pair (name,argStringRepresentation)
-  giving the argument name, and the 'argString' style representation.
-
-  
-**ClassDocs** objects contain the following attributes:
-
-* *name* - the name of the component (eg. "SourceTreeDocs")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.Support.Data.Repository"
-  
-* *docString* - the python doc string for the component
-
-* *methods* - list of MethodDocs objects describing methods defined in this
-  component (basically the same as FunctionDocs objects)
+The listAllXXXXX() methods enumerate items - such as classes, functions,
+components, prefabs or modules.
 
 
 
@@ -279,19 +218,18 @@ files, rather than import them. This allows introspection of code that might not
 necessarily run on the system at hand - perhaps because not all dependancies can
 be satisfied.
 
-A consequence of this is that if something is created by executed statements,
-rather than simply declared, it will not be picked up. For example::
-
-    def foo():
-        class MyComponent(component):
-            pass
-        return MyComponent
-
-    wontBePickedUpByRepositoryIntrospection = foo()
+Basic tracking of assignment operations is performed, so the following is fair
+game::
     
-    alsoWontBePickedUp = lambda : "burble"
+    from Axon.Component import component as flurble
+    
+    class Boo(flurble):
+        pass
+    
+    Foo=Boo
 
-Functions and classes declared within if statement will also not be found::
+However anything more comple is not processed. For example, functions and
+classes declared within "if" statement will not be found::
 
     if 1:
         class WillNotBeDetected:
