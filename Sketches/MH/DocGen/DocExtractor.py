@@ -46,6 +46,10 @@ Features:
 
 * can incorporate test suite output into documentation
 
+* can dump symbols (with mappings to URLs) to a file and/or read them in. This
+  makes it possible to cross-link, for example, from the Kamaelia documentation
+  back to the Axon documentation.
+
 *This is not an Axon/Kamaelia system* - it is not built from components. However
 it is probably sufficiently useful to be classified as a 'tool'!
 
@@ -61,14 +65,6 @@ For help on command line options, use the ``--help`` option::
 The command lines currently being used to generate Kamaelia and Axon
 documentation are as follows:
 
-For Kamaelia component docs for the website::
-
-    $> ./DocExtractor.py --urlprefix /Components/pydoc/                \
-                         --root Kamaelia                               \
-                         --footerinclude Components/pydoc-footer.html  \
-                         --outdir <outputDirName>                      \
-                         <repositoryDir> 
-
 For Axon docs for the website::
 
     $> ./DocExtractor.py --urlprefix /Docs/Axon/                       \
@@ -78,6 +74,16 @@ For Axon docs for the website::
                          --root Axon                                   \
                          --footerinclude Docs/Axon-footer.html         \
                          --outdir <outputDirName>                      \
+                         --dumpSymbolsTo <symbolFile>                  \
+                         <repositoryDir> 
+
+For Kamaelia component docs for the website::
+
+    $> ./DocExtractor.py --urlprefix /Components/pydoc/                \
+                         --root Kamaelia                               \
+                         --footerinclude Components/pydoc-footer.html  \
+                         --outdir <outputDirName>                      \
+                         --linkToSymbols <symbolFile                   \
                          <repositoryDir> 
 
 Why differences?
