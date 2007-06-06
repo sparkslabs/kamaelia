@@ -168,6 +168,10 @@ from docutils import nodes
 #from Kamaelia.Support.Data import Repository
 import Repository
 
+ClassScope    = Repository.ClassScope
+FunctionScope = Repository.FunctionScope
+ModuleScope   = Repository.ModuleScope
+ImportScope   = Repository.ImportScope
 
 from renderHTML import RenderHTML
 
@@ -1065,7 +1069,6 @@ if __name__ == "__main__":
     
     # automatically generate crosslinks when component names are seen
     crossLinks = {}
-    from ImportTracking import ClassScope,FunctionScope,ModuleScope,ImportScope
     wantedTypes=(ClassScope,FunctionScope,ModuleScope,)
     for (fullPathName,item) in REPOSITORY.listAllMatching(recurseDepth=99,noRecurseTypes=ImportScope,types=wantedTypes):
         if config.includeNonKamaeliaStuff \
