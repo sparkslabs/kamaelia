@@ -334,7 +334,7 @@ class ModuleDoc(ModuleScope):
         - filePath    -- the full filepath of this module or this subdirectory
         - localModules -- dictionary mapping localmodule pathnames to the global namespace; eg. Chassis -> Kamaelia.Chassis
         """
-        self.ignoreFilenames=[".svn"]
+        self.ignoreFilenames=[".svn","__init__.py"]
         
         if isdir(filePath):
             subModules,localModules,AST = self.scanSubdirs(filePath,moduleName)
@@ -347,6 +347,7 @@ class ModuleDoc(ModuleScope):
         # now we've already done children and have built up localModule name mappings
         # we can initialise ourselves properly (parsing the AST)
         print "Parsing:",moduleName
+        
         super(ModuleDoc,self).__init__(AST,localModules)
         self.localModules = localModules    # just to be safe
         
