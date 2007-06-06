@@ -147,6 +147,7 @@ class Scope(object):
             self.assign(destName, theImport)
 
     def _parse_Import(self, node):
+        """Parse an import AST node"""
         for (name,destName) in node.names:
             if name in self.localModules:
                 fullname = self.localModules[name]
@@ -154,9 +155,12 @@ class Scope(object):
                 fullname = name
             if destName == None:
                 self.imports.find(fullname) # force creation of the full item - looking it up in an import asserts its existence
-                head=fullname.split(".")[0]
-                theImport=self.imports.find(head)
-                self.assign(head,theImport)
+                fullnamesplit = fullname.split(".")
+                namesplit=name.split(".")
+                assert(namesplit==fullnamesplit[-len(namesplit):])
+                head=fullnamesplit[:len(fullnamesplit)-len(namesplit)+1]
+                theImport=self.imports.find(".".join(head))
+                self.assign(namesplit[0],theImport)
             else:
                 theImport=self.imports.find(fullname)
                 self.assign(destName, theImport)
@@ -464,6 +468,7 @@ class ImportScope(Scope):
         
         self.doc = ""
         self.importPathName=importPathName
+        if importPathName.count(".")>5: raise "ARGH"
         
     def resolveName(self,provisionalName):
         return self.importPathName
