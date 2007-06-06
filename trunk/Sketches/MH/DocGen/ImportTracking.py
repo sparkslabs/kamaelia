@@ -1,7 +1,29 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+#
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
-# Test Content
+# Test Content ... run this program with no arguments and it'll examine itself
+#
+# see what it thinks about these symbols to see if its gotten it right!
 
 from Axon.Component import component
 import Axon.ThreadedComponent
@@ -85,8 +107,13 @@ class Test18(Axon):
     pass
 
 Test19 = Test14
-Test14 = None
+Test14 = None     # Test14 should not be recognised as a class now
+
     
+# END OF TEST STUFF
+# ... okay, the other stuff defined below will also be picked up, but at least
+#     the stuff above does a reasonable job of exercising most stuff it is
+#     expected to be able to handle
 # ------------------------------------------------------------------------------
 
 import compiler
@@ -96,8 +123,22 @@ import __builtin__ as BUILTINS
 
 
 class Scope(object):
+    """\
+    Representation of a declaration scope - could be a module, class, function, import, etc.
+    Basically something that might contain other symbols.
+    
+    """
 
     def __init__(self, type="Module", ASTChildren=None, imports=None, localModules={}, rootScope=None):
+        """\
+        Arguments:
+        
+        - type          -- Descriptive name saying what kind of scope this is.
+        - ASTChildren   -- List of AST nodes for whatever is within this scope. Will be parsed.
+        - imports       -- Scope acting as a container/root for tracking any imports. Should be shared between all Scope objects.
+        - localModules  -- Dict mapping module names that might be present in the same lexical level as this module, or deeper; mapping them to their full module names. Eg. for Axon.Component this might contain a mapping for "AxonException" to "Axon.AxonException"
+        - rootScope     -- Scope object for current lexical root - eg. the Module containing this scope.
+        """
         super(Scope,self).__init__()
 
         self.symbols={}
@@ -134,6 +175,7 @@ class Scope(object):
         return
 
     def _parse_From(self,node):
+        """Parse a 'from ... import' AST node."""
         sourceModule = node.modname
         for (name, destName) in node.names:
             # check if this is actually a local module
@@ -147,28 +189,36 @@ class Scope(object):
             self.assign(destName, theImport)
 
     def _parse_Import(self, node):
-        """Parse an import AST node"""
+        """Parse an import AST node."""
         for (name,destName) in node.names:
+            # if module being referred to is in the local directory, map to the full pathame
             if name in self.localModules:
                 fullname = self.localModules[name]
             else:
                 fullname = name
+            
+            # force creation of the import, by looking for it (ImportScope objects do this)
+            theImport=self.imports.find(fullname)
+            
+            # is it being imported as a particular name, or just as itself? (eg. import Axon.Component as Flurble)
             if destName == None:
-                self.imports.find(fullname) # force creation of the full item - looking it up in an import asserts its existence
+                # work out the path to the root of the entity being imported (eg. "Axon.Component" for "import Component.component")
                 fullnamesplit = fullname.split(".")
                 namesplit=name.split(".")
                 assert(namesplit==fullnamesplit[-len(namesplit):])
                 head=fullnamesplit[:len(fullnamesplit)-len(namesplit)+1]
+                
                 theImport=self.imports.find(".".join(head))
                 self.assign(namesplit[0],theImport)
             else:
-                theImport=self.imports.find(fullname)
                 self.assign(destName, theImport)
         
     def _parse_Class(self, node):
+        """Parse a class statement AST node"""
         self.assign(node.name, ClassScope(node,self.imports,self.localModules,self.rootScope,self))
         
     def _parse_Function(self, node):
+        """Parse a function 'def' statement AST node"""
         self.assign(node.name, FunctionScope(node,self.imports,self.localModules,self.rootScope))
         
     def _parse_Assign(self, node):
@@ -222,6 +272,7 @@ class Scope(object):
         return assignments
 
     def _parse_Name(self,node):
+        """Parse a name AST node (some combination of Name/AssignName/GetAttr nodes)"""
         if isinstance(node, (ast.Name, ast.AssName)):
             return node.name
         elif isinstance(node, (ast.Getattr, ast.AssAttr)):
@@ -230,9 +281,27 @@ class Scope(object):
             return ""
         
     def resolveName(self,provisionalName):
+        """\
+        Returns the name you suggest this module should have; or a different one
+        if this module feels it knows better :-)
+        
+        Used by ImportScopes to explain that although they may have been imported into
+        one place; they are actually from somewhere else.
+        """
         return provisionalName
 
     def find(self, name, checkRoot=True):
+        """\
+        Find a given named symbol and return the scope object representing it.
+        Returns the found scope object, or raises ValueError if none can be found.
+        
+        This operation recurses automatically to subscopes.
+        
+        Arguments:
+        
+        - name       -- the path name of the thing to find below here.
+        - checkRoot  -- Optional. If it isn't found here, check the root scope too? (default=True)
+        """
         segmented=name.split(".")
         head=segmented[0]
         tail=".".join(segmented[1:])
@@ -249,6 +318,21 @@ class Scope(object):
         raise ValueError("Cannot find it!")
 
     def locate(self,value):
+        """\
+        Find where a given scope object is. Returns the pathname leading up to it,
+        or raises ValueError if it couldn't be found.
+        
+        Effectively the reverse of the find() operation.
+        
+        Example::
+        
+            >>> myScope.locate(subSubScopeObject)
+            'A.B.C'
+        
+        Arguments:
+        
+        - value  -- The scope object to locate.
+        """
         for symbol in self.symbols:
             if value==self.symbols[symbol]:
                 return symbol
@@ -260,6 +344,24 @@ class Scope(object):
         raise ValueError("Can't locate it!")
 
     def assign(self, name, value, checkRoot=True):
+        """\
+        Sets a given named symbol to be the supplied value. The name can be a
+        path (dot separated), in which case it will be followed through to assign
+        the symbol at the end of the path.
+        
+        ValueError will be raised if the path doesn't exist.
+        
+        Example::
+        
+            >>> myScope.assign("Flurble", Scope(...))
+            >>> myScope.assign("Flurble.Plig", Scope(..))
+        
+        Arguments:
+        
+        - name       -- the path name of the thing to set
+        - value      -- the object to assign as that name (eg. a scope object)
+        - checkRoot  -- Optional. Check the root scope too? (default=True)
+        """
         segmented=name.split(".")
         head=segmented[0]
         tail=".".join(segmented[1:])
@@ -287,6 +389,18 @@ class Scope(object):
         return self.listAllNotMatching((ImportScope,ModuleScope),**options)
             
     def listAllMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        """\
+        Returns a list of (pathName, object) pairs for all children of the
+        specified type. Will recurse as deeply as you specify. You can also block
+        it from recursing into certain scope types. By default, recusion stops
+        at ModuleScope objects.
+        
+        Arguments::
+        
+        - types           -- tuple of classes that can be returned (default is ModuleScope)
+        - noRecurseTypes  -- tuple of classes that will *not* be recursed into (default=none)
+        - recurseDepth    -- Optional. Maximum recursion depth (default=0)
+        """
         if noRecurseTypes==None:
             noRecurseTypes=(ModuleScope,)
         found=[]
@@ -301,6 +415,18 @@ class Scope(object):
         return found
             
     def listAllNotMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        """\
+        Returns a list of (pathName, object) pairs for all children *not* matching the
+        specified type. Will recurse as deeply as you specify. You can also block
+        it from recursing into certain scope types. By default, recusion stops
+        at ModuleScope objects.
+        
+        Arguments::
+        
+        - types           -- tuple of classes that can *not* be returned (default is ModuleScope)
+        - noRecurseTypes  -- tuple of classes that will *not* be recursed into (default=none)
+        - recurseDepth    -- Optional. Maximum recursion depth (default=0)
+        """
         if noRecurseTypes==None:
             noRecurseTypes=(ModuleScope,)
         found=[]
@@ -315,6 +441,17 @@ class Scope(object):
         return found
                 
     def resolve(self,_resolvePass=None,roots={}):
+        """\
+        Post processing step for resolving imports, base classes etc.
+        
+        Call this method after you have finished instantiating
+        your whole tree of Scope objects.
+        
+        Arguments:
+        
+        - _resolvePass  -- For internal use. Don't specify when calling manually.
+        - roots         -- list of master root scope objects - eg. the object representing the top level "Axon" or "Kamaelia" module.
+        """
         if _resolvePass==None:
             self.resolve(_resolvePass=1,roots=roots)
             self.resolve(_resolvePass=2,roots=roots)
@@ -327,6 +464,9 @@ class Scope(object):
                     pass
             
 class ModuleScope(Scope):
+    """\
+    Scope object representing module scopes.
+    """
     def __init__(self, AST, localModules={}):
         super(ModuleScope,self).__init__("Module",AST.node.nodes,None,localModules,None)
         self.ast=AST
@@ -337,6 +477,25 @@ class ModuleScope(Scope):
 
 
 class ClassScope(Scope):
+    """\
+    Scope object representing class scopes.
+    
+    Determines what its base classes are, and the method resolution order. A list
+    of (name,baseScopeObject) pairs is placed in self.bases. A list of scope objects
+    is placed into self.allBasesInMethodResolutionOrder.
+    
+    Bases will be a mixture of ClassScope and ImportScope objects.
+    
+    These lists won't be properly set until the resolve() post-pocessing method
+    has been called.
+    
+    Sets the following attributes:
+            
+    - doc        -- class's doc string, or the empty string if none.
+    - bases      -- list of (name,scope object) pairs describing the class's bases
+    - allBasesInMethodResolutionOrder  -- list of scope objects for the bases in method resolution order
+    - ast        -- the AST for this
+    """
     def __init__(self, AST, imports, localModules, rootScope, parentScope):
         super(ClassScope,self).__init__("Class",AST.code,imports,localModules,rootScope)
         self.ast=AST
@@ -359,6 +518,17 @@ class ClassScope(Scope):
             self.bases.append((resolvedBaseName,base))
         
     def resolve(self,_resolvePass=None,roots={}):
+        """\
+        Resolve pass 1:
+        
+        * resolves bases, where passible to ClassScope objects - eg. checking if
+          imports actually refer to stuff in this tree of scope objects, and
+          dereferening them.
+          
+        Resolve pass 2:
+        
+        * determines the method resolution order
+        """
         super(ClassScope,self).resolve(_resolvePass,roots)
         if _resolvePass==1 and len(roots):
             # resolve bases that are imports that could actually be classes in one of the root hierarchies
@@ -403,6 +573,13 @@ class ClassScope(Scope):
             super(ClassScope,self).resolve(_resolvePass,roots)
 
 def _determineMRO(klass):
+    """\
+    Pass a ClassScope object representing a class, and this method returns a
+    list of scope objects presenting the base classes in method resolution order.
+    
+    This function applies the C3 algorithm, as used by python, to determine the
+    method resolution order.
+    """
     order=[klass]
     if not isinstance(klass,ClassScope):
         return order
@@ -430,6 +607,16 @@ def _determineMRO(klass):
     
     
 class FunctionScope(Scope):
+    """\
+    Scope object representing a declared function.
+    
+    Sets the following attributes:
+                    
+    - doc        -- function's doc string, or the empty string if none.
+    - argString  -- string describing the arguments this method takes
+    - argNames   -- list of (name, annotatedName) tuples repesenting, in order, the arguments of the method
+    - ast        -- the AST for this
+    """
     def __init__(self, AST, imports, localModules, rootScope):
         super(FunctionScope,self).__init__("Class",None,imports,localModules,rootScope) # don't bother parsing function innards
         self.ast=AST
@@ -461,6 +648,14 @@ class FunctionScope(Scope):
         self.argString = argStr
 
 class ImportScope(Scope):
+    """\
+    Scope object representing an import.
+    
+    Sets the following attributes:
+                    
+    - doc        -- empty string
+    - importPathName  -- the full import path name leading to this entity, eg. "Axon.Component"
+    """
     def __init__(self,importPathName="",imports=None):
         if importPathName=="" and imports==None:
             imports=self
@@ -471,6 +666,7 @@ class ImportScope(Scope):
         if importPathName.count(".")>5: raise "ARGH"
         
     def resolveName(self,provisionalName):
+        """Returns the full (real) path name of this import"""
         return self.importPathName
 
     def find(self,name,checkRoot=False):
@@ -513,6 +709,15 @@ class ImportScope(Scope):
             self.symbols[head].assign(tail,value,checkRoot=False)
     
 class UnparsedScope(Scope):
+    """\
+    Scope object representing something that wasn't parsed - eg. a symbol
+    that refers to something that isn't a simple class, function etc.
+    
+    Sets the following attributes:
+    
+    - doc  -- empty string
+    - ast  -- the AST tree for this unparsed entity
+    """
     def __init__(self, AST, imports, localModules, rootScope):
         super(UnparsedScope,self).__init__("Unparsed",AST,imports,localModules,rootScope)
         self.doc=""
