@@ -66,14 +66,14 @@ class IRCClient(component):
     #more to come
 
     MapIPCToFunction = {
-        IRCIPCChangeNick      : (lambda x : self.changeNick(x.nick)),
-        IRCIPCDisconnect      : (lambda x : self.disconnect()),
-        IRCIPCConnect         : (lambda x : self.connect()),
-        IRCIPCLogin           : (lambda x : self.login(x.nick, x.password, x.channel)),
-        IRCIPCJoinChannel     : (lambda x : self.joinChannel(x.channel)),
-        IRCIPCSendMessage     : (lambda x : self.say(x.recipient, x.msg)),
-        IRCIPCLeaveChannel    : (lambda x : self.leaveChannel(x.channel)),
-        IRCIPCSetChannelTopic : (lambda x : self.changeTopic(x.channel, x.topic)),
+        IRCIPCChangeNick      : (lambda x, self : self.changeNick(x.nick)),
+        IRCIPCDisconnect      : (lambda x, self : self.disconnect()),
+        IRCIPCConnect         : (lambda x, self : self.connect()),
+        IRCIPCLogin           : (lambda x, self : self.login(x.nick, x.password, x.channel)),
+        IRCIPCJoinChannel     : (lambda x, self : self.joinChannel(x.channel)),
+        IRCIPCSendMessage     : (lambda x, self : self.say(x.recipient, x.msg)),
+        IRCIPCLeaveChannel    : (lambda x, self : self.leaveChannel(x.channel)),
+        IRCIPCSetChannelTopic : (lambda x, self : self.changeTopic(x.channel, x.topic)),
     }
         
     def __init__(self, host, port, nick, password, username):
@@ -135,8 +135,7 @@ class IRCClient(component):
             if self.dataReady("ipcObjects"):
                 command = self.recv("ipcObjects")
 		#so can be shut down 
-                self.MapIPCToFunction[command.__class__](command) # get the appropriate function for that type of message and pass the message to it
-                self.send(command, "outbox")
+                self.MapIPCToFunction[command.__class__](command, self) # get the appropriate function for that type of message and pass the message to it
                 
             elif self.dataReady("control"):
                 msg = self.recv("control")
@@ -159,7 +158,9 @@ class IRCClient(component):
                         splitline.pop(0)
 
                     if splitline[0] == "NOTICE": #ignorable
-                        msg = ('NOTICE', splitline[1], 
+                        msg = string.join(splitline[2:], ' ')
+                        msg = ('NOTICE', splitline[1], msg)
+                        self.send(msg, 'heard')
                         
                     elif splitline[0] == "PING":
                         # should alter this to consider if no second part given
