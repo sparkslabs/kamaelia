@@ -51,18 +51,15 @@ class dummyComponent(Axon.Component.component):
     Currently this object prevents the scheduler from cleanly exiting."""
     def main(self):
         while True:
-            if schedulerThread.dummyneeded.acquire(False):
-                return # we're no longer needed to keep the scheduler alive
-            else: time.sleep(0.01) # prevent the scheduler from pegging before the first component is activated.
-            # self.pause()
-            # pause will not make the system consume less resources,
-            # since the scheduler will loop continually even if all components are paused.
+#            if schedulerThread.dummyneeded.acquire(False):
+#                return # we're no longer needed to keep the scheduler alive
+#            else: time.sleep(0.01) # prevent the scheduler from pegging before the first component is activated.
+            self.pause()
             yield 1
 
 class schedulerThread(threading.Thread):
     """A python thread which runs a scheduler."""
     lock = threading.Lock()
-    dummyneeded = threading.Lock()
     def __init__(self,slowmo=0):
         if not schedulerThread.lock.acquire(False):
             raise "only one scheduler for now can be run!"
@@ -70,7 +67,6 @@ class schedulerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
     def run(self):
-        schedulerThread.dummyneeded.acquire()
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
         scheduler.run.runThreads(slowmo = self.slowmo)
         schedulerThread.lock.release()
@@ -78,7 +74,7 @@ class schedulerThread(threading.Thread):
 
 class componentWrapper(Axon.Component.component):
     """A component which takes a child component and connects its boxes to queues, which communicate
-    with the Likefile component. Takes one argument, a component."""
+    with the LikeFile component. Takes one argument, a component."""
     def __init__(self, childcomponent):
         super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
@@ -146,9 +142,15 @@ class LikeFile(object):
         self.outqueues = copy.copy(component.outqueues)
         # reaching into the component like this is threadsafe since it has not been activated yet, and __init__
         # runs in the current thread
-        component.activate() # threadsafe, see note 1
+        self.component = component
+        self.alive = False
+
+    def activate(self):
+        if self.alive: return # do nothing.
+        """activates the component, etc."""
+        self.component.activate() # threadsafe, see note 1
+        del self.component # we should not retain a reference since subsequent operations will not be threadsafe.
         self.alive = True
-        schedulerThread.dummyneeded.release() # kill the dummy component that was keeping the scheduler alive, now that we've activated another component.
 
     def get(self, boxname):
         if self.alive: 
@@ -180,6 +182,7 @@ if __name__ == "__main__":
     import time
 
     p = LikeFile(SimpleHTTPClient())
+    p.activate()
     p.put("http://google.com", "inbox")
     p.put("http://slashdot.org", "inbox")
     p.put("http://whatismyip.org", "inbox")
