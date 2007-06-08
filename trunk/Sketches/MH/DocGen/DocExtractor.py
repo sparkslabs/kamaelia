@@ -717,7 +717,7 @@ class docFormatter(object):
             moduleContents=[]
             
             if self.config.showComponentsOnIndices:
-                moduleContains=[name for (name,item) in module.listAllComponentsAndPrefabs()]
+                moduleContains=[name for (name,item) in submodule.listAllComponentsAndPrefabs()]
                 if len(moduleContains)>0:
                     moduleContains.sort()
                     moduleContents.append(nodes.Text(" ( "))

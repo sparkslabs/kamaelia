@@ -995,7 +995,7 @@ class ModuleDoc(ModuleScope):
         return [ (name,fnc) for (name,fnc) in self.listAllFunctions(**options) if name in self.prefabs ]
 
     def listAllComponentsAndPrefabs(self,**options):
-        return self.listAllComponents() + self.listAllPrefabs(**options)
+        return self.listAllComponents(**options) + self.listAllPrefabs(**options)
     
     def listAllModulesIncSubModules(self):
         modules = [(self.module, self)]
