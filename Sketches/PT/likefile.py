@@ -53,6 +53,7 @@ class dummyComponent(Axon.Component.component):
         while True:
             if schedulerThread.dummyneeded.acquire(False):
                 return # we're no longer needed to keep the scheduler alive
+            else: time.sleep(0.01) # prevent the scheduler from pegging before the first component is activated.
             # self.pause()
             # pause will not make the system consume less resources,
             # since the scheduler will loop continually even if all components are paused.
