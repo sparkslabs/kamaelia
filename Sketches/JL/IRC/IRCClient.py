@@ -25,7 +25,7 @@
 # The purpose of this version is to try out the IF model of message parsing.
 # The purpose of this version is to try out a more general IF model -- one
 #  general path for messages via IRC and one general path for messages received
-#  from the local user. It relays all received data to its "privmsg" outbox,
+#  from the local user. It relays all received data to its "heard" outbox,
 #  in the form (msgtype, sender, recipient, body)
 
 import Axon as _Axon
@@ -57,10 +57,7 @@ class IRC_Client(_Axon.Component.component):
       This is the base client. It is broken in the same was as
       the earliest internet handling code was. In many respects this
       is the logical counterpart to a TCPServer which upon connection
-      should spawn the equivalent of a Connected Socket Adaptor. Since
-      this could happen in various different ways, please hack on a
-      COPY of this file, rather that this file. (Keeps this file
-      relatively simple)
+      should spawn the equivalent of a Connected Socket Adaptor. 
 
       Specifically - consider that in order to make this work "properly"
       it needs to handle the chat session multiplexing that happens by
@@ -69,11 +66,7 @@ class IRC_Client(_Axon.Component.component):
    Inboxes = {"inbox":"", "control":"", "talk":"", "topic":""}
    Outboxes = {"outbox":"",
                "signal":"",
-               "privmsg":"",
-               "nonPrivmsg":"outbox for non PRIVMSGs",
-               "notice": "outbox for received notices. Currently not used.",
-               "ERR" : "outbox for received errors. Currently not used.",
-               "RPL" : "outbox for received RPLs. Currently not used."}
+               "heard" : "messages from the server"}
    
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
@@ -85,7 +78,10 @@ class IRC_Client(_Axon.Component.component):
       self.defaultChannel = defaultChannel
       self.channels = {}
       self.sendAsString = sendAsString
-
+      self.debugger = _Axon.debug.debug()
+      self.debugger.useConfig()
+      self.debugger.addDebugSection("IRCClient.main", 1)
+      
    def login(self, nick, nickinfo, password = None, username=None):
       """Should be abstracted out as far as possible.
          Protocol can be abstracted into the following kinds of items:
@@ -119,22 +115,9 @@ class IRC_Client(_Axon.Component.component):
             self.channels[self.defaultChannel].say(data)
             if data.find(self.nick) != -1:
                 if data.find("LEAVE") != -1:
-                   break
-            
-         elif self.dataReady("topic"):
-             newtopic = self.recv("topic")
-             self.channels[self.defaultChannel].topic(newtopic)
+                   break            
          elif self.dataReady("inbox"): #if received messages 
              self.handleMessage(self.recv("inbox"))
-             
-##                if "PRIVMSG" in data:
-##                    if data[0] == ":":
-##                        data = data[1:]
-##                    if ("VERSION" in data) and not seen_VERSION:
-##                        seen_Version = True
-##                    else:
-##                        data = data[data.find(":")+1:]
-##                        self.send(data, "privmsg")
                     
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
             self.pause() # Wait for response :-)
@@ -144,31 +127,27 @@ class IRC_Client(_Axon.Component.component):
       # print self.nick + "... is leaving\n" # Check with and IRC client instead.
 
    def handleMessage(self, lines):
-        """handles incoming messages that don't originate from the user."""
+        """handles incoming messages from the server"""
         if "\r" in lines:
             lines.replace("\r","\n")
         lines = lines.split("\n")
         for one_line in lines:
             if self.parseable(one_line):
-                print one_line
                 data = self.parseIRCMessage(one_line)
             elif len(one_line) > 0:
                 self.send('Malformed message: ' + one_line, "privmsg")
                 
             if data:
                 (msgtype, sender, recipient, body) = data
-                if msgtype == 'PRIVMSG':
-                    #if 'ACTION' in body:
-                    self.send(data, 'privmsg')
-                elif msgtype == 'PING' or 'PING ' in body:
-                    if msgtype == 'PING':
-                        reply = ("PONG " + sender)
-                    else:
-                        reply = ("PONG " + body[body.find("PING")+4:])
+                #reply to pings
+                if msgtype == 'PING':
+                    reply = ("PONG " + sender)
                     self.send(reply + '\r\n')
-                    self.send(data, "nonPrivmsg")
-                else:
-                    self.send(data, "nonPrivmsg")
+                elif 'PING ' in body: #must 'PING ' because 'PING' matches
+                    #things like CASEMAPPING=ascii
+                    reply = ("PONG " + body[body.find("PING")+4:])
+                    self.send(reply + '\r\n')
+                self.send(data, 'heard')
                 
    def parseable(self, line):
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
@@ -177,25 +156,20 @@ class IRC_Client(_Axon.Component.component):
        
    def parseIRCMessage(self, line):
         """Assumes most lines in the format of :nick!username MSGTYPE recipient :message.
-           Returns a tuple (message type, sender, recipient, message body)."""
+           Returns a tuple (message type, sender, recipient, other params)."""
         tokens = line.split()
         sender = ""
         recipient = ""
         body = ""
         try:
-            if tokens[0] == 'NOTICE':
-                msgtype = 'NOTICE'
-                recipient = tokens[1]
-                body = self.extractBody(tokens[2:])
-            elif tokens[0] == 'PING' or tokens[0] == 'PONG':    
-                msgtype = tokens[0]
-                sender = self.extractSender(tokens[1])
-            else:
-                sender = self.extractSender(tokens[0])
-                msgtype = tokens[1]
-                recipient = tokens[2]
-                if len(tokens) > 3:
-                    body = self.extractBody(tokens[3:])
+            if tokens[0][0] == ':':
+               sender = self.extractSender(tokens[0])
+               tokens = tokens[1:]
+               
+            msgtype = tokens[0]
+            recipient = tokens[1]
+            if len(tokens) > 2:
+               body = self.extractBody(tokens[2:])
             return (msgtype, sender, recipient, body)
         except IndexError:
             print "Malformed or unaccounted-for message:", tokens
@@ -213,18 +187,6 @@ class IRC_Client(_Axon.Component.component):
         else:
             return body
 
-   def send(self,message, boxname="outbox"):
-      """\
-      Overrides and calls Axon.Component.component.send.
-      If self.sendAsString is true, this method casts the message as a string before sending it on. 
-      
-      Raises Axon.AxonExceptions.noSpaceInBox if this outbox is linked to a
-      destination inbox that is full.
-      """
-      if self.sendAsString:
-          message = str(message)
-      super(IRC_Client, self).send(message, boxname)
-      
    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
@@ -245,9 +207,8 @@ def SimpleIRCClientPrefab(host="127.0.0.1",
         linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
-              ("PROTO"  , "privmsg")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
+              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
               ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
-              ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
               ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
@@ -255,12 +216,11 @@ def SimpleIRCClientPrefab(host="127.0.0.1",
         )
 
 if __name__ == '__main__':
-    from Axon.Scheduler import scheduler
     from Kamaelia.Util.Console import ConsoleReader
-    from Kamaelia.UI.Pygame.Ticker import Ticker
+    from NiceTickerPrefab import NiceTickerPrefab
     from Kamaelia.Chassis.Pipeline import Pipeline
     Pipeline(
         ConsoleReader(),
         SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        Ticker(render_right = 800,render_bottom = 600),
+        NiceTickerPrefab(render_right = 800,render_bottom = 600),
     ).run()
