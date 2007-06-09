@@ -7,6 +7,7 @@ from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 import time
 
 bg = schedulerThread(slowmo=0.01).start()
+
 ticker1 = LikeFile(Pipeline(
         Ticker(background_colour=(128,48,128),
             render_left = 1,
