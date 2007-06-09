@@ -48,12 +48,10 @@ queuelengths = 0
 
 class dummyComponent(Axon.Component.component):
     """A dummy component. Functionality: None. Prevents the scheduler from dying immediately.
-    Currently this object prevents the scheduler from cleanly exiting."""
+    Currently this object prevents the scheduler from cleanly exiting, but most components don't
+    exit cleanly anyway, so that's not a problem."""
     def main(self):
         while True:
-#            if schedulerThread.dummyneeded.acquire(False):
-#                return # we're no longer needed to keep the scheduler alive
-#            else: time.sleep(0.01) # prevent the scheduler from pegging before the first component is activated.
             self.pause()
             yield 1
 
