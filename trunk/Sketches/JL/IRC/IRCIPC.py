@@ -3,8 +3,9 @@
 class IRCIPC(object):
     "explanation %(foo)s did %(bar)s"
     Parameters = [] # ["foo", "bar"]
-    def __init__(self, **kwds):
+    def __init__(self, *args):
         super(IRCIPC, self).__init__()
+        
         for param in self.Parameters:
             optional = False
             if param[:1] == "?":
@@ -37,14 +38,15 @@ class IRCIPCChangeNick(IRCIPC):
 class IRCIPCDisconnect(IRCIPC):
     "Disconnect from the IRC server"
     Parameters = []
-
+    
 class IRCIPCConnect(IRCIPC):
     "Connect to the IRC server"
     Parameters = []
 
 class IRCIPCLogin(IRCIPC):
     "Login to the IRC server"
-    Parameters = ["nick", "?password", "?username"]
+    Parameters = ["nick", "username"]
+    Optional = ["password"]
     
 class IRCIPCJoinChannel(IRCIPC):
     "Join the chat channel %(channel)s"

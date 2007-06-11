@@ -61,7 +61,7 @@ class Kambot(component):
     
     FindResponses = (
         ( ( "no module named dirac_parser", ), "Try installing http://prdownloads.sourceforge.net/dirac/dirac-0.5.4.tar.gz?download" ),
-        ( ( "life", "the universe", "everything", ), "What do you get if you multiply 6 by 9?" ),
+        ( ( "life", "the universe", "everything", ), "What do you get if you multiply 6 by 7?" ),
         ( ( ("hi", "hey", "greetings", "hello", ), ("kambot", "{msgforme}")), "Hello." ),
         ( ( ("cya", "see ya", "see you", "bye", ), ("kambot", "{msgforme}")), "See ya!"),		
         ( ( "ecky", ), "Ptang!" ),

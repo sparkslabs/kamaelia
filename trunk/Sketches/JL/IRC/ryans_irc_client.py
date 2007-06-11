@@ -47,7 +47,7 @@ class IRCClient(component):
     Inboxes = {
         "inbox"       : "messages received from the server",
         "control"     : "receives shutdown signals",
-        "ipcObjects"  : "IPC objects received"
+        "user"  : "messages from the user"
     }
     
     Outboxes = {
@@ -193,6 +193,8 @@ class IRCClient(component):
                         msg = string.join(splitline[1:], " ")[1:]
                         msg = ( "NICK", linesender, splitline[1], msg )
                         self.send(msg, "heard")
+
+                    elif splitline[0] > '000' and splitline[0] < '300 
             else:
                 self.pause()
 
