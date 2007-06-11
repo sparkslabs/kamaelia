@@ -12,18 +12,16 @@ def ComplexIRCClientPrefab(host="127.0.0.1",
                           IRC_Handler=IRC_Client):
     return Graphline(
         CLIENT = TCPClient(host, port),
-        PROTO = IRC_Handler(nick, nickinfo, defaultChannel, sendAsString=True),
+        PROTO = IRC_Handler(nick, nickinfo, defaultChannel),
         SPLIT = Fanout(["toGraphline", "toTCP"]),
         linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("SPLIT", "inbox"),
-              ("PROTO"  , "privmsg")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
+              ("PROTO"  , "heard")  : ("SELF", "outbox"), #passthrough
               ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
-              ("SELF"  , "topic") : ("PROTO" , "topic"), #passthrough
               ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
-              ("PROTO", "nonPrivmsg") : ("SELF", "nonPrivmsg"), #passthrough
               ("SPLIT", "toGraphline") : ("SELF", "sendCopy"), #passthrough
               ("SPLIT", "toTCP") : ("CLIENT", "inbox")
               }
@@ -33,18 +31,15 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader
     from NiceTickerPrefab import NiceTickerPrefab as NiceTicker
     from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.Util.PureTransformer import PureTransformer
     Graphline(
         reader = ConsoleReader(),
         irc = ComplexIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        display1 = NiceTicker(render_right = 400,render_bottom = 300),
-        display2 = NiceTicker(render_right = 400,render_bottom = 300, position = (440, 0)),
-        display3 = NiceTicker(render_right = 400,render_bottom = 300, position = (0, 340)),
+        display1 = NiceTicker(render_right = 800,render_bottom = 300),
+        display2 = NiceTicker(render_right = 800,render_bottom = 300, position = (0, 340)),
         linkages = {
             ("reader", "outbox") : ("irc", "inbox"),
             ("irc", "outbox") : ("display1", "inbox"),
-            ("irc", "nonPrivmsg") : ("display2", "inbox"),
-            ("irc", "sendCopy") : ("display3", "inbox")
+            ("irc", "sendCopy") : ("display2", "inbox")
             }
             
     ).run()

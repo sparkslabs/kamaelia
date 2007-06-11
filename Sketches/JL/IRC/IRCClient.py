@@ -70,17 +70,15 @@ class IRC_Client(_Axon.Component.component):
    
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
-                      defaultChannel="#kamaeliatest",
-                      sendAsString = False):
+                      defaultChannel="#kamaeliatest"):
       self.__super.__init__()
       self.nick = nick
       self.nickinfo = nickinfo
       self.defaultChannel = defaultChannel
       self.channels = {}
-      self.sendAsString = sendAsString
       self.debugger = _Axon.debug.debug()
       self.debugger.useConfig()
-      self.debugger.addDebugSection("IRCClient.main", 1)
+      self.debugger.addDebugSection("IRCClient.main", 5)
       
    def login(self, nick, nickinfo, password = None, username=None):
       """Should be abstracted out as far as possible.
@@ -106,16 +104,12 @@ class IRC_Client(_Axon.Component.component):
       "Handling here is still in progress. :)"
       self.login(self.nick, self.nickinfo)
       self.channels[self.defaultChannel] = self.join(self.defaultChannel)
-      seen_VERSION = False
-
+      
       while not self.shutdown():
          data=""
          if self.dataReady("talk"):
             data = self.recv("talk")
-            self.channels[self.defaultChannel].say(data)
-            if data.find(self.nick) != -1:
-                if data.find("LEAVE") != -1:
-                   break            
+            self.handleInput(data)
          elif self.dataReady("inbox"): #if received messages 
              self.handleMessage(self.recv("inbox"))
                     
@@ -135,7 +129,7 @@ class IRC_Client(_Axon.Component.component):
             if self.parseable(one_line):
                 data = self.parseIRCMessage(one_line)
             elif len(one_line) > 0:
-                self.send('Malformed message: ' + one_line, "privmsg")
+                self.send(("CLIENT ERROR", 'client', '', one_line), 'heard')
                 
             if data:
                 (msgtype, sender, recipient, body) = data
@@ -143,10 +137,12 @@ class IRC_Client(_Axon.Component.component):
                 if msgtype == 'PING':
                     reply = ("PONG " + sender)
                     self.send(reply + '\r\n')
-                elif 'PING ' in body: #must 'PING ' because 'PING' matches
-                    #things like CASEMAPPING=ascii
+                    assert self.debugger.note('IRCClient.main', 1, 'PONG response to ' + one_line)
+                elif (msgtype == 'PRIVMSG' or msgtype == 'NOTICE') and 'PING ' in body:
+                    #must be 'PING ' because 'PING' matches things like CASEMAPPING=ascii
                     reply = ("PONG " + body[body.find("PING")+4:])
                     self.send(reply + '\r\n')
+                    assert self.debugger.note('IRCClient.main', 1, 'PONG response to ' + one_line)
                 self.send(data, 'heard')
                 
    def parseable(self, line):
@@ -170,9 +166,12 @@ class IRC_Client(_Axon.Component.component):
             recipient = tokens[1]
             if len(tokens) > 2:
                body = self.extractBody(tokens[2:])
+            if msgtype == 'PING':
+                sender =  recipient
+                recipient = ""
             return (msgtype, sender, recipient, body)
         except IndexError:
-            print "Malformed or unaccounted-for message:", tokens
+            print "Malformed or unaccounted-for message:", line
 
    def extractSender(self, token):
         if '!' in token:
@@ -186,6 +185,31 @@ class IRC_Client(_Axon.Component.component):
             return body[1:]
         else:
             return body
+
+   def handleInput(self, lines):
+        if "\r" in lines:
+            lines.replace("\r","\n")
+        lines = lines.split("\n")
+        for one_line in lines:
+            if one_line: #we don't want to deal with empty lines
+                tokens = one_line.split()
+                command = "PRIVMSG"
+                target = ""
+                body = ""
+                try: 
+                    if one_line[0] == '/':
+                        command = tokens[0][1:].upper()
+                        del(tokens[0])
+                        if command == 'MSG':
+                            command = 'PRIVMSG'
+                    if len(tokens) > 0:
+                        target = tokens[0]
+                    if len(tokens) > 1:
+                        body = ':' + string.join(tokens[1:])
+                    self.send('%s %s %s \r\n' % (command, target, body))
+                except IndexError:
+                    print "Malformed message:", one_line
+                    #/ hello world
 
    def shutdown(self):
        while self.dataReady("control"):
@@ -203,7 +227,7 @@ def SimpleIRCClientPrefab(host="127.0.0.1",
                           IRC_Handler=IRC_Client):
     return Graphline(
         CLIENT = TCPClient(host, port),
-        PROTO = IRC_Handler(nick, nickinfo, defaultChannel, sendAsString=True),
+        PROTO = IRC_Handler(nick, nickinfo, defaultChannel),
         linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
