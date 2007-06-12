@@ -70,10 +70,10 @@ class schedulerThread(threading.Thread):
         schedulerThread.lock.release()
 
 
-class componentWrapper(Axon.Component.component):
+class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its boxes to queues, which communicate
-    with the LikeFile component. Takes one argument, a component."""
-    def __init__(self, childcomponent):
+    with the LikeFile component."""
+    def __init__(self, childcomponent, extrainboxes = None, extraoutboxes = None):
         super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
@@ -83,10 +83,20 @@ class componentWrapper(Axon.Component.component):
 
         # for now, these are hard-coded.
         # this means, e.g. our own outbox is linked to the child's inbox. childSink:parentSource
+        # used to deliver information to a wrapped component from non-kamaelionic environments.
         self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
+        if extrainboxes:
+            for boxname in extrainboxes.iterkeys():
+                self.addOutbox(boxname)
+            self.childInboxMapping.update(extrainboxes)
 
         # this means, e.g. the child's outbox is linked to our own inbox. childSource:parentSink
+        # used to retrieve information from a kamaelia system to a non-kamaelionic environment.
         self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
+        if extraoutboxes:
+            for boxname in extraoutboxes.iterkeys():
+                self.addInbox(boxname)
+            self.childOutboxMapping.update(extraoutboxes)
 
         for childSink, parentSource in self.childInboxMapping.iteritems():
             self.inqueues[childSink] = Queue.Queue(self.queuelengths)
@@ -131,17 +141,21 @@ class componentWrapper(Axon.Component.component):
 
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
-    def __init__(self, componenttowrap):
+    def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise "no running scheduler found! Did you end all running components?"
-        component = componentWrapper(componenttowrap)
+        component = componentWrapper(componenttowrap, extrainboxes, extraoutboxes)
         self.inqueues = copy.copy(component.inqueues)
         self.outqueues = copy.copy(component.outqueues)
         # reaching into the component like this is threadsafe since it has not been activated yet, and __init__
         # runs in the current thread
         self.component = component
         self.alive = False
+
+##    def addlinkage(self):
+##        """This will add an additional linkage, to access a wrapped component's
+##        boxes from the likefile interface. Can be called during execution."""
 
     def activate(self):
         if self.alive: return # do nothing.
