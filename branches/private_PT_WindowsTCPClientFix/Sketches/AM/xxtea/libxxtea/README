@@ -1,0 +1,11 @@
+To build and install the libxxtea do 
+
+cd ./src
+    * make
+    * sudo make install
+
+There is some test code under test.
+
+cd ./test
+    * make
+    * ./xxtea_test

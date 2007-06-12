@@ -1,0 +1,5 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-weight:600">Answer:</span></p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">[[pre]class scheduler(microprocess):<br />    def __init__(self):<br />        super(scheduler, self).__init__()<br />        self.active = []<br />        self.newqueue = []<br />    def main(self): <br />        for i in xrange(100):<br />            for current in self.active:<br />                yield 1<br />                try:<br />                    result = current.next()<br />                    if result is not -1:<br />                        self.newqueue.append(current)<br />                except StopIteration:<br />                    pass<br />            self.active = self.newqueue<br />            self.newqueue = []<br />    def activateMicroprocess(self, someprocess):<br />        microthread = someprocess.main()<br />        self.newqueue.append(microthread)]</span></div></ul>
+<p dir="ltr"></p>
+</body></html>
