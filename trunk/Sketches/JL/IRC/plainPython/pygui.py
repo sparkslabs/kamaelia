@@ -20,9 +20,9 @@ def updateLine(line):
     pygame.display.update()
 
 ## initialize the pygame stuff. The output window.
-screen_width=300
-screen_height=200
-text_height=14
+screen_width=500
+screen_height=300
+text_height=18
 background_color = (255,255,255)
 text_color=(0,0,0)
         
@@ -41,6 +41,7 @@ writeRect = pygame.Rect((0, screen_height-text_height), (screen_width, text_heig
 #initialize the IRC connection
 import socket
 import select
+import string
 
 def say(chan, words):
     send = 'PRIVMSG %s :%s\r\n' % (chan, words)
@@ -51,7 +52,19 @@ def checkForMessages():
                select.select([sock], [], [sock], 0)
     if sock in read_list:
         raw = sock.recv(8000)
-        print raw
+        return raw
+
+def formatLine(line):
+    words = line.split()
+    sender = ""
+    if line[0] == ':' and len(words) >= 2:
+        sender = line[1:line.find('!')]
+        del(words[0])
+    tag = words[0].upper()
+    if tag == 'PRIVMSG':
+        return '%s: %s' % (sender, string.join(words[2:]))
+    else:
+        return '%s: %s' % (sender, string.join(words, ' '))
 
 network = 'irc.freenode.net'
 port = 6667
@@ -68,12 +81,13 @@ sock.send ('NICK %s \r\n' % nick )
 sock.send ( 'USER %s %s %s :%s r\n' % (uname, host, server, realname))
 sock.send ( 'JOIN %s\r\n' % channel)
 
-checkForMessages()
-say(channel, "Hi there")
 
-data = ''
-while data != 'QUIT':
-    data = raw_input('> ')
-    update(data)
-    
-checkForMessages()
+while True:
+    data = checkForMessages()
+    if data:
+        if '\r' in data:
+            data.replace('\r','\n')
+        lines = data.split('\n')
+        for msg in lines:
+            if msg: update(formatLine(msg))
+    pygame.display.update()
