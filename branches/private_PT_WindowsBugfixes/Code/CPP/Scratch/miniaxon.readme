@@ -1,0 +1,71 @@
+First, very, very, very simplified version of a C++ version of the
+component system. Experience of using a similar simplified system to
+teach a pre-university trainee how to use Axon suggest that this minimal
+subset (if we choose to extend slightly) is actually very useful.
+
+/**********************************************************************
+ *
+ * Sample Producer/Consumer system, passing IPC messages with a string as
+ * payload.
+ *
+ */
+
+struct mystring : public IPC_S{
+   string payload;
+};
+
+struct Producer : public SimpleComponent {
+
+    mystring msg;
+    Producer()  {     };
+    ~Producer() {     };
+
+    virtual int next() {
+    GENERATOR_CODE_START
+        while(1) {
+           msg.payload = "hello world!";
+           send(&msg);
+           YIELD(1);
+        };
+    GENERATOR_CODE_END
+    };
+};
+
+struct Consumer : public SimpleComponent {
+    mystring *result;
+
+    Consumer()  {     };
+    ~Consumer() {     };
+
+    virtual int next() {
+    GENERATOR_CODE_START
+        while (1) {
+            if (dataReady()) {
+               result = (mystring *)recv();
+               cout << "! " << result->payload << endl;
+            };
+            YIELD(1);
+        };
+    GENERATOR_CODE_END
+    };
+};
+
+
+int main(int, char **) {
+   Scheduler scheduler;
+
+   Producer P;
+   Consumer C;
+   Postman postie(&P,"outbox", &C, "inbox"); // Same as postie(&P,&C)
+   scheduler.activateMicroprocess(&P);
+   scheduler.activateMicroprocess(&C);
+   scheduler.activateMicroprocess(&postie);
+   scheduler.run();
+
+   return 0;
+}
+
+/*
+ * End of sample system.
+ *
+ **********************************************************************/
