@@ -207,18 +207,24 @@ class TCPClient(Axon.Component.component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
+         elif errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
-         if errorno == errno.EISCONN:
+         elif errorno == errno.EISCONN:
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
              return True
+         elif hasattr(errno, "WSAEINVAL") and errorno == errno.WSAEINVAL:
+            # If we are on windows, this will be the error instead of EALREADY
+            # above.
+            assert(self.connecting==1)
+            return False
          # Anything else is an error we don't handle
-         raise socket.msg
+         else:
+            raise socket.msg
 
    def runClient(self,sock=None):
       # The various numbers yielded here indicate progress through the function, and
