@@ -3,13 +3,20 @@
 
 import pygame
 import time
+from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class TextDisplayer(component):
-    #inboxes: inbox, control
-    #outboxes: outbox, signal
-    def __init__(self, screen_width=300, screen_height=200, text_height=14,
+    Inboxes = {"inbox" : "for incoming lines of text",
+               "_surface" : "for PygameDisplay to send surfaces to",
+               "_quitevents" : "for PygameDisplay to send quit events to",
+               "control" : "shutdown handling"}
+    Outboxes = {"outbox" : "not used",
+                "_pygame" : "for sending requests to PygameDisplay",
+                "signal" : "propagates out shutdown signals"}
+    
+    def __init__(self, screen_width=300, screen_height=200, text_height=18,
                  background_color = (255,255,255), text_color=(0,0,0)):
         super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
@@ -17,27 +24,44 @@ class TextDisplayer(component):
         self.text_height = text_height
         self.background_color = background_color
         self.text_color = text_color
-        
-        pygame.init()
-        self.screen = pygame.display.set_mode((screen_width, screen_height))
-        self.screen.fill(background_color)
-        pygame.display.update()
-        
-        self.scratch = self.screen.copy()
-        self.font = pygame.font.Font(None, 14)
-        self.linelen = self.screen_width/self.font.size('a')[0]
-        self.keepRect = pygame.Rect((0, text_height), (screen_width, screen_width-text_height))
-        self.scrollingRect = pygame.Rect((0, 0), (screen_width, screen_height - text_height))
-        self.writeRect = pygame.Rect((0, screen_height-text_height), (screen_width, text_height))
         self.done = False
+        
+        displayservice = PygameDisplay.getDisplayService()
+        self.link((self, "_pygame"), displayservice)
+        
+    def initPygame(self):
+        self.send({"DISPLAYREQUEST" : True,
+                   "size" : (self.screen_width, self.screen_height),
+                   "callback" : (self, "_surface")}, "_pygame")
+        while not self.dataReady("_surface"):
+            yield 1
+        self.screen = self.recv("_surface")
+        self.screen.fill(self.background_color)
+        self.scratch = self.screen.copy()
+        self.send({"REDRAW" : True,
+                   "surface" : self.screen}, "_pygame")
+
+        h = self.screen_height
+        w = self.screen_width
+        th = self.text_height
+        self.font = pygame.font.Font(None, th)
+        self.linelen = w/self.font.size('a')[0]
+        self.keepRect = pygame.Rect((0, th),(w, h - th))
+        self.scrollingRect = pygame.Rect((0, 0), (w, h - th))
+        self.writeRect = pygame.Rect((0, h - th), (w, th))
+
+        self.send({"ADDLISTENEVENT" : pygame.QUIT,
+                   "surface" : self.screen})
     
     def main(self):
+        for _ in self.initPygame():
+            yield 1
+    
         while not self.shutdown():
             yield 1
             if self.dataReady('inbox'):
                 line = self.recv('inbox')
                 self.update(line)
-            pygame.display.update() #constantly refresh screen 
 
     def update(self, text):
         while len(text) > self.linelen:
@@ -53,7 +77,8 @@ class TextDisplayer(component):
         self.screen.blit(lineSurf, self.writeRect)
         self.scratch.fill(self.background_color)
         self.scratch.blit(self.screen, self.screen.get_rect())
-        pygame.display.update()
+        self.send({"REDRAW" : True,
+                   "surface" : self.screen}, "_pygame")
 
     def shutdown(self):
         while self.dataReady("control"):
@@ -61,9 +86,11 @@ class TextDisplayer(component):
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                self.send(msg, "signal")
                return True
-        if self.done or pygame.event.get(pygame.QUIT):
-            self.send(producerFinished(), "signal")
-            return True
+        while self.dataReady("_quitevents"):
+            msg = self.recv("_quitevents")
+            if msg.type == pygame.QUIT:
+                self.send(producerFinished(), "signal")
+                return True
 
 
 if __name__ == '__main__':
@@ -94,4 +121,4 @@ That makes calamity of so long life;
                 yield 1
 ##            self.send(shutdownMicroprocess(), 'signal')
 
-    Pipeline(Chargen(), textScroller()).run()
+    Pipeline(Chargen(), TextDisplayer()).run()
