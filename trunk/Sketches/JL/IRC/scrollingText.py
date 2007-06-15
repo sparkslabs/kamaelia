@@ -1,3 +1,4 @@
+#!/usr/bin/env  python
 #simple scrolling textbox using Pygame
 
 import pygame
@@ -5,7 +6,7 @@ import time
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-class textScroller(component):
+class TextDisplayer(component):
     #inboxes: inbox, control
     #outboxes: outbox, signal
     def __init__(self, screen_width=300, screen_height=200, text_height=14,
@@ -28,6 +29,7 @@ class textScroller(component):
         self.keepRect = pygame.Rect((0, text_height), (screen_width, screen_width-text_height))
         self.scrollingRect = pygame.Rect((0, 0), (screen_width, screen_height - text_height))
         self.writeRect = pygame.Rect((0, screen_height-text_height), (screen_width, text_height))
+        self.done = False
     
     def main(self):
         while not self.shutdown():
@@ -57,8 +59,11 @@ class textScroller(component):
         while self.dataReady("control"):
            msg = self.recv("control")
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+               self.send(msg, "signal")
                return True
-        return False
+        if self.done or pygame.event.get(pygame.QUIT):
+            self.send(producerFinished(), "signal")
+            return True
 
 
 if __name__ == '__main__':
@@ -87,6 +92,6 @@ That makes calamity of so long life;
                 time.sleep(0.5)
                 self.send(one_line)
                 yield 1
-            self.send(shutdownMicroprocess(), 'signal')
+##            self.send(shutdownMicroprocess(), 'signal')
 
     Pipeline(Chargen(), textScroller()).run()
