@@ -11,7 +11,7 @@ class TextDisplayer(component):
     #outboxes: outbox, signal
     def __init__(self, screen_width=300, screen_height=200, text_height=14,
                  background_color = (255,255,255), text_color=(0,0,0)):
-        super(textScroller, self).__init__()
+        super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.text_height = text_height
