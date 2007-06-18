@@ -1,0 +1,76 @@
+<html><body>
+<h1>Kamaelia.NullPayloadRTP.NullPayloadPreFramer</h1>
+<h2>class NullPayloadPreFramer(Axon.Component.component)</h2>
+
+<dl class="docutils">
+<dt>Inboxes:</dt>
+<dd>control -&gt; File select, file read control, framing control
+recvsrc -&gt; Block/Chunks of raw disk data</dd>
+<dt>Outboxes:</dt>
+<dd>activatesrc -&gt; Control messages to the file reading subsystem
+output -&gt; The framed data, payload ready</dd>
+</dl>
+<h4>Inboxes</h4>
+<ul><li>   control : Code uses old style inbox/outbox description - no metadata available
+<li>   recvsrc : Code uses old style inbox/outbox description - no metadata available
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   output : Code uses old style inbox/outbox description - no metadata available
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, sourcename, sourcebitrate, chunksize)</h3>
+<ul>
+<li><dl class="first docutils">
+<dt>Name of source - at __init__</dt>
+<dd><ul class="first last simple">
+<li>Data Rate - at __init__</li>
+<li>Chunksize - at __init__</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<h3>closeDownComponent(self)</h3>
+<p>No closedown/shutdown code</p>
+<h3>handleControl(self)</h3>
+<p>returns quit flag - True means quit</p>
+<h3>handleShutdown(self)</h3>
+
+<h3>initialiseComponent(self)</h3>
+<p>No initialisation</p>
+<h3>mainBody(self)</h3>
+<p>Loopbody:</p>
+<h3>makeChunk(self, datatosend)</h3>
+<p>C.makeChunk(datatosend) -&gt; chunk : network ready data</p>
+<h3>sendCurrentChunk(self, sendpartial)</h3>
+<ul>
+<li><dl class="first docutils">
+<dt>grab first (current chunk size) bytes</dt>
+<dd><ul class="first last simple">
+<li>frame chunk</li>
+<li>send chunk</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<h3>updateTimestamp(self, datatosend)</h3>
+<p>C.updateTimestamp(datatosend)</p>
+<blockquote>
+self.timestamp stores the timestamp of the end of the most recently
+transmitted data, whenever we send some data this timestamp needs to
+be updated. This method represents the calculation involved. (calculate
+the time period the data covers, and increment the timestamp)</blockquote>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
