@@ -1105,7 +1105,11 @@ def GetAllKamaeliaComponents(baseDir=None):
     
     rDocs = ModuleDoc("Kamaelia",baseDir)
     
-    return [name.split(".") for (name,item) in rDocs.listAllComponentsIncSubModules()]
+    names = {}
+    for name in [name for (name,item) in rDocs.listAllComponentsIncSubModules()]:
+        path,name = tuple(name.split(".")[:-1]), name.split(".")[-1]
+        names[path] = names.get(path,[]) + [name]
+    return names
 
 def GetAllKamaeliaPrefabsNested(baseDir=None):
     """\
@@ -1143,7 +1147,11 @@ def GetAllKamaeliaPrefabs(baseDir=None):
     
     rDocs = ModuleDoc("Kamaelia",baseDir)
     
-    return [name.split(".") for (name,item) in rDocs.listAllPrefabsIncSubModules()]
+    names = {}
+    for name in [name for (name,item) in rDocs.listAllPrefabsIncSubModules()]:
+        path,name = tuple(name.split(".")[:-1]), name.split(".")[-1]
+        names[path] = names.get(path,[]) + [name]
+    return names
 
 
 def _nest(flatList):
