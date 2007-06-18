@@ -73,13 +73,17 @@ class RenderHTML(object):
         """
         return docName + ".html"
     
-    def makeURI(self, docName):
+    def makeURI(self, docName,internalRef=None):
         """\
         Returns the URI for a given document name. Takes into account the url prefix.
 
         Eg. "Kamaelia.Chassis" will be mapped to something like "/mydocs/Kamaelia.Chassis.html"
         """
-        return self.urlPrefix+self.makeFilename(docName)
+        if internalRef is not None:
+            suffix="#"+internalRef
+        else:
+            suffix=""
+        return self.urlPrefix+self.makeFilename(docName)+suffix
         
     def setAutoCrossLinks(self, mappings):
         """\
@@ -96,6 +100,12 @@ class RenderHTML(object):
             # convert the destination to a URI
             uri = self.makeURI(ref)
             self.mappings[pattern] = uri
+            
+    def addAutoLinksToURI(self, mappings):
+        for (key,uri) in mappings.items():
+            pattern=re.compile("(?<![a-zA-Z0-9._])"+re.escape(key)+"(?!\.?[a-zA-Z0-9_])")
+            self.mappings[pattern] = uri
+        
         
     def render(self, docName, docTree):
         """\

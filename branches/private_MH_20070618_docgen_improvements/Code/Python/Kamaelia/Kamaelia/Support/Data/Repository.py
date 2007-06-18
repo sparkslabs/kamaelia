@@ -77,67 +77,77 @@ Detailed introspections::
 
 We can ask for a complete introspection of the current Kamaelia installation::
     
-   >>> docTree=Repository.SourceTreeDocs()
+   >>> docTree=Repository.ModuleDoc("Kamaelia","/usr/lib/python/site-packages/Kamaelia")
+   >>> docTree.resolve(roots={"Kamaelia":docTree})
 
 And look up a particular module::
 
-   >>> m=docTree.flatModules[('Kamaelia','Util','Console')]
+   >>> m=docTree.find("Util.Console")
    >>> m
-   <Kamaelia.Support.Data.Repository.ModuleDocs object at 0x2aaaac4c7790>
+  <Repository.ModuleDoc object at 0x40403b0c>
    
 Then find components declared in that module::
 
-   >>> c=m.components[0]
+   >>> cs=m.listAllComponents()
+   >>> cs
+   [('ConsoleReader', <Repository.ClassScope object at 0x41511bac>), ('ConsoleEchoer', <Repository.ClassScope object at 0x4115990c>)]
+   >>> (name,c)=cs[0]
+   >>> name
+   'ConsoleReader'
    >>> c
-   <Kamaelia.Support.Data.Repository.KamaeliaComponentDocs object at 0x2aaaac6d61d0>
+   <Repository.ClassScope object at 0x41511bac>
     
 And look at properties of that component::
-    >>> c.name
-    'ConsoleEchoer'
+    
     >>> c.module
     'Kamaelia.Util.Console'
     >>> c.inboxes
-    {'control': 'Shutdown signalling', 'inbox': 'Stuff that will be echoed to standard output'}
+    {'control': 'NOT USED', 'inbox': 'NOT USED'}
     >>> c.outboxes
-    {'outbox': "Stuff forwarded from 'inbox' inbox (if enabled)", 'signal': 'Shutdown signalling'}
-    >>> print c.docString
-       ConsoleEchoer([forwarder][,use_repr]) -> new ConsoleEchoer component.
+    {'outbox': 'Lines that were typed at the console', 'signal': 'NOT USED'}
+    >>> print c.doc
+    ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
     
-       A component that outputs anything it is sent to standard output (the
-       console).
+    Component that provides a console for typing in stuff. Each line is output
+    from the "outbox" outbox one at a time.
     
-       Keyword arguments:
+    Keyword arguments:
     
-       - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
-       - use_repr   -- use repr() instead of str() if True (default=False)
+    - prompt  -- Command prompt (default=">>> ")
+    - eol     -- End of line character(s) to put on end of every line outputted (default is newline)
     
 This includes methods defined in it::
 
-    >>> meth=c.methods[0]
-    >>> meth.name
+    >>> c.listAllFunctions()
+    [('main', <Repository.FunctionScope object at 0x4166822c>), ('__init__', <Repository.FunctionScope object at 0x4166224c>)]
+    >>> name,f=c.listAllFunctions()[1]
+    >>> name
     '__init__'
-    >>> meth.module
-    'Kamaelia.Util.Console'
-    >>> meth.docString
+    >>> f
+    <Repository.FunctionScope object at 0x4166224c>
+    
+We can look at the docs for the function:
+    
+    >>> f.doc
     'x.__init__(...) initializes x; see x.__class__.__doc__ for signature'
-
+    
 We can ask for a string summarising the method's arguments::
-
-    >>> meth.argString
-    'self[, forwarder][, use_repr]'
-
+    
+    >>> f.argString
+    'self[, prompt][, eol]'
+    
 Or a list naming each argument, consisting of (argname, summary-representation)
 pairs::
     
-    >>> meth.args
-    [('self', 'self'), ('forwarder', '[forwarder]'), ('use_repr', '[use_repr]')]
+    >>> f.args
+    [('self', 'self'), ('prompt', '[prompt]'), ('eol', '[eol]')]
 
 
 
 Obtaining introspection data
 ----------------------------
 
-To get a detailed introspection you create a SourceTreeDocs object. You can
+To get a detailed introspection you create a ModuleDoc object. You can
 either point it at a specific directory, or just let it introspect the currently
 installed Kamaelia repository.
 
@@ -147,10 +157,12 @@ Kamaelia.Chassis directory; you should explain that the root name is
 "Kamaelia.Chassis". Or if, for example, you are using this code to document
 Axon, you would specify a root name of "Axon".
 
-Finally you can also specify a list of filenames to be excluded.
+After instantiating your ModuleDoc object; remember to call its "resolve" method
+to allow it to resolve references to base classes, and determine method the
+resolution order for classes.
 
 
-    
+
 How are components and prefabs detected?
 ----------------------------------------
 
@@ -168,106 +180,33 @@ simple list of strings giving the names of the components/prefabs present.
 Structure of detailed introspections
 ------------------------------------
 
-The SourceTreeDoc object contains dictionaries pointing you at various ModuleDocs
-objects. These in turn contain ClassDocs, FunctionDocs, PrefabDocs and ComponentDocs
-objects. ComponentDocs and ClassDocs objects will contain MethodDocs objects:
+The introspection is a hierarchy of Scope objects, each representing a delcaration
+scope - such as a module, class, function, etc. These are built up to reflect
+the structure of the library if it is imported.
 
-* SourceTreeDoc object
-
-  * ModuleDocs objects
-  
-    * ComponentDocs objects
+* ModuleDoc objects represent each module. They may contain:
     
-      * MethodDocs objects
-      
-    * PrefabDocs objects
+    * Other ModuleDoc objects
     
-    * ClassDocs objects
+    * ImportScope objects
     
-      * MethodDocs objects
-      
-    * FunctionDocs objects
+    * ClassScope objects (representing classes and components)
+    
+    * FunctionScope objects (repesenting functions and prefabs)
+    
+    * UnparsedScope objects (anything that wasn't parsed)
+    
+ClassScope and FunctionScope objects may also contain any of these. For example,
+methods in a class will be represented as FunctionScope objects within the
+ClassScope object.
+    
+The find() method of any given scope can be used to lookup a symbol in that scope,
+or its children. For example, you could call find() on the "Kamaelia.Chassis"
+ModuleDoc object with the argument "Graphline.Graphline" to retrieve the graphline
+component (its full path is "Kamaelia.Chassis.Graphline.Graphline")
 
-**SourceTreeDocs** objects have the following attributes:
-
-* *nestedModules* - a nested set of dictionaries reflecting the structure of
-  modules. At each level, the key is the module name. The value is a list of
-  other dicts and ModuleDocs objects.
-
-  For example, nestedModules["Kamaelia"]["Chassis"]["Pipeline"] would return
-  the ModuleDocs object documenting the module Kamaelia.Chassis.Pipeline
-
-* *flatModules* - a simple flat dictionary. The keys are tuples giving the
-  full path of the module. The value is a corresponding ModuleDocs object.
-
-  For example the key ("Kamaelia","Chassis","Pipeline") will return a
-  ModuleDocs object documenting the module Kamaelia.Chassis.Pipeline
-
-  
-**ModuleDocs** objects contain the following attributes:
-
-* *docString* - the python doc string for the module
-
-* *components* - list of KamaeliaComponentDocs objects describing prefabs
-  defined in this module
-
-* *prefabs* - list of KamaeliaPrefabDocs objects describing prefabs defined in
-  this module
-  
-* *classes* - list of ClassDocs objects describing non-component classes
-  defined in this module
-
-* *functions* - list of FunctionDocs objects describing functions defined in
-  this module (not including prefabs)
-
-  
-**KamaeliaComponentDocs** objects contain the following attributes:
-
-* *name* - the name of the component (eg. "Pipeline")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.Chassis.Pipeline"
-  
-* *docString* - the python doc string for the component
-
-* *inboxes* and *outboxes* - dicts mapping inbox/outbox names to any associated
-  documentation string or an empty string. For example: {"inbox":"Send data here"}
-
-* *methods* - list of MethodDocs objects describing methods defined in this
-  component (basically the same as FunctionDocs objects)
-
-  
-**KamaeliaPrefabDocs**, **FunctionDocs** and **MethodDocs** objects are all, in practice,
-the same format. They contain the following attributes:
-
-* *name* - the name of the prefabs (eg. "RateControlledFileReader")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.File.Reading"
-
-* *docString* - the python doc string for the prefab
-
-* *argString* - a string representation of the arguments the function/method/prefab
-  takes. Square brackets are used to indicate optionality, and single and
-  double asterisks to indicate argument and dictionary lists (as in normal
-  python syntax). For example: "self, \*components"
-
-* *args* - an ordered list detailing the individual arguments the
-  function/method/prefab takes. Each tuple is a pair (name,argStringRepresentation)
-  giving the argument name, and the 'argString' style representation.
-
-  
-**ClassDocs** objects contain the following attributes:
-
-* *name* - the name of the component (eg. "SourceTreeDocs")
-
-* *module* - the full module name for where it is located - for example:
-  "Kamaelia.Support.Data.Repository"
-  
-* *docString* - the python doc string for the component
-
-* *methods* - list of MethodDocs objects describing methods defined in this
-  component (basically the same as FunctionDocs objects)
+The listAllXXXXX() methods enumerate items - such as classes, functions,
+components, prefabs or modules.
 
 
 
@@ -279,19 +218,18 @@ files, rather than import them. This allows introspection of code that might not
 necessarily run on the system at hand - perhaps because not all dependancies can
 be satisfied.
 
-A consequence of this is that if something is created by executed statements,
-rather than simply declared, it will not be picked up. For example::
-
-    def foo():
-        class MyComponent(component):
-            pass
-        return MyComponent
-
-    wontBePickedUpByRepositoryIntrospection = foo()
+Basic tracking of assignment operations is performed, so the following is fair
+game::
     
-    alsoWontBePickedUp = lambda : "burble"
+    from Axon.Component import component as flurble
+    
+    class Boo(flurble):
+        pass
+    
+    Foo=Boo
 
-Functions and classes declared within if statement will also not be found::
+However anything more comple is not processed. For example, functions and
+classes declared within "if" statement will not be found::
 
     if 1:
         class WillNotBeDetected:
@@ -308,416 +246,786 @@ introspection of the codebase but then throw most of the information away.
 """
 
 
+import os
+import sys
+
 import compiler
 from compiler import ast
-import os
 
-class SourceTreeDocs(object):
+import __builtin__ as BUILTINS
+
+from os.path import isdir
+from os.path import isfile
+from os.path import exists
+from os.path import join as pathjoin
+
+
+class Scope(object):
     """\
-    SourceTreeDocs([baseDir][,rootName][,excludeFilenames]) -> new SourceTreeDocs object
-
-    Parses a code base to determine what modules, components, prefabs, functions
-    and classes are declared in it.
-
-    If no base-directory is specified, then the current Kamaelia installation
-    will be scanned.
-
-    self.nestedModules and self.flatModules contain the resulting data. For
-    example, ``x.nestedModules["Kamaelia"]["Chassis"]["Pipeline"]`` or
-    ``x.flatModules[("Kamaelia","Chassis","Pipeline")]`` will both return a
-    ModuleDocs object documenting that module
-
-    Keyword arguments:
-
-    - baseDir           -- Optional. Top directory of the code base to scan, or None for the current Kamaelia installation (default=None)
-    - rootName          -- Optional. The module path corresponding to the directory specified (default="Kamaelia")
-    - excludeFilenames  -- Optional. List of filenames to be ignored (default=[])
-    """
-    def __init__(self, baseDir=None, rootName="Kamaelia", excludeFilenames=[]):
-        super(SourceTreeDocs,self).__init__()
-
-        # if no base directory specified, locate the base directory of the
-        # current kamaelia installation
-        if baseDir:
-            self.baseDir = baseDir
-        else:
-            import Kamaelia
-            self.baseDir = os.path.dirname(Kamaelia.__file__)
-            
-        self.excludeFilenames = excludeFilenames
-
-        # build the initial path to the specified 'root' in the dictionaries
-        # of modules
-        root=rootName.split(".")
-        self.flatModules={}
-        self.nestedModules={}
-        
-        nested=self.nestedModules
-        for node in root:
-            nested[node] = {}
-            nested=nested[node]
-
-        # recurse through the source directories building docs
-        self._build(self.baseDir, self.flatModules, nested, base=root)
-        
-        
-    def _build(self,dirName,flatModules,nestedModules,base):
-        """\
-        **Internal method**
-        
-        Recursively scans the code base specified by dirName and documents any
-        modules found. Skips any filenames specified for exclusion at
-        initialisation.
-
-        Keyword arguments:
-
-        - dirName        -- directory to be scanned for python modules
-        - flatModules    -- dict into which (module-path,ModuleDocs object) pairs will be inserted
-        - nestedModules  -- dict into which (module-name,ModuleDocs object) and (module-name,sub-dict) pairs will be inserted
-        """
-        dirEntries = os.listdir(dirName)
-        containsPythonFiles = False
-        
-        for filename in dirEntries:
-            filepath = os.path.join(dirName, filename)
-            if filename in self.excludeFilenames:
-                continue
-            
-            elif os.path.isdir(filepath):
-                subTree = {}
-                subBase = base + [filename]
-                foundPythonFiles = self._build(filepath, flatModules, subTree, subBase)
-                # only include if there was actually something in there!
-                if foundPythonFiles:
-                    containsPythonFiles = True
-                    nestedModules[filename] = subTree
-                
-            elif isPythonFile(dirName, filename):
-                containsPythonFiles=True
-                moduleName = filename[:-3]
-                modulePath = ".".join(base+[moduleName])
-                if filename == "__init__.py":
-                    flatModulePath = base[:]
-                else:
-                    flatModulePath = base+[moduleName]
-                    
-                print "Parsing:",filepath
-                moduleDocs = ModuleDocs(filepath, flatModulePath)
-                
-                flatModules[tuple(flatModulePath)] = moduleDocs
-                nestedModules[moduleName] = moduleDocs
-
-        return containsPythonFiles
-
-
-def isPythonFile(Path, File):
-    """Returns True if the specified file looks like it is a python source file"""
-    FullEntry = os.path.join(Path, File)
-    if os.path.isfile(FullEntry):
-        if len(File) > 3:
-            if File[-3:] == ".py":
-                return True
-    return False
-
-
-class ClassDocs(object):
-    """\
-    Information about a declared class.
-
-    See module level docs for information on the attributes this will be loaded
-    up with.
-    """
-    pass
-
-class FunctionDocs(object):
-    """\
-    Information about a declared function/method/prefab.
-
-    See module level docs for information on the attributes this will be loaded
-    up with.
-    """
-    pass
-
-MethodDocs         = FunctionDocs
-KamaeliaPrefabDocs = FunctionDocs
-
-class KamaeliaComponentDocs(ClassDocs):
-    """\
-    Information about a declared component.
-
-    See module level docs for information on the attributes this will be loaded
-    up with.
-    """
-    pass
-
-ANY=object()
-
-class ModuleDocs(object):
-    """\
-    ModuleDocs(filepath, modulePath) -> new ModuleDocs object.
-
-    Inspects the named python sourcefile and detects components, prefabs,
-    classes and functions declared in it. Once initalised:
-
-    - **self.docString**  is the module level documentation string
-    - **self.prefabs, **self.components**, **self.classes**, and **self.functions**
-      are lists of prefabs, components, classes and functions declared in the module.
-
-    Keyword arguments:
-
-    - filepath    -- full filepath of the python source file
-    - modulePath  -- tuple of the path of this module, eg ("Kamaelia","File","Reading")
-    """
-    def __init__(self, filepath, modulePath):
-        super(ModuleDocs,self).__init__()
-        self._AST = compiler.parseFile(filepath)
-
-        self._extractModuleDocString()
-        self._findKamaeliaEntities()
-        self._findOtherEntities()
-        
-        self.prefabs = []
-        for prefabName in self._prefabNames:
-            doc = self._documentNamedFunction(prefabName, modulePath)
-            self.prefabs.append(doc)
-        
-        self.components = []
-        for componentName in self._componentNames:
-            doc = self._documentNamedComponent(componentName, modulePath)
-            self.components.append(doc)
-        
-        self.classes = []
-        for className in self._otherClassNames:
-            doc = self._documentNamedClass(className, modulePath)
-            self.classes.append(doc)
-            
-        self.functions = []
-        for funcName in self._otherFunctionNames:
-            doc = self._documentNamedFunction(funcName, modulePath)
-            self.functions.append(doc)
-            
-
-    def _extractModuleDocString(self):
-        assert(isinstance(self._AST, ast.Module))
-        self.docString = self._AST.doc or ""
-
-    def _findKamaeliaEntities(self):
-        # find the __kamaelia_compoents__ declaration
-        stmt = self._AST.getChildren()[1]
-        assert(isinstance(stmt, ast.Stmt))
-        components = self._findAssignments( "__kamaelia_components__",
-                                           stmt,
-                                           [ast.Class, ast.Function, ast.Module]
-                                         )
-        prefabs    = self._findAssignments( "__kamaelia_prefabs__",
-                                           stmt,
-                                           [ast.Class, ast.Function, ast.Module]
-                                         )
-
-        # flatten the results
-        components = _stringsInList([x for (_,x) in components])
-        prefabs    = _stringsInList([x for (_,x) in prefabs])
-
-        # and remove any repeats (unlikely)
-        self._componentNames = dict([(x,x) for x in components]).keys()
-        self._prefabNames = dict([(x,x) for x in prefabs]).keys()
-        
-    def _findOtherEntities(self):
-        stmt = self._AST.getChildren()[1]
-        assert(isinstance(stmt, ast.Stmt))
-        
-        # find other class, method etc top level declarations in the source
-        functions = self._findFunctions(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
-        classes   = self._findClasses(ANY, stmt, [ast.Class, ast.Module, ast.Function, ast.If])
-        
-        # convert from ast to name
-        functions = [func.name for func in functions]
-        classes   = [clss.name for clss in classes]
-        
-        # remove anything already matched up as being a prefab or component
-        functions = [name for name in functions if name not in self._prefabNames]
-        classes   = [name for name in classes   if name not in self._componentNames]
-
-        self._otherFunctionNames = functions
-        self._otherClassNames   = classes
-        
-
-    def _findAssignments(self, target, node, ignores):
-        # recurse to find an assignment statement for the given target
-        # but ignoring any branches matching the node classes listed
-        
-        found=[]
-        for child in node.getChildren():
-            if isinstance(child, ast.Assign):
-                assignStmt = child.getChildren()
-                lhs = assignStmt[0]
-                if isinstance(lhs, ast.AssName):
-                    lhsname = lhs.getChildren()[0]
-                    if lhsname == target or target==ANY:
-                        rhs = assignStmt[1]
-                        found.append((lhsname,rhs))
-                        
-            elif not isinstance(child, tuple(ignores)) and \
-                     isinstance(child, ast.Node):
-                found += self._findAssignments(target, child, ignores)
-                
-        return found
-
-    def _findFunctions(self, target, node, ignores):
-        # recurse to find a function statement for the given target
-        # but ignoring any branches matching the node classes listed
-        
-        found=[]
-        for child in node.getChildren():
-            if isinstance(child, ast.Function):
-                if child.name == target or target == ANY:
-                    found.append(child)
-            
-            elif not isinstance(child, tuple(ignores)) and \
-                     isinstance(child, ast.Node):
-                found += self._findFunctions(target, child, ignores)
-                
-        return found
+    Representation of a declaration scope - could be a module, class, function, import, etc.
+    Basically something that might contain other symbols.
     
-    def _documentNamedFunction(self, prefabName, modulePath):
-        fnode = self._findFunctions( prefabName,
-                                    self._AST.getChildren()[1],
-                                    [ast.Class, ast.Function, ast.Module]
-                                  )
-        assert(len(fnode)==1)
-        fnode=fnode[0]
-        assert(prefabName == fnode.name)
-        return self._documentFunction(fnode, modulePath)
+    """
+
+    def __init__(self, type="Module", ASTChildren=None, imports=None, localModules={}, rootScope=None):
+        """\
+        Arguments:
         
-    def _documentFunction(self, fnode, modulePath):
-        doc = fnode.doc or ""
-        # don't bother with argument default values since we'd need to reconstruct
-        # potentially complex values
-        argNames = [(str(argName),str(argName)) for argName in fnode.argnames]
+        - type          -- Descriptive name saying what kind of scope this is.
+        - ASTChildren   -- List of AST nodes for whatever is within this scope. Will be parsed.
+        - imports       -- Scope acting as a container/root for tracking any imports. Should be shared between all Scope objects.
+        - localModules  -- Dict mapping module names that might be present in the same lexical level as this module, or deeper; mapping them to their full module names. Eg. for Axon.Component this might contain a mapping for "AxonException" to "Axon.AxonException"
+        - rootScope     -- Scope object for current lexical root - eg. the Module containing this scope.
+        """
+        super(Scope,self).__init__()
+
+        self.symbols={}
+        self.type=type
+        if imports is not None:
+            self.imports=imports
+        else:
+            self.imports=ImportScope("")
+        self.localModules=localModules
+        if rootScope is not None:
+            self.rootScope=rootScope
+        else:
+            self.rootScope=self
+
+        if ASTChildren is None or ASTChildren==[]:
+            return
+        
+        # parse the AST
+        for node in ASTChildren:
+            if isinstance(node, ast.From): 
+                self._parse_From(node)            # parse "from ... import"s to recognise what symbols are mapped to what imported things
+            elif isinstance(node, ast.Import):
+                self._parse_Import(node)          # parse resolvesTo to recognise what symbols are mapped to what imported things
+            elif isinstance(node, ast.Class):
+                self._parse_Class(node)           # classes need to be parsed so we can work out base classes
+            elif isinstance(node, ast.Function):
+                self._parse_Function(node)
+            elif isinstance(node, ast.Assign):
+                self._parse_Assign(node)          # parse assignments that map stuff thats been imported to new names
+            elif isinstance(node, ast.AugAssign):
+                pass                              # definitely ignore these
+            else:
+                pass                              # ignore everything else for the moment
+        return
+
+    def _parse_From(self,node):
+        """Parse a 'from ... import' AST node."""
+        sourceModule = node.modname
+        for (name, destName) in node.names:
+            # check if this is actually a local module
+            if sourceModule in self.localModules:
+                sourceModule=self.localModules[sourceModule]
+            mapsTo = ".".join([sourceModule,name])
+            if destName == None:
+                destName = name
+
+            theImport=self.imports.find(mapsTo)
+            self.assign(destName, theImport)
+
+    def _parse_Import(self, node):
+        """Parse an import AST node."""
+        for (name,destName) in node.names:
+            # if module being referred to is in the local directory, map to the full pathame
+            if name in self.localModules:
+                fullname = self.localModules[name]
+            else:
+                fullname = name
+            
+            # force creation of the import, by looking for it (ImportScope objects do this)
+            theImport=self.imports.find(fullname)
+            
+            # is it being imported as a particular name, or just as itself? (eg. import Axon.Component as Flurble)
+            if destName == None:
+                # work out the path to the root of the entity being imported (eg. "Axon.Component" for "import Component.component")
+                fullnamesplit = fullname.split(".")
+                namesplit=name.split(".")
+                assert(namesplit==fullnamesplit[-len(namesplit):])
+                head=fullnamesplit[:len(fullnamesplit)-len(namesplit)+1]
+                
+                theImport=self.imports.find(".".join(head))
+                self.assign(namesplit[0],theImport)
+            else:
+                self.assign(destName, theImport)
+        
+    def _parse_Class(self, node):
+        """Parse a class statement AST node"""
+        self.assign(node.name, ClassScope(node,self.imports,self.localModules,self.rootScope,self))
+        
+    def _parse_Function(self, node):
+        """Parse a function 'def' statement AST node"""
+        self.assign(node.name, FunctionScope(node,self.imports,self.localModules,self.rootScope))
+        
+    def _parse_Assign(self, node):
+        for target in node.nodes:
+            # for each assignment target, go clamber through mapping against the assignment expression
+            # we'll only properly parse things with a direct 1:1 mapping
+            # if, for example, the assignment relies on understanding the value being assigned, eg. (a,b) = c
+            # then we'll silently fail
+            assignments = self._mapAssign(target,node.expr)
+            resolvedAssignments = []
+            for (target,expr) in assignments:
+                if isinstance(expr,str):
+                    try:
+                        resolved = self.find(expr)
+                    except ValueError:
+                        resolved = UnparsedScope(ast.Name(expr),self.imports,self.localModules,self.rootScope)
+                else:
+                    resolved = UnparsedScope(expr,self.imports,self.localModules,self.rootScope)
+                resolvedAssignments.append((target,resolved))
+                
+            for (target,expr) in resolvedAssignments:
+                self.assign(target,expr)
+
+    def _mapAssign(self, target, expr):
+        """\
+        Correlate each term on the lhs to the respective term on the rhs of the assignment.
+
+        Return a list of pairs (lhs, rhs) not yet resolved - just the names
+        """
+        assignments = []
+        if isinstance(target, ast.AssName):
+            targetname = self._parse_Name(target)
+            if isinstance(expr, (ast.Name, ast.Getattr)):
+                assignments.append( (targetname, self._parse_Name(expr)) )
+            else:
+                assignments.append( (targetname, expr) )
+        elif isinstance(target, (ast.AssTuple, ast.AssList)):
+            if isinstance(expr, (ast.Tuple, ast.List)):
+                targets = target.nodes
+                exprs = expr.nodes
+                if len(targets)==len(exprs):
+                    for i in range(0,len(targets)):
+                        assignments.extend(self._mapAssign(targets[i],exprs[i]))
+                else:
+                    for i in range(0,len(targets)):
+                        assignments.append( (targetname, exprs) )
+            else:
+                pass # dont know what to do with this term on the lhs of the assignment
+        else:
+            pass # dont know what to do with this term on the lhs of the assignment
+        return assignments
+
+    def _parse_Name(self,node):
+        """Parse a name AST node (some combination of Name/AssignName/GetAttr nodes)"""
+        if isinstance(node, (ast.Name, ast.AssName)):
+            return node.name
+        elif isinstance(node, (ast.Getattr, ast.AssAttr)):
+            return ".".join([self._parse_Name(node.expr), node.attrname])
+        else:
+            return ""
+        
+    def resolveName(self,provisionalName):
+        """\
+        Returns the name you suggest this module should have; or a different one
+        if this module feels it knows better :-)
+        
+        Used by ImportScopes to explain that although they may have been imported into
+        one place; they are actually from somewhere else.
+        """
+        return provisionalName
+
+    def find(self, name, checkRoot=True):
+        """\
+        Find a given named symbol and return the scope object representing it.
+        Returns the found scope object, or raises ValueError if none can be found.
+        
+        This operation recurses automatically to subscopes.
+        
+        Arguments:
+        
+        - name       -- the path name of the thing to find below here.
+        - checkRoot  -- Optional. If it isn't found here, check the root scope too? (default=True)
+        """
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if head in self.symbols:
+            found=self.symbols[head]
+            if tail=="":
+                return found
+            else:
+                return found.find(tail,checkRoot=False)
+        else:
+            if checkRoot and self.rootScope != self:
+                return self.rootScope.find(name,checkRoot=False)
+        raise ValueError("Cannot find it!")
+
+    def locate(self,value):
+        """\
+        Find where a given scope object is. Returns the pathname leading up to it,
+        or raises ValueError if it couldn't be found.
+        
+        Effectively the reverse of the find() operation.
+        
+        Example::
+        
+            >>> myScope.locate(subSubScopeObject)
+            'A.B.C'
+        
+        Arguments:
+        
+        - value  -- The scope object to locate.
+        """
+        for symbol in self.symbols:
+            if value==self.symbols[symbol]:
+                return symbol
+        for symbol in self.symbols:
+            try:
+                return symbol+"."+self.symbols[symbol].locate(value)
+            except ValueError:
+                pass
+        raise ValueError("Can't locate it!")
+
+    def assign(self, name, value, checkRoot=True):
+        """\
+        Sets a given named symbol to be the supplied value. The name can be a
+        path (dot separated), in which case it will be followed through to assign
+        the symbol at the end of the path.
+        
+        ValueError will be raised if the path doesn't exist.
+        
+        Example::
+        
+            >>> myScope.assign("Flurble", Scope(...))
+            >>> myScope.assign("Flurble.Plig", Scope(..))
+        
+        Arguments:
+        
+        - name       -- the path name of the thing to set
+        - value      -- the object to assign as that name (eg. a scope object)
+        - checkRoot  -- Optional. Check the root scope too? (default=True)
+        """
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if tail=="":
+            self.symbols[head]=value
+        else:
+            if head in self.symbols:
+                self.symbols[head].assign(tail,value,checkRoot=False)
+            else:
+                if checkRoot and self.rootScope != self:
+                    return self.rootScope.assign(name,value,checkRoot=False)
+            raise ValueError("Cannot assign to this!")
+
+    def listAllClasses(self,**options):
+        return self.listAllMatching(ClassScope,**options)
+            
+    def listAllFunctions(self,**options):
+        return self.listAllMatching(FunctionScope,**options)
+    
+    def listAllModules(self,**options):
+        return self.listAllMatching(ModuleScope,**options)
+    
+    def listAllNonImports(self,**options):
+        return self.listAllNotMatching((ImportScope,ModuleScope),**options)
+            
+    def listAllMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        """\
+        Returns a list of (pathName, object) pairs for all children of the
+        specified type. Will recurse as deeply as you specify. You can also block
+        it from recursing into certain scope types. By default, recusion stops
+        at ModuleScope objects.
+        
+        Arguments::
+        
+        - types           -- tuple of classes that can be returned (default is ModuleScope)
+        - noRecurseTypes  -- tuple of classes that will *not* be recursed into (default=none)
+        - recurseDepth    -- Optional. Maximum recursion depth (default=0)
+        """
+        if noRecurseTypes==None:
+            noRecurseTypes=(ModuleScope,)
+        found=[]
+        for symbol in self.symbols:
+            item=self.symbols[symbol]
+            if isinstance(item,types):
+                found.append((symbol,item))
+            if recurseDepth>0 and not isinstance(item,noRecurseTypes):
+                subfound=item.listAllMatching(types,noRecurseTypes,recurseDepth-1)
+                for (name,thing) in subfound:
+                    found.append((symbol+"."+name,thing))
+        return found
+            
+    def listAllNotMatching(self,types, noRecurseTypes=None, recurseDepth=0):
+        """\
+        Returns a list of (pathName, object) pairs for all children *not* matching the
+        specified type. Will recurse as deeply as you specify. You can also block
+        it from recursing into certain scope types. By default, recusion stops
+        at ModuleScope objects.
+        
+        Arguments::
+        
+        - types           -- tuple of classes that can *not* be returned (default is ModuleScope)
+        - noRecurseTypes  -- tuple of classes that will *not* be recursed into (default=none)
+        - recurseDepth    -- Optional. Maximum recursion depth (default=0)
+        """
+        if noRecurseTypes==None:
+            noRecurseTypes=(ModuleScope,)
+        found=[]
+        for symbol in self.symbols:
+            item=self.symbols[symbol]
+            if not isinstance(item,types):
+                found.append((symbol,item))
+            if recurseDepth>0 and not isinstance(item,noRecurseTypes):
+                subfound=item.listAllMatching(types,noRecurseTypes,recurseDepth-1)
+                for (name,thing) in subfound:
+                    found.append((symbol+"."+name,thing))
+        return found
+                
+    def resolve(self,_resolvePass=None,roots={}):
+        """\
+        Post processing step for resolving imports, base classes etc.
+        
+        Call this method after you have finished instantiating
+        your whole tree of Scope objects.
+        
+        Arguments:
+        
+        - _resolvePass  -- For internal use. Don't specify when calling manually.
+        - roots         -- list of master root scope objects - eg. the object representing the top level "Axon" or "Kamaelia" module.
+        """
+        if _resolvePass==None:
+            self.resolve(_resolvePass=1,roots=roots)
+            self.resolve(_resolvePass=2,roots=roots)
+        else:
+            for (name,item) in self.symbols.items():
+                try:
+                    item.resolve(_resolvePass=_resolvePass,roots=roots)
+                except AttributeError:
+                    # item doesn't have a 'resolve' method
+                    pass
+            
+class ModuleScope(Scope):
+    """\
+    Scope object representing module scopes.
+    """
+    def __init__(self, AST, localModules={}):
+        super(ModuleScope,self).__init__("Module",AST.node.nodes,None,localModules,None)
+        self.ast=AST
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
+
+
+class ClassScope(Scope):
+    """\
+    Scope object representing class scopes.
+    
+    Determines what its base classes are, and the method resolution order. A list
+    of (name,baseScopeObject) pairs is placed in self.bases. A list of scope objects
+    is placed into self.allBasesInMethodResolutionOrder.
+    
+    Bases will be a mixture of ClassScope and ImportScope objects.
+    
+    These lists won't be properly set until the resolve() post-pocessing method
+    has been called.
+    
+    Sets the following attributes:
+            
+    - doc        -- class's doc string, or the empty string if none.
+    - bases      -- list of (name,scope object) pairs describing the class's bases
+    - allBasesInMethodResolutionOrder  -- list of scope objects for the bases in method resolution order
+    - ast        -- the AST for this
+    """
+    def __init__(self, AST, imports, localModules, rootScope, parentScope):
+        super(ClassScope,self).__init__("Class",AST.code,imports,localModules,rootScope)
+        self.ast=AST
+
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
+        
+        # parse bases
+        self.bases = []
+        for baseName in AST.bases:
+            parsedBaseName=self._parse_Name(baseName)
+            try:
+                base=parentScope.find(parsedBaseName)
+                resolvedBaseName = base.resolveName(parsedBaseName)
+            except ValueError:
+                base=None
+                resolvedBaseName = parsedBaseName
+            self.bases.append((resolvedBaseName,base))
+        
+    def resolve(self,_resolvePass=None,roots={}):
+        """\
+        Resolve pass 1:
+        
+        * resolves bases, where passible to ClassScope objects - eg. checking if
+          imports actually refer to stuff in this tree of scope objects, and
+          dereferening them.
+          
+        Resolve pass 2:
+        
+        * determines the method resolution order
+        """
+        super(ClassScope,self).resolve(_resolvePass,roots)
+        if _resolvePass==1 and len(roots):
+            # resolve bases that are imports that could actually be classes in one of the root hierarchies
+            newBases = []
+            for baseName,base in self.bases:
+                history=[]
+                baseNameFrags = baseName.split(".")
+                # chase through the (chain of) imports to see if we can find them
+                # in the documentation object tree roots provided
+                while isinstance(base,ImportScope) or base is None:
+                    history.append(baseName)
+                        
+                    success=False
+                    for rootName,rootMod in roots.items():
+                        rootNameFrags=rootName.split(".")
+                        head=baseNameFrags[:len(rootNameFrags)]
+                        tail=baseNameFrags[len(rootNameFrags):]
+                        if rootNameFrags == head:
+                            try:
+                                base=rootMod.find(".".join(tail))
+                                baseName=baseName
+                                success=True
+                            except ValueError:
+                                continue
+                        if baseName in history:
+                            continue
+                    
+                    if not success:
+                        # ok, hit a dead end
+                        break
+                    if baseName in history:
+                        # ok, we've gone circular
+                        break
+                            
+                newBases.append((baseName,base))
+
+            self.bases=newBases
+        
+        elif _resolvePass==2:
+            # now determine the method resolution order
+            self.allBasesInMethodResolutionOrder = _determineMRO(self)
+            super(ClassScope,self).resolve(_resolvePass,roots)
+
+def _determineMRO(klass):
+    """\
+    Pass a ClassScope object representing a class, and this method returns a
+    list of scope objects presenting the base classes in method resolution order.
+    
+    This function applies the C3 algorithm, as used by python, to determine the
+    method resolution order.
+    """
+    order=[klass]
+    if not isinstance(klass,ClassScope):
+        return order
+    
+    bases=[]
+    for baseName,base in klass.bases:
+        bases.append(base)
+        
+    mergedBases = [_determineMRO(base) for base in bases]
+    mergedBases.extend([[base] for base in bases])
+    while len(mergedBases) > 0:
+        for baselist in mergedBases:
+            head = baselist[0]
+            foundElsewhere = [True for merged in mergedBases if (head in merged[1:])]
+            if foundElsewhere == []:
+                order.append(head)
+                for baselist in mergedBases:
+                    if baselist[0]==head:
+                        del baselist[0]
+                mergedBases = [baselist for baselist in mergedBases if baselist != []]
+                break
+        if foundElsewhere:
+            raise "FAILURE"
+    return order
+    
+    
+class FunctionScope(Scope):
+    """\
+    Scope object representing a declared function.
+    
+    Sets the following attributes:
+                    
+    - doc        -- function's doc string, or the empty string if none.
+    - argString  -- string describing the arguments this method takes
+    - argNames   -- list of (name, annotatedName) tuples repesenting, in order, the arguments of the method
+    - ast        -- the AST for this
+    """
+    def __init__(self, AST, imports, localModules, rootScope):
+        super(FunctionScope,self).__init__("Class",None,imports,localModules,rootScope) # don't bother parsing function innards
+        self.ast=AST
+
+        if AST.doc is not None:
+            self.doc = AST.doc
+        else:
+            self.doc = ""
+        
+        # parse arguments
+        argNames = [(str(argName),str(argName)) for argName in AST.argnames]
         i=-1
-        numVar = fnode.varargs or 0
-        numKW  = fnode.kwargs or 0
+        numVar = AST.varargs or 0
+        numKW  = AST.kwargs or 0
         for j in range(numKW):
             argNames[i] = ( argNames[i][0], "**"+argNames[i][1] )
             i-=1
         for j in range(numVar):
             argNames[i] = ( argNames[i][0], "*"+argNames[i][1] )
             i-=1
-        for j in range(len(fnode.defaults)-numVar-numKW):
+        for j in range(len(AST.defaults)-numVar-numKW):
             argNames[i] = ( argNames[i][0], "["+argNames[i][1]+"]" )
             i-=1
         
         argStr = ", ".join([arg for (_, arg) in argNames])
         argStr = argStr.replace(", [", "[, ")
         
-        theFunc = FunctionDocs()
-        theFunc.name = fnode.name
-        theFunc.args = argNames
-        theFunc.argString = argStr
-        theFunc.docString = doc
-        theFunc.module = ".".join(modulePath)
-        return theFunc
+        self.args = argNames
+        self.argString = argStr
 
+class ImportScope(Scope):
+    """\
+    Scope object representing an import.
     
-    def _findClasses(self, target, node, ignores):
-        # recurse to find a function statement for the given target
-        # but ignoring any branches matching the node classes listed
+    Sets the following attributes:
+                    
+    - doc        -- empty string
+    - importPathName  -- the full import path name leading to this entity, eg. "Axon.Component"
+    """
+    def __init__(self,importPathName="",imports=None):
+        if importPathName=="" and imports==None:
+            imports=self
+        super(ImportScope,self).__init__("Module",None,imports,[],None)  # its an opaque imported module, no local modules, etc to concern ourselves with
         
-        found=[]
-        for child in node.getChildren():
-            if isinstance(child, ast.Class):
-                if child.name == target or target == ANY:
-                    found.append(child)
+        self.doc = ""
+        self.importPathName=importPathName
+        if importPathName.count(".")>5: raise "ARGH"
+        
+    def resolveName(self,provisionalName):
+        """Returns the full (real) path name of this import"""
+        return self.importPathName
+
+    def find(self,name,checkRoot=False):
+        # we assume the symbol exists(!), so if it is referenced, we create a placeholder for it (if one doesn't already exist)
+        # shouldn't check in root scope of this parsing, since, as an import, this *is* the new root (its a new module)
+        checkRoot=False
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if head not in self.symbols:
+            if self.importPathName:
+                fullname=self.importPathName+"."+head
+            else:
+                fullname=head
+            self.assign(head, ImportScope(fullname,self.imports))
             
-            elif not isinstance(child, tuple(ignores)) and \
-                     isinstance(child, ast.Node):
-                found += self._findClasses(target, child, ignores)
-                
-        return found
-    
-    def _findBoxDecl(self, codeNode, boxTypeName):
-        for child in codeNode.getChildren():
-            if isinstance(child, ast.Assign):
-                assignStmt = child.getChildren()
-                lhs = assignStmt[0]
-                if isinstance(lhs, ast.AssName):
-                    if lhs.getChildren()[0] == boxTypeName:
-                        rhs = assignStmt[1]
-                        if isinstance(rhs, ast.Dict):
-                            return self._parseDictBoxes(rhs)
-                        elif isinstance(rhs, ast.List):
-                            return self._parseListBoxes(rhs)
-        return []
-                
-    def _parseDictBoxes(self, dictNode):
-        boxes = []
-        for (lhs,rhs) in dictNode.items:
-            if isinstance(lhs, ast.Const) and isinstance(rhs, ast.Const):
-                name = lhs.value
-                desc = rhs.value
-                if isinstance(name, str) and isinstance(desc, str):
-                    boxes.append((name,desc))
-        return dict(boxes)
-                
-    def _parseListBoxes(self, listNode):
-        boxes = []
-        for item in listNode.getChildren():
-            if isinstance(item, ast.Const):
-                name = item.value
-                if isinstance(name, str):
-                    boxes.append((name,''))
-        return list(boxes)
-    
-    def _documentNamedComponent(self, componentName, modulePath):
-        cnode = self._findClasses( componentName,
-                                  self._AST.getChildren()[1],
-                                  [ast.Class, ast.Function, ast.Module]
-                                )
-        assert(len(cnode)>=1)
-        cnode = cnode[0]
-        assert(componentName == cnode.name)
-        cDoc = cnode.doc or ""
-        inboxDoc  = self._findBoxDecl(cnode.code, "Inboxes")
-        outboxDoc = self._findBoxDecl(cnode.code, "Outboxes")
-        
-        methodNodes = self._findFunctions(ANY, cnode.code, [ast.Class, ast.Function, ast.Module])
-        methods = [self._documentFunction(node, modulePath) for node in methodNodes]
-        
-        theComp = KamaeliaComponentDocs()
-        theComp.name = componentName
-        theComp.docString = cDoc
-        theComp.inboxes = inboxDoc
-        theComp.outboxes = outboxDoc
-        theComp.methods = methods
-        theComp.module = ".".join(modulePath)
-        return theComp
-    
-    def _documentNamedClass(self, className, modulePath):
-        cnode = self._findClasses( className,
-                                  self._AST.getChildren()[1],
-                                  [ast.Class, ast.Function, ast.Module, ast.If]
-                                )
-        assert(len(cnode)>=1)
-        cnode = cnode[0]
-        assert(className == cnode.name)
-        cDoc = cnode.doc or ""
-        
-        methodNodes = self._findFunctions(ANY, cnode.code, [ast.Class, ast.Function, ast.Module])
-        methods = [self._documentFunction(node, modulePath) for node in methodNodes]
+        found=self.symbols[head]
+        if tail=="":
+            return found
+        else:
+            return found.find(tail,checkRoot=False)
 
-        theClass = ClassDocs()
-        theClass.name = className
-        theClass.docString = cDoc
-        theClass.methods = methods
-        theClass.module = ".".join(modulePath)
-        return theClass
+    def assign(self, name, value, checkRoot=False):
+        # we assume the symbol exists(!), so if it is referenced, we create a placeholder for it (if one doesn't already exist)
+        checkRoot=False
+        segmented=name.split(".")
+        head=segmented[0]
+        tail=".".join(segmented[1:])
+
+        if tail=="":
+            self.symbols[head]=value
+        else:
+            if head not in self.symbols:
+                if self.importPathName:
+                    fullname=self.importPathName+"."+head
+                else:
+                    fullname=head
+                self.assign(head, ImportScope(fullname,self.imports))
+            self.symbols[head].assign(tail,value,checkRoot=False)
+    
+class UnparsedScope(Scope):
+    """\
+    Scope object representing something that wasn't parsed - eg. a symbol
+    that refers to something that isn't a simple class, function etc.
+    
+    Sets the following attributes:
+    
+    - doc  -- empty string
+    - ast  -- the AST tree for this unparsed entity
+    """
+    def __init__(self, AST, imports, localModules, rootScope):
+        super(UnparsedScope,self).__init__("Unparsed",AST,imports,localModules,rootScope)
+        self.doc=""
+        self.ast=AST
+        
+
+
+class ModuleDoc(ModuleScope):
+    def __init__(self, moduleName, filePath, localModules={}):
+        """\
+        Arguments:
+        
+        - moduleName  -- the full module pathname for this module
+        - filePath    -- the full filepath of this module or this subdirectory
+        - localModules -- dictionary mapping localmodule pathnames to the global namespace; eg. Chassis -> Kamaelia.Chassis
+        """
+        self.ignoreFilenames=[".svn","__init__.py"]
+        
+        if isdir(filePath):
+            subModules,localModules,AST = self.scanSubdirs(filePath,moduleName)
+            
+        else:
+            subModules = {}
+            localModules = localModules
+            AST = self.scanSelfOnly(filePath)
+        
+        # now we've already done children and have built up localModule name mappings
+        # we can initialise ourselves properly (parsing the AST)
+        print "Parsing:",moduleName
+        
+        super(ModuleDoc,self).__init__(AST,localModules)
+        self.localModules = localModules    # just to be safe
+        
+        # add "module" attribute to ourselves
+        self.module = moduleName
+        
+        # go identify __kamaelia_components__ and __kamaelia_prefabs__ and refashion them
+        self.identifyComponentsAndPrefabs()
+        self.augmentComponentsAndPrefabs()
+        
+        # add "module" attribute to all our non import children too
+        for (symbol,item) in self.listAllNonImports():
+            item.module = moduleName
+        
+        # merge subModules into self.symbols
+        for name in subModules:
+            self.assign(name, subModules[name])
+
+
+    def scanSubdirs(self, filePath,moduleName):
+        subModules={}
+        
+        # try to ingest __init__.py
+        filename=pathjoin(filePath,"__init__.py")
+        if exists(filename):
+            AST=compiler.parseFile(filename)
+        else:
+            AST=compiler.parse("")
+            
+        subdirs = [name for name in os.listdir(filePath) if isdir(pathjoin(filePath,name)) and name not in self.ignoreFilenames]
+        sourcefiles = [name for name in os.listdir(filePath) if not name in subdirs and name[-3:]==".py" and name not in self.ignoreFilenames]
+        
+        localModules={} # we're a subdirectory, ignore what we were passed
+        
+        # recurse througth directory contents, doing subdirectories first
+        # ignore localModules we were passed; and build our own as the localModules of all children
+        for subDir in subdirs:
+            subModName=moduleName+"."+subDir
+            subMod = ModuleDoc(subModName, pathjoin(filePath,subDir))
+            subModules[subDir] = subMod
+            # merge the subdir's local modules into our own local modules
+            for key in subMod.localModules:
+                localModules[subDir+"."+key] = subMod.localModules[key]
+                
+        # add localstuff to localModules too
+        for file in sourcefiles:
+            modName=file[:-3] # strip ".py"
+            localModules[modName] = moduleName+"."+modName
+            
+        # now go through other module files in this directory with us
+        for file in sourcefiles:
+            modName=file[:-3]
+            mod = ModuleDoc(moduleName+"."+modName, pathjoin(filePath,file), localModules)
+            subModules[modName] = mod
+            
+        return subModules,localModules,AST
+            
+    def scanSelfOnly(self,filePath):
+        # ingest file as it stands
+        assert(exists(filePath))
+        assert(isfile(filePath))
+        AST=compiler.parseFile(filePath)
+        return AST
+
+    def identifyComponentsAndPrefabs(self):
+        try:
+            components = self.find("__kamaelia_components__")
+            components = _stringsInList(components.ast)
+        except (ValueError,TypeError):
+            components = []
+            
+        try:
+            prefabs = self.find("__kamaelia_prefabs__")
+            prefabs = _stringsInList(prefabs.ast)
+        except (ValueError,TypeError):
+            prefabs = []
+            
+        self.components = components
+        self.prefabs = prefabs
+        
+        
+    def augmentComponentsAndPrefabs(self):
+        # parse Inbox/Outbox declarations for components
+        for name,component in self.listAllComponents():
+            component.isComponent=True
+            
+            try:
+                inboxes = component.find("Inboxes")
+                component.inboxes = _parseBoxes(inboxes.ast)
+            except ValueError:
+                component.inboxes = []
+        
+            try:
+                outboxes = component.find("Outboxes")
+                component.outboxes = _parseBoxes(outboxes.ast)
+            except ValueError:
+                component.outboxes = []
+        
+        # nothing much to do for prefabs
+        for name,prefab in self.listAllPrefabs():
+            prefab.isPrefab=True
+
+    def listAllComponents(self,**options):
+        return [ (name,cls) for (name,cls) in self.listAllClasses(**options) if name in self.components ]
+    
+    def listAllPrefabs(self,**options):
+        return [ (name,fnc) for (name,fnc) in self.listAllFunctions(**options) if name in self.prefabs ]
+
+    def listAllComponentsAndPrefabs(self,**options):
+        return self.listAllComponents(**options) + self.listAllPrefabs(**options)
+    
+    def listAllModulesIncSubModules(self):
+        modules = [(self.module, self)]
+        for (_,m) in self.listAllModules(recurseDepth=0):
+            modules.extend(m.listAllModulesIncSubModules())
+        return modules
+    
+    def listAllComponentsIncSubModules(self):
+        components = [(self.module+"."+name, item) for (name,item) in self.listAllComponents(recurseDepth=5)]
+        for (_,m) in self.listAllModules(recurseDepth=0):
+            components.extend(m.listAllComponentsIncSubModules())
+        return components
+    
+    def listAllPrefabsIncSubModules(self):
+        prefabs = [(self.module+"."+name, item) for (name,item) in self.listAllPrefabs(recurseDepth=5)]
+        for (_,m) in self.listAllModules(recurseDepth=0):
+            prefabs.extend(m.listAllPrefabsIncSubModules())
+        return prefabs
+
+# ------------------------------------------------------------------------------
 
 
 def _stringsInList(theList):
     # flatten a tree structured list containing strings, or possibly ast nodes
-    
-    if isinstance(theList,ast.Node):
-        theList = theList.getChildren()
+    if isinstance(theList, (ast.Tuple,ast.List)):
+        theList = theList.nodes
+    elif isinstance(theList, (list,tuple)):
+        theList = theList
+    else:
+        raise TypeError("Not a tuple or list")
         
     found = []
     for item in theList:
@@ -729,6 +1037,33 @@ def _stringsInList(theList):
             found.extend(_stringsInList(item))
     return found
 
+
+def _parseBoxes(node):
+    if isinstance(node, ast.Dict):
+        return _parseDictBoxes(node)
+    elif isinstance(node, ast.List):
+        return _parseListBoxes(node)
+
+def _parseDictBoxes(dictNode):
+    boxes = []
+    for (lhs,rhs) in dictNode.items:
+        if isinstance(lhs, ast.Const) and isinstance(rhs, ast.Const):
+            name = lhs.value
+            desc = rhs.value
+            if isinstance(name, str) and isinstance(desc, str):
+                boxes.append((name,desc))
+    return dict(boxes)
+            
+def _parseListBoxes(listNode):
+    boxes = []
+    for item in listNode.nodes:
+        if isinstance(item, ast.Const):
+            name = item.value
+            if isinstance(name, str):
+                boxes.append((name,''))
+    return list(boxes)
+
+# ------------------------------------------------------------------------------
 
 
 # METHODS PROVIDING
@@ -747,12 +1082,9 @@ def GetAllKamaeliaComponentsNested(baseDir=None):
 
     - baseDir  -- Optional. Top directory of the code base to scan, or None for the current Kamaelia installation (default=None)
     """
-    rDocs = SourceTreeDocs(baseDir)
-    moduleTree = rDocs.nestedModules
-    reduced = _reduceToNames(moduleTree, keepComponents=True, keepPrefabs=False)
-    if reduced["Kamaelia"].has_key("Support"):
-        del reduced["Kamaelia"]["Support"]
-    return reduced
+    flatList = GetAllKamaeliaComponents(baseDir)
+    flatList.sort()
+    return _nest(flatList)
 
 def GetAllKamaeliaComponents(baseDir=None):
     """\
@@ -767,9 +1099,17 @@ def GetAllKamaeliaComponents(baseDir=None):
 
     - baseDir  -- Optional. Top directory of the code base to scan, or None for the current Kamaelia installation (default=None)
     """
-    rDocs = SourceTreeDocs(baseDir)
-    modules = rDocs.flatModules
-    return _reduceToNames(modules, keepComponents=True, keepPrefabs=False)
+    if baseDir is None:
+        import Kamaelia
+        baseDir=os.path.dirname(Kamaelia.__file__)
+    
+    rDocs = ModuleDoc("Kamaelia",baseDir)
+    
+    names = {}
+    for name in [name for (name,item) in rDocs.listAllComponentsIncSubModules()]:
+        path,name = tuple(name.split(".")[:-1]), name.split(".")[-1]
+        names[path] = names.get(path,[]) + [name]
+    return names
 
 def GetAllKamaeliaPrefabsNested(baseDir=None):
     """\
@@ -784,12 +1124,9 @@ def GetAllKamaeliaPrefabsNested(baseDir=None):
 
     - baseDir  -- Optional. Top directory of the code base to scan, or None for the current Kamaelia installation (default=None)
     """
-    rDocs = SourceTreeDocs(baseDir)
-    moduleTree = rDocs.nestedModules
-    reduced = _reduceToNames(moduleTree, keepComponents=False, keepPrefabs=True)
-    if reduced["Kamaelia"].has_key("Support"):
-        del reduced["Kamaelia"]["Support"]
-    return reduced
+    flatList = GetAllKamaeliaPrefabs(baseDir)
+    flatList.sort()
+    return _nest(flatList)
     
 def GetAllKamaeliaPrefabs(baseDir=None):
     """\
@@ -804,48 +1141,41 @@ def GetAllKamaeliaPrefabs(baseDir=None):
 
     - baseDir  -- Optional. Top directory of the code base to scan, or None for the current Kamaelia installation (default=None)
     """
-    rDocs = SourceTreeDocs(baseDir)
-    modules = rDocs.flatModules
-    return _reduceToNames(modules, keepComponents=False, keepPrefabs=True)
-
-
-def _reduceToNames(tree, keepComponents=True, keepPrefabs=True):
-    """\
-    **Internal method**
-
-    Transforms a full module documentation object tree (nested dictionaries)
-    converting documentation objects down to simple names of components and
-    prefabs. Module, function and classes are filtered out.
-
-    The original structure of nested dictionaries is maintained. Only the leaves
-    are converted.
-
-    Keyword arguments:
-
-    - tree           -- The documentation tree (nested dictionaries)
-    - keepComponents -- Optional. Set to True (default=True) to include components in the final output.
-    - keepPrefabs    -- Optional. Set to True (default=True) to include prefabs in the final output.
-    """
-    output={}
-    for key in tree.keys():
-        value=tree[key]
-        if isinstance(value,dict):
-            output[key] = _reduceToNames(value, keepComponents, keepPrefabs)
-        elif isinstance(value, ModuleDocs):
-            if key == "__init__":
-                continue
-            else:
-                items = []
-                if keepComponents:
-                    componentNames = [c.name for c in value.components]
-                    items.extend(componentNames)
-                if keepPrefabs:
-                    prefabNames = [p.name for p in value.prefabs]
-                    items.extend(prefabNames)
-                if len(items)>0:
-                    output[key] = items
-    return output
+    if baseDir is None:
+        import Kamaelia
+        baseDir=os.path.dirname(Kamaelia.__file__)
     
+    rDocs = ModuleDoc("Kamaelia",baseDir)
+    
+    names = {}
+    for name in [name for (name,item) in rDocs.listAllPrefabsIncSubModules()]:
+        path,name = tuple(name.split(".")[:-1]), name.split(".")[-1]
+        names[path] = names.get(path,[]) + [name]
+    return names
+
+
+def _nest(flatList):
+    nested={}
+    for path in flatList:
+        leafModuleName=path[-2]
+        componentName=path[-1]
+        node=nested
+        
+        for element in path[:-2]:
+            if element in node:
+                assert(isinstance(node[element],dict))
+            else:
+                node[element]=dict()
+            node=node[element]
+            
+        if leafModuleName in node:
+            assert(isinstance(node[leafModuleName],list))
+        else:
+            node[leafModuleName]=list()
+        node[leafModuleName].append(componentName)
+        
+    return nested
+
 
 
         
@@ -853,24 +1183,24 @@ if __name__ == "__main__":
     file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/File/Reading.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Chassis/Pipeline.py"
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
-    modDocs = ModuleDocs(file,["Kamaelia","File","Reading"])
+    modDocs = ModuleDoc("Kamaelia.File.Reading",file,{})
 
     print "MODULE:"
-    print modDocs.docString
+    print modDocs.doc
     
     print 
     print "PREFABS:"
-    for m in modDocs.prefabs:
-        print m.name, m.args
+    for (name,item) in modDocs.listAllPrefabs():
+        print name,item.argString
         
     print
     print "COMPONENTS:"
-    for comp in modDocs.components:
-        print comp.name
-        print "Inboxes:  ",comp.inboxes
-        print "Outboxes: ",comp.outboxes
-        for meth in comp.methods:
-            print meth.name + "(" + meth.argString + ")"
+    for (name,item) in modDocs.listAllComponents():
+        print name
+        print "Inboxes:  ",item.inboxes
+        print "Outboxes: ",item.outboxes
+        for (name,meth) in item.listAllFunctions():
+            print name + "(" + meth.argString + ")"
         print
 
     import pprint
@@ -879,3 +1209,13 @@ if __name__ == "__main__":
     print "*******************************************************************"
     print
     pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
+    print
+    print "*******************************************************************"
+    print
+    pprint.pprint(GetAllKamaeliaPrefabs(),None,4)
+    print
+    print "*******************************************************************"
+    print
+    pprint.pprint(GetAllKamaeliaPrefabsNested(),None,4)
+    print
+    print "*******************************************************************"
