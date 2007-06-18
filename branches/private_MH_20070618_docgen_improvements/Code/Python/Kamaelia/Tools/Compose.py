@@ -47,58 +47,51 @@ from Kamaelia.UI.Pygame.Button import Button
 import Kamaelia.Support.Data.Repository
 import Axon
 import pprint
+import os
 
-C = Kamaelia.Support.Data.Repository.GetAllKamaeliaComponents()
-COMPONENTS = {}
-for key in C.keys():
-    COMPONENTS[".".join(key)] = C[key]
-
-import inspect
-    
-def getAllClasses( modules ):
-    _modules = list(modules.keys())
-    _modules.sort()
-    for modname in _modules:
-        try:
-            for entry in getModuleConstructorArgs( modname, modules[modname] ):
-                yield entry
-        except ImportError:
-            print "WARNING: Import Error: ", modname
-            continue
-
-def getModuleConstructorArgs( modulename, classnames):
+def getAllComponents():
+    import Kamaelia
+    baseDir=os.path.dirname(Kamaelia.__file__)
+        
+    rDocs = Kamaelia.Support.Data.Repository.ModuleDoc("Kamaelia",baseDir)
+    COMPONENTS = rDocs.listAllComponentsIncSubModules()
     clist = []
-
-    module = __import__(modulename, [], [], classnames)
-    for classname in classnames:
-        theclass = eval("module."+classname)
-        entry = { "module"   : modulename,
-                  "class"    : classname,
-                  "classdoc" : theclass.__doc__,
-                  "initdoc"  : theclass.__init__.__doc__,
-                  "args"     : getConstructorArgs(theclass),
-                  "theclass" : theclass,
+    for (name,comp) in COMPONENTS:
+        try:
+            init_doc=comp.find("__init__").doc
+        except ValueError:
+            init_doc=""
+        entry = { "module"   : ".".join(name.split(".")[:-1]),
+                  "class"    : name.split(".")[-1],
+                  "classdoc" : comp.doc,
+                  "initdoc"  : init_doc,
+                  "args"     : getConstructorArgs(comp),
+                  "theclass" : comp,
                 }
-
         clist.append(entry)
-
     return clist
 
-    
 
-def getConstructorArgs(component):
-    initfunc = eval("component.__init__")
+
+def getConstructorArgs(comp):
     try:
-        (args, vargs, vargkw, defaults) = inspect.getargspec(initfunc)
-    except TypeError, e:
-        print "FAILURE", str(component), repr(component), component
-        raise e
-
-    arglist = [ [arg] for arg in args ]
-    if defaults is not None:
-        for i in range(0,len(defaults)):
-            arglist[-1-i].append( repr(defaults[-1-i]) )
-
+        initfunc=comp.find("__init__")
+    except ValueError:
+        return {"std":[],"*":None,"**":None}
+    
+    arglist=[]
+    vargs=None
+    vargkw=None
+    for argname,labelledName in initfunc.args:
+        if labelledName[:2]=="**":
+            vargs=argname
+        elif labelledName[:1]=="*":
+            vargkw=argname
+        elif labelledName[0] == "[" and labelledName[-1] == "]":
+            arglist.append([labelledName])
+        else:
+            arglist.append([argname])
+    
     del arglist[0]   # remove 'self'
     
     return {"std":arglist, "*":vargs, "**":vargkw}
@@ -321,7 +314,7 @@ class Magic(Axon.Component.component):
                    ], "to_topology" )
 
         inboxes = []
-        for inbox in event[3]["configuration"]["theclass"].Inboxes:
+        for inbox in event[3]["configuration"]["theclass"].inboxes:
             boxid = str(nodeid) + "." + inbox
             self.send( [ "ADD", "NODE",
                                 boxid,
@@ -336,7 +329,7 @@ class Magic(Axon.Component.component):
             inboxes.append(  [ boxid, inbox]  )
 
         outboxes = []
-        for outbox in event[3]["configuration"]["theclass"].Outboxes:
+        for outbox in event[3]["configuration"]["theclass"].outboxes:
             boxid = str(nodeid) + "." + outbox
             self.send( [ "ADD", "NODE",
                                 boxid,
@@ -374,7 +367,7 @@ if __name__ == "__main__":
     from Compose.GUI.TextOutputGUI import TextOutputGUI
     from Kamaelia.Util.Backplane import *
 
-    items = list(getAllClasses( COMPONENTS ))
+    items = getAllComponents()
 
     # Create the TK GUI for selecting which components to add remove
     # Pass that data through an intermediary tracking the topology caled PipeBuild
