@@ -83,13 +83,16 @@ For Kamaelia component docs for the website::
                          --root Kamaelia                               \
                          --footerinclude Components/pydoc-footer.html  \
                          --outdir <outputDirName>                      \
-                         --linkToSymbols <symbolFile                   \
+                         --linkToSymbols <symbolFile>                  \
                          <repositoryDir> 
 
 Why differences?
 
 * The ``--notjustcomponents`` flag which ensures that the classes and functions
   making up Axon are documented.
+  
+* the ``--dumpSymbolsTo`` option creates a dump of all symbols documented.
+  ``--linkToSymbols`` reads them in for generating crosslinks.
 
 * The remaining differences change the formatting and style:
     
