@@ -76,6 +76,7 @@ class IRC_Client(_Axon.Component.component):
       self.nickinfo = nickinfo
       self.defaultChannel = defaultChannel
       self.channels = {}
+      self.done = False
       self.debugger = _Axon.debug.debug()
       self.debugger.useConfig()
       self.debugger.addDebugSection("IRCClient.main", 5)
@@ -109,8 +110,9 @@ class IRC_Client(_Axon.Component.component):
          data=""
          if self.dataReady("talk"):
             data = self.recv("talk")
+            assert self.debugger.note('IRCClient.main', 5, 'received talk ' + data)
             self.handleInput(data)
-         elif self.dataReady("inbox"): #if received messages 
+         if self.dataReady("inbox"): #if received messages 
              self.handleMessage(self.recv("inbox"))
                     
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
@@ -202,14 +204,19 @@ class IRC_Client(_Axon.Component.component):
                         del(tokens[0])
                         if command == 'MSG':
                             command = 'PRIVMSG'
+                        if command == 'QUIT':
+                            self.done = True
                     if len(tokens) > 0:
                         target = tokens[0]
                     if len(tokens) > 1:
                         body = ':' + string.join(tokens[1:])
-                    self.send('%s %s %s \r\n' % (command, target, body))
+                    send = '%s %s %s \r\n' % (command, target, body) 
+                    self.send(send)
+                    assert self.debugger.note('IRCClient.main', 5, send)
                 except IndexError:
                     print "Malformed message:", one_line
                     #/ hello world
+                    
 
    def shutdown(self):
        while self.dataReady("control"):
