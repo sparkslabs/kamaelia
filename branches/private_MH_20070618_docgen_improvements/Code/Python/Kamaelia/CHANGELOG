@@ -8,7 +8,8 @@
 
    Enhanced Kamaelia.Support.Data.Repository to support fuller introspection
    of components, prefabs, classes and methods in the repository, including
-   their arguments and docuentation.
+   their arguments and documentation. The "Compose" tool now uses this,
+   instead of trying to import all components.
 
    Dirac 0.6.0 release now supported by Dirac components (through 0.6.0
    bindings)
