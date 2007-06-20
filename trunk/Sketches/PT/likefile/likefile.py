@@ -27,11 +27,12 @@ LikeFile - Non-Kamaelionic component interface
 
 
 
+todo: documentation
 
 
 
 
-
+todo: this is a programming note, the end-user doesn't care. move it into a comment.
 
 Note 1: Threadsafeness of activate().
 
@@ -45,6 +46,7 @@ from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Queue, threading, time, copy, Axon
 queuelengths = 0
+
 
 class SchedulerShutdown(Exception):
     """An exception used internally to provide a way of shutting down a thread."""
@@ -80,50 +82,68 @@ class schedulerThread(threading.Thread):
 class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its boxes to queues, which communicate
     with the LikeFile component."""
-    def __init__(self, childcomponent, extrainboxes = None, extraoutboxes = None):
+    def __init__(self, childcomponent, extraInboxes = None, extraOutboxes = None):
         super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
-        self.inqueues = dict()
-        self.outqueues = dict()
+        self.inQueues = dict()
+        self.outQueues = dict()
         self.addChildren(self.child)
-
-        # this means, e.g. our own outbox is linked to the child's inbox. childSink:parentSource
+        self.commandQueue = Queue.Queue()
+        
+        # parentSource:childSink
         # used to deliver information to a wrapped component from non-kamaelionic environments.
         self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
-        if extrainboxes:
-            if type(extrainboxes) == str(): extrainboxes = (extrainboxes,)
-            for boxname in extrainboxes:
-                realboxname = self.addOutbox(boxname)
-                self.childInboxMapping[realboxname] = boxname
+        if extraInboxes:
+            self.__addBox("Inbox", extraInboxes)
 
-        # this means, e.g. the child's outbox is linked to our own inbox. childSource:parentSink
+        # childSource:parentSink
         # used to retrieve information from a kamaelia system to a non-kamaelionic environment.
         self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
-        if extraoutboxes:
-            if type(extraoutboxes) == str(): extraoutboxes = (extraoutboxes,)
-            for boxname in extraoutboxes:
-                realboxname = self.addInbox(boxname)
-                self.childOutboxMapping[realboxname] = boxname
+        if extraOutboxes:
+            self.__addBox("Outbox", extraOutboxes)
 
         for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.inqueues[childSink] = Queue.Queue(self.queuelengths)
-            self.link((self, parentSource),(self.child, childSink))
-
+            self.__addQueue("Inbox", parentSource, childSink)
         for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.outqueues[childSource] = Queue.Queue(self.queuelengths)
-            self.link((self.child, childSource),(self, parentSink))
+            self.__addQueue("Outbox", childSource, parentSink)
 
-        # note to self: this can be slightly optimised by making self.outqueues/self.inqueues keyed by the parentSource/parentSink,
-        # avoiding an extra lookup below in the box mapping iteritems()
+       
+    def __addBox(self, direction, names):
+        """Function used internally to add a new wrapped box. Direction is either
+        "Inbox" or "Outbox". This is the box's direction on the child."""
+        if direction == "Inbox":
+            boxMap, addBox = self.childInboxMapping, self.addOutbox
+        elif direction == "Outbox":
+            boxMap, addBox = self.childOutboxMapping, self.addInbox
+        else:
+            raise ValueError, "%s is not a valid direction." % direction
+        if type(names) == str:
+            names = (names,)
+        for boxname in names:
+            if boxname in boxMap:
+                raise ValueError, "%s %s already exists!" % (direction, boxname)
+            realboxname = addBox(boxname)
+            boxMap[boxname] = realboxname
 
+
+    def __addQueue(self, direction, source, sink):
+        """Function used internally to add a new Queue, and create the link
+        used to communicate between the Queue and the child component.
+        No sanity checking!. Assumes all boxes exist, and are not previously linked."""
+        if direction == "Inbox":
+            self.inQueues[sink] = Queue.Queue(self.queuelengths)
+            self.link((self, source),(self.child, sink))
+        elif direction == "Outbox":
+            self.outQueues[source] = Queue.Queue(self.queuelengths)
+            self.link((self.child, source),(self, sink))
+        else: raise ValueError, "%s is not a valid direction." % direction
 
     def main(self):
         self.child.activate()
         while True:
-            yield 1
             for childSink, parentSource in self.childInboxMapping.iteritems():
-                queue = self.inqueues[childSink]
+                queue = self.inQueues[childSink]
                 # to aid a lack of confusion, this is where information would traverse from stdin to a child component's inbox.
                 while not queue.empty():
                     if not self.outboxes[parentSource].isFull():
@@ -132,16 +152,15 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             self.send(msg, parentSource)
                         except noSpaceInBox, e:
                             raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                        if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
+                        if isinstance(msg, (shutdownMicroprocess, producerFinished)):
                             return
                             # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
                     else:
                         # if the component's inboxes are full, do something here. Preferably not succeed.
                         break
-
-
+            yield 1 # yielding at this point theoretically might give better performance.
             for childSource, parentSink in self.childOutboxMapping.iteritems():
-                queue = self.outqueues[childSource]
+                queue = self.outQueues[childSource]
                 # to aid a lack of confusion, this is where information would traverse from a child component's outbox to stdout.
                 while self.dataReady(parentSink):
                     if not queue.full():
@@ -155,17 +174,18 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
+        self.alive = False
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise "no running scheduler found!"
-        component = componentWrapper(componenttowrap, extrainboxes, extraoutboxes)
-        # if invalid boxes are requested, the link() call will fail verbosely in the above
-        # line. You may want to make this slightly more userfriendly.
-        self.inqueues = copy.copy(component.inqueues)
-        self.outqueues = copy.copy(component.outqueues)
+        try: component = componentWrapper(componenttowrap, extrainboxes, extraoutboxes)
+        except KeyError, e:
+            raise KeyError, 'component to wrap has no such box: %s' % e
+        self.inQueues = copy.copy(component.inQueues)
+        self.outQueues = copy.copy(component.outQueues)
         # reaching into the component like this is threadsafe since it has not been activated yet.
         self.component = component
-        self.alive = False
+
 
 ##    def addInbox(self):
 ##        """This will add an additional linkage, to access a wrapped component's
@@ -181,21 +201,21 @@ class LikeFile(object):
 
     def get(self, boxname):
         if self.alive:
-            return self.outqueues[boxname].get()
+            return self.outQueues[boxname].get()
         else: raise "shutdown was previously called!"
 
     def put(self, msg, boxname):
         if self.alive:
-            self.inqueues[boxname].put_nowait(msg)
+            self.inQueues[boxname].put_nowait(msg)
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
         """Will send terminatory signals to the wrapped component, and shut down the componentWrapper.
         Due to the way axon handles component shutdown, this may never terminate the scheduler thread. It would be nice if it did."""
         if self.alive: 
-            self.inqueues["control"].put_nowait(Axon.Ipc.shutdown()) # legacy support.
-            self.inqueues["control"].put_nowait(Axon.Ipc.producerFinished())
-            self.inqueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess()) # should be last, this is what we honour
+            self.inQueues["control"].put_nowait(Axon.Ipc.shutdown()) # legacy support.
+            self.inQueues["control"].put_nowait(Axon.Ipc.producerFinished())
+            self.inQueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess()) # should be last, this is what we honour
         else:
             raise "shutdown was previously called, or we were never activated."
         self.alive = False
