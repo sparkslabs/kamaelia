@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import sys ; sys.path.append("../../JL/IRC/")
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Fanout import Fanout
@@ -34,9 +35,9 @@ if __name__ == '__main__':
     from Textbox import Textbox
     from Kamaelia.Chassis.Graphline import Graphline
     Graphline(
-        irc = ComplexIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        display1 = TextDisplayer(screen_width = 800,screen_height = 300),
-        reader = Textbox(screen_width = 800,screen_height = 300, position = (0, 340)),
+        irc = ComplexIRCClientPrefab(host="irc.freenode.net", nick="michaelbot", defaultChannel="#kamtest"),
+        display1 = TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340)),
+        reader = Textbox(screen_width = 800, screen_height = 300, position = (0,0)),
         linkages = {
             ("reader", "outbox") : ("irc", "inbox"),
             ("irc", "outbox") : ("display1", "inbox"),
