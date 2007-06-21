@@ -29,7 +29,7 @@
 #  in the form (msgtype, sender, recipient, body)
 
 import Axon as _Axon
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
 import string
@@ -81,7 +81,7 @@ class IRC_Client(_Axon.Component.component):
       self.debugger.useConfig()
       self.debugger.addDebugSection("IRCClient.main", 5)
       
-   def login(self, nick, nickinfo, password = None, username=None):
+   def login(self, password = None, username=None):
       """Should be abstracted out as far as possible.
          Protocol can be abstracted into the following kinds of items:
              - The independent atoms of the transactions in the protocol
@@ -89,12 +89,24 @@ class IRC_Client(_Axon.Component.component):
                transactions of the protocol.
              - The higher level abstractions for handling the protocol
       """
-      self.send ( 'NICK %s\r\n' % nick )
+      ## in progress
+      self.send ( 'NICK %s\r\n' % self.nick )
+      while not self.dataReady("inbox"):
+         yield 1
+
+      while self.dataReady("inbox"):
+         data = self.recv("inbox")
+         if self.parseable(data):
+            msgtype, sender, receiver, body = self.parseIRCMessage(data)
+            if msgtype == '433':
+               self.nick = self.nick + '_'
+      ## in progress
+               
       if password:
           self.send('PASS %s\r\n' % password )
       if not username:
-          username = nick
-      self.send ( 'USER %s %s %s :%s\r\n' % (username,nick,nick, nickinfo))
+          username = self.nick
+      self.send ( 'USER %s %s %s :%s\r\n' % (username,self.nick,self.nick, self.nickinfo))
 
    def join(self, someChannel):
       chan = channel(self,someChannel)
@@ -103,7 +115,7 @@ class IRC_Client(_Axon.Component.component):
 
    def main(self):
       "Handling here is still in progress. :)"
-      self.login(self.nick, self.nickinfo)
+      yield WaitComplete(self.login())
       self.channels[self.defaultChannel] = self.join(self.defaultChannel)
       
       while not self.shutdown():
@@ -112,8 +124,10 @@ class IRC_Client(_Axon.Component.component):
             data = self.recv("talk")
             assert self.debugger.note('IRCClient.main', 5, 'received talk ' + data)
             self.handleInput(data)
-         if self.dataReady("inbox"): #if received messages 
-             self.handleMessage(self.recv("inbox"))
+         if self.dataReady("inbox"): #if received messages
+             data = self.recv("inbox")
+             assert self.debugger.note('IRCClient.main', 7, 'IRC ' + data)
+             self.handleMessage(data)
                     
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
             self.pause() # Wait for response :-)
@@ -128,23 +142,26 @@ class IRC_Client(_Axon.Component.component):
             lines.replace("\r","\n")
         lines = lines.split("\n")
         for one_line in lines:
+            data = None
             if self.parseable(one_line):
                 data = self.parseIRCMessage(one_line)
             elif len(one_line) > 0:
                 self.send(("CLIENT ERROR", 'client', '', one_line), 'heard')
-                
+    
             if data:
                 (msgtype, sender, recipient, body) = data
                 #reply to pings
                 if msgtype == 'PING':
                     reply = ("PONG " + sender)
                     self.send(reply + '\r\n')
-                    assert self.debugger.note('IRCClient.main', 1, 'PONG response to ' + one_line)
+                    assert self.debugger.note('IRCClient.main', 7, 'PONG response to ' + one_line)
                 elif (msgtype == 'PRIVMSG' or msgtype == 'NOTICE') and 'PING ' in body:
                     #must be 'PING ' because 'PING' matches things like CASEMAPPING=ascii
                     reply = ("PONG " + body[body.find("PING")+4:])
                     self.send(reply + '\r\n')
-                    assert self.debugger.note('IRCClient.main', 1, 'PONG response to ' + one_line)
+                    assert self.debugger.note('IRCClient.main', 7, 'PONG response to ' + one_line)
+##                elif (msgtype == 'PRIVMSG' or msgtype == 'NOTICE') and\
+                     
                 self.send(data, 'heard')
                 
    def parseable(self, line):
@@ -165,9 +182,12 @@ class IRC_Client(_Axon.Component.component):
                tokens = tokens[1:]
                
             msgtype = tokens[0]
-            recipient = tokens[1]
+            recipient = tokens[1].lstrip(':')
             if len(tokens) > 2:
                body = self.extractBody(tokens[2:])
+               if 'ACTION' in body.split()[0]:
+                    msgtype = 'ACTION'
+                    body = string.join(body.split()[1:])
             if msgtype == 'PING':
                 sender =  recipient
                 recipient = ""
@@ -212,7 +232,7 @@ class IRC_Client(_Axon.Component.component):
                         body = ':' + string.join(tokens[1:])
                     send = '%s %s %s \r\n' % (command, target, body) 
                     self.send(send)
-                    assert self.debugger.note('IRCClient.main', 5, send)
+                    assert self.debugger.note('IRCClient.main', 10, send)
                 except IndexError:
                     print "Malformed message:", one_line
                     #/ hello world
@@ -223,7 +243,7 @@ class IRC_Client(_Axon.Component.component):
            msg = self.recv("control")
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                return True
-       return False
+       return self.done
 
       
 def SimpleIRCClientPrefab(host="127.0.0.1",
@@ -247,11 +267,12 @@ def SimpleIRCClientPrefab(host="127.0.0.1",
         )
 
 if __name__ == '__main__':
-    from Kamaelia.Util.Console import ConsoleReader
-    from NiceTickerPrefab import NiceTickerPrefab
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+    from Kamaelia.Util.PureTransformer import PureTransformer
     from Kamaelia.Chassis.Pipeline import Pipeline
     Pipeline(
-        ConsoleReader(),
+        ConsoleReader('IRC> '),
         SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        NiceTickerPrefab(render_right = 800,render_bottom = 600),
+        PureTransformer(lambda aTuple: str(aTuple) + '\r\n'),
+        ConsoleEchoer(),
     ).run()
