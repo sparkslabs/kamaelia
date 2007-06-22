@@ -89,10 +89,9 @@ class SolarSystem(Axon.ThreadedComponent.threadedcomponent):
             time.sleep(0.01)
             self.planet.put(self.planet_position, "translation")
             accn = self.acceleration(self.sun_position, self.planet_position)
-            planet_velocity = self.apply_acceleration_to_velocity(self.planet_velocity, accn)
-            planet_position = self.apply_velocity_to_position(self.planet_position, planet_velocity)
+            self.planet_velocity = self.apply_acceleration_to_velocity(self.planet_velocity, accn)
+            self.planet_position = self.apply_velocity_to_position(self.planet_position, self.planet_velocity)
 
-#        time.sleep(5)
 
 SolarSystem(*cat_args).activate()
 
