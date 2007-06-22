@@ -199,12 +199,12 @@ class LikeFile(object):
         self.component.activate() # threadsafe, see note 1
         self.alive = True
 
-    def get(self, boxname):
+    def get(self, boxname = "outbox"):
         if self.alive:
             return self.outQueues[boxname].get()
         else: raise "shutdown was previously called!"
 
-    def put(self, msg, boxname):
+    def put(self, msg, boxname = "inbox"):
         if self.alive:
             self.inQueues[boxname].put_nowait(msg)
         else: raise "shutdown was previously called!"
