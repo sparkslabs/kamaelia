@@ -56,10 +56,10 @@ cat_args = (cat_location, screensize, border)
 spritescheduler = SpriteScheduler(cat_args, [], background, screen_surface, MyGamesEvents).activate()
 
 newcat = make_cat(*cat_args)
-time.sleep(1)
-
 likecat = LikeFile(make_cat(*cat_args), extrainboxes="rotator")
 likecat.activate()
-for x in xrange(0, 360):
-    time.sleep(0.01)
+for x in xrange(0, 360, 10):
     likecat.put(x, "rotator")
+likecat.put(0, "rotator")
+
+time.sleep(5)
