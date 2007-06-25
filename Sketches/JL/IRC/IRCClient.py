@@ -63,10 +63,12 @@ class IRC_Client(_Axon.Component.component):
       it needs to handle the chat session multiplexing that happens by
       default in IRC. There are MANY ways this could be achieved.
    """
-   Inboxes = {"inbox":"", "control":"", "talk":"", "topic":""}
-   Outboxes = {"outbox":"",
-               "signal":"",
-               "heard" : "messages from the server"}
+   Inboxes = {"inbox":"incoming message strings from the server",
+              "control":"shutdown handling",
+              "talk":"takes tuples to be turned into IRC commands ", "topic":""}
+   Outboxes = {"outbox":"IRC commands to be sent out to the server",
+               "signal":"shutdown handling",
+               "heard" : "parsed tuples of messages from the server"}
    
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
@@ -80,6 +82,7 @@ class IRC_Client(_Axon.Component.component):
       self.debugger = _Axon.debug.debug()
       self.debugger.useConfig()
       self.debugger.addDebugSection("IRCClient.main", 5)
+      self.debugger.addDebugSection("IRCClient.handleInput", 5)
       
    def login(self, password = None, username=None):
       """Should be abstracted out as far as possible.
@@ -121,12 +124,12 @@ class IRC_Client(_Axon.Component.component):
       while not self.shutdown():
          data=""
          if self.dataReady("talk"):
-            data = self.recv("talk")
-            assert self.debugger.note('IRCClient.main', 5, 'received talk ' + data)
+            data = self.recv("talk") #should be a tuple. e.g. ("JOIN", "#kamaelia")
+            assert self.debugger.note('IRCClient.main', 5, 'received talk ' + str(data))
             self.handleInput(data)
          if self.dataReady("inbox"): #if received messages
              data = self.recv("inbox")
-             assert self.debugger.note('IRCClient.main', 7, 'IRC ' + data)
+             assert self.debugger.note('IRCClient.main', 7, 'IRC ' + str(data))
              self.handleMessage(data)
                     
          if not self.anyReady(): # Axon 1.1.3 (See CVS)
@@ -160,7 +163,6 @@ class IRC_Client(_Axon.Component.component):
                     reply = ("PONG " + body[body.find("PING")+4:])
                     self.send(reply + '\r\n')
                     assert self.debugger.note('IRCClient.main', 7, 'PONG response to ' + one_line)
-##                elif (msgtype == 'PRIVMSG' or msgtype == 'NOTICE') and\
                      
                 self.send(data, 'heard')
                 
@@ -208,35 +210,18 @@ class IRC_Client(_Axon.Component.component):
         else:
             return body
 
-   def handleInput(self, lines):
-        if "\r" in lines:
-            lines.replace("\r","\n")
-        lines = lines.split("\n")
-        for one_line in lines:
-            if one_line: #we don't want to deal with empty lines
-                tokens = one_line.split()
-                command = "PRIVMSG"
-                target = ""
-                body = ""
-                try: 
-                    if one_line[0] == '/':
-                        command = tokens[0][1:].upper()
-                        del(tokens[0])
-                        if command == 'MSG':
-                            command = 'PRIVMSG'
-                        if command == 'QUIT':
-                            self.done = True
-                    if len(tokens) > 0:
-                        target = tokens[0]
-                    if len(tokens) > 1:
-                        body = ':' + string.join(tokens[1:])
-                    send = '%s %s %s \r\n' % (command, target, body) 
-                    self.send(send)
-                    assert self.debugger.note('IRCClient.main', 10, send)
-                except IndexError:
-                    print "Malformed message:", one_line
-                    #/ hello world
-                    
+   def handleInput(self, command_tuple):
+       mod_command = []
+       for param in command_tuple:
+           if len(param.split()) > 1:
+               mod_command.append(':' + param)
+           else:
+               mod_command.append(param)
+       mod_command[0] = mod_command[0].upper()
+       send = string.join(mod_command) + '\r\n'
+       assert self.debugger.note('IRCClient.handleInput', 1, send)
+       self.send(send)
+       
 
    def shutdown(self):
        while self.dataReady("control"):
