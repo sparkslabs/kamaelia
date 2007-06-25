@@ -22,7 +22,7 @@ class TextDisplayer(component):
                 "signal" : "propagates out shutdown signals"}
     
     def __init__(self, screen_width=500, screen_height=300, text_height=18,
-                 background_color = (255,255,240), text_color=(0,0,0), position=(0,0)):
+                 background_color = (255,255,200), text_color=(0,0,0), position=(0,0)):
         super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
