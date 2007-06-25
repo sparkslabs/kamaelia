@@ -2,8 +2,13 @@
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Fanout import Fanout
+from Kamaelia.Util.PureTransformer import PureTransformer
 import sys ; sys.path.append("../../JL/IRC/")
 from IRCClient import *
+import string
+
+def formatter(text):
+    return text.split()
 
 def ComplexIRCClientPrefab(host="127.0.0.1",
                           port=6667,
@@ -14,23 +19,24 @@ def ComplexIRCClientPrefab(host="127.0.0.1",
     return Graphline(
         CLIENT = TCPClient(host, port),
         PROTO = IRC_Handler(nick, nickinfo, defaultChannel),
+        FORMAT = PureTransformer(formatter),
         SPLIT = Fanout(["toGraphline", "toTCP"]),
         linkages = {
               ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
               ("PROTO"  , "outbox") : ("SPLIT", "inbox"),
               ("PROTO"  , "heard")  : ("SELF", "outbox"), #passthrough
-              ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
+              ("SELF"  , "inbox") : ("FORMAT", "inbox" ), #passthrough
+              ("FORMAT", "outbox") : ("PROTO" , "talk"), 
               ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
               ("PROTO"  , "signal") : ("CLIENT", "control"),
               ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
               ("SPLIT", "toGraphline") : ("SELF", "sendCopy"), #passthrough
-              ("SPLIT", "toTCP") : ("CLIENT", "inbox")
+              ("SPLIT", "toTCP") : ("CLIENT", "inbox"),
               }
         )
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader
-    from NiceTickerPrefab import NiceTickerPrefab as NiceTicker
     from TextDisplayer import TextDisplayer
     from Textbox import Textbox
     from Kamaelia.Chassis.Graphline import Graphline
