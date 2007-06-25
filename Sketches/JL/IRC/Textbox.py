@@ -28,7 +28,7 @@ class Textbox(TextDisplayer):
         for _ in self.initPygame(DISPLAYREQUEST = True,
                                  size = (self.screen_width, self.screen_height),
                                  callback = (self, '_surface'),
-                                 position = (0,0),
+                                 position = self.position,
                                  events = (self, "_events")):
             yield 1
 
