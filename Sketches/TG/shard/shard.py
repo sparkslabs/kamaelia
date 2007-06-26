@@ -1,3 +1,5 @@
+import inspect
+
 """
 Trying the non-metaclass way of doing things
 """
@@ -35,7 +37,7 @@ def addShards(shardList):
     # merge all shards, later entries override earlier ones
     attrDict = {}
     for shard in shardList:
-        attrDict.update(shard.__dict__)
+        attrDict.update( dict(inspect.getmembers(shard)) )
     
     # filter out attrs on ignoreList
     for name in ignoreList:
@@ -43,6 +45,11 @@ def addShards(shardList):
             attrDict.pop(name)
         except KeyError:
             continue    # don't care if it isn't there
+            
+    # getmembers gives unbound methods; convert to function objects
+    for name, attr in attrDict.items():
+        if inspect.ismethod(attr):
+            attrDict[name] = attr.im_func
     
     # calculate if any requirements/dependencies remain
     
