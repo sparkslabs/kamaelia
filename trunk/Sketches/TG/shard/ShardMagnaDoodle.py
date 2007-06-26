@@ -119,7 +119,7 @@ __kamaelia_components__  = ( ShardMagnaDoodle, )
 
 # import shards
 from SMouseEventHandling import *
-#from SMouseSwap import *   #subclassing doesn't work herre yet either
+#from SMouseSwap import *   #subclassing doesn't work here yet either
 from SDrawing import *
 from SShutdownHandling import *
 from shard import *
@@ -128,6 +128,7 @@ from shard import *
 #shardify = addShards([ClickPrint, Drawing, ShutdownHandler])
 shardify = addShards([MouseEventHandler, Drawing, ShutdownHandler])
 shardify(ShardMagnaDoodle)
+a = MouseEventHandler.test
 
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer

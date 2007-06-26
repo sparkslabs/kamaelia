@@ -52,3 +52,6 @@ class MouseEventHandler:
         self.send( { "ADDLISTENEVENT" : pygame.MOUSEMOTION,
                             "surface" : self.display},
                             "display_signal")
+    
+    def test(self):
+        print repr(self)
