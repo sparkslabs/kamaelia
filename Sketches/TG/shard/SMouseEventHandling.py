@@ -55,3 +55,6 @@ class MouseEventHandler:
     
     def test(self):
         print repr(self)
+        
+import shard
+shard.requires('blitToSurface', 'drawBG')(MouseEventHandler)
