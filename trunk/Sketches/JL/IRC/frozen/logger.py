@@ -70,14 +70,14 @@ class IRCFormatter(component):
             text = '%s from %s: %s' % (msgtype, sender, body)
         return text + end
 
-channel = '#kamaelia'
+channel = '#kamtest'
 
 def Logger():
     return Graphline(irc = SimpleIRCClientPrefab(host="irc.freenode.net", nick="jinnaslogbot", \
                                                defaultChannel=channel),
                    formatter = IRCFormatter("jinnaslogbot", channel),
-                   log = SimpleFileWriter("%s%i.log" % (channel, time.time())),
-                   info = SimpleFileWriter("%s%i.info" % (channel, time.time())),
+                   log = SimpleFileWriter("%s%i.log" % (channel[1:], time.time())),
+                   info = SimpleFileWriter("%s%i.info" % (channel[1:], time.time())),
                    linkages = {("irc" , "outbox") : ("formatter", "inbox"),
                                ("irc", "signal") : ("formatter", "control"),
                                ("formatter", "outbox") : ("log", "inbox"),
