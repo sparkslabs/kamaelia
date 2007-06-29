@@ -79,7 +79,7 @@ class schedulerThread(threading.Thread):
         schedulerThread.lock.release()
 
 
-class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class componentWrapper(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     """A component which takes a child component and connects its boxes to queues, which communicate
     with the LikeFile component."""
     def __init__(self, childcomponent, extraInboxes = None, extraOutboxes = None):
@@ -90,7 +90,6 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.outQueues = dict()
         self.addChildren(self.child)
         self.commandQueue = Queue.Queue()
-        
         # parentSource:childSink
         # used to deliver information to a wrapped component from non-kamaelionic environments.
         self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
@@ -140,6 +139,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else: raise ValueError, "%s is not a valid direction." % direction
 
     def main(self):
+        
         self.child.activate()
         while True:
             for childSink, parentSource in self.childInboxMapping.iteritems():
@@ -158,7 +158,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     else:
                         # if the component's inboxes are full, do something here. Preferably not succeed.
                         break
-            yield 1 # yielding at this point theoretically might give better performance.
+            self.pause() # go to sleep until our child has processed this.
             for childSource, parentSink in self.childOutboxMapping.iteritems():
                 queue = self.outQueues[childSource]
                 # to aid a lack of confusion, this is where information would traverse from a child component's outbox to stdout.
@@ -185,22 +185,26 @@ class LikeFile(object):
         self.outQueues = copy.copy(component.outQueues)
         # reaching into the component like this is threadsafe since it has not been activated yet.
         self.component = component
+        self.threadWakeUp = component.threadWakeUp
 
     def activate(self):
-        """activates the component, etc."""
+        """activates the component on the backgrounded scheduler and permits IO."""
         if self.alive:
             return
         self.component.activate() # threadsafe, see note 1
         self.alive = True
 
     def get(self, boxname = "outbox"):
+        """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component."""
         if self.alive:
             return self.outQueues[boxname].get()
         else: raise "shutdown was previously called!"
 
     def put(self, msg, boxname = "inbox"):
+        """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
         if self.alive:
             self.inQueues[boxname].put_nowait(msg)
+            self.threadWakeUp.set() # wake the thread up to process the data we've just sent.
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
