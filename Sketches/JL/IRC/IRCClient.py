@@ -32,28 +32,11 @@ import Axon as _Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.PureTransformer import PureTransformer
 import string
 
-class channel(object):
-   """\
-      This is an ugly hack - the send here is one helluvahack. 
-      (works with a socket and a component. It's deliberate but
-      ugly as hell""" 
-   # Sock here is currently a component, and default inbox
-   def __init__(self, sock, channel):
-      self.sock = sock
-      self.channel = channel
-   def join(self):
-      self.sock.send ( 'JOIN %s\r\n' % self.channel)
-   def say(self, message):
-      self.sock.send ( 'PRIVMSG %s :%s\r\n' % (self.channel, message))
-   def leave(self):
-      self.sock.send("PART %s\r\n" % self.channel)
-   def topic(self, newTopic):
-       self.sock.send("TOPIC %s :%s\r\n" % (self.channel, newTopic))
-
 class IRC_Client(_Axon.Component.component):
-   """\
+    """\
       This is the base client. It is broken in the same was as
       the earliest internet handling code was. In many respects this
       is the logical counterpart to a TCPServer which upon connection
@@ -62,84 +45,43 @@ class IRC_Client(_Axon.Component.component):
       Specifically - consider that in order to make this work "properly"
       it needs to handle the chat session multiplexing that happens by
       default in IRC. There are MANY ways this could be achieved.
-   """
-   Inboxes = {"inbox":"incoming message strings from the server",
+     """
+    Inboxes = {"inbox":"incoming message strings from the server",
               "control":"shutdown handling",
-              "talk":"takes tuples to be turned into IRC commands ", "topic":""}
-   Outboxes = {"outbox":"IRC commands to be sent out to the server",
+              "talk":"takes tuples to be turned into IRC commands ",
+              }
+   
+    Outboxes = {"outbox":"IRC commands to be sent out to the server",
                "signal":"shutdown handling",
                "heard" : "parsed tuples of messages from the server"}
    
-   def __init__(self, nick="kamaeliabot",
-                      nickinfo="Kamaelia",
-                      defaultChannel="#kamaeliatest"):
+    def __init__(self):
       self.__super.__init__()
-      self.nick = nick
-      self.nickinfo = nickinfo
-      self.defaultChannel = defaultChannel
-      self.channels = {}
       self.done = False
-      self.debugger = _Axon.debug.debug()
-      self.debugger.useConfig()
-      self.debugger.addDebugSection("IRCClient.main", 5)
-      self.debugger.addDebugSection("IRCClient.handleInput", 5)
+
+      debugSections = {"IRCClient.main" : 5,
+                       "IRCClient.handleInput" : 5,
+                       }
+      self.debugger.addDebug(**debugSections)
       
-   def login(self, password = None, username=None):
-      """Should be abstracted out as far as possible.
-         Protocol can be abstracted into the following kinds of items:
-             - The independent atoms of the transactions in the protocol
-             - The orchestration of the molecules of the atoms of
-               transactions of the protocol.
-             - The higher level abstractions for handling the protocol
-      """
-      ## in progress
-      self.send ( 'NICK %s\r\n' % self.nick )
-      while not self.dataReady("inbox"):
-         yield 1
-
-      while self.dataReady("inbox"):
-         data = self.recv("inbox")
-         if self.parseable(data):
-            msgtype, sender, receiver, body = self.parseIRCMessage(data)
-            if msgtype == '433':
-               self.nick = self.nick + '_'
-      ## in progress
-               
-      if password:
-          self.send('PASS %s\r\n' % password )
-      if not username:
-          username = self.nick
-      self.send ( 'USER %s %s %s :%s\r\n' % (username,self.nick,self.nick, self.nickinfo))
-
-   def join(self, someChannel):
-      chan = channel(self,someChannel)
-      chan.join()
-      return chan
-
-   def main(self):
-      "Handling here is still in progress. :)"
-      yield WaitComplete(self.login())
-      self.channels[self.defaultChannel] = self.join(self.defaultChannel)
-      
-      while not self.shutdown():
-         data=""
-         if self.dataReady("talk"):
-            data = self.recv("talk") #should be a tuple. e.g. ("JOIN", "#kamaelia")
-            assert self.debugger.note('IRCClient.main', 5, 'received talk ' + str(data))
-            self.handleInput(data)
-         if self.dataReady("inbox"): #if received messages
-             data = self.recv("inbox")
-             assert self.debugger.note('IRCClient.main', 7, 'IRC ' + str(data))
-             self.handleMessage(data)
+    def main(self):
+        "Handling here is still in progress. :)"
+        while not self.shutdown():
+           data=""
+           if self.dataReady("talk"):
+               data = self.recv("talk")
+               assert self.debugger.note('IRCClient.main', 5, 'received talk ' + str(data))
+               self.handleInput(data)
+           if self.dataReady("inbox"):
+               data = self.recv("inbox")
+               assert self.debugger.note('IRCClient.main', 10, 'received from server ' + str(data))
+               self.handleMessage(data)
                     
-         if not self.anyReady(): # Axon 1.1.3 (See CVS)
-            self.pause() # Wait for response :-)
-         yield 1
-         
-      self.channels[self.defaultChannel].leave()
-      # print self.nick + "... is leaving\n" # Check with and IRC client instead.
+           if not self.anyReady():
+              self.pause()
+           yield 1
 
-   def handleMessage(self, lines):
+    def handleMessage(self, lines):
         """handles incoming messages from the server"""
         if "\r" in lines:
             lines.replace("\r","\n")
@@ -148,30 +90,16 @@ class IRC_Client(_Axon.Component.component):
             data = None
             if self.parseable(one_line):
                 data = self.parseIRCMessage(one_line)
+                self.send(data, "heard")
             elif len(one_line) > 0:
                 self.send(("CLIENT ERROR", 'client', '', one_line), 'heard')
-    
-            if data:
-                (msgtype, sender, recipient, body) = data
-                #reply to pings
-                if msgtype == 'PING':
-                    reply = ("PONG " + sender)
-                    self.send(reply + '\r\n')
-                    assert self.debugger.note('IRCClient.main', 7, 'PONG response to ' + one_line)
-                elif (msgtype == 'PRIVMSG' or msgtype == 'NOTICE') and 'PING ' in body:
-                    #must be 'PING ' because 'PING' matches things like CASEMAPPING=ascii
-                    reply = ("PONG " + body[body.find("PING")+4:])
-                    self.send(reply + '\r\n')
-                    assert self.debugger.note('IRCClient.main', 7, 'PONG response to ' + one_line)
-                     
-                self.send(data, 'heard')
                 
-   def parseable(self, line):
+    def parseable(self, line):
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
             return False
         return len(line) > 0
        
-   def parseIRCMessage(self, line):
+    def parseIRCMessage(self, line):
         """Assumes most lines in the format of :nick!username MSGTYPE recipient :message.
            Returns a tuple (message type, sender, recipient, other params)."""
         tokens = line.split()
@@ -195,69 +123,43 @@ class IRC_Client(_Axon.Component.component):
                 recipient = ""
             return (msgtype, sender, recipient, body)
         except IndexError:
-            print "Malformed or unaccounted-for message:", line
+            return (("CLIENT ERROR", 'client', '', line))
 
-   def extractSender(self, token):
+    def extractSender(self, token):
         if '!' in token:
             return token[1:token.find('!')]
         else:
             return token[1:]
 
-   def extractBody(self, tokens):
+    def extractBody(self, tokens):
         body =  string.join(tokens, ' ')
         if body[0] == ':':
             return body[1:]
         else:
             return body
 
-   def handleInput(self, command_tuple):
+    def handleInput(self, command_tuple):
        mod_command = []
        for param in command_tuple:
-           if len(param.split()) > 1:
+           if len(param.split()) > 1 or (len(param.split())== 1 and param[0] == ':'):
                mod_command.append(':' + param)
            else:
                mod_command.append(param)
        mod_command[0] = mod_command[0].upper()
-       send = string.join(mod_command) + '\r\n'
-       assert self.debugger.note('IRCClient.handleInput', 1, send)
-       self.send(send)
-       
 
-   def shutdown(self):
+       if mod_command[0] == 'ME' and len(mod_command) > 2:
+           assert self.debugger.note('IRCClient.handleInput', 10, str(mod_command))
+           send = 'PRIVMSG %s :\x01ACTION %s\x01' % (mod_command[1], mod_command[2].lstrip(':'))
+       elif mod_command[0] == 'ACTION':
+           send = 'PRIVMSG %s :\x01ACTION\x01' % mod_command[1]
+       else: send = string.join(mod_command)
+       
+       assert self.debugger.note('IRCClient.handleInput', 5, send)
+       self.send(send + '\r\n')
+
+    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                return True
        return self.done
-
-      
-def SimpleIRCClientPrefab(host="127.0.0.1",
-                          port=6667,
-                          nick="kamaeliabot",
-                          nickinfo="Kamaelia",
-                          defaultChannel="#kamaeliatest",
-                          IRC_Handler=IRC_Client):
-    return Graphline(
-        CLIENT = TCPClient(host, port),
-        PROTO = IRC_Handler(nick, nickinfo, defaultChannel),
-        linkages = {
-              ("CLIENT" , "outbox") : ("PROTO" , "inbox"),
-              ("PROTO"  , "outbox") : ("CLIENT", "inbox"),
-              ("PROTO"  , "heard")  : ("SELF", "outbox"), #SELF refers to the Graphline. Passthrough linkage
-              ("SELF"  , "inbox") : ("PROTO" , "talk"), #passthrough
-              ("SELF"  , "control") : ("PROTO" , "control"), #passthrough
-              ("PROTO"  , "signal") : ("CLIENT", "control"),
-              ("CLIENT" , "signal") : ("SELF" , "signal"), #passthrough
-              }
-        )
-
-if __name__ == '__main__':
-    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    from Kamaelia.Util.PureTransformer import PureTransformer
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    Pipeline(
-        ConsoleReader('IRC> '),
-        SimpleIRCClientPrefab(host="irc.freenode.net", nick="kamaeliabot", defaultChannel="#kamtest"),
-        PureTransformer(lambda aTuple: str(aTuple) + '\r\n'),
-        ConsoleEchoer(),
-    ).run()
