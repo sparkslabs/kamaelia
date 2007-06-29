@@ -147,7 +147,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # to aid a lack of confusion, this is where information would traverse from stdin to a child component's inbox.
                 while not queue.empty():
                     if not self.outboxes[parentSource].isFull():
-                        msg = queue.get_nowait()
+                        msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
                         try:
                             self.send(msg, parentSource)
                         except noSpaceInBox, e:
@@ -185,12 +185,6 @@ class LikeFile(object):
         self.outQueues = copy.copy(component.outQueues)
         # reaching into the component like this is threadsafe since it has not been activated yet.
         self.component = component
-
-
-##    def addInbox(self):
-##        """This will add an additional linkage, to access a wrapped component's
-##        boxes from the likefile interface. Can be called during execution."""
-
 
     def activate(self):
         """activates the component, etc."""
@@ -233,10 +227,10 @@ if __name__ == "__main__":
 
     p = LikeFile(SimpleHTTPClient())
     p.activate()
-    p.put("http://google.com", "inbox")
-    p.put("http://slashdot.org", "inbox")
-    p.put("http://whatismyip.org", "inbox")
-    google = p.get("outbox")
-    slashdot = p.get("outbox")
-    whatismyip = p.get("outbox")
+    p.put("http://google.com")
+    p.put("http://slashdot.org")
+    p.put("http://whatismyip.org")
+    google = p.get()
+    slashdot = p.get()
+    whatismyip = p.get()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
