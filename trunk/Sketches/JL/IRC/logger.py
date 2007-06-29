@@ -1,47 +1,59 @@
 #!/usr/bin/env python
 
-from IRCClient import SimpleIRCClientPrefab
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.PureTransformer import PureTransformer
-           
+from Axon.Component import component
+from Axon.Ipc import WaitComplete
+import time
+from guitest import outformat
+from IRCClient import SimpleIRCClientPrefab
 
-def makeformatter(nick, channel): #the nick argument is useless
-    def format(data):
-        msgtype, sender, recipient, body = data
-        end = '\n'
-        if msgtype == 'PRIVMSG':
-            if body[0:5] == '[off]': #we don't want to log lines prefixed by "[off]"
-                return
-            text = '<%s> %s' % (sender, body)
-        elif msgtype == 'JOIN' :
-            text = '*** %s has joined %s' % (sender, recipient)
-        elif msgtype == 'PART' :
-            text = '*** %s has parted %s' % (sender, recipient)
-        elif msgtype == 'NICK':
-            text = '*** %s is now known as %s' % (sender, recipient)
-        elif msgtype == 'ACTION':
-            text = '*** %s %s' % (sender, body)
-        elif msgtype == 'TOPIC':
-            text = '*** %s changed the topic to %s' % (sender, body)
-        elif msgtype > '000' and msgtype < '400':
-            text = 'Reply %s from %s to %s: %s' % data
-        elif msgtype >= '400' and msgtype < '600':
-            text = 'Error! %s %s %s %s' % data
-        elif msgtype >= '600' and msgtype < '1000':
-            text = 'Unknown numeric reply: %s %s %s %s' % data
-        else:
-            text = '%s from %s: %s' % (msgtype, sender, body)
+class Logger(component):
+    
+    Outboxes = {"irc" : "to IRC, for user responses and login",
+                "outbox" : "What we're interested in, the traffic over the channel",
+                "system" : "Messages directed toward the client, numeric replies, etc.",
+                "signal" : "Shutdown handling in the future",
+                }
+        
+    def __init__(self, channel, formatter=outformat, name="jinnaslogbot"):
+        super(Logger, self).__init__()
+        self.channel = channel
+        self.format = formatter
+        self.name = name
 
-        if recipient != channel:
-            text = "Private message - %s" % text
-        return text + end
-    return format
+    def login(self):
+        self.send(("NICK", self.name), "irc")
+        self.send(("USER", self.name, self.name, self.name, self.name), "irc")
+        self.send(("JOIN", self.channel), "irc")
+        
+    def main(self):
+        self.login()
+        while True:
+            yield 1
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                formatted_data = self.format(data)
+                if data[2] == self.channel:
+                    self.send(formatted_data, "outbox")
+                else:
+                    self.send(formatted_data, "system")
 
-Pipeline(
-    ConsoleReader(),
-    SimpleIRCClientPrefab(host="irc.freenode.net", nick="jinnaslogbot", defaultChannel="#kamtest"),
-    PureTransformer(makeformatter("jinnaslogbot", "#kamtest")),
-    SimpleFileWriter("/home/jlei/irc/kamtest.log"),
-).run()
+            
+def LoggerPrefab(channel):
+    return Graphline(irc = SimpleIRCClientPrefab(),
+                     logger = Logger(channel),
+                     log = SimpleFileWriter("%s%i.log" % (channel[1:], time.time())),
+                     info = SimpleFileWriter("%s%i.info" % (channel[1:], time.time())),
+                     linkages = {("logger", "irc") : ("irc", "inbox"),
+                                 ("irc", "outbox") : ("logger", "inbox"),
+                                 ("logger", "outbox"): ("log", "inbox"),
+                                 ("logger", "system"): ("info", "inbox"),
+                               }
+                     )
+    
+if __name__ == '__main__':
+    LoggerPrefab('#kamtest').run()
