@@ -81,6 +81,7 @@ cat_args = (cat_location, screensize, border)
 spritescheduler = SpriteScheduler(cat_args, [], background, screen_surface, MyGamesEvents).activate()
 
 catlist = []
+total = 0
 while True:
     input = raw_input(">>> ").lower()
     try: command, args = input.split(' ', 1)
@@ -91,9 +92,10 @@ while True:
     elif command == "add":
         count = 1
         if args and int(args) > 1: count = int(args)
-        for i in xrange(1, count):
+        for i in xrange(0, count):
             newcat = LikeFile(make_cat(*cat_args))
             newcat.activate()
             catlist.append(newcat)
-            print "added a cat."
+            total += 1
+            print "added a cat.", total, len(catlist)
             time.sleep(0.1)
