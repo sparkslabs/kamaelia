@@ -31,6 +31,12 @@ class CatSprite(BasicSprite):
     def main(self):
         spritescheduler.allsprites.add(self)
         while True:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox").lower()
+                if data == "pause":
+                    self.freeze()
+                elif data == "toggle":
+                    self.toggleFreeze()
             self.pause()
             yield 1
 
@@ -63,6 +69,7 @@ def make_cat(cat_location, screensize, border ):
        imaging = continuousIdentity(cat),
        shutdown_fanout = Fanout(["rotator","translation","scaler", "imaging","self_shutdown"]),
        linkages = {
+           ("self","inbox" ) : ("newCat", "inbox"),
            ("rotator","outbox" ) : ("newCat", "rotator"),
            ("translation","outbox" ) : ("newCat", "translation"),
            ("scaler","outbox" ) : ("newCat", "scaler"),
@@ -81,7 +88,6 @@ cat_args = (cat_location, screensize, border)
 spritescheduler = SpriteScheduler(cat_args, [], background, screen_surface, MyGamesEvents).activate()
 
 catlist = []
-total = 0
 while True:
     input = raw_input(">>> ").lower()
     try: command, args = input.split(' ', 1)
@@ -96,6 +102,12 @@ while True:
             newcat = LikeFile(make_cat(*cat_args))
             newcat.activate()
             catlist.append(newcat)
-            total += 1
-            print "added a cat.", total, len(catlist)
-            time.sleep(0.1)
+        print "added %s cats." % count
+    elif command == "pause":
+        for cat in catlist:
+            cat.put("pause", "inbox")
+        print "paused %s cats" % len(catlist)
+    elif command == "toggle":
+       for cat in catlist:
+           cat.put("toggle", "inbox")
+       print "toggled %s cats" % len(catlist)
