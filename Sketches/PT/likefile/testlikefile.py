@@ -8,13 +8,21 @@ import unittest, random, Axon
 class DyingShunt(component):
     """A component which passes all data through itself, and terminates on receipt of 
     shutdownMicroprocess() or producerFinished()"""
+    Inboxes = { "inbox"   : "Input data",
+                "control" : "Control data",
+                "extra"   : "An additional nonstandard inbox",
+              }
+    Outboxes = { "outbox" : "Input data is echoed here",
+                 "signal" : "Control data is echoed here",
+                 "extra"  : "Extra data is echoed here",
+               }
     def main(self):
-        # self.link((self, "inbox"), (self, "outbox"))
-        # shame this doesn't work.
         while True:
             yield 1
             while self.dataReady("inbox"):
                 self.send(self.recv("inbox"), "outbox")
+            while self.dataReady("extra"):
+                self.send(self.recv("extra"), "extra")
             while self.dataReady("control"):
                 data = self.recv("control")
                 self.send(data, "signal")
@@ -22,8 +30,16 @@ class DyingShunt(component):
                     return
 
 class Dummy(component):
+    Inboxes = { "inbox"   : "Input data",
+                "control" : "Control data",
+                "extra"   : "An additional nonstandard inbox",
+              }
+    Outboxes = { "outbox" : "Input data is echoed here",
+                 "signal" : "Control data is echoed here",
+                 "extra"  : "Extra data is echoed here",
+               }
     def main(self):
-        while 1:
+        while True:
             yield 1
 
 class Test_DyingShunt(unittest.TestCase):
@@ -36,9 +52,11 @@ class Test_DyingShunt(unittest.TestCase):
         self.inSrc = Dummy()
         self.inSrc.link((self.inSrc,"outbox"), (self.shunt,"inbox"))
         self.inSrc.link((self.inSrc,"signal"), (self.shunt,"control"))
+        self.inSrc.link((self.inSrc,"extra"), (self.shunt,"extra"))
         self.outDest = Dummy()
         self.outDest.link((self.shunt,"outbox"), (self.outDest,"inbox"))
         self.outDest.link((self.shunt,"signal"), (self.outDest,"control"))
+        self.outDest.link((self.shunt,"extra"), (self.outDest,"extra"))
         self.run = self.scheduler.main()
         self.shunt.activate()
 
@@ -51,13 +69,13 @@ class Test_DyingShunt(unittest.TestCase):
     def test_passthrough(self):
         for i in self.randlist:
             self.inSrc.send(i, "outbox")
+            self.inSrc.send(i, "signal")
+            self.inSrc.send(i, "extra")
         self.runFor(20) # shouldn't terminate
         for i in self.randlist:
             self.failUnless(self.outDest.recv("inbox") == i)
-            self.inSrc.send(i, "signal")
-        self.runFor(20) # shouldn't terminate
-        for i in self.randlist:
             self.failUnless(self.outDest.recv("control") == i)
+            self.failUnless(self.outDest.recv("extra") == i)
     def test_shutdown1(self):
         self.inSrc.send(shutdownMicroprocess(), "signal")
         self.failUnlessRaises(StopIteration, self.runFor, iterations = 10)
