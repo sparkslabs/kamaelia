@@ -99,9 +99,11 @@ class MagnaDoodle(Axon.Component.component):
       # END SHARD : Get Display Surface ---------------------------------------------
 
       # START SHARD : drawBG ========================================================
+      #    Dependency: self.drawBG defined
       self.drawBG()
       # END SHARD : drawBG ========================================================
       # START SHARD : Blit Display --------------------------------------------------
+      #    Dependency: self.blitToSurface defined
       self.blitToSurface()
       # END SHARD : Blit Display ----------------------------------------------------
       
@@ -143,9 +145,11 @@ class MagnaDoodle(Axon.Component.component):
                     elif event.button == 3:
                         self.oldpos = None
                         # START SHARD : drawBG ......................................
+                        #    Dependency: self.drawBG defined
                         self.drawBG()
                         # END SHARD : drawBG ........................................
                         # START SHARD : Blit Display ................................
+                        #    Dependency: self.blitToSurface defined
                         self.blitToSurface()
                         # END SHARD : Blit Display ..................................
 
@@ -164,6 +168,7 @@ class MagnaDoodle(Axon.Component.component):
                             pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
                             self.oldpos = event.pos
                         # START SHARD : Blit Display ................................
+                        #    Dependency: self.blitToSurface defined
                         self.blitToSurface()
                         # END SHARD : Blit Display ..................................
                     # END SHARD : Mouse move ----------------------------------------
