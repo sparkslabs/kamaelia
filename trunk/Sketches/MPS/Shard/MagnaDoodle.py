@@ -20,42 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-"""\
-===========================
-Simple Pygame drawing board
-===========================
-
-A simple drawing board for the pygame display service.
-
-Use your left mouse button to draw to the board and the
-right to erase your artwork.
-
-"""
-
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class MagnaDoodle(Axon.Component.component):
-   """\
-   MagnaDoodle(...) -> A new MagnaDoodle component.
-
-   A simple drawing board for the pygame display service.
-
-   (this component and its documentation is heaviliy based on Kamaelia.UI.Pygame.Button)
-
-   Keyword arguments:
-   
-   - position     -- (x,y) position of top left corner in pixels
-   - margin       -- pixels margin between caption and button edge (default=8)
-   - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
-   - fgcolour     -- (r,g,b) text colour (default=(0,0,0))
-   - transparent  -- draw background transparent if True (default=False)
-   - size         -- None or (w,h) in pixels (default=None)
-   
-   """
-   
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay"
@@ -66,7 +35,6 @@ class MagnaDoodle(Axon.Component.component):
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
                 transparent = False, size=(200,200)):
-      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(MagnaDoodle,self).__init__()
       
       self.backgroundColour = bgcolour
@@ -74,8 +42,6 @@ class MagnaDoodle(Axon.Component.component):
       self.margin = margin
       self.oldpos = None
       self.drawing = False
-###      print "KEY",key
-      
       self.size = size
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
@@ -97,7 +63,6 @@ class MagnaDoodle(Axon.Component.component):
 
        
    def waitBox(self,boxname):
-      """Generator. yields 1 until data ready on the named inbox."""
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
@@ -109,12 +74,10 @@ class MagnaDoodle(Axon.Component.component):
      
    
    def main(self):
-      """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
-      self.send( self.disprequest,
-                  "display_signal")
+      self.send( self.disprequest, "display_signal")
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
@@ -137,7 +100,8 @@ class MagnaDoodle(Axon.Component.component):
       while not done:
          while self.dataReady("control"):
             cmsg = self.recv("control")
-            if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+            if isinstance(cmsg, Axon.Ipc.producerFinished) or \
+               isinstance(cmsg, Axon.Ipc.shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
          
@@ -155,7 +119,6 @@ class MagnaDoodle(Axon.Component.component):
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
-#                   print "BUTTON", event.button
                     if self.drawing and self.innerRect.collidepoint(*event.pos):
                         if self.oldpos == None:
                             self.oldpos = event.pos
@@ -174,10 +137,4 @@ __kamaelia_components__  = ( MagnaDoodle, )
 
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
-   from pygame.locals import *
-   
-   Magna = MagnaDoodle().activate()
-   
-   Axon.Scheduler.scheduler.run.runThreads()  
-# Licensed to the BBC under a Contributor Agreement: THF
+   MagnaDoodle().run()
