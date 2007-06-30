@@ -2,8 +2,14 @@ from shard import *
 from inspect import *
 
 """
-rebinding tests - superclass calls must be routed through
-function object rather than method
+Test case to work out why superclass calls were causing
+TypeErrors on first arguments
+
+Solution:
+- superclass calls must be routed through
+  function object rather than method
+- superclasses must be named in upcall as opposed
+  to using super()
 """
 
 class A(object):  #md
