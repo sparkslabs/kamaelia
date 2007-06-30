@@ -75,7 +75,7 @@ class schedulerThread(threading.Thread):
         schedulerThread.lock.release()
 
 
-class componentWrapper(Axon.ThreadedComponent.threadedadaptivecommscomponent):
+class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its boxes to queues, which communicate
     with the LikeFile component."""
     def __init__(self, childcomponent, extraInboxes = None, extraOutboxes = None):
@@ -138,34 +138,41 @@ class componentWrapper(Axon.ThreadedComponent.threadedadaptivecommscomponent):
         
         self.child.activate()
         while True:
-            for childSink, parentSource in self.childInboxMapping.iteritems():
-                queue = self.inQueues[childSink]
-                # to aid a lack of confusion, this is where information would traverse from stdin to a child component's inbox.
-                while not queue.empty():
-                    if not self.outboxes[parentSource].isFull():
-                        msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
-                        try:
-                            self.send(msg, parentSource)
-                        except noSpaceInBox, e:
-                            raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                        if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                            return
-                            # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
-                    else:
-                        # if the component's inboxes are full, do something here. Preferably not succeed.
-                        break
-            self.pause() # go to sleep until our child has processed this.
-            for childSource, parentSink in self.childOutboxMapping.iteritems():
-                queue = self.outQueues[childSource]
-                # to aid a lack of confusion, this is where information would traverse from a child component's outbox to stdout.
-                while self.dataReady(parentSink):
-                    if not queue.full():
-                        msg = self.recv(parentSink)
-                        queue.put_nowait(msg)
-                    else:
-                        break
-                        # permit a horrible backlog to build up inside our boxes. What could go wrong?
+            self.pollQueues()
+            yield 1
+            self.sendPending()
 
+    def pollQueues(self):
+        """This method checks all the queues from the outside world, and forwards any waiting data
+        to the child component."""
+        for childSink, parentSource in self.childInboxMapping.iteritems():
+            queue = self.inQueues[childSink]
+            while not queue.empty():
+                if not self.outboxes[parentSource].isFull():
+                    msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
+                    try:
+                        self.send(msg, parentSource)
+                    except noSpaceInBox, e:
+                        raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                    if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                        return
+                        # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
+                else:
+                    # if the component's inboxes are full, do something here. Preferably not succeed.
+                    break
+
+    def sendPending(self):
+        """This method will take any data sent to us from a child component and stick it on a queue 
+        to the outside world."""
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            queue = self.outQueues[childSource]
+            while self.dataReady(parentSink):
+                if not queue.full():
+                    msg = self.recv(parentSink)
+                    queue.put_nowait(msg)
+                else:
+                    break
+                    # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
@@ -181,7 +188,6 @@ class LikeFile(object):
         self.outQueues = copy.copy(component.outQueues)
         # reaching into the component like this is threadsafe since it has not been activated yet.
         self.component = component
-        self.threadWakeUp = component.threadWakeUp
 
     def activate(self):
         """activates the component on the backgrounded scheduler and permits IO."""
@@ -200,7 +206,6 @@ class LikeFile(object):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
         if self.alive:
             self.inQueues[boxname].put_nowait(msg)
-            self.threadWakeUp.set() # wake the thread up to process the data we've just sent.
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
