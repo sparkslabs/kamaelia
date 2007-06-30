@@ -46,7 +46,7 @@ queuelengths = 0
 
 def addBox(self, names, boxMap, addBox):
         """Add an extra wrapped box"""
-        if type(names) == str:
+        if type(names) != tuple:
             names = (names,)
         for boxname in names:
             if boxname in boxMap:
@@ -54,9 +54,6 @@ def addBox(self, names, boxMap, addBox):
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
 
-class SchedulerShutdown(Exception):
-    """An exception used internally to provide a way of shutting down a thread."""
-    pass
 
 class dummyComponent(Axon.Component.component):
     """A dummy component. Functionality: None. Prevents the scheduler from dying immediately.
@@ -66,6 +63,7 @@ class dummyComponent(Axon.Component.component):
         while True:
             self.pause()
             yield 1
+
 
 class schedulerThread(threading.Thread):
     """A python thread which runs a scheduler."""
@@ -78,11 +76,9 @@ class schedulerThread(threading.Thread):
         self.setDaemon(True) # Die when the caller dies
     def run(self):
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
-        try:
-            scheduler.run.runThreads(slowmo = self.slowmo)
-        except SchedulerShutdown:
-            pass
+        scheduler.run.runThreads(slowmo = self.slowmo)
         schedulerThread.lock.release()
+
 
 class componentWrapperWaker(Axon.ThreadedComponent.threadedcomponent):
     """This is a companion to the component wrapper, which wakes up the component wrapper whenever
@@ -91,6 +87,7 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedcomponent):
         super(componentWrapperWaker, self).__init__()
         self.wakeUp = threading.Event()
         # this is the Event on which we will wait.
+
     def main(self):
         while True:
             self.wakeUp.wait()
@@ -109,11 +106,14 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         super(componentWrapper, self).__init__()
         self.queuelengths = queuelengths
         self.child = childcomponent
+
+        # These queues map from the name of the box on the child which is to be wrapped,
+        # to the Queue object they represent.
         self.inQueues = dict()
         self.outQueues = dict()
         self.addChildren(self.child)
         self.commandQueue = Queue.Queue()
-        
+
         # set up the service that will wake us up when our queues have data.
         self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
         self.waker = componentWrapperWaker()
@@ -142,7 +142,6 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for childSource, parentSink in self.childOutboxMapping.iteritems():
             self.outQueues[childSource] = Queue.Queue(self.queuelengths)
             self.link((self.child, childSource),(self, parentSink))
-
 
     def main(self):
         self.child.activate()
@@ -198,13 +197,14 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             return True
         return False
 
+
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
         self.alive = False
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
-            raise "no running scheduler found!"
+            raise AttributeError, "no running scheduler found."
         try: component = componentWrapper(componenttowrap, extrainboxes, extraoutboxes)
         except KeyError, e:
             raise KeyError, 'component to wrap has no such box: %s' % e
@@ -216,17 +216,18 @@ class LikeFile(object):
         self.componentWaker = component.waker.wakeUp
 
     def activate(self):
-        """activates the component on the backgrounded scheduler and permits IO."""
+        """Activates the component on the backgrounded scheduler and permits IO."""
         if self.alive:
             return
         self.component.activate() # threadsafe, see note 1
         self.alive = True
 
     def get(self, boxname = "outbox"):
-        """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component."""
+        """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
+        raises AttributeError if the LikeFile is not alive."""
         if self.alive:
             return self.outQueues[boxname].get()
-        else: raise "shutdown was previously called!"
+        else: raise AttributeError, "shutdown was previously called, or we were never activated."
 
     def put(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
@@ -235,17 +236,16 @@ class LikeFile(object):
 
             # and clear the Event so that the componentWrapper knows to check for data.
             self.componentWaker.set()
-        else: raise "shutdown was previously called!"
+        else: raise AttributeError, "shutdown was previously called, or we were never activated."
 
     def shutdown(self):
-        """Will send terminatory signals to the wrapped component, and shut down the componentWrapper.
-        Due to the way axon handles component shutdown, this may never terminate the scheduler thread. It would be nice if it did."""
+        """Sends terminatory signals to the wrapped component, and shut down the componentWrapper."""
         if self.alive: 
-            self.inQueues["control"].put_nowait(Axon.Ipc.shutdown()) # legacy support.
-            self.inQueues["control"].put_nowait(Axon.Ipc.producerFinished())
-            self.inQueues["control"].put_nowait(Axon.Ipc.shutdownMicroprocess()) # should be last, this is what we honour
+            self.put(Axon.Ipc.shutdown(),               "control") # legacy support.
+            self.put(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
+            self.put(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
-            raise "shutdown was previously called, or we were never activated."
+            raise AttributeError, "shutdown was previously called, or we were never activated."
         self.alive = False
 
     def __del__(self):
