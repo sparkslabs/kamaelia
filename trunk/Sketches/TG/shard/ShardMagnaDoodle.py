@@ -118,15 +118,15 @@ class ShardMagnaDoodle(Axon.Component.component):
 __kamaelia_components__  = ( ShardMagnaDoodle, )
 
 # import shards
-#from SMouseEventHandling import *
-from SMouseSwap import *   # subclassing works using im_func for superclass calls
+from SMouseEventHandling import *
+#from SMouseSwap import *   # subclassing works using im_func for superclass calls
 from SDrawing import *
 from SShutdownHandling import *
 from shard import *
 
 # add shard methods
-shardify = addShards(ClickPrint, Drawing, ShutdownHandler)
-#shardify = addShards(MouseEventHandler, Drawing, ShutdownHandler)
+#shardify = addShards(ClickPrint, Drawing, ShutdownHandler)  # subclass test
+shardify = addShards(MouseEventHandler, Drawing, ShutdownHandler)
 shardify(ShardMagnaDoodle)
 a = MouseEventHandler.test
 
