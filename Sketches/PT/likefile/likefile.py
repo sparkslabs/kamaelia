@@ -44,6 +44,16 @@ import Queue, threading, time, copy, Axon
 queuelengths = 0
 
 
+def addBox(self, names, boxMap, addBox):
+        """Add an extra wrapped box"""
+        if type(names) == str:
+            names = (names,)
+        for boxname in names:
+            if boxname in boxMap:
+                raise ValueError, "%s %s already exists!" % (direction, boxname)
+            realboxname = addBox(boxname)
+            boxMap[boxname] = realboxname
+
 class SchedulerShutdown(Exception):
     """An exception used internally to provide a way of shutting down a thread."""
     pass
@@ -114,49 +124,25 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # used to deliver information to a wrapped component from non-kamaelionic environments.
         self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
         if extraInboxes:
-            self.__addBox("Inbox", extraInboxes)
+            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
 
         # childSource:parentSink
         # used to retrieve information from a kamaelia system to a non-kamaelionic environment.
         self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
         if extraOutboxes:
-            self.__addBox("Outbox", extraOutboxes)
+            addBox(extraOutoxes, self.childOutboxMapping, self.addInbox)
 
+        # Now, we set up all the linkages between us and our child.
+
+        # Now, add all the queues and link to the children. These are two
+        # unrelated operations but they use the same dict iteration.
         for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.__addQueue("Inbox", parentSource, childSink)
+            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
+            self.link((self, parentSource),(self.child, childSink))
         for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.__addQueue("Outbox", childSource, parentSink)
+            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
+            self.link((self.child, childSource),(self, parentSink))
 
-       
-    def __addBox(self, direction, names):
-        """Function used internally to add a new wrapped box. Direction is either
-        "Inbox" or "Outbox". This is the box's direction on the child."""
-        if direction == "Inbox":
-            boxMap, addBox = self.childInboxMapping, self.addOutbox
-        elif direction == "Outbox":
-            boxMap, addBox = self.childOutboxMapping, self.addInbox
-        else:
-            raise ValueError, "%s is not a valid direction." % direction
-        if type(names) == str:
-            names = (names,)
-        for boxname in names:
-            if boxname in boxMap:
-                raise ValueError, "%s %s already exists!" % (direction, boxname)
-            realboxname = addBox(boxname)
-            boxMap[boxname] = realboxname
-
-
-    def __addQueue(self, direction, source, sink):
-        """Function used internally to add a new Queue, and create the link
-        used to communicate between the Queue and the child component.
-        No sanity checking!. Assumes all boxes exist, and are not previously linked."""
-        if direction == "Inbox":
-            self.inQueues[sink] = Queue.Queue(self.queuelengths)
-            self.link((self, source),(self.child, sink))
-        elif direction == "Outbox":
-            self.outQueues[source] = Queue.Queue(self.queuelengths)
-            self.link((self.child, source),(self, sink))
-        else: raise ValueError, "%s is not a valid direction." % direction
 
     def main(self):
         self.child.activate()
