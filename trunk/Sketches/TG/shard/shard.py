@@ -8,14 +8,18 @@ use (when this is supported for classes...)
 # attributes that shouldn't be overwritten
 ignoreList = dir(object)
 ignoreList += ['__dict__', '__module__', '__doc__', '__metaclass__', '__weakref__']
+ignoreList += ['__requiresMethods']  # any additional or custom attrs
 
 def addShards(*shardList):
     """
     Adds all given shards at once: eliminates repeated overwriting
     of attributes and allows dependency calculation
     
-    (Can only apply this method once to a class as dependency requirements
-    cause errors)
+    Any application of this method must satisfy all dependencies
+    between shards and container class, as unsatisfied
+    dependencies cause errors
+    
+    If container class declares its requirements, these will also be checked
     """
     
     # merge all shards, later entries override earlier ones
@@ -47,10 +51,10 @@ def addShards(*shardList):
         except ValueError:
             continue   # don't care if method provided isn't required
     
-    
     # define and return attr-setting function
     def shardify(cls):
-        # check dependencies
+        
+        # check dependencies of added shards are satisfied by container cls
         reqM = requiredMethods[:]
         for attr in dir(cls):
             try:
@@ -58,11 +62,26 @@ def addShards(*shardList):
             except ValueError:
                 continue   # don't care if method provided isn't required
         
-        if reqM:
+        if reqM:  # dependencies of shards outstanding
             errmess = 'required methods missing from %s: %s' % (cls.__name__, reqM)
+
             raise TypeError, errmess
         
-        # set shard methods as cls attributes
+        # if container class declares requirements, check these too
+        if hasattr(cls, '__requiresMethods'):
+            cls.__requiresMethods = list(cls.__requiresMethods)
+            for name in attrDict.keys():
+                try:
+                    cls.__requiresMethods.remove(name)
+                except ValueError:
+                    continue   # don't care if method provided isn't required
+            
+            if cls.__requiresMethods:  # dependencies of container cls outstanding
+                errmess = 'required methods missing from', cls.__name__
+                errmess += ':', cls.__requiresMethods
+                raise TypeError, errmess
+        
+        # no requirements remaining, set shard methods as cls attributes
         for name, attr in attrDict.items():
             if name in cls.__dict__:
                 raise TypeError, '%s already has %s' % (repr(cls), name)
