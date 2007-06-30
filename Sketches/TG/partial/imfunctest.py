@@ -8,10 +8,10 @@ Test case to confirm subclassing can't work this way:
 of the partial class, so no references are held to the partial
 class at all: its name becomes an alias for the base class
 """
-class ClickPrint(partial, MouseEventHandler):
+class ClickTest(partial, MouseEventHandler):
     
-    #@replace   # this doesn't help either, as MouseHandler object thrown away
+    @replace   # required
     def handleMouseUp(self, event):
-        #super(ClickPrint, self).handleMouseUp(self, event)
-        MouseEventHandler.handleMouseUp(self, event)
+        super(ClickPrint, self).handleMouseUp.im_func(self, event) # causes <type 'exceptions.AttributeError'>: 'NoneType' object has no attribute 'exc_info'
+        #MouseEventHandler.handleMouseUp.im_func(self, event) # infinite loop
         print 'hup!'
