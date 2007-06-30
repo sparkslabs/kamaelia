@@ -36,7 +36,8 @@ class MagnaDoodle(Axon.Component.component):
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
                 transparent = False, size=(200,200)):
       super(MagnaDoodle,self).__init__()
-      
+
+      # How to represent these as dependencies... (they are dependended on by shards)
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
@@ -52,6 +53,8 @@ class MagnaDoodle(Axon.Component.component):
          transparency = bgcolour
       else:
          transparency = None
+
+      # START DEPENDENCY FOR SHARD: Get Display Surface -----------------------------
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
                            "events" : (self, "inbox"),
@@ -60,17 +63,22 @@ class MagnaDoodle(Axon.Component.component):
       
       if not position is None:
         self.disprequest["position"] = position         
+      # END DEPENDENCY FOR SHARD: Get Display Surface -------------------------------
 
        
+   # START FROM SHARD : Get Display Surface =========================================
    def waitBox(self,boxname):
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
         else: yield 1
+   # START FROM SHARD : Get Display Surface =========================================
 
+   # START FROM SHARD : drawBG ======================================================
    def drawBG(self):
       self.display.fill( (255,0,0) )
       self.display.fill( self.backgroundColour, self.innerRect )
+   # END FROM SHARD : drawBG ========================================================
      
    
    def main(self):
@@ -88,7 +96,9 @@ class MagnaDoodle(Axon.Component.component):
       self.display = self.recv("callback")
       # END SHARD : Get Display Surface ---------------------------------------------
 
+      # START SHARD : drawBG ========================================================
       self.drawBG()
+      # END SHARD : drawBG ========================================================
       # START SHARD : Blit Display --------------------------------------------------
       self.blitToSurface()
       # END SHARD : Blit Display ----------------------------------------------------
@@ -130,10 +140,12 @@ class MagnaDoodle(Axon.Component.component):
                         self.drawing = True
                     elif event.button == 3:
                         self.oldpos = None
+                        # START SHARD : drawBG ......................................
                         self.drawBG()
-                        # START SHARD : Blit Display --------------------------------
+                        # END SHARD : drawBG ........................................
+                        # START SHARD : Blit Display ................................
                         self.blitToSurface()
-                        # END SHARD : Blit Display ----------------------------------
+                        # END SHARD : Blit Display ..................................
 
                     # END SHARD : Mouse dn button 1 ---------------------------------
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -149,9 +161,9 @@ class MagnaDoodle(Axon.Component.component):
                         else:
                             pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
                             self.oldpos = event.pos
-                        # START SHARD : Blit Display --------------------------------
+                        # START SHARD : Blit Display ................................
                         self.blitToSurface()
-                        # END SHARD : Blit Display ----------------------------------
+                        # END SHARD : Blit Display ..................................
                     # END SHARD : Mouse move ----------------------------------------
                 # END SHARD : Handle Event ==========================================
             # END SHARD : Loop over Pygame Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
