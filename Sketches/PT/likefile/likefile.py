@@ -74,6 +74,23 @@ class schedulerThread(threading.Thread):
             pass
         schedulerThread.lock.release()
 
+class componentWrapperWaker(Axon.ThreadedComponent.threadedcomponent):
+    """This is a companion to the component wrapper, which wakes up the component wrapper whenever
+    information is pending on one of its queues, to avoid polling."""
+    def __init__(self):
+        super(componentWrapperWaker, self).__init__()
+        self.wakeUp = threading.Event()
+        # this is the Event on which we will wait.
+    def main(self):
+        while True:
+            self.wakeUp.wait()
+            # We were woken up, first thing to do is to reset the wakeUp event.
+            self.wakeUp.clear()
+            # Now, we send a message to the component wrapper indicating that we were woken up
+            # by likefile, signalling that some data is waiting on a queue.
+            # it doesn't matter what we send.
+            self.send(object)
+
 
 class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its boxes to queues, which communicate
@@ -86,6 +103,13 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.outQueues = dict()
         self.addChildren(self.child)
         self.commandQueue = Queue.Queue()
+        
+        # set up the service that will wake us up when our queues have data.
+        self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
+        self.waker = componentWrapperWaker()
+        self.addChildren(self.waker)
+        self.link((self.waker, "outbox"), (self, self.wakeboxname))
+
         # parentSource:childSink
         # used to deliver information to a wrapped component from non-kamaelionic environments.
         self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
@@ -135,11 +159,16 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else: raise ValueError, "%s is not a valid direction." % direction
 
     def main(self):
-        
         self.child.activate()
+        self.waker.activate()
         while True:
-            self.pollQueues()
+            self.pause()
             yield 1
+            # print "likefile woken for some reason."
+            if self.checkWakeupReason():
+                self.pollQueues()
+            # there might have been data arriving from the child and the waker in the same 
+            # scheduler cycle, so always do the pending send.
             self.sendPending()
 
     def pollQueues(self):
@@ -174,6 +203,15 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     break
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
+    def checkWakeupReason(self):
+        """Returns True if we were woken  up because of pending data on a Queue.
+        also prevents the wakeup box from overflowing."""
+        if self.dataReady(self.wakeboxname):
+            while self.dataReady(self.wakeboxname):
+                self.recv(self.wakeboxname)
+            return True
+        return False
+
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
@@ -186,8 +224,10 @@ class LikeFile(object):
             raise KeyError, 'component to wrap has no such box: %s' % e
         self.inQueues = copy.copy(component.inQueues)
         self.outQueues = copy.copy(component.outQueues)
-        # reaching into the component like this is threadsafe since it has not been activated yet.
+
+        # reaching into the component and its child like this is threadsafe since it has not been activated yet.
         self.component = component
+        self.componentWaker = component.waker.wakeUp
 
     def activate(self):
         """activates the component on the backgrounded scheduler and permits IO."""
@@ -206,6 +246,9 @@ class LikeFile(object):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
         if self.alive:
             self.inQueues[boxname].put_nowait(msg)
+
+            # and clear the Event so that the componentWrapper knows to check for data.
+            self.componentWaker.set()
         else: raise "shutdown was previously called!"
 
     def shutdown(self):
@@ -229,7 +272,6 @@ if __name__ == "__main__":
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     import time
-
     p = LikeFile(SimpleHTTPClient())
     p.activate()
     p.put("http://google.com")
