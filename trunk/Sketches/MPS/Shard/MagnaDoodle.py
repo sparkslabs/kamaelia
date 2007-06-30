@@ -38,21 +38,25 @@ class MagnaDoodle(Axon.Component.component):
       super(MagnaDoodle,self).__init__()
 
       # How to represent these as dependencies... (they are dependended on by shards)
+
+      # START SHARD : __init__ ======================================================
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
       self.oldpos = None
       self.drawing = False
       self.size = size
-      self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
-      if msg is None:
-         msg = ("CLICK", self.id)
-      self.eventMsg = msg      
       if transparent:
          transparency = bgcolour
       else:
          transparency = None
+
+      if msg is None:
+         msg = ("CLICK", self.id)
+      self.eventMsg = msg      
+      self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
+      # END SHARD : __init__ ========================================================
 
       # START DEPENDENCY FOR SHARD: Get Display Surface -----------------------------
       self.disprequest = { "DISPLAYREQUEST" : True,
@@ -82,8 +86,6 @@ class MagnaDoodle(Axon.Component.component):
      
    
    def main(self):
-      # START SHARD : __init__ ======================================================
-      # END SHARD : __init__ ========================================================
       # START SHARD : Setup Display =================================================
 
       # START SHARD : Get Display Surface -------------------------------------------
