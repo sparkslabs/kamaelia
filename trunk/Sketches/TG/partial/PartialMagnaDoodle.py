@@ -120,6 +120,7 @@ __kamaelia_components__  = ( PartialMagnaDoodle, )
 # import (and initialise) relevant shards
 from PMouseEventHandling import *
 #from PMouseSwap import *   # attempt to subclass shard doesn't work
+#from imfunctest import *  # im_func subclassing attempt also fails
 from PShutdownHandling import *
 from PDrawing import *
 

@@ -2,23 +2,26 @@ import inspect
 
 """
 Trying the non-metaclass way of doing things
+Return single-argument functions to allow decorator-style
+use (when this is supported for classes...)
 """
 # attributes that shouldn't be overwritten
-ignoreList = ['__module__', '__doc__', '__metaclass__']
+ignoreList = dir(object)
+ignoreList += ['__dict__', '__module__', '__doc__', '__metaclass__', '__weakref__']
 
-def addShards(shardList):
+def addShards(*shardList):
     """
     Adds all given shards at once: eliminates repeated overwriting
-    of attributes and allows dependency calculation (if shards specify these)
+    of attributes and allows dependency calculation
     
-    (Can only apply this method once to a class if dependency requirements
+    (Can only apply this method once to a class as dependency requirements
     cause errors)
     """
     
     # merge all shards, later entries override earlier ones
     attrDict = {}
     for shard in shardList:
-        attrDict.update( dict(inspect.getmembers(shard)) )
+        attrDict.update( dict(inspect.getmembers(shard)) ) # getmembers used to get inherited attrs
     
     # filter out attrs on ignoreList
     for name in ignoreList:
@@ -43,6 +46,7 @@ def addShards(shardList):
             requiredMethods.remove(provided)
         except ValueError:
             continue   # don't care if method provided isn't required
+    
     
     # define and return attr-setting function
     def shardify(cls):
