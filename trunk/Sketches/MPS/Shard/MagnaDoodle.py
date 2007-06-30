@@ -74,6 +74,11 @@ class MagnaDoodle(Axon.Component.component):
      
    
    def main(self):
+      # START SHARD : __init__ ======================================================
+      # END SHARD : __init__ ========================================================
+      # START SHARD : Setup Display =================================================
+
+      # START SHARD : Get Display Surface -------------------------------------------
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -81,9 +86,14 @@ class MagnaDoodle(Axon.Component.component):
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
+      # END SHARD : Get Display Surface ---------------------------------------------
+
       self.drawBG()
+      # START SHARD : Blit Display --------------------------------------------------
       self.blitToSurface()
+      # END SHARD : Blit Display ----------------------------------------------------
       
+      # START SHARD : Set Event Options ---------------------------------------------
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
@@ -95,39 +105,61 @@ class MagnaDoodle(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
                   "surface" : self.display},
                   "display_signal")
+      # END SHARD : Set Event Options -----------------------------------------------
+      # END SHARD : Setup Display ===================================================
 
+      # START SHARD : mainloop ======================================================
       done = False
       while not done:
+         # START SHARD : Handle Shutdown --------------------------------------------
          while self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, Axon.Ipc.producerFinished) or \
                isinstance(cmsg, Axon.Ipc.shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
+         # END SHARD : Handle Shutdown ----------------------------------------------
          
          while self.dataReady("inbox"):
+            # START SHARD : Loop over Pygame Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             for event in self.recv("inbox"):
+                # START SHARD : Handle Event ========================================
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    # START SHARD : Mouse dn button 1 -------------------------------
                     if  event.button == 1:
                         self.drawing = True
                     elif event.button == 3:
                         self.oldpos = None
                         self.drawBG()
+                        # START SHARD : Blit Display --------------------------------
                         self.blitToSurface()
+                        # END SHARD : Blit Display ----------------------------------
 
+                    # END SHARD : Mouse dn button 1 ---------------------------------
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    # START SHARD : Mouse up button 1 -------------------------------
                     self.drawing = False
                     self.oldpos = None
+                    # END SHARD : Mouse up button 1 ---------------------------------
                 elif event.type == pygame.MOUSEMOTION:
+                    # START SHARD : Mouse move --------------------------------------
                     if self.drawing and self.innerRect.collidepoint(*event.pos):
                         if self.oldpos == None:
                             self.oldpos = event.pos
                         else:
                             pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
                             self.oldpos = event.pos
+                        # START SHARD : Blit Display --------------------------------
                         self.blitToSurface()
+                        # END SHARD : Blit Display ----------------------------------
+                    # END SHARD : Mouse move ----------------------------------------
+                # END SHARD : Handle Event ==========================================
+            # END SHARD : Loop over Pygame Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          self.pause()
          yield 1
+      # END SHARD : mainloop ========================================================
+      # START SHARD : __exit__ ======================================================
+      # END SHARD : __exit__ ========================================================
             
       
    def blitToSurface(self):
