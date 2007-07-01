@@ -3,7 +3,7 @@ import pygame
 class Drawing:
     """
     Code adapted slightly from MagnaDoodle.py and moved into separate module
-    Inheritance from class partial causes methods to be added back to PartialMagnaDoodle
+    Inheritance from class partial causes methods to be added back to ShardMagnaDoodle
     class at runtime
     """
     
