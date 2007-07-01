@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 
-from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Util.PureTransformer import PureTransformer
-from Kamaelia.Util.Fanout import Fanout
 from Axon.Component import component
-from Axon.Ipc import WaitComplete
-import time
 from guitest import outformat
 from IRCClient import SimpleIRCClientPrefab
-
+import time
 
 class Logger(component):
     
@@ -20,15 +14,28 @@ class Logger(component):
                 "outbox" : "What we're interested in, the traffic over the channel",
                 "system" : "Messages directed toward the client, numeric replies, etc.",
                 "signal" : "Shutdown handling in the future",
-                "date" : "For sending out the date" #useful if your logfiles are going to be encapsulated in Carousels
+
+                "log_next" : "for the Log Carousel",
+                "info_next" : "for the Info Carousel"
                 }
-        
-    def __init__(self, channel, formatter=outformat, name="jinnaslogbot"):
+
+    def __init__(self, channel, formatter=outformat, name="jinnaslogbot", logdir=""):
         super(Logger, self).__init__()
         self.channel = channel
         self.format = formatter
         self.name = name
-        self.lastdatestring = self.currentDateString()
+        self.logdir = logdir
+        self.logname = ""
+        self.infoname = ""
+
+        Graphline(log = Carousel(SimpleFileWriter),
+                  info = Carousel(SimpleFileWriter),
+                  logger = self,
+                  linkages = {("logger", "log_next") : ("log", "next"),
+                              ("logger", "info_next") : ("info", "next"),
+                              ("logger", "outbox") : ("log", "inbox"),
+                              ("logger", "system") : ("info", "inbox"),
+                              }).activate()
 
     def login(self):
         self.send(("NICK", self.name), "irc")
@@ -38,16 +45,15 @@ class Logger(component):
         
     def main(self):
         self.login()
-        self.send(self.lastdatestring, "date")
+        self.changeDate()
         yield 1
         
         while True:
             if self.currentDateString() != self.lastdatestring:
                 self.lastdatestring = self.currentDateString()
-                self.send(self.lastdatestring, "date")
+                self.changeDate()
                 
-            yield 1
-            
+            yield 1 
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 formatted_data = self.format(data)
@@ -62,13 +68,17 @@ class Logger(component):
             words = msg[3].split()
             replyLines = ""
             if words[0] == 'logfile':
-                replyLines = ["feature in progress!"]
+                replyLines = [self.logname]
+            elif words[0] == 'infofile':
+                replyLines = [self.infoname]
             elif words[0] == 'help':
                 replyLines = ["Lines prefixed by [off] won't get recorded",
                               "Name: %s   Channel: %s" % (self.name, self.channel)
                               ]
             elif words[0] == 'date':
                 replyLines = [self.currentDateString()]
+            elif words[0] == 'dance':
+                replyLines = ['\x01ACTION does the macarena\x01']
 
             if replyLines:
                 for reply in replyLines:
@@ -77,50 +87,22 @@ class Logger(component):
                 
     def currentDateString(self):
        curtime = time.gmtime()
-       return time.strftime("%d-%m-%Y-%M", curtime)
+       return time.strftime("%d-%m-%Y", curtime)
 
-
-#unused code, but I wanted to have it in the repository anyway
-class DateChecker(component):
-    """Sends the new filename to its outbox every time there is a date change"""
-    def __init__(self):
-        super(DateChecker, self).__init__()
+    def changeDate(self):
         self.lastdatestring = self.currentDateString()
+        self.logname = self.logdir+self.channel.lstrip('#')+self.lastdatestring+'.log'
+        self.infoname = self.logdir+self.channel.lstrip('#')+self.lastdatestring+'.info'
+        self.send(self.logname, "log_next")
+        self.send(self.infoname, "info_next")
 
-    def main(self):
-        self.send(self.lastdatestring)
-        while True: 
-            yield 1
-            if self.currentDateString() != self.lastdatestring:
-                self.lastdatestring = self.currentDateString()
-                self.send(self.lastdatestring)
-
-    def currentDateString(self):
-        curtime = time.gmtime()
-        return time.strftime("%d-%m-%Y", curtime)
-#/unused code
-
-
-def LogFile(channel, prefix="", suffix=""):
-    def getfile(changybit):
-        return SimpleFileWriter(prefix+channel.lstrip('#')+changybit+suffix)
-    return getfile
 
 
 def LoggerPrefab(channel):
     return Graphline(irc = SimpleIRCClientPrefab(),
                      logger = Logger(channel),
-                     split = Fanout(("toLog", "toInfo")),
-                     log = Carousel(LogFile(channel, suffix=".log")),
-                     info = Carousel(LogFile(channel, suffix=".info")),
                      linkages = {("logger", "irc") : ("irc", "inbox"),
                                  ("irc", "outbox") : ("logger", "inbox"),
-                                 ("logger", "outbox"): ("log", "inbox"),
-                                 ("logger", "system"): ("info", "inbox"),
-
-                                 ("logger", "date") : ("split", "inbox"),
-                                 ("split", "toLog") : ("log", "next"),
-                                 ("split", "toInfo") : ("info", "next"),
                                 }
                      ) 
     
