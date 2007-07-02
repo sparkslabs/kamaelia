@@ -103,5 +103,6 @@ def requires(*methodList):
     """
     def setDependents(shard):
         shard.__requiresMethods = methodList
+        return shard
     
     return setDependents

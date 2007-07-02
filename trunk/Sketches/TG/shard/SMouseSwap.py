@@ -13,6 +13,3 @@ class ClickPrint(MouseEventHandler):
         MouseEventHandler.handleMouseUp.im_func(self, event)
         print 'hup!'
     
-    # for testing function application with non-ClickPrint objects
-    def test(self):
-        print 'testing', repr(self)
