@@ -163,3 +163,13 @@ class IRC_Client(_Axon.Component.component):
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                return True
        return self.done
+
+def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
+    return Graphline(irc = IRC_Client(),
+                  tcp = TCPClient(host, port),
+                  linkages = {("self", "inbox") : ("irc" , "talk"),
+                              ("irc", "outbox") : ("tcp" , "inbox"),
+                              ("tcp", "outbox") : ("irc", "inbox"),
+                              ("irc", "heard") : ("self", "outbox"),
+                              }
+                  )
