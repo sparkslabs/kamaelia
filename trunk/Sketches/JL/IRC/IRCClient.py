@@ -42,6 +42,8 @@ SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to e
 IRC_Client's "talk" and "heard" boxes to the prefab's "inbox" and "outbox" boxes, respectively.
 SimpleIRCClientPrefab does not terminate. 
 
+SimpleUserClientPrefab formats incoming and outcoming messages, so a user can send plain text to its "inbox",
+or IRC commands preceded by a slash ("/"), and receive formatted output from its "outbox"
 
 Example Usage
 -------------
@@ -57,10 +59,6 @@ client = Graphline(irc = IRC_Client(),
                           })
 Pipeline(ConsoleReader(), PureTransformer(informat), client, PureTransformer(outformat),
          ConsoleEchoer()).run()
-
-or
-
-Pipeline(ConsoleReader(), SimpleIRCClientPrefab(), ConsoleEchoer()).run()
 
          
 Known Issues
@@ -278,7 +276,7 @@ def channelInformat(channel):
     return (lambda text: informat(text, defaultChannel=channel))
 
 from Kamaelia.Chassis.Pipeline import Pipeline
-def SimpleIRCClientPrefab(channel='#kamtest', host='irc.freenode.net', port=6667):
+def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
     client = Graphline(irc = IRC_Client(),
                   tcp = TCPClient(host, port),
                   linkages = {("self", "inbox") : ("irc" , "talk"),
@@ -287,11 +285,11 @@ def SimpleIRCClientPrefab(channel='#kamtest', host='irc.freenode.net', port=6667
                               ("irc", "heard") : ("self", "outbox"),
                               }
                   )
+    return client
 
-    return Pipeline(PureTransformer(channelInformat(channel)),
-                    client,
-                    PureTransformer(channelOutformat(channel)))
-
+def SimpleUserClientPrefab(channel='#kamtest', **tcp_args):
+    return Pipeline(PureTransformer(informat), SimpleIRCClientPrefab(**tcp_args), PureTransformer(outformat))
+    
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    Pipeline(ConsoleReader(), SimpleIRCClientPrefab(), ConsoleEchoer()).run()
+    Pipeline(ConsoleReader(), SimpleUserClientPrefab(), ConsoleEchoer()).run()
