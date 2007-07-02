@@ -19,14 +19,58 @@
 ## Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 ## to discuss alternative licensing.
 ## -------------------------------------------------------------------------
-# This is the base version.
-# The purpose of this version is to see if a general sendCommand statement would
-#  work, and to improve display support for messages other than PRIVMSGs. 
-# The purpose of this version is to try out the IF model of message parsing.
-# The purpose of this version is to try out a more general IF model -- one
-#  general path for messages via IRC and one general path for messages received
-#  from the local user. It relays all received data to its "heard" outbox,
-#  in the form (msgtype, sender, recipient, body)
+
+"""
+==================
+Kamaelia IRC Interface
+==================
+
+IRC_Client provides an IRC interface for Kamaelia components. To send a command, send a tuple
+to its "talk" inbox in the form ('cmd', [arg1] [,arg2] [,arg3...]). E.g. ('JOIN', '#kamaelia'),
+('QUIT'), ('PRIVMSG', '#kamtest', 'hey, how's it going?'). IRC_Client will put the command into
+a form IRC servers understand, and send the data to its "outbox".
+
+IRC_Client's "inbox" takes messages from an IRC server and retransmits them to its "heard" outbox in
+tuple format. Currently each tuple has fields (command, sender, receiver, rest). This method has
+worked well so far.
+
+To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its "control" box.
+The higher-level client must send a login itself. Neither IRC_Client nor SimpleIRCClientPrefab
+will log in to the server. 
+
+SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to each other and
+IRC_Client's "talk" and "heard" boxes to the prefab's "inbox" and "outbox" boxes, respectively.
+SimpleIRCClientPrefab does not terminate. 
+
+
+Example Usage
+-------------
+
+To link IRCClient to the web::
+
+client = Graphline(irc = IRC_Client(),
+              tcp = TCPClient(host, port),
+              linkages = {("self", "inbox") : ("irc" , "talk"),
+                          ("irc", "outbox") : ("tcp" , "inbox"),
+                          ("tcp", "outbox") : ("irc", "inbox"),
+                          ("irc", "heard") : ("self", "outbox"),
+                          })
+Pipeline(ConsoleReader(), PureTransformer(informat), client, PureTransformer(outformat),
+         ConsoleEchoer()).run()
+
+or
+
+Pipeline(ConsoleReader(), SimpleIRCClientPrefab(), ConsoleEchoer()).run()
+
+         
+Known Issues
+-----------
+SimpleIRCClientPrefab does not terminate.
+Sometimes messages from the server are split up. IRC_Client does not recognize these messages
+and flags them as errors. 
+
+
+"""
 
 import Axon as _Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
@@ -57,10 +101,12 @@ class IRC_Client(_Axon.Component.component):
    
     def __init__(self):
       self.__super.__init__()
-      self.done = False
+      self.done = False #does not do anything so far
 
-      debugSections = {"IRCClient.main" : 5,
-                       "IRCClient.handleInput" : 5,
+      debugSections = {"IRCClient.main" : 0,
+                       "IRCClient.handleInput" : 0,
+                       "IRCClient.parseIRCMessage" : 0,
+                       "IRCClient.handleMessage" : 0,
                        }
       self.debugger.addDebug(**debugSections)
       
@@ -93,7 +139,7 @@ class IRC_Client(_Axon.Component.component):
                 self.send(data, "heard")
             elif len(one_line) > 0:
                 self.send(("CLIENT ERROR", 'client', '', one_line), 'heard')
-                
+                    
     def parseable(self, line):
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
             return False
@@ -110,12 +156,12 @@ class IRC_Client(_Axon.Component.component):
             if tokens[0][0] == ':':
                sender = self.extractSender(tokens[0])
                tokens = tokens[1:]
-               
+
             msgtype = tokens[0]
             recipient = tokens[1].lstrip(':')
-            if len(tokens) > 2:
+            if len(tokens) > 2 :
                body = self.extractBody(tokens[2:])
-               if 'ACTION' in body.split()[0]:
+               if body and 'ACTION' in body.split()[0]: #in case "body" is an empty string
                     msgtype = 'ACTION'
                     body = string.join(body.split()[1:])
             if msgtype == 'PING':
@@ -124,7 +170,7 @@ class IRC_Client(_Axon.Component.component):
             return (msgtype, sender, recipient, body)
         except IndexError:
             return (("CLIENT ERROR", 'client', '', line))
-
+            
     def extractSender(self, token):
         if '!' in token:
             return token[1:token.find('!')]
@@ -143,6 +189,7 @@ class IRC_Client(_Axon.Component.component):
        for param in command_tuple:
            if len(param.split()) > 1 or (len(param.split())== 1 and param[0] == ':'):
                mod_command.append(':' + param)
+               assert self.debugger.note('IRCClient.handleInput', 10, "added : to %s" % param)
            else:
                mod_command.append(param)
        mod_command[0] = mod_command[0].upper()
@@ -164,8 +211,75 @@ class IRC_Client(_Axon.Component.component):
                return True
        return self.done
 
-def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
-    return Graphline(irc = IRC_Client(),
+
+def informat(text,defaultChannel='#kamtest'):
+    if text[0] != '/' or text.split()[0] == '/': #in case we were passed "/ word words", or simply "/"
+        return ('PRIVMSG', defaultChannel, text)
+    words = text.split()
+    tag = words[0]
+    tag = tag.lstrip('/').upper()
+    if tag == 'MSG':
+        tag = 'PRIVMSG'
+    try:
+        if tag == 'QUIT' and len(words) >= 2:
+            return (tag, string.join(words[1:]))
+        elif tag in ('PRIVMSG', 'MSG', 'NOTICE', 'KILL', 'TOPIC', 'SQUERY') and len(words) >= 3:
+            return (tag, words[1], string.join(words[2:]))
+        elif tag == 'KICK' and len(words) >= 4:
+            return (tag, words[1], words[2], string.join(words[3:]))
+        elif tag == 'USER':
+            return (tag, words[1], words[2], words[3], string.join(words[4:]))
+        elif tag == 'ME' and len(words) >= 2:
+            return (tag, defaultChannel, string.join(words[1:]))
+        else: 
+            words[0] = tag
+            if tag: #only false if we were passed "/" as text
+                return words
+    except IndexError:
+        words[0] = tag
+        return words
+
+
+def outformat(data, defaultChannel='#kamtest'):
+    msgtype, sender, recipient, body = data
+    end = '\n'
+    if msgtype == 'PRIVMSG':
+        if body[0:5] == '[off]': #we don't want to log lines prefixed by "[off]"
+            return
+        text = '<%s> %s' % (sender, body)
+    elif msgtype == 'JOIN' :
+        text = '*** %s has joined %s' % (sender, recipient)
+    elif msgtype == 'PART' :
+        text = '*** %s has parted %s' % (sender, recipient)
+    elif msgtype == 'NICK':
+        text = '*** %s is now known as %s' % (sender, recipient)
+    elif msgtype == 'ACTION':
+        text = '*** %s %s' % (sender, body)
+    elif msgtype == 'TOPIC':
+        text = '*** %s changed the topic to %s' % (sender, body)
+    elif msgtype == 'QUIT': #test this, channel to outbox, not system
+        text = '*** %s has quit IRC' % (sender)
+    elif msgtype == 'MODE' and recipient == defaultChannel:
+        text = '*** %s has set channel mode: %s' % (sender, body) 
+    elif msgtype > '000' and msgtype < '400':
+        text = 'Reply %s from %s to %s: %s' % data
+    elif msgtype >= '400' and msgtype < '600':
+        text = 'Error! %s %s %s %s' % data
+    elif msgtype >= '600' and msgtype < '1000':
+        text = 'Unknown numeric reply: %s %s %s %s' % data
+    else:
+        text = '%s from %s: %s' % (msgtype, sender, body)
+    return text + end
+
+def channelOutformat(channel):
+    return (lambda data: outformat(data, defaultChannel=channel))
+
+def channelInformat(channel):
+    return (lambda text: informat(text, defaultChannel=channel))
+
+from Kamaelia.Chassis.Pipeline import Pipeline
+def SimpleIRCClientPrefab(channel='#kamtest', host='irc.freenode.net', port=6667):
+    client = Graphline(irc = IRC_Client(),
                   tcp = TCPClient(host, port),
                   linkages = {("self", "inbox") : ("irc" , "talk"),
                               ("irc", "outbox") : ("tcp" , "inbox"),
@@ -173,3 +287,11 @@ def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
                               ("irc", "heard") : ("self", "outbox"),
                               }
                   )
+
+    return Pipeline(PureTransformer(channelInformat(channel)),
+                    client,
+                    PureTransformer(channelOutformat(channel)))
+
+if __name__ == '__main__':
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+    Pipeline(ConsoleReader(), SimpleIRCClientPrefab(), ConsoleEchoer()).run()
