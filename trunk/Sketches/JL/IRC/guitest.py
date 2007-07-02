@@ -72,6 +72,9 @@ if __name__ == '__main__':
     from IRCClient import IRC_Client
     from Textbox import Textbox
     from TextDisplayer import TextDisplayer
+    
+    #to connect to IRC, you need to type "/nick yournickname" followed by "/user arg1 arg2 arg3 arg4"
+    #very fast, before the connection times out. 
 
     testfile = '/home/jlei/files/InputFormatter_test.txt'
     class LineFileReader(component):

@@ -14,7 +14,7 @@ def acceptClient(sock):
     username = userSplit[1]
     hostname = userSplit[2]
     servername = userSplit[3]
-    realname = string.join(userSplit[4], ' ')
+    realname = string.join(userSplit[4:], ' ')
     entry = {'nick': nick, 'uname': username, 'address': address,
              'hostname':hostname, 'servername':servername,
              'realname':realname}
@@ -26,12 +26,7 @@ def receive(client):
     print "Waiting for data"
     data = client.recv(1000)
     print data
-    if 'JOIN' in data:
-        info = table[client]
-        client.send(':%s!n=%s@%s.%s JOIN %s' % (info['nick'], info['uname'],
-                                               info['hostname'],
-                                               info['servername'],
-                                               data[data.find('JOIN') + 5:]))
+    return data
 
 def createSocket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,11 +43,20 @@ sock = createSocket()
 print "Waiting for client to connect"
 acceptClient(sock)
 
-    
-for i in range(4):
+done = False
+while not done:
     keys = table.keys()
     for one_key in keys:
-        receive(one_key)
+        data = receive(one_key)
+        if data == 'quit':
+            done = True
+        if 'JOIN' in data:
+            info = table[one_key]
+            one_key.send(':%s!n=%s@%s.%s JOIN %s' % (info['nick'], info['uname'],
+                                                   info['hostname'],
+                                                   info['servername'],
+                                                   data[data.find('JOIN') + 5:]))
+
     
 sock.close()
 
