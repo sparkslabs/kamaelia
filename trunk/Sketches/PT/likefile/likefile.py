@@ -40,12 +40,14 @@ on an appropriate scheduler. _addThread calls wakeThread, which places the reque
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-import Queue, threading, time, copy, Axon
+import Queue, threading, time, copy, Axon, exceptions
 queuelengths = 0
 
 
-def addBox(self, names, boxMap, addBox):
-        """Add an extra wrapped box"""
+def addBox(names, boxMap, addBox):
+        """Add an extra wrapped box called name, using the addBox function provided
+        (either self.addInbox or self.addOutbox), and adding it to the box mapping
+        which is used to coordinate message routing within componentWrapper."""
         if type(names) != tuple:
             names = (names,)
         for boxname in names:
@@ -80,7 +82,7 @@ class schedulerThread(threading.Thread):
         schedulerThread.lock.release()
 
 
-class componentWrapperWaker(Axon.ThreadedComponent.threadedcomponent):
+class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     """This is a companion to the component wrapper, which wakes up the component wrapper whenever
     information is pending on one of its queues, to avoid polling."""
     def __init__(self):
@@ -97,6 +99,9 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedcomponent):
             # by likefile, signalling that some data is waiting on a queue.
             # it doesn't matter what we send.
             self.send(object)
+            if self.dataReady("control"):
+                # send us something on an inbox to kill us.
+                return
 
 
 class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -115,10 +120,12 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.commandQueue = Queue.Queue()
 
         # set up the service that will wake us up when our queues have data.
-        self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
         self.waker = componentWrapperWaker()
-        self.addChildren(self.waker)
+        self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
+        self.wakekillername = self.addOutbox(str(id(self.waker)))
         self.link((self.waker, "outbox"), (self, self.wakeboxname))
+        self.link((self, self.wakekillername), (self.waker, "control"))
+        self.addChildren(self.waker)
 
         # parentSource:childSink
         # used to deliver information to a wrapped component from non-kamaelionic environments.
@@ -130,7 +137,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # used to retrieve information from a kamaelia system to a non-kamaelionic environment.
         self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
         if extraOutboxes:
-            addBox(extraOutoxes, self.childOutboxMapping, self.addInbox)
+            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
 
         # Now, we set up all the linkages between us and our child.
 
@@ -151,7 +158,13 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1
             # print "likefile woken for some reason."
             if self.checkWakeupReason():
-                self.pollQueues()
+                if not self.pollQueues():
+                    # we've been told to shut down.
+                    yield 1 
+                    # must yield once to allow the shutdown message time to propogate
+                    # to the waker component, since the set will instantly start it up again.
+                    self.waker.wakeUp.set()
+                    return
             # there might have been data arriving from the child and the waker in the same 
             # scheduler cycle, so always do the pending send.
             self.sendPending()
@@ -169,11 +182,13 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     except noSpaceInBox, e:
                         raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
                     if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                        return
+                        self.send(msg, self.wakekillername)
+                        return False
                         # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
                 else:
                     # if the component's inboxes are full, do something here. Preferably not succeed.
                     break
+        return True
 
     def sendPending(self):
         """This method will take any data sent to us from a child component and stick it on a queue 
@@ -222,14 +237,15 @@ class LikeFile(object):
         self.component.activate() # threadsafe, see note 1
         self.alive = True
 
-    def get(self, boxname = "outbox"):
+    def recv(self, boxname = "outbox"):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
         raises AttributeError if the LikeFile is not alive."""
         if self.alive:
             return self.outQueues[boxname].get()
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
+    get = recv # alias for backwards compatibility.
 
-    def put(self, msg, boxname = "inbox"):
+    def send(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
         if self.alive:
             self.inQueues[boxname].put_nowait(msg)
@@ -237,6 +253,7 @@ class LikeFile(object):
             # and clear the Event so that the componentWrapper knows to check for data.
             self.componentWaker.set()
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
+    put = send # alias for backwards compatibility
 
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper."""
@@ -260,10 +277,10 @@ if __name__ == "__main__":
     import time
     p = LikeFile(SimpleHTTPClient())
     p.activate()
-    p.put("http://google.com")
-    p.put("http://slashdot.org")
-    p.put("http://whatismyip.org")
+    p.send("http://google.com")
+    p.send("http://slashdot.org")
+    p.send("http://whatismyip.org")
     google = p.get()
-    slashdot = p.get()
-    whatismyip = p.get()
+    slashdot = p.recv()
+    whatismyip = p.recv()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
