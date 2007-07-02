@@ -1,7 +1,63 @@
-#!/usr/bin/env  python
-#simple scrolling textbox using Pygame
-#These components do not terminate. 
+#!/usr/bin/env python
+#
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
 
+"""
+==================
+Pygame Components for text input and display
+==================
+
+TextDisplayer displays any data it receives on a Pygame surface.
+Every new piece of data is displayed on its own line, and lines
+wrap automatically.
+
+Textbox displays user input while the user types, and sends its string buffer
+to its 'outbox' when it receives a '\n'.
+
+
+Example Usage
+-------------
+
+To take user input in Textbox and display it in TextDisplayer::
+
+Pipeline(Textbox(screen_width = 800, screen_height = 300, position = (0,0)),
+             TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340))).run()
+
+
+How does it work? 
+-----------
+TextDisplayer requests a display from the Pygame Display service and renders any text it receives onto it.
+If it receives a newline, or if text must wrap, it moves the existing text upwards and blits the
+new line onto the bottom. 
+
+Textbox registers to receive Keydown events from the Pygame Display service. It looks up the unicode
+character corresponding to each keypress and appends that character to its string buffer. It then
+wipes the display screen and updates the screen with the new string buffer. 
+
+The line wrapping length is specified by the width of the display divided by the width of the letter 'a'
+in the displayed font, so lines may wrap too far off the edge of the screen if the user types very
+narrow text (i.e. just text with no spaces), or too far inside the edge of the screen (usually).
+
+"""
 import pygame
 import time
 from Kamaelia.UI.Pygame.Display import PygameDisplay
@@ -101,7 +157,7 @@ class TextDisplayer(component):
             
 
 class Textbox(TextDisplayer):
-    "Reads keyboard input and updates it on the screen. Upon seeing \
+    "Reads keyboard input and updates it on the screen. Upon seeing 
     a newline sends the input to it's 'outbox'"
     Inboxes = {"inbox" : "for incoming lines of text",
                "_surface" : "for PygameDisplay to send surfaces to",
