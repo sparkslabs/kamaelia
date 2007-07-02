@@ -3,8 +3,7 @@ import pygame
 class Drawing:
     """
     Code adapted slightly from MagnaDoodle.py and moved into separate module
-    Inheritance from class partial causes methods to be added back to ShardMagnaDoodle
-    class at runtime
+    Methods added back to ShardMagnaDoodle using shard wrapper function at runtime
     """
     
     def displaySetup(self, bgcolour, fgcolour, margin, size, transparent, position):
