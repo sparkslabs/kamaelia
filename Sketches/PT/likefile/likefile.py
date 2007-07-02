@@ -88,6 +88,8 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponen
     def __init__(self):
         super(componentWrapperWaker, self).__init__()
         self.wakeUp = threading.Event()
+        self.shutDown = threading.Event()
+        self.shutDown.clear()
         # this is the Event on which we will wait.
 
     def main(self):
@@ -99,8 +101,8 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponen
             # by likefile, signalling that some data is waiting on a queue.
             # it doesn't matter what we send.
             self.send(object)
-            if self.dataReady("control"):
-                # send us something on an inbox to kill us.
+            # Event to indicate that we should die.
+            if self.shutDown.isSet():
                 return
 
 
@@ -122,9 +124,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # set up the service that will wake us up when our queues have data.
         self.waker = componentWrapperWaker()
         self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
-        self.wakekillername = self.addOutbox(str(id(self.waker)))
         self.link((self.waker, "outbox"), (self, self.wakeboxname))
-        self.link((self, self.wakekillername), (self.waker, "control"))
         self.addChildren(self.waker)
 
         # parentSource:childSink
@@ -159,10 +159,8 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # print "likefile woken for some reason."
             if self.checkWakeupReason():
                 if not self.pollQueues():
-                    # we've been told to shut down.
-                    yield 1 
-                    # must yield once to allow the shutdown message time to propogate
-                    # to the waker component, since the set will instantly start it up again.
+                    # we've been told to shut down, so shut down the waker component.
+                    self.waker.shutDown.set()
                     self.waker.wakeUp.set()
                     return
             # there might have been data arriving from the child and the waker in the same 
@@ -182,7 +180,6 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     except noSpaceInBox, e:
                         raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
                     if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                        self.send(msg, self.wakekillername)
                         return False
                         # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
                 else:
@@ -258,9 +255,9 @@ class LikeFile(object):
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper."""
         if self.alive: 
-            self.put(Axon.Ipc.shutdown(),               "control") # legacy support.
-            self.put(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
-            self.put(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
+            self.send(Axon.Ipc.shutdown(),               "control") # legacy support.
+            self.send(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
+            self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
         self.alive = False
@@ -280,7 +277,7 @@ if __name__ == "__main__":
     p.send("http://google.com")
     p.send("http://slashdot.org")
     p.send("http://whatismyip.org")
-    google = p.get()
+    google = p.recv()
     slashdot = p.recv()
     whatismyip = p.recv()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
