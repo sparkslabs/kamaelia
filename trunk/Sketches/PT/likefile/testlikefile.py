@@ -7,7 +7,7 @@ import unittest, random, Axon, threading, time
 
 scheduler = schedulerThread(slowmo=0.001)
 scheduler.start()
-
+randlist = [random.random() for x in xrange(0, 10)]
 
 class DyingShunt(component):
     """A component which passes all data through itself, and terminates on receipt of 
@@ -50,7 +50,6 @@ class Test_DyingShunt(unittest.TestCase):
     """A test for the test dummy component used to test likefile. If this test passes, the behaviour of DyingShunt is assumed to always work."""
     def setUp(self):
         self.oldRun = Axon.Scheduler.scheduler.run
-        self.randlist = [random.random() for x in xrange(0, 10)]
         self.scheduler = Axon.Scheduler.scheduler()
         Axon.Scheduler.scheduler.run = self.scheduler
         self.shunt = DyingShunt()
@@ -73,12 +72,12 @@ class Test_DyingShunt(unittest.TestCase):
             self.run.next()
 
     def test_passthrough(self):
-        for i in self.randlist:
+        for i in randlist:
             self.inSrc.send(i, "outbox")
             self.inSrc.send(i + 1, "signal")
             self.inSrc.send(i + 2, "extrain")
         self.runFor(20) # shouldn't terminate
-        for i in self.randlist:
+        for i in randlist:
             self.failUnless(self.outDest.recv("inbox") == i)
             self.failUnless(self.outDest.recv("control") == i + 1)
             self.failUnless(self.outDest.recv("extraout") == i + 2)
@@ -92,24 +91,72 @@ class Test_DyingShunt(unittest.TestCase):
         self.failUnless(isinstance(self.outDest.recv("control"), producerFinished)) # pass through the shutdown code
 
 
-class test_LikeFileClosure(unittest.TestCase):
-    def build(self):
+class test_LikeFile(unittest.TestCase):
+    def setUp(self):
+        self.numthreads = threading.activeCount()
+        self.numcomponents = len(Axon.Scheduler.scheduler.run.threads)
+
+    def tearDown(self):
+        # the small timeout is necessary, since the shutdown signal is sent before
+        # likefile has returned, and if we check immediately then it might not have died yet.
+        time.sleep(0.5)
+        self.failUnless(self.numcomponents == len(Axon.Scheduler.scheduler.run.threads))
+        self.failUnless(self.numthreads == threading.activeCount())
+        ## make sure also that creating then killing a likefile doesn't leave any crufty extra threads or extra scheduler entries.
+
+    def test_nop(self):
+        """Test that creating, activating, and deleting a wrapped component doesn't fail."""
         self.component = LikeFile(DyingShunt())
         self.component.activate()
-        time.sleep(0.1)
-
-    def collapse(self):
+        time.sleep(0.1) # I think this might be a threading issue - the instant shutdown is not being processed.
         self.component.shutdown()
         del self.component
 
-    def test_setup_shutdown(self):
-        """a test to make sure that there's no cruft left in a scheduler from the passing existence of
-        a likefile, assuming the wrapped component honours shutdown messages."""
-        numthreads, numcomponents = threading.activeCount, len(Axon.Scheduler.scheduler.run.threads)
-        self.build()
-        self.collapse()
+    def testmany(self):
+        compdict = dict()
+        for i in xrange(1, 10): # test 100 concurrent likefiles.
+            compdict[i] = LikeFile(DyingShunt(), extrainboxes = "extrain", extraoutboxes = "extraout")
+            compdict[i].activate()
         time.sleep(0.1)
-        self.failUnless(numcomponents == len(Axon.Scheduler.scheduler.run.threads))
+        for num, component in compdict.iteritems():
+            for i in randlist:
+                # i is a random integer between 0 and 1, so the following manipulations guarantee that each box on each
+                # component gets a different number, to eliminate crosstalk passing a test.
+                component.send(num + i, "inbox")
+                component.send(num + i % 0.5, "control")
+                component.send(num + i % 0.25, "extrain")
+        for num, component in compdict.iteritems():
+            for i in randlist:
+                self.failUnless(component.recv("outbox") == num + i)
+                self.failUnless(component.recv("signal") == num + i % 0.5)
+                self.failUnless(component.recv("extraout") == num + i % 0.25)
+        for component in compdict.itervalues():
+            component.shutdown()
+
+    def test_aborted(self):
+        """test that creating but not activating a likefile wrapper doesn't leave any cruft in the scheduler,
+        and that you can't perform IO on a pre-activated component."""
+        component = LikeFile(DyingShunt())
+        self.failUnlessRaises(AttributeError, component.recv)
+        self.failUnlessRaises(AttributeError, component.send, "boo")
+    def test_badbox(self):
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extrainboxes = "nonsense")
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraoutboxes = "nonsense")
+    def test_closed(self):
+        """test that creating, activating, and then closing a likefile wrapper will result in an object you're not
+        allowed to perform IO on."""
+        component = LikeFile(DyingShunt())
+        component.activate()
+        time.sleep(0.1)
+        component.shutdown()
+        time.sleep(0.1)
+        self.failUnlessRaises(AttributeError, component.recv)
+        self.failUnlessRaises(AttributeError, component.send, "boo")
+
+
 
 if __name__ == "__main__":
     unittest.main()
+    import sys
+    sys.tracebacklimit = 0
+    # if the interpreter exits with active threads, this spams the console and pushes anything useful off the top of the page.
