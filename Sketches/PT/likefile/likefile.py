@@ -83,94 +83,41 @@ class schedulerThread(threading.Thread):
 
 
 class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponent):
-    """This is a companion to the component wrapper, which wakes up the component wrapper whenever
-    information is pending on one of its queues, to avoid polling."""
-    def __init__(self):
+    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
+    queued data to be placed on the child's inboxes.."""
+    def __init__(self, child, extraInboxes = None):
         super(componentWrapperWaker, self).__init__()
         self.wakeUp = threading.Event()
         self.isDead = threading.Event()
         self.isDead.clear()
+        self.inQueues = dict()
+        self.child = child
+        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
+        if extraInboxes:
+            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
+        for childSink, parentSource in self.childInboxMapping.iteritems():
+            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
+            self.link((self, parentSource),(self.child, childSink))
         # this is the Event on which we will wait.
+        self.deathbox = self.addOutbox(str(id(self)))
 
     def main(self):
         while True:
             self.wakeUp.wait()
             # We were woken up, first thing to do is to reset the wakeUp event.
             self.wakeUp.clear()
-            # Now, we send a message to the component wrapper indicating that we were woken up
-            # by likefile, signalling that some data is waiting on a queue.
-            # it doesn't matter what we send.
-            self.send(object)
-            # Event to indicate that we should die.
-            if self.isDead.isSet():
+            # now, we check to see what data needs to be delivered to the child.
+            if not self.pollQueues():
+                # a False return indicates that we should shut down.
+                self.isDead.set()
+                # tells the foreground object that we've successfully processed a shutdown message.
+                # unfortunately, whether the child honours it or not is a matter of debate.
+                self.send(object, self.deathbox)
                 return
-
-
-class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
-    """A component which takes a child component and connects its boxes to queues, which communicate
-    with the LikeFile component."""
-    def __init__(self, childcomponent, extraInboxes = None, extraOutboxes = None):
-        super(componentWrapper, self).__init__()
-        self.queuelengths = queuelengths
-        self.child = childcomponent
-
-        # These queues map from the name of the box on the child which is to be wrapped,
-        # to the Queue object they represent.
-        self.inQueues = dict()
-        self.outQueues = dict()
-        self.addChildren(self.child)
-        self.commandQueue = Queue.Queue()
-
-        # set up the service that will wake us up when our queues have data.
-        self.waker = componentWrapperWaker()
-        self.isDead = self.waker.isDead
-        self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
-        self.link((self.waker, "outbox"), (self, self.wakeboxname))
-        self.addChildren(self.waker)
-
-        # parentSource:childSink
-        # used to deliver information to a wrapped component from non-kamaelionic environments.
-        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
-        if extraInboxes:
-            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
-
-        # childSource:parentSink
-        # used to retrieve information from a kamaelia system to a non-kamaelionic environment.
-        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
-        if extraOutboxes:
-            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
-
-        # Now, we set up all the linkages between us and our child.
-
-        # Now, add all the queues and link to the children. These are two
-        # unrelated operations but they use the same dict iteration.
-        for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
-            self.link((self, parentSource),(self.child, childSink))
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
-            self.link((self.child, childSource),(self, parentSink))
-
-    def main(self):
-        self.child.activate()
-        self.waker.activate()
-        while True:
-            self.pause()
-            yield 1
-            # print "likefile woken for some reason."
-            if self.checkWakeupReason():
-                if not self.pollQueues():
-                    # we've been told to shut down, so shut down the waker component.
-                    self.isDead.set()
-                    self.waker.wakeUp.set()
-                    return
-            # there might have been data arriving from the child and the waker in the same 
-            # scheduler cycle, so always do the pending send.
-            self.sendPending()
 
     def pollQueues(self):
         """This method checks all the queues from the outside world, and forwards any waiting data
-        to the child component."""
+        to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
         for childSink, parentSource in self.childInboxMapping.iteritems():
             queue = self.inQueues[childSink]
             while not queue.empty():
@@ -182,14 +129,53 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
                     if isinstance(msg, (shutdownMicroprocess, producerFinished)):
                         return False
-                        # relying on a child component to propogate a shutdown back to our own control inbox is potentially flawed.
                 else:
                     # if the component's inboxes are full, do something here. Preferably not succeed.
                     break
         return True
 
+class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    """A component which takes a child component and connects its outboxes to queues, which communicate
+    with the LikeFile component."""
+    def __init__(self, child, extraInboxes = None, extraOutboxes = None):
+        super(componentWrapper, self).__init__()
+        self.queuelengths = queuelengths
+        self.child = child
+
+        # These queues map from the name of the box on the child which is to be wrapped,
+        # to the Queue object they represent.
+
+        self.outQueues = dict()
+        self.addChildren(self.child)
+
+        # set up the service that will wake us up when our queues have data, or kill us when it's all over.
+        self.waker = componentWrapperWaker(child, extraInboxes)
+        self.isDead = self.waker.isDead
+        self.deathbox = self.addInbox(str(id(self)))
+        self.link((self.waker, self.waker.deathbox), (self, self.deathbox))
+
+
+        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
+        if extraOutboxes:
+            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
+
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
+            self.link((self.child, childSource),(self, parentSink))
+
+    def main(self):
+        self.child.activate()
+        self.waker.activate()
+        while True:
+            self.pause()
+            yield 1
+            self.sendPending()
+            if self.dataReady(self.deathbox):
+                return
+
+
     def sendPending(self):
-        """This method will take any data sent to us from a child component and stick it on a queue 
+        """This method will take any outgoing data sent to us from a child component and stick it on a queue 
         to the outside world."""
         for childSource, parentSink in self.childOutboxMapping.iteritems():
             queue = self.outQueues[childSource]
@@ -202,16 +188,6 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     break
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
-    def checkWakeupReason(self):
-        """Returns True if we were woken  up because of pending data on a Queue.
-        also prevents the wakeup box from overflowing."""
-        if self.dataReady(self.wakeboxname):
-            while self.dataReady(self.wakeboxname):
-                self.recv(self.wakeboxname)
-            return True
-        return False
-
-
 class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
@@ -222,7 +198,7 @@ class LikeFile(object):
         try: component = componentWrapper(componenttowrap, extrainboxes, extraoutboxes)
         except KeyError, e:
             raise KeyError, 'component to wrap has no such box: %s' % e
-        self.inQueues = copy.copy(component.inQueues)
+        self.inQueues = copy.copy(component.waker.inQueues)
         self.outQueues = copy.copy(component.outQueues)
 
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
