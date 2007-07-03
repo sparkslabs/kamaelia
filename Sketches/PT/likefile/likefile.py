@@ -40,7 +40,7 @@ on an appropriate scheduler. _addThread calls wakeThread, which places the reque
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-import Queue, threading, time, copy, Axon, exceptions
+import Queue, threading, time, copy, Axon, warnings
 queuelengths = 0
 
 
@@ -88,8 +88,8 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponen
     def __init__(self):
         super(componentWrapperWaker, self).__init__()
         self.wakeUp = threading.Event()
-        self.shutDown = threading.Event()
-        self.shutDown.clear()
+        self.isDead = threading.Event()
+        self.isDead.clear()
         # this is the Event on which we will wait.
 
     def main(self):
@@ -102,7 +102,7 @@ class componentWrapperWaker(Axon.ThreadedComponent.threadedadaptivecommscomponen
             # it doesn't matter what we send.
             self.send(object)
             # Event to indicate that we should die.
-            if self.shutDown.isSet():
+            if self.isDead.isSet():
                 return
 
 
@@ -123,6 +123,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # set up the service that will wake us up when our queues have data.
         self.waker = componentWrapperWaker()
+        self.isDead = self.waker.isDead
         self.wakeboxname = self.addInbox(str(id(self))) # unlikely to be a clash in names.
         self.link((self.waker, "outbox"), (self, self.wakeboxname))
         self.addChildren(self.waker)
@@ -160,7 +161,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if self.checkWakeupReason():
                 if not self.pollQueues():
                     # we've been told to shut down, so shut down the waker component.
-                    self.waker.shutDown.set()
+                    self.isDead.set()
                     self.waker.wakeUp.set()
                     return
             # there might have been data arriving from the child and the waker in the same 
@@ -195,6 +196,7 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             while self.dataReady(parentSink):
                 if not queue.full():
                     msg = self.recv(parentSink)
+                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
                     queue.put_nowait(msg)
                 else:
                     break
@@ -211,9 +213,9 @@ class componentWrapper(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 
 class LikeFile(object):
+    alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
-        self.alive = False
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
@@ -253,13 +255,17 @@ class LikeFile(object):
     put = send # alias for backwards compatibility
 
     def shutdown(self):
-        """Sends terminatory signals to the wrapped component, and shut down the componentWrapper."""
+        """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
+        will warn if the shutdown took too long to confirm in action."""
         if self.alive: 
             self.send(Axon.Ipc.shutdown(),               "control") # legacy support.
             self.send(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
             self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
+        self.component.isDead.wait(1)
+        if not self.component.isDead.isSet(): # we timed out instead of someone else setting the flag
+            warnings.warn("Timed out waiting on shutdown confirmation, may not be dead.")
         self.alive = False
 
     def __del__(self):
