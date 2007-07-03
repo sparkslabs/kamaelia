@@ -49,7 +49,7 @@ Carousel-encapsulated SimpleFileWriters. It also slaps timestamps on messages.
 It takes any keyword that BasicLogger or SimpleIRCClientPrefab will take.
 
 One can run Logger from the command line by entering::
-./Logger.py \#somechannel
+./Logger.py \#somechannel desirednickname
 """
 
 class BasicLogger(component):
@@ -170,8 +170,10 @@ def Logger(channel, formatter=TimedOutformat, name=None, logdir="", **irc_args):
     
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) > 1:
-        channel = sys.argv[1]
-    else: channel = '#kamtest'
-    print "Logging " + channel
-    Logger(channel, name="aKamaeliaBot").run()
+    channel = "#kamtest"
+    Name = "jinnaslogbot"
+    if len(sys.argv) > 1: channel = sys.argv[1]
+    if len(sys.argv) > 2: Name = sys.argv[2]
+
+    print "Logging %s as %s" % (channel, Name)
+    Logger(channel, name=Name).run()
