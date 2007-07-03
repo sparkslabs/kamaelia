@@ -26,7 +26,33 @@ LikeFile - file-like interaction with components.
 
 
 
-
+THE OUTSIDE WORLD
+     +----------------------------------+
+     |             LikeFile             |
+     +----------------------------------+
+          |                      / \
+          |                       |
+      InQueues                 OutQueues
+          |                       |
++---------+-----------------------+---------+
+|        \ /                      |         |
+|    +---------+               +--------+   |
+|    |  Input  |   Shutdown    | Output |   |
+|    | Wrapper |-------------->|        |   |
+|    | (thread)|   Message     |Wrapper |   |
+|    +---------+               +--------+   |
+|         |                      / \        |
+|         |                       |         |
+|     Inboxes                 Outboxes      |
+|         |                       |         |
+|        \ /                      |         |
+|    +----------------------------------+   |
+|    |      the wrapped component       |   |
+|    +----------------------------------+   |
+|                                           |
+|                                           |
+|  AXON SCHEDULED COMPONENTS                |
++-------------------------------------------+
 
 
 
