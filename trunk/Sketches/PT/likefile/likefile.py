@@ -47,7 +47,7 @@ queuelengths = 0
 def addBox(names, boxMap, addBox):
         """Add an extra wrapped box called name, using the addBox function provided
         (either self.addInbox or self.addOutbox), and adding it to the box mapping
-        which is used to coordinate message routing within componentWrapper."""
+        which is used to coordinate message routing within component wrappers."""
         if type(names) != tuple:
             names = (names,)
         for boxname in names:
@@ -58,9 +58,7 @@ def addBox(names, boxMap, addBox):
 
 
 class dummyComponent(Axon.Component.component):
-    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately.
-    Currently this object prevents the scheduler from cleanly exiting, but most components don't
-    exit cleanly anyway, so that's not a problem."""
+    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
     def main(self):
         while True:
             self.pause()
@@ -114,7 +112,8 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
 
     def main(self):
         while True:
-            if not self.pollQueues():
+            whatInbox = self.whatInbox.get()
+            if not self.pollQueue(whatInbox):
                 # a False return indicates that we should shut down.
                 self.isDead.set()
                 # tells the foreground object that we've successfully processed a shutdown message.
@@ -122,12 +121,11 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
                 self.send(object, self.deathbox)
                 return
 
-    def pollQueues(self):
+    def pollQueue(self, whatInbox):
         """This method checks all the queues from the outside world, and forwards any waiting data
         to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
-        childSink = self.whatInbox.get()
-        parentSource = self.childInboxMapping[childSink]
-        queue = self.inQueues[childSink]
+        parentSource = self.childInboxMapping[whatInbox]
+        queue = self.inQueues[whatInbox]
         while not queue.empty():
             if not self.outboxes[parentSource].isFull():
                 msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
@@ -161,7 +159,8 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
         self.deathbox = self.addInbox(str(id(self)))
         self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
 
-
+        # This sets up the linkages between us and our child, avoiding extra
+        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
         self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
         if extraOutboxes:
             addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
