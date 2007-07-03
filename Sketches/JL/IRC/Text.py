@@ -23,7 +23,7 @@
 
 """
 ==================
-Pygame Components for text input and display
+Pygame components for text input and display
 ==================
 
 TextDisplayer displays any data it receives on a Pygame surface. Every new piece
@@ -38,9 +38,13 @@ Example Usage
 
 To take user input in Textbox and display it in TextDisplayer::
 
-Pipeline(Textbox(screen_width = 800, screen_height = 300, position = (0,0)),
-         TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340))
-         ).run()
+    Pipeline(Textbox(screen_width = 800,
+                     screen_height = 300,
+                     position = (0,0)),
+             TextDisplayer(screen_width = 800,
+                           screen_height = 300,
+                           position = (0,340))
+             ).run()
 
 
 How does it work? 
@@ -67,12 +71,29 @@ import time
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Axon.Component import component
-from Axon.Ipc import shutdownMicroprocess, producerFinished
-from Axon.Ipc import WaitComplete
+from Axon.Ipc import shutdownMicroprocess, producerFinished, WaitComplete
 from pygame.locals import *
 
 
 class TextDisplayer(component):
+    """\
+    TextDisplayer(...) -> new TextDisplayer Pygame component.
+
+    Keyword arguments:
+
+    - screen_width     -- width of the TextDisplayer surface, in pixels.
+                          Default 500.
+    - screen_height    -- height of the TextDisplayer surface, in pixels.
+                          Default 300.
+    - text_height      -- font size. Default 18.
+    - background_color -- tuple containing RGB values for the background color.
+                          Default is a pale yellow.
+    - text_color       -- tuple containing RGB values for the text color.
+                          Default is black.
+    - position         -- tuple containing x,y coordinates of the surface's
+                          upper left corner in relation to the Pygame
+                          window. Default (0,0)
+    """
     Inboxes = {"inbox" : "for incoming lines of text",
                "_surface" : "for PygameDisplay to send surfaces to",
                "_quitevents" : "user-generated quit events",
@@ -84,6 +105,7 @@ class TextDisplayer(component):
     
     def __init__(self, screen_width=500, screen_height=300, text_height=18,
                  background_color = (255,255,200), text_color=(0,0,0), position=(0,0)):
+        """Initialises"""
         super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -94,6 +116,8 @@ class TextDisplayer(component):
         self.done = False
         
     def initPygame(self, **argd):
+        """requests a display surface from the PygameDisplay service, fills
+        the color in, and copies it"""
         displayservice = PygameDisplay.getDisplayService()
         self.link((self, "_pygame"), displayservice)
         self.send(argd, "_pygame")
@@ -116,6 +140,7 @@ class TextDisplayer(component):
         self.writeRect = pygame.Rect((0, h - th), (w, th))
 
     def main(self):
+        """Main loop"""
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
                                            size = (self.screen_width, self.screen_height),
                                            callback = (self, '_surface'),
@@ -128,6 +153,8 @@ class TextDisplayer(component):
                 self.update(line)
 
     def update(self, text):
+        """Updates text to the bottom of the screen while scrolling old text
+        upwards. Delegates most of the work to updateLine"""
         while len(text) > self.linelen:
             cutoff = text.rfind(' ', 0, self.linelen)
             if cutoff == -1:
@@ -137,6 +164,7 @@ class TextDisplayer(component):
         self.updateLine(text)
             
     def updateLine(self, line):
+        """Updates one line of text to bottom of screen, scrolling old text upwards."""
         line = line.replace('\r', ' ')
         line = line.replace('\n', ' ')
         lineSurf = self.font.render(line, True, self.text_color)    
@@ -149,6 +177,7 @@ class TextDisplayer(component):
                    "surface" : self.screen}, "_pygame")
 
     def shutdown(self):
+        """Checks for control messages"""
         while self.dataReady("control"):
             msg = self.recv("control")
             if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
@@ -161,7 +190,18 @@ class TextDisplayer(component):
             
 
 class Textbox(TextDisplayer):
-    "Reads keyboard input and updates it on the screen. Flushes string buffer and sends it to outbox when a newline is encountered."
+    """\
+    Textbox(...) -> New Pygame Textbox component
+
+    Keyword Arguments:
+    - Textbox inherits its keyword arguments from TextDisplayer. Please see
+      TextDisplayer docs.
+
+    Reads keyboard input and updates it on the screen. Flushes string buffer and
+    sends it to outbox when a newline is encountered.
+
+    """
+    
     Inboxes = {"inbox" : "for incoming lines of text",
                "_surface" : "for PygameDisplay to send surfaces to",
                "_quitevents" : "user-generated quit events",
@@ -174,11 +214,17 @@ class Textbox(TextDisplayer):
 
     string_buffer = ""
     def setText(self, text):
+        """erases the screen and updates it with text"""
         self.screen.fill(self.background_color)
         self.scratch.fill(self.background_color)
         self.update(text)
 
     def main(self):
+        """\
+        Requests a surface from PygameDisplay and registers to listen for events.
+        Then enters the main loop, which checks for Pygame events and updates
+        them to the screen.
+        """
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
                                  size = (self.screen_width, self.screen_height),
                                  callback = (self, '_surface'),
@@ -214,8 +260,13 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
     
-    Pipeline(Textbox(screen_width = 800, screen_height = 300, position = (0,0)),
-             TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340))).run()
+    Pipeline(Textbox(screen_width = 800,
+                     screen_height = 300,
+                     position = (0,0)),
+             TextDisplayer(screen_width = 800,
+                           screen_height = 300,
+                           position = (0,340))
+             ).run()
 
 if 0: #old test just involving TextDisplayer
     from Kamaelia.Chassis.Pipeline import Pipeline
