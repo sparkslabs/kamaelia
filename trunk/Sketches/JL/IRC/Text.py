@@ -26,9 +26,8 @@
 Pygame Components for text input and display
 ==================
 
-TextDisplayer displays any data it receives on a Pygame surface.
-Every new piece of data is displayed on its own line, and lines
-wrap automatically.
+TextDisplayer displays any data it receives on a Pygame surface. Every new piece
+of data is displayed on its own line, and lines wrap automatically.
 
 Textbox displays user input while the user types, and sends its string buffer
 to its 'outbox' when it receives a '\n'.
@@ -40,24 +39,29 @@ Example Usage
 To take user input in Textbox and display it in TextDisplayer::
 
 Pipeline(Textbox(screen_width = 800, screen_height = 300, position = (0,0)),
-             TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340))).run()
+         TextDisplayer(screen_width = 800, screen_height = 300, position = (0,340))
+         ).run()
 
 
 How does it work? 
 -----------
-TextDisplayer requests a display from the Pygame Display service and renders any text it receives onto it.
-If it receives a newline, or if text must wrap, it moves the existing text upwards and blits the
-new line onto the bottom. 
+TextDisplayer requests a display from the Pygame Display service and renders any
+text it receives onto it. If it receives a newline, or if text must wrap, it
+moves the existing text upwards and blits the new line onto the bottom. 
 
-Textbox registers to receive Keydown events from the Pygame Display service. It looks up the unicode
-character corresponding to each keypress and appends that character to its string buffer. It then
-wipes the display screen and updates the screen with the new string buffer. 
+Textbox registers to receive Keydown events from the Pygame Display service. It
+looks up the unicode character corresponding to each keypress and appends that
+character to its string buffer. It then wipes the display screen and updates the
+screen with the new string buffer. 
 
-The line wrapping length is specified by the width of the display divided by the width of the letter 'a'
-in the displayed font, so lines may wrap too far off the edge of the screen if the user types very
-narrow text (i.e. just text with no spaces), or too far inside the edge of the screen (usually).
-
+Known issues
+------------
+The line wrapping length is specified by the width of the display divided by the
+width of the letter 'a' in the displayed font, so lines may wrap too far off the
+edge of the screen if the user types very narrow text (i.e. just text with no
+spaces), or too far inside the edge of the screen (usually).
 """
+
 import pygame
 import time
 from Kamaelia.UI.Pygame.Display import PygameDisplay
@@ -157,8 +161,7 @@ class TextDisplayer(component):
             
 
 class Textbox(TextDisplayer):
-    "Reads keyboard input and updates it on the screen. Upon seeing 
-    a newline sends the input to it's 'outbox'"
+    "Reads keyboard input and updates it on the screen. Flushes string buffer and sends it to outbox when a newline is encountered."
     Inboxes = {"inbox" : "for incoming lines of text",
                "_surface" : "for PygameDisplay to send surfaces to",
                "_quitevents" : "user-generated quit events",
