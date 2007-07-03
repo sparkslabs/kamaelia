@@ -40,32 +40,92 @@ used to format incoming and outgoing messages.
 Example Usage
 -------------
 
-To link IRC_Client to the web::
+To link IRC_Client to the web with console input and output::
 
-client = Graphline(irc = IRC_Client(),
-              tcp = TCPClient(host, port),
-              linkages = {("self", "inbox") : ("irc" , "talk"),
-                          ("irc", "outbox") : ("tcp" , "inbox"),
-                          ("tcp", "outbox") : ("irc", "inbox"),
-                          ("irc", "heard") : ("self", "outbox"),
-                          })
-Pipeline(ConsoleReader(), PureTransformer(informat), client,
-         PureTransformer(outformat), ConsoleEchoer()).run()
+    client = Graphline(irc = IRC_Client(),
+                  tcp = TCPClient(host, port),
+                  linkages = {("self", "inbox") : ("irc" , "talk"),
+                              ("irc", "outbox") : ("tcp" , "inbox"),
+                              ("tcp", "outbox") : ("irc", "inbox"),
+                              ("irc", "heard") : ("self", "outbox"),
+                              })
+    Pipeline(ConsoleReader(),
+             PureTransformer(channelInformat("#kamtest")),
+             client,
+             PureTransformer(channelOutformat("#kamtest")),
+             ConsoleEchoer(),
+    ).run()
 
-or
+or::
 
-Pipeline(Textbox(), SimpleUserClientPrefab(), TextDisplayer(position=(0,340)).run()
+    Pipeline(Textbox(),
+             SimpleUserClientPrefab(),
+             TextDisplayer(position=(0,340)
+    ).run()
+Note: 
+The user needs to type::
+    /nick aNickName
+    /user uname server host realname
 
-How it works
+into the console before doing anything else. Be quick before the connection
+times out.
+
+Then try IRC commands preceded by a slash. Messages to the channel need not
+be preceded by anything.
+>>> /join #kamtest             
+>>> /msg nickserv identify secretpassword
+>>> /topic #kamtest Testing IRC client
+>>> Hello everyone. 
+>>> /part #kamtest
+>>> /quit
+
+This example sends all plaintext to #kamtest by default. To send to another
+channel by default, change the arguments of channelInformat and
+channelOutformat to the name of a different channel. (E.g. "#python")
+
+For a more comprehensive example, see Logger.py in Tools.
+
+How does it work?
 ------------
-To send a command, send a tuple to IRCClient's "talk" inbox in the form
-('cmd', [arg1] [,arg2] [,arg3...]). E.g. ('JOIN', '#kamaelia'), ('QUIT'),
-('PRIVMSG', '#kamtest', 'hey, how's it going?'). IRC_Client will put the
-command into a form IRC servers understand, and send the data to its "outbox".
+IRC_Client accepts commands arriving at its "talk" inbox. A command is a
+list/tuple and is in the form ('cmd', [arg1] [,arg2] [,arg3...]). IRC_Client
+retransmits these as full-fledged IRC commands to its "outbox". Arguments
+following the command are per RFC 1459 and RFC 2812. 
+
+For example,
+    ('NICK', 'Zorknpals')
+    ('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')
+    ('JOIN', '#kamaelia')
+    ('PRIVMSG', '#kamtest', 'hey, how's it going?')
+    ('TOPIC', '#cheese', "Mozzerella vs. Parmesan")
+    ('QUIT')
+    ('QUIT', "Konversation terminated!")
+    ('BERSERKER', "Lvl. 10")
+
+Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not
+complain about this, as it treats commands uniformly, but you might get
+an error 421, "ERR_UNKNOWNCOMMAND" back from the server.
+
+CTCP commands:
+    ACTION: 
+        ("ME", channel-or-user, the-action-that-you-do). 
+    MSG:
+        If you use the outformat function defined here, 'MSG' commands are
+        treated as 'PRIVMSGs'.
+    No other CTCP commands are implemented.
+
 
 IRC_Client's "inbox" takes messages from an IRC server and retransmits them to
 its "heard" outbox in tuple format. Currently each tuple has fields (command,
 sender, receiver, rest). This method has worked well so far.
+
+Example output:
+    ('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode
+        IRC Network jinnaslogbot')
+    ('NOTICE', '', 'jinnaslogbot', '***Checking ident')
+    ('PRIVMSG', 'jlei_', '#kamtest', 'stuff')
+    ('PART', 'kambot', '#kamtest', 'see you later)
+    ('ACTION', 'jinnaslogbot',  '#kamtest', 'does the macarena')
 
 To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its
 "control" box. The higher-level client must send a login itself and respond to
@@ -78,7 +138,6 @@ The prefabs do not terminate.
 Sometimes messages from the server are split up. IRC_Client does not recognize
 these messages and flags them as errors. 
 
-
 """
 
 import Axon as _Axon
@@ -89,16 +148,9 @@ from Kamaelia.Util.PureTransformer import PureTransformer
 import string
 
 class IRC_Client(_Axon.Component.component):
-    """\
-      This is the base client. It is broken in the same was as
-      the earliest internet handling code was. In many respects this
-      is the logical counterpart to a TCPServer which upon connection
-      should spawn the equivalent of a Connected Socket Adaptor. 
-
-      Specifically - consider that in order to make this work "properly"
-      it needs to handle the chat session multiplexing that happens by
-      default in IRC. There are MANY ways this could be achieved.
-     """
+    """
+      IRC_Client() -> new IRC_Client component
+    """
     Inboxes = {"inbox":"incoming message strings from the server",
               "control":"shutdown handling",
               "talk":"takes tuples to be turned into IRC commands ",
@@ -109,18 +161,19 @@ class IRC_Client(_Axon.Component.component):
                "heard" : "parsed tuples of messages from the server"}
    
     def __init__(self):
-      self.__super.__init__()
-      self.done = False #does not do anything so far
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        self.__super.__init__()
+        self.done = False #does not do anything so far
 
-      debugSections = {"IRCClient.main" : 0,
+        debugSections = {"IRCClient.main" : 0,
                        "IRCClient.handleInput" : 0,
                        "IRCClient.parseIRCMessage" : 0,
                        "IRCClient.handleMessage" : 0,
                        }
-      self.debugger.addDebug(**debugSections)
+        self.debugger.addDebug(**debugSections)
       
     def main(self):
-        "Handling here is still in progress. :)"
+        "Main loop"
         while not self.shutdown():
            data=""
            if self.dataReady("talk"):
@@ -150,13 +203,13 @@ class IRC_Client(_Axon.Component.component):
                 self.send(("CLIENT ERROR", 'client', '', one_line), 'heard')
                     
     def parseable(self, line):
+        """weeds out empty lines and broken lines""" 
         if len(line) > 0 and len(line.split()) <= 1 and line[0] == ':':
             return False
         return len(line) > 0
        
     def parseIRCMessage(self, line):
-        """Assumes most lines in the format of :nick!username MSGTYPE recipient :message.
-           Returns a tuple (message type, sender, recipient, other params)."""
+        """Takes server messages and returns a tuple (message type, sender, recipient, other params)."""
         tokens = line.split()
         sender = ""
         recipient = ""
@@ -182,12 +235,14 @@ class IRC_Client(_Axon.Component.component):
             return (("CLIENT ERROR", 'client', '', line))
             
     def extractSender(self, token):
+        """extracts sender from message"""
         if '!' in token:
             return token[1:token.find('!')]
         else:
             return token[1:]
 
     def extractBody(self, tokens):
+        """returns a string from the joined tokens with the leading colon stripped"""
         body =  string.join(tokens, ' ')
         if body[0] == ':':
             return body[1:]
@@ -195,26 +250,28 @@ class IRC_Client(_Axon.Component.component):
             return body
 
     def handleInput(self, command_tuple):
-       mod_command = []
-       for param in command_tuple:
+        """turns an input tuple into an IRC message and sends it out"""
+        mod_command = []
+        for param in command_tuple:
            if len(param.split()) > 1 or (len(param.split())== 1 and param[0] == ':'):
                mod_command.append(':' + param)
                assert self.debugger.note('IRCClient.handleInput', 10, "added : to %s" % param)
            else:
                mod_command.append(param)
-       mod_command[0] = mod_command[0].upper()
+        mod_command[0] = mod_command[0].upper()
 
-       if mod_command[0] == 'ME' and len(mod_command) > 2:
+        if mod_command[0] == 'ME' and len(mod_command) > 2:
            assert self.debugger.note('IRCClient.handleInput', 10, str(mod_command))
            send = 'PRIVMSG %s :\x01ACTION %s\x01' % (mod_command[1], mod_command[2].lstrip(':'))
-       elif mod_command[0] == 'ACTION':
+        elif mod_command[0] == 'ACTION':
            send = 'PRIVMSG %s :\x01ACTION\x01' % mod_command[1]
-       else: send = string.join(mod_command)
-       
-       assert self.debugger.note('IRCClient.handleInput', 5, send)
-       self.send(send + '\r\n')
+        else: send = string.join(mod_command)
+
+        assert self.debugger.note('IRCClient.handleInput', 5, send)
+        self.send(send + '\r\n')
 
     def shutdown(self):
+       """checks for control messages"""
        while self.dataReady("control"):
            msg = self.recv("control")
            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
@@ -223,6 +280,10 @@ class IRC_Client(_Axon.Component.component):
 
 
 def informat(text,defaultChannel='#kamtest'):
+    """\
+    Puts a string input into tuple format for IRC_Client.
+    Understands irc commands preceded by a slash ("/")
+    """
     if text[0] != '/' or text.split()[0] == '/': #in case we were passed "/ word words", or simply "/"
         return ('PRIVMSG', defaultChannel, text)
     words = text.split()
@@ -251,11 +312,14 @@ def informat(text,defaultChannel='#kamtest'):
 
 
 def outformat(data, defaultChannel='#kamtest'):
+    """\
+    Takes tuple output from IRC_Client and formats for easier reading.
+    If a plaintext is received, outformat treats it as a privmsg intended for
+    defaultChannel (default "#kamtest").
+    """
     msgtype, sender, recipient, body = data
     end = '\n'
     if msgtype == 'PRIVMSG':
-        if body[0:5] == '[off]': #we don't want to log lines prefixed by "[off]"
-            return
         text = '<%s> %s' % (sender, body)
     elif msgtype == 'JOIN' :
         text = '*** %s has joined %s' % (sender, recipient)
@@ -282,13 +346,24 @@ def outformat(data, defaultChannel='#kamtest'):
     return text + end
 
 def channelOutformat(channel):
+    """returns outformat with the specified channel as the default channel"""
     return (lambda data: outformat(data, defaultChannel=channel))
 
 def channelInformat(channel):
+    """returns informat with the specified channel as the default channel"""
     return (lambda text: informat(text, defaultChannel=channel))
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
+    """\
+    SimpleIRCClientPrefab(...) -> IRC_Client connected to tcp via a Graphline.
+    Routes its "inbox" to IRC_Client's "talk" and IRC_Client's "heard" to
+    "outbox"
+
+    Keyword arguments:
+    - host -- the server to connect to. Default irc.freenode.net
+    - port -- the port to connect on. Default 6667.
+    """
     client = Graphline(irc = IRC_Client(),
                   tcp = TCPClient(host, port),
                   linkages = {("self", "inbox") : ("irc" , "talk"),
@@ -300,8 +375,14 @@ def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
     return client
 
 def SimpleUserClientPrefab(**tcp_args):
+    """Pipelines PureTransformer(informat) to
+       SimpleIRCClientPrefab(**tcp_args) to
+       PureTransformer(outformat)"""
     return Pipeline(PureTransformer(informat), SimpleIRCClientPrefab(**tcp_args), PureTransformer(outformat))
     
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    Pipeline(ConsoleReader(), SimpleUserClientPrefab(), ConsoleEchoer()).run()
+    Pipeline(ConsoleReader(),
+             SimpleUserClientPrefab(),
+             ConsoleEchoer()).run()
+    #user needs to type "/nick yournickname" followed by "/user arg1 arg2 arg3 arg4" really fast here
