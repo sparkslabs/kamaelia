@@ -24,31 +24,23 @@
 ==================
 Kamaelia IRC Interface
 ==================
+IRC_Client provides an IRC interface for Kamaelia components.
 
-IRC_Client provides an IRC interface for Kamaelia components. To send a command, send a tuple
-to its "talk" inbox in the form ('cmd', [arg1] [,arg2] [,arg3...]). E.g. ('JOIN', '#kamaelia'),
-('QUIT'), ('PRIVMSG', '#kamtest', 'hey, how's it going?'). IRC_Client will put the command into
-a form IRC servers understand, and send the data to its "outbox".
+SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to
+each other and IRC_Client's "talk" and "heard" boxes to the prefab's "inbox"
+and "outbox" boxes, respectively. SimpleIRCClientPrefab does not terminate.
 
-IRC_Client's "inbox" takes messages from an IRC server and retransmits them to its "heard" outbox in
-tuple format. Currently each tuple has fields (command, sender, receiver, rest). This method has
-worked well so far.
+SimpleUserClientPrefab formats incoming and outcoming messages, so a user
+can send plain text to its "inbox", or IRC commands preceded by a slash ("/"),
+and receive formatted output from its "outbox"
 
-To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its "control" box.
-The higher-level client must send a login itself. Neither IRC_Client nor SimpleIRCClientPrefab
-will log in to the server. 
-
-SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to each other and
-IRC_Client's "talk" and "heard" boxes to the prefab's "inbox" and "outbox" boxes, respectively.
-SimpleIRCClientPrefab does not terminate. 
-
-SimpleUserClientPrefab formats incoming and outcoming messages, so a user can send plain text to its "inbox",
-or IRC commands preceded by a slash ("/"), and receive formatted output from its "outbox"
+The functions informat, outformat, channelInformat, and channelOutformat can be
+used to format incoming and outgoing messages.
 
 Example Usage
 -------------
 
-To link IRCClient to the web::
+To link IRC_Client to the web::
 
 client = Graphline(irc = IRC_Client(),
               tcp = TCPClient(host, port),
@@ -57,15 +49,34 @@ client = Graphline(irc = IRC_Client(),
                           ("tcp", "outbox") : ("irc", "inbox"),
                           ("irc", "heard") : ("self", "outbox"),
                           })
-Pipeline(ConsoleReader(), PureTransformer(informat), client, PureTransformer(outformat),
-         ConsoleEchoer()).run()
+Pipeline(ConsoleReader(), PureTransformer(informat), client,
+         PureTransformer(outformat), ConsoleEchoer()).run()
 
-         
+or
+
+Pipeline(Textbox(), SimpleUserClientPrefab(), TextDisplayer(position=(0,340)).run()
+
+How it works
+------------
+To send a command, send a tuple to IRCClient's "talk" inbox in the form
+('cmd', [arg1] [,arg2] [,arg3...]). E.g. ('JOIN', '#kamaelia'), ('QUIT'),
+('PRIVMSG', '#kamtest', 'hey, how's it going?'). IRC_Client will put the
+command into a form IRC servers understand, and send the data to its "outbox".
+
+IRC_Client's "inbox" takes messages from an IRC server and retransmits them to
+its "heard" outbox in tuple format. Currently each tuple has fields (command,
+sender, receiver, rest). This method has worked well so far.
+
+To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its
+"control" box. The higher-level client must send a login itself and respond to
+pings. IRC_Client will not do this automatically. 
+
+
 Known Issues
 -----------
-SimpleIRCClientPrefab does not terminate.
-Sometimes messages from the server are split up. IRC_Client does not recognize these messages
-and flags them as errors. 
+The prefabs do not terminate.
+Sometimes messages from the server are split up. IRC_Client does not recognize
+these messages and flags them as errors. 
 
 
 """
@@ -158,10 +169,11 @@ class IRC_Client(_Axon.Component.component):
             msgtype = tokens[0]
             recipient = tokens[1].lstrip(':')
             if len(tokens) > 2 :
-               body = self.extractBody(tokens[2:])
-               if body and 'ACTION' in body.split()[0]: #in case "body" is an empty string
-                    msgtype = 'ACTION'
-                    body = string.join(body.split()[1:])
+                body = self.extractBody(tokens[2:])
+                if body:
+                    if 'ACTION' in body.split()[0]:
+                         msgtype = 'ACTION'
+                         body = string.join(body.split()[1:])
             if msgtype == 'PING':
                 sender =  recipient
                 recipient = ""
@@ -287,7 +299,7 @@ def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
                   )
     return client
 
-def SimpleUserClientPrefab(channel='#kamtest', **tcp_args):
+def SimpleUserClientPrefab(**tcp_args):
     return Pipeline(PureTransformer(informat), SimpleIRCClientPrefab(**tcp_args), PureTransformer(outformat))
     
 if __name__ == '__main__':
