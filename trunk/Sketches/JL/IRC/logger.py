@@ -4,11 +4,45 @@ from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Component import component
-from guitest import outformat
+from IRCClient import outformat
 from IRCClient import SimpleIRCClientPrefab
-import time
+import time, os
 
-class Logger(component):
+"""\
+=============
+IRC Channel Logger
+=============
+Logger writes all channel traffic to two files in the specified directory. The filenames are in the format
+"givenchannelnameDD-MM-YYYY.log" and "givenchannelnameDD-MM-YYYY.info".
+
+BasicLogger writes all channel output to its "outbox" and all other messages to its "system" box. 
+
+Example Usage
+-------------
+To log the channel #sillyputty on server my.server.org::
+Logger('#kamtest', host="my.server.org").run()
+
+How it works
+-------------
+BasicLogger sends messages to IRC via its "irc" outbox, allowing it to log in and send responses.
+Once per loop, it checks the current date against its stored date. If the date has changed, then
+it changes the name of its logfiles to reflect the new date and sends the new names to "log_next" and
+"info_next". This can be used in conjunction with a Carousel to create a new logfile and close the old one.
+
+BasicLogger separates channel traffic from all other traffic, sending channel messages to its "outbox"
+and everything else to its "system" box.
+
+BasicLogger responds to several private messages. So far, these include "logfile," "infofile", "help",
+"date," and "dance." It will not record messages prefixed by "[off]". 
+
+By default BasicLogger uses ::outformat::, defined in IRCClient, to format messages from SimpleIRCClientPrefab
+before writing to the log. To format messages differently, pass in a different function to its "formatter"
+keyword. 
+
+Logger simply links BasicLogger with a SimpleIRCClientPrefab and two Carousel-encapsulated SimpleFileWriters.
+It takes any keyword that BasicLogger or SimpleIRCClientPrefab takes. 
+"""
+class BasicLogger(component):
     
     Outboxes = {"irc" : "to IRC, for user responses and login",
                 "outbox" : "What we're interested in, the traffic over the channel",
@@ -20,11 +54,12 @@ class Logger(component):
                 }
 
     def __init__(self, channel, formatter=outformat, name="jinnaslogbot", logdir=""):
-        super(Logger, self).__init__()
+        super(BasicLogger, self).__init__()
         self.channel = channel
         self.format = formatter
         self.name = name
-        self.logdir = logdir
+        self.logdir = logdir.rstrip('/') or os.getcwd()
+        self.logdir = self.logdir + '/'
         self.logname = ""
         self.infoname = ""
 
@@ -60,8 +95,8 @@ class Logger(component):
                 if data[2] == self.channel and formatted_data: #format might return None
                     self.send(formatted_data, "outbox")
                 elif formatted_data:
-                    self.respond(data) 
                     self.send(formatted_data, "system")
+                    self.respond(data) 
 
     def respond(self, msg):
         if msg[0] == 'PRIVMSG' and msg[2] == self.name:
@@ -98,13 +133,19 @@ class Logger(component):
 
 
 
-def LoggerPrefab(channel):
-    return Graphline(irc = SimpleIRCClientPrefab(),
-                     logger = Logger(channel),
+def Logger(channel, formatter=None, name=None, logdir=None, **irc_args):
+    return Graphline(irc = SimpleIRCClientPrefab(**irc_args),
+                     logger = BasicLogger(channel),
+                     log = Carousel(SimpleFileWriter),
+                     info = Carousel(SimpleFileWriter),
                      linkages = {("logger", "irc") : ("irc", "inbox"),
                                  ("irc", "outbox") : ("logger", "inbox"),
+                                 ("logger", "log_next") : ("log", "next"),
+                                 ("logger", "outbox") : ("log", "inbox"),
+                                 ("logger", "info_next") : ("info", "next"),
+                                 ("logger", "system") : ("info", "inbox"),
                                 }
                      ) 
     
 if __name__ == '__main__':
-    LoggerPrefab('#kamtest').run()
+    Logger('#kamtest').run()
