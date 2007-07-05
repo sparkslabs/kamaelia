@@ -10,7 +10,7 @@ York over the last few years :)
 TODO: add caching component
 """
 
-class GetData(Axon.Component.component):
+class GetData(Axon.ThreadedComponent.threadedcomponent):
     """
     Connects to weather data source and formats retrieved data
     """
@@ -42,7 +42,6 @@ class GetData(Axon.Component.component):
                 d, m, y = self.recv()
                 msg = self.format( self.getFile(m, y) , int(d))
                 self.send(msg)
-            yield 1
             
 
 class Query(Axon.Component.component):
