@@ -115,7 +115,7 @@ class CMagnaDoodle(Axon.Component.component):
          self.pause()
          yield 1
 
-__kamaelia_components__  = ( ShardMagnaDoodle, )
+__kamaelia_components__  = ( CMagnaDoodle, )
 
 # import shards
 from SMouseEventHandling import *

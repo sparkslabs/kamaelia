@@ -1,5 +1,4 @@
 import inspect
-import re
 
 """
 Code generation stuff. Can componentise later.
@@ -151,7 +150,7 @@ def makeboxes(inboxes = True, default = True, **boxes):
     for boxnm, val in boxes.items():
         lines += [pre + '\"' + boxnm + '\": ' + val + ',' + nl]
         
-    return lines + [pre[:-1] + "}\n"]  #line up and add closing brace
+    return lines + [pre[:-2] + "}\n"]  #line up and add closing brace
 
 
 def getshard(function, indentlevel = 1):
@@ -169,21 +168,20 @@ def getshard(function, indentlevel = 1):
     lines = inspect.getsource(function).splitlines(True)[1:]
         
     # remove any whitespace lines at start
-    while lines[0].isspace():
-        lines = lines[1:]
+    while lines[0].isspace(): lines.pop(0)
     
     # remove docstrings
     while True:
         if lines[0].count(r'"""') % 2 == 1:
-            lines = lines[1:]  # remove line with opening doctag
+            lines.pop(0)  # remove line with opening doctag
             while lines[0].count(r'"""') % 2 == 0:
-                lines = lines[1:]  # remove lines till tag match
-            lines = lines[1:] # remove matching tag
+                lines.pop(0)  # remove lines till tag match
+            lines.pop(0) # remove matching tag
         
         if lines[0].count(r'"""') == 0:
             break  # no docstring, start of code
         else:  # docstring tags closed, continue till code line found
-            lines = lines[1:]
+            lines.pop(0)
     
     return setindent(lines, indentlevel)
 
@@ -202,7 +200,7 @@ def annotateshard(shardcode, shardname, indentlevel = 1, delimchar = '-'):
     Returns:
     list of lines of code surrounded by delimiter comments as specified
     """
-    # need to add indentation at start
+
     start = r"# START SHARD: " + shardname + " "
     start = setindent([start], indentlevel+1)[0]  # adjust ind level, no raw indent on string
     start = start.ljust(80, delimchar) + "\n"
