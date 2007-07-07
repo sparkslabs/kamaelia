@@ -81,6 +81,7 @@ def addBox(names, boxMap, addBox):
                 raise ValueError, "%s %s already exists!" % (direction, boxname)
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
+            
 
 
 class dummyComponent(Axon.Component.component):
@@ -126,15 +127,27 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
+        self.childInboxMapping = dict()
+        self.wrapChildInbox(("inbox", "control"))
         if extraInboxes:
-            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
-        for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
-            self.link((self, parentSource),(self.child, childSink))
+            self.wrapChildInbox(extraInboxes)
 
         # This outbox is used to tell the output wrapper when to shut down.
         self.deathbox = self.addOutbox(str(id(self)))
+
+
+    def wrapChildInbox(self, inbox):
+        """This method takes the name (or a tuple of names) of an inbox on the child and adds
+        all the appropriate queues and linkages and so on, so that the inbox
+        is handled properly on the next iteration."""
+        if type(inbox) == str:
+            inbox = (inbox, )
+        for boxname in inbox:
+            realboxname = self.addOutbox(boxname)
+            self.childInboxMapping[boxname] = realboxname
+            self.inQueues[boxname] = Queue.Queue(self.queuelengths)
+            self.link((self, realboxname), (self.child, boxname))
+            
 
     def main(self):
         while True:
@@ -187,13 +200,24 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
+        self.childOutboxMapping = dict()
+        self.wrapChildOutbox(("outbox", "signal"))
         if extraOutboxes:
-            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
+            self.wrapChildOutbox(extraOutboxes)
 
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
-            self.link((self.child, childSource),(self, parentSink))
+
+    def wrapChildOutbox(self, outbox):
+        """This method takes the name (or a tuple of names) of an outbox on the child and adds
+        all the appropriate queues and linkages and so on, so that the outbox
+        is handled properly on the next iteration."""
+        if type(outbox) == str:
+            outbox = (outbox, )
+        for boxname in outbox:
+            realboxname = self.addInbox(boxname)
+            self.childOutboxMapping[boxname] = realboxname
+            self.outQueues[boxname] = Queue.Queue(self.queuelengths)
+            self.link((self.child, boxname), (self, realboxname))
+
 
     def main(self):
         self.child.activate()
