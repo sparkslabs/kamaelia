@@ -7,8 +7,26 @@ Set of components to answer queries about the weather in
 York over the last few years :)
 *See: http://www.amp.york.ac.uk/external/weather/newdata.html
 
-TODO: add caching component
+TODO:
+add caching component
+add date bounds checking
 """
+
+class request(object):
+    
+    def __new__(self, day, month, year, v = None, st = None):
+        self.day = day
+        self.month = month
+        self.year = year
+        self.v = v
+        self.st = st
+        #error check
+        if error:
+            return "invalid request"
+        if nodata:
+            return "no data for request"
+        else:
+            return super(request, self).__new__()
 
 class GetData(Axon.ThreadedComponent.threadedcomponent):
     """
@@ -17,7 +35,9 @@ class GetData(Axon.ThreadedComponent.threadedcomponent):
     
     Inboxes = { "inbox": "incoming data requests of (day, month, year)",
                         "control": "receive shutdown messages"}
-    Outboxes = { "outbox": "outgoing data retrieved" }
+    Outboxes = { "outbox": "outgoing data retrieved",
+                           "signal": "outgoing shutdown messages"
+                       }
     
     def __init__(self):
         super(GetData, self).__init__()
@@ -37,7 +57,8 @@ class GetData(Axon.ThreadedComponent.threadedcomponent):
     def main(self):
         while True:
             if self.dataReady("control"): # handle shutdown
-                self.stop()
+                self.send(self.recv("control"), "signal")
+                return
             elif self.dataReady(): # handle data requests
                 d, m, y = self.recv()
                 msg = self.format( self.getFile(m, y) , int(d))
@@ -114,7 +135,7 @@ class Query(Axon.Component.component):
         while True:  # handle shutdown
             if self.dataReady("control"):
                 self.send(self.recv("control"), "signal")
-                self.stop()
+                return
             else: # receive requests and send queries
                 if self.dataReady("requests"):
                     d, m, y, v, st = self.recv("requests")
@@ -144,7 +165,8 @@ class ReadLoop(Axon.Component.component):
     and prints replies
     """
     
-    Inboxes = { "inbox": "incoming weather data" }
+    Inboxes = { "inbox": "incoming weather data",
+                        "stdin": "incoming console input"}
     Outboxes = { "outbox": "outgoing data queries of (day, month, year, v, st) ",
                            "signal": "send shutdown messages"}
     
@@ -164,27 +186,29 @@ enter \'quit\' to exit"
             if self.dataReady(): # print any responses available
                 for line in self.recv():
                     print line
-                    
-            s = stdin.readline()
-            if 'quit' in s: # handle shutdown
-                self.send("shutdown", "signal")
-                self.stop()
-            else: # format and send input query
-                s = s.split()
-                if len(s) == 5:
-                    self.send(s)
-                if len(s) == 4:
-                    self.send(s + [None])
-                if len(s) == 3:
-                    self.send(s + [None, None])
-            yield 1
+            if self.dataReady("stdin"):
+                s = self.recv("stdin")
+                if 'quit' in s: # handle shutdown
+                    self.send("shutdown", "signal")
+                    return
+                else: # format and send input query
+                    s = s.split()
+                    if len(s) == 5:
+                        self.send(s)
+                    if len(s) == 4:
+                        self.send(s + [None])
+                    if len(s) == 3:
+                        self.send(s + [None, None])
+                yield 1
 
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Util.Console import ConsoleReader
     
-    Graphline( RL = ReadLoop(), Q = Query(), GD = GetData(),
-                        linkages = {('RL',  "outbox")  : ('Q', "requests"),
+    Graphline( CR = ConsoleReader(), RL = ReadLoop(), Q = Query(), GD = GetData(),
+                        linkages = {('CR', "outbox") : ('RL', "stdin"),
+                                            ('RL',  "outbox")  : ('Q', "requests"),
                                             ('Q', "answers")  : ('RL', "inbox"),
                                             ('GD', "outbox")  : ('Q',  "data"),
                                             ('Q',  "queries")  : ('GD', "inbox"),
@@ -193,4 +217,4 @@ if __name__ == '__main__':
                                             ('Q', "signal") : ('GD', "control")
                                           }
                        ).run()
-    
+                       
