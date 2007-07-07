@@ -7,30 +7,28 @@ Code generation stuff. Can componentise later.
 indentation = "    "
 nl = "\n"
 
-def setindent(lines, level = 1):
+def indent(lines, level = 1):
     """
     Indents strings with spaces
     
     Arguments:
-    strings = list of strings, assumed to be indented one level already,
-                   as input from calling getsource() on a free function
+    strings = list of strings, as input from calling getsource()
+                   on a free function
     level = number of levels to be indented, defaults to 1
     
     Returns:
     list of strings prefixed by specified amount of whitespace
     """
     
-    if level == 1:
-        return lines
+    if level < 0:
+        level = -level
+        return [ line[len(indentation*level):] for line in lines ]
         
     elif level == 0: # need to remove raw indentation of 1 level
-        return [ line[len(indentation):] for line in lines ]
+        return lines
     
-    elif level > 1: # need to add indentation
-        return [indentation*(level-1) + line for line in lines]
-    
-    else:
-        raise TypeError, "level must be a positive integer or zero"
+    elif level > 0: # need to add indentation
+        return [indentation*level + line for line in lines]
 
 
 def importmodules(*modulenames, **importfrom):
@@ -153,13 +151,60 @@ def makeboxes(inboxes = True, default = True, **boxes):
     return lines + [pre[:-2] + "}\n"]  #line up and add closing brace
 
 
-def getshard(function, indentlevel = 1):
+def makearglist(args, kwargs, exarg = None, exkwarg = None):
+    """
+    Generates argument list for a function
+    
+    Arguments
+    """
+    
+    arglist = ""
+    
+    if args:
+        for arg in args:
+            arglist += arg + ', '
+    
+    if kwargs:
+        for kw, val in kwargs.items():
+            arglist += kw + ' = ' + val + ', '
+        
+    if exarg:
+        arglist += '*'+exarg+', '
+        
+    if exkwarg:
+        arglist += '**'+exkwarg+', '
+        
+    return arglist[:-2]
+
+
+def makefunction(name, args, kwargs, exarg = None, exkwarg = None, *shardlist):
+    """
+    Generate code for a new function
+    
+    Arguments:
+    name = string of function name
+    args = named arguments as strings
+    kwargs = keyword arguments mapped to their default values
+    exarg = name of an 'extra arguments' parameter, default None (not included)
+    exkwarg = name of an 'extra keyword arguments' parameter, default None
+    shardlist = list of shards to be pasted into the body of the function    ----------------->>  hmm...
+    """
+    ## shardlist - need a construct to make imported shards/code lines/functions
+    ## and constructed shards equivalent
+    
+    args = makearglist(args, kwargs, exarg, exkwarg)
+    defline = "def "+name+"("+args+"):\n"
+    
+    return defline
+
+
+def getshard(function, indentlevel = 0):
     """
     Gets shard code for generation
     
     Arguments:
     function = shard function to get
-    indentlevel = level of indentation prefixed to lines, default is 1
+    indentlevel = level of indentation prefixed to lines, default is 0
     
     Returns:
     list of lines of code, indented as specified
@@ -183,17 +228,19 @@ def getshard(function, indentlevel = 1):
         else:  # docstring tags closed, continue till code line found
             lines.pop(0)
     
-    return setindent(lines, indentlevel)
+    i = len(lines[0]) - len(lines[0].lstrip())
+    
+    return indent([ line[i:] for line in lines ], indentlevel)
 
 
-def annotateshard(shardcode, shardname, indentlevel = 1, delimchar = '-'):
+def annotateshard(shardcode, shardname, indentlevel = 0, delimchar = '-'):
     """
     Marks out start and end of shard code with comments
     
     Arguments:
     shardcode = list of lines of code, e.g. in form given by getshard()
     shardname = string containing name of shard
-    indentlevel = indentation level of delimiter comments, default of 1
+    indentlevel = indentation level of delimiter comments, default of 0
     delimchar = single character string containing character to be used
                         in marking out shard limit across the page
     
@@ -202,11 +249,11 @@ def annotateshard(shardcode, shardname, indentlevel = 1, delimchar = '-'):
     """
 
     start = r"# START SHARD: " + shardname + " "
-    start = setindent([start], indentlevel+1)[0]  # adjust ind level, no raw indent on string
+    start = indent([start], indentlevel)[0]
     start = start.ljust(80, delimchar) + "\n"
     
     end = r"# END SHARD: " + shardname + " "
-    end = setindent([end], indentlevel+1)[0]
+    end = indent([end], indentlevel)[0]
     end = end.ljust(80, delimchar) + "\n"
     
     return [start] + shardcode + [end]
