@@ -1,7 +1,51 @@
 import Shard
 
+"""
+Makes class shards
+"""
+
+indentation = "    "
+nl = "\n"
+
 class classShard(Shard.shard):
-    def makeclass(name, superclasses = None):
+    
+    def __init__(self, clsname, superclasses = [], docstring = '', inboxes = {},
+                        outboxes = {}, shards = [], indent = 0):
+        """
+        Creates a class as a shard from given components
+        
+        Arguments:
+        clsname = name of class as string
+        superclasses = sequence of class names to inherit from. If empty
+                                or unspecified, this will default to 'object'
+        docstring = formatted string of comments, default
+        inboxes = dict of inbox names to default values, generally a description.
+                         Default (inbox, control) boxes are always generated
+        outboxes = dict of outbox names to default values, generally a description.
+                           Default (outbox, signal) boxes are always generated
+        shards = list of shards (any of shard objects, lines of code, function names)
+                       to form body of class, i.e. class variables and methods.
+                       Note: methods should be given as appropriate function shards,
+                       function objects have the body of the function imported only
+        indent = level of indentation at which to begin class statement (body of
+                      class indented automatically). Defaults to 0
+        
+        Returns:
+        shard object containing a definition of the class as specified
+        """
+        
+        bodyind = indent+1
+        super(classShard, self).__init__(name = clsname, indent = bodyind, shards = shards)
+        
+        defline = self.addindent(self.makeclass(clsname, superclasses), indent)
+        docstr = self.addindent(self.makedoc(docstring) if docstring else [], bodyind)
+        inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), bodyind)
+        outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), bodyind)
+        
+        self.code = defline + docstr + inboxes + outboxes + [nl] + self.code
+    
+    
+    def makeclass(self, name, superclasses = None):
         """
         Creates class statement
     
@@ -26,7 +70,7 @@ class classShard(Shard.shard):
         return [str + "):" + nl]
 
 
-    def makedoc(doc):
+    def makedoc(self, doc):
         """
         Creates docstring
     
@@ -42,7 +86,7 @@ class classShard(Shard.shard):
         return docstr.splitlines(True)
 
 
-    def makeboxes(inboxes = True, default = True, **boxes):
+    def makeboxes(self, inboxes = True, default = True, boxes = {}):
         """
         Makes in and outboxes.
     
@@ -50,8 +94,8 @@ class classShard(Shard.shard):
         inboxes = True if inboxes are to be made (default), False if outboxes wanted
         default = make standard in and control boxes (Inbox) or out and signal
                         boxes (Outbox) as appropriate, default is True
-        ** boxes = additional boxnames with default values. This will generally
-                          be a description if they are initialised in the body of a class.
+        boxes = additional boxnames mapped to default values as strings. This will
+                      generally be a description if they are initialised in the body of a class.
     
         Returns:
         list of strings containing the lines of box statements

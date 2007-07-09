@@ -177,7 +177,7 @@ def makearglist(args, kwargs, exarg = None, exkwarg = None):
     if exkwarg:
         arglist += '**'+exkwarg+', '
         
-    return arglist[:-2]
+    return arglist[:-2] # remove trailing comma and space
 
 
 def makefunction(name, args, kwargs, exarg = None, exkwarg = None, *shardlist):
@@ -222,14 +222,14 @@ def getshard(function, indentlevel = 0):
     doctag = r'"""'
     while True:
         if lines[0].count(doctag) % 2 == 1:
-            lines.pop(0)  # remove line with opening doctag
-            while lines[0].count(r'"""') % 2 == 0:
-                lines.pop(0)  # remove lines till tag match
-            lines.pop(0) # remove matching tag
+            lines.pop(0)                            # remove line with opening doctag
+            while lines[0].count(doctag) % 2 == 0:
+                lines.pop(0)                        # remove lines till tag match
+            lines.pop(0)                            # remove matching tag
         
         if lines[0].count(doctag) == 0:
-            break  # no docstring, start of code
-        else:  # docstring tags closed, continue till code line found
+            break                                     # no docstring, start of code
+        else:                                          # docstring tags closed, continue till code line found
             lines.pop(0)
     
     i = len(lines[0]) - len(lines[0].lstrip())
