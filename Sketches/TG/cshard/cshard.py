@@ -20,14 +20,14 @@ def indent(lines, level = 1):
     list of strings prefixed by specified amount of whitespace
     """
     
-    if level < 0:
+    if level < 0: # remove indentation
         level = -level
         return [ line[len(indentation*level):] for line in lines ]
         
-    elif level == 0: # need to remove raw indentation of 1 level
+    elif level == 0:
         return lines
     
-    elif level > 0: # need to add indentation
+    elif level > 0: # add indentation
         return [indentation*level + line for line in lines]
 
 
@@ -155,7 +155,10 @@ def makearglist(args, kwargs, exarg = None, exkwarg = None):
     """
     Generates argument list for a function
     
-    Arguments
+    Arguments:
+    args = list of names of arguments or None if none
+    kwargs = dict of keyword argument names to default values as strings,
+                    or None if none
     """
     
     arglist = ""
@@ -211,19 +214,20 @@ def getshard(function, indentlevel = 0):
     """
     # get code, throwaway def line
     lines = inspect.getsource(function).splitlines(True)[1:]
-        
+    
     # remove any whitespace lines at start
     while lines[0].isspace(): lines.pop(0)
     
     # remove docstrings
+    doctag = r'"""'
     while True:
-        if lines[0].count(r'"""') % 2 == 1:
+        if lines[0].count(doctag) % 2 == 1:
             lines.pop(0)  # remove line with opening doctag
             while lines[0].count(r'"""') % 2 == 0:
                 lines.pop(0)  # remove lines till tag match
             lines.pop(0) # remove matching tag
         
-        if lines[0].count(r'"""') == 0:
+        if lines[0].count(doctag) == 0:
             break  # no docstring, start of code
         else:  # docstring tags closed, continue till code line found
             lines.pop(0)
