@@ -47,7 +47,8 @@ nl = "\n"
 class shard(object):
     namer = namegen()
     
-    def __init__(self, name = None, indent = 0, annotate = False, function = None, code = None, shards = []):
+    def __init__(self, name = None, indent = 0, annotate = False, function = None,
+                        code = None, shards = []):
         """
         Initialisation to create shards from lines of code, existing functions,
         or a combination of these and existing shard objects
@@ -176,3 +177,36 @@ class shard(object):
         
         elif level > 0: # add indentation
             return [indentation*level + line for line in lines]
+
+
+class docShard(shard):
+    
+    def __init__(self, name = None, indent = 0, annotate = False, docstring = '', shards = []):
+        """
+        As shard constructor, but additionally sets a self.docstring
+        attribute to be a list of the lines of the docstring, indented one
+        level further than given indentation
+        
+        Additional argument:
+        docstring = formatted string of comments, default is empty
+        """
+        super(docShard, self).__init__(name = name, indent = indent, annotate = annotate, shards = shards)
+        
+        self.docstring = self.makedoc(docstring, indent) if docstring else []
+        
+    
+    def makedoc(self, doc, indent = 0):
+        """
+        Creates docstring
+        
+        Arguments:
+        doc = formatted string for docstring
+        
+        Returns:
+        list of strings containing lines of docstring
+        """
+        
+        tag = "\"\"\"" + nl
+        docstr = tag + doc + nl + tag
+        
+        return self.addindent(docstr.splitlines(True), indent)
