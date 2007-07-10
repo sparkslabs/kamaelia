@@ -108,13 +108,13 @@ class test_LikeFile(unittest.TestCase):
         """Test that creating, activating, and deleting a wrapped component doesn't fail."""
         self.component = LikeFile(DyingShunt())
         self.component.activate()
-        time.sleep(0.1) # I think this might be a threading issue - the instant shutdown is not being processed.
+        time.sleep(0.25) # I think this might be a threading issue - the instant shutdown is not being processed.
         self.component.shutdown()
         del self.component
 
     def testmany(self):
         compdict = dict()
-        for i in xrange(1, 10): # test 100 concurrent likefiles.
+        for i in xrange(1, 100): # test 100 concurrent likefiles.
             compdict[i] = LikeFile(DyingShunt(), extrainboxes = "extrain", extraoutboxes = "extraout")
             compdict[i].activate()
         time.sleep(0.1)
@@ -139,9 +139,17 @@ class test_LikeFile(unittest.TestCase):
         component = LikeFile(DyingShunt())
         self.failUnlessRaises(AttributeError, component.recv)
         self.failUnlessRaises(AttributeError, component.send, "boo")
-    def test_badbox(self):
-        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extrainboxes = "nonsense")
-        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraoutboxes = "nonsense")
+    def test_badboxwrap(self):
+        """test that wrapping a nonexistent box will fail."""
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extrainboxes = "nonsenseaddbox")
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraoutboxes = "nonsenseaddbox")
+    def test_badboxuse(self):
+        """test that IO on a box name that doesn't exist will fail."""
+        component = LikeFile(DyingShunt())
+        component.activate()
+        self.failUnlessRaises(KeyError, component.send, "boo", "nonsensesendbox")
+        self.failUnlessRaises(KeyError, component.recv, "nonsensesendbox")
+        component.shutdown()
     def test_closed(self):
         """test that creating, activating, and then closing a likefile wrapper will result in an object you're not
         allowed to perform IO on."""
