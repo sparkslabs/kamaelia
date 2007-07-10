@@ -81,7 +81,6 @@ def addBox(names, boxMap, addBox):
                 raise ValueError, "%s %s already exists!" % (direction, boxname)
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
-            
 
 
 class dummyComponent(Axon.Component.component):
@@ -90,6 +89,17 @@ class dummyComponent(Axon.Component.component):
         while True:
             self.pause()
             yield 1
+
+
+def mergeTuple(theTuple, extra = None):
+    """Helper function."""
+    if extra is not None:
+        if type(extra) == tuple:
+            return theTuple + extra
+        else:
+            return theTuple + (extra, )
+    else:
+        return theTuple
 
 
 class schedulerThread(threading.Thread):
@@ -113,36 +123,27 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
     def __init__(self, child, extraInboxes = None):
         super(componentWrapperInput, self).__init__()
         self.child = child
-        self.pending = False
+        self.children = dict()
 
         # This queue is used by the foreground to send us tuples of (data, boxname)
         # where data is to be delivered to boxname.
         self.inQueue = Queue.Queue()
         self.isDead = threading.Event()
-
-
-        # This sets up the linkages between us and our child, avoiding extra
-        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childInboxMapping = dict()
-        self.wrapChildInbox(("inbox", "control"))
-        if extraInboxes:
-            self.wrapChildInbox(extraInboxes)
-
-        # This outbox is used to tell the output wrapper when to shut down.
         self.deathbox = self.addOutbox(str(id(self)))
 
+        inboxes = mergeTuple(("inbox", "control"), extraInboxes)
+        self.addNewChild(child, inboxes)
 
-    def wrapChildInbox(self, inbox):
-        """This method takes the name (or a tuple of names) of an inbox on the child and adds
-        all the appropriate queues and linkages and so on, so that the inbox
-        is handled properly on the next iteration."""
-        if type(inbox) == str:
-            inbox = (inbox, )
-        for boxname in inbox:
-            realboxname = self.addOutbox(boxname)
-            self.childInboxMapping[boxname] = realboxname
-            self.link((self, realboxname), (self.child, boxname))
-            
+
+    def addNewChild(self, child, inboxes):
+        """Commences wrapping a new child."""
+        inboxMapping = dict()
+        childid = str(id(child))
+        for boxname in inboxes:
+            realboxname = self.addOutbox(boxname + childid) # TODO - benchmark the best way to wrap this.
+            inboxMapping[boxname] = realboxname
+            self.link((self, realboxname), (child, boxname))
+        self.children[child] = inboxMapping
 
     def main(self):
         while True:
@@ -154,19 +155,14 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
                 self.send(object, self.deathbox)
                 return
 
+
     def pollQueue(self):
         """This method checks all the queues from the outside world, and forwards any waiting data
         to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
 
-        if not self.pending:
-            msg, childSource = self.inQueue.get() # blocks
-        else:
-            # we previously attempted to deliver into a full box. Wait a wee bit and try again.
-            time.sleep(0.1)
-            msg, childSource = self.pending
-            self.pending = False
+        msg, childSource, child = self.inQueue.get() # blocks
+        parentSource = self.children[child][childSource]
 
-        parentSource = self.childInboxMapping[childSource]
         if not self.outboxes[parentSource].isFull():
             try:
                 self.send(msg, parentSource)
@@ -175,8 +171,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
             if isinstance(msg, (shutdownMicroprocess, producerFinished)):
                 return False
         else:
-            # TODO - better congestion handling.
-            self.pending = (msg, childSource)
+            raise NotImplementedError # TODO - congestion handling.
         return True
 
 class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -247,6 +242,7 @@ class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
+        self.child = componenttowrap
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
@@ -257,7 +253,7 @@ class LikeFile(object):
         except KeyError, e:
             del inputComponent
             raise KeyError, 'component to wrap has no such outbox: %s' % e
-        self.validInboxes = inputComponent.childInboxMapping.keys()
+        self.validInboxes = inputComponent.children[componenttowrap].keys()
         self.validOutboxes = outputComponent.childOutboxMapping.keys()
         self.inQueue = inputComponent.inQueue
         self.outQueues = copy.copy(outputComponent.outQueues)
@@ -288,7 +284,7 @@ class LikeFile(object):
             # we need to do explicit checking here since otherwise we'd need to block on error return from the other thread.
             raise KeyError, "%s is not a valid inbox" % boxname
         if self.alive:
-            self.inQueue.put_nowait((msg, boxname))
+            self.inQueue.put_nowait((msg, boxname, self.child))
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
     put = send # alias for backwards compatibility
 
