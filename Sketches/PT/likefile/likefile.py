@@ -113,15 +113,11 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
     def __init__(self, child, extraInboxes = None):
         super(componentWrapperInput, self).__init__()
         self.child = child
+        self.pending = False
 
-        # This is a map from the name of the wrapped inbox on the child, to the
-        # Queue used to convey data into it.
-        self.inQueues = dict()
-
-        # This queue is used by the foreground to tell us what queue it has sent us
-        # data on, so that we do not need to check all our input queues,
-        # and also so that we can block on reading it.
-        self.whatInbox = Queue.Queue()
+        # This queue is used by the foreground to send us tuples of (data, boxname)
+        # where data is to be delivered to boxname.
+        self.inQueue = Queue.Queue()
         self.isDead = threading.Event()
 
 
@@ -145,14 +141,12 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
         for boxname in inbox:
             realboxname = self.addOutbox(boxname)
             self.childInboxMapping[boxname] = realboxname
-            self.inQueues[boxname] = Queue.Queue(self.queuelengths)
             self.link((self, realboxname), (self.child, boxname))
             
 
     def main(self):
         while True:
-            whatInbox = self.whatInbox.get()
-            if not self.pollQueue(whatInbox):
+            if not self.pollQueue():
                 # a False return indicates that we should shut down.
                 self.isDead.set()
                 # tells the foreground object that we've successfully processed a shutdown message.
@@ -160,23 +154,29 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
                 self.send(object, self.deathbox)
                 return
 
-    def pollQueue(self, whatInbox):
+    def pollQueue(self):
         """This method checks all the queues from the outside world, and forwards any waiting data
         to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
-        parentSource = self.childInboxMapping[whatInbox]
-        queue = self.inQueues[whatInbox]
-        while not queue.empty():
-            if not self.outboxes[parentSource].isFull():
-                msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
-                try:
-                    self.send(msg, parentSource)
-                except noSpaceInBox, e:
-                    raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                    return False
-            else:
-                # if the component's inboxes are full, do something here. Preferably not succeed.
-                break
+
+        if not self.pending:
+            msg, childSource = self.inQueue.get() # blocks
+        else:
+            # we previously attempted to deliver into a full box. Wait a wee bit and try again.
+            time.sleep(0.1)
+            msg, childSource = self.pending
+            self.pending = False
+
+        parentSource = self.childInboxMapping[childSource]
+        if not self.outboxes[parentSource].isFull():
+            try:
+                self.send(msg, parentSource)
+            except noSpaceInBox, e:
+                raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                return False
+        else:
+            # TODO - better congestion handling.
+            self.pending = (msg, childSource)
         return True
 
 class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -257,7 +257,9 @@ class LikeFile(object):
         except KeyError, e:
             del inputComponent
             raise KeyError, 'component to wrap has no such outbox: %s' % e
-        self.inQueues = copy.copy(inputComponent.inQueues)
+        self.validInboxes = inputComponent.childInboxMapping.keys()
+        self.validOutboxes = outputComponent.childOutboxMapping.keys()
+        self.inQueue = inputComponent.inQueue
         self.outQueues = copy.copy(outputComponent.outQueues)
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
         self.inputComponent = inputComponent
@@ -282,10 +284,11 @@ class LikeFile(object):
 
     def send(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
+        if boxname not in self.validInboxes:
+            # we need to do explicit checking here since otherwise we'd need to block on error return from the other thread.
+            raise KeyError, "%s is not a valid inbox" % boxname
         if self.alive:
-            queue = self.inQueues[boxname]
-            queue.put_nowait(msg)
-            self.inputComponent.whatInbox.put_nowait(boxname)
+            self.inQueue.put_nowait((msg, boxname))
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
     put = send # alias for backwards compatibility
 
@@ -322,3 +325,4 @@ if __name__ == "__main__":
     slashdot = p.recv()
     whatismyip = p.recv()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+    p.shutdown()
