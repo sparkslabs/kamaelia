@@ -180,6 +180,11 @@ def waitBox(self,boxname):
 def blitToSurface(self):
     self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
+def addListenEvent(self, event):
+    self.send({ "ADDLISTENEVENT" : pygame.__getattribute__(event),
+                "surface" : self.display},
+                "display_signal")
+
 __kamaelia_components__  = ( MagnaDoodle, )
 
                   
