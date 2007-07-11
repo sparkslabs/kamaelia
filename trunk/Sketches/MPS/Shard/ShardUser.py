@@ -102,13 +102,22 @@ class MagnaDoodle(Axon.Component.component,Shardable):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if  event.button == 1:
-                        self.drawing = True
-                    elif event.button == 3:
-                        self.oldpos = None
-                        self.drawBG()
-                        self.blitToSurface()
-
+                    import inspect
+                    import re
+                    import InlineShards
+                    IShard = inspect.getsource(InlineShards.MOUSEBUTTONDOWN_handler)
+                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+                    lines = []
+                    indent = -1
+                    for line in IShard.split("\n"):
+                        if indent == -1:
+                            r = line.strip()
+                            indent = len(line) - len(r)
+                            lines.append(r)
+                        else:
+                            lines.append(line[indent:])
+                    IShard = "\n".join(lines)
+                    exec IShard
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     import inspect
                     import re
@@ -128,13 +137,22 @@ class MagnaDoodle(Axon.Component.component,Shardable):
                     exec IShard
                 elif event.type == pygame.MOUSEMOTION:
 #                   print "BUTTON", event.button
-                    if self.drawing and self.innerRect.collidepoint(*event.pos):
-                        if self.oldpos == None:
-                            self.oldpos = event.pos
+                    import inspect
+                    import re
+                    import InlineShards
+                    IShard = inspect.getsource(InlineShards.MOUSEMOTION_handler)
+                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+                    lines = []
+                    indent = -1
+                    for line in IShard.split("\n"):
+                        if indent == -1:
+                            r = line.strip()
+                            indent = len(line) - len(r)
+                            lines.append(r)
                         else:
-                            pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
-                            self.oldpos = event.pos
-                        self.blitToSurface()
+                            lines.append(line[indent:])
+                    IShard = "\n".join(lines)
+                    exec IShard
          self.pause()
          yield 1
 
