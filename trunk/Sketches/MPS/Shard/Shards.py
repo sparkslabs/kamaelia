@@ -63,14 +63,6 @@ class MagnaDoodle(Axon.Component.component):
       if not position is None:
         self.disprequest["position"] = position         
 
-       
-   def waitBox(self,boxname):
-      """Generator. yields 1 until data ready on the named inbox."""
-      waiting = True
-      while waiting:
-        if self.dataReady(boxname): return
-        else: yield 1
-
    def drawBG(self):
       self.display.fill( (255,0,0) )
       self.display.fill( self.backgroundColour, self.innerRect )
@@ -135,6 +127,13 @@ class MagnaDoodle(Axon.Component.component):
          yield 1
             
       
+   def waitBox(self,boxname):
+      """Generator. yields 1 until data ready on the named inbox."""
+      waiting = True
+      while waiting:
+        if self.dataReady(boxname): return
+        else: yield 1
+
 def blitToSurface(self):
        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
