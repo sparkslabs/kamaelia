@@ -101,14 +101,11 @@ class MagnaDoodle(Shardable,Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-#                    exec self.getIShard(self.IShards["MOUSEBUTTONDOWN"])
                     exec self.getIShard("MOUSEBUTTONDOWN")
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-#                    exec self.getIShard(self.IShards["MOUSEBUTTONUP_conditional"])
                     exec self.getIShard("MOUSEBUTTONUP_conditional")
                 elif event.type == pygame.MOUSEMOTION:
-#                    exec self.getIShard(self.IShards["MOUSEMOTION"])
-                    exec self.getIShard(MOUSEMOTION")
+                    exec self.getIShard("MOUSEMOTION")
          self.pause()
          yield 1
 
