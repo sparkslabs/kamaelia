@@ -16,16 +16,17 @@ class MagnaDoodle(Axon.Component.component,Shardable):
    (this component and its documentation is heaviliy based on Kamaelia.UI.Pygame.Button)
 
    Keyword arguments:
-   
+
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)
    - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
    - fgcolour     -- (r,g,b) text colour (default=(0,0,0))
    - transparent  -- draw background transparent if True (default=False)
    - size         -- None or (w,h) in pixels (default=None)
-   
+
    """
-   
+   requires_methods = [ "blitToSurface", "waitBox", "drawBG" ]
+
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay"
@@ -33,25 +34,25 @@ class MagnaDoodle(Axon.Component.component,Shardable):
    Outboxes = { "outbox" : "not used",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
-   
+
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
                 transparent = False, size=(200,200)):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(MagnaDoodle,self).__init__()
-      
+
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
       self.oldpos = None
       self.drawing = False
 ###      print "KEY",key
-      
+
       self.size = size
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
       if msg is None:
          msg = ("CLICK", self.id)
-      self.eventMsg = msg      
+      self.eventMsg = msg
       if transparent:
          transparency = bgcolour
       else:
@@ -61,11 +62,10 @@ class MagnaDoodle(Axon.Component.component,Shardable):
                            "events" : (self, "inbox"),
                            "size": self.size,
                            "transparency" : transparency }
-      
-      if not position is None:
-        self.disprequest["position"] = position         
 
-     
+      if not position is None:
+        self.disprequest["position"] = position
+
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -73,7 +73,7 @@ class MagnaDoodle(Axon.Component.component,Shardable):
 
       self.send( self.disprequest,
                   "display_signal")
-             
+
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
       self.drawBG()
@@ -98,7 +98,7 @@ class MagnaDoodle(Axon.Component.component,Shardable):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-         
+
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -135,16 +135,24 @@ if __name__ == "__main__":
    from Shards import blitToSurface
    from Shards import waitBox
    from Shards import drawBG
+   from Shards import Fail
 
-   #
-   # The following components are requirements of Magna.main
-   # without these, MagnaDoodle will not run.
-   #
+   try:
+       Magna.checkDependencies()
+   except Fail, e:
+       print "Class", Magna.__class__.__name__, "requires the following dependencies"
+       print e.message
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
    Magna.addMethod("drawBG", drawBG)
+   try:
+       Magna.checkDependencies()
+   except Fail, e:
+       print "Magna Doodle requires the following dependencies"
+       print e.message
 
    Magna.run()
+
 
 
 

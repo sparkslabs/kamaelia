@@ -121,9 +121,19 @@ class MagnaDoodle(Axon.Component.component):
          self.pause()
          yield 1
 
+class Fail(Exception): pass
 class Shardable(object):
-   def addMethod(self, name, method):
-       self.__dict__[name] = lambda *args: method(self,*args)
+    def addMethod(self, name, method):
+        self.__dict__[name] = lambda *args: method(self,*args)
+    def checkDependencies(self):
+        missing = []
+        for i in self.requires_methods:
+            try:
+                x = self.__getattribute__(i)
+            except AttributeError, e:
+                missing.append(i)
+        if missing != []:
+            raise Fail(missing)
 
 def drawBG(self):
     self.display.fill( (255,0,0) )
