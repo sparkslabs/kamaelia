@@ -133,6 +133,8 @@ class Shardable(object):
             except AttributeError, e:
                 missing.append(i)
         if missing != []:
+            print "Class", self.__class__.__name__, "requires the following dependencies"
+            print missing
             raise Fail(missing)
 
 def drawBG(self):
