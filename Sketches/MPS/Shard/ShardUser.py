@@ -65,17 +65,6 @@ class MagnaDoodle(Axon.Component.component,Shardable):
       if not position is None:
         self.disprequest["position"] = position         
 
-       
-   def waitBox(self,boxname):
-      """Generator. yields 1 until data ready on the named inbox."""
-      waiting = True
-      while waiting:
-        if self.dataReady(boxname): return
-        else: yield 1
-
-   def drawBG(self):
-      self.display.fill( (255,0,0) )
-      self.display.fill( self.backgroundColour, self.innerRect )
      
    
    def main(self):
@@ -149,6 +138,7 @@ if __name__ == "__main__":
 
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
+   Magna.addMethod("drawBG", drawBG)
 
    Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF

@@ -130,6 +130,10 @@ class Shardable(object):
    def addMethod(self, name, method):
        self.__dict__[name] = lambda *args: method(self,*args)
 
+def drawBG(self):
+    self.display.fill( (255,0,0) )
+    self.display.fill( self.backgroundColour, self.innerRect )
+
 def waitBox(self,boxname):
     """Generator. yields 1 until data ready on the named inbox."""
     waiting = True
