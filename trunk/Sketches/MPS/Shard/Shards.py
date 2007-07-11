@@ -151,8 +151,8 @@ class Shardable(object):
             print missing
             raise Fail(missing)
 
-    def getIShard(self, code_object):
-        IShard = inspect.getsource(code_object)
+    def getIShard(self, code_object_name):
+        IShard = inspect.getsource(self.IShards[code_object_name])
         IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
         lines = []
         indent = -1
