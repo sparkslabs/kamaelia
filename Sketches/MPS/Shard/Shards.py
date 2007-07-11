@@ -121,10 +121,24 @@ class MagnaDoodle(Axon.Component.component):
          self.pause()
          yield 1
 
+import inspect
+import re
+
 class Fail(Exception): pass
+
 class Shardable(object):
+    def __init__(self):
+        super(Shardable,self).__init__()
+        print "Initialising Shardable"
+        self.IShards = {}
+
     def addMethod(self, name, method):
         self.__dict__[name] = lambda *args: method(self,*args)
+
+    def addIShard(self, name, method):
+        print "Adding IShard", name
+        self.IShards[name] = method
+
     def checkDependencies(self):
         missing = []
         for i in self.requires_methods:
@@ -136,6 +150,21 @@ class Shardable(object):
             print "Class", self.__class__.__name__, "requires the following dependencies"
             print missing
             raise Fail(missing)
+
+    def getIShard(self, code_object):
+        IShard = inspect.getsource(code_object)
+        IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+        lines = []
+        indent = -1
+        for line in IShard.split("\n"):
+            if indent == -1:
+                r = line.strip()
+                indent = len(line) - len(r)
+                lines.append(r)
+            else:
+                lines.append(line[indent:])
+        IShard = "\n".join(lines)
+        return IShard
 
 def drawBG(self):
     self.display.fill( (255,0,0) )
