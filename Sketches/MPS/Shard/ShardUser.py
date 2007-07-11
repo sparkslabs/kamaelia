@@ -66,7 +66,6 @@ class MagnaDoodle(Axon.Component.component,Shardable):
         self.disprequest["position"] = position         
 
      
-   
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -131,14 +130,23 @@ if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
 
-   Magna = MagnaDoodle().activate()
+   Magna = MagnaDoodle()
 
    from Shards import blitToSurface
    from Shards import waitBox
+   from Shards import drawBG
 
+   #
+   # The following components are requirements of Magna.main
+   # without these, MagnaDoodle will not run.
+   #
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
    Magna.addMethod("drawBG", drawBG)
 
-   Axon.Scheduler.scheduler.run.runThreads()  
-# Licensed to the BBC under a Contributor Agreement: THF
+   Magna.run()
+
+
+
+
+
