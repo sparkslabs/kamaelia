@@ -90,14 +90,12 @@ class MagnaDoodle(Shardable,Axon.Component.component):
                   "surface" : self.display},
                   "display_signal")
 
-      # This breaks due to the "yield" in MainLoop...
-      exec self.getIShard("MainLoop")
-      #done = False
-      #while not done:
-         #exec self.getIShard("HandleShutdown")
-         #exec self.getIShard("LoopOverPygameEvents")
-         #self.pause()
-         #yield 1
+      done = False
+      while not done:
+         exec self.getIShard("HandleShutdown")
+         exec self.getIShard("LoopOverPygameEvents")
+         self.pause()
+         yield 1
 
 __kamaelia_components__  = ( MagnaDoodle, )
 
@@ -126,7 +124,6 @@ if __name__ == "__main__":
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
    Magna.addIShard("HandleShutdown", InlineShards.ShutdownHandler)
    Magna.addIShard("LoopOverPygameEvents", InlineShards.LoopOverPygameEvents)
-   Magna.addIShard("MainLoop", InlineShards.MainLoop)
 
    try:
        Magna.checkDependencies()
