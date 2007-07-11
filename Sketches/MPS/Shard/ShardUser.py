@@ -40,30 +40,35 @@ class MagnaDoodle(Shardable,Axon.Component.component):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(MagnaDoodle,self).__init__()
 
-      self.backgroundColour = bgcolour
-      self.foregroundColour = fgcolour
-      self.margin = margin
-      self.oldpos = None
-      self.drawing = False
+      #
+      # And this can't work either
+      #
+      exec self.getIShard("BINGLE")
+#def __INIT__(self):
+      #self.backgroundColour = bgcolour
+      #self.foregroundColour = fgcolour
+      #self.margin = margin
+      #self.oldpos = None
+      #self.drawing = False
 
-      self.size = size
-      self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
+      #self.size = size
+      #self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
-      if msg is None:
-         msg = ("CLICK", self.id)
-      self.eventMsg = msg
-      if transparent:
-         transparency = bgcolour
-      else:
-         transparency = None
-      self.disprequest = { "DISPLAYREQUEST" : True,
-                           "callback" : (self,"callback"),
-                           "events" : (self, "inbox"),
-                           "size": self.size,
-                           "transparency" : transparency }
+      #if msg is None:
+         #msg = ("CLICK", self.id)
+      #self.eventMsg = msg
+      #if transparent:
+         #transparency = bgcolour
+      #else:
+         #transparency = None
+      #self.disprequest = { "DISPLAYREQUEST" : True,
+                           #"callback" : (self,"callback"),
+                           #"events" : (self, "inbox"),
+                           #"size": self.size,
+                           #"transparency" : transparency }
 
-      if not position is None:
-        self.disprequest["position"] = position
+      #if not position is None:
+        #self.disprequest["position"] = position
 
    def main(self):
       """Main loop."""
@@ -74,7 +79,6 @@ class MagnaDoodle(Shardable,Axon.Component.component):
 
       self.drawBG()
       self.blitToSurface()
-
       exec self.getIShard("SetEventOptions")
       done = False
       while not done:
@@ -107,14 +111,14 @@ if __name__ == "__main__":
    Magna.addMethod("drawBG", drawBG)
    Magna.addMethod("addListenEvent", addListenEvent)
    Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
-   Magna.addIShard("MOUSEBUTTONUP_conditional", InlineShards.MOUSEBUTTONUP_conditional_handler)
+   Magna.addIShard("MOUSEBUTTONUP", InlineShards.MOUSEBUTTONUP_handler)
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
    Magna.addIShard("HandleShutdown", InlineShards.ShutdownHandler)
    Magna.addIShard("LoopOverPygameEvents", InlineShards.LoopOverPygameEvents)
    Magna.addIShard("RequestDisplay", InlineShards.RequestDisplay)
    Magna.addIShard("GrabDisplay", InlineShards.GrabDisplay)
    Magna.addIShard("SetEventOptions", InlineShards.SetEventOptions)
-
+   Magna.addIShard("BINGLE", InlineShards.BINGLE)
 
    try:
        Magna.checkDependencies()
