@@ -135,7 +135,7 @@ class MagnaDoodle(Axon.Component.component):
          yield 1
             
       
-   def blitToSurface(self):
+def blitToSurface(self):
        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
 __kamaelia_components__  = ( MagnaDoodle, )
