@@ -86,14 +86,6 @@ def addBox(names, boxMap, addBox):
             boxMap[boxname] = realboxname
 
 
-class dummyComponent(Axon.Component.component):
-    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
-    def main(self):
-        while True:
-            self.pause()
-            yield 1
-
-
 def validateBoxes(extraboxes, whitelist):
     """Helper function, will determine whether or not extra boxes are members of the whitelist."""
     for box in extraboxes:
@@ -101,11 +93,103 @@ def validateBoxes(extraboxes, whitelist):
             raise KeyError, "box %s not a valid box" % box
 
 
-class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+
+class ComponentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
+    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
+    queued data to be placed on the child's inboxes."""
+    def __init__(self):
+        super(ComponentWrapperInput, self).__init__()
+
+        # this maps from the child component object to a dict of box mappings of the form:
+        # ParentSource: ChildSink
+        self.children = dict()
+
+        # This queue is used by the foreground to send us data
+        # where data is to be delivered to boxname.
+        self.inQueue = Queue.Queue()
+
+
+    def handleControlCommand(self, args):
+        """We were sent some form of information from a foreground thread.
+
+        for now, the only control command is one to add an extra component to watch,
+        we are sent the unactivated component object and a tuple of pre-validated inboxes
+        to wrap as well as the defaults."""
+        child, extraInboxes = args
+        self.addNewChild(child, extraInboxes + DEFIN)
+
+
+    def addNewChild(self, child, inboxes):
+        """Commences wrapping a new child. It seems that the actual linkage step is very slow."""
+        inboxMapping = dict()
+        childId = str(id(child))
+        for childSink in inboxes:
+            parentSource = self.addOutbox(childSink + childId) # TODO - benchmark the best way to wrap this.
+            inboxMapping[childSink] = parentSource
+            self.link((self, parentSource), (child, childSink))
+        self.children[child] = inboxMapping
+        
+
+
+    def deleteChild(self, child):
+        """Finishes monitoring a child component. Triggered by the relaying of ."""
+        self.unlink(thecomponent = child)
+        for parentSource in self.children[child].itervalues():
+            self.deleteOutbox(parentSource)
+        del self.children[child]
+
+    def main(self):
+        while True:
+            self.pollQueue()
+
+
+    def pollQueue(self):
+        """This method checks the queue from the outside world, and forwards any waiting data
+        to the appropriate child component."""
+
+        delivered = self.inQueue.get() # blocks
+        try:
+            # delivered can either be a 3-value tuple, or more rarely some control information.
+            msg, childSink, child = delivered
+        except ValueError:
+            self.handleControlCommand(delivered)
+            return
+        parentSource = self.children[child][childSink]
+        if not self.outboxes[parentSource].isFull():
+            try:
+                self.send(msg, parentSource)
+            except noSpaceInBox, e:
+                raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+            if childSink == "control" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.deleteChild(child)
+        else:
+            raise NotImplementedError # TODO - congestion handling.
+
+
+
+class schedulerThread(threading.Thread):
+    """A python thread which runs a scheduler."""
+    lock = threading.Lock()
+    inputWrapper = None
+    def __init__(self,slowmo=0):
+        if not schedulerThread.lock.acquire(False):
+            raise "only one scheduler for now can be run!"
+        self.slowmo = slowmo
+        threading.Thread.__init__(self)
+        self.setDaemon(True) # Die when the caller dies
+        schedulerThread.inputWrapper = ComponentWrapperInput()
+    def run(self):
+        schedulerThread.inputWrapper.activate()
+        scheduler.run.runThreads(slowmo = self.slowmo)
+        schedulerThread.lock.release()
+
+
+
+class ComponentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
     with the LikeFile component."""
-    def __init__(self, child, inputHandler, extraOutboxes = ()):
-        super(componentWrapperOutput, self).__init__()
+    def __init__(self, child, extraInboxes = (), extraOutboxes = ()):
+        super(ComponentWrapperOutput, self).__init__()
         self.queuelengths = queuelengths
         self.child = child
         self.addChildren(self.child)
@@ -122,6 +206,8 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
         self.childOutboxMapping = dict()
         self.wrapChildOutbox(DEFOUT + extraOutboxes)
+        # Tell the input wrapper to start delivering messages to the child.
+        schedulerThread.inputWrapper.inQueue.put_nowait((child, extraInboxes))
 
 
     def wrapChildOutbox(self, outboxes):
@@ -164,92 +250,6 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
         return True
 
 
-class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
-    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
-    queued data to be placed on the child's inboxes."""
-    def __init__(self, child, extraInboxes = ()):
-        super(componentWrapperInput, self).__init__()
-
-        # this maps from the child component object to a dict of box mappings of the form:
-        # ParentSource: ChildSink
-        self.children = dict()
-
-        # This queue is used by the foreground to send us tuples of (data, boxname)
-        # where data is to be delivered to boxname.
-        self.inQueue = Queue.Queue()
-
-        self.addNewChild(child, DEFIN + extraInboxes)
-
-    def handleControlCommand(self, args):
-        """We were sent some form of information from a foreground thread."""
-        raise NotImplementedError
-
-
-    def addNewChild(self, child, inboxes):
-        """Commences wrapping a new child."""
-        inboxMapping = dict()
-        childId = str(id(child))
-        for childSink in inboxes:
-            parentSource = self.addOutbox(childSink + childId) # TODO - benchmark the best way to wrap this.
-            inboxMapping[childSink] = parentSource
-            self.link((self, parentSource), (child, childSink))
-        self.children[child] = inboxMapping
-
-    def deleteChild(self, child):
-        """Finishes monitoring a child component. Triggered by the relaying of ."""
-        self.unlink(thecomponent = child)
-        for parentSource in self.children[child].itervalues():
-            self.deleteOutbox(parentSource)
-
-    def main(self):
-        while True:
-            if not self.pollQueue():
-                # a False return indicates that we've gone through the shutdown handler already.
-                return
-
-
-    def pollQueue(self):
-        """This method checks the queue from the outside world, and forwards any waiting data
-        to the appropriate child component."""
-
-        delivered = self.inQueue.get() # blocks
-        try:
-            # delivered can either be a 3-value tuple, or more rarely some control information.
-            msg, childSink, child = delivered
-        except ValueError:
-            self.handleControlCommand(delivered)
-            return True
-
-        parentSource = self.children[child][childSink]
-        if not self.outboxes[parentSource].isFull():
-            try:
-                self.send(msg, parentSource)
-            except noSpaceInBox, e:
-                raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-            if childSink == "control" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                self.deleteChild(child)
-                return False
-        else:
-            raise NotImplementedError # TODO - congestion handling.
-        return True
-
-
-
-class schedulerThread(threading.Thread):
-    """A python thread which runs a scheduler."""
-    lock = threading.Lock()
-    def __init__(self,slowmo=0):
-        if not schedulerThread.lock.acquire(False):
-            raise "only one scheduler for now can be run!"
-        self.slowmo = slowmo
-        threading.Thread.__init__(self)
-        self.setDaemon(True) # Die when the caller dies
-    def run(self):
-        dummyComponent().activate() # to keep the scheduler from exiting immediately.
-        scheduler.run.runThreads(slowmo = self.slowmo)
-        schedulerThread.lock.release()
-
-
 
 class LikeFile(object):
     alive = False
@@ -276,13 +276,11 @@ class LikeFile(object):
         self.validInboxes = extraInboxes + DEFIN
         self.validOutboxes = extraOutboxes + DEFOUT
 
-        inputComponent = componentWrapperInput(componenttowrap, extraInboxes)
-        outputComponent = componentWrapperOutput(componenttowrap, inputComponent, extraOutboxes)
+        outputComponent = ComponentWrapperOutput(componenttowrap, extraInboxes, extraOutboxes)
 
-        self.inQueue = inputComponent.inQueue
+        self.inQueue = schedulerThread.inputWrapper.inQueue
         self.outQueues = copy.copy(outputComponent.outQueues)
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
-        self.inputComponent = inputComponent
         self.outputComponent = outputComponent
 
 
@@ -290,7 +288,6 @@ class LikeFile(object):
         """Activates the component on the backgrounded scheduler and permits IO."""
         if self.alive:
             return
-        self.inputComponent.activate() # threadsafe, see note 1
         self.outputComponent.activate()
         self.alive = True
 
@@ -317,7 +314,6 @@ class LikeFile(object):
         will warn if the shutdown took too long to confirm in action."""
         if self.alive: 
             self.send(Axon.Ipc.shutdown(),               "control") # legacy support.
-            self.send(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
             self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
