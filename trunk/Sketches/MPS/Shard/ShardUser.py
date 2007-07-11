@@ -5,9 +5,7 @@ import Axon
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
-class Shardable(object):
-   def addMethod(self, name, method):
-       self.__dict__[name] = lambda *args: method(self,*args)
+from Shards import Shardable
 
 class MagnaDoodle(Axon.Component.component,Shardable):
    """\
@@ -140,7 +138,6 @@ class MagnaDoodle(Axon.Component.component,Shardable):
 
 __kamaelia_components__  = ( MagnaDoodle, )
 
-                  
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
@@ -149,9 +146,6 @@ if __name__ == "__main__":
 
    from Shards import blitToSurface
    from Shards import waitBox
-
-#   def addMethod(self, name, method):
-#       self.__dict__[name] = lambda *args: method(self,*args)
 
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)

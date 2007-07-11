@@ -125,8 +125,11 @@ class MagnaDoodle(Axon.Component.component):
                         self.blitToSurface()
          self.pause()
          yield 1
-            
-      
+
+class Shardable(object):
+   def addMethod(self, name, method):
+       self.__dict__[name] = lambda *args: method(self,*args)
+
 def waitBox(self,boxname):
     """Generator. yields 1 until data ready on the named inbox."""
     waiting = True
