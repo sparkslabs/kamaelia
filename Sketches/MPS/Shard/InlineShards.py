@@ -45,6 +45,16 @@ def LoopOverPygameEvents(self):
             elif event.type == pygame.MOUSEMOTION:
                 exec self.getIShard("MOUSEMOTION")
 
+def MainLoop(self):
+    # This can't be compiled outside the main function due to the yield statemnet
+    # 
+    done = False
+    while not done:
+        exec self.getIShard("HandleShutdown")
+        exec self.getIShard("LoopOverPygameEvents")
+        self.pause()
+        yield 1
+
 #def getIShard(code_object):
     #IShard = inspect.getsource(code_object)
     #IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
