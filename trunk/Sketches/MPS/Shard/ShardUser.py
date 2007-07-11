@@ -7,7 +7,7 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 from Shards import Shardable
 
-class MagnaDoodle(Axon.Component.component,Shardable):
+class MagnaDoodle(Shardable,Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
 
@@ -45,7 +45,6 @@ class MagnaDoodle(Axon.Component.component,Shardable):
       self.margin = margin
       self.oldpos = None
       self.drawing = False
-###      print "KEY",key
 
       self.size = size
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
@@ -102,14 +101,11 @@ class MagnaDoodle(Axon.Component.component,Shardable):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    import InlineShards
-                    exec InlineShards.getShard(InlineShards.MOUSEBUTTONDOWN_handler)
+                    exec InlineShards.getIShard(self.IShards["MOUSEBUTTONDOWN"])
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    import InlineShards
-                    exec InlineShards.getShard(InlineShards.MOUSEBUTTONUP_conditional_handler)
+                    exec InlineShards.getIShard(self.IShards["MOUSEBUTTONUP_conditional"])
                 elif event.type == pygame.MOUSEMOTION:
-                    import InlineShards
-                    exec InlineShards.getShard(InlineShards.MOUSEMOTION_handler)
+                    exec InlineShards.getIShard(self.IShards["MOUSEMOTION"])
          self.pause()
          yield 1
 
@@ -125,6 +121,7 @@ if __name__ == "__main__":
    from Shards import waitBox
    from Shards import drawBG
    from Shards import Fail
+   import InlineShards
 
    try:
        Magna.checkDependencies()
@@ -133,6 +130,11 @@ if __name__ == "__main__":
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
    Magna.addMethod("drawBG", drawBG)
+
+   Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
+   Magna.addIShard("MOUSEBUTTONUP_conditional", InlineShards.MOUSEBUTTONUP_conditional_handler)
+   Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
+
    try:
        Magna.checkDependencies()
    except Fail, e:

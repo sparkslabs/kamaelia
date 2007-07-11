@@ -3,7 +3,6 @@ import re
 #
 # This is where we will put shards that come from *inside* the main method.
 #
-#
 def MOUSEBUTTONDOWN_handler(self):
     if  event.button == 1:
         self.drawing = True
@@ -25,9 +24,7 @@ def MOUSEMOTION_handler(self):
             self.oldpos = event.pos
         self.blitToSurface()
 
-def getShard(code_object):
-#    import InlineShards
-#    exec InlineShards.getShard(InlineShards.MOUSEBUTTONDOWN_handler)
+def getIShard(code_object):
     IShard = inspect.getsource(code_object)
     IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
     lines = []
