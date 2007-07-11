@@ -24,18 +24,30 @@ def MOUSEMOTION_handler(self):
             self.oldpos = event.pos
         self.blitToSurface()
 
-def getIShard(code_object):
-    IShard = inspect.getsource(code_object)
-    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
-    lines = []
-    indent = -1
-    for line in IShard.split("\n"):
-        if indent == -1:
-            r = line.strip()
-            indent = len(line) - len(r)
-            lines.append(r)
-        else:
-            lines.append(line[indent:])
-    IShard = "\n".join(lines)
-    return IShard
-#    exec IShard
+#
+# Reusaable IShard
+#
+
+def ShutdownHandler(self):
+    while self.dataReady("control"):
+        cmsg = self.recv("control")
+        if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+            self.send(cmsg, "signal")
+            done = True
+
+
+#def getIShard(code_object):
+    #IShard = inspect.getsource(code_object)
+    #IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+    #lines = []
+    #indent = -1
+    #for line in IShard.split("\n"):
+        #if indent == -1:
+            #r = line.strip()
+            #indent = len(line) - len(r)
+            #lines.append(r)
+        #else:
+            #lines.append(line[indent:])
+    #IShard = "\n".join(lines)
+    #return IShard
+##    exec IShard
