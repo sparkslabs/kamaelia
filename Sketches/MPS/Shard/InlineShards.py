@@ -1,3 +1,5 @@
+import inspect
+import re
 #
 # This is where we will put shards that come from *inside* the main method.
 #
@@ -22,3 +24,21 @@ def MOUSEMOTION_handler(self):
             pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
             self.oldpos = event.pos
         self.blitToSurface()
+
+def getShard(code_object):
+#    import InlineShards
+#    exec InlineShards.getShard(InlineShards.MOUSEBUTTONDOWN_handler)
+    IShard = inspect.getsource(code_object)
+    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+    lines = []
+    indent = -1
+    for line in IShard.split("\n"):
+        if indent == -1:
+            r = line.strip()
+            indent = len(line) - len(r)
+            lines.append(r)
+        else:
+            lines.append(line[indent:])
+    IShard = "\n".join(lines)
+    return IShard
+#    exec IShard

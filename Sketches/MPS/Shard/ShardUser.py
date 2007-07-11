@@ -102,57 +102,14 @@ class MagnaDoodle(Axon.Component.component,Shardable):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    import inspect
-                    import re
                     import InlineShards
-                    IShard = inspect.getsource(InlineShards.MOUSEBUTTONDOWN_handler)
-                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
-                    lines = []
-                    indent = -1
-                    for line in IShard.split("\n"):
-                        if indent == -1:
-                            r = line.strip()
-                            indent = len(line) - len(r)
-                            lines.append(r)
-                        else:
-                            lines.append(line[indent:])
-                    IShard = "\n".join(lines)
-                    exec IShard
+                    exec InlineShards.getShard(InlineShards.MOUSEBUTTONDOWN_handler)
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    import inspect
-                    import re
                     import InlineShards
-                    IShard = inspect.getsource(InlineShards.MOUSEBUTTONUP_conditional_handler)
-                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
-                    lines = []
-                    indent = -1
-                    for line in IShard.split("\n"):
-                        if indent == -1:
-                            r = line.strip()
-                            indent = len(line) - len(r)
-                            lines.append(r)
-                        else:
-                            lines.append(line[indent:])
-                    IShard = "\n".join(lines)
-                    exec IShard
+                    exec InlineShards.getShard(InlineShards.MOUSEBUTTONUP_conditional_handler)
                 elif event.type == pygame.MOUSEMOTION:
-#                   print "BUTTON", event.button
-                    import inspect
-                    import re
                     import InlineShards
-                    IShard = inspect.getsource(InlineShards.MOUSEMOTION_handler)
-                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
-                    lines = []
-                    indent = -1
-                    for line in IShard.split("\n"):
-                        if indent == -1:
-                            r = line.strip()
-                            indent = len(line) - len(r)
-                            lines.append(r)
-                        else:
-                            lines.append(line[indent:])
-                    IShard = "\n".join(lines)
-                    exec IShard
+                    exec InlineShards.getShard(InlineShards.MOUSEMOTION_handler)
          self.pause()
          yield 1
 
