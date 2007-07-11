@@ -166,9 +166,16 @@ class Shardable(object):
         IShard = "\n".join(lines)
         return IShard
 
+#
+# Non-Reusable
+#
 def drawBG(self):
     self.display.fill( (255,0,0) )
     self.display.fill( self.backgroundColour, self.innerRect )
+
+#
+# Reusable Shards
+#
 
 def waitBox(self,boxname):
     """Generator. yields 1 until data ready on the named inbox."""
