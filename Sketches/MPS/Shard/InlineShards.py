@@ -35,6 +35,15 @@ def ShutdownHandler(self):
             self.send(cmsg, "signal")
             done = True
 
+def LoopOverPygameEvents(self):
+    while self.dataReady("inbox"):
+        for event in self.recv("inbox"):
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                exec self.getIShard("MOUSEBUTTONDOWN")
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                exec self.getIShard("MOUSEBUTTONUP_conditional")
+            elif event.type == pygame.MOUSEMOTION:
+                exec self.getIShard("MOUSEMOTION")
 
 #def getIShard(code_object):
     #IShard = inspect.getsource(code_object)

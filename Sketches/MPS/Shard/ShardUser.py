@@ -93,15 +93,17 @@ class MagnaDoodle(Shardable,Axon.Component.component):
       done = False
       while not done:
          exec self.getIShard("HandleShutdown")
+         exec self.getIShard("LoopOverPygameEvents")
 
-         while self.dataReady("inbox"):
-            for event in self.recv("inbox"):
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    exec self.getIShard("MOUSEBUTTONDOWN")
-                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    exec self.getIShard("MOUSEBUTTONUP_conditional")
-                elif event.type == pygame.MOUSEMOTION:
-                    exec self.getIShard("MOUSEMOTION")
+
+         #while self.dataReady("inbox"):
+            #for event in self.recv("inbox"):
+                #if event.type == pygame.MOUSEBUTTONDOWN:
+                    #exec self.getIShard("MOUSEBUTTONDOWN")
+                #elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    #exec self.getIShard("MOUSEBUTTONUP_conditional")
+                #elif event.type == pygame.MOUSEMOTION:
+                    #exec self.getIShard("MOUSEMOTION")
          self.pause()
          yield 1
 
@@ -131,7 +133,7 @@ if __name__ == "__main__":
    Magna.addIShard("MOUSEBUTTONUP_conditional", InlineShards.MOUSEBUTTONUP_conditional_handler)
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
    Magna.addIShard("HandleShutdown", InlineShards.ShutdownHandler)
-
+   Magna.addIShard("LoopOverPygameEvents", InlineShards.LoopOverPygameEvents)
    try:
        Magna.checkDependencies()
    except Fail, e:
