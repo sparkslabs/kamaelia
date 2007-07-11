@@ -102,19 +102,68 @@ def mergeTuple(theTuple, extra = None):
         return theTuple
 
 
-class schedulerThread(threading.Thread):
-    """A python thread which runs a scheduler."""
-    lock = threading.Lock()
-    def __init__(self,slowmo=0):
-        if not schedulerThread.lock.acquire(False):
-            raise "only one scheduler for now can be run!"
-        self.slowmo = slowmo
-        threading.Thread.__init__(self)
-        self.setDaemon(True) # Die when the caller dies
-    def run(self):
-        dummyComponent().activate() # to keep the scheduler from exiting immediately.
-        scheduler.run.runThreads(slowmo = self.slowmo)
-        schedulerThread.lock.release()
+
+class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    """A component which takes a child component and connects its outboxes to queues, which communicate
+    with the LikeFile component."""
+    def __init__(self, child, inputHandler, extraOutboxes = None):
+        super(componentWrapperOutput, self).__init__()
+        self.queuelengths = queuelengths
+        self.child = child
+        self.addChildren(self.child)
+
+        # This queue maps from the name of the outbox on the child which is to be wrapped,
+        # to the Queue which conveys that data to the foreground thread.
+        self.outQueues = dict()
+
+        # set up notification from the input handler to kill us when appropriate.
+        # we cannot rely on shutdown messages being propogated through the child.
+        self.isDead = inputHandler.isDead
+        self.deathbox = self.addInbox(str(id(self)))
+        self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
+
+        # This sets up the linkages between us and our child, avoiding extra
+        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
+        self.childOutboxMapping = dict()
+        outboxes = mergeTuple(("outbox", "signal"), extraOutboxes)
+        self.wrapChildOutbox(outboxes)
+
+
+    def wrapChildOutbox(self, outboxes):
+        """This method takes a tuple of names of an outbox on the child and adds
+        all the appropriate queues and linkages and so on, so that the outbox
+        is handled properly on the next iteration."""
+        for boxname in outboxes:
+            realboxname = self.addInbox(boxname)
+            self.childOutboxMapping[boxname] = realboxname
+            self.outQueues[boxname] = Queue.Queue(self.queuelengths)
+            self.link((self.child, boxname), (self, realboxname))
+
+
+    def main(self):
+        self.child.activate()
+        while True:
+            self.pause()
+            yield 1
+            self.sendPendingOutput()
+            if self.dataReady(self.deathbox):
+                return
+
+
+    def sendPendingOutput(self):
+        """This method will take any outgoing data sent to us from a child component and stick it on a queue 
+        to the outside world."""
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            queue = self.outQueues[childSource]
+            while self.dataReady(parentSink):
+                if not queue.full():
+                    msg = self.recv(parentSink)
+                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
+                    queue.put_nowait(msg)
+                else:
+                    break
+                    # permit a horrible backlog to build up inside our boxes. What could go wrong?
+
 
 
 class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
@@ -122,7 +171,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
     queued data to be placed on the child's inboxes."""
     def __init__(self, child, extraInboxes = None):
         super(componentWrapperInput, self).__init__()
-        
+
         # this maps from the child component object to a dict of box mappings of the form:
         # ParentSource: ChildSink
         self.children = dict()
@@ -193,66 +242,23 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
             raise NotImplementedError # TODO - congestion handling.
         return True
 
-class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
-    """A component which takes a child component and connects its outboxes to queues, which communicate
-    with the LikeFile component."""
-    def __init__(self, child, inputHandler, extraOutboxes = None):
-        super(componentWrapperOutput, self).__init__()
-        self.queuelengths = queuelengths
-        self.child = child
-        self.addChildren(self.child)
-
-        # This queue maps from the name of the outbox on the child which is to be wrapped,
-        # to the Queue which conveys that data to the foreground thread.
-        self.outQueues = dict()
-
-        # set up notification from the input handler to kill us when appropriate.
-        # we cannot rely on shutdown messages being propogated through the child.
-        self.isDead = inputHandler.isDead
-        self.deathbox = self.addInbox(str(id(self)))
-        self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
-
-        # This sets up the linkages between us and our child, avoiding extra
-        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childOutboxMapping = dict()
-        outboxes = mergeTuple(("outbox", "signal"), extraOutboxes)
-        self.wrapChildOutbox(outboxes)
 
 
-    def wrapChildOutbox(self, outboxes):
-        """This method takes a tuple of names of an outbox on the child and adds
-        all the appropriate queues and linkages and so on, so that the outbox
-        is handled properly on the next iteration."""
-        for boxname in outboxes:
-            realboxname = self.addInbox(boxname)
-            self.childOutboxMapping[boxname] = realboxname
-            self.outQueues[boxname] = Queue.Queue(self.queuelengths)
-            self.link((self.child, boxname), (self, realboxname))
+class schedulerThread(threading.Thread):
+    """A python thread which runs a scheduler."""
+    lock = threading.Lock()
+    def __init__(self,slowmo=0):
+        if not schedulerThread.lock.acquire(False):
+            raise "only one scheduler for now can be run!"
+        self.slowmo = slowmo
+        threading.Thread.__init__(self)
+        self.setDaemon(True) # Die when the caller dies
+    def run(self):
+        dummyComponent().activate() # to keep the scheduler from exiting immediately.
+        scheduler.run.runThreads(slowmo = self.slowmo)
+        schedulerThread.lock.release()
 
 
-    def main(self):
-        self.child.activate()
-        while True:
-            self.pause()
-            yield 1
-            self.sendPendingOutput()
-            if self.dataReady(self.deathbox):
-                return
-
-
-    def sendPendingOutput(self):
-        """This method will take any outgoing data sent to us from a child component and stick it on a queue 
-        to the outside world."""
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
-            queue = self.outQueues[childSource]
-            while self.dataReady(parentSink):
-                if not queue.full():
-                    msg = self.recv(parentSink)
-                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
-                    queue.put_nowait(msg)
-                else:
-                    break
-                    # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
 class LikeFile(object):
     alive = False
