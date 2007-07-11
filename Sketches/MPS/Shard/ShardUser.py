@@ -67,27 +67,21 @@ class MagnaDoodle(Shardable,Axon.Component.component):
 
    def main(self):
       """Main loop."""
-      displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"display_signal"), displayservice)
+      exec self.getIShard("RequestDisplay")
+      for _ in self.waitBox("callback"):
+          yield 1 # This can't be Sharded or ISharded
+      exec self.getIShard("GrabDisplay")
 
-      self.send( self.disprequest,
-                  "display_signal")
-
-      for _ in self.waitBox("callback"): yield 1
-      self.display = self.recv("callback")
       self.drawBG()
       self.blitToSurface()
 
-      self.addListenEvent("MOUSEBUTTONDOWN")
-      self.addListenEvent("MOUSEBUTTONUP")
-      self.addListenEvent("MOUSEMOTION")
-
+      exec self.getIShard("SetEventOptions")
       done = False
       while not done:
          exec self.getIShard("HandleShutdown")
          exec self.getIShard("LoopOverPygameEvents")
          self.pause()
-         yield 1
+         yield 1 # This can't be Sharded or ISharded
 
 __kamaelia_components__  = ( MagnaDoodle, )
 
@@ -117,6 +111,10 @@ if __name__ == "__main__":
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
    Magna.addIShard("HandleShutdown", InlineShards.ShutdownHandler)
    Magna.addIShard("LoopOverPygameEvents", InlineShards.LoopOverPygameEvents)
+   Magna.addIShard("RequestDisplay", InlineShards.RequestDisplay)
+   Magna.addIShard("GrabDisplay", InlineShards.GrabDisplay)
+   Magna.addIShard("SetEventOptions", InlineShards.SetEventOptions)
+
 
    try:
        Magna.checkDependencies()
@@ -124,9 +122,3 @@ if __name__ == "__main__":
        print "Hmm, should not fail, we've added dependencies"
 
    Magna.run()
-
-
-
-
-
-

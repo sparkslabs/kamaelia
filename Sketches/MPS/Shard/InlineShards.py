@@ -24,8 +24,13 @@ def MOUSEMOTION_handler(self):
             self.oldpos = event.pos
         self.blitToSurface()
 
+def SetEventOptions(self):
+    self.addListenEvent("MOUSEBUTTONDOWN")
+    self.addListenEvent("MOUSEBUTTONUP")
+    self.addListenEvent("MOUSEMOTION")
+
 #
-# Reusaable IShard
+# Reusaable IShards
 #
 
 def ShutdownHandler(self):
@@ -45,15 +50,13 @@ def LoopOverPygameEvents(self):
             elif event.type == pygame.MOUSEMOTION:
                 exec self.getIShard("MOUSEMOTION")
 
-def MainLoop(self):
-    # This can't be compiled outside the main function due to the yield statemnet
-    # 
-    done = False
-    while not done:
-        exec self.getIShard("HandleShutdown")
-        exec self.getIShard("LoopOverPygameEvents")
-        self.pause()
-        yield 1
+def RequestDisplay(self):
+    displayservice = PygameDisplay.getDisplayService()
+    self.link((self,"display_signal"), displayservice)
+    self.send( self.disprequest, "display_signal")
+
+def GrabDisplay(self):
+    self.display = self.recv("callback")
 
 #def getIShard(code_object):
     #IShard = inspect.getsource(code_object)
