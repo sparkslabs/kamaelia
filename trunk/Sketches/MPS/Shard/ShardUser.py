@@ -140,16 +140,14 @@ if __name__ == "__main__":
    try:
        Magna.checkDependencies()
    except Fail, e:
-       print "Class", Magna.__class__.__name__, "requires the following dependencies"
-       print e.message
+       print "yay, should fail before we add dependencies"
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
    Magna.addMethod("drawBG", drawBG)
    try:
        Magna.checkDependencies()
    except Fail, e:
-       print "Magna Doodle requires the following dependencies"
-       print e.message
+       print "Hmm, should not fail, we've added dependencies"
 
    Magna.run()
 
