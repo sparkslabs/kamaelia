@@ -116,9 +116,7 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 
         # set up notification from the input handler to kill us when appropriate.
         # we cannot rely on shutdown messages being propogated through the child.
-        self.isDead = inputHandler.isDead
-        self.deathbox = self.addInbox(str(id(self)))
-        self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
+        self.isDead = threading.Event()
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
@@ -136,16 +134,17 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
             self.outQueues[boxname] = Queue.Queue(self.queuelengths)
             self.link((self.child, boxname), (self, realboxname))
 
+    def handleShutdown(self):
+        """we got a shutdown signal propogated from the child - we should inform the parent that we're about to exit."""
+        self.isDead.set()
 
     def main(self):
         self.child.activate()
         while True:
             self.pause()
             yield 1
-            self.sendPendingOutput()
-            if self.dataReady(self.deathbox):
+            if not self.sendPendingOutput():
                 return
-
 
     def sendPendingOutput(self):
         """This method will take any outgoing data sent to us from a child component and stick it on a queue 
@@ -155,12 +154,14 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
             while self.dataReady(parentSink):
                 if not queue.full():
                     msg = self.recv(parentSink)
-                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
+                    if childSource == "signal" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                        self.handleShutdown()
+                        return False
                     queue.put_nowait(msg)
                 else:
                     break
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
-
+        return True
 
 
 class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
@@ -176,8 +177,6 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
         # This queue is used by the foreground to send us tuples of (data, boxname)
         # where data is to be delivered to boxname.
         self.inQueue = Queue.Queue()
-        self.isDead = threading.Event()
-        self.deathbox = self.addOutbox(str(id(self)))
 
         self.addNewChild(child, DEFIN + extraInboxes)
 
@@ -205,11 +204,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
     def main(self):
         while True:
             if not self.pollQueue():
-                # a False return indicates that we should shut down.
-                self.isDead.set()
-                # tells the foreground object that we've successfully processed a shutdown message.
-                # unfortunately, whether the child honours it or not is a matter of debate.
-                self.send(object, self.deathbox)
+                # a False return indicates that we've gone through the shutdown handler already.
                 return
 
 
@@ -326,8 +321,8 @@ class LikeFile(object):
             self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
-        self.inputComponent.isDead.wait(1)
-        if not self.inputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
+        self.outputComponent.isDead.wait(1)
+        if not self.outputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
             warnings.warn("Timed out waiting on shutdown confirmation, may not be dead.")
         self.alive = False
 
