@@ -144,8 +144,10 @@ if __name__ == "__main__":
    Magna = MagnaDoodle().activate()
 
    from Shards import blitToSurface
+   from Shards import waitBox
 
    Magna.blitToSurface = lambda *args: blitToSurface(Magna,*args)
+   Magna.waitBox = lambda *args: waitBox(Magna,*args)
 
 
    Axon.Scheduler.scheduler.run.runThreads()  
