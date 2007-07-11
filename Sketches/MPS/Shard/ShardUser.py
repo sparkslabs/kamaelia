@@ -110,8 +110,22 @@ class MagnaDoodle(Axon.Component.component,Shardable):
                         self.blitToSurface()
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    self.drawing = False
-                    self.oldpos = None
+                    import inspect
+                    import re
+                    import InlineShards
+                    IShard = inspect.getsource(InlineShards.MOUSEBUTTONUP_conditional_handler)
+                    IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
+                    lines = []
+                    indent = -1
+                    for line in IShard.split("\n"):
+                        if indent == -1:
+                            r = line.strip()
+                            indent = len(line) - len(r)
+                            lines.append(r)
+                        else:
+                            lines.append(line[indent:])
+                    IShard = "\n".join(lines)
+                    exec IShard
                 elif event.type == pygame.MOUSEMOTION:
 #                   print "BUTTON", event.button
                     if self.drawing and self.innerRect.collidepoint(*event.pos):
