@@ -11,9 +11,10 @@ def MOUSEBUTTONDOWN_handler(self):
         self.drawBG()
         self.blitToSurface()
 
-def MOUSEBUTTONUP_conditional_handler(self):
-    self.drawing = False
-    self.oldpos = None
+def MOUSEBUTTONUP_handler(self):
+    if event.button == 1:
+        self.drawing = False
+        self.oldpos = None
 
 def MOUSEMOTION_handler(self):
     if self.drawing and self.innerRect.collidepoint(*event.pos):
@@ -28,6 +29,32 @@ def SetEventOptions(self):
     self.addListenEvent("MOUSEBUTTONDOWN")
     self.addListenEvent("MOUSEBUTTONUP")
     self.addListenEvent("MOUSEMOTION")
+
+def BINGLE(self):
+    self.backgroundColour = bgcolour
+    self.foregroundColour = fgcolour
+    self.margin = margin
+    self.oldpos = None
+    self.drawing = False
+
+    self.size = size
+    self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
+
+    if msg is None:
+        msg = ("CLICK", self.id)
+    self.eventMsg = msg
+    if transparent:
+        transparency = bgcolour
+    else:
+        transparency = None
+    self.disprequest = { "DISPLAYREQUEST" : True,
+                         "callback" : (self,"callback"),
+                         "events" : (self, "inbox"),
+                         "size": self.size,
+                         "transparency" : transparency }
+
+    if not position is None:
+        self.disprequest["position"] = position
 
 #
 # Reusaable IShards
@@ -45,7 +72,7 @@ def LoopOverPygameEvents(self):
         for event in self.recv("inbox"):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 exec self.getIShard("MOUSEBUTTONDOWN")
-            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONUP:
                 exec self.getIShard("MOUSEBUTTONUP_conditional")
             elif event.type == pygame.MOUSEMOTION:
                 exec self.getIShard("MOUSEMOTION")
