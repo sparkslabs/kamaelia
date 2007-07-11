@@ -92,11 +92,12 @@ class MagnaDoodle(Shardable,Axon.Component.component):
 
       done = False
       while not done:
-         while self.dataReady("control"):
-            cmsg = self.recv("control")
-            if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
-               self.send(cmsg, "signal")
-               done = True
+#         while self.dataReady("control"):
+#            cmsg = self.recv("control")
+#            if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+#               self.send(cmsg, "signal")
+#               done = True
+         exec self.getIShard("SHUTDOWN")
 
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
@@ -134,6 +135,7 @@ if __name__ == "__main__":
    Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
    Magna.addIShard("MOUSEBUTTONUP_conditional", InlineShards.MOUSEBUTTONUP_conditional_handler)
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
+   Magna.addIShard("SHUTDOWN", InlineShards.ShutdownHandler)
 
    try:
        Magna.checkDependencies()
