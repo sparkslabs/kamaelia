@@ -133,10 +133,6 @@ class MagnaDoodle(Axon.Component.component):
                         self.blitToSurface()
          self.pause()
          yield 1
-            
-      
-   def blitToSurface(self):
-       self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
 __kamaelia_components__  = ( MagnaDoodle, )
 
@@ -144,8 +140,13 @@ __kamaelia_components__  = ( MagnaDoodle, )
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
-   
+
    Magna = MagnaDoodle().activate()
-   
+
+   from Shards import blitToSurface
+
+   Magna.blitToSurface = lambda *args: blitToSurface(Magna,*args)
+
+
    Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF
