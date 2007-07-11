@@ -67,8 +67,11 @@ from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Queue, threading, time, copy, Axon, warnings
-queuelengths = 0
 
+
+queuelengths = 0
+DEFIN = ("inbox", "control")
+DEFOUT = ("outbox", "signal")
 
 def addBox(names, boxMap, addBox):
         """Add an extra wrapped box called name, using the addBox function provided
@@ -91,22 +94,17 @@ class dummyComponent(Axon.Component.component):
             yield 1
 
 
-def mergeTuple(theTuple, extra = None):
-    """Helper function."""
-    if extra is not None:
-        if type(extra) == tuple:
-            return theTuple + extra
-        else:
-            return theTuple + (extra, )
-    else:
-        return theTuple
-
+def validateBoxes(extraboxes, whitelist):
+    """Helper function, will determine whether or not extra boxes are members of the whitelist."""
+    for box in extraboxes:
+        if box not in whitelist:
+            raise KeyError, "box %s not a valid box" % box
 
 
 class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
     with the LikeFile component."""
-    def __init__(self, child, inputHandler, extraOutboxes = None):
+    def __init__(self, child, inputHandler, extraOutboxes = ()):
         super(componentWrapperOutput, self).__init__()
         self.queuelengths = queuelengths
         self.child = child
@@ -125,8 +123,7 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
         self.childOutboxMapping = dict()
-        outboxes = mergeTuple(("outbox", "signal"), extraOutboxes)
-        self.wrapChildOutbox(outboxes)
+        self.wrapChildOutbox(DEFOUT + extraOutboxes)
 
 
     def wrapChildOutbox(self, outboxes):
@@ -169,7 +166,7 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
     queued data to be placed on the child's inboxes."""
-    def __init__(self, child, extraInboxes = None):
+    def __init__(self, child, extraInboxes = ()):
         super(componentWrapperInput, self).__init__()
 
         # this maps from the child component object to a dict of box mappings of the form:
@@ -182,8 +179,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
         self.isDead = threading.Event()
         self.deathbox = self.addOutbox(str(id(self)))
 
-        inboxes = mergeTuple(("inbox", "control"), extraInboxes)
-        self.addNewChild(child, inboxes)
+        self.addNewChild(child, DEFIN + extraInboxes)
 
     def handleControlCommand(self, args):
         """We were sent some form of information from a foreground thread."""
@@ -263,20 +259,31 @@ class schedulerThread(threading.Thread):
 class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
-    def __init__(self, componenttowrap, extrainboxes = None, extraoutboxes = None):
+    def __init__(self, componenttowrap, extraInboxes = (), extraOutboxes = ()):
+
+        # the rest of the code is considerably terser if we always know these are tuples.
+        # Duck typing leads to a catastrophe here; if we have a string arg where a tuple
+        # is assumed, the code will not fail but instead add many boxes of one letter names.
+        if type(extraInboxes) != tuple:
+            extraInboxes = (extraInboxes, )
+        if type(extraOutboxes) != tuple:
+            extraOutboxes = (extraOutboxes, )
+
         self.child = componenttowrap
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
-        try: inputComponent = componentWrapperInput(componenttowrap, extrainboxes)
-        except KeyError, e:
-            raise KeyError, 'component to wrap has no such inbox: %s' % e
-        try: outputComponent = componentWrapperOutput(componenttowrap, inputComponent, extraoutboxes)
-        except KeyError, e:
-            del inputComponent
-            raise KeyError, 'component to wrap has no such outbox: %s' % e
-        self.validInboxes = inputComponent.children[componenttowrap].keys()
-        self.validOutboxes = outputComponent.childOutboxMapping.keys()
+
+        # ensure that the additional boxes specified are valid boxes on the child;
+        # doing it manually allows us to move more code into another thread.
+        validateBoxes(extraInboxes,  type(self.child).Inboxes.keys()  )
+        validateBoxes(extraOutboxes, type(self.child).Outboxes.keys() )
+        self.validInboxes = extraInboxes + DEFIN
+        self.validOutboxes = extraOutboxes + DEFOUT
+
+        inputComponent = componentWrapperInput(componenttowrap, extraInboxes)
+        outputComponent = componentWrapperOutput(componenttowrap, inputComponent, extraOutboxes)
+
         self.inQueue = inputComponent.inQueue
         self.outQueues = copy.copy(outputComponent.outQueues)
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
