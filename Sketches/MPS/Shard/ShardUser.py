@@ -77,18 +77,10 @@ class MagnaDoodle(Shardable,Axon.Component.component):
       self.display = self.recv("callback")
       self.drawBG()
       self.blitToSurface()
-      
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                  "surface" : self.display},
-                  "display_signal")
 
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                  "surface" : self.display},
-                  "display_signal")
-
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
-                  "surface" : self.display},
-                  "display_signal")
+      self.addListenEvent("MOUSEBUTTONDOWN")
+      self.addListenEvent("MOUSEBUTTONUP")
+      self.addListenEvent("MOUSEMOTION")
 
       done = False
       while not done:
@@ -109,6 +101,7 @@ if __name__ == "__main__":
    from Shards import waitBox
    from Shards import drawBG
    from Shards import Fail
+   from Shards import addListenEvent
    import InlineShards
 
    try:
@@ -118,7 +111,7 @@ if __name__ == "__main__":
    Magna.addMethod("blitToSurface", blitToSurface)
    Magna.addMethod("waitBox", waitBox)
    Magna.addMethod("drawBG", drawBG)
-
+   Magna.addMethod("addListenEvent", addListenEvent)
    Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
    Magna.addIShard("MOUSEBUTTONUP_conditional", InlineShards.MOUSEBUTTONUP_conditional_handler)
    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
