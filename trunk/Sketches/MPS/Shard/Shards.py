@@ -63,11 +63,6 @@ class MagnaDoodle(Axon.Component.component):
       if not position is None:
         self.disprequest["position"] = position         
 
-   def drawBG(self):
-      self.display.fill( (255,0,0) )
-      self.display.fill( self.backgroundColour, self.innerRect )
-     
-   
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
