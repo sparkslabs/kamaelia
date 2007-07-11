@@ -5,7 +5,11 @@ import Axon
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
-class MagnaDoodle(Axon.Component.component):
+class Shardable(object):
+   def addMethod(self, name, method):
+       self.__dict__[name] = lambda *args: method(self,*args)
+
+class MagnaDoodle(Axon.Component.component,Shardable):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
 
@@ -146,13 +150,11 @@ if __name__ == "__main__":
    from Shards import blitToSurface
    from Shards import waitBox
 
-   def addMethod(self, name, method):
-       self.__dict__[name] = lambda *args: method(self,*args)
+#   def addMethod(self, name, method):
+#       self.__dict__[name] = lambda *args: method(self,*args)
 
-   addMethod(Magna, "blitToSurface", blitToSurface)
-   #Magna.blitToSurface = lambda *args: blitToSurface(Magna,*args)
-   Magna.waitBox = lambda *args: waitBox(Magna,*args)
-
+   Magna.addMethod("blitToSurface", blitToSurface)
+   Magna.addMethod("waitBox", waitBox)
 
    Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF
