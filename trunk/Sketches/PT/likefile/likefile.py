@@ -122,7 +122,9 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
     queued data to be placed on the child's inboxes."""
     def __init__(self, child, extraInboxes = None):
         super(componentWrapperInput, self).__init__()
-        self.child = child
+        
+        # this maps from the child component object to a dict of box mappings of the form:
+        # ParentSource: ChildSink
         self.children = dict()
 
         # This queue is used by the foreground to send us tuples of (data, boxname)
@@ -134,16 +136,26 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
         inboxes = mergeTuple(("inbox", "control"), extraInboxes)
         self.addNewChild(child, inboxes)
 
+    def handleControlCommand(self, args):
+        """We were sent some form of information from a foreground thread."""
+        raise NotImplementedError
+
 
     def addNewChild(self, child, inboxes):
         """Commences wrapping a new child."""
         inboxMapping = dict()
-        childid = str(id(child))
-        for boxname in inboxes:
-            realboxname = self.addOutbox(boxname + childid) # TODO - benchmark the best way to wrap this.
-            inboxMapping[boxname] = realboxname
-            self.link((self, realboxname), (child, boxname))
+        childId = str(id(child))
+        for childSink in inboxes:
+            parentSource = self.addOutbox(childSink + childId) # TODO - benchmark the best way to wrap this.
+            inboxMapping[childSink] = parentSource
+            self.link((self, parentSource), (child, childSink))
         self.children[child] = inboxMapping
+
+    def deleteChild(self, child):
+        """Finishes monitoring a child component. Triggered by the relaying of ."""
+        self.unlink(thecomponent = child)
+        for parentSource in self.children[child].itervalues():
+            self.deleteOutbox(parentSource)
 
     def main(self):
         while True:
@@ -157,18 +169,25 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
 
 
     def pollQueue(self):
-        """This method checks all the queues from the outside world, and forwards any waiting data
-        to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
+        """This method checks the queue from the outside world, and forwards any waiting data
+        to the appropriate child component."""
 
-        msg, childSource, child = self.inQueue.get() # blocks
-        parentSource = self.children[child][childSource]
+        delivered = self.inQueue.get() # blocks
+        try:
+            # delivered can either be a 3-value tuple, or more rarely some control information.
+            msg, childSink, child = delivered
+        except ValueError:
+            self.handleControlCommand(delivered)
+            return True
 
+        parentSource = self.children[child][childSink]
         if not self.outboxes[parentSource].isFull():
             try:
                 self.send(msg, parentSource)
             except noSpaceInBox, e:
                 raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-            if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+            if childSink == "control" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.deleteChild(child)
                 return False
         else:
             raise NotImplementedError # TODO - congestion handling.
@@ -196,18 +215,15 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
         self.childOutboxMapping = dict()
-        self.wrapChildOutbox(("outbox", "signal"))
-        if extraOutboxes:
-            self.wrapChildOutbox(extraOutboxes)
+        outboxes = mergeTuple(("outbox", "signal"), extraOutboxes)
+        self.wrapChildOutbox(outboxes)
 
 
-    def wrapChildOutbox(self, outbox):
-        """This method takes the name (or a tuple of names) of an outbox on the child and adds
+    def wrapChildOutbox(self, outboxes):
+        """This method takes a tuple of names of an outbox on the child and adds
         all the appropriate queues and linkages and so on, so that the outbox
         is handled properly on the next iteration."""
-        if type(outbox) == str:
-            outbox = (outbox, )
-        for boxname in outbox:
+        for boxname in outboxes:
             realboxname = self.addInbox(boxname)
             self.childOutboxMapping[boxname] = realboxname
             self.outQueues[boxname] = Queue.Queue(self.queuelengths)
