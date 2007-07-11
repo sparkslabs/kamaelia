@@ -146,7 +146,11 @@ if __name__ == "__main__":
    from Shards import blitToSurface
    from Shards import waitBox
 
-   Magna.blitToSurface = lambda *args: blitToSurface(Magna,*args)
+   def addMethod(self, name, method):
+       self.__dict__[name] = lambda *args: method(self,*args)
+
+   addMethod(Magna, "blitToSurface", blitToSurface)
+   #Magna.blitToSurface = lambda *args: blitToSurface(Magna,*args)
    Magna.waitBox = lambda *args: waitBox(Magna,*args)
 
 
