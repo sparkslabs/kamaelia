@@ -30,7 +30,7 @@ def SetEventOptions(self):
     self.addListenEvent("MOUSEBUTTONUP")
     self.addListenEvent("MOUSEMOTION")
 
-def BINGLE(self):
+def __INIT__(self):
     self.backgroundColour = bgcolour
     self.foregroundColour = fgcolour
     self.margin = margin
@@ -73,7 +73,7 @@ def LoopOverPygameEvents(self):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 exec self.getIShard("MOUSEBUTTONDOWN")
             elif event.type == pygame.MOUSEBUTTONUP:
-                exec self.getIShard("MOUSEBUTTONUP_conditional")
+                exec self.getIShard("MOUSEBUTTONUP")
             elif event.type == pygame.MOUSEMOTION:
                 exec self.getIShard("MOUSEMOTION")
 
