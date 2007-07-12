@@ -35,40 +35,11 @@ class MagnaDoodle(Shardable,Axon.Component.component):
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
 
-   def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
-                transparent = False, size=(200,200)):
+   def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None, transparent = False, size=(200,200), initial_shards={}):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(MagnaDoodle,self).__init__()
-
-      #
-      # And this can't work either
-      #
-      exec self.getIShard("BINGLE")
-#def __INIT__(self):
-      #self.backgroundColour = bgcolour
-      #self.foregroundColour = fgcolour
-      #self.margin = margin
-      #self.oldpos = None
-      #self.drawing = False
-
-      #self.size = size
-      #self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
-
-      #if msg is None:
-         #msg = ("CLICK", self.id)
-      #self.eventMsg = msg
-      #if transparent:
-         #transparency = bgcolour
-      #else:
-         #transparency = None
-      #self.disprequest = { "DISPLAYREQUEST" : True,
-                           #"callback" : (self,"callback"),
-                           #"events" : (self, "inbox"),
-                           #"size": self.size,
-                           #"transparency" : transparency }
-
-      #if not position is None:
-        #self.disprequest["position"] = position
+      self.initialShards(initial_shards)
+      exec self.getIShard("__INIT__")
 
    def main(self):
       """Main loop."""
@@ -92,15 +63,15 @@ __kamaelia_components__  = ( MagnaDoodle, )
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
-
-   Magna = MagnaDoodle()
-
+   import InlineShards
    from Shards import blitToSurface
    from Shards import waitBox
    from Shards import drawBG
    from Shards import Fail
    from Shards import addListenEvent
-   import InlineShards
+
+   Magna = MagnaDoodle(initial_shards={"__INIT__": InlineShards.__INIT__})
+
 
    try:
        Magna.checkDependencies()
@@ -118,7 +89,6 @@ if __name__ == "__main__":
    Magna.addIShard("RequestDisplay", InlineShards.RequestDisplay)
    Magna.addIShard("GrabDisplay", InlineShards.GrabDisplay)
    Magna.addIShard("SetEventOptions", InlineShards.SetEventOptions)
-   Magna.addIShard("BINGLE", InlineShards.BINGLE)
 
    try:
        Magna.checkDependencies()

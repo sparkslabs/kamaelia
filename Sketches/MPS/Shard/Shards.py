@@ -139,6 +139,10 @@ class Shardable(object):
         print "Adding IShard", name
         self.IShards[name] = method
 
+    def initialShards(self, initial_shards):
+        for name in initial_shards:
+            self.addIShard(name, initial_shards[name])
+
     def checkDependencies(self):
         missing = []
         for i in self.requires_methods:
