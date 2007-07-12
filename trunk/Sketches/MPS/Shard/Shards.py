@@ -42,12 +42,6 @@ class ShardedPygameAppChassis(Shardable,Axon.Component.component):
          self.pause()
          yield 1 # This can't be Sharded or ISharded
 
-#
-# Non-Reusable
-#
-def drawBG(self):
-    self.display.fill( (255,0,0) )
-    self.display.fill( self.backgroundColour, self.innerRect )
 
 #
 # Reusable Shards
