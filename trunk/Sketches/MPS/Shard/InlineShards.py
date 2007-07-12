@@ -31,20 +31,20 @@ def SetEventOptions(self):
     self.addListenEvent("MOUSEMOTION")
 
 def __INIT__(self):
-    self.backgroundColour = bgcolour
-    self.foregroundColour = fgcolour
-    self.margin = margin
+    self.backgroundColour = argd.get("bgcolour", (124,124,124))
+    self.foregroundColour = argd.get("fgcolour", (0,0,0))
+    self.margin = argd.get("margin", 8)
     self.oldpos = None
     self.drawing = False
 
-    self.size = size
+    self.size = argd.get("size", (200,200))
     self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
-    if msg is None:
-        msg = ("CLICK", self.id)
-    self.eventMsg = msg
-    if transparent:
-        transparency = bgcolour
+    if argd.get("msg", None) is None:
+        argd["msg"] = ("CLICK", self.id)
+    self.eventMsg = argd.get("msg", None)
+    if argd.get("transparent",False):
+        transparency = argd.get("bgcolour", (124,124,124))
     else:
         transparency = None
     self.disprequest = { "DISPLAYREQUEST" : True,
@@ -53,11 +53,11 @@ def __INIT__(self):
                          "size": self.size,
                          "transparency" : transparency }
 
-    if not position is None:
-        self.disprequest["position"] = position
+    if not argd.get("position", None) is None:
+        self.disprequest["position"] = argd.get("position",None)
 
 #
-# Reusaable IShards
+# Reuseable IShards
 #
 
 def ShutdownHandler(self):
@@ -84,19 +84,3 @@ def RequestDisplay(self):
 
 def GrabDisplay(self):
     self.display = self.recv("callback")
-
-#def getIShard(code_object):
-    #IShard = inspect.getsource(code_object)
-    #IShard = IShard[re.search(":.*\n",IShard).end():] # strip def.*
-    #lines = []
-    #indent = -1
-    #for line in IShard.split("\n"):
-        #if indent == -1:
-            #r = line.strip()
-            #indent = len(line) - len(r)
-            #lines.append(r)
-        #else:
-            #lines.append(line[indent:])
-    #IShard = "\n".join(lines)
-    #return IShard
-##    exec IShard
