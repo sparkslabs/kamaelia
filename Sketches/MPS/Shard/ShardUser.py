@@ -3,10 +3,11 @@
 from Shards import ShardedPygameAppChassis
 from Shards import blitToSurface
 from Shards import waitBox
-from Shards import drawBG
 from Shards import Fail
 from Shards import addListenEvent
+
 import InlineShards
+import MagnaDoodleShards
 
 def MagnaDoodle(**argd):
     """\
@@ -27,22 +28,23 @@ def MagnaDoodle(**argd):
 
     """
 
-    argd["initial_shards"]={"__INIT__": InlineShards.__INIT__}
+    argd["initial_shards"]={"__INIT__": MagnaDoodleShards.__INIT__}
     Magna = ShardedPygameAppChassis(**argd)
 
     Magna.addMethod("blitToSurface", blitToSurface)
     Magna.addMethod("waitBox", waitBox)
-    Magna.addMethod("drawBG", drawBG)
+    Magna.addMethod("drawBG", MagnaDoodleShards.drawBG)
     Magna.addMethod("addListenEvent", addListenEvent)
 
-    Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
-    Magna.addIShard("MOUSEBUTTONUP", InlineShards.MOUSEBUTTONUP_handler)
-    Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
+    Magna.addIShard("MOUSEBUTTONDOWN", MagnaDoodleShards.MOUSEBUTTONDOWN_handler)
+    Magna.addIShard("MOUSEBUTTONUP", MagnaDoodleShards.MOUSEBUTTONUP_handler)
+    Magna.addIShard("MOUSEMOTION", MagnaDoodleShards.MOUSEMOTION_handler)
+    Magna.addIShard("SetEventOptions", MagnaDoodleShards.SetEventOptions)
+
     Magna.addIShard("HandleShutdown", InlineShards.ShutdownHandler)
     Magna.addIShard("LoopOverPygameEvents", InlineShards.LoopOverPygameEvents)
     Magna.addIShard("RequestDisplay", InlineShards.RequestDisplay)
     Magna.addIShard("GrabDisplay", InlineShards.GrabDisplay)
-    Magna.addIShard("SetEventOptions", InlineShards.SetEventOptions)
 
 
     try:
