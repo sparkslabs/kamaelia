@@ -92,6 +92,10 @@ class Test_DyingShunt(unittest.TestCase):
 
 
 class test_LikeFile(unittest.TestCase):
+
+    def status(self):
+        print threading.activeCount(), len(Axon.Scheduler.scheduler.run.threads), Axon.Scheduler.scheduler.run.threads
+
     def setUp(self):
         self.numthreads = threading.activeCount()
         self.numcomponents = len(Axon.Scheduler.scheduler.run.threads)
@@ -114,8 +118,8 @@ class test_LikeFile(unittest.TestCase):
 
     def testmany(self):
         compdict = dict()
-        for i in xrange(1, 100): # test 100 concurrent likefiles.
-            compdict[i] = LikeFile(DyingShunt(), extrainboxes = "extrain", extraoutboxes = "extraout")
+        for i in xrange(1, 50): # test 100 concurrent likefiles.
+            compdict[i] = LikeFile(DyingShunt(), extraInboxes = "extrain", extraOutboxes = "extraout")
             compdict[i].activate()
         time.sleep(0.1)
         for num, component in compdict.iteritems():
@@ -141,8 +145,8 @@ class test_LikeFile(unittest.TestCase):
         self.failUnlessRaises(AttributeError, component.send, "boo")
     def test_badboxwrap(self):
         """test that wrapping a nonexistent box will fail."""
-        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extrainboxes = "nonsenseaddbox")
-        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraoutboxes = "nonsenseaddbox")
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraInboxes = "nonsenseaddbox")
+        self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraOutboxes = "nonsenseaddbox")
     def test_badboxuse(self):
         """test that IO on a box name that doesn't exist will fail."""
         component = LikeFile(DyingShunt())

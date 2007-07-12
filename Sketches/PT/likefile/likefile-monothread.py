@@ -67,8 +67,11 @@ from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Queue, threading, time, copy, Axon, warnings
-queuelengths = 0
 
+
+queuelengths = 0
+DEFIN = ("inbox", "control")
+DEFOUT = ("outbox", "signal")
 
 def addBox(names, boxMap, addBox):
         """Add an extra wrapped box called name, using the addBox function provided
@@ -83,94 +86,110 @@ def addBox(names, boxMap, addBox):
             boxMap[boxname] = realboxname
 
 
-class dummyComponent(Axon.Component.component):
-    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
+def validateBoxes(extraboxes, whitelist):
+    """Helper function, will determine whether or not extra boxes are members of the whitelist."""
+    for box in extraboxes:
+        if box not in whitelist:
+            raise KeyError, "box %s not a valid box" % box
+
+
+
+class ComponentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
+    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
+    queued data to be placed on the child's inboxes."""
+    def __init__(self):
+        super(ComponentWrapperInput, self).__init__()
+
+        # this maps from the child component object to a dict of box mappings of the form:
+        # ParentSource: ChildSink
+        self.children = dict()
+
+        # This queue is used by the foreground to send us data
+        # where data is to be delivered to boxname.
+        self.inQueue = Queue.Queue()
+
+
+    def handleControlCommand(self, args):
+        """We were sent some form of information from a foreground thread.
+
+        for now, the only control command is one to add an extra component to watch,
+        we are sent the unactivated component object and a tuple of pre-validated inboxes
+        to wrap as well as the defaults."""
+        child, extraInboxes = args
+        self.addNewChild(child, extraInboxes + DEFIN)
+
+
+    def addNewChild(self, child, inboxes):
+        """Commences wrapping a new child. It seems that the actual linkage step is very slow."""
+        inboxMapping = dict()
+        childId = str(id(child))
+        for childSink in inboxes:
+            parentSource = self.addOutbox(childSink + childId) # TODO - benchmark the best way to wrap this.
+            inboxMapping[childSink] = parentSource
+            self.link((self, parentSource), (child, childSink))
+        self.children[child] = inboxMapping
+        
+
+
+    def deleteChild(self, child):
+        """Finishes monitoring a child component. Triggered by the relaying of ."""
+        self.unlink(thecomponent = child)
+        for parentSource in self.children[child].itervalues():
+            self.deleteOutbox(parentSource)
+        del self.children[child]
+
     def main(self):
         while True:
-            self.pause()
-            yield 1
+            self.pollQueue()
+
+
+    def pollQueue(self):
+        """This method checks the queue from the outside world, and forwards any waiting data
+        to the appropriate child component."""
+
+        delivered = self.inQueue.get() # blocks
+        try:
+            # delivered can either be a 3-value tuple, or more rarely some control information.
+            msg, childSink, child = delivered
+        except ValueError:
+            self.handleControlCommand(delivered)
+            return
+        parentSource = self.children[child][childSink]
+        if not self.outboxes[parentSource].isFull():
+            try:
+                self.send(msg, parentSource)
+            except noSpaceInBox, e:
+                raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+            if childSink == "control" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                self.deleteChild(child)
+        else:
+            raise NotImplementedError # TODO - congestion handling.
+
 
 
 class schedulerThread(threading.Thread):
     """A python thread which runs a scheduler."""
     lock = threading.Lock()
+    inputWrapper = None
     def __init__(self,slowmo=0):
         if not schedulerThread.lock.acquire(False):
             raise "only one scheduler for now can be run!"
         self.slowmo = slowmo
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
+        schedulerThread.inputWrapper = ComponentWrapperInput()
     def run(self):
-        dummyComponent().activate() # to keep the scheduler from exiting immediately.
+        schedulerThread.inputWrapper.activate()
         scheduler.run.runThreads(slowmo = self.slowmo)
         schedulerThread.lock.release()
 
 
-class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
-    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
-    queued data to be placed on the child's inboxes."""
-    def __init__(self, child, extraInboxes = None):
-        super(componentWrapperInput, self).__init__()
-        self.child = child
 
-        # This is a map from the name of the wrapped inbox on the child, to the
-        # Queue used to convey data into it.
-        self.inQueues = dict()
-
-        # This queue is used by the foreground to tell us what queue it has sent us
-        # data on, so that we do not need to check all our input queues,
-        # and also so that we can block on reading it.
-        self.whatInbox = Queue.Queue()
-        self.isDead = threading.Event()
-
-
-        # This sets up the linkages between us and our child, avoiding extra
-        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
-        if extraInboxes:
-            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
-        for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
-            self.link((self, parentSource),(self.child, childSink))
-
-        # This outbox is used to tell the output wrapper when to shut down.
-        self.deathbox = self.addOutbox(str(id(self)))
-
-    def main(self):
-        while True:
-            whatInbox = self.whatInbox.get()
-            if not self.pollQueue(whatInbox):
-                # a False return indicates that we should shut down.
-                self.isDead.set()
-                # tells the foreground object that we've successfully processed a shutdown message.
-                # unfortunately, whether the child honours it or not is a matter of debate.
-                self.send(object, self.deathbox)
-                return
-
-    def pollQueue(self, whatInbox):
-        """This method checks all the queues from the outside world, and forwards any waiting data
-        to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
-        parentSource = self.childInboxMapping[whatInbox]
-        queue = self.inQueues[whatInbox]
-        while not queue.empty():
-            if not self.outboxes[parentSource].isFull():
-                msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
-                try:
-                    self.send(msg, parentSource)
-                except noSpaceInBox, e:
-                    raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-                    return False
-            else:
-                # if the component's inboxes are full, do something here. Preferably not succeed.
-                break
-        return True
-
-class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class ComponentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
     with the LikeFile component."""
-    def __init__(self, child, inputHandler, extraOutboxes = None):
-        super(componentWrapperOutput, self).__init__()
+    def __init__(self, child, extraInboxes = (), extraOutboxes = ()):
+        super(ComponentWrapperOutput, self).__init__()
         self.queuelengths = queuelengths
         self.child = child
         self.addChildren(self.child)
@@ -181,29 +200,37 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 
         # set up notification from the input handler to kill us when appropriate.
         # we cannot rely on shutdown messages being propogated through the child.
-        self.isDead = inputHandler.isDead
-        self.deathbox = self.addInbox(str(id(self)))
-        self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
+        self.isDead = threading.Event()
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
-        if extraOutboxes:
-            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
+        self.childOutboxMapping = dict()
+        self.wrapChildOutbox(DEFOUT + extraOutboxes)
+        # Tell the input wrapper to start delivering messages to the child.
+        schedulerThread.inputWrapper.inQueue.put_nowait((child, extraInboxes))
 
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
-            self.link((self.child, childSource),(self, parentSink))
+
+    def wrapChildOutbox(self, outboxes):
+        """This method takes a tuple of names of an outbox on the child and adds
+        all the appropriate queues and linkages and so on, so that the outbox
+        is handled properly on the next iteration."""
+        for boxname in outboxes:
+            realboxname = self.addInbox(boxname)
+            self.childOutboxMapping[boxname] = realboxname
+            self.outQueues[boxname] = Queue.Queue(self.queuelengths)
+            self.link((self.child, boxname), (self, realboxname))
+
+    def handleShutdown(self):
+        """we got a shutdown signal propogated from the child - we should inform the parent that we're about to exit."""
+        self.isDead.set()
 
     def main(self):
         self.child.activate()
         while True:
             self.pause()
             yield 1
-            self.sendPendingOutput()
-            if self.dataReady(self.deathbox):
+            if not self.sendPendingOutput():
                 return
-
 
     def sendPendingOutput(self):
         """This method will take any outgoing data sent to us from a child component and stick it on a queue 
@@ -213,30 +240,47 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
             while self.dataReady(parentSink):
                 if not queue.full():
                     msg = self.recv(parentSink)
-                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
+                    if childSource == "signal" and isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                        self.handleShutdown()
+                        return False
                     queue.put_nowait(msg)
                 else:
                     break
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
+        return True
+
+
 
 class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
-    def __init__(self, componenttowrap, extraInboxes = None, extraOutboxes = None):
+    def __init__(self, componenttowrap, extraInboxes = (), extraOutboxes = ()):
+
+        # the rest of the code is considerably terser if we always know these are tuples.
+        # Duck typing leads to a catastrophe here; if we have a string arg where a tuple
+        # is assumed, the code will not fail but instead add many boxes of one letter names.
+        if type(extraInboxes) != tuple:
+            extraInboxes = (extraInboxes, )
+        if type(extraOutboxes) != tuple:
+            extraOutboxes = (extraOutboxes, )
+
+        self.child = componenttowrap
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
-        try: inputComponent = componentWrapperInput(componenttowrap, extraInboxes)
-        except KeyError, e:
-            raise KeyError, 'component to wrap has no such inbox: %s' % e
-        try: outputComponent = componentWrapperOutput(componenttowrap, inputComponent, extraOutboxes)
-        except KeyError, e:
-            del inputComponent
-            raise KeyError, 'component to wrap has no such outbox: %s' % e
-        self.inQueues = copy.copy(inputComponent.inQueues)
+
+        # ensure that the additional boxes specified are valid boxes on the child;
+        # doing it manually allows us to move more code into another thread.
+        validateBoxes(extraInboxes,  type(self.child).Inboxes.keys()  )
+        validateBoxes(extraOutboxes, type(self.child).Outboxes.keys() )
+        self.validInboxes = extraInboxes + DEFIN
+        self.validOutboxes = extraOutboxes + DEFOUT
+
+        outputComponent = ComponentWrapperOutput(componenttowrap, extraInboxes, extraOutboxes)
+
+        self.inQueue = schedulerThread.inputWrapper.inQueue
         self.outQueues = copy.copy(outputComponent.outQueues)
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
-        self.inputComponent = inputComponent
         self.outputComponent = outputComponent
 
 
@@ -244,7 +288,6 @@ class LikeFile(object):
         """Activates the component on the backgrounded scheduler and permits IO."""
         if self.alive:
             return
-        self.inputComponent.activate() # threadsafe, see note 1
         self.outputComponent.activate()
         self.alive = True
 
@@ -258,10 +301,11 @@ class LikeFile(object):
 
     def send(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
+        if boxname not in self.validInboxes:
+            # we need to do explicit checking here since otherwise we'd need to block on error return from the other thread.
+            raise KeyError, "%s is not a valid inbox" % boxname
         if self.alive:
-            queue = self.inQueues[boxname]
-            queue.put_nowait(msg)
-            self.inputComponent.whatInbox.put_nowait(boxname)
+            self.inQueue.put_nowait((msg, boxname, self.child))
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
     put = send # alias for backwards compatibility
 
@@ -270,12 +314,11 @@ class LikeFile(object):
         will warn if the shutdown took too long to confirm in action."""
         if self.alive: 
             self.send(Axon.Ipc.shutdown(),               "control") # legacy support.
-            self.send(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
             self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
-        self.inputComponent.isDead.wait(1)
-        if not self.inputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
+        self.outputComponent.isDead.wait(1)
+        if not self.outputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
             warnings.warn("Timed out waiting on shutdown confirmation, may not be dead.")
         self.alive = False
 
@@ -298,3 +341,4 @@ if __name__ == "__main__":
     slashdot = p.recv()
     whatismyip = p.recv()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+    p.shutdown()
