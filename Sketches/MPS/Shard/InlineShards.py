@@ -1,35 +1,9 @@
 import inspect
 import re
 #
-# This is where we will put shards that come from *inside* the main method.
+# This is where we will put shards that come from *inside* the main method
+# and inside __init__
 #
-def MOUSEBUTTONDOWN_handler(self):
-    if  event.button == 1:
-        self.drawing = True
-    elif event.button == 3:
-        self.oldpos = None
-        self.drawBG()
-        self.blitToSurface()
-
-def MOUSEBUTTONUP_handler(self):
-    if event.button == 1:
-        self.drawing = False
-        self.oldpos = None
-
-def MOUSEMOTION_handler(self):
-    if self.drawing and self.innerRect.collidepoint(*event.pos):
-        if self.oldpos == None:
-            self.oldpos = event.pos
-        else:
-            pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
-            self.oldpos = event.pos
-        self.blitToSurface()
-
-def SetEventOptions(self):
-    self.addListenEvent("MOUSEBUTTONDOWN")
-    self.addListenEvent("MOUSEBUTTONUP")
-    self.addListenEvent("MOUSEMOTION")
-
 def __INIT__(self):
     self.backgroundColour = argd.get("bgcolour", (124,124,124))
     self.foregroundColour = argd.get("fgcolour", (0,0,0))
@@ -56,6 +30,33 @@ def __INIT__(self):
     if not argd.get("position", None) is None:
         self.disprequest["position"] = argd.get("position",None)
 
+def SetEventOptions(self):
+    self.addListenEvent("MOUSEBUTTONDOWN")
+    self.addListenEvent("MOUSEBUTTONUP")
+    self.addListenEvent("MOUSEMOTION")
+
+def MOUSEBUTTONDOWN_handler(self):
+    if  event.button == 1:
+        self.drawing = True
+    elif event.button == 3:
+        self.oldpos = None
+        self.drawBG()
+        self.blitToSurface()
+
+def MOUSEBUTTONUP_handler(self):
+    if event.button == 1:
+        self.drawing = False
+        self.oldpos = None
+
+def MOUSEMOTION_handler(self):
+    if self.drawing and self.innerRect.collidepoint(*event.pos):
+        if self.oldpos == None:
+            self.oldpos = event.pos
+        else:
+            pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+            self.oldpos = event.pos
+        self.blitToSurface()
+
 #
 # Reuseable IShards
 #
@@ -63,7 +64,8 @@ def __INIT__(self):
 def ShutdownHandler(self):
     while self.dataReady("control"):
         cmsg = self.recv("control")
-        if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+        if isinstance(cmsg, Axon.Ipc.producerFinished) or \
+           isinstance(cmsg, Axon.Ipc.shutdownMicroprocess):
             self.send(cmsg, "signal")
             done = True
 
