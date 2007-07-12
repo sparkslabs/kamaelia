@@ -69,13 +69,13 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Queue, threading, time, copy, Axon, warnings
 queuelengths = 0
 
+DEFIN = ["inbox", "control"]
+DEFOUT = ["outbox", "signal"]
 
 def addBox(names, boxMap, addBox):
         """Add an extra wrapped box called name, using the addBox function provided
         (either self.addInbox or self.addOutbox), and adding it to the box mapping
         which is used to coordinate message routing within component wrappers."""
-        if type(names) != tuple:
-            names = (names,)
         for boxname in names:
             if boxname in boxMap:
                 raise ValueError, "%s %s already exists!" % (direction, boxname)
@@ -109,7 +109,7 @@ class schedulerThread(threading.Thread):
 class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
     """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
     queued data to be placed on the child's inboxes."""
-    def __init__(self, child, extraInboxes = None):
+    def __init__(self, child, inboxes = DEFIN):
         super(componentWrapperInput, self).__init__()
         self.child = child
 
@@ -126,9 +126,8 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childInboxMapping = { "inbox": "outbox", "control": "signal" }
-        if extraInboxes:
-            addBox(extraInboxes, self.childInboxMapping, self.addOutbox)
+        self.childInboxMapping = dict()
+        addBox(inboxes, self.childInboxMapping, self.addOutbox)
         for childSink, parentSource in self.childInboxMapping.iteritems():
             self.inQueues[childSink] = Queue.Queue(self.queuelengths)
             self.link((self, parentSource),(self.child, childSink))
@@ -169,7 +168,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
 class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
     with the LikeFile component."""
-    def __init__(self, child, inputHandler, extraOutboxes = None):
+    def __init__(self, child, inputHandler, outboxes = DEFOUT):
         super(componentWrapperOutput, self).__init__()
         self.queuelengths = queuelengths
         self.child = child
@@ -187,9 +186,8 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 
         # This sets up the linkages between us and our child, avoiding extra
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
-        self.childOutboxMapping = { "outbox": "inbox", "signal": "control" }
-        if extraOutboxes:
-            addBox(extraOutboxes, self.childOutboxMapping, self.addInbox)
+        self.childOutboxMapping = dict()
+        addBox(outboxes, self.childOutboxMapping, self.addInbox)
 
         for childSource, parentSink in self.childOutboxMapping.iteritems():
             self.outQueues[childSource] = Queue.Queue(self.queuelengths)
@@ -222,14 +220,33 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
 class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
-    def __init__(self, componenttowrap, extraInboxes = None, extraOutboxes = None):
+    def __init__(self, child, extraInboxes = (), extraOutboxes = ()):
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
-        try: inputComponent = componentWrapperInput(componenttowrap, extraInboxes)
+        # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
+        # letter.
+        if not isinstance(extraInboxes, tuple):
+            extraInboxes = (extraInboxes, )
+        if not isinstance(extraOutboxes, tuple):
+            extraOutboxes = (extraOutboxes, )
+
+        # If the component to wrap is missing, say, "inbox", then don't fail but silently neglect to wrap it.
+        validInboxes = type(child).Inboxes.keys()
+        validOutboxes = type(child).Outboxes.keys()
+        inboxes = []
+        outboxes = []
+        for i in DEFIN:
+            if i in validInboxes: inboxes.append(i)
+        for i in DEFOUT:
+            if i in validOutboxes: outboxes.append(i)
+        inboxes += list(extraInboxes)
+        outboxes += list(extraOutboxes)
+
+        try: inputComponent = componentWrapperInput(child, inboxes)
         except KeyError, e:
             raise KeyError, 'component to wrap has no such inbox: %s' % e
-        try: outputComponent = componentWrapperOutput(componenttowrap, inputComponent, extraOutboxes)
+        try: outputComponent = componentWrapperOutput(child, inputComponent, outboxes)
         except KeyError, e:
             del inputComponent
             raise KeyError, 'component to wrap has no such outbox: %s' % e
@@ -248,22 +265,25 @@ class LikeFile(object):
         self.outputComponent.activate()
         self.alive = True
 
-    def recv(self, boxname = "outbox"):
+    def get_nowait(self, boxname = "outbox"):
+        return self.get(boxname, blocking = False)
+
+    def get(self, boxname = "outbox", blocking = True):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
         raises AttributeError if the LikeFile is not alive."""
         if self.alive:
-            return self.outQueues[boxname].get()
+            return self.outQueues[boxname].get(blocking)
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
-    get = recv # alias for backwards compatibility.
+    recv = get
 
-    def send(self, msg, boxname = "inbox"):
+    def put(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
         if self.alive:
             queue = self.inQueues[boxname]
             queue.put_nowait(msg)
             self.inputComponent.whatInbox.put_nowait(boxname)
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
-    put = send # alias for backwards compatibility
+    send = put
 
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.

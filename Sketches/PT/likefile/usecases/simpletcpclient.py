@@ -12,14 +12,14 @@ from Kamaelia.Internet.TCPClient import TCPClient
 likefile.schedulerThread(slowmo=0.01).start()
 
 print "what channel on freenode?"
-channel = raw_input(">>> ")
+channel = raw_input(">>> ") # this is to prevent spammage of the default settings.
 
 client = likefile.LikeFile(TCPClient(host = host, port = port))
 client.activate()
 time.sleep(1)
 client.put("user likefile likefile likefile :likefile\n")
 client.put("nick likefile\n")
-client.put("JOIN %s\n" % channel)
+client.put("JOIN #kamaelia\n")
 while True:
     print client.get()
 
