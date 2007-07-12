@@ -1,48 +1,5 @@
 #!/usr/bin/python
 
-import pygame
-import Axon
-from Axon.Ipc import producerFinished
-from Kamaelia.UI.PygameDisplay import PygameDisplay
-
-from Shards import Shardable
-
-class SimplePygameAppChassis(Shardable,Axon.Component.component):
-   requires_methods = [ "blitToSurface", "waitBox", "drawBG" ]
-
-   Inboxes = { "inbox"    : "Receive events from PygameDisplay",
-               "control"  : "For shutdown messages",
-               "callback" : "Receive callbacks from PygameDisplay"
-             }
-   Outboxes = { "outbox" : "not used",
-                "signal" : "For shutdown messages",
-                "display_signal" : "Outbox used for communicating to the display surface" }
-
-   def __init__(self, **argd):
-      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(SimplePygameAppChassis,self).__init__()
-      self.initialShards(argd.get("initial_shards",{}))
-      exec self.getIShard("__INIT__")
-
-   def main(self):
-      """Main loop."""
-      exec self.getIShard("RequestDisplay")
-      for _ in self.waitBox("callback"):
-          yield 1 # This can't be Sharded or ISharded
-      exec self.getIShard("GrabDisplay")
-
-      self.drawBG()
-      self.blitToSurface()
-      exec self.getIShard("SetEventOptions")
-      done = False
-      while not done:
-         exec self.getIShard("HandleShutdown")
-         exec self.getIShard("LoopOverPygameEvents")
-         self.pause()
-         yield 1 # This can't be Sharded or ISharded
-
-__kamaelia_components__  = ( SimplePygameAppChassis, )
-
 if __name__ == "__main__":
    import InlineShards
    from Shards import blitToSurface
@@ -50,6 +7,7 @@ if __name__ == "__main__":
    from Shards import drawBG
    from Shards import Fail
    from Shards import addListenEvent
+   from Shards import ShardedPygameAppChassis
 
    def MagnaDoodle(**argd):
        """\
@@ -69,13 +27,15 @@ if __name__ == "__main__":
        - size         -- None or (w,h) in pixels (default=None)
 
        """
+
        argd["initial_shards"]={"__INIT__": InlineShards.__INIT__}
-       Magna = SimplePygameAppChassis(**argd)
+       Magna = ShardedPygameAppChassis(**argd)
 
        Magna.addMethod("blitToSurface", blitToSurface)
        Magna.addMethod("waitBox", waitBox)
        Magna.addMethod("drawBG", drawBG)
        Magna.addMethod("addListenEvent", addListenEvent)
+
        Magna.addIShard("MOUSEBUTTONDOWN", InlineShards.MOUSEBUTTONDOWN_handler)
        Magna.addIShard("MOUSEBUTTONUP", InlineShards.MOUSEBUTTONUP_handler)
        Magna.addIShard("MOUSEMOTION", InlineShards.MOUSEMOTION_handler)
@@ -85,11 +45,12 @@ if __name__ == "__main__":
        Magna.addIShard("GrabDisplay", InlineShards.GrabDisplay)
        Magna.addIShard("SetEventOptions", InlineShards.SetEventOptions)
 
+
        try:
            Magna.checkDependencies()
        except Fail, e:
            print "Hmm, should not fail, we've added dependencies"
        return Magna
 
-   Magna = MagnaDoodle()
+   Magna = MagnaDoodle(size=(800,600))
    Magna.run()
