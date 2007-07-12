@@ -35,10 +35,10 @@ class MagnaDoodle(Shardable,Axon.Component.component):
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
 
-   def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None, transparent = False, size=(200,200), initial_shards={}):
+   def __init__(self, **argd):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(MagnaDoodle,self).__init__()
-      self.initialShards(initial_shards)
+      self.initialShards(argd.get("initial_shards",{}))
       exec self.getIShard("__INIT__")
 
    def main(self):
@@ -71,7 +71,6 @@ if __name__ == "__main__":
    from Shards import addListenEvent
 
    Magna = MagnaDoodle(initial_shards={"__INIT__": InlineShards.__INIT__})
-
 
    try:
        Magna.checkDependencies()
