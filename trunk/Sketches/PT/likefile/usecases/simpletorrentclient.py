@@ -18,7 +18,7 @@ except IndexError:
 
 torrenter = likefile.LikeFile(
     Pipeline(TriggeredFileReader(),
-        TorrentClient(),
+        TorrentPatron(),
         BasicTorrentExplainer(),
         ))
 
