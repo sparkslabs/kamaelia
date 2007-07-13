@@ -26,7 +26,10 @@ This component is for downloading and uploading data using the peer-to-peer
 BitTorrent protocol. You MUST have the Mainline (official) BitTorrent client
 installed for any BitTorrent stuff to work in Kamaelia.
 
-See http://download.bittorrent.com/dl/?M=D
+NOTE: This code has only been successfully tested with version 4.20.8. Problems
+have been experienced with other more recent versions regarding a missing or
+misplaced language translations file. See http://download.bittorrent.com/dl/?M=D
+and download the appropriate version 4.20.8 package for for your platform.
 
 
 

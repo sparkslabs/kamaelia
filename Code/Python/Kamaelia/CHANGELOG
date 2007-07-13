@@ -105,6 +105,10 @@
    been tested with version 4.20.8 - use this version or later only.
    Get the latest sources from: http://download.bittorrent.com/dl/?M=D
 
+   Some people have reported problems with more recent versions (regarding a
+   missing or misplaced language translations file). Try reverting to version
+   4.20.8 if you encounter difficulties.
+
    For more details see: ./Examples/SoC2006/RJL/README-BitTorrent      
 
 
