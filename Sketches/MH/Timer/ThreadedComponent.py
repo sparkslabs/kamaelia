@@ -29,7 +29,7 @@ from __future__ import generators
 
 from Axon import Component
 from Axon.AdaptiveCommsComponent import _AdaptiveCommsable as _AC
-from AxonExceptions import noSpaceInBox
+from Axon.AxonExceptions import noSpaceInBox
 import threading
 import Queue
 from Axon.idGen import numId
