@@ -9,22 +9,27 @@ from Axon.Ipc import shutdownMicroprocess
 
 class OSCARProtocol(component):
     Inboxes = {"inbox" : "receives messages, usually from TCP",
-               "control" : "NOTHING",
+               "control" : "shutdown handling",
                "SNAC" : "SNACs to be sent out to AIM. Takes data in the format ((family, subtype), data)",
                "strings" : "strings to be sent out to AIM. Takes data in the format (channel, data)"
                }
 
     Outboxes = {"outbox" : "sends messages to AIM, usually via TCP",
-                "signal" : "NOTHING",
-                "heard" : "Everything it hears, after processing",
+                "signal" : "shutdown handling", 
+                "channel1" : "channel1",
+                "channel2" : "channel2",
+                "channel3" : "channel3",
+                "channel4" : "channel4",
+                "channel5" : "channel5",
                 }
     
     def __init__(self):
         super(OSCARProtocol, self).__init__()
         self.seqnum = 0
+        self.done = False
 
     def main(self):
-        while True:
+        while not self.done:
             yield 1
             self.checkBoxes()
 
@@ -36,10 +41,18 @@ class OSCARProtocol(component):
 
     def handleinbox(self):
         data = self.recv("inbox")
-        self.send(data, "heard")
+        header = '!cBHH'
+        while data:
+            a, chan, seqnum, datalen = struct.unpack(header, data[:6])
+            assert len(data) >= 6+datalen
+            flapbody = data[6:6+datalen]
+            self.send(flapbody, "channel%i" % chan)
+            data = data[6+datalen:]
 
     def handlecontrol(self):
         data = self.recv("control")
+        self.done = True
+        self.send(shutdownMicroprocess(), "signal")
 
     def handleSNAC(self):
         data = self.recv("SNAC")
@@ -71,9 +84,9 @@ class OSCARProtocol(component):
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Internet.TCPClient import TCPClient
 
-def OSCARClient():
+def OSCARClient(server, port):
     return Graphline(oscar = OSCARProtocol(),
-                     tcp = TCPClient('login.oscar.aol.com', 5190),
+                     tcp = TCPClient(server, port),
                      linkages = {
                          ("oscar", "outbox") : ("tcp", "inbox"),
                          ("tcp", "outbox") : ("oscar", "inbox"),
@@ -84,10 +97,31 @@ def OSCARClient():
                          ("self", "snac") : ("oscar", "SNAC"),
                          ("self", "strings") : ("oscar", "strings"),
                          ("self", "control") : ("oscar", "control"),
-                         ("oscar", "heard") : ("self", "outbox"),
+                         ("oscar", "channel1") : ("self", "channel1"),
+                         ("oscar", "channel2") : ("self", "channel2"),
+                         ("oscar", "channel3") : ("self", "channel3"),
+                         ("oscar", "channel4") : ("self", "channel4"),
+                         ("oscar", "channel5") : ("self", "channel5"),
                          ("tcp", "signal") : ("self", "signal"),
                          }
                      )
 
 if __name__ == '__main__':
-    OSCARClient().run() #shouldn't do anything except make sure the code passes the barest of requirements
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.PureTransformer import PureTransformer
+    
+    proto = OSCARProtocol()
+    flap = '*\x03\x00\x01\x00\x08flapbody' * 5
+    proto._deliver(flap, "inbox")
+
+    def unpack(data):
+        fmt = '!%iB' % len(data)
+        return struct.unpack(fmt, data)
+    
+    Graphline(proto = proto,
+              pure = PureTransformer(unpack),
+              echo = ConsoleEchoer(),
+              linkages = {("proto", "channel3") : ("pure", "inbox"),
+                          ("pure", "outbox") : ("echo", "inbox"),
+                          }
+              ).run()
