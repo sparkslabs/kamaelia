@@ -274,7 +274,6 @@ class LikeFile(object):
         if self.alive:
             return self.outQueues[boxname].get(blocking)
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
-    recv = get
 
     def put(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
@@ -283,7 +282,6 @@ class LikeFile(object):
             queue.put_nowait(msg)
             self.inputComponent.whatInbox.put_nowait(boxname)
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
-    send = put
 
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
@@ -311,10 +309,10 @@ if __name__ == "__main__":
     import time
     p = LikeFile(SimpleHTTPClient())
     p.activate()
-    p.send("http://google.com")
-    p.send("http://slashdot.org")
-    p.send("http://whatismyip.org")
-    google = p.recv()
-    slashdot = p.recv()
-    whatismyip = p.recv()
+    p.put("http://google.com")
+    p.put("http://slashdot.org")
+    p.put("http://whatismyip.org")
+    google = p.get()
+    slashdot = p.get()
+    whatismyip = p.get()
     print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
