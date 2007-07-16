@@ -272,7 +272,10 @@ class LikeFile(object):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
         raises AttributeError if the LikeFile is not alive."""
         if self.alive:
-            return self.outQueues[boxname].get(blocking)
+            return self.outQueues[boxname].get(blocking, 86400)
+            # TODO - remove this.
+            # Specifying any timeout allows ctrl-c to interrupt the wait, even if the timeout is excessive.
+            # This is one day. this may be a problem, in which case retry after an "empty" exception is raised.
         else: raise AttributeError, "shutdown was previously called, or we were never activated."
 
     def put(self, msg, boxname = "inbox"):
@@ -287,9 +290,9 @@ class LikeFile(object):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
         will warn if the shutdown took too long to confirm in action."""
         if self.alive: 
-            self.send(Axon.Ipc.shutdown(),               "control") # legacy support.
-            self.send(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
-            self.send(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
+            self.put(Axon.Ipc.shutdown(),               "control") # legacy support.
+            self.put(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
+            self.put(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
         self.inputComponent.isDead.wait(1)
