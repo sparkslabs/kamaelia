@@ -10,18 +10,14 @@ from oscarutil import *
 
 screenname = 'ukelele94720'
 password = '123abc'
-CLIENT_ID_STRING = "Purple/2.0.0beta7devel"
+CLIENT_ID_STRING = "Kamaelia/AIM"
+CHANNEL_NEWCONNECTION = 1
+CHANNEL_SNAC = 2
+CHANNEL_FLAPERROR = 3
+CHANNEL_CLOSECONNECTION = 4
+CHANNEL_KEEPALIVE = 5
 
 class AuthCookieGetter(component):
-    Inboxes = {"channel1" : "channel1",
-               "channel2" : "SNACs",
-               }
-    
-    Outboxes = {"outbox" : "the only thing that comes out is the auth cookie and BOS server",
-                "strings" : "non-snac requests to AIM",
-                "snac" : "snacs to go out to AIM",
-                "signal" : "shutdown handling",
-                }
     
     def __init__(self):
         super(AuthCookieGetter, self).__init__()
@@ -36,30 +32,26 @@ class AuthCookieGetter(component):
         for value in self.getBOSandAuthCookie(md5key):
             if value == 1: yield value
             else: reply = value
-            
+
+        goal = self.extractBOSandCookie(reply)
+
+        assert self.debugger.note("AuthCookieGetter.main", 1, str(goal))
         #save data, in case we need it for debugging later
         fle = open("snac1703.dat", "w")
         pickle.dump(reply, fle)
+        fle.close()        
+        fle = open("bos_auth.dat", "wb")
+        pickle.dump(goal, fle)
         fle.close()
         
-        snac = readSNAC(reply)
-        parsed = readTLVs(snac[1])
-        if parsed.has_key(0x05):
-            BOS_server = parsed[0x05]
-            BOS_server, port = BOS_server.split(':')
-            port = int(port)    
-            auth_cookie = parsed[0x06]
-            self.send((BOS_server, port, auth_cookie))
-        else:
-            self.send('ERROR')
         self.send(shutdownMicroprocess(), "signal")
     
     def handshake(self):
         data = struct.pack('!i', self.versionNumber)
-        self.send((CHANNEL1, data), "strings")
-        while not self.dataReady("channel1"):
+        self.send((CHANNEL_NEWCONNECTION, data))
+        while not self.dataReady():
             yield 1
-        reply = self.recv("channel1") #should be server ack of new connection
+        reply = self.recv() #should be server ack of new connection
         assert self.debugger.note("AuthCookieGetter.main", 5, "received new connection ack")
 
     def getMD5key(self):
@@ -68,12 +60,12 @@ class AuthCookieGetter(component):
         snac_body += TLV(0x01, screenname)
         snac_body += TLV(0x4b, zero)
         snac_body += TLV(0x5a, zero)
-        self.send(((0x17, 0x06), snac_body), "snac")
+        self.send((CHANNEL_SNAC, SNAC(0x17, 0x06, snac_body)))
         # get md5 key
-        while not self.dataReady("channel2"):
+        while not self.dataReady():
             yield 1
-        reply = self.recv("channel2") #snac (17, 07)
-        snac = readSNAC(reply)
+        reply = self.recv() #snac (17, 07)
+        snac = readSNAC(reply[1])
         assert self.debugger.note("AuthCookieGetter.main", 5, "received md5 key")
         yield snac[1][2:]
 
@@ -118,13 +110,24 @@ class AuthCookieGetter(component):
 
         ssiflag = 1
         snac_body += TLV(0x4a, Single(ssiflag))
-        self.send(((0x17, 0x02), snac_body), "snac")
+        self.send((CHANNEL_SNAC, SNAC(0x17, 0x02, snac_body)))
         
-        while not self.dataReady("channel2"):
+        while not self.dataReady():
             yield 1
-        reply = self.recv("channel2")
+        reply = self.recv()
         assert self.debugger.note("AuthCookieGetter.main", 5, "received BOS/auth cookie")
-        yield reply
+        yield reply[1]
+
+    def extractBOSandCookie(self, data):  
+        snac = readSNAC(data)
+        parsed = readTLVs(snac[1])
+        assert parsed.has_key(0x05)
+        BOS_server = parsed[0x05]
+        BOS_server, port = BOS_server.split(':')
+        port = int(port)    
+        auth_cookie = parsed[0x06]
+        return BOS_server, port, auth_cookie
+
 
 
 if __name__ == '__main__':
@@ -133,12 +136,8 @@ if __name__ == '__main__':
 
     Graphline(auth = AuthCookieGetter(),
               oscar = OSCARClient('login.oscar.aol.com', 5190),
-              echo = ConsoleEchoer(),
-              linkages = {("auth", "strings") : ("oscar", "strings"),
-                          ("auth", "snac") : ("oscar", "snac"),
-                          ("oscar", "channel1") : ("auth", "channel1"),
-                          ("oscar", "channel2") : ("auth", "channel2"),
-                          ("auth", "outbox") : ("echo", "inbox"),
+              linkages = {("auth", "outbox") : ("oscar", "inbox"),
+                          ("oscar", "outbox") : ("auth", "inbox"),
                           ("auth", "signal") : ("oscar", "control"),
                           }
               ).run()
