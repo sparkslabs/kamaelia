@@ -7,20 +7,16 @@ import pickle
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
 
+FLAP_HEADER_LEN = 6
 class OSCARProtocol(component):
     Inboxes = {"inbox" : "receives messages, usually from TCP",
                "control" : "shutdown handling",
-               "SNAC" : "SNACs to be sent out to AIM. Takes data in the format ((family, subtype), data)",
-               "strings" : "strings to be sent out to AIM. Takes data in the format (channel, data)"
+               "talk" : "(channel, FLAP payload)",
                }
 
     Outboxes = {"outbox" : "sends messages to AIM, usually via TCP",
                 "signal" : "shutdown handling", 
-                "channel1" : "channel1",
-                "channel2" : "channel2",
-                "channel3" : "channel3",
-                "channel4" : "channel4",
-                "channel5" : "channel5",
+                "heard" : "(channel, FLAP payload)",
                 }
     
     def __init__(self):
@@ -41,35 +37,22 @@ class OSCARProtocol(component):
 
     def handleinbox(self):
         data = self.recv("inbox")
-        header = '!cBHH'
+        head = '!cBHH'
         while data:
-            a, chan, seqnum, datalen = struct.unpack(header, data[:6])
+            a, chan, seqnum, datalen = struct.unpack(head, data[:FLAP_HEADER_LEN])
             assert len(data) >= 6+datalen
-            flapbody = data[6:6+datalen]
-            self.send(flapbody, "channel%i" % chan)
-            data = data[6+datalen:]
+            flapbody = data[FLAP_HEADER_LEN:FLAP_HEADER_LEN+datalen]
+            self.send((chan, flapbody), "heard")  
+            data = data[FLAP_HEADER_LEN+datalen:]
 
     def handlecontrol(self):
         data = self.recv("control")
         self.done = True
         self.send(shutdownMicroprocess(), "signal")
 
-    def handleSNAC(self):
-        data = self.recv("SNAC")
-        snac = self.makeSNAC(*data)
-        self.sendFLAP(snac)
-
-    def handlestrings(self):
-        chan, data = self.recv("strings")
+    def handletalk(self):
+        chan, data = self.recv("talk")
         self.sendFLAP(data, chan)
-
-    #most of method definition from Twisted's oscar.py
-    def makeSNAC(self, (fam, sub), data, flags=[0,0], id=1): #currently id never changes
-        header="!HHBBL"
-        head=struct.pack(header,fam,sub,
-                         flags[0],flags[1],
-                         id)
-        return head+str(data)
 
     #most of method definition from Twisted's oscar.py
     def sendFLAP(self,data,channel = 0x02):
@@ -90,21 +73,16 @@ def OSCARClient(server, port):
                      linkages = {
                          ("oscar", "outbox") : ("tcp", "inbox"),
                          ("tcp", "outbox") : ("oscar", "inbox"),
-                         ("oscar", "signal") : ("tcp", "control"),
 
                          ("oscar", "signal") : ("tcp", "control"),
 
-                         ("self", "snac") : ("oscar", "SNAC"),
-                         ("self", "strings") : ("oscar", "strings"),
+                         ("self", "inbox") : ("oscar", "talk"),
+                         ("oscar", "heard") : ("self", "outbox"),
                          ("self", "control") : ("oscar", "control"),
-                         ("oscar", "channel1") : ("self", "channel1"),
-                         ("oscar", "channel2") : ("self", "channel2"),
-                         ("oscar", "channel3") : ("self", "channel3"),
-                         ("oscar", "channel4") : ("self", "channel4"),
-                         ("oscar", "channel5") : ("self", "channel5"),
                          ("tcp", "signal") : ("self", "signal"),
                          }
                      )
+    
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
@@ -113,15 +91,9 @@ if __name__ == '__main__':
     proto = OSCARProtocol()
     flap = '*\x03\x00\x01\x00\x08flapbody' * 5
     proto._deliver(flap, "inbox")
-
-    def unpack(data):
-        fmt = '!%iB' % len(data)
-        return struct.unpack(fmt, data)
     
     Graphline(proto = proto,
-              pure = PureTransformer(unpack),
               echo = ConsoleEchoer(),
-              linkages = {("proto", "channel3") : ("pure", "inbox"),
-                          ("pure", "outbox") : ("echo", "inbox"),
+              linkages = {("proto", "heard") : ("echo", "inbox"),
                           }
               ).run()
