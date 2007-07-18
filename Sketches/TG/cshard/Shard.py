@@ -11,7 +11,7 @@ Would replace the more '2-stage' approaches so far by making
 everything a shard from import.
 
 TODO:
-check indentation defaults are sensible
+test getMethod and writeFile
 """
 
 def namegen(name = 'shard'):
@@ -79,7 +79,7 @@ class shard(object):
         super(shard, self).__init__()
         
         self.indent = indent
-        # need to indent generated code
+        
         if function:
             self.name = function.func_name
             self.code = self.addindent(self.getshard(function), indent)
@@ -106,7 +106,7 @@ class shard(object):
         function = shard function to get
         
         Returns:
-        list of lines of code, indented as specified
+        list of lines of code of function
         """
         
         # get code, throwaway def line
@@ -130,6 +130,29 @@ class shard(object):
                 lines.pop(0)
         
         return [c[len(lines[0]) - len(lines[0].lstrip()):] for c in lines] # remove leading indentation
+    
+    
+    def getMethod(self, function):
+        """
+        Get whole method code (including def) to paste
+        into a class. Adds self parameter if not present
+        
+        Arguments:
+        function = string name of function to get
+        
+        Returns:
+        list of lines of code of entire method with self parameter
+        """
+        
+        # get code
+        lines = inspect.getsource(function).splitlines(True)
+        
+        # check for self parameter, add as necessary
+        if lines[0].find(function+"(self") == -1:
+            nm, br, argsln = lines[0].partition("(")
+            lines[0] = nm + br + "self, " + argsln
+        
+        return lines
     
     
     def annotate(self, delimchar = '-'):
@@ -177,6 +200,28 @@ class shard(object):
         
         elif level > 0: # add indentation
             return [indentation*level + line for line in lines]
+    
+    def writeFile(self, filename = None):
+        """
+        Writes code from this shard into a file.
+        
+        Arguments:
+        filename = filename to write to. No checking of name clashes
+                          is performed, defaults to shard object name with
+                          a .py extension
+        
+        Returns:
+        file containing shard code
+        """
+        
+        if not filename:
+            filename = self.name + '.py'
+        
+        file = open(filename,"w")
+        file.writelines(self.code)
+        file.close()
+        
+        return file
 
 
 class docShard(shard):
