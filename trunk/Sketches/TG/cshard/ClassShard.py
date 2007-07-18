@@ -76,7 +76,7 @@ class classShard(Shard.docShard):
     
         Arguments:
         inboxes = True if inboxes are to be made (default), False if outboxes wanted
-        default = make standard in and control boxes (Inbox) or out and signal
+        default = ensure standard in and control boxes (Inbox) or out and signal
                         boxes (Outbox) as appropriate, default is True
         boxes = additional boxnames mapped to default values as strings. This will
                       generally be a description if they are initialised in the body of a class.
@@ -100,11 +100,23 @@ class classShard(Shard.docShard):
         pre = ""
         
         if inboxes:
+            # overwrite standard inbox descriptions if supplied
+            if 'inbox' in boxes.keys():
+                inbox = '\"inbox\": ' + boxes['inbox'] + ',' + nl
+            if 'control' in boxes.keys():
+                inbox = '\"control\": ' + boxes['control'] + ',' + nl
+                
             pre = " "*len(inopen)
             if default:
                 lines += [inopen + inbox, pre + control]
             
         else:  #outbox
+            # overwrite standard outbox descriptions if supplied
+            if 'outbox' in boxes.keys():
+                inbox = '\"outbox\": ' + boxes['outbox'] + ',' + nl
+            if 'signal' in boxes.keys():
+                inbox = '\"signal\": ' + boxes['signal'] + ',' + nl
+                
             pre = " "*len(outopen)
             if default:
                 lines += [outopen + outbox, pre + signal]
