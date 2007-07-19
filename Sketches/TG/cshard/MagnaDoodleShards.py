@@ -7,6 +7,7 @@
 # This is where we will put shards that come from *inside* the main method
 # and inside __init__
 #
+
 def __INIT__(self):
     self.backgroundColour = argd.get("bgcolour", (124,124,124))
     self.foregroundColour = argd.get("fgcolour", (0,0,0))
@@ -66,7 +67,4 @@ def MOUSEMOTION_handler(self):
 def drawBG(self):
     self.display.fill( (255,0,0) )
     self.display.fill( self.backgroundColour, self.innerRect )
-
-
-
 

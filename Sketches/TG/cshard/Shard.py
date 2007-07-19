@@ -29,6 +29,7 @@ def iscode(c):
     Tests if argument type could be lines of code,
     i.e. list of strings
     """
+    
     if type(c) == type([]):
         return type(c[0]) == type('') if c else True
     else: return False
@@ -39,6 +40,9 @@ def isfunction(f):
     """
     
     return callable(f)
+
+
+class DependencyError(Exception): pass
 
 
 indentation = "    "
@@ -75,6 +79,8 @@ class shard(object):
         Returns:
         shard object containing the name and code of the new shard
         """
+        
+        annotate = True
         
         super(shard, self).__init__()
         
@@ -138,7 +144,7 @@ class shard(object):
         into a class. Adds self parameter if not present
         
         Arguments:
-        function = string name of function to get
+        function = function object to get code
         
         Returns:
         list of lines of code of entire method with self parameter
@@ -148,11 +154,11 @@ class shard(object):
         lines = inspect.getsource(function).splitlines(True)
         
         # check for self parameter, add as necessary
-        if lines[0].find(function+"(self") == -1:
+        if lines[0].find(function.func_name+"(self") == -1:
             nm, br, argsln = lines[0].partition("(")
             lines[0] = nm + br + "self, " + argsln
         
-        return lines
+        return lines + [nl]
     
     
     def annotate(self, delimchar = '-'):
