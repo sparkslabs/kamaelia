@@ -1,9 +1,12 @@
 from ClassShard import *
-from ShardCore import *
+from LoopShard import *
 
 """
 Experiment to try and recreate MPS/Shards with code gen
 setup, i.e. generation of PygameAppChassis
+
+At the moment 15 line-main method construction takes 17 lines
+in __init__. Not sure this is so great.
 """
 
 indentation = "    "
@@ -17,7 +20,7 @@ class pygameComponentShard(classShard):
                        "GrabDisplay", "SetEventOptions" ))
     
     # default information supplied by this class
-    sclasses = ["Axon.Component.component", "Shardable"]
+    sclasses = ["Axon.Component.component"]
     dstr = ''
     inbxs = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
@@ -27,13 +30,15 @@ class pygameComponentShard(classShard):
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
     
-    def __init__(self, componentname = "PygameAppChassis", methods = [], ishards = {}):
+    
+    def __init__(self, componentname = "PygameAppChassis", *methods, **ishards):
         
         mshards = []
         # add methods to shard list, importing as necessary
         for m in methods:
+            print m
             if type(m) == type(""):
-                mshards += [Shard(name = m, code = getMethod(m))]
+                mshards += [Shard(name = m, code = self.getMethod(m))]
             else:
                 mshards += [m]
 
@@ -50,30 +55,50 @@ class pygameComponentShard(classShard):
         
         # create default methods and add in shards
         compInit = initShard(clsname = componentname, exkwarg = 'argd',
-                                         shards = ishards['__INIT__'])
-        # need to replace 'shards' below with construction of main method
+                                         shards = [ishards['__INIT__']])
+        
+        waitLoop = forShard(name = 'wait', inVar = r'self.waitBox("callback")',
+                                         shards = [['yield 1\n']], indent = 2)
+                                         
+        mainLoop = whileShard(name = 'mainLoop', condition = 'not done', indent = 2,
+                                              shards = [ishard['HandleShutdown'],
+                                                              ishard['LoopOverPygameEvents'],
+                                                              ['self.pause()\n', 'yield 1\n']])
+        
         compMain = functionShard(funcname = "main", indent = 1, args = ['self'],
-                                                    shards = [ishards["RequestDisplay"], ...]):
+                                                    shards = [ishards["RequestDisplay"], waitLoop,
+                                                    ishards['GrabDisplay'],
+                                                    ['self.drawBG()\n', 'self.blitToSurface()\n'],
+                                                    ishard['SetEventOptions'], ['done = False\n'],
+                                                    mainLoop])
         
         # construct class with full shard set
         classShard.__init__(self, componentname, superclasses = self.sclasses,
                                        docstring = self.dstr, inboxes = self.inbxs, outboxes = outbxs,
                                        shards = [compInit] + mshards + [compMain])
-        
-   #~ def main(self):
-      #~ """Main loop."""
-      #~ exec self.getIShard("RequestDisplay")
-      #~ for _ in self.waitBox("callback"):
-          #~ yield 1 # This can't be Sharded or ISharded
-      #~ exec self.getIShard("GrabDisplay")
 
-      #~ self.drawBG()
-      #~ self.blitToSurface()
-      #~ exec self.getIShard("SetEventOptions")
-      #~ done = False
-      #~ while not done:
-         #~ exec self.getIShard("HandleShutdown")
-         #~ exec self.getIShard("LoopOverPygameEvents")
-         #~ self.pause()
-         #~ yield 1 # This can't be Sharded or ISharded
-        
+#~ import MagnaDoodleShards
+#~ import Shards
+#~ import InlineShards
+
+from MagnaDoodleShards import *
+from InlineShards import *
+from Shards import *
+
+#~ print
+#~ for d in dir():
+    #~ print d
+#~ print
+
+#~ import inspect
+#~ print inspect.getsource(waitBox)
+
+chassis = pygameComponentShard('blitToSurface', 'waitBox', 'drawBG', 'addListenEvent',
+                                                         MOUSEBUTTONDOWN = MOUSEBUTTONDOWN_handler,
+                                                         MOUSEBUTTONUP = MOUSEBUTTONUP_handler,
+                                                         MOUSEMOTION = MOUSEMOTION_handler,
+                                                         SetEventOptions = SetEventOptions,
+                                                         HandleShutdown = ShutdownHandler,
+                                                         LoopOverPygameEvents = LoopOverPygameEvents,
+                                                         RequestDisplay = RequestDisplay,
+                                                         GrabDisplay = GrabDisplay)
