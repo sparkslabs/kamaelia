@@ -41,4 +41,3 @@ class moduleShard(Shard.docShard):
                 lines += [str + nl]
         
         self.code = lines + [nl, nl] + self.docstring + [nl, nl] + self.code
-        
