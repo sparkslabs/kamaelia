@@ -36,7 +36,6 @@ class pygameComponentShard(classShard):
         mshards = []
         # add methods to shard list, importing as necessary
         for m in methods:
-            print m
             if type(m) == type(""):
                 mshards += [Shard(name = m, code = self.getMethod(m))]
             else:
@@ -77,23 +76,13 @@ class pygameComponentShard(classShard):
                                        docstring = self.dstr, inboxes = self.inbxs, outboxes = outbxs,
                                        shards = [compInit] + mshards + [compMain])
 
-#~ import MagnaDoodleShards
-#~ import Shards
-#~ import InlineShards
 
 from MagnaDoodleShards import *
 from InlineShards import *
 from Shards import *
 
-#~ print
-#~ for d in dir():
-    #~ print d
-#~ print
 
-#~ import inspect
-#~ print inspect.getsource(waitBox)
-
-chassis = pygameComponentShard('blitToSurface', 'waitBox', 'drawBG', 'addListenEvent',
+chassis = pygameComponentShard(blitToSurface, waitBox, drawBG, addListenEvent,
                                                          MOUSEBUTTONDOWN = MOUSEBUTTONDOWN_handler,
                                                          MOUSEBUTTONUP = MOUSEBUTTONUP_handler,
                                                          MOUSEMOTION = MOUSEMOTION_handler,
