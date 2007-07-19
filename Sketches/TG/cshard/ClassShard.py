@@ -38,7 +38,7 @@ class classShard(Shard.docShard):
         super(classShard, self).__init__(name = clsname, indent = bodyind,
                                                           docstring = docstring, shards = shards)
         
-        defline = self.addindent(self.makeclass(clsname, superclasses), indent) + [nl]
+        defline = self.addindent(self.makeclass(clsname, superclasses), indent)
         inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), bodyind)
         outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), bodyind)
         
@@ -102,9 +102,11 @@ class classShard(Shard.docShard):
         if inboxes:
             # overwrite standard inbox descriptions if supplied
             if 'inbox' in boxes.keys():
-                inbox = '\"inbox\": ' + boxes['inbox'] + ',' + nl
+                inbox = '\"inbox\": ' + '\"' + boxes['inbox'] + '\"' + ',' + nl
+                boxes.pop('inbox')
             if 'control' in boxes.keys():
-                inbox = '\"control\": ' + boxes['control'] + ',' + nl
+                control = '\"control\": ' + '\"' + boxes['control'] + '\"' + ',' + nl
+                boxes.pop('control')
                 
             pre = " "*len(inopen)
             if default:
@@ -113,9 +115,11 @@ class classShard(Shard.docShard):
         else:  #outbox
             # overwrite standard outbox descriptions if supplied
             if 'outbox' in boxes.keys():
-                inbox = '\"outbox\": ' + boxes['outbox'] + ',' + nl
+                outbox = '\"outbox\": ' + '\"' + boxes['outbox'] + '\"' + ',' + nl
+                boxes.pop('outbox')
             if 'signal' in boxes.keys():
-                inbox = '\"signal\": ' + boxes['signal'] + ',' + nl
+                signal = '\"signal\": ' + '\"' + boxes['signal'] + '\"' + ',' + nl
+                boxes.pop('signal')
                 
             pre = " "*len(outopen)
             if default:
@@ -127,6 +131,6 @@ class classShard(Shard.docShard):
             lines += [(inopen if inbox else outopen) + str]
         
         for boxnm, val in boxes.items():
-            lines += [pre + '\"' + boxnm + '\": ' + val + ',' + nl]
+            lines += [pre + '\"' + boxnm + '\": ' + '\"' + val + '\"' + ',' + nl]
         
         return lines + [pre[:-2] + "}\n"]  #line up and add closing brace
