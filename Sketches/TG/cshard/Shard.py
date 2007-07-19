@@ -118,8 +118,8 @@ class shard(object):
         # get code, throwaway def line
         lines = inspect.getsource(function).splitlines(True)[1:]
         
-        # remove any whitespace lines at start
-        while lines[0].isspace(): lines.pop(0)
+        # remove any whitespace lines
+        lines = [line for line in lines if not line.isspace()]
         
         # remove docstrings
         doctag = r'"""'
