@@ -84,7 +84,7 @@ from MagnaDoodleShards import __INIT__
 from MagnaDoodleShards import *
 from InlineShards import *
 from Shards import *
-
+from ModuleShard import moduleShard
 
 chassis = pygameComponentShard("PygameAppChassis",
                                                          blitToSurface, waitBox, drawBG, addListenEvent,
@@ -98,4 +98,10 @@ chassis = pygameComponentShard("PygameAppChassis",
                                                          RequestDisplay = RequestDisplay,
                                                          GrabDisplay = GrabDisplay)
 
-chassis.writeFile()
+file = moduleShard("PygameAppChassis", importmodules = ['pygame', 'Axon'],
+                               importfrom = {'Kamaelia.UI.PygameDisplay': ['PygameDisplay']},
+                               shards = [chassis])
+file.writeFile()
+
+from PygameAppChassis import *
+PygameAppChassis(size=(800,600)).run()
