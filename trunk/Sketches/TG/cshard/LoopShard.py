@@ -1,6 +1,6 @@
-import Shard
+from Shard import shard
 
-class forShard(Shard.shard):
+class forShard(shard):
     def __init__(self, name = None, forVars = [], inVar = '[]', shards = [], indent = 0):
         """
         Generates code for a for-loop
@@ -17,7 +17,7 @@ class forShard(Shard.shard):
                        indented automatically
         """
         
-        shard.__init__(name = name, indent = indent, shards = shards, indent = indent+1)
+        super(forShard, self).__init__(name = name, shards = shards, indent = indent+1)
         
         forline = "for "
         if not forVars:
@@ -27,10 +27,10 @@ class forShard(Shard.shard):
                 forline += var + ", "
         forline = forline[:-2] + " in " + inVar + ":\n"
         
-        self.code = self.addIndent([forline], indent) + self.code
+        self.code = self.addindent([forline], indent) + self.code
 
 
-class whileShard(Shard.shard):
+class whileShard(shard):
     def __init__(self, name = None, condition = 'True', shards = [], indent = 0):
         """
         Generates a while-loop
@@ -46,7 +46,7 @@ class whileShard(Shard.shard):
                        indented automatically
         """
         
-        shard.__init__(name = name, indent = indent, shards = shards, indent = indent+1)
+        super(whileShard, self).__init__(name = name, shards = shards, indent = indent+1)
         
-        self.code = self.addIndent(["while "+condition+":\n"], indent) + self.code
+        self.code = self.addindent(["while "+condition+":\n"], indent) + self.code
 

@@ -38,7 +38,7 @@ class classShard(Shard.docShard):
         super(classShard, self).__init__(name = clsname, indent = bodyind,
                                                           docstring = docstring, shards = shards)
         
-        defline = self.addindent(self.makeclass(clsname, superclasses), indent)
+        defline = self.addindent(self.makeclass(clsname, superclasses), indent) + [nl]
         inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), bodyind)
         outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), bodyind)
         

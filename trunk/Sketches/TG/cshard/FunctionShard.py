@@ -35,9 +35,9 @@ class functionShard(Shard.docShard):
                                                               docstring = docstring, shards = shards)
         
         args = self.makearglist(args, kwargs, exarg, exkwarg)
-        defline = self.addindent("def "+funcname+"("+args+"):\n", indent)
+        defline = self.addindent(["def "+funcname+"("+args+"):\n"], indent)
         
-        self.code = [defline] + self.docstring + self.code + [nl]
+        self.code = defline + self.docstring + self.code + [nl]
     
     
     def makearglist(self, args, kwargs, exarg = None, exkwarg = None):
