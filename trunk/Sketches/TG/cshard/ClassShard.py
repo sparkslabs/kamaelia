@@ -23,9 +23,9 @@ class classShard(Shard.docShard):
                          Default (inbox, control) boxes are always generated
         outboxes = dict of outbox names to default values, generally a description.
                            Default (outbox, signal) boxes are always generated
-        shards = list of shards (any of shard objects, lines of code, function names)
+        shards = list of shards (any of shard objects, lines of code, functions)
                        to form body of class, i.e. class variables and methods.
-                       Note: methods should be given as appropriate function shards,
+                       Note: methods should be given as appropriate shard objects,
                        function objects have the body of the function imported only
         indent = level of indentation at which to begin class statement (body of
                       class indented automatically). Defaults to 0
