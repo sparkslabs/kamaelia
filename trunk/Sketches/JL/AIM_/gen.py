@@ -45,6 +45,7 @@ class AuthCookieGetter(component):
         fle.close()
         
         self.send(shutdownMicroprocess(), "signal")
+        print "sent shutdownMicroprocess"
     
     def handshake(self):
         data = struct.pack('!i', self.versionNumber)
