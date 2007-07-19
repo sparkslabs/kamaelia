@@ -60,14 +60,14 @@ class pygameComponentShard(classShard):
                                          shards = [ishards['__INIT__']])
         
         waitLoop = forShard(name = 'wait', inVar = r'self.waitBox("callback")',
-                                         shards = [['yield 1\n']], indent = 0)
+                                         shards = [['yield 1\n']])
                                          
-        mainLoop = whileShard(name = 'mainLoop', condition = 'not done', indent = 0,
+        mainLoop = whileShard(name = 'mainLoop', condition = 'not done',
                                               shards = [ishards['HandleShutdown'],
                                                               ishards['LoopOverPygameEvents'],
                                                               ['self.pause()\n', 'yield 1\n']])
         
-        compMain = functionShard(funcname = "main", indent = 1, args = ['self'],
+        compMain = functionShard(funcname = "main", args = ['self'],
                                                     shards = [ishards["RequestDisplay"], waitLoop,
                                                     ishards['GrabDisplay'],
                                                     ['self.drawBG()\n', 'self.blitToSurface()\n'],
