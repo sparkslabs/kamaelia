@@ -188,6 +188,7 @@ class shard(object):
         Returns:
         object's code attribute prefixed by specified amount of whitespace
         """
+        
         if lines == None:
             lines = self.code
         
@@ -235,6 +236,7 @@ class docShard(shard):
         Additional argument:
         docstring = formatted string of comments, default is empty
         """
+        
         super(docShard, self).__init__(name = name, indent = indent, annotate = annotate, shards = shards)
         
         self.docstring = self.makedoc(docstring, indent) if docstring else []
