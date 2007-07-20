@@ -6,6 +6,6 @@ class initShard(functionShard):
                         exkwarg = None, docstring = '', shards = []):
         superinit = ["super(" + clsname+", self).__init__()\n"]
         
-        super(initShard, self).__init__(funcname = '__init__', indent = 0, args = ['self']+ args,
+        super(initShard, self).__init__(funcname = '__init__', args = ['self']+ args,
                                            kwargs = kwargs, exarg = exarg, exkwarg = exkwarg,
                                            docstring = docstring, shards = [superinit] + shards)

@@ -86,6 +86,18 @@ from InlineShards import *
 from Shards import *
 from ModuleShard import moduleShard
 
+# need to construct this shard here to replace execs
+#~ def LoopOverPygameEvents(self):
+    #~ while self.dataReady("inbox"):
+        #~ for event in self.recv("inbox"):
+            #~ if event.type == pygame.MOUSEBUTTONDOWN:
+                #~ exec self.getIShard("MOUSEBUTTONDOWN")
+            #~ elif event.type == pygame.MOUSEBUTTONUP:
+                #~ exec self.getIShard("MOUSEBUTTONUP")
+            #~ elif event.type == pygame.MOUSEMOTION:
+                #~ exec self.getIShard("MOUSEMOTION")
+
+
 chassis = pygameComponentShard("PygameAppChassis",
                                                          blitToSurface, waitBox, drawBG, addListenEvent,
                                                          __INIT__ = __INIT__,

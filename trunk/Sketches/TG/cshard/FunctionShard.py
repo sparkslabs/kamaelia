@@ -4,19 +4,17 @@ import Shard
 Generates function definition code as shard object
 """
 
-indentation = "    "
 nl = "\n"
 
 class functionShard(Shard.docShard):
     
-    def __init__(self, funcname, indent = 0, args = [], kwargs = {}, exarg = None,
+    def __init__(self, funcname, args = [], kwargs = {}, exarg = None,
                         exkwarg = None, docstring = '', shards = []):
         """
         Generate code for a new function
         
         Arguments:
         funcname = name for new shard
-        indent = indent = level of indentation to add to function body, default 0
         args = named arguments as strings
         kwargs = keyword arguments mapped to their default values
         exarg = name of an 'extra arguments' parameter, default None (not included)
@@ -29,15 +27,13 @@ class functionShard(Shard.docShard):
         shard object containing definition of function as specified
         """
         
-        bodyind = indent + 1
-        
-        super(functionShard, self).__init__(name = funcname, indent = bodyind,
-                                                              docstring = docstring, shards = shards)
+        super(functionShard, self).__init__(name = funcname, docstring = docstring,
+                                                              shards = shards)
         
         args = self.makearglist(args, kwargs, exarg, exkwarg)
-        defline = self.addindent(["def "+funcname+"("+args+"):\n"], indent)
+        defline = ["def "+funcname+"("+args+"):\n"]
         
-        self.code = defline + self.docstring + self.code + [nl]
+        self.code = defline + self.addindent(self.docstring + self.code, 1) + [nl]
     
     
     def makearglist(self, args, kwargs, exarg = None, exkwarg = None):
