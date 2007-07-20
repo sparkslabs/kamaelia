@@ -1,7 +1,7 @@
 from Shard import shard
 
 class forShard(shard):
-    def __init__(self, name = None, forVars = [], inVar = '[]', shards = [], indent = 0):
+    def __init__(self, name = None, forVars = [], inVar = '[]', shards = []):
         """
         Generates code for a for-loop
         
@@ -13,11 +13,9 @@ class forShard(shard):
         shards = list of shards to include in body. As usual, these can be
                        shard objects, lines of code, or function names that
                        contain the required code
-        indent = indent level to start the loop statement at; loop body
-                       indented automatically
         """
         
-        super(forShard, self).__init__(name = name, shards = shards, indent = indent+1)
+        super(forShard, self).__init__(name = name, shards = shards)
         
         forline = "for "
         if not forVars:
@@ -27,11 +25,11 @@ class forShard(shard):
                 forline += var + ", "
         forline = forline[:-2] + " in " + inVar + ":\n"
         
-        self.code = self.addindent([forline], indent) + self.code
+        self.code = [forline] + self.addindent(self.code, 1)
 
 
 class whileShard(shard):
-    def __init__(self, name = None, condition = 'True', shards = [], indent = 0):
+    def __init__(self, name = None, condition = 'True', shards = []):
         """
         Generates a while-loop
         
@@ -42,11 +40,9 @@ class whileShard(shard):
         shards = list of shards to include in body. As usual, these can be
                        shard objects, lines of code, or function names that
                        contain the required code
-        indent = indent level to start the loop statement at; loop body
-                       indented automatically
         """
         
-        super(whileShard, self).__init__(name = name, shards = shards, indent = indent+1)
+        super(whileShard, self).__init__(name = name, shards = shards)
         
-        self.code = self.addindent(["while "+condition+":\n"], indent) + self.code
+        self.code = ["while "+condition+":\n"] + self.addindent(self.code, 1)
 

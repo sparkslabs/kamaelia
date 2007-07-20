@@ -4,7 +4,6 @@ import Shard
 Wrapper shard for adding imports to a module of shards
 """
 
-indentation = "    "
 nl = "\n"
 
 class moduleShard(Shard.docShard):
@@ -24,8 +23,8 @@ class moduleShard(Shard.docShard):
         shard object containing import statements
         """
         
-        super(moduleShard, self).__init__(name = name, indent = 0,
-                                                             docstring = docstring, shards = shards)
+        super(moduleShard, self).__init__(name = name, docstring = docstring,
+                                                             shards = shards)
         
         lines = ["import "+nm + nl for nm in importmodules]
         
@@ -40,4 +39,7 @@ class moduleShard(Shard.docShard):
                     str += ", " + object
                 lines += [str + nl]
         
-        self.code = lines + [nl, nl] + self.docstring + [nl, nl] + self.code
+        if docstring:
+            self.docstring += [nl, nl]
+            
+        self.code = lines + [nl] + self.docstring + self.code

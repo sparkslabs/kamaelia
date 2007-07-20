@@ -4,13 +4,12 @@ import Shard
 Makes class shards
 """
 
-indentation = "    "
 nl = "\n"
 
 class classShard(Shard.docShard):
     
     def __init__(self, clsname, superclasses = [], docstring = '', inboxes = {},
-                        outboxes = {}, shards = [], indent = 0):
+                        outboxes = {}, shards = []):
         """
         Creates a class as a shard from given components
         
@@ -27,22 +26,20 @@ class classShard(Shard.docShard):
                        to form body of class, i.e. class variables and methods.
                        Note: methods should be given as appropriate shard objects,
                        function objects have the body of the function imported only
-        indent = level of indentation at which to begin class statement (body of
-                      class indented automatically). Defaults to 0
         
         Returns:
         shard object containing a definition of the class as specified
         """
         
-        bodyind = indent+1
-        super(classShard, self).__init__(name = clsname, indent = bodyind,
-                                                          docstring = docstring, shards = shards)
+        super(classShard, self).__init__(name = clsname, docstring = docstring,
+                                                          shards = shards)
         
-        defline = self.addindent(self.makeclass(clsname, superclasses), indent)
-        inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), bodyind)
-        outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), bodyind)
+        defline = self.makeclass(clsname, superclasses)
+        inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), 1)
+        outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), 1)
         
-        self.code = defline + self.docstring + inboxes + outboxes + [nl] + self.code
+        self.code = defline + self.docstring + inboxes + outboxes + [nl] \
+                           + self.addindent(self.code, 1)
     
     
     def makeclass(self, name, superclasses = None):

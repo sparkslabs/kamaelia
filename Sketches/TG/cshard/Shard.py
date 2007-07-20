@@ -44,15 +44,13 @@ def isfunction(f):
 
 class DependencyError(Exception): pass
 
-
-indentation = "    "
 nl = "\n"
 
 class shard(object):
     namer = namegen()
     
-    def __init__(self, name = None, indent = 0, annotate = False, function = None,
-                        code = None, shards = []):
+    def __init__(self, name = None, annotate = True, function = None,
+                        code = None, shards = [], indent = 0):
         """
         Initialisation to create shards from lines of code, existing functions,
         or a combination of these and existing shard objects
@@ -62,9 +60,8 @@ class shard(object):
                      a default name will be generated (except where shard is
                      created from a single function, where the function's name
                      will be used)
-        indent = level of indentation to add to imported code, default 0
         annotate = whether to add annotations for imported code into
-                           new shard's generated code, default False
+                           new shard's generated code, default True
         function = if shard is being made from a single function, it can be
                          entered here. Used mainly internally to initialise function
                          objects passed into *shards. If present, any following
@@ -75,12 +72,11 @@ class shard(object):
                        can be any combination of existing shard objects, function
                        objects, and lists of code lines (e.g. as imported by
                        getshard); these will be initialised as necessary
+        indent = level of indentation to add to imported code, default 0
         
         Returns:
         shard object containing the name and code of the new shard
         """
-        
-        annotate = True
         
         super(shard, self).__init__()
         
@@ -233,7 +229,7 @@ class shard(object):
 
 class docShard(shard):
     
-    def __init__(self, name = None, indent = 0, annotate = False, docstring = '', shards = []):
+    def __init__(self, name = None, annotate = False, docstring = '', shards = []):
         """
         As shard constructor, but additionally sets a self.docstring
         attribute to be a list of the lines of the docstring, indented one
@@ -243,9 +239,9 @@ class docShard(shard):
         docstring = formatted string of comments, default is empty
         """
         
-        super(docShard, self).__init__(name = name, indent = indent, annotate = annotate, shards = shards)
+        super(docShard, self).__init__(name = name, annotate = annotate, shards = shards)
         
-        self.docstring = self.makedoc(docstring, indent) if docstring else []
+        self.docstring = self.makedoc(docstring) if docstring else []
         
     
     def makedoc(self, doc, indent = 0):
