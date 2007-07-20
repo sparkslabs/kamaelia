@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
@@ -60,4 +61,21 @@ class TwoWaySplitter(Axon.Component.component):
                     return
 
             self.pause()
+            yield 1
+
+class ConditionalSplitter(Axon.Component.component): # This is a data tap/siphon/demuxer
+    Outboxes = ["true", "false"]
+    def condition(self, data): return True
+    def true(self,data): self.send(data, "true")
+    def false(self,data): self.send(data, "false")
+    def main(self):
+        while 1:
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if self.condition(data):
+                    self.true(data)
+                else:
+                    self.false(data)
+            if not self.anyReady():
+                self.pause()
             yield 1

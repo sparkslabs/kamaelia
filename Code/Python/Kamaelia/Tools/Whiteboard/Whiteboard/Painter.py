@@ -89,7 +89,7 @@ class Painter(Axon.Component.component):
                             oldpos = data.pos
                             dragging = True
                         elif data.button==3:
-                            pygame.display.toggle_fullscreen()
+                            pygame.display.toggle_fullscreen() ### XXX WART
                     elif data.type == pygame.MOUSEMOTION and dragging:
                         self.cmd(mode, oldpos, data.pos, r, g, b)
                         oldpos = data.pos
