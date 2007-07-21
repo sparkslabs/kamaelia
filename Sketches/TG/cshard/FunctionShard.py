@@ -44,6 +44,8 @@ class functionShard(Shard.docShard):
         args = list of names of arguments or None if none
         kwargs = dict of keyword argument names to default values as strings,
                         or None if none
+        exarg = name of an 'extra arguments' parameter, default None (not included)
+        exkwarg = name of an 'extra keyword arguments' parameter, default None
         """
         
         arglist = ""

@@ -11,7 +11,7 @@ Would replace the more '2-stage' approaches so far by making
 everything a shard from import.
 
 TODO:
-test getMethod and writeFile
+bring dependency checking into here
 """
 
 def namegen(name = 'shard'):

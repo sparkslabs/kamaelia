@@ -2,7 +2,10 @@ import pygame
 import Axon
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
-class PygameAppChassis(Axon.Component.component):
+class MagnaDoodle(Axon.Component.component):
+    """
+    Auto-generated pygame component
+    """
     Inboxes = { "inbox": "Receive events from PygameDisplay",
                 "control": "For shutdown messages",
                 "callback": "Receive callbacks from PygameDisplay",
@@ -13,7 +16,7 @@ class PygameAppChassis(Axon.Component.component):
                }
 
     def __init__(self, **argd):
-        super(PygameAppChassis, self).__init__()
+        super(MagnaDoodle, self).__init__()
         self.backgroundColour = argd.get("bgcolour", (124,124,124))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
         self.margin = argd.get("margin", 8)
