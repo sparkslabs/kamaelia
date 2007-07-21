@@ -65,8 +65,8 @@ class shard(object):
                            new shard's generated code, default True
         function = if shard is being made from a single function, it can be
                          entered here. Used mainly internally to initialise function
-                         objects passed into *shards. If present, any following
-                         arguments are ignored, default is None
+                         objects passed into shards. If present, any following
+                         arguments are ignored. Default is None
         code = as function, but if initialisation is for single code block
         shards = the shards that will compose the body of the new shard,
                        in the order in which they will be added. Arguments here
