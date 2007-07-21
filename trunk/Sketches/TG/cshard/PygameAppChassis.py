@@ -2,7 +2,6 @@ import pygame
 import Axon
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
-# START SHARD: PygameAppChassis ------------------------------------------------
 class PygameAppChassis(Axon.Component.component):
     Inboxes = { "inbox": "Receive events from PygameDisplay",
                 "control": "For shutdown messages",
@@ -13,13 +12,8 @@ class PygameAppChassis(Axon.Component.component):
                  "display_signal": "Outbox used for communicating to the display surface",
                }
 
-    # START SHARD: __init__ --------------------------------------------------------
     def __init__(self, **argd):
-        # START SHARD: __init__ --------------------------------------------------------
         super(PygameAppChassis, self).__init__()
-        # END SHARD: __init__ ----------------------------------------------------------
-        
-        # START SHARD: __INIT__ --------------------------------------------------------
         self.backgroundColour = argd.get("bgcolour", (124,124,124))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
         self.margin = argd.get("margin", 8)
@@ -41,18 +35,10 @@ class PygameAppChassis(Axon.Component.component):
                              "transparency" : transparency }
         if not argd.get("position", None) is None:
             self.disprequest["position"] = argd.get("position",None)
-        # END SHARD: __INIT__ ----------------------------------------------------------
-        
     
-    # END SHARD: __init__ ----------------------------------------------------------
-    
-    # START SHARD: blitToSurface ---------------------------------------------------
     def blitToSurface(self):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
     
-    # END SHARD: blitToSurface -----------------------------------------------------
-    
-    # START SHARD: waitBox ---------------------------------------------------------
     def waitBox(self,boxname):
         """Generator. yields 1 until data ready on the named inbox."""
         waiting = True
@@ -60,59 +46,31 @@ class PygameAppChassis(Axon.Component.component):
             if self.dataReady(boxname): return
             else: yield 1
     
-    # END SHARD: waitBox -----------------------------------------------------------
-    
-    # START SHARD: drawBG ----------------------------------------------------------
     def drawBG(self):
         self.display.fill( (255,0,0) )
         self.display.fill( self.backgroundColour, self.innerRect )
     
-    # END SHARD: drawBG ------------------------------------------------------------
-    
-    # START SHARD: addListenEvent --------------------------------------------------
     def addListenEvent(self, event):
         self.send({ "ADDLISTENEVENT" : pygame.__getattribute__(event),
                     "surface" : self.display},
                     "display_signal")
     
-    # END SHARD: addListenEvent ----------------------------------------------------
-    
-    # START SHARD: main ------------------------------------------------------------
     def main(self):
-        # START SHARD: RequestDisplay --------------------------------------------------
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayservice)
         self.send( self.disprequest, "display_signal")
-        # END SHARD: RequestDisplay ----------------------------------------------------
-        
-        # START SHARD: wait ------------------------------------------------------------
         for _ in self.waitBox("callback"):
             # START SHARD: wait ------------------------------------------------------------
             yield 1
             # END SHARD: wait --------------------------------------------------------------
             
-        # END SHARD: wait --------------------------------------------------------------
-        
-        # START SHARD: GrabDisplay -----------------------------------------------------
         self.display = self.recv("callback")
-        # END SHARD: GrabDisplay -------------------------------------------------------
-        
-        # START SHARD: main ------------------------------------------------------------
         self.drawBG()
         self.blitToSurface()
-        # END SHARD: main --------------------------------------------------------------
-        
-        # START SHARD: SetEventOptions -------------------------------------------------
         self.addListenEvent("MOUSEBUTTONDOWN")
         self.addListenEvent("MOUSEBUTTONUP")
         self.addListenEvent("MOUSEMOTION")
-        # END SHARD: SetEventOptions ---------------------------------------------------
-        
-        # START SHARD: main ------------------------------------------------------------
         done = False
-        # END SHARD: main --------------------------------------------------------------
-        
-        # START SHARD: mainLoop --------------------------------------------------------
         while not done:
             # START SHARD: ShutdownHandler -------------------------------------------------
             while self.dataReady("control"):
@@ -123,26 +81,51 @@ class PygameAppChassis(Axon.Component.component):
                     done = True
             # END SHARD: ShutdownHandler ---------------------------------------------------
             
-            # START SHARD: LoopOverPygameEvents --------------------------------------------
+            # START SHARD: pygameEventLoop -------------------------------------------------
             while self.dataReady("inbox"):
+                # START SHARD: eventhandler ----------------------------------------------------
                 for event in self.recv("inbox"):
+                    # START SHARD: shard0 ----------------------------------------------------------
+                    # START SHARD: shard1 ----------------------------------------------------------
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        exec self.getIShard("MOUSEBUTTONDOWN")
+                        # START SHARD: MOUSEBUTTONDOWN_handler -----------------------------------------
+                        if  event.button == 1:
+                            self.drawing = True
+                        elif event.button == 3:
+                            self.oldpos = None
+                            self.drawBG()
+                            self.blitToSurface()
+                        # END SHARD: MOUSEBUTTONDOWN_handler -------------------------------------------
+                        
                     elif event.type == pygame.MOUSEBUTTONUP:
-                        exec self.getIShard("MOUSEBUTTONUP")
+                        # START SHARD: MOUSEBUTTONUP_handler -------------------------------------------
+                        if event.button == 1:
+                            self.drawing = False
+                            self.oldpos = None
+                        # END SHARD: MOUSEBUTTONUP_handler ---------------------------------------------
+                        
                     elif event.type == pygame.MOUSEMOTION:
-                        exec self.getIShard("MOUSEMOTION")
-            # END SHARD: LoopOverPygameEvents ----------------------------------------------
+                        # START SHARD: MOUSEMOTION_handler ---------------------------------------------
+                        if self.drawing and self.innerRect.collidepoint(*event.pos):
+                            if self.oldpos == None:
+                                self.oldpos = event.pos
+                            else:
+                                pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+                                self.oldpos = event.pos
+                            self.blitToSurface()
+                        # END SHARD: MOUSEMOTION_handler -----------------------------------------------
+                        
+                    # END SHARD: shard1 ------------------------------------------------------------
+                    
+                    # END SHARD: shard0 ------------------------------------------------------------
+                    
+                # END SHARD: eventhandler ------------------------------------------------------
+                
+            # END SHARD: pygameEventLoop ---------------------------------------------------
             
             # START SHARD: mainLoop --------------------------------------------------------
             self.pause()
             yield 1
             # END SHARD: mainLoop ----------------------------------------------------------
             
-        # END SHARD: mainLoop ----------------------------------------------------------
-        
     
-    # END SHARD: main --------------------------------------------------------------
-    
-# END SHARD: PygameAppChassis --------------------------------------------------
-
