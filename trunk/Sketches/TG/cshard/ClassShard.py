@@ -38,7 +38,7 @@ class classShard(Shard.docShard):
         inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), 1)
         outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), 1)
         
-        self.code = defline + self.docstring + inboxes + outboxes + [nl] \
+        self.code = defline + self.addindent(self.docstring) + inboxes + outboxes + [nl] \
                            + self.addindent(self.code, 1)
     
     
