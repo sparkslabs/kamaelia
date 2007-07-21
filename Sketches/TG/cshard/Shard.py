@@ -44,6 +44,7 @@ def isfunction(f):
 
 class DependencyError(Exception): pass
 
+indentation = "    "
 nl = "\n"
 
 class shard(object):

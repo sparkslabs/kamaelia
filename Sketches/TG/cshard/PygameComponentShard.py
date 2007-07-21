@@ -6,10 +6,8 @@ from FunctionShard import functionShard
 
 """
 Experiment to try and recreate MPS/Shards with code gen
-setup, i.e. generation of PygameAppChassis
-
-At the moment 15 line-main method construction takes 17 lines
-in __init__. Not sure this is so great.
+setup, i.e. class to replace PygameAppChassis
+Current test successfully generates and runs MagnaDoodle
 """
 
 indentation = "    "
@@ -18,8 +16,7 @@ nl = "\n"
 class pygameComponentShard(classShard):
     # required addin shards
     requires_methods = set(( "blitToSurface", "waitBox", "drawBG", "addListenEvent" ))
-    requires_ishards = set(("MOUSEBUTTONDOWN", "MOUSEBUTTONUP", "MOUSEMOTION",
-                       "HandleShutdown", "LoopOverPygameEvents", "RequestDisplay",
+    requires_ishards = set(("HandleShutdown", "LoopOverPygameEvents", "RequestDisplay",
                        "GrabDisplay", "SetEventOptions" ))
     
     # default information supplied by this class
@@ -84,29 +81,25 @@ from MagnaDoodleShards import __INIT__
 from MagnaDoodleShards import *
 from InlineShards import *
 from Shards import *
+
 from ModuleShard import moduleShard
+from BranchShard import *
 
-# need to construct this shard here to replace execs
-#~ def LoopOverPygameEvents(self):
-    #~ while self.dataReady("inbox"):
-        #~ for event in self.recv("inbox"):
-            #~ if event.type == pygame.MOUSEBUTTONDOWN:
-                #~ exec self.getIShard("MOUSEBUTTONDOWN")
-            #~ elif event.type == pygame.MOUSEBUTTONUP:
-                #~ exec self.getIShard("MOUSEBUTTONUP")
-            #~ elif event.type == pygame.MOUSEMOTION:
-                #~ exec self.getIShard("MOUSEMOTION")
-
+mousehandler = switchShard('mouseHandler', switchVar = 'event.type',
+                                            branches = [('pygame.MOUSEBUTTONDOWN', [MOUSEBUTTONDOWN_handler]),
+                                                                ('pygame.MOUSEBUTTONUP', [MOUSEBUTTONUP_handler]),
+                                                                ('pygame.MOUSEMOTION', [MOUSEMOTION_handler])])
+pyeventloop = forShard(name = 'eventhandler', forVars = ['event'], inVar = r'self.recv("inbox")',
+                                      shards = [mousehandler])
+pyeventloop = whileShard(name = 'pygameEventLoop', condition = r'self.dataReady("inbox")',
+                                          shards = [pyeventloop])
 
 chassis = pygameComponentShard("PygameAppChassis",
                                                          blitToSurface, waitBox, drawBG, addListenEvent,
                                                          __INIT__ = __INIT__,
-                                                         MOUSEBUTTONDOWN = MOUSEBUTTONDOWN_handler,
-                                                         MOUSEBUTTONUP = MOUSEBUTTONUP_handler,
-                                                         MOUSEMOTION = MOUSEMOTION_handler,
                                                          SetEventOptions = SetEventOptions,
                                                          HandleShutdown = ShutdownHandler,
-                                                         LoopOverPygameEvents = LoopOverPygameEvents,
+                                                         LoopOverPygameEvents = pyeventloop,
                                                          RequestDisplay = RequestDisplay,
                                                          GrabDisplay = GrabDisplay)
 
