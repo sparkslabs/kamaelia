@@ -6,7 +6,7 @@ nl = "\n"
 
 class switchShard(shard):
     
-    def __init__(self, switchVar = None, branches = [], elseshards = [], compare = '=='):
+    def __init__(self, name = None, switchVar = None, branches = [], elseshards = [], compare = '=='):
         """
         Generates a switch-type if statement
         
@@ -27,13 +27,17 @@ class switchShard(shard):
         
         br, sh = branches.pop(0)
         ifline = ['if ' + switchVar + compare + br + ':\n']
-        sh = shard('branch0', shards = sh).addindent()
+        sh = shard('if branch', shards = sh)
+        
+        code = ifline + sh.addindent()
         
         for pair in branches:
             br, sh = pair
-            ...
+            elifline = ['elif ' + switchVar + compare + br + ':\n']
+            sh = shard('elif branch', shards = sh)
+            code += elifline + sh.addindent()
         
-        super(switchShard, self).__init__(shards = [ifline + sh + ...])
+        super(switchShard, self).__init__(shards = [code])
         
         
         
