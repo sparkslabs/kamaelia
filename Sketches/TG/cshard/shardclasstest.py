@@ -60,3 +60,16 @@ ms = moduleShard('moduletest', importmodules = imps, importfrom = impfrs, shards
 for l in ms.code:
     print l,
 print
+
+## funcAppShard
+from FuncAppShard import *
+ps = ['lala', 'doo', 'ming']
+kws = {'wheee': "[huphup, 'pop', 'pip', 1]", 'nanoo': '"noom"', 'a': '1'}
+app = funcAppShard('testcall', funcObj = None, args = ps, kwargs = kws)
+for ln in app.code:
+    print ln,
+print
+app = funcAppShard('testcall', funcObj = 'testobj', args = ps, kwargs = kws)
+for ln in app.code:
+    print ln,
+print
