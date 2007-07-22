@@ -1,4 +1,4 @@
-import Shard
+from Shard import shard, docShard, isfunction
 
 """
 Makes class shards
@@ -6,7 +6,7 @@ Makes class shards
 
 nl = "\n"
 
-class classShard(Shard.docShard):
+class classShard(docShard):
     
     def __init__(self, clsname, superclasses = [], docstring = '', inboxes = {},
                         outboxes = {}, shards = []):
@@ -131,3 +131,25 @@ class classShard(Shard.docShard):
             lines += [pre + '\"' + boxnm + '\": ' + '\"' + val + '\"' + ',' + nl]
         
         return lines + [pre[:-2] + "}\n"]  #line up and add closing brace
+    
+    
+    def makeMethodShards(self, functions):
+        """
+        Converts function objects to method shards
+        
+        Arguments:
+        functions = sequence of function or shard objects;
+                           shards are added to output, functions
+                           are converted to shard objects containing
+                           code for the method
+        Returns:
+        list of shard objects corresponding to given functions
+        """
+        
+        mshards = []
+        for m in functions:
+            if isfunction(m):
+                m = shard(name = m.func_name, code = self.getMethod(m))
+            mshards += [m]
+        
+        return mshards

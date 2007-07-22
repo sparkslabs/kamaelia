@@ -63,9 +63,9 @@ class MagnaDoodle(Axon.Component.component):
         self.link((self,"display_signal"), displayservice)
         self.send( self.disprequest, "display_signal")
         for _ in self.waitBox("callback"):
-            # START SHARD: wait ------------------------------------------------------------
+            # START SHARD: wait.shard3 -----------------------------------------------------
             yield 1
-            # END SHARD: wait --------------------------------------------------------------
+            # END SHARD: wait.shard3 -------------------------------------------------------
             
         self.display = self.recv("callback")
         self.drawBG()
@@ -89,7 +89,7 @@ class MagnaDoodle(Axon.Component.component):
                 # START SHARD: eventhandler ----------------------------------------------------
                 for event in self.recv("inbox"):
                     # START SHARD: shard0 ----------------------------------------------------------
-                    # START SHARD: shard1 ----------------------------------------------------------
+                    # START SHARD: shard0.shard1 ---------------------------------------------------
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         # START SHARD: MOUSEBUTTONDOWN_handler -----------------------------------------
                         if  event.button == 1:
@@ -118,7 +118,7 @@ class MagnaDoodle(Axon.Component.component):
                             self.blitToSurface()
                         # END SHARD: MOUSEMOTION_handler -----------------------------------------------
                         
-                    # END SHARD: shard1 ------------------------------------------------------------
+                    # END SHARD: shard0.shard1 -----------------------------------------------------
                     
                     # END SHARD: shard0 ------------------------------------------------------------
                     
@@ -126,9 +126,9 @@ class MagnaDoodle(Axon.Component.component):
                 
             # END SHARD: pygameEventLoop ---------------------------------------------------
             
-            # START SHARD: mainLoop --------------------------------------------------------
+            # START SHARD: mainLoop.shard4 -------------------------------------------------
             self.pause()
             yield 1
-            # END SHARD: mainLoop ----------------------------------------------------------
+            # END SHARD: mainLoop.shard4 ---------------------------------------------------
             
     
