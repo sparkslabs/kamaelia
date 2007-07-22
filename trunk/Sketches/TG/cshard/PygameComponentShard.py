@@ -7,10 +7,8 @@ from FunctionShard import functionShard
 """
 Experiment to try and recreate MPS/Shards with code gen
 setup, i.e. class to replace PygameAppChassis
-Current test successfully generates and runs MagnaDoodle
 
-TODO:
-generalise dependency checking and move into main shard class
+Current test successfully generates and runs MagnaDoodle
 """
 
 indentation = "    "
@@ -18,10 +16,10 @@ nl = "\n"
 
 class pygameComponentShard(classShard):
     
-    # required addin shards
-    requires_methods = set(( "blitToSurface", "waitBox", "drawBG", "addListenEvent" ))
-    requires_ishards = set(("HandleShutdown", "LoopOverPygameEvents", "RequestDisplay",
-                                          "GrabDisplay", "SetEventOptions" ))
+    # required shards
+    shard.addReqMethods("blitToSurface", "waitBox", "drawBG", "addListenEvent" )
+    shard.addReqIShards("HandleShutdown", "LoopOverPygameEvents", "RequestDisplay",
+                                          "GrabDisplay", "SetEventOptions" )
     
     # default information supplied by this class
     sclasses = ["Axon.Component.component"]
@@ -56,24 +54,9 @@ class pygameComponentShard(classShard):
                         shards will be ignored
         """
         
-        mshards = []
-        # add methods to shard list, importing as necessary
-        for m in methods:
-            if isfunction(m):
-                m = shard(name = m.func_name, code = self.getMethod(m))
-            mshards += [m]
+        mshards = self.makeMethodShards(methods)
         
-        # check all dependencies satisfied
-        error = ""
-        mgiven = set([s.name for s in mshards if isinstance(s, shard)])
-        
-        if not self.requires_methods <= mgiven:
-            error += "need methods "+ str(self.requires_methods - mgiven)
-        if not self.requires_ishards <= set(ishards.keys()):
-            error += "need ishards "+ str(self.requires_ishards - set(ishards.keys()))
-        
-        if not error == "":
-            raise DependencyError, error
+        self.checkDependencies(mshards, ishards)
         
         # create default methods and add in shards
         compInit = initShard(clsname = cmpname, exkwarg = 'argd',

@@ -1,17 +1,11 @@
 import inspect
 
 """
-Rough first pass at shard constructor: aims to treat shard objects,
+Shard constructor that treats shard objects,
 named functions and lists of strings (code) equivalently
 
-Current thought is to subclass shard to create Connectors,
-e.g. ifshard(shard) can construct if-statements as shards,
-functionshard(shard) can replace the current makefunction, etc.
-Would replace the more '2-stage' approaches so far by making
-everything a shard from import.
-
-TODO:
-bring dependency checking into here
+Subclass to create more specific connectors, e.g.
+branching, looping, methods, function calls, etc.
 """
 
 def namegen(name = 'shard'):
@@ -48,7 +42,74 @@ indentation = "    "
 nl = "\n"
 
 class shard(object):
+    
+    # dependency checking attributes
+    requiredMethods = set()
+    requiredIShards = set()
+    
+    @classmethod
+    def addReqMethods(self, *methods):
+        """
+        Adds methods to the list of requirements for this class.
+        A DependencyError will be raised if these are not filled
+        when the object is constructed
+        
+        Arguments:
+        methods = string names of additional required methods
+        """
+        
+        self.requiredMethods = self.requiredMethods | set(methods)
+
+    @classmethod
+    def addReqIShards(self, *ishards):
+        """
+        Adds inline shards to the list of requirements for this class.
+        A DependencyError will be raised if these are not filled
+        when the object is constructed
+        
+        Arguments:
+        ishards = string names of additional required shards
+        """
+        
+        self.requiredIShards = self.requiredIShards | set(ishards)
+    
+    @classmethod
+    def remReqMethods(self, *methods):
+        """
+        Removes methods from list of requirements. Methods
+        given but not in requirements list will be ignored
+        
+        Arguments:
+        methods = string names of unrequired methods. If empty,
+                          all methods will be removed
+        """
+        
+        if not methods:
+            self.requiredMethods = set()
+        else:
+            self.requiredMethods = self.requiredMethods - set(methods)
+    
+    @classmethod
+    def remReqIShards(self, *ishards):
+        """
+        Removes inline shards from list of requirements. Shards
+        given but not in requirements list will be ignored
+        
+        Arguments:
+        ishards = string names of unrequired shards. If empty,
+                        all shards will be removed
+        """
+        
+        if not ishards:
+            self.requiredIShards = set()
+        else:
+            self.requiredIShards = self.requiredIShards - set(ishards)
+
+    
+    # generator to name anonymous shards
     namer = namegen()
+    
+    
     
     def __init__(self, name = None, annotate = True, function = None,
                         code = None, shards = [], indent = 0):
@@ -92,13 +153,60 @@ class shard(object):
         else:
             self.name = name if name else self.namer.next()
             self.code = []
-            for s in shards:
-                if isfunction(s):
-                    s = shard(function = s)
-                elif iscode(s):
-                    s = shard(name = name, code = s)
-                
+            for s in self.makeShards(shards):
                 self.code += self.addindent(s.annotate() if annotate else s.code, indent)
+    
+    
+    def makeShards(self, things):
+        """
+        Converts functions or lines of code to shard objects
+        
+        Arguments:
+        things = any mix of shard objects, functions or lines
+                      of code to convert, in a sequence
+        
+        Returns:
+        list of inline shards equivalent to arguments
+        """
+        
+        shards = []
+        for t in things:
+            if isfunction(t):
+                shards.append(shard(function = t))
+            elif iscode(t):
+                nm = self.name +'.' + self.namer.next()
+                shards.append(shard(name = nm, code = t))
+            else:
+                shards.append(t)
+        
+        return shards
+    
+    
+    def checkDependencies(self, mshards, ishards):
+        """
+        Checks that given methods and inline shards satisfy
+        the dependencies listed by the class; raises a
+        DependencyError if they are not
+        
+        Arguments:
+        mshards = sequence of method shard objects
+        ishards = list of, or dict whose keys are, the names
+                        of the supplied inline shards
+        """
+        
+        error = ""
+        methods = set([s.name for s in mshards])
+        inlines = set(ishards.keys() if isinstance(ishards, dict) else ishards)
+        
+        if not self.requiredMethods <= methods:
+            error += "need methods "+ str(self.requiredMethods - methods)
+        if not self.requiredIShards <= inlines:
+            error += "need ishards "+ str(self.requiredIShards - inlines)
+        
+        if not error == "":
+            raise DependencyError, error
+        
+        return True
     
     
     def getshard(self, function):
@@ -205,6 +313,7 @@ class shard(object):
         elif level > 0: # add indentation
             return [indentation*level + line for line in lines]
     
+    
     def writeFile(self, filename = None):
         """
         Writes code from this shard into a file.
@@ -226,6 +335,7 @@ class shard(object):
         file.close()
         
         return file
+
 
 
 class docShard(shard):
