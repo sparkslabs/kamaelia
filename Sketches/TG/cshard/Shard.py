@@ -159,7 +159,10 @@ class shard(object):
             self.code = []
             #self.shards = self.makeShards(shards)
             for s in self.makeShards(shards):
-                self.code += self.addindent(s.annotate() if annotate else s.code, indent)
+                if annotate:
+                    self.code += self.addindent(s.annotate(), indent)
+                else:
+                    self.code += self.addindent(s.code, indent)
 
 
     def makeShards(self, things):
