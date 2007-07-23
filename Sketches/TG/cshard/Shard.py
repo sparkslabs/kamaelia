@@ -24,10 +24,19 @@ def iscode(c):
     i.e. list of strings
     """
 
-    if type(c) == type([]):
-        return type(c[0]) == type('') if c else True
-    else: return False
+#<<<<<< .mine
+    try:
+       return c[0] == str
+    except: # Rare circumstance bare except makes sense
+       pass
+    return False
 
+#=======
+#    if type(c) == type([]):
+#        return type(c[0]) == type('') if c else True
+#    else: return False
+#
+#>>>>>>> .r3395
 def isfunction(f):
     """
     Tests if argument is a function
@@ -150,16 +159,26 @@ class shard(object):
             self.shards = self.makeShards([function])
 
         elif code:
-            self.name = name if name else self.namer.next()
+            if name:
+                self.name = name
+            else:
+                self.name = self.namer.next()
+#            self.name = name if name else self.namer.next()
             self.code = self.addindent(code, indent)
             self.shards = self.makeShards([code])
 
         else:
-            self.name = name if name else self.namer.next()
+            self.name = self.namer.next()
+#            self.name = name if name else self.namer.next()
             self.code = []
             self.shards = self.makeShards(shards)
             for s in self.shards:
-                self.code += self.addindent(s.annotate() if annotate else s.code, indent)
+                if annotate:
+                    theIndent = s.annotate()
+                else:
+                    theIndent = s.code
+                self.code += self.addindent(theIndent, indent)
+#                self.code += self.addindent(s.annotate() if annotate else s.code, indent)
 
 
     def makeShards(self, things):
@@ -205,7 +224,11 @@ class shard(object):
 
         error = ""
         methods = set([s.name for s in mshards])
-        inlines = set(ishards.keys() if isinstance(ishards, dict) else ishards)
+        if isinstance(ishards, dict):
+            inlines = set(ishards.keys())
+        else:
+            inlines = ishards
+#        inlines = set(ishards.keys() if isinstance(ishards, dict) else ishards)
 
         if not self.requiredMethods <= methods:
             error += "need methods "+ str(self.requiredMethods - methods)
@@ -338,7 +361,11 @@ class docShard(shard):
 
         super(docShard, self).__init__(name = name, annotate = annotate, shards = shards)
 
-        self.docstring = self.makedoc(docstring) if docstring else []
+        if docstring:
+            self.docstring = self.makedoc(docstring)
+        else:
+            self.docstring = []
+#        self.docstring = self.makedoc(docstring) if docstring else []
 
 
     def makedoc(self, doc, indent = 0):
