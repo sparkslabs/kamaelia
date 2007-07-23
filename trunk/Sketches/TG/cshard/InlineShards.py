@@ -13,6 +13,8 @@ def ShutdownHandler(self):
             self.send(cmsg, "signal")
             done = True
 
+# not used in MagnaDoodle test case (PygameComponentShard.py)
+# (new chassis doesn't inherit from shardable, thus can't getIShard)
 def LoopOverPygameEvents(self):
     while self.dataReady("inbox"):
         for event in self.recv("inbox"):

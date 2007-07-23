@@ -40,7 +40,7 @@ def SetEventOptions(self):
     self.addListenEvent("MOUSEMOTION")
 
 def MOUSEBUTTONDOWN_handler(self):
-    print 'down'
+    #print 'down'
     if  event.button == 1:
         self.drawing = True
     elif event.button == 3:
@@ -49,13 +49,13 @@ def MOUSEBUTTONDOWN_handler(self):
         self.blitToSurface()
 
 def MOUSEBUTTONUP_handler(self):
-    print 'up'
+    #print 'up'
     if event.button == 1:
         self.drawing = False
         self.oldpos = None
 
 def MOUSEMOTION_handler(self):
-    print 'move'
+    #print 'move'
     if self.drawing and self.innerRect.collidepoint(*event.pos):
         if self.oldpos == None:
             self.oldpos = event.pos

@@ -92,7 +92,7 @@ class MagnaDoodle(Axon.Component.component):
                     # START SHARD: shard0.shard1 ---------------------------------------------------
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         # START SHARD: MOUSEBUTTONDOWN_handler -----------------------------------------
-                        print 'down'
+                        #print 'down'
                         if  event.button == 1:
                             self.drawing = True
                         elif event.button == 3:
@@ -103,7 +103,7 @@ class MagnaDoodle(Axon.Component.component):
                         
                     elif event.type == pygame.MOUSEBUTTONUP:
                         # START SHARD: MOUSEBUTTONUP_handler -------------------------------------------
-                        print 'up'
+                        #print 'up'
                         if event.button == 1:
                             self.drawing = False
                             self.oldpos = None
@@ -111,7 +111,7 @@ class MagnaDoodle(Axon.Component.component):
                         
                     elif event.type == pygame.MOUSEMOTION:
                         # START SHARD: MOUSEMOTION_handler ---------------------------------------------
-                        print 'move'
+                        #print 'move'
                         if self.drawing and self.innerRect.collidepoint(*event.pos):
                             if self.oldpos == None:
                                 self.oldpos = event.pos

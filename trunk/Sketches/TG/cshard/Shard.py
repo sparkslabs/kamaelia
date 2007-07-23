@@ -150,7 +150,7 @@ class shard(object):
         if function:
             self.name = function.func_name
             self.code = self.addindent(self.getshard(function), indent)
-            #self.shards = self.makeShards([function])
+            self.shards = [function]
 
         elif code:
             if name:
@@ -158,7 +158,7 @@ class shard(object):
             else:
                 self.name = self.namer.next()
             self.code = self.addindent(code, indent)
-            #self.shards = self.makeShards([code])
+            self.shards = [code]
 
         else:
             if name:
@@ -166,25 +166,29 @@ class shard(object):
             else:
                 self.name = self.namer.next()
             self.code = []
-            #self.shards = self.makeShards(shards)
-            for s in self.makeShards(shards):
+            self.shards = self.makeShards(shards)
+            for s in self.shards:
                 if annotate:
                     self.code += self.addindent(s.annotate(), indent)
                 else:
                     self.code += self.addindent(s.code, indent)
 
 
-    def makeShards(self, things):
+    def makeShards(self, things = None):
         """
         Converts functions or lines of code to shard objects
 
         Arguments:
         things = any mix of shard objects, functions or lines
-                      of code to convert, in a sequence
+                      of code to convert, in a sequence. Default
+                      is None, in which case self.shards is used
 
         Returns:
         list of inline shards equivalent to arguments
         """
+
+        if things == None:
+            things = self.shards
 
         shards = []
         for t in things:
