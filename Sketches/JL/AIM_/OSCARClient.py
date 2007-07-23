@@ -87,13 +87,17 @@ def OSCARClient(server, port):
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Util.PureTransformer import PureTransformer
-    
-    proto = OSCARProtocol()
-    flap = '*\x03\x00\x01\x00\x08flapbody' * 5
-    proto._deliver(flap, "inbox")
-    
-    Graphline(proto = proto,
-              echo = ConsoleEchoer(),
-              linkages = {("proto", "heard") : ("echo", "inbox"),
-                          }
-              ).run()
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    server = 'localhost'
+    port = 5190
+
+    class Terminator(component):
+        def main(self):
+            for i in range(10):
+                print i
+                self.send((i, "hi i am a string"))
+                yield 1            
+            self.send(shutdownMicroprocess(), "signal")
+
+    Pipeline(Terminator(), OSCARClient(server,port)).run()
+    print "Pipeline finished"

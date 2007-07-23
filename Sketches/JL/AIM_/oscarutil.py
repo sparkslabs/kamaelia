@@ -158,9 +158,9 @@ desired_service_versions = {
     0x15 : 1,
     }
 
-single = '!b'
-double = '!h'
-quad = '!i'
+single = '!B'
+double = '!H'
+quad = '!I'
 
 Single = (lambda num: struct.pack('!b', num))
 Double = (lambda num: struct.pack('!h', num))
