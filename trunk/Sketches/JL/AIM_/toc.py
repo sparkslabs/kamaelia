@@ -12,11 +12,13 @@ info,dir: see how gaim connects for this...it may never work if it tries to conn
 This module is stable, but deprecated.
 
 Maintainer: U{Paul Swartz<mailto:z3p@twistedmatrix.com>}
+
+Modified by Jinna Lei for Kamaelia. 
 """
 
 # twisted imports
-from twisted.internet import reactor, protocol
-from twisted.python import log
+##from twisted.internet import reactor, protocol
+##from twisted.python import log
 
 # base imports
 import struct
@@ -86,69 +88,9 @@ def roast(pw):
 
 def checksum(b):
     return DUMMY_CHECKSUM # do it like gaim does, since the checksum
-                      # formula doesn't work
-##    # used in file transfers
-##    check0 = check1 = 0x00ff
-##    for i in range(len(b)):
-##        if i%2:
-##            if ord(b[i])>check1:
-##                check1=check1+0x100 # wrap
-##                if check0==0:
-##                    check0=0x00ff
-##                    if check1==0x100:
-##                        check1=check1-1
-##                else:
-##                    check0=check0-1
-##            check1=check1-ord(b[i])
-##        else:
-##            if ord(b[i])>check0: # wrap
-##                check0=check0+0x100
-##                if check1==0:
-##                    check1=0x00ff
-##                    if check0==0x100:
-##                        check0=check0-1
-##                else:
-##                    check1=check1-1
-##            check0=check0-ord(b[i])
-##    check0=check0 & 0xff
-##    check1=check1 & 0xff
-##    checksum=(long(check0)*0x1000000)+(long(check1)*0x10000)
-##    return checksum
 
 def checksum_file(f):
     return DUMMY_CHECKSUM # do it like gaim does, since the checksum
-                      # formula doesn't work
-##    check0=check1=0x00ff
-##    i=0
-##    while 1:
-##        b=f.read()
-##        if not b: break
-##        for char in b:
-##            i=not i
-##            if i:
-##                if ord(char)>check1:
-##                    check1=check1+0x100 # wrap
-##                    if check0==0:
-##                        check0=0x00ff
-##                        if check1==0x100:
-##                            check1=check1-1
-##                    else:
-##                        check0=check0-1
-##                check1=check1-ord(char)
-##            else:
-##                if ord(char)>check0: # wrap
-##                    check0=check0+0x100
-##                    if check1==0:
-##                        check1=0x00ff
-##                        if check0==0x100:
-##                            check0=check0-1
-##                    else:
-##                        check1=check1-1
-##                check0=check0-ord(char)
-##    check0=check0 & 0xff
-##    check1=check1 & 0xff
-##    checksum=(long(check0)*0x1000000)+(long(check1)*0x10000)
-##    return checksum
 
 def normalize(s):
     s=string.lower(s)

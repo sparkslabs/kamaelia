@@ -3,8 +3,8 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleEchoer
 from gen import *
 import sys
-sys.path.append('../../PT/likefile')
-from likefile import LikeFile
+sys.path.append('..')
+from likefile import *
 
 g = \
 Graphline(auth = AuthCookieGetter(),
@@ -15,9 +15,10 @@ Graphline(auth = AuthCookieGetter(),
                       ("auth", "signal") : ("oscar", "control"),
                       ("auth", "_cookie") : ("self", "outbox"),
                       }
-          ).run()
+          ) 
 
+background = schedulerThread(slowmo=0.01).start()
 h = LikeFile(g)
-h.put()
+h.activate()
 cookie = h.get()
 print cookie

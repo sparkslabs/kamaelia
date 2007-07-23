@@ -42,11 +42,11 @@ class ProtocolNegotiator(component):
         data = struct.pack('!i', self.versionNumber)
         data += TLV(0x06, self.authCookie)
         self.send((CHANNEL1, data))
+        assert self.debugger.note("ProtocolNegotiator.main", 5, "sent handshake 1")
         while not self.dataReady():
             yield 1
         recvdflap = self.recv()
         assert self.debugger.note("ProtocolNegotiator.main", 5, "received FLAP " + str(recvdflap[0]))
-        
 
         #get supported services
         while not self.dataReady():
@@ -90,8 +90,6 @@ class ProtocolNegotiator(component):
         #process rate limits
         numClasses, = struct.unpack('!H', reply[:2])
         self.parseRateInfo(reply[2:], numClasses)
-        #doesn't work yet, and as of now, we don't need this data
-##        pickle.dump([numClasses, reply[2:], reply[2 + numClasses*LEN_RATE_CLASS:]], open("rateInfoRaw.dat", "wb"))
 ##        reply = reply[2 + numClasses*LEN_RATE_CLASS:]
 ##        self.parseRateGroups(reply)
 
@@ -150,14 +148,25 @@ if __name__ == '__main__':
     from OSCARClient import OSCARClient
     import sys
     import os
-    sys.path.append('../../PT/likefile')
-    from likefile import LikeFile
+    sys.path.append('..')
+    from likefile import *
+    from gen import AuthCookieGetter
     import pickle
 
+    g = \
+    Graphline(auth = AuthCookieGetter(),
+              oscar = OSCARClient('login.oscar.aol.com', 5190),
+              linkages = {("auth", "outbox") : ("oscar", "inbox"),
+                          ("oscar", "outbox") : ("auth", "inbox"),
+                          ("auth", "signal") : ("oscar", "control"),
+                          ("auth", "_cookie") : ("self", "outbox"),
+                          }
+              ) 
 
-    f = open("bos_auth.dat")
-    BOS_server, port, auth_cookie = pickle.load(f)
-    f.close()
+    background = schedulerThread(slowmo=0.01).start()
+    h = LikeFile(g)
+    h.activate()
+    BOS_server, port, auth_cookie = h.get()
 
     Graphline(ambassador = ProtocolNegotiator(auth_cookie),
               oscar = OSCARClient(BOS_server, port),
