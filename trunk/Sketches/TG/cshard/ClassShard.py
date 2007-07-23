@@ -125,7 +125,12 @@ class classShard(docShard):
         if not default:  # need a custom box on initial line
             boxnm, val = boxes.popitem()
             str = '\"' + boxnm + '\": ' + val + ',' + nl
-            lines += [(inopen if inbox else outopen) + str]
+            if inbox:
+                boxtext = inopen
+            else:
+                boxtext = outopen
+            lines += [boxtext + str]
+#            lines += [(inopen if inbox else outopen) + str]
 
         for boxnm, val in boxes.items():
             lines += [pre + '\"' + boxnm + '\": ' + '\"' + val + '\"' + ',' + nl]
