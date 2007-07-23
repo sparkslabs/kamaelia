@@ -18,6 +18,11 @@ CHANNEL_CLOSECONNECTION = 4
 CHANNEL_KEEPALIVE = 5
 
 class AuthCookieGetter(component):
+    Outboxes = {"outbox" : "outgoing messages to AIM",
+                "signal" : "NOT USED",
+                "_cookie" : "(BOS server, port, cookie)",
+                }
+                
     
     def __init__(self):
         super(AuthCookieGetter, self).__init__()
@@ -34,18 +39,18 @@ class AuthCookieGetter(component):
             else: reply = value
 
         goal = self.extractBOSandCookie(reply)
-
+        self.send(goal, "_cookie")
         assert self.debugger.note("AuthCookieGetter.main", 1, str(goal))
         #save data, in case we need it for debugging later
-        fle = open("snac1703.dat", "w")
-        pickle.dump(reply, fle)
-        fle.close()        
-        fle = open("bos_auth.dat", "wb")
-        pickle.dump(goal, fle)
-        fle.close()
+##        fle = open("snac1703.dat", "w")
+##        pickle.dump(reply, fle)
+##        fle.close()        
+##        fle = open("bos_auth.dat", "wb")
+##        pickle.dump(goal, fle)
+##        fle.close()
         
         self.send(shutdownMicroprocess(), "signal")
-        print "sent shutdownMicroprocess"
+        assert self.debugger.note("AuthCookieGetter.main", 5, "sent shutdownMicroprocess")
     
     def handshake(self):
         data = struct.pack('!i', self.versionNumber)
@@ -137,9 +142,11 @@ if __name__ == '__main__':
 
     Graphline(auth = AuthCookieGetter(),
               oscar = OSCARClient('login.oscar.aol.com', 5190),
+              cons = ConsoleEchoer(),
               linkages = {("auth", "outbox") : ("oscar", "inbox"),
                           ("oscar", "outbox") : ("auth", "inbox"),
                           ("auth", "signal") : ("oscar", "control"),
+                          ("auth", "_cookie") : ("cons", "inbox"),
                           }
               ).run()
               
