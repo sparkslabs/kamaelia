@@ -15,12 +15,12 @@ indentation = "    "
 nl = "\n"
 
 class pygameComponentShard(classShard):
-    
+
     # required shards
     shard.addReqMethods("blitToSurface", "waitBox", "drawBG", "addListenEvent" )
     shard.addReqIShards("HandleShutdown", "LoopOverPygameEvents", "RequestDisplay",
                                           "GrabDisplay", "SetEventOptions" )
-    
+
     # default information supplied by this class
     sclasses = ["Axon.Component.component"]
     dstr = 'Auto-generated pygame component'
@@ -31,13 +31,13 @@ class pygameComponentShard(classShard):
     outbxs = { "outbox" : "not used",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
-    
-    
+
+
     def __init__(self, cmpname, *methods, **ishards):
         """
         Generates a pygame kamaelia component if all required methods
         and shards are supplied, else raises a DependencyError
-        
+
         Arguments:
         cmpname = string of component name, will be used as class
                             name. If None, an auto-generated name will be
@@ -53,30 +53,30 @@ class pygameComponentShard(classShard):
                         from which they are to be imported. Non-required
                         shards will be ignored
         """
-        
+
         mshards = self.makeMethodShards(methods)
-        
+
         self.checkDependencies(mshards, ishards)
-        
+
         # create default methods and add in shards
         compInit = initShard(clsname = cmpname, exkwarg = 'argd',
                                          shards = [ishards['__INIT__']])
-        
+
         waitLoop = forShard(name = 'wait', inVar = r'self.waitBox("callback")',
                                          shards = [['yield 1\n']])
-                                         
+
         mainLoop = whileShard(name = 'mainLoop', condition = 'not done',
                                               shards = [ishards['HandleShutdown'],
                                                               ishards['LoopOverPygameEvents'],
                                                               ['self.pause()\n', 'yield 1\n']])
-        
+
         compMain = functionShard(funcname = "main", args = ['self'],
                                                     shards = [ishards["RequestDisplay"], waitLoop,
                                                     ishards['GrabDisplay'],
                                                     ['self.drawBG()\n', 'self.blitToSurface()\n'],
                                                     ishards['SetEventOptions'], ['done = False\n'],
                                                     mainLoop])
-        
+
         # construct class with full shard set
         classShard.__init__(self, cmpname, superclasses = self.sclasses,
                                        docstring = self.dstr, inboxes = self.inbxs,
