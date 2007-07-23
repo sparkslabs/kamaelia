@@ -19,7 +19,7 @@ client.activate()
 time.sleep(1)
 client.put("user likefile likefile likefile :likefile\n")
 client.put("nick likefile\n")
-client.put("JOIN #kamaelia\n")
+client.put("JOIN %s\n" % channel)
 while True:
     print client.get()
 
