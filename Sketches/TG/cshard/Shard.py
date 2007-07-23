@@ -153,12 +153,18 @@ class shard(object):
             #self.shards = self.makeShards([function])
 
         elif code:
-            self.name = name if name else self.namer.next()
+            if name:
+                self.name = name
+            else:
+                self.name = self.namer.next()
             self.code = self.addindent(code, indent)
             #self.shards = self.makeShards([code])
 
         else:
-            self.name = name if name else self.namer.next()
+            if name:
+                self.name = name
+            else:
+                self.name = self.namer.next()
             self.code = []
             #self.shards = self.makeShards(shards)
             for s in self.makeShards(shards):
@@ -211,7 +217,10 @@ class shard(object):
 
         error = ""
         methods = set([s.name for s in mshards])
-        inlines = set(ishards.keys() if isinstance(ishards, dict) else ishards)
+        if isinstance(ishards, dict):
+            inlines = set(ishards.keys())
+        else:
+            inlines = set(ishards)
 
         if not self.requiredMethods <= methods:
             error += "need methods "+ str(self.requiredMethods - methods)
@@ -344,7 +353,10 @@ class docShard(shard):
 
         super(docShard, self).__init__(name = name, annotate = annotate, shards = shards)
 
-        self.docstring = self.makedoc(docstring) if docstring else []
+        if docstring:
+            self.docstring = self.makedoc(docstring)
+        else:
+            self.docstring = []
 
 
     def makedoc(self, doc, indent = 0):
