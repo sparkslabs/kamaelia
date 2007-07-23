@@ -1,4 +1,5 @@
 from Shard import shard, docShard, isfunction
+import inspect
 
 """
 Makes class shards
@@ -125,12 +126,7 @@ class classShard(docShard):
         if not default:  # need a custom box on initial line
             boxnm, val = boxes.popitem()
             str = '\"' + boxnm + '\": ' + val + ',' + nl
-            if inbox:
-                boxtext = inopen
-            else:
-                boxtext = outopen
-            lines += [boxtext + str]
-#            lines += [(inopen if inbox else outopen) + str]
+            lines += [(inopen if inbox else outopen) + str]
 
         for boxnm, val in boxes.items():
             lines += [pre + '\"' + boxnm + '\": ' + '\"' + val + '\"' + ',' + nl]
@@ -155,9 +151,9 @@ class classShard(docShard):
         mshards = []
         for m in functions:
             if isfunction(m):
-                lines = inspect.getsource(function).splitlines(True) # get code
+                lines = inspect.getsource(m).splitlines(True) # get code
                 # check for self parameter, add as necessary
-                if lines[0].find(function.func_name+"(self") == -1:
+                if lines[0].find(m.func_name+"(self") == -1:
                     nm, br, argsln = lines[0].partition("(")
                     lines[0] = nm + br + "self, " + argsln
                 # make shard
