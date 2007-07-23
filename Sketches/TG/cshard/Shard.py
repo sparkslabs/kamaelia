@@ -25,7 +25,10 @@ def iscode(c):
     """
 
     if type(c) == type([]):
-        return type(c[0]) == type('') if c else True
+        if c:
+            return type(c[0]) == type('')
+        else:
+            return True
     else: return False
 
 def isfunction(f):
