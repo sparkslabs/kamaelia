@@ -18,7 +18,7 @@ Example Usage
 -------------
 To log the channel #sillyputty on server my.server.org::
 
-    Logger('#kamtest', host="my.server.org").run()
+    Logger('#sillyputty', host="my.server.org").run()
 
 It will now log all messages to #kamtest except those prefixed by "[off]".
 
@@ -96,6 +96,7 @@ class BasicLogger(component):
         self.logdir = self.logdir + '/'
         self.logname = ""
         self.infoname = ""
+        self.debugger.addDebugSection("Logger.main", 0)
 
         Graphline(log = Carousel(SimpleFileWriter),
                   info = Carousel(SimpleFileWriter),
@@ -128,19 +129,21 @@ class BasicLogger(component):
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 formatted_data = self.format(data)
-                if data[2] == self.channel and formatted_data: #format might return None
+                if (data[2] == self.channel or data[0] == 'NICK') and formatted_data: #format might return None
                     self.send(formatted_data, "outbox")
+                    self.respond(data) 
                 elif formatted_data:
                     self.send(formatted_data, "system")
-                    self.respond(data) 
+                    assert self.debugger.note("Logger.main", 5, str(data))
 
     def respond(self, msg):
         """respond to queries from other clients and pings from the server"""
         if msg[0] == 'PING':
             self.send(('PONG', msg[1]), 'irc')
             self.send("Sent PONG to %s \n" % msg[1], "system")
-        if msg[0] == 'PRIVMSG' and msg[2] == self.name:
+        if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:
             words = msg[3].split()
+            del(words[0])
             replyLines = ""
             tag = 'PRIVMSG'
             if words[0] == 'logfile':
@@ -156,11 +159,15 @@ class BasicLogger(component):
             elif words[0] == 'dance':
                 tag = 'ME'
                 replyLines = ['does the macarena']
+            elif words[0] == 'poke':
+                replyLines = ['Hehe! That tickles!']
+            elif words[0] == 'slap':
+                replyLines = ['Ouch!']
 
             if replyLines:
                 for reply in replyLines:
                     self.send((tag, self.channel, reply), "irc")
-                    self.send("Reply: %s \n" % reply, "system")
+                    self.send("Reply: %s \n" % reply, "log")
                 
     def currentDateString(self):
         """returns the current date in DD-MM-YYYY format"""
@@ -225,6 +232,7 @@ if __name__ == '__main__':
     import sys
     channel = "#kamtest"
     Name = "jinnaslogbot"
+    print sys.argv
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
 
