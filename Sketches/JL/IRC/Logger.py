@@ -131,16 +131,18 @@ class BasicLogger(component):
                 formatted_data = self.format(data)
                 if (data[2] == self.channel or data[0] == 'NICK') and formatted_data: #format might return None
                     self.send(formatted_data, "outbox")
-                    self.respond(data) 
+                    self.respondToQueries(data) 
                 elif formatted_data:
                     self.send(formatted_data, "system")
-                    assert self.debugger.note("Logger.main", 5, str(data))
+                    self.respondToPings(data) 
 
-    def respond(self, msg):
-        """respond to queries from other clients and pings from the server"""
+    def respondToPings(self, msg):
         if msg[0] == 'PING':
             self.send(('PONG', msg[1]), 'irc')
             self.send("Sent PONG to %s \n" % msg[1], "system")
+
+    def respondToQueries(self, msg):
+        """respond to queries from other clients and pings from the server"""
         if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:
             words = msg[3].split()
             del(words[0])
@@ -156,6 +158,8 @@ class BasicLogger(component):
                               ]
             elif words[0] == 'date':
                 replyLines = [self.currentDateString()]
+            elif words[0] == 'time':
+                replyLines = [self.currentTimeString()]
             elif words[0] == 'dance':
                 tag = 'ME'
                 replyLines = ['does the macarena']
@@ -167,12 +171,16 @@ class BasicLogger(component):
             if replyLines:
                 for reply in replyLines:
                     self.send((tag, self.channel, reply), "irc")
-                    self.send("Reply: %s \n" % reply, "log")
+                    self.send("Reply: %s \n" % reply, "outbox")
                 
     def currentDateString(self):
         """returns the current date in DD-MM-YYYY format"""
         curtime = time.gmtime()
         return time.strftime("%d-%m-%Y", curtime)
+
+    def currentTimeString(self):
+        curtime = time.gmtime()
+        return time.strftime("%H:%M:%S", curtime)
 
     def changeDate(self):
         """updates the date and requests new log files to reflect the date"""
@@ -232,7 +240,6 @@ if __name__ == '__main__':
     import sys
     channel = "#kamtest"
     Name = "jinnaslogbot"
-    print sys.argv
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
 
