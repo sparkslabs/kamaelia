@@ -75,8 +75,26 @@ with it, whilst it is running in the backgrounded sheduler::
     someOtherCode()
 
 Now, wrappedComponent is an instance of the likefile wrapper, and you can
-interact with "component" by calling get() or put() on wrappedComponent.
+interact with "component" by calling get() on wrappedComponent, to get data
+from the outbox on "component", or by calling put(data) to put "data" into
+the inbox of "component" like so::
 
+    p = LikeFile(SimpleHTTPClient())
+    p.activate()
+    p.put("http://google.com")
+    p.put("http://whatismyip.org")
+    google = p.get()
+    p.shutdown()
+    print "google's homepage is", len(google), "bytes long.
+
+for both get() and put(), there is an optional extra parameter
+boxname, allowing you to interact with different boxes, for example::
+
+    wrappedComponent.put("reload", "control")
+    wrappedComponent.get("signal")
+
+Finally, LikeFile objects have a shutdown() method that sends the usual Axon
+IPC shutdown messages to a wrapped component, and prevents further IO.
 
 
 Diagram of LikeFile's functionality
@@ -381,5 +399,5 @@ if __name__ == "__main__":
     google = p.get()
     slashdot = p.get()
     whatismyip = p.get()
-    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
     p.shutdown()
+    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
