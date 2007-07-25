@@ -230,6 +230,9 @@ class IRC_Client(_Axon.Component.component):
             if msgtype == 'PING':
                 sender =  recipient
                 recipient = ""
+            elif msgtype == 'NICK':
+                body = recipient
+                recipient = ""
             return (msgtype, sender, recipient, body)
         except IndexError:
             return (("CLIENT ERROR", 'client', '', line))
@@ -326,7 +329,7 @@ def outformat(data, defaultChannel='#kamtest'):
     elif msgtype == 'PART' :
         text = '*** %s has parted %s' % (sender, recipient)
     elif msgtype == 'NICK':
-        text = '*** %s is now known as %s' % (sender, recipient)
+        text = '*** %s is now known as %s' % (sender, body)
     elif msgtype == 'ACTION':
         text = '*** %s %s' % (sender, body)
     elif msgtype == 'TOPIC':
