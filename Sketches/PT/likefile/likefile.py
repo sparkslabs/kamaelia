@@ -24,7 +24,55 @@
 LikeFile - file-like interaction with components.
 =================================================
 
+LikeFile is a way to run Axon components with code that is not Axon-aware. It
+does this by running the scheduler and all associated microprocesses in a
+thread, and using a custom component to communicate if so desired.
 
+
+Using this code
+---------------
+
+With a normal kamaelia system, you would start up a component and start
+running the Axon scheduler as follows, either ::
+    from Axon.Scheduler import scheduler
+    component.activate()
+    scheduler.run.runThreads()
+    someOtherCode()
+
+or simply::
+    component.run()
+    someOtherCode()
+
+In both cases, someOtherCode() only run when the scheduler exits. What do you
+do if you want to (e.g.) run this alongside another external library that has
+the same requirement?
+
+Well, first we start the Axon scheduler in the background as follows::
+    from likefile import schedulerThread
+    schedulerThread().start()
+The scheduler is now actively running in the background, and you can start
+components on it from the foreground, in the same way as you would from inside
+kamaelia (don't worry, activate() is threadsafe)::
+    component.activate()
+    someOtherCode()
+"component" will immediately start running and processing. This is fine if it's
+something non-interactive like a TCP server, but what do we do if we want to 
+interact with this component from someOtherCode?
+
+In this case, we use LikeFile, instead of activating. This is a wrapper
+which sits around a component and provides a threadsafe way to interact
+with it, whilst it is running in the backgrounded sheduler::
+    from likefile import LikeFile
+    wrappedComponent = LikeFile(component)
+    wrappedComponent.activate()
+    someOtherCode()
+Now, wrappedComponent is an instance of the likefile wrapper, and you can
+interact with "component" by calling get() or put() on wrappedComponent.
+
+
+
+Diagram of LikeFile's functionality
+-----------------------------------
 
 THE OUTSIDE WORLD
      +----------------------------------+
@@ -50,9 +98,14 @@ THE OUTSIDE WORLD
 |    |      the wrapped component       |   |
 |    +----------------------------------+   |
 |                                           |
+|    +----------------------------------+   |
+|    |       Some other component       |   | 
+     |     that was only activated      |   |
+|    +----------------------------------+   |
 |                                           |
 |  AXON SCHEDULED COMPONENTS                |
 +-------------------------------------------+
+
 
 
 
@@ -102,6 +155,7 @@ class schedulerThread(threading.Thread):
         self.setDaemon(True) # Die when the caller dies
     def run(self):
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
+        # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
         scheduler.run.runThreads(slowmo = self.slowmo)
         schedulerThread.lock.release()
 
@@ -217,6 +271,7 @@ class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent)
                     break
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
+
 class LikeFile(object):
     alive = False
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
@@ -318,4 +373,4 @@ if __name__ == "__main__":
     google = p.get()
     slashdot = p.get()
     whatismyip = p.get()
-    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip`

@@ -126,14 +126,14 @@ class test_LikeFile(unittest.TestCase):
             for i in randlist:
                 # i is a random integer between 0 and 1, so the following manipulations guarantee that each box on each
                 # component gets a different number, to eliminate crosstalk passing a test.
-                component.send(num + i, "inbox")
-                component.send(num + i % 0.5, "control")
-                component.send(num + i % 0.25, "extrain")
+                component.put(num + i, "inbox")
+                component.put(num + i % 0.5, "control")
+                component.put(num + i % 0.25, "extrain")
         for num, component in compdict.iteritems():
             for i in randlist:
-                self.failUnless(component.recv("outbox") == num + i)
-                self.failUnless(component.recv("signal") == num + i % 0.5)
-                self.failUnless(component.recv("extraout") == num + i % 0.25)
+                self.failUnless(component.get("outbox") == num + i)
+                self.failUnless(component.get("signal") == num + i % 0.5)
+                self.failUnless(component.get("extraout") == num + i % 0.25)
         for component in compdict.itervalues():
             component.shutdown()
 
@@ -141,8 +141,8 @@ class test_LikeFile(unittest.TestCase):
         """test that creating but not activating a likefile wrapper doesn't leave any cruft in the scheduler,
         and that you can't perform IO on a pre-activated component."""
         component = LikeFile(DyingShunt())
-        self.failUnlessRaises(AttributeError, component.recv)
-        self.failUnlessRaises(AttributeError, component.send, "boo")
+        self.failUnlessRaises(AttributeError, component.get)
+        self.failUnlessRaises(AttributeError, component.put, "boo")
     def test_badboxwrap(self):
         """test that wrapping a nonexistent box will fail."""
         self.failUnlessRaises(KeyError, LikeFile, DyingShunt(), extraInboxes = "nonsenseaddbox")
@@ -151,8 +151,8 @@ class test_LikeFile(unittest.TestCase):
         """test that IO on a box name that doesn't exist will fail."""
         component = LikeFile(DyingShunt())
         component.activate()
-        self.failUnlessRaises(KeyError, component.send, "boo", "nonsensesendbox")
-        self.failUnlessRaises(KeyError, component.recv, "nonsensesendbox")
+        self.failUnlessRaises(KeyError, component.put, "boo", "nonsensesendbox")
+        self.failUnlessRaises(KeyError, component.get, "nonsensesendbox")
         component.shutdown()
     def test_closed(self):
         """test that creating, activating, and then closing a likefile wrapper will result in an object you're not
@@ -162,8 +162,8 @@ class test_LikeFile(unittest.TestCase):
         time.sleep(0.1)
         component.shutdown()
         time.sleep(0.1)
-        self.failUnlessRaises(AttributeError, component.recv)
-        self.failUnlessRaises(AttributeError, component.send, "boo")
+        self.failUnlessRaises(AttributeError, component.get)
+        self.failUnlessRaises(AttributeError, component.put, "boo")
 
 
 
