@@ -1,6 +1,76 @@
 #! /usr/bin/env python
-import pickle
-import struct
+
+"""\
+NOTE: A "byte" in the following documentation refers to an ASCII char, an
+unsigned char in C.
+
+OSCAR messages are transmitted in discrete units called FLAPs. Don't ask me what
+this stands for -- nobody save AOL really knows. FLAPs take the following form:
+|----------------|
+|FLAP-header     |
+|----------------|
+| ------------   |
+||FLAP payload|  |
+| ------------   |
+|----------------|
+
+Many times the payload is a SNAC, which has a structure of its own. Here is the
+structure of a SNAC:
+
+|------------------------|
+|SNAC-header             |
+|  Family -- 2 bytes     |
+|  Subtype -- 2 bytes    |
+|  Request ID -- 2 bytes |
+|  Flags -- 4 bytes      |
+|------------------------
+|  --------------        |
+| | SNAC payload |       |
+|  --------------        |
+|------------------------|
+
+There are many different SNACs. For example, family 0x04, subtype 0x07
+(henceforth referred to as (04, 07)),carries AIM messages from the server
+to the client. A client sends SNAC (01, 11) to tell the server its idle time.
+All SNAC payloads must follow a prescribed format, a format unique to each
+particular type. However all SNAC headers follow the format described above.
+All FLAPs containing SNACs are sent through Channel 2. Channels are handled in
+the FLAP header. Abstractions exist both to handle the formation of a SNAC and
+the formation of a FLAP. However, at times there are long sequences of SNACs
+exchanged, and all we are really interested in is the SNAC payload, and maybe
+the family and subtype, just so we know which SNACs we are dealing with. Also,
+sometimes we have to wait for certain responses from the server, and it gets
+unwieldy to keep having to type ::
+    while not self.dataReady():
+        yield 1
+    goOnWithLife()
+
+SNACEngine exists to handle request/response-type SNAC exchanges. It supports a
+"sendout" method that, given the family, subtype, and snac body, automatically
+handles the making of a SNAC and the channel the SNAC is to be sent on. It also
+takes arguments for specifying which SNAC we should be expecting back from the
+server, which SNAC we should send back as a reply, and a function that we should
+run the server message through to get our reply.
+
+It also supports a "putwait" method that a snac (fam, sub) pair to wait for, a
+(fam, sub) response type, and a function to run the server SNAC body through to
+obtain the response SNAC body. 
+
+=====================
+How to use
+=====================
+
+Subclass it and override the main method. An example exists in login.py, in this directory.
+
+=====================
+Future development
+=====================
+Get rid of sendout. Keep putwait and sendSNAC. Provide a main method which calls "sendAndPut()" first thing,
+which can be overridden. 
+
+"""
+
+
 from oscarutil import *
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, shutdownMicroprocess
@@ -15,6 +85,7 @@ class SNACEngine(component):
         super(SNACEngine, self).__init__()
         self.waiting = {}
         self.versionNumber = 1
+        self.reqid = 2
         debugSections = {"SNACEngine.main" : 5,
                          "SNACEngine.handleAIMMessage" : 5,
                          }
@@ -31,11 +102,12 @@ class SNACEngine(component):
         then that value is
         sent as the SNAC body. If not, then an empty SNAC is sent."""
         self.sendSNAC(fam, sub, s_body)
+        self.reqid += 1
         if waitfor:
             self.putwait(waitfor, sendback, postrecv)
 
     def sendSNAC(self, fam, sub, s_body):
-        self.send((CHANNEL_SNAC, SNAC(fam, sub, s_body)))
+        self.send((CHANNEL_SNAC, SNAC(fam, sub, s_body, id=self.reqid)))
 
     def putwait(self, famsub, sendback, postrecv):
         self.waiting[famsub] = (sendback, postrecv or (lambda self, x: None))
