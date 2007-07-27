@@ -4,8 +4,8 @@ from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Component import component
-from IRCClient import outformat
-from IRCClient import SimpleIRCClientPrefab
+import IRCClient
+import LoggerFunctions
 import time, os
 
 """\
@@ -54,12 +54,12 @@ Logger uses this in conjunction with a Carousel to create a new logfile and
 close the old one.
 
 By default BasicLogger uses ::outformat::, defined in IRCClient, to format
-messages from SimpleIRCClientPrefab before writing to the log. To format
+messages from IRCClient.SimpleIRCClientPrefab before writing to the log. To format
 messages differently, pass in a different function to its "formatter" keyword. 
 
-Logger simply links BasicLogger with a SimpleIRCClientPrefab and two
+Logger simply links BasicLogger with a IRCClient.SimpleIRCClientPrefab and two
 Carousel-encapsulated SimpleFileWriters. It also slaps timestamps on messages.
-It takes any keyword that BasicLogger or SimpleIRCClientPrefab will take.
+It takes any keyword that BasicLogger or IRCClient.SimpleIRCClientPrefab will take.
 
 One can run Logger from the command line by entering::
     ./Logger.py \#somechannel desirednickname
@@ -86,12 +86,12 @@ class BasicLogger(component):
                 "info_next" : "for the Info Carousel"
                 }
 
-    def __init__(self, channel, formatter=outformat, name="jinnaslogbot", logdir=""):
+    def __init__(self, channel, formatter=IRCClient.outformat, name="jinnaslogbot", logdir=""):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(BasicLogger, self).__init__()
         self.channel = channel
-        self.format = formatter or outformat #in case we get passed in None
-        self.name = name or "jinnaslogbot" #"
+        self.format = formatter #in case we get passed in None
+        self.name = name
         self.logdir = logdir.rstrip('/') or os.getcwd()
         self.logdir = self.logdir + '/'
         self.logname = ""
@@ -144,34 +144,14 @@ class BasicLogger(component):
     def respondToQueries(self, msg):
         """respond to queries from other clients and pings from the server"""
         if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:
-            words = msg[3].split()
-            del(words[0])
-            replyLines = ""
-            tag = 'PRIVMSG'
-            if words[0] == 'logfile':
-                replyLines = [self.logname]
-            elif words[0] == 'infofile':
-                replyLines = [self.infoname]
-            elif words[0] == 'help':
-                replyLines = ["Lines prefixed by [off] won't get recorded",
-                              "Name: %s   Channel: %s" % (self.name, self.channel)
-                              ]
-            elif words[0] == 'date':
-                replyLines = [self.currentDateString()]
-            elif words[0] == 'time':
-                replyLines = [self.currentTimeString()]
-            elif words[0] == 'dance':
-                tag = 'ME'
-                replyLines = ['does the macarena']
-            elif words[0] == 'poke':
-                replyLines = ['Hehe! That tickles!']
-            elif words[0] == 'slap':
-                replyLines = ['Ouch!']
-
-            if replyLines:
-                for reply in replyLines:
-                    self.send((tag, self.channel, reply), "irc")
-                    self.send("Reply: %s \n" % reply, "outbox")
+            words = msg[3].split()[1:]
+            if len(words) > 1 and words[0] == "reload":
+                try:
+                    exec("reload(%s)" % words[1])
+                    self.send(('PRIVMSG', self.channel, "'%s' reloaded\n" % words[1]), "irc")
+                except (NameError, TypeError):
+                    self.send(('PRIVMSG', self.channel, "'%s' isn't a module, or at least not one I can reload.\n" % words[1]), "irc")               
+        LoggerFunctions.respondToQueries(self, msg)
                 
     def currentDateString(self):
         """returns the current date in DD-MM-YYYY format"""
@@ -202,7 +182,7 @@ def TimedOutformat(data):
     """
     if data[0] == 'PRIVMSG' and data[3][0:5] == '[off]':
         return
-    formatted = outformat(data)
+    formatted = IRCClient.outformat(data)
     curtime = time.gmtime()
     timestamp = time.strftime("[%H:%M] ", curtime)
     if formatted: return timestamp+formatted
@@ -221,9 +201,9 @@ def Logger(channel, formatter=TimedOutformat, name=None, logdir="", **irc_args):
                    BasicLogger.
     - logdir    -- directory logs are to be put into. Default is the directory
                    this module is in.
-    - **irc_args  -- pointer to a dictionary containing arguments for SimpleIRCClientPrefab
+    - **irc_args  -- pointer to a dictionary containing arguments for IRCClient.SimpleIRCClientPrefab
     """
-    return Graphline(irc = SimpleIRCClientPrefab(**irc_args),
+    return Graphline(irc = IRCClient.SimpleIRCClientPrefab(**irc_args),
                      logger = BasicLogger(channel, formatter=formatter, name=name, logdir=logdir),
                      log = Carousel(AppendingFileWriter),
                      info = Carousel(AppendingFileWriter),
