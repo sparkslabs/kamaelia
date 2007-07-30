@@ -87,8 +87,8 @@ the inbox of "component" like so::
     p.shutdown()
     print "google's homepage is", len(google), "bytes long.
 
-for both get() and put(), there is an optional extra parameter
-boxname, allowing you to interact with different boxes, for example::
+for both get() and put(), there is an optional extra parameter boxname,
+allowing you to interact with different boxes, for example::
 
     wrappedComponent.put("reload", "control")
     wrappedComponent.get("signal")
@@ -99,16 +99,17 @@ IPC shutdown messages to a wrapped component, and prevents further IO.
 
 Diagram of LikeFile's functionality
 -----------------------------------
+LikeFile is constructed from components like so::
 
 THE OUTSIDE WORLD
-     +--- ------------------------------+
+     +----------------------------------+
      |             LikeFile             |
      +----------------------------------+
           |                      / \
           |                       |
       InQueues                 OutQueues
           |                       |
-+--  -----+-----------------------+---------+
++---------+-----------------------+---------+
 |        \ /                      |         |
 |    +---------+               +--------+   |
 |    |  Input  |   Shutdown    | Output |   |
@@ -126,7 +127,7 @@ THE OUTSIDE WORLD
 |                                           |
 |    +----------------------------------+   |
 |    |       Some other component       |   | 
-     |     that was only activated      |   |
+|    |     that was only activated      |   |
 |    +----------------------------------+   |
 |                                           |
 |  AXON SCHEDULED COMPONENTS                |
@@ -171,7 +172,7 @@ class dummyComponent(Axon.Component.component):
 
 
 class schedulerThread(threading.Thread):
-    """A python thread which runs a scheduler."""
+    """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
     lock = threading.Lock()
     def __init__(self,slowmo=0):
         if not schedulerThread.lock.acquire(False):
@@ -306,12 +307,11 @@ class LikeFile(object):
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
         # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
-        # letter.
+        # letter. TODO - this is unelegant code.
         if not isinstance(extraInboxes, tuple):
             extraInboxes = (extraInboxes, )
         if not isinstance(extraOutboxes, tuple):
             extraOutboxes = (extraOutboxes, )
-
         # If the component to wrap is missing, say, "inbox", then don't fail but silently neglect to wrap it.
         validInboxes = type(child).Inboxes.keys()
         validOutboxes = type(child).Outboxes.keys()
@@ -336,24 +336,29 @@ class LikeFile(object):
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
         self.inputComponent = inputComponent
         self.outputComponent = outputComponent
-
-
-    def activate(self):
-        """Activates the component on the backgrounded scheduler and permits IO."""
-        if self.alive:
-            return
-        self.inputComponent.activate() # threadsafe, see note 1
-        self.outputComponent.activate()
+        inputComponent.activate()
+        outputComponent.activate()
         self.alive = True
 
+
+# methods passed through from the queue.
+    def empty(self, boxname = "outbox"):
+        """Return True if there is no data pending collection on boxname, False otherwise."""
+        return self.outQueues[boxname].empty()
+    def qsize(self, boxname = "outbox"):
+        """Returns the approximate number of pending data items awaiting collection from boxname. Will never be smaller than the actual amount."""
+        return self.outQueues[boxname].qsize()
+
     def get_nowait(self, boxname = "outbox"):
+        """Equivalent to get(boxname, False)"""
         return self.get(boxname, blocking = False)
 
-    def get(self, boxname = "outbox", blocking = True):
+    def get(self, boxname = "outbox", blocking = True, timeout = 86400):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
-        raises AttributeError if the LikeFile is not alive."""
+        raises AttributeError if the LikeFile is not alive. Optional parameters blocking and timeout function
+        the same way as in Queue objects, since that is what's used under the surface."""
         if self.alive:
-            return self.outQueues[boxname].get(blocking, 86400)
+            return self.outQueues[boxname].get(blocking, timeout)
             # TODO - remove this.
             # Specifying any timeout allows ctrl-c to interrupt the wait, even if the timeout is excessive.
             # This is one day. this may be a problem, in which case retry after an "empty" exception is raised.
@@ -370,6 +375,7 @@ class LikeFile(object):
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
         will warn if the shutdown took too long to confirm in action."""
+        # TODO - what if the wrapped component has no control box?
         if self.alive: 
             self.put(Axon.Ipc.shutdown(),               "control") # legacy support.
             self.put(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
@@ -387,12 +393,11 @@ class LikeFile(object):
 
 
 if __name__ == "__main__":
-    background = schedulerThread(slowmo=0.01).start()
+    background = schedulerThread().start()
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     import time
     p = LikeFile(SimpleHTTPClient())
-    p.activate()
     p.put("http://google.com")
     p.put("http://slashdot.org")
     p.put("http://whatismyip.org")
