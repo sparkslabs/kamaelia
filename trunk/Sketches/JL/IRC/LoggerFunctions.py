@@ -2,21 +2,15 @@ def respondToQueries(self, msg):
     replyLines = ""
     tag = 'PRIVMSG'
 
-    if msg[0] == 'PRIVMSG':
-        words = msg[3].split()
-        if words[0] in ('hi', 'greetings'):
-            replyLines = ['Hello ' + msg[1]]
-        elif words[0] in ('bye', 'cya'):
-            replyLines = ['Bye ' + msg[1]]
-
-        
     if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:
+        words = msg[3].split()
         if words[1] == 'logfile':
             replyLines = [self.logname]
         elif words[1] == 'infofile':
             replyLines = [self.infoname]
         elif words[1] == 'help':
             replyLines = ["Name: %s   Channel: %s" % (self.name, self.channel),
+                          "I do a simple job -- recording all channel traffic.",
                           "Lines prefixed by [off] won't get recorded",
                           "I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', and 'reload {modulename}'."
                           ]
