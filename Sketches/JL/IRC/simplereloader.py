@@ -48,7 +48,7 @@ class SimpleReloader(component):
                 try:
                     exec("reload(%s)" % words[1])
                 except (NameError, TypeError):
-                    self.send("'%s' not a module\n" % words[1])            
+                    self.send("'%s' not a module\n" % words[1], "irc")            
         formatted = formatters.outformat(msg, defaultChannel=self.channel)
         self.send(formatted)
 
