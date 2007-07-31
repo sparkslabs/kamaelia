@@ -180,7 +180,7 @@ class SingleShotHTTPClient(component):
         "signal"         : "UNUSED"
     }
         
-    def __init__(self, starturl, postbody = "", connectionclass = TCPClient, extraheaders = None):
+    def __init__(self, starturl, postbody = "", connectionclass = TCPClient, extraheaders = None, method = None):
         #print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
@@ -188,6 +188,7 @@ class SingleShotHTTPClient(component):
         self.requestqueue = []
         self.starturl = starturl
         self.connectionclass = connectionclass
+        self.method = method
         
         self.postbody = postbody
         if extraheaders is not None:
@@ -203,12 +204,20 @@ class SingleShotHTTPClient(component):
         if splituri.has_key("uri-port"):
             host += ":" + splituri["uri-port"]
 
-        splituri["request"] = []        
-        if self.postbody == "":    
-            splituri["request"].append("GET " + splituri["raw-uri"] + " HTTP/1.1\r\n")
+        splituri["request"] = []
+        method = self.method
+        if self.postbody == "":
+            if not method:
+                method = 'GET'
+            splituri["request"].append(method + " " + splituri["raw-uri"] + " HTTP/1.1\r\n")
         else:
-            splituri["request"].append("POST " + splituri["raw-uri"] + " HTTP/1.1\r\n")
-            splituri["request"].append("Content-Length: " + str(len(self.postbody)) + "\r\n")
+            if not method:
+                method = 'POST'
+            splituri["request"].append(method + " " + splituri["raw-uri"] + " HTTP/1.1\r\n")
+            if self.postbody != None:
+                splituri["request"].append("Content-Length: " + str(len(self.postbody)) + "\r\n")
+            else:
+                splituri["request"].append("Content-Length: 0\r\n")
 
         splituri["request"].append("Host: " + host + "\r\n")
         splituri["request"].append("User-agent: Kamaelia HTTP Client 0.3 (RJL)\r\n")
@@ -222,7 +231,7 @@ class SingleShotHTTPClient(component):
 
         print splituri["request"]
         
-        if self.postbody != "":
+        if self.postbody not in [None, ""]:
             splituri["request"].append(self.postbody)
         
         return splituri
@@ -359,7 +368,8 @@ def makeSSHTTPClient(paramdict):
     # get the "url" and "postbody" keys from paramdict to use as the arguments of SingleShotHTTPClient
     return SingleShotHTTPClient(paramdict.get("url", ""), 
                                 paramdict.get("postbody", ""),
-                                extraheaders = paramdict.get("extraheaders", None)
+                                extraheaders = paramdict.get("extraheaders", None),
+                                method = paramdict.get('method', None)
                                )
 
 class SimpleHTTPClient(component):
