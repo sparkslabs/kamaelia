@@ -140,7 +140,12 @@ class ArgumentsPanel(Tkinter.Frame):
             text = svar.get().strip()
             default = default.strip()
             if argname != "*" and argname != "**":
-                if default=="" or text != default:
+                if argname[0]=="[" and argname[-1]=="]":
+                    if text:
+                        argname=argname[1:-1]
+                        argstr = argstr + prefix + argname + " = " + text
+                        prefix=", "
+                elif (default=="" or text != default):
                     if not text:
                         text = "<<unspecified>>"
                     argstr = argstr + prefix + argname + " = " + text
