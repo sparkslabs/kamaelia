@@ -154,6 +154,9 @@ When a box is wired to another, it diverts calls to append() to the final
 destination instead of its own local storage; so A,B,C,D and E can be inboxes
 or outboxes - it doesn't matter.
 
+You are not allowed to create links going from one source to two or more
+destinations (one-to-many arrangements). If you try, an Axon.AxonExceptions.BoxAlreadyLinkedToDestination
+exception will be raised.
 
 
 
@@ -277,6 +280,7 @@ tradeoff.
 """
 
 from AxonExceptions import noSpaceInBox
+from AxonExceptions import BoxAlreadyLinkedToDestination
 
 class nullsink(object):
     """\
@@ -421,7 +425,13 @@ class postbox(object):
         Also finds out from the new source who wants to be notified when messages are taken
         out of postboxes, and updates records accordingly, and passes this info further down
         the chain of linkages.
+        
+        Raises Axon.AxonExceptions.BoxAlreadyLinkedToDestination if the newsource is already
+        targetted at a destination. This is because Axon does not support one-to-many
+        arrangements.
         """
+        if newsource.target != None:
+            raise BoxAlreadyLinkedToDestination(self, self.target, newsource)
         self.sources.append(newsource)       # XXX assuming not already linked from that source
         newsource._retarget(self)
         self._addnotifys(newsource.getnotifys())
@@ -477,27 +487,23 @@ class postbox(object):
         
         If newtarget is unspecified or None, target is default local storage.
         """
-#        print "OK here", self
         if newtarget==None:
             self.target = None
             self.sink = self.storage
-#            print "NOT HERE"
         else:
             self.target = newtarget
             self.sink = newtarget.sink
             # if i'm storing stuff, pass it on
             while len(self.storage):
                 self.sink.append(self.storage.pop(0))
-
+        
         # make calling these methods go direct to the sink
         self.append         = self.sink.append
         self.pop            = self.sink.pop
         self.__target_len__ = self.sink.__len__
         # propagate the change back up the chain
-#        print "B4 propagate the change back up the chain", type(self.sink)
         for source in self.sources:
             source._retarget(newtarget=self)
-#        print "AFTER propagate the change back up the chain", type(self.sink)
 
     def setSize(self, size):
         """\
