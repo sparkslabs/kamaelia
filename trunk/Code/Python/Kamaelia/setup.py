@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -46,6 +46,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Protocol",
                   "Kamaelia.Protocol.HTTP",
                   "Kamaelia.Protocol.HTTP.Handlers",
+                  "Kamaelia.Protocol.RTP",
                   "Kamaelia.Protocol.Torrent",
                   "Kamaelia.Support",
                   "Kamaelia.Support.Data",
@@ -60,9 +61,11 @@ setup(name = "Kamaelia",
                   "Kamaelia.UI.OpenGL",
                   "Kamaelia.Util",
                   "Kamaelia.Util.Tokenisation",
+                  "Kamaelia.Video",
                   "Kamaelia.Visualisation",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.PhysicsGraph",
+                  "Kamaelia.XML",
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
