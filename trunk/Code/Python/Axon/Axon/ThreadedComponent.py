@@ -189,6 +189,28 @@ behaviour.
 
 
 
+When the thread terminates...
+-----------------------------
+
+threadedcomponent will terminate - as you would expect. However, there are some
+subtleties that may need to be considered. These are due to the existence of the
+intermediate queues used to communicate between the thread and the actual
+inboxes and outboxes (as described above).
+
+* When main() terminates, even if it has just recently checked its inqueues
+  (inboxes) there might still be items of data at the inboxes.
+  This is because there is a gap between data that arriving at an inbox, and it
+  being forwarded into an inqueue going to the thread.
+
+* When main() terminates, threadedcomponent will keep executing until it has
+  finished successfully sending any data in outqueues, out of the respective
+  "outboxes". This means that anything main() thinks it has sent is guaranteed
+  to be sent. But if the destination is a size limited inbox that has become
+  full (and that never gets emptied), then threadedcomponent will indefinitely
+  stall because it cannot finish sending.
+
+
+
 How is threaded component implemented?
 --------------------------------------
 
@@ -509,7 +531,8 @@ class threadedcomponent(Component.component):
           msgcount = self.threadtoaxonqueue.qsize()
           
           stuffWaiting = False
-          
+
+
           for box in self.inboxes:
               while self._nonthread_dataReady(box):
                   if not self.inqueues[box].full():
@@ -517,7 +540,7 @@ class threadedcomponent(Component.component):
                       self.inqueues[box].put(msg)
                       self.threadWakeUp.set()     # wake a paused main()
                   else:
-                      stuffWaiting = True
+#                      stuffWaiting = True
                       break
                   
           for box in self.outboxes:
