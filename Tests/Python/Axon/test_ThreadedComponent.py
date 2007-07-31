@@ -421,6 +421,77 @@ class threadedcomponent_Test(unittest.TestCase):
             t.howManyToSend.put("STOP")
             raise
 
+    def test_localprocessterminatesifInQueueFull(self):
+        """threadedcomponent terminates when the thread terminates, even if data is clogged in one of the inqueues"""
+        class Test(threadedcomponent):
+            def __init__(self):
+                super(Test,self).__init__(queuelengths=5)
+            def main(self):
+                while not self.dataReady("control"):
+                    pass
+                
+        sched=scheduler()
+        t=Test().activate(Scheduler=sched)
+        
+        for i in range(0,10):
+            t._deliver(object(),"inbox")        # fill the inbox with more data than the internal queues can hold
+        t._deliver(object(),"control")
+            
+        n=50
+        for s in sched.main():
+            time.sleep(0.05)
+            n=n-1
+            self.assert_(n>0, "Thread (and scheduler) should have stopped by now")
+    
+    def test_localprocessterminatesOnlyIfOutqueueFlushed(self):
+        """threadedcomponent ensures that if the thread terminates, any messages still pending in outqueues (waiting to be sent out of outboxes) get sent, even if it is held up for a while by noSpaceInBox exceptions"""
+        class Test(threadedcomponent):
+            def __init__(self):
+                super(Test,self).__init__(queuelengths=5)
+            def main(self):
+                self.count=0
+                while 1:
+                    try:
+                        self.send(object(),"outbox")
+                        self.count=self.count+1
+                    except noSpaceInBox:
+                        # outqueue is clearly full now, so lets terminate quick!
+                        return
+
+        sched=scheduler()
+        t=Test()
+        r=DoesNothingComponent()
+        r.link((t,"outbox"),(r,"inbox"))
+        r.inboxes["inbox"].setSize(1)
+        r.activate(Scheduler=sched)
+        t.activate(Scheduler=sched)
+        s=sched.main()
+        
+        for n in range(0,50):
+            time.sleep(0.05)
+            s.next()
+
+        self.assert_(not t._isStopped(), "Thread component should not have finished yet")
+        self.assert_(r.dataReady("inbox"), "Should be data waiting at the receiver's inbox")
+        
+        # now relax the inbox size restriction and start receiving items
+        r.inboxes["inbox"].setSize(999)
+        r.recv("inbox")
+        count=1
+        
+        for _ in range(0,50):
+            time.sleep(0.05)
+            s.next()
+
+        # should expect to have received all t.count items sent
+        while r.dataReady("inbox"):
+            count=count+1
+            r.recv("inbox")
+        
+        self.assert_(count==t.count)
+        self.assert_(t._isStopped(), "Thread component should have finished by now")
+        
+
 class threadedadaptivecommscomponent_Test(unittest.TestCase):
     
     def test_smoketest_init(self):
