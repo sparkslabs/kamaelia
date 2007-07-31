@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -75,12 +75,12 @@ The carousel chassis creates and encapsulates (as a child) the component you
 want it to, and lets it get on with it.
 
 Anything sent to the carousel's "inbox" inbox is passed onto the child
-component. Anything the child sends out appears at the carousel's "outbox" and
-"signal" outboxes.
+component. Anything the child sends out appears at the carousel's "outbox"
+outbox.
 
-If the child sends an Axon.Ipc.shutdownMicroprocess or Axon.Ipc.producerFinished
-message then the carousel gets rid of that component and sends a "NEXT" message
-to its "requestNext" outbox. It does not pass the message on.
+If the child terminates, then the carousel unwires it and sends a "NEXT"
+message out of its "requestNext" outbox (unless of course it has been told to
+shutdown).
 
 Another component, such as a Chooser, can respond to this message by sending
 the new set of arguments (for the factory function) to the carousel's "next"
@@ -92,15 +92,26 @@ If the argument source needs to receive a "NEXT" message before sending its
 first set of arguments, then set the argument make1stRequest=True when creating
 the carousel.
 
-You can send new orders to the "next" inbox at any time. The carousel will
-immediately unwire that child (and create the new one) and ask the old child to
-shut down by sending an Axon.Ipc.shutdownMicroprocess message to its "control"
-inbox.
+You can actually send new orders to the "next" inbox at any time, not just in
+response to requests from the Carousel. The carousel will immediately ask that
+child to terminate; then as soon as it has done so, it will create the new one
+and wire it in in its place.
 
-The carousel will shutdown in response to an Axon.Ipc.shutdownMicroprocess or
-Axon.Ipc.producerFinished message. It will also terminate any child component
-in the same way as described above.
+If Carousel receives an Axon.Ipc.producerFinished message on its "control" inbox
+then it will finish handling any pending messages on its "next" inbox (in the
+way described above) then when there are none left, it will ask the child
+component to shut down by sending on the producerFinished message to the child.
+As soon as the child has terminated, the Carousel will terminate and send on the
+producerFinished message out of its own "signal" outbox.
 
+If Carousel receives an Axon.Ipc.shutdownMicroprocess message on its "control"
+inbox then it will immediately send it on to its child component to ask it
+to terminate. As soon as the child has termianted, the Carousel will terminate
+and send on the shutdownMicroprocess message out of its own "signal" outbox.
+
+Of course, if the Carousel has no child at the time either shutdown request is
+received, it will immediately terminate and send on the message out of its
+"signal" outbox.
 """
 
 import Axon
@@ -124,7 +135,6 @@ class Carousel(component):
     Inboxes = { "inbox"    : "child's inbox",
                 "next"     : "requests to replace child",
                 "control"  : "",
-                "_control" : "internal use: to receive 'producerFinished' or 'shutdownMicroprocess' from child"
               }
     Outboxes = { "outbox"      : "child's outbox",
                  "signal"      : "",
@@ -140,105 +150,117 @@ class Carousel(component):
         self.childDone = False
 
         self.make1stRequest = make1stRequest
+        self.mustStop = None
+        self.pleaseStop = None
 
-        
     def main(self):
-        """Main loop"""
         if self.make1stRequest:
             self.requestNext()
-        
-        while not self.shutdown():
-            self.handleFinishedChild()
             
-            yield 1  # gap important - to allow shutdown messages to propogate to the child
+        while 1:
             
-            yield self.handleNewChild()
+            # first state - no child component, waiting for instuctions to
+            # allow us to instantiate one
+            
+            while len(self.childComponents()) == 0:
+                self.handleChildTerminations()
+                mustStop, pleaseStop = self.checkControl()
+                
+                if mustStop:
+                    self.send(mustStop,"signal")
+                    return
+                
+                elif self.dataReady("next"):
+                    self.instantiateNewChild(self.recv("next"))
+                
+                elif pleaseStop:
+                    # ok, no instructions to make a child yet, perhaps we're being
+                    # asked to shut down?
+                    self.send(pleaseStop,"signal")
+                    return
+                    
+                elif len(self.childComponents()) == 0:
+                    # nothing to do, might as well sleep
+                    self.pause()
+                    yield 1
 
-            
-            if not self.dataReady("next") and not self.dataReady("control") and not self.dataReady("_control"):
-                self.pause()
-        
-        self.unplugChildren()
+            yield 1 # give things a chance to do something
 
-            
+            # second state - we've got a child now
+            alreadyTerminatingChild=False
+            while len(self.childComponents()) > 0:
+                self.handleChildTerminations()
+                mustStop, pleaseStop = self.checkControl()
+                
+                if mustStop and not alreadyTerminatingChild:
+                    self.shutdownChild(mustStop)
+                    alreadyTerminatingChild=True
+                
+                elif self.dataReady("next") and not alreadyTerminatingChild:
+                    # ok, got a child, but being asked to create a new one
+                    # ask it to shut down, but don't purge this message - handle
+                    # it once the child is shut down
+                    self.shutdownChild(shutdownMicroprocess())
+                    alreadyTerminatingChild=True
+                    
+                elif pleaseStop and not alreadyTerminatingChild:
+                    # ok, got a child, but being asked to completely shutdown
+                    # ask it to shut down, but don't purge this message
+                    self.shutdownChild(pleaseStop)
+                    alreadyTerminatingChild=True
+
+                elif len(self.childComponents()) > 0:
+                    # nothing to do, might as well sleep
+                    self.pause()
+                    yield 1
+                    
+            # ok, child has terminated now
+            if not self.dataReady("next") and not pleaseStop and not mustStop:
+                self.requestNext()
+
+    def handleChildTerminations(self):
+        """Unplugs any children that have terminated"""
+        for child in self.childComponents():
+            if child._isStopped():
+                self.removeChild(child)   # deregisters linkages for us
+
+    
+    
+    def checkControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg,producerFinished):
+                self.pleaseStop = msg
+            elif isinstance(msg,shutdownMicroprocess):
+                self.mustStop = msg
+                
+        return self.mustStop, self.pleaseStop
+
+
     def requestNext(self):
         """Sends 'next' out the 'requestNext' outbox"""
         self.send( "NEXT", "requestNext" )
-    
+        
 
-
-    def handleFinishedChild(self):
-        """
-        Unplugs the child if a shutdownMicroprocess or producerFinished message is
-        received from it. Also sends a "NEXT" request if one has not already been sent.
-        """
-        if self.dataReady("_control"):
-            msg = self.recv("_control")
-
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                if not self.childDone:
-                    self.childDone = True
-                    self.requestNext()
-                self.unplugChildren()
-
-    
-
-    def handleNewChild(self):
-        """
-        If data received on "next" inbox, removes any existing child and creates and wires
-        in a new one.
-
-        Received data is passed as an argument to the factory function (supplied at
-        initialisation) that creates the new child.
-        """
-        if self.dataReady("next"):
-            arg = self.recv("next")
-
-            # purge old child and any control messages that may have come from the old child
-            while self.dataReady("_control"):
-                self.recv("_control")
-
-            self.unplugChildren()
-
-            # create new child
-            newChild = self.factory(arg)
-            self.addChildren( newChild )
+    def instantiateNewChild(self, args):
+        # create new child
+        newChild = self.factory(args)
+        self.addChildren( newChild )
             
-            # set flag for handleFinishedChild's sake
-            self.childDone = False
+        # wire it in
+        self.link( (self,     "inbox"),   (newChild, "inbox"),  passthrough=1 )
+        self.link( (self,     "_signal"), (newChild, "control")  )
+        
+        self.link( (newChild, "outbox"),  (self,     "outbox"), passthrough=2 )
+        
+        # return it to be yielded
+        newChild.activate()
+        
+        
+    def shutdownChild(self, shutdownMsg):
+        self.send(shutdownMsg, "_signal")
+        
 
-            # wire it in
-            self.link( (self,     "inbox"),   (newChild, "inbox"),  passthrough=1 )
-            self.link( (self,     "_signal"), (newChild, "control")  )
-            
-            self.link( (newChild, "outbox"),  (self,     "outbox"), passthrough=2 )
-            self.link( (newChild, "signal"),  (self,     "_control") )
-            
-            # return it to be yielded
-            return newComponent(*(self.children))
-        return 1
-
-
-    def unplugChildren(self):
-        """
-        Sends 'shutdownMicroprocess' to children and unwires and disowns them.
-        """
-        for child in self.childComponents():
-            self.send( shutdownMicroprocess(self), "_signal" )
-            self.unlink(thecomponent=child)
-            self.removeChild(child)
-
-
-    def shutdown(self):
-        """
-        Returns True if a shutdownMicroprocess or producerFinished message was received.
-        """
-        if self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                self.send( msg, "signal")
-                return True
-        return False
 
 
 __kamaelia_components__ = ( Carousel, )
