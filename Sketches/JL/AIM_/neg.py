@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 from oscarutil import *
 from Axon.Component import component
+import time
 
 screenname = 'ukelele94720'
 password = '123abc'
@@ -52,8 +53,10 @@ class ProtocolNegotiator(component):
         yield Axon.Ipc.WaitComplete(self.getRateLimits())
         self.requestRights()
         yield Axon.Ipc.WaitComplete(self.getRights())
-        self.sendReady()
+        assert self.debugger.note("ProtocolNegotiator.main", 5, "rights gotten, calling self.sendReady()")
+        self.activateConnection()
         while True:
+            yield 1
             while self.dataReady():
                 header, body = self.recvSnac()
 
@@ -67,6 +70,7 @@ class ProtocolNegotiator(component):
         while not self.dataReady():
             yield 1
         serverAck = self.recv()
+        assert serverAck[0] == CHANNEL_NEWCONNECTION
 
     def setServiceVersions(self):
         #get supported services
@@ -127,16 +131,35 @@ class ProtocolNegotiator(component):
             else:
                 done = True
         assert self.debugger.note("ProtocolNegotiator.main", 5, "last reply: " + str((header[0], header[1])))
+                                  
 
-    def sendReady(self):
-        self.sendSnac(0x01, 0x1e, TLV(0x1d, "I'm available!"))
+    def activateConnection(self):
+        """send some parameters up to the server, then signal that we're ready to begin receiving data"""
+        #tell server our capabilities -- which at this point is nothing
+        capabilities = TLV(0x05, "")
+        self.sendSnac(0x02, 0x04, capabilities)
 
-        #send "client ready" and capabilities again
+        #tell server we're done editing SSI data
+        self.sendSnac(0x13, 0x12, "")
+
+        #activate SSI data
+        self.sendSnac(0x13, 0x07, "")
+
+        #send up our status
+        STATUS_DCDISABLED = 0x0100
+        STATUS_ONLINE = 0x0000
+        userStatus = TLV(0x06, struct.pack("!HH", STATUS_DCDISABLED, STATUS_ONLINE))
+        self.sendSnac(0x01, 0x1e, userStatus)
+
+        #now we're ready to begin receiving data
         body = ""
         for service, version in self.desiredServiceVersions.items():
             data = struct.pack("!HHi", service, version, 0x01100629)
             body += data
         self.sendSnac(0x01, 0x02, body)
+
+                                  
+        
         
 if __name__ == '__main__':
     from OSCARClient import OSCARClient
