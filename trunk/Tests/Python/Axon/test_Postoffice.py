@@ -34,6 +34,7 @@ from Axon.Component import component
 from Axon.Scheduler import scheduler
 from Axon.Postoffice import postoffice
 from Axon.AxonExceptions import noSpaceInBox
+from Axon.AxonExceptions import BoxAlreadyLinkedToDestination
 
 class Dummybox(list):
     def __init__(self,*argl,**argd):
@@ -252,6 +253,21 @@ class postoffice_Test(unittest.TestCase):
         self.assert_(c1.outboxes['outbox'].sourcesremoved == [])
         self.assert_(c1.outboxes['signal'].sourcesadded == [])
         self.assert_(c1.outboxes['signal'].sourcesremoved == [])
+
+    def test_BoxAlreadyLinkedToDestinationException(self):
+        p=postoffice()
+        c1=component()
+        c2=component()
+        c3=component()
+        l1 = p.link( (c1,"outbox"), (c2,"inbox") )
+        try:
+            l2 = p.link( (c1,"outbox"), (c3,"inbox") )
+            self.fail("Should have raised BoxAreadyLinkedException when link was made from already linked c1-outbox")
+        except BoxAlreadyLinkedToDestination:
+            pass
+        p.unlink(thelinkage=l1)
+        l2 = p.link( (c1,"outbox"), (c3,"inbox") )
+        
         
 
 class BusyWaitComponent(component):

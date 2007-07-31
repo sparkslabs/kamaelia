@@ -175,3 +175,22 @@ class ArgumentsClash(AxonException):
       arguments or values of arguments?
     """
     pass
+
+class BoxAlreadyLinkedToDestination(AxonException):
+    """\
+    The inbox/outbox already has a linkage going *from* it to a destination.
+    
+    Arguments:
+
+    - the box that is already linked
+    - the box that it is linked to
+    - the box you were trying to link it to
+
+    Possible causes:
+    
+    - Are you trying to make a linkage going from an inbox/outbox to more than
+      one destination?
+    - perhaps another component has already made a linkage from that
+      inbox/outbox?
+    """
+    pass

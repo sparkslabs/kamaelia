@@ -96,6 +96,7 @@ from util import removeAll
 from idGen import strId, numId
 from debug import debug
 from AxonExceptions import AxonException
+from AxonExceptions import BoxAlreadyLinkedToDestination
 from Linkage import linkage
 
 class postoffice(object):
@@ -135,12 +136,18 @@ class postoffice(object):
        object is returned as a handle representing the linkage created.
        
        The linkage is registered with this postoffice.
+       
+       Throws Axon.AxonExceptions.BoxAlreadyLinkedToDestination if the source
+       is already linked to somewhere else (Axon does not permit one-to-many).
        """
        (sourcecomp, sourcebox) = source
        (sinkcomp, sinkbox) = sink
        thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,*optionalargs,**kwoptionalargs)
+       try:
+           thelink.getSinkbox().addsource( thelink.getSourcebox() )
+       except BoxAlreadyLinkedToDestination, e:
+           raise e
        self.linkages.append(thelink)
-       thelink.getSinkbox().addsource( thelink.getSourcebox() )
        return thelink
 
    def unlink(self, thecomponent=None, thelinkage=None):
