@@ -154,8 +154,9 @@ class SingleShotHTTPClient(component):
 
     Arguments:
     - starturl     -- the URL of the file to download
-    - [postbody]   -- data to POST to that URL
+    - [postbody]   -- data to POST to that URL - if set to None becomes an empty body in to a POST (of PUT) request
     - [connectionclass] -- specify a class other than TCPClient to connect with
+    - [method]     -- the HTTP method for the request (default to GET normally or POST if postbody != ""
     """
    
     Inboxes =  {             
