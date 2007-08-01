@@ -86,16 +86,22 @@ class BasicLogger(component):
                 "info_next" : "for the Info Carousel"
                 }
 
-    def __init__(self, channel, formatter=IRCClient.outformat, name="jinnaslogbot", logdir=""):
+    def __init__(self,
+                 channel,
+                 formatter=IRCClient.outformat,
+                 name="jinnaslogbot",
+                 logdir="",
+                 password=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(BasicLogger, self).__init__()
         self.channel = channel
-        self.format = formatter #in case we get passed in None
+        self.format = formatter 
         self.name = name
         self.logdir = logdir.rstrip('/') or os.getcwd()
         self.logdir = self.logdir + '/'
         self.logname = ""
         self.infoname = ""
+        self.password = password
         self.debugger.addDebugSection("Logger.main", 0)
 
         Graphline(log = Carousel(SimpleFileWriter),
@@ -111,7 +117,8 @@ class BasicLogger(component):
         """registers with the IRC server"""
         self.send(("NICK", self.name), "irc")
         self.send(("USER", self.name, self.name, self.name, self.name), "irc")
-        self.send(("PRIVMSG", 'nickserv', "identify abc123"), "irc")
+        if self.password:
+            self.send(("PRIVMSG", 'nickserv', "identify " + self.password), "irc")
         self.send(("JOIN", self.channel), "irc")
         
     def main(self):
@@ -122,7 +129,6 @@ class BasicLogger(component):
         
         while True:
             if self.currentDateString() != self.lastdatestring:
-                self.lastdatestring = self.currentDateString()
                 self.changeDate()
                 
             yield 1 
@@ -142,52 +148,45 @@ class BasicLogger(component):
             self.send("Sent PONG to %s \n" % msg[1], "system")
 
     def respondToQueries(self, msg):
-        """respond to queries from other clients and pings from the server"""
         if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:
             words = msg[3].split()[1:]
             if len(words) > 1 and words[0] == "reload":
                 try:
                     exec("reload(%s)" % words[1])
-                    self.send(('PRIVMSG', self.channel, "'%s' reloaded\n" % words[1]), "irc")
-                except (NameError, TypeError):
-                    self.send(('PRIVMSG', self.channel, "'%s' isn't a module, or at least not one I can reload.\n" % words[1]), "irc")               
+                    reply = "'%s' reloaded\n" % words[1]
+                except:
+                    reply = "'%s' isn't a module, or at least not one I can reload.\n" % words[1]
+                self.send(('PRIVMSG', self.channel, reply), "irc")
+                self.send(self.format(reply), "outbox")
         LoggerFunctions.respondToQueries(self, msg)
-                
+
     def currentDateString(self):
-        """returns the current date in DD-MM-YYYY format"""
-        curtime = time.gmtime()
-        return time.strftime("%d-%m-%Y", curtime)
+        """returns the current date"""
+        return LoggerFunctions.currentDateString()
 
     def currentTimeString(self):
-        curtime = time.gmtime()
-        return time.strftime("%H:%M:%S", curtime)
+        """returns current time"""
+        return LoggerFunctions.currentTimeString()
 
+    def getFilenames(self):
+        """returns tuple (logname, infoname) according to the parameters given"""
+        return LoggerFunctions.getFilenames(self.logdir, self.channel)
+    
     def changeDate(self):
         """updates the date and requests new log files to reflect the date"""
         self.lastdatestring = self.currentDateString()
-        self.logname = self.logdir+self.channel.lstrip('#')+self.lastdatestring+'.log'
-        self.infoname = self.logdir+self.channel.lstrip('#')+self.lastdatestring+'.info'
+        self.logname, self.infoname = self.getFilenames()
         self.send(self.logname, "log_next")
         self.send(self.infoname, "info_next")
 
-
-def AppendingFileWriter(filename):
-    """appends to instead of overwrites logs"""
-    return SimpleFileWriter(filename, mode='ab')
-
-def TimedOutformat(data):
-    """\
-    prepends a timestamp onto formatted data and ignores all privmsgs prefixed
-    by "[off]"
-    """
-    if data[0] == 'PRIVMSG' and data[3][0:5] == '[off]':
-        return
-    formatted = IRCClient.outformat(data)
-    curtime = time.gmtime()
-    timestamp = time.strftime("[%H:%M] ", curtime)
-    if formatted: return timestamp+formatted
     
-def Logger(channel, formatter=TimedOutformat, name=None, logdir="", **irc_args):
+def Logger(channel,
+           name=None,
+           formatter=LoggerFunctions.TimedOutformat,
+           logdir="",
+           password=None,
+           filewriter = LoggerFunctions.AppendingFileWriter,
+           **irc_args):
     """\
     Logger(channel, **kwargs) ->
         Prefab that links the IRC components to BasicLogger
@@ -204,9 +203,9 @@ def Logger(channel, formatter=TimedOutformat, name=None, logdir="", **irc_args):
     - **irc_args  -- pointer to a dictionary containing arguments for IRCClient.SimpleIRCClientPrefab
     """
     return Graphline(irc = IRCClient.SimpleIRCClientPrefab(**irc_args),
-                     logger = BasicLogger(channel, formatter=formatter, name=name, logdir=logdir),
-                     log = Carousel(AppendingFileWriter),
-                     info = Carousel(AppendingFileWriter),
+                     logger = BasicLogger(channel, name=name, formatter=formatter, logdir=logdir, password=password),
+                     log = Carousel(filewriter),
+                     info = Carousel(filewriter),
                      linkages = {("logger", "irc") : ("irc", "inbox"),
                                  ("irc", "outbox") : ("logger", "inbox"),
                                  ("logger", "log_next") : ("log", "next"),
@@ -220,8 +219,19 @@ if __name__ == '__main__':
     import sys
     channel = "#kamtest"
     Name = "jinnaslogbot"
+    pwd = None
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
+    if len(sys.argv) > 3: pwd = sys.argv[3]
 
+    from Kamaelia.Internet.TCPClient import TCPClient
+    from Kamaelia.Util.Introspector import Introspector
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    Pipeline( Introspector(), TCPClient("127.0.0.1",1501) ).activate()
     print "Logging %s as %s" % (channel, Name)
-    Logger(channel, name=Name).run()
+    Logger(channel,
+           name=Name,
+           password=pwd,
+           formatter=(lambda data: LoggerFunctions.HTMLOutformat(data)),
+           filewriter = LoggerFunctions.LoggerWriter,
+           ).run()
