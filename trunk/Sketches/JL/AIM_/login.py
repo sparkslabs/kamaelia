@@ -46,7 +46,8 @@ class LoginHandler(SNACExchanger):
     def main(self):
         yield Axon.Ipc.WaitComplete(self.getBOSandCookie())
         yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
-
+        self.passTheReins()
+        
     def getBOSandCookie(self):
         yield Axon.Ipc.WaitComplete(self.connectAuth())
         for reply in self.getCookie(): yield 1
@@ -220,6 +221,10 @@ class LoginHandler(SNACExchanger):
         self.sendSnac(0x01, 0x02, body)
         assert self.debugger.note("LoginHandler.main", 5, "sent CLI_READY")
 
+    def passTheReins(self):
+        self.unlink(self.oscar)
+        self.send(self.oscar, "signal")
+        
         
 if __name__ == '__main__':
     screenname = 'ukelele94720'

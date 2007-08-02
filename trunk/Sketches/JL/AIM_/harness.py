@@ -20,40 +20,17 @@ class AIMHarness(component):
     
     def __init__(self):
         super(AIMHarness, self).__init__()
-        oscar = OSCARClient('login.oscar.aol.com', 5190)
-        auth = AuthCookieGetter()
-        self.link((auth, "outbox") , (oscar, "inbox"))
-        self.link((oscar, "outbox") , (auth, "inbox"))
-        self.link((auth, "_cookie") , (self, "internal inbox"))
-        oscar.activate()
-        auth.activate()
-        self.oscar, self.auth = oscar, auth
-        self.addChildren(self.oscar, self.auth)
+        self.loginer = LoginHandler().activate()
+        self.link((self.loginer, "signal"), (self, "internal inbox"))
+        self.addChildren(self.loginer)
         self.debugger.addDebugSection("AIMHarness.main", 5)
 
     def main(self):
         while not self.dataReady("internal inbox"):
             yield 1
-        BOS_server, port, cookie = self.recv("internal inbox")
-        self.removeChildren(*self.children)
-        neg = ProtocolNegotiator(cookie)
-        oscar = OSCARClient(BOS_server, port)
-        self.link((neg, "outbox") , (oscar, "inbox"))
-        self.link((oscar, "outbox") , (neg, "inbox"))
-        self.link((neg, "signal"), (self, "internal control"))
-        
-        oscar.activate()
-        neg.activate()
-        self.oscar, self.neg = oscar, neg
-        self.addChildren(self.oscar, self.neg)
-        while not self.dataReady("internal control"):
-            yield 1
-        self.removeChildren(neg)
-        assert self.debugger.note("AIMHarness.main", 5, "Harness finished")
-
-    def removeChildren(self, *children):
-        for child in children:
-            self.removeChild(child)
+        self.oscar = self.recv("internal inbox")
+        link_loginer_to_one_outbox()
+        chat_manager_to_another()
 
 
 if __name__ == '__main__':
