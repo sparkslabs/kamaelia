@@ -1,92 +1,89 @@
 #! /usr/bin/env python
 from oscarutil import *
 from Axon.Component import component
+from OSCARClient import OSCARClient, SNACExchanger
 import time
+import Axon
 
-screenname = 'ukelele94720'
-password = '123abc'
-class SNACExchanger(component):
-    def __init__(self):
-        super(SNACExchanger, self).__init__()
-        debugSections = {"SNACExchanger.recvSnac" : 5,
-                         "SNACExchanger.sendSnac" : 5,
-                         }
-        self.debugger.addDebug(**debugSections)
-        
-    def sendSnac(self, fam, sub, body):
-        snac = SNAC(fam, sub, body)
-        self.send((CHANNEL_SNAC, snac))
-        assert self.debugger.note("SNACExchanger.sendSnac", 5, "sent SNAC " + str((fam, sub)))
-
-    def recvSnac(self):
-        recvdflap = self.recv() #supported services snac
-        header, reply = readSNAC(recvdflap[1])
-        assert self.debugger.note("SNACExchanger.recvSnac", 5, "received SNAC" + str(header))
-        return header, reply
-
-    def waitSnac(self, fam, sub):
-        done = False
-        while not done:
-            while not self.dataReady():
-                yield 1
-            header, reply = self.recvSnac()
-            if header[0] == fam and header[1] == sub:
-                yield reply
-                done = True
-
-class AuthCookieGetter(SNACExchanger):
-    Outboxes = {"outbox" : "outgoing messages to AIM",
-                "signal" : "NOT USED",
-                "_cookie" : "(BOS server, port, cookie)",
-                }
-                
-    
-    def __init__(self):
-        super(AuthCookieGetter, self).__init__()
+class LoginHandler(SNACExchanger):
+    def __init__(self,screenname, password, versionNumber=1):
+        super(LoginHandler, self).__init__()
+        self.screenname = screenname
+        self.password = password
+        self.versionNumber = versionNumber
+        self.desiredServiceVersions = {0x01 : 3,
+                                       0x02 : 1,
+                                       0x03 : 1,
+                                       0x04 : 1,
+                                       0x08 : 1,
+                                       0x09 : 1,
+                                       0x0a : 1,
+                                       0x0b : 1,
+                                       0x13 : 4,
+                                       0x15 : 1,
+                                       }
         self.client_id = 0x0109 #this value seems to work
-        self.major_version = 5
+        self.major_version = 0
         self.minor_version = 1
         self.lesser_version = 0
-        self.build_num = 3036
+        self.build_num = 42
         self.distr_num = 0
         self.language = 'en'
         self.country = 'us'
         self.use_SSI = 1
-        self.versionNumber = 1
-        self.debugger.addDebugSection("AuthCookieGetter.main", 5)
+
+        self.oscar = OSCARClient('login.oscar.aol.com', 5190).activate()
+        self.link((self, "outbox"), (self.oscar, "inbox"))
+        self.link((self.oscar, "outbox"), (self, "inbox"))
+
+        debugSections = {"LoginHandler.main" : 5,
+                         "LoginHandler.connectAuth" : 5,
+                         "LoginHandler.reconnect" : 5,
+                         }
+        self.debugger.addDebug(**debugSections)
+
 
     def main(self):
-        for goal in self.getBOSandCookie(): yield goal
-        
+        yield Axon.Ipc.WaitComplete(self.getBOSandCookie())
+        yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
+
     def getBOSandCookie(self):
         yield Axon.Ipc.WaitComplete(self.connectAuth())
         for reply in self.getCookie(): yield 1
         goal = self.extractBOSandCookie(reply)
-        self.send(goal, "_cookie")
-        assert self.debugger.note("AuthCookieGetter.main", 1, "Got cookie!")
-        yield goal
+        assert self.debugger.note("Loginhandler.main", 1, "Got cookie!")
         
+    def negotiateProtocol(self):
+        yield Axon.Ipc.WaitComplete(self.reconnect(self.server, self.port, self.cookie))
+        yield Axon.Ipc.WaitComplete(self.setServiceVersions())
+        yield Axon.Ipc.WaitComplete(self.getRateLimits())
+        self.requestRights()
+        yield Axon.Ipc.WaitComplete(self.getRights())
+        assert self.debugger.note("LoginHandler.main", 5, "rights gotten, activating connection")
+        self.activateConnection()
+        yield 1
+
     def connectAuth(self):
+        assert self.debugger.note("LoginHandler.connectAuth", 7, "sending new connection...")
         data = struct.pack('!i', self.versionNumber)
         self.send((CHANNEL_NEWCONNECTION, data))
         while not self.dataReady():
             yield 1
         reply = self.recv() #should be server ack of new connection
-        assert self.debugger.note("AuthCookieGetter.main", 5, "received new connection ack")
+        assert self.debugger.note("LoginHandler.connectAuth", 5, "received new connection ack")
 
     def getCookie(self):
         #request and get MD5 key from server
-        print "starting getCookie"
         zero = struct.pack('!H', 0)
-        request = TLV(0x01, screenname) + TLV(0x4b, zero) + TLV(0x5a, zero)
+        request = TLV(0x01, self.screenname) + TLV(0x4b, zero) + TLV(0x5a, zero)
         self.sendSnac(0x17, 0x06, request)
         for reply in self.waitSnac(0x17, 0x07): yield 1
         assert self.debugger.note("AuthCookieGetter.main", 5, "received md5 key")
         md5key = reply[2:]
 
         #using MD5 key, request and get BOS server, port and authorization cookie
-        request = TLV(0x01, screenname) +\
-                  TLV(0x25, encryptPasswordMD5(password, md5key)) +\
+        request = TLV(0x01, self.screenname) +\
+                  TLV(0x25, encryptPasswordMD5(self.password, md5key)) +\
                   TLV(0x4c, "") +\
                   TLV(0x03, CLIENT_ID_STRING) +\
                   TLV(0x16, Double(self.client_id)) +\
@@ -101,6 +98,10 @@ class AuthCookieGetter(SNACExchanger):
         self.sendSnac(0x17, 0x02, request)
         for reply in self.waitSnac(0x17, 0x03): yield 1
         assert self.debugger.note("AuthCookieGetter.main", 5, "received BOS/auth cookie")
+        while not self.dataReady():
+            yield 1
+        recvdflap = self.recv()
+        assert recvdflap[0] == 4 #close connection command
         yield reply
 
     def extractBOSandCookie(self, reply):  
@@ -110,46 +111,18 @@ class AuthCookieGetter(SNACExchanger):
         BOS_server, port = BOS_server.split(':')
         port = int(port)    
         auth_cookie = parsed[0x06]
-        return BOS_server, port, auth_cookie
+        self.server, self.port, self.cookie = BOS_server, port, auth_cookie
 
-class LoginHandler(SNACExchanger):
-    def __init__(self, authCookie, versionNumber=1):
-        super(LoginHandler, self).__init__()
-        self.authCookie = authCookie
-        self.versionNumber = versionNumber
-        self.desiredServiceVersions = {0x01 : 3,
-                                       0x02 : 1,
-                                       0x03 : 1,
-                                       0x04 : 1,
-                                       0x08 : 1,
-                                       0x09 : 1,
-                                       0x0a : 1,
-                                       0x0b : 1,
-                                       0x13 : 4,
-                                       0x15 : 1,
-                                       }
-        debugSections = {"LoginHandler.main" : 5,
-                         "LoginHandler.recvSnac" : 5,
-                         }
-        self.debugger.addDebug(**debugSections)
-
-
-    def main(self):
-        yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
-
-    def negotiateProtocol(self):
-        yield Axon.Ipc.WaitComplete(self.reconnect())
-        yield Axon.Ipc.WaitComplete(self.setServiceVersions())
-        yield Axon.Ipc.WaitComplete(self.getRateLimits())
-        self.requestRights()
-        yield Axon.Ipc.WaitComplete(self.getRights())
-        assert self.debugger.note("LoginHandler.main", 5, "rights gotten, activating connection")
-        self.activateConnection()
+    def reconnect(self, server, port, cookie):
+        self.unlink(self.oscar)
+        self.oscar = OSCARClient(server, port).activate()
+        self.link((self, "outbox"), (self.oscar, "inbox"))
+        self.link((self.oscar, "outbox"), (self, "inbox"))
         yield 1
+        assert self.debugger.note("LoginHandler.reconnect", 7, "linked, linked, and unlinked")
         
-    def reconnect(self):
         data = Quad(self.versionNumber)
-        data += TLV(0x06, self.authCookie)
+        data += TLV(0x06, cookie)
         self.send((CHANNEL_NEWCONNECTION, data))
         while not self.dataReady():
             yield 1
@@ -181,7 +154,7 @@ class LoginHandler(SNACExchanger):
         #request rate limits
         self.sendSnac(0x01, 0x06, "")
         for reply in self.waitSnac(0x01, 0x07): yield 1
-        assert self.debugger.note("LoginHandler.main", 5, "parsing rate info...")
+        assert self.debugger.note("LoginHandler.main", 7, "parsing rate info...")
         
         #process rate limits
         numClasses, = struct.unpack('!H', reply[:2])
@@ -246,37 +219,11 @@ class LoginHandler(SNACExchanger):
             body += data
         self.sendSnac(0x01, 0x02, body)
         assert self.debugger.note("LoginHandler.main", 5, "sent CLI_READY")
+
         
 if __name__ == '__main__':
-    from OSCARClient import OSCARClient
-    from Kamaelia.Chassis.Graphline import Graphline
-    import sys
-    import os
-    sys.path.append('..')
-    from likefile import *
-    import pickle
+    screenname = 'ukelele94720'
+    password = '123abc'
 
-    g = \
-    Graphline(auth = AuthCookieGetter(),
-              oscar = OSCARClient('login.oscar.aol.com', 5190),
-              linkages = {("auth", "outbox") : ("oscar", "inbox"),
-                          ("oscar", "outbox") : ("auth", "inbox"),
-                          ("auth", "signal") : ("oscar", "control"),
-                          ("auth", "_cookie") : ("self", "outbox"),
-                          }
-              ) 
+    LoginHandler(screenname, password).run()
 
-    background = schedulerThread(slowmo=0.01).start()
-    h = LikeFile(g)
-    h.activate()
-    BOS_server, port, auth_cookie = h.get()
-
-    Graphline(ambassador = LoginHandler(auth_cookie),
-              oscar = OSCARClient(BOS_server, port),
-              linkages = {("ambassador", "outbox") : ("oscar", "inbox"),
-                          ("oscar", "outbox") : ("ambassador", "inbox"),
-                          ("ambassador", "signal") : ("oscar", "control"),
-                          }
-              ).run()
-
-    
