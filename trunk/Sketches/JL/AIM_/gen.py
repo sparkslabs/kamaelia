@@ -2,9 +2,8 @@
 
 import pickle
 import md5
-from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
-from Axon.Ipc import shutdownMicroprocess, WaitComplete, ipc
+from Axon.Ipc import WaitComplete, ipc
 from OSCARClient import OSCARClient
 from oscarutil import *
 
@@ -30,29 +29,14 @@ class AuthCookieGetter(component):
         self.debugger.addDebugSection("AuthCookieGetter.main", 5)
         
     def main(self):
-        yield WaitComplete(self.handshake())
-        for value in self.getMD5key():
-            if value == 1: yield value
-            else: md5key = value
-        for value in self.getBOSandAuthCookie(md5key):
-            if value == 1: yield value
-            else: reply = value
-
+        yield WaitComplete(self.connect())
+        for md5key in self.getMD5key(): yield 1
+        for reply in self.getBOSandAuthCookie(md5key): yield 1
         goal = self.extractBOSandCookie(reply)
         self.send(goal, "_cookie")
         assert self.debugger.note("AuthCookieGetter.main", 1, str(goal))
-        #save data, in case we need it for debugging later
-##        fle = open("snac1703.dat", "w")
-##        pickle.dump(reply, fle)
-##        fle.close()        
-##        fle = open("bos_auth.dat", "wb")
-##        pickle.dump(goal, fle)
-##        fle.close()
         
-        self.send(shutdownMicroprocess(), "signal")
-        assert self.debugger.note("AuthCookieGetter.main", 5, "sent shutdownMicroprocess")
-    
-    def handshake(self):
+    def connect(self):
         data = struct.pack('!i', self.versionNumber)
         self.send((CHANNEL_NEWCONNECTION, data))
         while not self.dataReady():

@@ -162,8 +162,8 @@ single = '!B'
 double = '!H'
 quad = '!I'
 
-Single = (lambda num: struct.pack('!b', num))
-Double = (lambda num: struct.pack('!h', num))
+Single = (lambda num: struct.pack('!B', num))
+Double = (lambda num: struct.pack('!H', num))
 Quad = (lambda num: struct.pack('!i', num))
 
 def makeSnac((snac_fam, snac_sub), snac_body, flags=0, reqid=1):
@@ -208,3 +208,10 @@ CHANNEL3 = 3
 CHANNEL4 = 4
 CHANNEL5 = 5
 
+CLIENT_ID_STRING = "Kamaelia/AIM"
+CHANNEL_NEWCONNECTION = 1
+CHANNEL_SNAC = 2
+CHANNEL_FLAPERROR = 3
+CHANNEL_CLOSECONNECTION = 4
+CHANNEL_KEEPALIVE = 5
+LEN_RATE_CLASS = 2 + 8*4 + 1
