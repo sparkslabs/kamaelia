@@ -46,13 +46,13 @@ class LoginHandler(SNACExchanger):
     def main(self):
         yield Axon.Ipc.WaitComplete(self.getBOSandCookie())
         yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
-        self.passTheReins()
+        yield Axon.Ipc.WaitComplete(self.passTheReins())
         
     def getBOSandCookie(self):
         yield Axon.Ipc.WaitComplete(self.connectAuth())
         for reply in self.getCookie(): yield 1
         goal = self.extractBOSandCookie(reply)
-        assert self.debugger.note("Loginhandler.main", 1, "Got cookie!")
+        assert self.debugger.note("LoginHandler.main", 1, "Got cookie!")
         
     def negotiateProtocol(self):
         yield Axon.Ipc.WaitComplete(self.reconnect(self.server, self.port, self.cookie))
@@ -62,8 +62,7 @@ class LoginHandler(SNACExchanger):
         yield Axon.Ipc.WaitComplete(self.getRights())
         assert self.debugger.note("LoginHandler.main", 5, "rights gotten, activating connection")
         self.activateConnection()
-        yield 1
-
+        
     def connectAuth(self):
         assert self.debugger.note("LoginHandler.connectAuth", 7, "sending new connection...")
         data = struct.pack('!i', self.versionNumber)
@@ -222,13 +221,19 @@ class LoginHandler(SNACExchanger):
         assert self.debugger.note("LoginHandler.main", 5, "sent CLI_READY")
 
     def passTheReins(self):
+        while not self.dataReady():
+            yield 1
+        queued = []
+        while self.dataReady(): #empty the inbox and pass it on to the next component
+            queued.append(self.recv())
+            yield 1
         self.unlink(self.oscar)
         self.send(self.oscar, "signal")
-        
+        self.send(queued, "signal")
         
 if __name__ == '__main__':
-    screenname = 'ukelele94720'
-    password = '123abc'
+    screenname = 'kamaelia1'
+    password = 'abc123'
 
     LoginHandler(screenname, password).run()
 
