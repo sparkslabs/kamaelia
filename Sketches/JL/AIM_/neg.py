@@ -53,13 +53,10 @@ class ProtocolNegotiator(component):
         yield Axon.Ipc.WaitComplete(self.getRateLimits())
         self.requestRights()
         yield Axon.Ipc.WaitComplete(self.getRights())
-        assert self.debugger.note("ProtocolNegotiator.main", 5, "rights gotten, calling self.sendReady()")
+        assert self.debugger.note("ProtocolNegotiator.main", 5, "rights gotten, calling self.activateConnection()")
         self.activateConnection()
-        while True:
-            yield 1
-            while self.dataReady():
-                header, body = self.recvSnac()
-
+        yield 1
+        
     def parseRateInfo(self, data, numClasses):
         return '\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05'
 
@@ -156,10 +153,7 @@ class ProtocolNegotiator(component):
         for service, version in self.desiredServiceVersions.items():
             data = struct.pack("!HHi", service, version, 0x01100629)
             body += data
-        self.sendSnac(0x01, 0x02, body)
-
-                                  
-        
+        self.sendSnac(0x01, 0x02, body)        
         
 if __name__ == '__main__':
     from OSCARClient import OSCARClient

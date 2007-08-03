@@ -2,7 +2,7 @@
 
 import md5
 import struct
-#from oscarutil import *
+from oscarutil import *
 import pickle
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
@@ -83,6 +83,35 @@ def OSCARClient(server, port):
                          }
                      )
     
+class SNACExchanger(component):
+    def __init__(self):
+        super(SNACExchanger, self).__init__()
+        debugSections = {"SNACExchanger.recvSnac" : 0,
+                         "SNACExchanger.sendSnac" : 0,
+                         }
+        self.debugger.addDebug(**debugSections)
+        
+    def sendSnac(self, fam, sub, body):
+        snac = SNAC(fam, sub, body)
+        self.send((CHANNEL_SNAC, snac))
+        assert self.debugger.note("SNACExchanger.sendSnac", 5, "sent SNAC " + str((fam, sub)))
+
+    def recvSnac(self):
+        recvdflap = self.recv() #supported services snac
+        header, reply = readSNAC(recvdflap[1])
+        assert self.debugger.note("SNACExchanger.recvSnac", 5, "received SNAC" + str(header))
+        return header, reply
+
+    def waitSnac(self, fam, sub):
+        done = False
+        while not done:
+            while not self.dataReady():
+                yield 1
+            header, reply = self.recvSnac()
+            if header[0] == fam and header[1] == sub:
+                yield reply
+                done = True
+
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
