@@ -19,7 +19,9 @@ class container(object):
             x, y = e.pos
             if self.toolbar.contains(x, y):
                 self.toolbar.handleMouseDown(e)
-            else: pass #in grid
+            elif self.grid.contains(x, y):
+                self.grid.handleMouseDown(x, y)
+        
         elif e.type == MOUSEMOTION:
             self.handleMouseMove(e)
     

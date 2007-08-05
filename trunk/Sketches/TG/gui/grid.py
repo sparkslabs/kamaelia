@@ -3,6 +3,8 @@ from pygame.color import THECOLORS as colours
 from pygame.draw import line
 from pygame.rect import Rect
 
+from guiShard import guiShard
+
 class grid(object):
     def __init__(self, surface, x, y, maxw, maxh, xspacing = 75, yspacing = 36):
         
@@ -13,6 +15,8 @@ class grid(object):
         self.yspacing = yspacing
         self.border = 1
         self.colour = colours['grey90']
+        
+        self.rootshard = None
         
         # integer division
         cols = maxw / self.xspacing
@@ -48,17 +52,51 @@ class grid(object):
     def bounds(self):
         return Rect(self.x, self.y, self.surface.get_width(), self.height)
     
+    def snapToCol(self, x):
+        diffs = [abs(c - x) for c in self.coldividers]
+        newx, col = min((x, i) for i, x in enumerate(diffs))
+        return col
+        
+    def snapToRow(self, y):
+        diffs = [abs(r - y) for r in self.rowdividers]
+        newy, row = min((y, i) for i, y in enumerate(diffs))
+        return row
+
     def snapToGrid(self, x, y):
-        diffs = [abs(vert - x) for vert in self.coldividers]
-        newx, xind = min((x, i) for i, x in enumerate(diffs))
+        col, row = self.snapToCol(x), self.snapToRow(y)
+        return self.colCoord(col), self.rowCoord(row)
+    
+    def rowCoord(self, row):
+        return self.rowdividers[row] + 2*self.border
+    
+    def colCoord(self, col):
+        return self.coldividers[col]
+    
+    def maxRows(self):
+        return len(self.rowdividers)
         
-        diffs = [abs(hor - y) for hor in self.rowdividers]
-        newy, yind = min((y, i) for i, y in enumerate(diffs))
-        
-        return self.coldividers[xind], self.rowdividers[yind] + 2
+    def maxCols(self):
+        return len(self.coldividers)
+    
+    def handleMouseDown(self, x, y):
+        if self.container.floating:
+            col, row = self.snapToCol(x), self.snapToRow(y)
+            # depending on occupation, add float label to grid cell
+            # add to draw list
+            if not self.rootshard:
+                g = guiShard(self.container.floating, None, row, range(0, self.maxCols()-1))
+                self.rootshard = g
+            else:
+                self.rootshard.add(self.container.floating, row, col)
+            
+            self.container.floating.erase(self.container.screen)
+            self.container.floating = None
     
     def draw(self, surface):
         surface.blit(self.surface, (self.x, self.y))
+        if self.rootshard:
+            self.rootshard.draw(surface)
+        
         return [self.bounds()]
 
 
