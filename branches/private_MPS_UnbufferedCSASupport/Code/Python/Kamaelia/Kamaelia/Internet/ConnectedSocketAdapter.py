@@ -127,7 +127,7 @@ class ConnectedSocketAdapter(component):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConnectedSocketAdapter, self).__init__()
       self.socket = listensocket
-      self.sendQueue = []
+      self.data_to_send = ""
       self.crashOnBadDataToSend = crashOnBadDataToSend
       self.noisyErrors = noisyErrors
       self.selectorService = selectorService
@@ -150,11 +150,6 @@ class ConnectedSocketAdapter(component):
           else:
               pass # unrecognised message
    
-   def handleSendRequest(self):
-       """Check for data to send to the socket, add to an internal send queue buffer."""
-       if self.dataReady("inbox"):
-            data = self.recv("inbox")
-            self.sendQueue.append(data)
 
    def passOnShutdown(self):
         self.send(socketShutdown(self,[self.socket,self.howDied]), "CreatorFeedback")
@@ -186,14 +181,14 @@ class ConnectedSocketAdapter(component):
        return bytes_sent
    
    def flushSendQueue(self):
-       if len(self.sendQueue) > 0:
-           data = self.sendQueue[0]
-           bytes_sent = self._safesend(self.socket, data)
-           if bytes_sent:
-               if bytes_sent == len(data):
-                   del self.sendQueue[0]
-               else:
-                   self.sendQueue[0] = data[bytes_sent:]
+       while ( len(self.data_to_send) != 0 ) or self.dataReady("inbox") :
+           if len(self.data_to_send) == 0:
+               # Can't get here unless self.dataReady("inbox")
+               self.data_to_send = self.recv("inbox")
+           bytes_sent = self._safesend(self.socket, self.data_to_send)
+           self.data_to_send = self.data_to_send[bytes_sent:]
+           if bytes_sent == 0:
+               break # failed to send right now, resend later
 
    def _saferecv(self, sock, size=32768):
        """Internal only function, used for recieving data, and handling EAGAIN style
@@ -241,7 +236,7 @@ class ConnectedSocketAdapter(component):
            self.recv("SendReady")
 
    def canDoSomething(self):
-       if self.sending and len(self.sendQueue) > 0:
+       if self.sending and ( (len(self.data_to_send) > 0) or self.dataReady("inbox") ):
            return True
        if self.receiving:
            return True
@@ -260,7 +255,6 @@ class ConnectedSocketAdapter(component):
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
           self.checkSocketStatus() # To be written
-          self.handleSendRequest() # Check for data, in our "inbox", to send to the socket, add to an internal send queue buffer.
           self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
           if self.sending:
               self.flushSendQueue()
