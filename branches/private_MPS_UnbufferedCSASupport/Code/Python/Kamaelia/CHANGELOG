@@ -1,3 +1,8 @@
+   Changed the CSA such that it no longer has internal buffering. This means
+   that if you make the link *TO* the CSA synchronous that you will be able
+   to send to the link as fast as the link will handle without causing over
+   buffering.
+
    Bugfixes to:
     * Kamaelia.UI.Pygame.BasicSprite component.
 
