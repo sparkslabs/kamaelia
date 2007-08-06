@@ -45,6 +45,14 @@ class grid(object):
             rowstart = i*self.yspacing + yborder
             self.rowdividers += [rowstart]
             line(self.surface, self.colour, (xborder, rowstart), (self.width+xborder, rowstart))
+        
+        self.colcentres = []
+        for i in xrange(0, len(self.coldividers)-1):
+            self.colcentres += [(self.coldividers[i] + self.coldividers[i+1])/2]
+        
+        self.rowcentres = []
+        for i in xrange(0, len(self.rowdividers)-1):
+            self.rowcentres += [(self.rowdividers[i] + self.rowdividers[i+1])/2]
     
     def contains(self, x, y):
         return self.bounds().collidepoint(x, y)
@@ -53,12 +61,12 @@ class grid(object):
         return Rect(self.x, self.y, self.surface.get_width(), self.height)
     
     def snapToCol(self, x):
-        diffs = [abs(c - x) for c in self.coldividers]
+        diffs = [abs(c - x) for c in self.colcentres]
         newx, col = min((x, i) for i, x in enumerate(diffs))
         return col
         
     def snapToRow(self, y):
-        diffs = [abs(r - y) for r in self.rowdividers]
+        diffs = [abs(r - y) for r in self.rowcentres]
         newy, row = min((y, i) for i, y in enumerate(diffs))
         return row
 
@@ -73,10 +81,10 @@ class grid(object):
         return self.coldividers[col]
     
     def maxRows(self):
-        return len(self.rowdividers)
+        return len(self.rowcentres)
         
     def maxCols(self):
-        return len(self.coldividers)
+        return len(self.colcentres)
     
     def handleMouseDown(self, x, y):
         if self.container.floating:
@@ -84,7 +92,7 @@ class grid(object):
             # depending on occupation, add float label to grid cell
             # add to draw list
             if not self.rootshard:
-                g = guiShard(self.container.floating, None, row, range(0, self.maxCols()-1))
+                g = guiShard(self.container.floating, None, row, range(0, self.maxCols()))
                 self.rootshard = g
             else:
                 self.rootshard.add(self.container.floating, row, col)
