@@ -88,14 +88,14 @@ class grid(object):
     
     def handleMouseDown(self, x, y):
         if self.container.floating:
-            col, row = self.snapToCol(x), self.snapToRow(y)
+            row = self.snapToRow(y)
             # depending on occupation, add float label to grid cell
             # add to draw list
             if not self.rootshard:
                 g = guiShard(self.container.floating, None, row, range(0, self.maxCols()))
                 self.rootshard = g
             else:
-                self.rootshard.add(self.container.floating, row, col)
+                self.rootshard.add(self.container.floating, row, x)
             
             self.container.floating.erase(self.container.screen)
             self.container.floating = None
