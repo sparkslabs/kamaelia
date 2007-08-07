@@ -27,8 +27,7 @@ class toolbar(object):
             self.height = things[0].height
         self.height += 2*self.border
         
-        for t in things:
-            self.add(t)
+        self.add(things)
     
     def width(self):
         return self.endx - self.x + self.border
@@ -39,14 +38,16 @@ class toolbar(object):
     def contains(self, x, y):
         return self.bounds().collidepoint(x, y)
     
-    def add(self, thing):
-        self.things += [thing]
+    def add(self, things):
+        self.things += list(things)
         
-        thing.toolbar = self
-        thing.x = self.endx + self.border
-        thing.y = self.y + self.border
+        for thing in things:
+            thing.toolbar = self
+            thing.x = self.endx + self.border
+            thing.y = self.y + self.border
+            
+            self.endx += thing.width + self.border
         
-        self.endx += thing.width + self.border
         self.rect = self.bounds()
     
     def handleMouseDown(self, e):
