@@ -4,6 +4,7 @@ from pygame.draw import line
 from pygame.rect import Rect
 
 from guiShard import guiShard
+from history import history
 
 class grid(object):
     def __init__(self, surface, x, y, maxw, maxh, xspacing = 75, yspacing = 36):
@@ -16,7 +17,7 @@ class grid(object):
         self.border = 1
         self.colour = colours['grey90']
         
-        self.rootshard = None
+        self.shardhist = history(self)
         
         # integer division
         cols = maxw / self.xspacing
@@ -91,19 +92,22 @@ class grid(object):
             row = self.snapToRow(y)
             # depending on occupation, add float label to grid cell
             # add to draw list
-            if not self.rootshard:
+            if not self.shardhist.current():
                 g = guiShard(self.container.floating, None, row, range(0, self.maxCols()))
-                self.rootshard = g
+                self.shardhist.add(g)
             else:
-                self.rootshard.add(self.container.floating, row, x)
+                self.shardhist.current().add(self.container.floating, row, x)
             
             self.container.floating.erase(self.container.screen)
             self.container.floating = None
     
+    def clear(self):
+        self.shardhist.add(None)
+    
     def draw(self, surface):
         surface.blit(self.surface, (self.x, self.y))
-        if self.rootshard:
-            self.rootshard.draw(surface)
+        if self.shardhist.current():
+            self.shardhist.current().draw(surface)
         
         return [self.bounds()]
 

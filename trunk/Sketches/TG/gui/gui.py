@@ -7,9 +7,10 @@ from pygame.rect import *
 
 from toolbar import toolbar
 from box import box
-from cancel import cancel
+from label import cancel, clear
 from grid import grid
 from container import container
+from arrows import forward, back
 
 def main():
     pygame.init()
@@ -21,7 +22,10 @@ def main():
     
     t = toolbar(things = [box('label.png'), box('label.png')])
     c = cancel('label.png')
-    t.add(c)
+    cl = clear('label.png')
+    f = forward('label.png')
+    b = back('label.png')
+    t.add([c, cl, b, f])
     g = grid(screen, 0, t.height, screen.get_width(), screen.get_height()-t.height)
     
     con = container(t, g, screen)

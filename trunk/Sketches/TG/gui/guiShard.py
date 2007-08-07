@@ -20,7 +20,6 @@ class guiShard(object):
         
         self.row = row
         self.cols = cols
-        self.minwidth = 1
         
         self.parent = parent
         self.children = []
@@ -40,6 +39,10 @@ class guiShard(object):
     def centre(self):
         return self.makeRect().centerx
     
+    def minwidth(self):
+        if not self.children: return 1
+        else: return len(self.children)
+    
     def resize(self, newcols):
         self.cols = list(newcols)
     
@@ -47,68 +50,53 @@ class guiShard(object):
         # column 0 given as a temporary value
         self.children.insert(index, guiShard(floating, self, self.row+1, [0]))
         self.repack()
-        self.minwidth += 1
     
     def newChildIndex(self, newx):
         for c in self.children: # assumes children ordered in display l-r
             if newx < c.centre():
-                return self.children.index(c)
-        return len(self.children) # if no child applies, new is last
+                return self.children.index(c) + self.cols[0]
+        return len(self.children) + self.cols[0] # if no child applies, new is last
     
-    # doesn't repack children's children etc.
     def repack(self):
         if not self.children:
             return
-        totalminw = 0
-        for c in self.children:
-            totalminw += c.minwidth
         
-        rem = len(self.cols) - totalminw
-        if rem < 0:
-            print 'error, not enough room'
-            return
-        else:
-            sizes = [(c.minwidth, c) for c in self.children]
-            while rem != 0:
-                sizes.sort()
-                sizes[0] = (sizes[0][0]+1, sizes[0][1]) # increment width
-                rem -= 1 # decrement spare cols
-            
-            # sort into child order
-            sizes.sort(lambda x,y: self.children.index(x[1]) - self.children.index(y[1]))
-            
-            widths = [c[0] for c in sizes]            
-            starts = [sum(widths[0:i]) + self.cols[0] for i in xrange(0, len(widths))]
-            #print starts
-            ends = [widths[i] + starts[i] for i in xrange(0, len(starts))]
-            for i in xrange(0, len(sizes)):
-                child = sizes[i][1]
-                newcols = range(starts[i], ends[i])
-                #print newcols
-                child.resize(newcols)
-                child.repack()
-    
-    def hasSpace(self):
-        totalminw = 0
-        for c in self.children:
-            totalminw += c.minwidth
+        rem = self.spaceRemaining()
+        sizes = [(c.minwidth(), c) for c in self.children]
+        while rem != 0:
+            sizes.sort()
+            sizes[0] = (sizes[0][0]+1, sizes[0][1]) # increment width
+            rem -= 1 # decrement spare cols
         
+        # sort into child order
+        sizes.sort(lambda x,y: self.children.index(x[1]) - self.children.index(y[1]))
+        
+        widths = [c[0] for c in sizes]            
+        starts = [sum(widths[0:i])+self.cols[0] for i in xrange(0, len(widths))]
+        ends = [widths[i] + starts[i] for i in xrange(0, len(starts))]
+        for i in xrange(0, len(sizes)):
+            child = sizes[i][1]
+            newcols = range(starts[i], ends[i])
+            child.resize(newcols)
+            child.repack()
+
+    def spaceRemaining(self):
+        totalminw = sum([c.minwidth() for c in self.children])
         rem = len(self.cols) - totalminw
-        return rem > 0
+        return rem
     
     def add(self, floating, row, x):
-        if row == self.row:
-            if self.hasSpace():
-                self.addChild(floating, self.newChildIndex(x))
-            else:
-                print 'error, not enough room'
-        else:
+        if row != self.row:
             col = self.grid.snapToCol(x)
             for c in self.children:
                 if col in c.cols:
-                    c.add(floating, row, col)
+                    c.add(floating, row, x)
                     return
-            print 'no child covers col', col
+        
+        if self.spaceRemaining():
+            self.addChild(floating, self.newChildIndex(x))
+        else:
+            print 'error, not enough room'
     
     def __str__(self):
         return 'r'+str(self.row)+'/cs'+ str(self.cols)
