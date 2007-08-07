@@ -51,7 +51,7 @@ class guiShard(object):
     
     def newChildIndex(self, newx):
         for c in self.children: # assumes children ordered in display l-r
-            if x < c.centre():
+            if newx < c.centre():
                 return self.children.index(c)
         return len(self.children) # if no child applies, new is last
     
@@ -76,9 +76,10 @@ class guiShard(object):
             
             # sort into child order
             sizes.sort(lambda x,y: self.children.index(x[1]) - self.children.index(y[1]))
+            
             widths = [c[0] for c in sizes]            
             starts = [sum(widths[0:i]) + self.cols[0] for i in xrange(0, len(widths))]
-            print starts
+            #print starts
             ends = [widths[i] + starts[i] for i in xrange(0, len(starts))]
             for i in xrange(0, len(sizes)):
                 child = sizes[i][1]
@@ -86,11 +87,21 @@ class guiShard(object):
                 #print newcols
                 child.resize(newcols)
                 child.repack()
-            print
+    
+    def hasSpace(self):
+        totalminw = 0
+        for c in self.children:
+            totalminw += c.minwidth
+        
+        rem = len(self.cols) - totalminw
+        return rem > 0
     
     def add(self, floating, row, x):
         if row == self.row:
-            self.addChild(floating, self.newChildIndex(x))
+            if self.hasSpace():
+                self.addChild(floating, self.newChildIndex(x))
+            else:
+                print 'error, not enough room'
         else:
             col = self.grid.snapToCol(x)
             for c in self.children:
