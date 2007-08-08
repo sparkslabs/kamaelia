@@ -26,7 +26,7 @@ Video frame cropping and scaling
 
 This component applies a crop and/or scaling operation to frames of RGB video.
 
-Requires PIL - the `python imaging library<http://www.pythonware.com/products/pil/>`_.
+Requires PIL - the `python imaging library. <http://www.pythonware.com/products/pil/>`_
 
 
 

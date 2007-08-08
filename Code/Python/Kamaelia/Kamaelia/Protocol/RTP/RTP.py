@@ -127,7 +127,7 @@ RTPDeframer Behaviour
 
 Send to RTPDeframer's "inbox" inbox a binary string of an RTP packet, and the
 packet will be parsed, resulting in a (seqnum, packet_contents) tuple being sent
-to the "outbox" outbox. It will have this structure:
+to the "outbox" outbox. It will have this structure::
 
     ( sequence_number,
       {

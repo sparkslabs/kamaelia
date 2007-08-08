@@ -37,19 +37,19 @@ Example Usage
 Run several OneShot components running one after the other::
 
     Pipeline( Seq( "BEGIN SEQUENCE",
-                   OneShot("Hello\n"),
-                   OneShot("Doctor\n"),
-                   OneShot("Name\n"),
-                   OneShot("Continue\n"),
-                   OneShot("Yesterday\n"),
-                   OneShot("Tomorrow\n"),
+                   OneShot("Hello\\n"),
+                   OneShot("Doctor\\n"),
+                   OneShot("Name\\n"),
+                   OneShot("Continue\\n"),
+                   OneShot("Yesterday\\n"),
+                   OneShot("Tomorrow\\n"),
                    "END SEQUENCE",
                  ),
               ConsoleEchoer(),
             ).run()
 
 Running this generates the following output::
-    
+
     BEGIN SEQUENCE
     Hello
     Doctor
@@ -99,7 +99,7 @@ class Seq(component):
     outbox of the Seq component.
     
     Keyword arguments:
-        
+    
     - \*sequence  -- Components that will be run, in sequence. Can also include strings that will be output to the console.
     """
 
@@ -137,8 +137,9 @@ class Seq(component):
 
 
     def childrenDone(self):
-        """Unplugs any children that have terminated, and returns true if there are no
-           running child components left (ie. their microproceses have finished)
+        """\
+        Unplugs any children that have terminated, and returns true if there are no
+        running child components left (ie. their microproceses have finished)
         """
         for child in self.childComponents():
             if child._isStopped():

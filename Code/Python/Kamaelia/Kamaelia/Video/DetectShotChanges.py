@@ -93,7 +93,7 @@ shot change.
 
 The algorithm is courtesy of Jim Easterbrook of BBC Research. It is also
 available in its own right as an independent open source library
-`here<http://sourceforge.net/projects/shot-change>`_.
+`here. <http://sourceforge.net/projects/shot-change>`_
 
 As signal processing is done on the confidence values internally to emphasise
 spikes - which are likely to indicate a sudden increase in the level of change
