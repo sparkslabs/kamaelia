@@ -301,6 +301,10 @@ class docFormatter(object):
             print "!!! Warnings detected:"
             print warnings
             self.errorCount+=1
+            print "Offending docstring:"
+            print '"""'
+            print docstring
+            print '"""'
         warningStream.close()
         
         return nodes.section('', *docTree.children)
