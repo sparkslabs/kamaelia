@@ -52,7 +52,7 @@ function axon_config () {
 
     # DocExtractor.py options
     DOC_OPTIONS="--urlprefix /Docs/Axon/ --promotetitles --root Axon --notjustcomponents --indexdepth 0 --footerinclude Docs/Axon-footer.html"
-    DOC_OPTIONS="$DOC_OPTIONS --dumpsymbolsto '/tmp/axon.symbols'"
+    DOC_OPTIONS="$DOC_OPTIONS --dumpsymbolsto $BUILDROOT/axon.symbols"
 
     # where to (temporarily) place output as it is generated
     TEST_OUTPUT="$BUILDROOT/generated/Axon-tests"
@@ -77,7 +77,7 @@ function kamaelia_config () {
     # DocExtractor.py options
     DOC_OPTIONS="--urlprefix /Components/pydoc/ --root Kamaelia --footerinclude Components/pydoc-footer.html"
     if [ -f "$BUILDROOT/axon.symbols" ]; then
-        DOC_OPTIONS="$DOC_OPTIONS --linktosmbols /tmp/axon.symbols"
+        DOC_OPTIONS="$DOC_OPTIONS --linktosymbols $BUILDROOT/axon.symbols"
     fi;
 
     # where to (temporarily) place output as it is generated
