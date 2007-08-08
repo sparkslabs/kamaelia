@@ -5,7 +5,7 @@ from pygame.rect import Rect
 from random import randint
 
 nicecolours = [c for k, c in colours.items() if not ('grey' in k or 'gray' in k or 'black' in k)]
-darkcolours = [x for x in nicecolours if x[0]+x[1]+x[2] < 500]
+darkcolours = [x for x in nicecolours if x[0]+x[1]+x[2] < 400]
 
 def pickColour():
     return darkcolours[randint(0, len(darkcolours)-1)]
@@ -85,18 +85,34 @@ class guiShard(object):
         rem = len(self.cols) - totalminw
         return rem
     
+    def childAt(self, col):
+        for c in self.children:
+            if col in c.cols:
+                return c
+    
     def add(self, floating, row, x):
         if row != self.row:
             col = self.grid.snapToCol(x)
-            for c in self.children:
-                if col in c.cols:
-                    c.add(floating, row, x)
-                    return
+            if self.children:
+                self.childAt(col).add(floating, row, x)
+                return
         
         if self.spaceRemaining():
             self.addChild(floating, self.newChildIndex(x))
         else:
             print 'error, not enough room'
+    
+    def handleMouseDown(self, x, y):
+        # x, y relative to grid
+        col = self.grid.snapToCol(x)
+        row = self.grid.snapToRow(y)
+        print 'shardclick, row, self.row', row, self.row
+        if row == self.row:
+            print 'histadd'
+            self.grid.shardhist.add(self)
+        else:
+            if self.children:
+                self.childAt(col).handleMouseDown(x, y)
     
     def __str__(self):
         return 'r'+str(self.row)+'/cs'+ str(self.cols)

@@ -62,14 +62,16 @@ class grid(object):
         return Rect(self.x, self.y, self.surface.get_width(), self.height)
     
     def snapToCol(self, x):
-        diffs = [abs(c - x) for c in self.colcentres]
-        newx, col = min((x, i) for i, x in enumerate(diffs))
-        return col
-        
+        for i in range(1, len(self.coldividers)):
+            if x < self.coldividers[i]:
+                #print 'col', i
+                return i-1
+
     def snapToRow(self, y):
-        diffs = [abs(r - y) for r in self.rowcentres]
-        newy, row = min((y, i) for i, y in enumerate(diffs))
-        return row
+        for i in range(1, len(self.rowdividers)):
+            if y < self.rowdividers[i]:
+                #print 'row', i
+                return i-1
 
     def snapToGrid(self, x, y):
         col, row = self.snapToCol(x), self.snapToRow(y)
@@ -88,10 +90,10 @@ class grid(object):
         return len(self.colcentres)
     
     def handleMouseDown(self, x, y):
+        x -= self.x  #adjust coords relative to col/rowdividers, etc.
+        y -= self.y
         if self.container.floating:
             row = self.snapToRow(y)
-            # depending on occupation, add float label to grid cell
-            # add to draw list
             if not self.shardhist.current():
                 g = guiShard(self.container.floating, None, row, range(0, self.maxCols()))
                 self.shardhist.add(g)
@@ -100,6 +102,9 @@ class grid(object):
             
             self.container.floating.erase(self.container.screen)
             self.container.floating = None
+        else:
+            if self.shardhist.current():
+                self.shardhist.current().handleMouseDown(x, y)
     
     def clear(self):
         self.shardhist.add(None)
