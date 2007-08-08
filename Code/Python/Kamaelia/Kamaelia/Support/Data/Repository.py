@@ -277,6 +277,7 @@ class Scope(object):
         - localModules  -- Dict mapping module names that might be present in the same lexical level as this module, or deeper; mapping them to their full module names. Eg. for Axon.Component this might contain a mapping for "AxonException" to "Axon.AxonException"
         - rootScope     -- Scope object for current lexical root - eg. the Module containing this scope.
         """
+
         super(Scope,self).__init__()
 
         self.symbols={}
@@ -295,6 +296,11 @@ class Scope(object):
             return
         
         # parse the AST
+	try:
+		ASTChildren=ASTChildren.getChildNodes()   # python 2.3 complains if you try to iterate over the node itself
+	except:
+		pass
+
         for node in ASTChildren:
             if isinstance(node, ast.From): 
                 self._parse_From(node)            # parse "from ... import"s to recognise what symbols are mapped to what imported things

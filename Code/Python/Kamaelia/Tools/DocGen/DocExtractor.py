@@ -580,7 +580,7 @@ class docFormatter(object):
         while len(testsTree.children)>0:
             node=testsTree.children[0]
             testsTree.remove(node)
-            moduleTree.append(node)
+            moduleDocTree.append(node)
             
         
         if self.config.promoteModuleTitles and \
