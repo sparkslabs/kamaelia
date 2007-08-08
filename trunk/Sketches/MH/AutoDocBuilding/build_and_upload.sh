@@ -196,6 +196,20 @@ function builddocs () {
 
 # ------------------------------------------------------------------------------
 
+
+if [ $# -lt 1 ]
+then
+    help=1;
+    echo "Usage:"
+    echo ""
+    echo "$0 [Axon] [Kamaelia]"
+    echo ""
+    echo "    Axon     - build and upload Axon docs"
+    echo "    Kamaelia - build and upload Kamaelia docs"
+    echo ""
+    exit 0;    
+fi
+
 failures=0
 for buildset in "$@" 
 do
