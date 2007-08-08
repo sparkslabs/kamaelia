@@ -33,7 +33,7 @@ UnixProcess2 allows you to start a separate process and send data to it and
 receive data from it using the standard input/output/error pipes and optional
 additional named pipes.
 
-This component works on *nix platforms only. It is almost certainly not Windows
+This component works on \*nix platforms only. It is almost certainly not Windows
 compatible. Tested only under Linux.
 
 
