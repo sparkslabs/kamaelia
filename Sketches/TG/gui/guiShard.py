@@ -4,6 +4,8 @@ from pygame.rect import Rect
 
 from random import randint
 
+from gridparts import row, column
+
 nicecolours = [c for k, c in colours.items() if not ('grey' in k or 'gray' in k or 'black' in k)]
 darkcolours = [x for x in nicecolours if x[0]+x[1]+x[2] < 400]
 
