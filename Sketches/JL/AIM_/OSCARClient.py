@@ -62,6 +62,7 @@ class OSCARProtocol(component):
         head=struct.pack(header,'*', channel,
                          seqnum, len(data))
         self.send(head+str(data))
+        print "sent FLAP"
 
 
 from Kamaelia.Chassis.Graphline import Graphline

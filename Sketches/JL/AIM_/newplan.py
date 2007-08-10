@@ -26,7 +26,7 @@ class ControlTower(adaptivecommscomponent):
     def main(self):
         for goal in self.getCookie(): yield goal
         for rates in self.getRates(goal): yield rates
-        self.initServices(rates); yield 1
+        self.initServices(rates): yield 1
         yield WaitComplete(self.activateConnection())
         
         while not self.shutdown():
