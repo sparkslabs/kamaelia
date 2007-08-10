@@ -1,7 +1,5 @@
 from Shard import *
 
-class ArgumentError(Exception): pass
-
 nl = "\n"
 
 class switchShard(shard):

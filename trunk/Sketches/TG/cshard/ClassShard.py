@@ -1,4 +1,4 @@
-from Shard import shard, docShard, isfunction
+from Shard import *
 import inspect
 
 """
@@ -9,13 +9,14 @@ nl = "\n"
 
 class classShard(docShard):
 
-    def __init__(self, clsname, superclasses = [], docstring = '', inboxes = {},
+    def __init__(self, clsname = None, superclasses = [], docstring = '', inboxes = {},
                         outboxes = {}, shards = []):
         """
         Creates a class as a shard from given components
 
         Arguments:
-        clsname = name of class as string
+        clsname = name of class as string, defaults to None, but this must be
+                         provided else shard Init will fail
         superclasses = sequence of class names to inherit from. If empty
                                 or unspecified, this will default to 'object'
         docstring = formatted string of comments, default is empty
@@ -31,14 +32,17 @@ class classShard(docShard):
         Returns:
         shard object containing a definition of the class as specified
         """
-
+        
+        if not clsname:
+            raise ArgumentError, 'classname must be given'
+        
         super(classShard, self).__init__(name = clsname, docstring = docstring,
                                                           shards = shards)
-
+        
         defline = self.makeclass(clsname, superclasses)
         inboxes = self.addindent(self.makeboxes(inboxes = True, boxes = inboxes), 1)
         outboxes = self.addindent(self.makeboxes(inboxes = False, boxes = outboxes), 1)
-
+        
         self.code = defline + self.addindent(self.docstring) + inboxes + outboxes + [nl] \
                            + self.addindent(self.code, 1)
 
