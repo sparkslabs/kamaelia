@@ -2,20 +2,29 @@ from Shard import *
 
 class funcAppShard(shard):
 
-    def __init__(self, funcname = None, funcObj = None, args = [], kwargs = {}):
-        """
-        Generates a function call statement
+    """
+    Generates a function call statement
+    
+    Arguments:
+    funcname = string name of the function to be called, defaults
+                        to None but shard init will fail if this is not replaced
+    funcObj = if this method is called on an object, its name
+                    should be given here. If left as the default None,
+                    a global function is assumed
+    arg = list of positional arguments to be passed to the function
+    kwargs = list of keywords and their arguments, as strings, to
+                   be passed to the function
+    """
 
-        Arguments:
-        funcname = string name of the function to be called, defaults
-                            to None but shard init will fail if this is not replaced
-        funcObj = if this method is called on an object, its name
-                        should be given here. If left as the default None,
-                        a global function is assumed
-        arg = list of positional arguments to be passed to the function
-        kwargs = list of keywords and their arguments, as strings, to
-                       be passed to the function
-        """
+    # default initialisation parameters
+    initargs = {}
+    initargs['funcname'] = None
+    initargs['funcObj'] = None
+    initargs['args'] = []
+    initargs['kwargs'] = {}
+    
+
+    def __init__(self, funcname = None, funcObj = None, args = [], kwargs = {}):
         
         if not funcname:
             raise ArgumentError, 'function name must be provided'

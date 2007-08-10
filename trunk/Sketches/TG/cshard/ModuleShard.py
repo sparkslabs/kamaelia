@@ -1,28 +1,34 @@
 import Shard
 
-"""
-Wrapper shard for adding imports to a module of shards
-"""
-
 nl = "\n"
 
 class moduleShard(Shard.docShard):
     
+    """
+    Creates import statements followed by the given shards
+    
+    Arguments:
+    importmodules = strings of module names to be imported
+    importfrom = mapping from modules to sequences of
+                          objects to be imported from each
+    docstring = formatted string of comments, default is empty
+    shards = list of shards to make up the body of the module
+    
+    Returns:
+    shard object containing import statements
+    """
+    
+    # default initialisation parameters
+    initargs = {}
+    initargs['name'] = None
+    initargs['importmodules'] = []
+    initargs['importfrom'] = {}
+    initargs['docstring'] = ''
+    initargs['shards'] = []
+    
+    
     def __init__(self, name = None, importmodules = [], importfrom = {},
                         docstring = '', shards = []):
-        """
-        Creates import statements followed by the given shards
-        
-        Arguments:
-        importmodules = strings of module names to be imported
-        importfrom = mapping from modules to sequences of
-                              objects to be imported from each
-        docstring = formatted string of comments, default is empty
-        shards = list of shards to make up the body of the module
-        
-        Returns:
-        shard object containing import statements
-        """
         
         super(moduleShard, self).__init__(name = name, docstring = docstring,
                                                              shards = shards)

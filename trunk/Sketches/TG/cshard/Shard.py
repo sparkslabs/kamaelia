@@ -46,6 +46,36 @@ indentation = "    "
 nl = "\n"
 
 class shard(object):
+    
+    """
+    Initialisation creates shards from lines of code, existing functions,
+    or a combination of these and existing shard objects.
+    As the shard base class, classmethods for handling and checking
+    shard dependencies are also given
+
+    Arguments:
+    name = name of new shard, default None. If no name is specified
+                 a default name will be generated (except where shard is
+                 created from a single function, where the function's name
+                 will be used)
+    annotate = whether to add annotations for imported code into
+                       new shard's generated code, default True
+    function = if shard is being made from a single function, it can be
+                     entered here. Used mainly internally to initialise function
+                     objects passed into shards. If present, any following
+                     arguments are ignored. Default is None
+    code = as function, but if initialisation is for single code block
+    shards = the shards that will compose the body of the new shard,
+                   in the order in which they will be added. Arguments here
+                   can be any combination of existing shard objects, function
+                   objects, and lists of code lines (e.g. as imported by
+                   getshard); these will be initialised as necessary
+    indent = level of indentation to add to imported code, default 0
+
+    Returns:
+    shard object containing the name and code of the new shard
+    """
+
 
     # generator to name anonymous shards
     namer = namegen()
@@ -113,46 +143,30 @@ class shard(object):
         else:
             self.requiredIShards = self.requiredIShards - set(ishards)
 
-
+    
+    # default initialisation parameters
+    initargs = {}
+    initargs['name'] = None
+    initargs['annotate'] = True
+    initargs['function'] = None
+    initargs['code'] = None
+    initargs['shards'] = []
+    initargs['indent'] = 0
+    
+    
     # instance methods
     def __init__(self, name = None, annotate = True, function = None,
                         code = None, shards = [], indent = 0):
-        """
-        Initialisation to create shards from lines of code, existing functions,
-        or a combination of these and existing shard objects
-
-        Arguments:
-        name = name of new shard, default None. If no name is specified
-                     a default name will be generated (except where shard is
-                     created from a single function, where the function's name
-                     will be used)
-        annotate = whether to add annotations for imported code into
-                           new shard's generated code, default True
-        function = if shard is being made from a single function, it can be
-                         entered here. Used mainly internally to initialise function
-                         objects passed into shards. If present, any following
-                         arguments are ignored. Default is None
-        code = as function, but if initialisation is for single code block
-        shards = the shards that will compose the body of the new shard,
-                       in the order in which they will be added. Arguments here
-                       can be any combination of existing shard objects, function
-                       objects, and lists of code lines (e.g. as imported by
-                       getshard); these will be initialised as necessary
-        indent = level of indentation to add to imported code, default 0
-
-        Returns:
-        shard object containing the name and code of the new shard
-        """
-
+        
         super(shard, self).__init__()
-
+        
         self.indent = indent
-
+        
         if function:
             self.name = function.func_name
             self.code = self.addindent(self.getshard(function), indent)
             self.shards = [function]
-
+        
         elif code:
             if name:
                 self.name = name
@@ -160,7 +174,7 @@ class shard(object):
                 self.name = self.namer.next()
             self.code = self.addindent(code, indent)
             self.shards = [code]
-
+        
         else:
             if name:
                 self.name = name
@@ -345,16 +359,25 @@ class shard(object):
 
 
 class docShard(shard):
-
-    def __init__(self, name = None, annotate = False, docstring = '', shards = []):
-        """
-        As shard constructor, but additionally sets a self.docstring
-        attribute to be a list of the lines of the docstring, indented one
-        level further than given indentation
-        
-        Additional argument:
-        docstring = formatted string of comments, default is empty
-        """
+    
+    """
+    As shard constructor, but additionally sets a self.docstring
+    attribute to be a list of the lines of the docstring, indented one
+    level further than given indentation
+    
+    Additional argument:
+    docstring = formatted string of comments, default is empty
+    """
+    
+    # default initialisation parameters
+    initargs = {}
+    initargs['name'] = None
+    initargs['annotate'] = True
+    initargs['docstring'] = ''
+    initargs['shards'] = []
+    
+    
+    def __init__(self, name = None, annotate = True, docstring = '', shards = []):
         
         super(docShard, self).__init__(name = name, annotate = annotate, shards = shards)
         
