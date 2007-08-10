@@ -1,31 +1,39 @@
 from Shard import docShard, ArgumentError
 
-"""
-Generates function definition code as shard object
-"""
-
 nl = "\n"
 
 class functionShard(docShard):
+
+    """
+    Generate code for a new function
     
+    Arguments:
+    funcname = name for new shard, must be provided else shard init will fail
+    args = named arguments as strings
+    kwargs = keyword arguments mapped to their default values
+    exarg = name of an 'extra arguments' parameter, default None (not included)
+    exkwarg = name of an 'extra keyword arguments' parameter, default None
+    docstring = formatted string of comments, default is empty
+    shards = list of shards to be pasted into the body of the function, any combination
+                   of shard objects, lines of code or function names
+    
+    Returns:
+    shard object containing definition of function as specified
+    """
+
+    # default initialisation parameters
+    initargs = {}
+    initargs['funcname'] = None
+    initargs['args'] = []
+    initargs['kwargs'] = {}
+    initargs['exarg'] = None
+    initargs['exkwarg'] = None
+    initargs['docstring'] = ''
+    initargs['shards'] = []
+
+
     def __init__(self, funcname = None, args = [], kwargs = {}, exarg = None,
                         exkwarg = None, docstring = '', shards = []):
-        """
-        Generate code for a new function
-        
-        Arguments:
-        funcname = name for new shard, must be provided else shard init will fail
-        args = named arguments as strings
-        kwargs = keyword arguments mapped to their default values
-        exarg = name of an 'extra arguments' parameter, default None (not included)
-        exkwarg = name of an 'extra keyword arguments' parameter, default None
-        docstring = formatted string of comments, default is empty
-        shards = list of shards to be pasted into the body of the function, any combination
-                       of shard objects, lines of code or function names
-        
-        Returns:
-        shard object containing definition of function as specified
-        """
         
         if not funcname:
             raise ArgumentError, 'function name must be provided'

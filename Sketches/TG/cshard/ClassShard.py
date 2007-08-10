@@ -9,29 +9,41 @@ nl = "\n"
 
 class classShard(docShard):
 
+    """
+    Creates a class as a shard from given components
+    
+    Arguments:
+    clsname = name of class as string, defaults to None, but this must be
+                     provided else shard Init will fail
+    superclasses = sequence of class names to inherit from. If empty
+                            or unspecified, this will default to 'object'
+    docstring = formatted string of comments, default is empty
+    inboxes = dict of inbox names to default values, generally a description.
+                     Default (inbox, control) boxes are always generated
+    outboxes = dict of outbox names to default values, generally a description.
+                       Default (outbox, signal) boxes are always generated
+    shards = list of shards (any of shard objects, lines of code, functions)
+                   to form body of class, i.e. class variables and methods.
+                   Note: methods should be given as appropriate shard objects,
+                   function objects have the body of the function imported only
+    
+    Returns:
+    shard object containing a definition of the class as specified
+    """
+
+    # default initialisation parameters
+    initargs = {}
+    initargs['clsname'] = None
+    initargs['superclasses'] = []
+    initargs['docstring'] = ''
+    initargs['inboxes'] = {}
+    initargs['outboxes'] = {}
+    initargs['shards'] = []
+
+
     def __init__(self, clsname = None, superclasses = [], docstring = '', inboxes = {},
                         outboxes = {}, shards = []):
-        """
-        Creates a class as a shard from given components
 
-        Arguments:
-        clsname = name of class as string, defaults to None, but this must be
-                         provided else shard Init will fail
-        superclasses = sequence of class names to inherit from. If empty
-                                or unspecified, this will default to 'object'
-        docstring = formatted string of comments, default is empty
-        inboxes = dict of inbox names to default values, generally a description.
-                         Default (inbox, control) boxes are always generated
-        outboxes = dict of outbox names to default values, generally a description.
-                           Default (outbox, signal) boxes are always generated
-        shards = list of shards (any of shard objects, lines of code, functions)
-                       to form body of class, i.e. class variables and methods.
-                       Note: methods should be given as appropriate shard objects,
-                       function objects have the body of the function imported only
-
-        Returns:
-        shard object containing a definition of the class as specified
-        """
         
         if not clsname:
             raise ArgumentError, 'classname must be given'
