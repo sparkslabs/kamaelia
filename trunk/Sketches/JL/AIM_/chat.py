@@ -19,27 +19,33 @@ class ChatManager(SNACExchanger):
 
     def __init__(self):
         super(ChatManager, self).__init__()
-        debugSections = {"ChatManager.main" : 7,
-                        "ChatManager.receiveMessage" : 5}
+        debugSections = {"ChatManager.main" : 5,
+                        "ChatManager.receiveMessage" : 5,
+                         "ChatManager.sendMessage" : 4,}
         self.debugger.addDebug(**debugSections)
 
     def main(self):
         while True:
             yield 1
-            if self.dataReady():
+            while self.dataReady():
                 header, body = self.recvSnac()
                 kind = (header[0], header[1])
                 if kind == (0x03, 0x0b):
                     l, = struct.unpack('!B', body[0])
                     buddy = body[1:1+l]
-                    assert self.debugger.note("ChatManager.main", 7, buddy + " came online")
+                    assert self.debugger.note("ChatManager.main", 5, buddy + " came online")
                     buddyinfo = {"name" : buddy}
                     self.send(("buddy online", buddyinfo), "heard")
                 elif kind == (0x04, 0x07):
                     self.receiveMessage(body)
                 else:
                     print "unknown message", header
-
+            while self.dataReady("talk"):
+                data = self.recv("talk")
+                assert self.debugger.note("ChatManager.main", 5, "received " + str(data))
+                if data[0] == "message" :
+                    self.sendMessage(data[1], data[2])
+                    
     def receiveMessage(self, body):
         msgid, msgchan, l = struct.unpack('!QHB', body[:11])
         sender = body[11:11+l]
@@ -58,13 +64,23 @@ class ChatManager(SNACExchanger):
             
         self.send(("message", sender, message), "heard")
 
+    def sendMessage(self, buddyname, text):
+        frag = TLV(0x0501, struct.pack("!i", 0))
+        frag2 = TLV(0x0101, struct.pack("!HH", 0, 0) + text)
+        msgCookie = '\x32\x36\x37\x31\x34\x36\x36\x00'
+        msgChan = 1
+        buddyinfo = Single(len(buddyname)) + buddyname
+        body = msgCookie + Double(msgChan) + buddyinfo + TLV(0x02, frag + frag2)
+        self.sendSnac(0x04, 0x06, body)
+
+
 if __name__ == '__main__':
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
     import sys
     sys.path.append('..')
     from likefile import *
-    
+
     flap = open('/home/jlei/aim/snacs/0407').read()
     class Chargen(component):
         def main(self):
