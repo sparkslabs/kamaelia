@@ -40,6 +40,7 @@ def isfunction(f):
 
 
 class DependencyError(Exception): pass
+class ArgumentError(Exception): pass
 
 indentation = "    "
 nl = "\n"
@@ -350,13 +351,13 @@ class docShard(shard):
         As shard constructor, but additionally sets a self.docstring
         attribute to be a list of the lines of the docstring, indented one
         level further than given indentation
-
+        
         Additional argument:
         docstring = formatted string of comments, default is empty
         """
-
+        
         super(docShard, self).__init__(name = name, annotate = annotate, shards = shards)
-
+        
         if docstring:
             self.docstring = self.makedoc(docstring)
         else:

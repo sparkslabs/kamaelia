@@ -1,15 +1,17 @@
 from FunctionShard import functionShard
+from Shard import ArgumentError
 
 class initShard(functionShard):
     
-    def __init__(self, clsname, args = [], kwargs = {}, exarg = None,
+    def __init__(self, clsname = None, args = [], kwargs = {}, exarg = None,
                         exkwarg = None, docstring = '', shards = []):
         """
         Generates a default __init__ method for a class, consisting of
         a call to super().__init__ followed by the specified shards
         
         Arguments:
-        clsname = string name of the class containing this __init__
+        clsname = string name of the class containing this __init__,
+                          must be provided
         args = list of any arguments in addition to 'self' that init needs,
                     default is empty
         kwargs = dict of any keywords arguments that init needs,
@@ -19,6 +21,9 @@ class initShard(functionShard):
         docstring = string of documentation to be included in the init method
         shards = list of shards to be the body of the init, default empty
         """
+        
+        if not clsname:
+            raise ArgumentError, 'class name must be provided'
         
         superinit = ["super(" + clsname+", self).__init__()\n"]
         

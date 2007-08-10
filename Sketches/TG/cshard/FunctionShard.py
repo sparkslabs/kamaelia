@@ -1,4 +1,4 @@
-import Shard
+from Shard import docShard, ArgumentError
 
 """
 Generates function definition code as shard object
@@ -6,15 +6,15 @@ Generates function definition code as shard object
 
 nl = "\n"
 
-class functionShard(Shard.docShard):
+class functionShard(docShard):
     
-    def __init__(self, funcname, args = [], kwargs = {}, exarg = None,
+    def __init__(self, funcname = None, args = [], kwargs = {}, exarg = None,
                         exkwarg = None, docstring = '', shards = []):
         """
         Generate code for a new function
         
         Arguments:
-        funcname = name for new shard
+        funcname = name for new shard, must be provided else shard init will fail
         args = named arguments as strings
         kwargs = keyword arguments mapped to their default values
         exarg = name of an 'extra arguments' parameter, default None (not included)
@@ -26,6 +26,9 @@ class functionShard(Shard.docShard):
         Returns:
         shard object containing definition of function as specified
         """
+        
+        if not funcname:
+            raise ArgumentError, 'function name must be provided'
         
         super(functionShard, self).__init__(name = funcname, docstring = docstring,
                                                               shards = shards)
