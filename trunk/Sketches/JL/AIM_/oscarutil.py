@@ -25,11 +25,8 @@ import re
 
 # Twisted
 def SNAC(fam,sub,data,id=1, flags=[0,0]):
-    header="!HHBBL"
-    head=struct.pack(header,fam,sub,
-                     flags[0],flags[1],
-                     id)
-    return head+str(data)
+    #the reqid mostly doesn't matter, unless this is a query-response situation 
+    return Double(fam) + Double(sub) + Single(flags[0]) + Single(flags[1]) + Quad(id) + data
 
 def readSNAC(data):
     header="!HHBBL"
@@ -67,52 +64,14 @@ def encryptPasswordICQ(password):
         r=r+chr(bytes[i]^key[i%len(key)])
     return r
 
-def FLAP(channel, seqnum, data):
-    header="!cBHH"
-    head=struct.pack(header,'*', channel, seqnum, len(data))
-    return head + data
-
-def readFlap(self, flap):
-    header="!cBHH"
-    head=struct.unpack(header,flap[:6])
-    if len(flap) < (6+head[3]):
-        print "flap delivered less than specified length"
-        return
-    data = flap[6:]
-    return (head, data) #return a tuple in the same form they were passed in
-
-def parseTLVstring(tlvs):
-    result = {}
-    while len(tlvs) > 0:
-        try:
-            tlv_type = tlvs[0:2]
-            tlv_type = ord(tlv_type[0])*256 + ord(tlv_type[1])
-            tlv_len = tlvs[2:4]
-            tlv_len = ord(tlv_len[0])*256 + ord(tlv_len[1])
-            tlvs = tlvs[4:]
-            tlv_body = tlvs[:tlv_len]
-            tlvs = tlvs[tlv_len:]
-            result[tlv_type] = tlv_body
-        except IndexError:
-            raise "IndexError! \nresult=%s \ntlvs=%s" % (str(result), tlvs)
-    return result
-
 Single = (lambda num: struct.pack('!B', num))
 Double = (lambda num: struct.pack('!H', num))
 Quad = (lambda num: struct.pack('!i', num))
-
-def makeSnac((snac_fam, snac_sub), snac_body, flags=0, reqid=1):
-    #the reqid mostly doesn't matter, unless this is a query-response situation 
-    return Double(snac_fam) + Double(snac_sub) + Double(flags) + Quad(reqid) + snac_body
-
-def makeFlap(channel, seqchars, flap_body):
-    return '*' + Single(channel) + seqchars + Double(len(flap_body)) + flap_body
 
 def unpackDoubles(data):
     fmt = '!%iH' % (len(data)/2)
     return struct.unpack(fmt, data)
 
-unpackFour = unpackDoubles
 def unpackSingles(data):
     return struct.unpack('!%iB' % len(data), data)
 
@@ -144,21 +103,30 @@ RATE_CURRENT_WIDTH = 4
 RATE_MAX_WIDTH = 4
 RATE_LASTTIME_WIDTH = 4
 RATE_CURRENTSTATE_WIDTH = 1
+RATE_CLASS_LEN = 2 + 8*4 + 1
+
+#status constants
+STATUS_MISC_WEBAWARE = 0x0001
+STATUS_MISC_SHOWIP = 0x0002
+STATUS_MISC_BIRTHDAY = 0x0008
+STATUS_MISC_WEBFRONT = 0x0020
+STATUS_MISC_DCDISABLED = 0x0100
+STATUS_MISC_DCAUTH = 0x1000
+STATUS_MISC_DCCONT = 0x2000
+
+STATUS_ONLINE = 0x0000
+STATUS_AWAY = 0x0001
+STATUS_DND = 0x0002
+STATUS_NA = 0x0004
+STATUS_OCCUPIED = 0x0010
+STATUS_FREE4CHAT = 0x0020
+STATUS_INVISIBLE = 0x0100
+
 
 #other OSCAR variables
 AUTH_SERVER = 'login.oscar.aol.com'
 AIM_PORT = 5190
 AIM_MD5_STRING = "AOL Instant Messenger (SM)"
-FLAP_HEADER_LEN = 1+1+2+2
-#* + channel + seqnum + datafieldlen
-SNAC_HEADER_LEN = 2+2+2+4
-#family + subtype + flags + snacid
-
-CHANNEL1 = 1
-CHANNEL2 = 2
-CHANNEL3 = 3
-CHANNEL4 = 4
-CHANNEL5 = 5
 
 CLIENT_ID_STRING = "Kamaelia/AIM"
 CHANNEL_NEWCONNECTION = 1
@@ -166,4 +134,3 @@ CHANNEL_SNAC = 2
 CHANNEL_FLAPERROR = 3
 CHANNEL_CLOSECONNECTION = 4
 CHANNEL_KEEPALIVE = 5
-LEN_RATE_CLASS = 2 + 8*4 + 1

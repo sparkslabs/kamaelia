@@ -36,9 +36,10 @@ class LoginHandler(SNACExchanger):
         self.link((self, "outbox"), (self.oscar, "inbox"))
         self.link((self.oscar, "outbox"), (self, "inbox"))
 
-        debugSections = {"LoginHandler.main" : 5,
-                         "LoginHandler.connectAuth" : 5,
-                         "LoginHandler.reconnect" : 5,
+        debugSections = {"LoginHandler.main" : 0,
+                         "LoginHandler.connectAuth" : 0,
+                         "LoginHandler.reconnect" : 0,
+                         "LoginHandler.passTheReins" : 5,
                          }
         self.debugger.addDebug(**debugSections)
 
@@ -207,9 +208,7 @@ class LoginHandler(SNACExchanger):
         self.sendSnac(0x13, 0x07, "")
 
         #send up our status
-        STATUS_DCDISABLED = 0x0100
-        STATUS_ONLINE = 0x0000
-        userStatus = TLV(0x06, struct.pack("!HH", STATUS_DCDISABLED, STATUS_ONLINE))
+        userStatus = TLV(0x06, struct.pack("!HH", STATUS_MISC_DCDISABLED, STATUS_ONLINE))
         self.sendSnac(0x01, 0x1e, userStatus)
 
         #now we're ready to begin receiving data
@@ -218,7 +217,7 @@ class LoginHandler(SNACExchanger):
             data = struct.pack("!HHi", service, version, 0x01100629)
             body += data
         self.sendSnac(0x01, 0x02, body)
-        assert self.debugger.note("LoginHandler.main", 5, "sent CLI_READY")
+        assert self.debugger.note("LoginHandler.activateConnection", 5, "sent CLI_READY")
 
     def passTheReins(self):
         while not self.dataReady():
@@ -230,6 +229,7 @@ class LoginHandler(SNACExchanger):
         self.unlink(self.oscar)
         self.send(self.oscar, "signal")
         self.send(queued, "signal")
+        assert self.debugger.note("LoginHandler.passTheReins", 5, "Login done")
         
 if __name__ == '__main__':
     screenname = 'kamaelia1'

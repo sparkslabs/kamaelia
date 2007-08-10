@@ -34,22 +34,17 @@ class AIMHarness(component):
         
         assert self.debugger.note("AIMHarness.main", 5, "%i queued messages" % len(queued))
         self.chatter = chat.ChatManager().activate()
-        self.link((self, "internal outbox"), (self.chatter, "inbox"))
         self.link((self.chatter, "heard"), (self, "outbox"), passthrough=2)
         self.link((self, "inbox"), (self.chatter, "talk"), passthrough=1)
         self.link((self.chatter, "outbox"), (self.oscar, "inbox"))
         self.link((self.oscar, "outbox"), (self.chatter, "inbox"))
+        self.link((self, "internal outbox"), (self.chatter, "inbox"))
         while len(queued):
             self.send(queued[0], "internal outbox")
             del(queued[0])
-        for _ in range(20):
-            yield 1
         while True:
             yield 1
         
-            
-
-
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
@@ -65,4 +60,4 @@ if __name__ == '__main__':
                         data = ("message", data[0], " ".join(data[1:]))
                         self.send(data)
                 
-    Pipeline(ConsoleReader(), Tupler(), AIMHarness(), ConsoleEchoer()).run()
+    Pipeline(ConsoleReader(), Tupler(), AIMHarness(), ConsoleEchoer('\n')).run()
