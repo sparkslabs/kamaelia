@@ -33,16 +33,16 @@ class ChatManager(SNACExchanger):
                 if kind == (0x03, 0x0b):
                     l, = struct.unpack('!B', body[0])
                     buddy = body[1:1+l]
-                    assert self.debugger.note("ChatManager.main", 5, buddy + " came online")
+                    assert self.debugger.note("ChatManager.main", 7, buddy + " came online")
                     buddyinfo = {"name" : buddy}
                     self.send(("buddy online", buddyinfo), "heard")
                 elif kind == (0x04, 0x07):
                     self.receiveMessage(body)
                 else:
-                    print "unknown message", header
+                    self.send(("unknown message", header[0], header[1]), "heard")
             while self.dataReady("talk"):
                 data = self.recv("talk")
-                assert self.debugger.note("ChatManager.main", 5, "received " + str(data))
+                assert self.debugger.note("ChatManager.main", 7, "received " + str(data))
                 if data[0] == "message" :
                     self.sendMessage(data[1], data[2])
                     

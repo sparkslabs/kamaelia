@@ -1,9 +1,7 @@
 #! /usr/bin/env python
 
-import md5
 import struct
 from oscarutil import *
-import pickle
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
 
@@ -25,17 +23,22 @@ class OSCARProtocol(component):
         self.done = False
 
     def main(self):
+        """main loop"""
         while not self.done:
             yield 1
             self.checkBoxes()
 
     def checkBoxes(self):
+        """checks for data in all our boxes, and if there is data, then call the appropriate function
+        to handle it."""
         for box in self.Inboxes:
             if self.dataReady(box):
                 cmd = "self.handle%s()" % box
                 exec(cmd)
 
     def handleinbox(self):
+        """receives data coming in through the wire, reformats it into Kamaelia-and-Python-friendly forms,
+        and retransmits it to its "heard" outbox."""
         data = self.recv("inbox")
         head = '!cBHH'
         while data:
@@ -51,8 +54,13 @@ class OSCARProtocol(component):
         self.send(shutdownMicroprocess(), "signal")
 
     def handletalk(self):
-        chan, data = self.recv("talk")
-        self.sendFLAP(data, chan)
+        """handles messages coming into the "talk" inbox. Expects FLAP data in the format (channel, flap body).
+        If incoming messages are not in this format, we raise an error. 
+        If they are in the correct format, then this method constructs the FLAPs and sends them."""
+        data = self.recv("talk")
+        assert len(data) == 2 #we want to call this to the developer's attention if the format of things coming into "talk" isn't right.
+        assert type(data[0]) == type(1)
+        self.sendFLAP(data[1], data[0])
 
     #most of method definition from Twisted's oscar.py
     def sendFLAP(self,data,channel = 0x02):
@@ -62,7 +70,6 @@ class OSCARProtocol(component):
         head=struct.pack(header,'*', channel,
                          seqnum, len(data))
         self.send(head+str(data))
-        print "sent FLAP"
 
 
 from Kamaelia.Chassis.Graphline import Graphline
@@ -93,13 +100,15 @@ class SNACExchanger(component):
         self.debugger.addDebug(**debugSections)
         
     def sendSnac(self, fam, sub, body):
-        snac = SNAC(fam, sub, body)
+        snac = self.makeSnac(fam, sub, body)
         self.send((CHANNEL_SNAC, snac))
         assert self.debugger.note("SNACExchanger.sendSnac", 5, "sent SNAC " + str((fam, sub)))
 
     def recvSnac(self):
         recvdflap = self.recv() #supported services snac
-        header, reply = readSNAC(recvdflap[1])
+        data = readSNAC(recvdflap[1])
+        assert len(data) == 2
+        header, reply = data
         assert self.debugger.note("SNACExchanger.recvSnac", 5, "received SNAC" + str(header))
         return header, reply
 
@@ -112,6 +121,11 @@ class SNACExchanger(component):
             if header[0] == fam and header[1] == sub:
                 yield reply
                 done = True
+
+    def makeSnac(self, fam,sub,data,id=1, flags=[0,0]):
+        #the reqid mostly doesn't matter, unless this is a query-response situation 
+        return Double(fam) + Double(sub) + Single(flags[0]) + Single(flags[1]) + Quad(id) + data
+
 
 
 if __name__ == '__main__':
