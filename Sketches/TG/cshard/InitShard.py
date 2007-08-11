@@ -30,6 +30,9 @@ class initShard(functionShard):
     initargs['docstring'] = ''
     initargs['shards'] = []
     
+    # compulsory init parameters
+    required = ['clsname']
+    
     
     def __init__(self, clsname = None, args = [], kwargs = {}, exarg = None,
                         exkwarg = None, docstring = '', shards = []):

@@ -39,6 +39,9 @@ class classShard(docShard):
     initargs['inboxes'] = {}
     initargs['outboxes'] = {}
     initargs['shards'] = []
+    
+    # compulsory init parameters
+    required = ['clsname']
 
 
     def __init__(self, clsname = None, superclasses = [], docstring = '', inboxes = {},

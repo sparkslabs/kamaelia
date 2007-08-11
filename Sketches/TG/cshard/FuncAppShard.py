@@ -23,7 +23,10 @@ class funcAppShard(shard):
     initargs['args'] = []
     initargs['kwargs'] = {}
     
-
+    # compulsory init parameters
+    required = ['funcname']
+    
+    
     def __init__(self, funcname = None, funcObj = None, args = [], kwargs = {}):
         
         if not funcname:
