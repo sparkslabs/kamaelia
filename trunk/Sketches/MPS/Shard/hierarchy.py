@@ -2,16 +2,13 @@
 
 import pygame
 import Axon
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
-import time
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class PygameComponent(Axon.Component.component):
    Inboxes = { "inbox"        : "Specify (new) filename",
                "control"      : "Shutdown messages & feedback from Pygame Display service",
                "alphacontrol" : "Transparency of the ticker (0=fully transparent, 255=fully opaque)",
-               "pausebox"     : "Any message pauses the ticker",
-               "unpausebox"   : "Any message unpauses the ticker",
              }
    Outboxes = { "outbox" : "NOT USED",
                 "signal" : "Shutdown signalling & sending requests to Pygame Display service",
@@ -55,8 +52,12 @@ class PygameComponent(Axon.Component.component):
        """Clears the ticker of any existing text."""
        self.display.fill(0xffffff)
 
-
 class MyFoo(PygameComponent):
+    boxsize = (100,50)
+    width = 100
+    hspacing = 10
+    height = 50
+    vspacing = 50
     def makeLabel(self, text):
         font = pygame.font.Font(None, 14)
         textimage = font.render(text,True, (0,0,0),)
@@ -64,7 +65,6 @@ class MyFoo(PygameComponent):
         return textimage, w,h
 
     def drawBox(self, box):
-        print "Drawing box", box
         pygame.draw.rect(self.display, 0xaaaaaa, (self.boxes[box],self.boxsize), 0)
         cx = self.boxes[box][0]+self.boxsize[0]/2
         cy = self.boxes[box][1]+self.boxsize[1]/2
@@ -72,19 +72,18 @@ class MyFoo(PygameComponent):
         self.display.blit( image, (cx-w/2,cy-h/2) )
         if box in self.topology:
            self.drawTree(box)
-   
+
     def drawLine(self, line):
-        print line[0],line[1]
         pygame.draw.line(self.display, 0,line[0],line[1],2)
 
     def drawTree(self, tree):
-#        paths = self.trees[tree]
         box = tree
         w = self.boxsize[0]
         h = self.boxsize[1]
         x,y = self.boxes[box]
         paths = []
         for subbox in self.topology[box]:
+            self.drawBox(subbox)
             ax,ay = self.boxes[subbox]
             paths.append(
                     [
@@ -93,28 +92,37 @@ class MyFoo(PygameComponent):
                         (((ax+w/2), ay) , ((ax+w/2), ay-(ay-(y+h))/2 )),
                     ],
             )
-        
+
         for path in paths:
             self.drawPath(path)
 
     def drawPath(self, path):
         for line in path:
-            print line
             self.drawLine(line)
-    
+
     def main(self):
         """Main loop."""
+        self.layout_tree(1, self.topology,0,100)
         yield self.doRequestDisplay((1024, 768))
         self.clearDisplay()
-        self.flip()
-        for box in self.boxes:
-            self.drawBox(box)
+        self.drawBox(1)
         self.flip()
         while 1:
             yield 1
 
+    def layout_tree(self, box, topology, wx, wy):
+        left = wx
+        nw = self.width
+        row_below = wy+self.height+self.vspacing
+        for subbox in topology.get(box,[]):
+            nw = self.layout_tree(subbox, topology, left, row_below)
+            left = left + nw+self.hspacing
+        if left != wx:
+            nw = left-wx-self.hspacing
+        MyBoxes.boxes[box] = wx+(nw/2), wy
+        return nw
+
 class MyBoxes(MyFoo):
-    boxsize = (100,50)
     nodes = {
        1: "MagnaDoodle",
        2: "init",
@@ -137,23 +145,7 @@ class MyBoxes(MyFoo):
         9: [ 10],
         10: [ 11, 12, 13],
     }
-    boxes = {
-        1: (400, 100),
-        2: (75, 200),
-        3: (225, 200),
-        4: (525, 200),
-        5: (675, 200),
-        6: (150, 300),
-        7: (300, 300),
-        8: (450, 300),
-        9: (600, 300),
-       10: (600, 400),
-       11: (450, 500),
-       12: (600, 500),
-       13: (750, 500),
-    }
+    boxes = {}
 
 MyBoxes().run()
-
-
 
