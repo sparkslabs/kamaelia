@@ -1,4 +1,3 @@
-
    NEW TOOLS:
 
    Simple Video Player:
@@ -31,6 +30,11 @@
     * Experimental Pipeline/Graphline/Carousel support for size limited inboxes
     * Sequencing of tasks (Seq component)
 
+
+   Changed the CSA such that it no longer has internal buffering. This means
+   that if you make the link *TO* the CSA synchronous that you will be able
+   to send to the link as fast as the link will handle without causing over
+   buffering.
 
    Bugfixes to:
     * Kamaelia.Chassis.Carousel component - rewrite to fix shutdown behaviour.
