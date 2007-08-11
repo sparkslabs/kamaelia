@@ -87,9 +87,9 @@ class MyFoo(PygameComponent):
             ax,ay = self.boxes[subbox]
             paths.append(
                     [
-                        (((x+w/2), y+h) , ((x+w/2), y+h+((ay-(y+h))/2) )),
-                        (((x+w/2), y+h+((ay-(y+h))/2) ), ((ax+w/2), ay-(ay-(y+h))/2 )),
-                        (((ax+w/2), ay) , ((ax+w/2), ay-(ay-(y+h))/2 )),
+                        (((x+w/2), y+h) , ((x+w/2), y+h+((ay-(y+h))/2) )),  # DOWN
+                        (((x+w/2), y+h+((ay-(y+h))/2) ), ((ax+w/2), ay-(ay-(y+h))/2 )), # ACROSS
+                        (((ax+w/2), ay-(ay-(y+h))/2 ), ((ax+w/2), ay)),  # DOWN
                     ],
             )
 
