@@ -7,11 +7,13 @@ from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class PygameComponent(Axon.Component.component):
    Inboxes = { "inbox"        : "Specify (new) filename",
-               "control"      : "Shutdown messages & feedback from Pygame Display service",
+               "display_control"      : "Shutdown messages & feedback from Pygame Display service",
                "alphacontrol" : "Transparency of the ticker (0=fully transparent, 255=fully opaque)",
+               "control" : "...",
              }
    Outboxes = { "outbox" : "NOT USED",
-                "signal" : "Shutdown signalling & sending requests to Pygame Display service",
+                "signal" : "",
+                "pygamesignal" : "Shutdown signalling & sending requests to Pygame Display service",
               }
    def waitBox(self,boxname):
       """Generator. yields 1 until data ready on the named inbox."""
@@ -20,7 +22,7 @@ class PygameComponent(Axon.Component.component):
          else: yield 1
 
    def flip(self):
-       self.send({"REDRAW":True, "surface":self.display}, "signal")
+       self.send({"REDRAW":True, "surface":self.display}, "pygamesignal")
 
    def requestDisplay(self, **argd):
       """\
@@ -29,10 +31,10 @@ class PygameComponent(Axon.Component.component):
       Makes the request, then yields 1 until a display surface is returned.
       """
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
-      self.send(argd, "signal")
-      for _ in self.waitBox("control"): yield 1
-      display = self.recv("control")
+      self.link((self,"pygamesignal"), displayservice)
+      self.send(argd, "pygamesignal")
+      for _ in self.waitBox("display_control"): yield 1
+      display = self.recv("display_control")
       self.display = display
 
    def handleAlpha(self):
@@ -43,7 +45,7 @@ class PygameComponent(Axon.Component.component):
    def doRequestDisplay(self,size):
         return WaitComplete(
                  self.requestDisplay(DISPLAYREQUEST=True,
-                                     callback = (self,"control"),
+                                     callback = (self,"display_control"),
                                      size = size,
                                      position = (0,0)
                  )
@@ -108,6 +110,13 @@ class MyFoo(PygameComponent):
         self.drawBox(1)
         self.flip()
         while 1:
+            while self.dataReady("inbox"):
+                self.topology = self.recv("inbox")
+                self.boxes = {}
+                self.layout_tree(1, self.topology,0,100)
+                self.clearDisplay()
+                self.drawBox(1)
+                self.flip()
             yield 1
 
     def layout_tree(self, box, topology, wx, wy):
@@ -119,7 +128,7 @@ class MyFoo(PygameComponent):
             left = left + nw+self.hspacing
         if left != wx:
             nw = left-wx-self.hspacing
-        MyBoxes.boxes[box] = wx+(nw/2), wy
+        self.boxes[box] = wx+(nw/2), wy
         return nw
 
 class MyBoxes(MyFoo):
@@ -138,14 +147,43 @@ class MyBoxes(MyFoo):
       12: "mouse dn 2",
       13: "mouse dn 3",
     }
-    topology = {
-        1: [ 2, 3, 4, 5],
-        3: [ 6, 7],
-        4: [ 8, 9],
-        9: [ 10],
-        10: [ 11, 12, 13],
-    }
+    topology = { }
     boxes = {}
 
-MyBoxes().run()
+import time
+class Source(Axon.Component.component):
+    iterable = []
+    delay = 1
+    def main(self):
+        tl = time.time() 
+        for item in self.iterable:
+            while (time.time()-tl) < self.delay:
+                yield 1
+            tl = time.time() 
+            yield 1
+            self.send(item,"outbox")
+        yield 1
+
+from Kamaelia.Chassis.Pipeline import Pipeline
+
+# Sample topologies to show how the hierarchy can grow/be constructed...
+topologies = [
+    { 1: [ 2], },
+    { 1: [ 2, 3], },
+    { 1: [ 2, 3, 4], },
+    { 1: [ 2, 3, 4, 5], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11] },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11, 12] },
+    { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11, 12, 13] },
+]
+
+Pipeline(
+    Source(iterable=topologies),
+    MyBoxes()
+).run()
 
