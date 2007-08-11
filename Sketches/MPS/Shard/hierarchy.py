@@ -102,23 +102,22 @@ class MyFoo(PygameComponent):
         for line in path:
             self.drawLine(line)
 
-    def main(self):
-        """Main loop."""
+    def reDoTopology(self):
+        self.boxes = {}
         self.layout_tree(1, self.topology,0,100)
-        yield self.doRequestDisplay((1024, 768))
         self.clearDisplay()
         self.drawBox(1)
         self.flip()
+
+    def main(self):
+        """Main loop."""
+        yield self.doRequestDisplay((1024, 768))
+        self.reDoTopology()
         while 1:
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command[0] == "replace":
                     self.topology = command[1]
-                    self.boxes = {}
-                    self.layout_tree(1, self.topology,0,100)
-                    self.clearDisplay()
-                    self.drawBox(1)
-                    self.flip()
                 if command[0] == "add":
                     nodeid, label, parent = command[1:]
                     self.nodes[nodeid] = label
@@ -126,19 +125,10 @@ class MyFoo(PygameComponent):
                        self.topology[parent].append(nodeid)
                     except KeyError:
                         self.topology[parent] = [nodeid]
-                    self.boxes = {}
-                    self.layout_tree(1, self.topology,0,100)
-                    self.clearDisplay()
-                    self.drawBox(1)
-                    self.flip()
                 if command[0] == "relabel":
                     nodeid, newlabel = command[1:]
                     self.nodes[nodeid] = newlabel
-                    self.boxes = {}
-                    self.layout_tree(1, self.topology,0,100)
-                    self.clearDisplay()
-                    self.drawBox(1)
-                    self.flip()
+                self.reDoTopology()
             yield 1
 
     def layout_tree(self, box, topology, wx, wy):
