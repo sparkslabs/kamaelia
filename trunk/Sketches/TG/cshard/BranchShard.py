@@ -24,6 +24,9 @@ class switchShard(shard):
     initargs['branches'] = []
     initargs['elseshards'] = []
     initargs['compare'] = '=='
+    
+    # compulsory init parameters
+    required = ['switchVar', 'branches']
 
 
     def __init__(self, name = None, switchVar = None, branches = [], elseshards = [], compare = '=='):
