@@ -132,6 +132,7 @@ class MyFoo(PygameComponent):
             yield 1
 
     def layout_tree(self, box, topology, wx, wy):
+        "yes, this took a considerable amount of faffing about"
         left = wx
         nw = self.width
         row_below = wy+self.height+self.vspacing
