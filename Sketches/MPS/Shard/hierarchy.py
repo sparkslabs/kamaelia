@@ -131,6 +131,14 @@ class MyFoo(PygameComponent):
                     self.clearDisplay()
                     self.drawBox(1)
                     self.flip()
+                if command[0] == "relabel":
+                    nodeid, newlabel = command[1:]
+                    self.nodes[nodeid] = newlabel
+                    self.boxes = {}
+                    self.layout_tree(1, self.topology,0,100)
+                    self.clearDisplay()
+                    self.drawBox(1)
+                    self.flip()
             yield 1
 
     def layout_tree(self, box, topology, wx, wy):
@@ -209,8 +217,34 @@ grow_commands = [
     ["add", 11, "mouse dn 1", 10 ],
     ["add", 12, "mouse dn 2", 10 ],
     ["add", 13, "mouse dn 3", 10 ],
-    ["add", 14, "mouse dn 3", 10 ],
-    ["add", 15, "mouse dn 3", 10 ],
+]
+
+relabel_commands = [
+    ["add", 2, "2", 1 ],
+    ["add", 3, "3", 1 ],
+    ["add", 4, "4", 1 ],
+    ["add", 5, "5", 1 ],
+    ["add", 6, "6", 3 ],
+    ["add", 7, "7", 3 ],
+    ["add", 8, "8", 4 ],
+    ["add", 9, "9", 4 ],
+    ["add", 10, "10", 9 ],
+    ["add", 11, "11", 10 ],
+    ["add", 12, "12", 10 ],
+    ["add", 13, "13", 10 ],
+
+    ["relabel", 2, "init" ],
+    ["relabel", 3, "setupdisplay" ],
+    ["relabel", 4, "mainloop" ],
+    ["relabel", 5, "exit" ],
+    ["relabel", 6, "Get Display Surface" ],
+    ["relabel", 7, "Set Event Options" ],
+    ["relabel", 8, "Handle Shutdown" ],
+    ["relabel", 9, "Loop pygame events" ],
+    ["relabel", 10, "handle event" ],
+    ["relabel", 11, "mouse dn 1" ],
+    ["relabel", 12, "mouse dn 2" ],
+    ["relabel", 13, "mouse dn 3" ],
 ]
 
 if 0:
@@ -220,9 +254,15 @@ if 0:
         MyBoxes()
     ).run()
 
-if 1:
+if 0:
     Pipeline(
         Source(iterable=grow_commands),
+        MyBoxes()
+    ).run()
+
+if 1:
+    Pipeline(
+        Source(iterable=relabel_commands, delay=0.3),
         MyBoxes()
     ).run()
 
