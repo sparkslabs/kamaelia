@@ -1,4 +1,6 @@
 from box import box
+from shardGen import shardGen
+from floating import shardFloat
 
 from pygame.color import THECOLORS as colours
 from pygame import font
@@ -42,6 +44,22 @@ class clear(label):
     
     def handleMouseDown(self, e):
         self.container().grid.clear()
+
+
+class shardLabel(label):
+    def __init__(self, shardclass, name, imname):
+        super(shardLabel, self).__init__(imname, name)
+        
+        self.shard = shardclass
+    
+    def handleMouseDown(self, e):
+        if self.container().floating:
+            self.container().floating.erase(self.container().screen)
+        
+        self.container().floating = shardFloat(self.x, self.y, self)
+    
+    def makeGen(self):
+        return shardGen(self.shard)
 
 
 if __name__ == '__main__':

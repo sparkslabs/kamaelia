@@ -1,7 +1,8 @@
 from pygame.color import THECOLORS as colours
 
 class column(object):
-    def __init__(self, x, y, width, height, rowheight):
+    def __init__(self, grid, x, y, width, height, rowheight):
+        self.grid = grid
         self.x = x # x, y relative to grid
         self.y = y
         
@@ -21,6 +22,11 @@ class column(object):
     # y is relative to grid
     def contains(self, y):
         return y >= self.y and y < self.y + self.height
+    
+    def next(self):
+        if self.grid.cols[:-1][0] == self:
+            return None
+        return self.grid.cols[self.grid.cols.index(self)+1]
     
     def rowAt(self, y):
         if self.contains(y):
@@ -43,7 +49,8 @@ class column(object):
             line(surface, self.colour, (self.start, y), (self.end, y))
 
 class row(object):
-    def __init__(self, x, y, height, width, colwidth):
+    def __init__(self, grid, x, y, height, width, colwidth):
+        self.grid = grid
         self.x = x
         self.y = y
         
@@ -62,7 +69,12 @@ class row(object):
     
     def contains(self, x):
         return x >= self.x and x <= self.x + self.width
-    
+
+    def next(self):
+        if self.grid.rows[:-1][0] == self:
+            return None
+        return self.grid.rows[self.grid.rows.index(self)+1]
+
     def colAt(self, x):
         if self.contains(x):
             return x/self.colwidth

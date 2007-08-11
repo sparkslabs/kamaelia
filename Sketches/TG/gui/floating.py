@@ -47,6 +47,12 @@ class floating(object):
         return r + [self.bounds()]
 
 
+class shardFloat(floating):
+    def __init__(self, startx, starty, shardLabel):
+        super(shardFloat, self).__init__(startx, starty, shardLabel)
+        
+        self.shardGen = shardLabel.makeGen()
+
 if __name__ == '__main__':
     from gui import *
     main()
