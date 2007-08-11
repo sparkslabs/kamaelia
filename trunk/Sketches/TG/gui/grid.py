@@ -19,83 +19,58 @@ class grid(object):
         
         self.shardhist = history(self)
         
-        # integer division
-        cols = maxw / self.xspacing
+        cols = maxw / self.xspacing # int div
         rows = maxh / self.yspacing
         
         self.width = cols*xspacing
-        self.height = maxh
-        
-        self.surface = pygame.Surface((maxw, maxh)).convert()
-        self.surface.fill(colours["white"])
+        self.height = rows*yspacing
         
         xborder = (maxw - self.width)/2
-        yborder = yspacing/2
+        yborder = (maxh - selfheight)/2
+        coldividers = [i*self.xspacing + xborder for i in xrange(0, cols)]
+        rowdividers = [i*self.yspacing + yborder for i in xrange(0, rows)]
         
-        self.coldividers = []
-        self.rowdividers = []
-        
-        # vertical lines
-        for i in xrange(0, cols + 1):
-            colstart = i*self.xspacing + xborder
-            self.coldividers += [colstart]
-            line(self.surface, self.colour, (colstart, yborder), (colstart, self.height+yborder))
-        
-        # horizontal lines
-        for i in xrange(0, rows):
-            rowstart = i*self.yspacing + yborder
-            self.rowdividers += [rowstart]
-            line(self.surface, self.colour, (xborder, rowstart), (self.width+xborder, rowstart))
-        
-        self.colcentres = []
-        for i in xrange(0, len(self.coldividers)-1):
-            self.colcentres += [(self.coldividers[i] + self.coldividers[i+1])/2]
-        
-        self.rowcentres = []
-        for i in xrange(0, len(self.rowdividers)-1):
-            self.rowcentres += [(self.rowdividers[i] + self.rowdividers[i+1])/2]
+        self.cols = [column(self, c, y, xspacing, self.height, yspacing) for c in coldividers]
+        self.rows = [row(self, x, r, yspacing, self.width, xspacing) for r in rowdividers]
+                
+        self.surface = pygame.Surface((maxw, maxh)).convert()
+        self.surface.fill(colours["white"])
+        for c in self.cols: c.draw(surface)
+    
     
     def contains(self, x, y):
         return self.bounds().collidepoint(x, y)
     
     def bounds(self):
-        return Rect(self.x, self.y, self.surface.get_width(), self.height)
+        return Rect(self.x, self.y, self.width, self.height)
     
     def snapToCol(self, x):
-        for i in range(1, len(self.coldividers)):
-            if x < self.coldividers[i]:
-                #print 'col', i
-                return i-1
+        for c in self.cols:
+            if c.contains(x):
+                return self.cols.index(c)
 
     def snapToRow(self, y):
-        for i in range(1, len(self.rowdividers)):
-            if y < self.rowdividers[i]:
-                #print 'row', i
-                return i-1
-
+        for r in self.rows:
+            if r.contains(y):
+                return self.rows.index(r)
+    
     def snapToGrid(self, x, y):
         col, row = self.snapToCol(x), self.snapToRow(y)
         return self.colCoord(col), self.rowCoord(row)
     
     def rowCoord(self, row):
-        return self.rowdividers[row] + 2*self.border
+        return self.rows[row].start# + 2*self.border
     
     def colCoord(self, col):
-        return self.coldividers[col]
-    
-    def maxRows(self):
-        return len(self.rowcentres)
-        
-    def maxCols(self):
-        return len(self.colcentres)
+        return self.cols[col].start
     
     def handleMouseDown(self, x, y):
-        x -= self.x  #adjust coords relative to col/rowdividers, etc.
+        x -= self.x  #adjust coords relative to self.surface
         y -= self.y
         if self.container.floating:
             row = self.snapToRow(y)
             if not self.shardhist.current():
-                g = guiShard(self.container.floating, None, row, range(0, self.maxCols()))
+                g = guiShard(self.container.floating, None, self.rows[row], self.cols[:]))
                 self.shardhist.add(g)
             else:
                 self.shardhist.current().add(self.container.floating, row, x)

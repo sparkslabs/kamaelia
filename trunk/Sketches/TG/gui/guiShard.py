@@ -16,15 +16,25 @@ class guiShard(object):
     def __init__(self, floating, parent, row, cols):
         
         self.floating = floating
-        self.colour = pickColour()
-        
         self.grid = floating.container().grid
+        self.shardGen = floating.shardGen
+        
+        self.colour = pickColour()
         
         self.row = row
         self.cols = cols
         
+        for c in self.cols:
+            c.add(self, row = row)
+            self.row.add(self, col = c)
+        
         self.parent = parent
         self.children = []
+    
+    # return shard code generator, see gui/shardGen.py
+    def getShardGen(self):
+        self.shardGen.children = [c.getShardGen() for c in self.children]
+        return self.shardGen
     
     def draw(self, surface):
         rect(surface, self.colour, self.makeRect(), 0)
@@ -32,10 +42,10 @@ class guiShard(object):
             c.draw(surface)
     
     def makeRect(self):
-        x = self.grid.colCoord(self.cols[0])
-        y = self.grid.rowCoord(self.row)
-        width = self.grid.xspacing*len(self.cols)
-        height = self.grid.yspacing
+        x = self.cols[0].x
+        y = self.row.y
+        width = self.row.colwidth*len(self.cols)
+        height = self.row.height
         return Rect(x, y, width, height)
     
     def centre(self):
@@ -46,13 +56,21 @@ class guiShard(object):
         else: return len(self.children)
     
     def resize(self, newcols):
+        for c in self.cols:
+            c.add(None, row = self.row)
+            self.row.add(None, col = c)
+        
         self.cols = list(newcols)
+        for c in self.cols:
+            c.add(self, row = self.row)
+            self.row.add(self, col = c)
     
     def addChild(self, floating, index):
-        # column 0 given as a temporary value
-        self.children.insert(index, guiShard(floating, self, self.row+1, [0]))
+        # no columns given as a temporary value
+        self.children.insert(index, guiShard(floating, self, self.row.next(), []))
         self.repack()
     
+    # row, cols numbers changed to objects!
     def newChildIndex(self, newx):
         for c in self.children: # assumes children ordered in display l-r
             if newx < c.centre():
@@ -81,7 +99,7 @@ class guiShard(object):
             newcols = range(starts[i], ends[i])
             child.resize(newcols)
             child.repack()
-
+    
     def spaceRemaining(self):
         totalminw = sum([c.minwidth() for c in self.children])
         rem = len(self.cols) - totalminw
@@ -108,9 +126,7 @@ class guiShard(object):
         # x, y relative to grid
         col = self.grid.snapToCol(x)
         row = self.grid.snapToRow(y)
-        print 'shardclick, row, self.row', row, self.row
         if row == self.row:
-            print 'histadd'
             self.grid.shardhist.add(self)
         else:
             if self.children:

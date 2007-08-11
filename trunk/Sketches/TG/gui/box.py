@@ -18,12 +18,6 @@ class box(object):
     def bounds(self):
         return Rect(self.x, self.y, self.width, self.height)
     
-    def handleMouseDown(self, e):
-        if self.container().floating:
-            self.container().floating.erase(self.container().screen)
-        
-        self.container().floating = floating(self.x, self.y, self)
-    
     def draw(self, surface):   
         surface.blit(self.surface, (self.x, self.y))
         return [self.bounds()]
