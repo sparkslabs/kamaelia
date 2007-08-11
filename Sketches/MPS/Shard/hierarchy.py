@@ -111,12 +111,26 @@ class MyFoo(PygameComponent):
         self.flip()
         while 1:
             while self.dataReady("inbox"):
-                self.topology = self.recv("inbox")
-                self.boxes = {}
-                self.layout_tree(1, self.topology,0,100)
-                self.clearDisplay()
-                self.drawBox(1)
-                self.flip()
+                command = self.recv("inbox")
+                if command[0] == "replace":
+                    self.topology = command[1]
+                    self.boxes = {}
+                    self.layout_tree(1, self.topology,0,100)
+                    self.clearDisplay()
+                    self.drawBox(1)
+                    self.flip()
+                if command[0] == "add":
+                    nodeid, label, parent = command[1:]
+                    self.nodes[nodeid] = label
+                    try:
+                       self.topology[parent].append(nodeid)
+                    except KeyError:
+                        self.topology[parent] = [nodeid]
+                    self.boxes = {}
+                    self.layout_tree(1, self.topology,0,100)
+                    self.clearDisplay()
+                    self.drawBox(1)
+                    self.flip()
             yield 1
 
     def layout_tree(self, box, topology, wx, wy):
@@ -165,6 +179,7 @@ class Source(Axon.Component.component):
         yield 1
 
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 # Sample topologies to show how the hierarchy can grow/be constructed...
 topologies = [
@@ -181,9 +196,33 @@ topologies = [
     { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11, 12] },
     { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11, 12, 13] },
 ]
+grow_commands = [
+    ["add", 2, "init", 1 ],
+    ["add", 3, "setupdisplay", 1 ],
+    ["add", 4, "mainloop", 1 ],
+    ["add", 5, "exit", 1 ],
+    ["add", 6, "Get Display Surface", 3 ],
+    ["add", 7, "Set Event Options", 3 ],
+    ["add", 8, "Handle Shutdown", 4 ],
+    ["add", 9, "Loop pygame events", 4 ],
+    ["add", 10, "handle event", 9 ],
+    ["add", 11, "mouse dn 1", 10 ],
+    ["add", 12, "mouse dn 2", 10 ],
+    ["add", 13, "mouse dn 3", 10 ],
+    ["add", 14, "mouse dn 3", 10 ],
+    ["add", 15, "mouse dn 3", 10 ],
+]
 
-Pipeline(
-    Source(iterable=topologies),
-    MyBoxes()
-).run()
+if 0:
+    Pipeline(
+        Source(iterable=topologies),
+        PureTransformer(lambda x : ["replace", x ]),
+        MyBoxes()
+    ).run()
+
+if 1:
+    Pipeline(
+        Source(iterable=grow_commands),
+        MyBoxes()
+    ).run()
 
