@@ -82,8 +82,9 @@ other messages are now the responsibility of the component that received them.
 
 """
 
-from oscarUtil import *
-from oscarUtil2 import *
+from OscarUtil import *
+from OscarUtil2 import *
+
 from Axon.Component import component
 from OSCARClient import OSCARClient, SNACExchanger
 import time

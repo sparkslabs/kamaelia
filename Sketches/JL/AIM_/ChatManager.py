@@ -94,8 +94,8 @@ Simple client with a truly horrible interface::
 """
 
 from OSCARClient import *
-from oscarUtil import *
-from oscarUtil2 import *
+from OscarUtil import *
+from OscarUtil2 import *
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import re
