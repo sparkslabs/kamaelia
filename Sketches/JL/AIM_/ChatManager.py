@@ -136,8 +136,8 @@ class ChatManager(SNACExchanger):
                     self.send(("buddy online", buddyinfo), "heard")
                 elif kind == (0x04, 0x07):
                     self.receiveMessage(body)
-                else:
-                    self.send(("unknown message", header[0], header[1]), "heard")
+##                else:
+##                    self.send(("unknown message", header[0], header[1]), "heard")
             while self.dataReady("talk"):
                 data = self.recv("talk")
                 assert self.debugger.note("ChatManager.main", 7, "received " + str(data))
@@ -180,18 +180,10 @@ class ChatManager(SNACExchanger):
         self.sendSnac(0x04, 0x06, body)
 
     def cleanMessage(self, message):
-        """strips the HTML tags off of a received message"""
-        if message[0] != '<':
-            return message
-        text = ""
-        pos = 0
-        while pos < len(message) and pos != -1:
-            pos = message.find(">", pos+1)
-            if pos+1 < len(message) and message[pos+1] != "<":
-                endpos = message.find("<", pos+1)
-                text += message[pos+1:endpos]
-        return text
-
+        """strips HTML tags off messages"""
+        p = re.compile("<[^<^>]*>")
+        message = p.sub("", message)
+        return message
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Graphline import Graphline
