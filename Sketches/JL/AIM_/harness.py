@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from OSCARClient import *
-import login
+import LoginHandler
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import chat
@@ -20,7 +20,7 @@ class AIMHarness(component):
     
     def __init__(self):
         super(AIMHarness, self).__init__()
-        self.loginer = login.LoginHandler('sitar63112', 'sitar63112').activate()
+        self.loginer = LoginHandler.LoginHandler('sitar63112', 'sitar63112').activate()
         self.link((self.loginer, "signal"), (self, "internal inbox")) #quite a hack, sending other data out through "signal"
         self.addChildren(self.loginer)
         self.debugger.addDebugSection("AIMHarness.main", 5)
