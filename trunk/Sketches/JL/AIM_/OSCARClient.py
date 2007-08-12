@@ -24,6 +24,8 @@
 ========================
 Kamaelia OSCAR interface
 ========================
+NOTE: This module provides a low-level interface to OSCAR. For a high-level,
+      easy-to-use interface, see AIMHarness.py.
 
 The OSCARProtocol component provides a Kamaelia interface for the FLAP level of
 OSCAR protocol. You should not be linking to OSCARProtocol directly, but to
