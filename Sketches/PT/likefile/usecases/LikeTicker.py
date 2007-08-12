@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from likefile import LikeFile, schedulerThread
+from Axon.likefile import LikeFile, schedulerThread
 from Kamaelia.UI.Pygame.Ticker import Ticker
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
@@ -40,14 +40,11 @@ ticker3 = LikeFile(Pipeline(
         )
     )
 
-ticker1.activate()
-ticker2.activate()
 for line in file("Ulysses", 'r+b'):
     line = line.rstrip() # kill the newlines - printing them in reverse order messes with the ticker.
     ticker1.put(line[::-1], "inbox")
     ticker2.put(line, "inbox")
 time.sleep(5)
-ticker3.activate()
 for line in file("Ulysses", 'r+b'):
     ticker3.put(line, "inbox")
 time.sleep(10)

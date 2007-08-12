@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from likefile import LikeFile, schedulerThread
+from Axon.likefile import LikeFile, schedulerThread
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
@@ -18,7 +18,6 @@ host = "bbc.kamaelia.org"
 port = 1500
 
 client = LikeFile(TCPClient(host = host, port = port))
-client.activate()
 # component to grab a stream from the internet
 
 filedump = open("streamdump.ogg", "w+b")
