@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import time, sys, Axon
-from likefile import LikeFile, schedulerThread
+from Axon.likefile import LikeFile, schedulerThread
 
 schedulerThread().start()
 

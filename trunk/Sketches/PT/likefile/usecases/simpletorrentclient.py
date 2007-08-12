@@ -2,7 +2,7 @@
 
 # A demonstration of using likefile to control a torrent downloader.
 
-import likefile, time, sys
+import Axon.likefile, time, sys
 from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
 from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
 from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
@@ -22,7 +22,6 @@ torrenter = likefile.LikeFile(
         BasicTorrentExplainer(),
         ))
 
-torrenter.activate()
 torrenter.put(filename)
 try:
     while True:

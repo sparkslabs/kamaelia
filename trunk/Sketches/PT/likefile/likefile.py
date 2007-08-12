@@ -69,7 +69,7 @@ In this case, we use LikeFile, instead of activating. This is a wrapper
 which sits around a component and provides a threadsafe way to interact
 with it, whilst it is running in the backgrounded sheduler:
 
-    from likefile import LikeFile
+    from Axon.likefile import LikeFile
     wrappedComponent = LikeFile(component)
     someOtherCode()
 
@@ -159,10 +159,13 @@ on an appropriate scheduler. _addThread calls wakeThread, which places the reque
 
 """
 
-from Axon.Scheduler import scheduler
-from Axon.AxonExceptions import noSpaceInBox
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-import Queue, threading, time, copy, Axon, warnings
+from Scheduler import scheduler
+from Component import component
+from ThreadedComponent import threadedadaptivecommscomponent
+from AdaptiveCommsComponent import AdaptiveCommsComponent
+from AxonExceptions import noSpaceInBox
+from Ipc import producerFinished, shutdownMicroprocess
+import Queue, threading, time, copy, warnings
 queuelengths = 0
 
 DEFIN = ["inbox", "control"]
@@ -179,7 +182,7 @@ def addBox(names, boxMap, addBox):
             boxMap[boxname] = realboxname
 
 
-class dummyComponent(Axon.Component.component):
+class dummyComponent(component):
     """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
     def main(self):
         while True:
@@ -203,7 +206,7 @@ class schedulerThread(threading.Thread):
         schedulerThread.lock.release()
 
 
-class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponent):
+class componentWrapperInput(threadedadaptivecommscomponent):
     """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
     queued data to be placed on the child's inboxes."""
     def __init__(self, child, inboxes = DEFIN):
@@ -262,7 +265,7 @@ class componentWrapperInput(Axon.ThreadedComponent.threadedadaptivecommscomponen
                 break
         return True
 
-class componentWrapperOutput(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class componentWrapperOutput(AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
     with the LikeFile component."""
     def __init__(self, child, inputHandler, outboxes = DEFOUT):
@@ -355,7 +358,6 @@ class LikeFile(object):
         outputComponent.activate()
         self.alive = True
 
-
 # methods passed through from the queue.
     def empty(self, boxname = "outbox"):
         """Return True if there is no data pending collection on boxname, False otherwise."""
@@ -392,9 +394,9 @@ class LikeFile(object):
         will warn if the shutdown took too long to confirm in action."""
         # TODO - what if the wrapped component has no control box?
         if self.alive: 
-            self.put(Axon.Ipc.shutdown(),               "control") # legacy support.
-            self.put(Axon.Ipc.producerFinished(),       "control") # some components only honour this one
-            self.put(Axon.Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
+            self.put(Ipc.shutdown(),               "control") # legacy support.
+            self.put(Ipc.producerFinished(),       "control") # some components only honour this one
+            self.put(Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
             raise AttributeError, "shutdown was previously called, or we were never activated."
         self.inputComponent.isDead.wait(1)

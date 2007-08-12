@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-import likefile
+import likefile, pydoc
 
-outfile = open("likefile.txt", "w+b")
-outfile.write("<pre>")
-outfile.write(likefile.__doc__)
-outfile.write("</pre>")
+documentation = ''.join(["<pre>",
+            likefile.__doc__,
+            "<br><br><br></pre>",
+            pydoc.HTMLDoc().document(likefile.LikeFile),
+            ])
+
+outfile = open("likefile.html", "w+b")
+outfile.write(documentation)
