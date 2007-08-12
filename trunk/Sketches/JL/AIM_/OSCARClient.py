@@ -157,8 +157,8 @@ For a more complete example, see LoginHandler.py
                   
           
 import struct
-from oscarUtil import *
-from oscarUtil2 import *
+from OscarUtil import *
+from OscarUtil2 import *
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
 
