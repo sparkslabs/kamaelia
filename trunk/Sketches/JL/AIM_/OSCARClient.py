@@ -286,7 +286,7 @@ class SNACExchanger(component):
         assert self.debugger.note("SNACExchanger.sendSnac", 5, "sent SNAC " + str((fam, sub)))
 
     def recvSnac(self):
-        """receives FLAPs and parses the SNAC data."""
+        """receives FLAPs containing SNACs and parses the SNAC data."""
         recvdflap = self.recv() #supported services snac
         data = readSNAC(recvdflap[1])
         assert len(data) == 2

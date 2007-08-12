@@ -4,7 +4,7 @@ from OSCARClient import *
 import LoginHandler
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
-import chat
+import ChatManager
 
 class AIMHarness(component):
     Inboxes = {"inbox" : "NOT USED",
@@ -20,7 +20,7 @@ class AIMHarness(component):
     
     def __init__(self):
         super(AIMHarness, self).__init__()
-        self.loginer = LoginHandler.LoginHandler('sitar63112', 'sitar63112').activate()
+        self.loginer = LoginHandler.LoginHandler('ukelele94720', '123abc').activate()
         self.link((self.loginer, "signal"), (self, "internal inbox")) #quite a hack, sending other data out through "signal"
         self.addChildren(self.loginer)
         self.debugger.addDebugSection("AIMHarness.main", 5)
@@ -33,7 +33,7 @@ class AIMHarness(component):
         self.unlink(self.oscar)
         
         assert self.debugger.note("AIMHarness.main", 5, "%i queued messages" % len(queued))
-        self.chatter = chat.ChatManager().activate()
+        self.chatter = ChatManager.ChatManager().activate()
         self.link((self.chatter, "heard"), (self, "outbox"), passthrough=2)
         self.link((self, "inbox"), (self.chatter, "talk"), passthrough=1)
         self.link((self.chatter, "outbox"), (self.oscar, "inbox"))
@@ -48,16 +48,14 @@ class AIMHarness(component):
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
+    from Kamaelia.Util.PureTransformer import PureTransformer
 
-    class Tupler(component):
-        def main(self):
-            while True:
-                yield 1
-                if self.dataReady():
-                    data = self.recv()
-                    data = data.split()
-                    if len(data) > 1: 
-                        data = ("message", data[0], " ".join(data[1:]))
-                        self.send(data)
-                
-    Pipeline(ConsoleReader(), Tupler(), AIMHarness(), ConsoleEchoer('\n')).run()
+    def tuplefy(data):
+        data = data.split()
+        if len(data) > 1: 
+            data = ("message", data[0], " ".join(data[1:]))
+            return data
+
+        
+            
+    Pipeline(ConsoleReader(), PureTransformer(tuplefy), AIMHarness(), ConsoleEchoer()).run()
