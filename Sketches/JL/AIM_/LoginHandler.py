@@ -56,6 +56,8 @@ Login and wire the resulting OSCARClient up to a ChatManager::
             while True:
                 yield 1
 
+    AIMHarness().run()
+
 You can also run LoginHandler by itself. This is mostly useful for debugging
 purposes::
 
