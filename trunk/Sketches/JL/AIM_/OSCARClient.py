@@ -32,7 +32,8 @@ OSCARClient.
 The OSCARClient prefab returns an OSCARProtocol component wired up to a TCPClient.
 
 These components implement the OSCAR protocol at the lowest level and still
-require a fairly good knowledge of the protocol to use them.
+require a fairly good knowledge of OSCAR to use them.
+
 
 SNACExchanger is the base class for all components that deal with the SNAC layer
 of OSCAR protocol. 
