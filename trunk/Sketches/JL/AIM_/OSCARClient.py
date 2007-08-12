@@ -157,7 +157,8 @@ For a more complete example, see LoginHandler.py
                   
           
 import struct
-from oscarutil import *
+from oscarUtil import *
+from oscarUtil2 import *
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
 
@@ -283,7 +284,7 @@ class SNACExchanger(component):
         """\
         constructs a SNAC by calling self.makeSnac and sends it out the "outbox".
         """
-        snac = self.makeSnac(fam, sub, body)
+        snac = SNAC(fam, sub, body)
         self.send((CHANNEL_SNAC, snac))
         assert self.debugger.note("SNACExchanger.sendSnac", 5, "sent SNAC " + str((fam, sub)))
 
@@ -314,12 +315,6 @@ class SNACExchanger(component):
             if header[0] == fam and header[1] == sub:
                 yield reply
                 done = True
-
-    def makeSnac(self, fam,sub,data,id=1, flags=[0,0]):
-        """actually constructs the SNAC"""
-        #the snac id doesn't matter unless this is a query-response situation 
-        return Double(fam) + Double(sub) + Single(flags[0]) + Single(flags[1]) + Quad(id) + data
-
 
 
 if __name__ == '__main__':

@@ -94,9 +94,11 @@ Simple client with a truly horrible interface::
 """
 
 from OSCARClient import *
-from oscarutil import *
+from oscarUtil import *
+from oscarUtil2 import *
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
+import re
 
 class ChatManager(SNACExchanger):
     """
