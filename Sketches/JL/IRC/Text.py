@@ -22,15 +22,16 @@
 #
 
 """
-==================
+============================================
 Pygame components for text input and display
-==================
+============================================
 
 TextDisplayer displays any data it receives on a Pygame surface. Every new piece
 of data is displayed on its own line, and lines wrap automatically.
 
 Textbox displays user input while the user types, and sends its string buffer
 to its 'outbox' when it receives a '\n'.
+
 
 
 Example Usage
@@ -47,23 +48,24 @@ To take user input in Textbox and display it in TextDisplayer::
              ).run()
 
 
-How does it work? 
------------
-TextDisplayer requests a display from the Pygame Display service and renders any
-text it receives onto it. If it receives a newline, or if text must wrap, it
-moves the existing text upwards and blits the new line onto the bottom. 
 
-Textbox registers to receive Keydown events from the Pygame Display service. It
-looks up the unicode character corresponding to each keypress and appends that
-character to its string buffer. It then wipes the display screen and updates the
-screen with the new string buffer. 
+How does it work? 
+-----------------
+TextDisplayer requests a display from the Pygame Display service and requests
+that Pygame Display send all keypresses to it. Everytime TextDisplayer receives
+a keypress, it updates its string buffer and the display. 
+
+If it receives a newline, or if text must wrap, it moves the existing text
+upwards and blits the new line onto the bottom. 
+
+
 
 Known issues
 ------------
 The line wrapping length is specified by the width of the display divided by the
 width of the letter 'a' in the displayed font, so lines may wrap too far off the
-edge of the screen if the user types very narrow text (i.e. just text with no
-spaces), or too far inside the edge of the screen (usually).
+edge of the screen if the user types very narrow text (i.e. just spaces with no
+other charachters), or too far inside the edge of the screen (usually).
 """
 
 import pygame
@@ -74,7 +76,8 @@ from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished, WaitComplete
 from pygame.locals import *
 
-
+__kamaelia_components__ = (PygameDisplay, KeyEvent)
+    
 class TextDisplayer(component):
     """\
     TextDisplayer(...) -> new TextDisplayer Pygame component.

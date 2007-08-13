@@ -1,18 +1,34 @@
 #!/usr/bin/env python
-
-from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Carousel import Carousel
-from Axon.Component import component
-import IRCClient
-import LoggerFunctions
-import time, os
+#
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+#
 
 """\
 ===================
 IRC Channel Logger
 ===================
-Logger is built using IRC_Client as its core.  
+Logger writes all traffic it receives to text files, changing files once per
+day. It is built using IRC_Client as its core.  
+
+
 
 Example Usage
 -------------
@@ -22,22 +38,23 @@ To log the channel #sillyputty on server my.server.org::
 
 It will now log all messages to #kamtest except those prefixed by "[off]".
 
-Logger responds to these private messages:
-    logfile
-    infofile
-    date
-    help
-    dance
+
 
 More Detail
 -----------
-BasicLogger is a higher-level IRC client that is meant to link to the base client found in
-IRCClient.py. It sends command tuples to its "irc" outbox, and receives them via its "inbox", 
-allowing it to implement login, and ping response. It uses IRC_Client's tuple-based output format to
-achieve some demultiplexing of IRC output as well, though not of the multiple-channel sort.
+BasicLogger is a higher-level IRC client that is meant to link to the base
+client found in IRCClient.py. It sends command tuples to its "irc" outbox, and
+receives them via its "inbox", allowing it to implement login, and ping
+response. It uses IRC_Client's tuple-based output format to achieve some
+demultiplexing of IRC output as well, though not of the multiple-channel sort.
 
-Logger ultimately links BasicLogger's "irc" outbox to IRC_Client's "talk" inbox. It also utilizes
-two Carousels and SimpleFileWriters. 
+BasicLogger depends heavily on the LoggerFunctions module. See LoggerFunctions
+for a list of queries it responds to, how it formats the date and time, and how
+it determines file names. 
+
+Logger ultimately links BasicLogger's "irc" outbox to IRC_Client's "talk" inbox.
+It also utilizes two Carousels and SimpleFileWriters. 
+
 
 
 How it works
@@ -54,16 +71,32 @@ Logger uses this in conjunction with a Carousel to create a new logfile and
 close the old one.
 
 By default BasicLogger uses ::outformat::, defined in IRCClient, to format
-messages from IRCClient.SimpleIRCClientPrefab before writing to the log. To format
-messages differently, pass in a different function to its "formatter" keyword. 
+messages from IRCClient.SimpleIRCClientPrefab before writing to the log. To
+format messages differently, pass in a different function to its "formatter"
+keyword. 
 
 Logger simply links BasicLogger with a IRCClient.SimpleIRCClientPrefab and two
 Carousel-encapsulated SimpleFileWriters. It also slaps timestamps on messages.
-It takes any keyword that BasicLogger or IRCClient.SimpleIRCClientPrefab will take.
+It takes any keyword that BasicLogger or IRCClient.SimpleIRCClientPrefab will
+take.
 
+
+
+Command Line Usage
+------------------
 One can run Logger from the command line by entering::
+
     ./Logger.py \#somechannel desirednickname
 """
+from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Carousel import Carousel
+from Axon.Component import component
+import IRCClient
+import LoggerFunctions
+import time, os
+
+__kamaelia_components__ = (SimpleFileWriter, Graphline, Carousel, IRCClient)
 
 class BasicLogger(component):
     """\
