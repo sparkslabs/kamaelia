@@ -21,9 +21,9 @@
 ## -------------------------------------------------------------------------
 
 """
-==================
+=======================
 Kamaelia IRC Interface
-==================
+=======================
 IRC_Client provides an IRC interface for Kamaelia components.
 
 SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to
@@ -36,6 +36,8 @@ and receive formatted output from its "outbox"
 
 The functions informat, outformat, channelInformat, and channelOutformat can be
 used to format incoming and outgoing messages.
+
+
 
 Example Usage
 -------------
@@ -62,8 +64,10 @@ or::
              SimpleUserClientPrefab(),
              TextDisplayer(position=(0,340)
     ).run()
+    
 Note: 
-The user needs to type::
+The user needs to enter::
+
     /nick aNickName
     /user uname server host realname
 
@@ -71,13 +75,14 @@ into the console before doing anything else. Be quick before the connection
 times out.
 
 Then try IRC commands preceded by a slash. Messages to the channel need not
-be preceded by anything.
->>> /join #kamtest             
->>> /msg nickserv identify secretpassword
->>> /topic #kamtest Testing IRC client
->>> Hello everyone. 
->>> /part #kamtest
->>> /quit
+be preceded by anything::
+
+    >>> /join #kamtest             
+    >>> /msg nickserv identify secretpassword
+    >>> /topic #kamtest Testing IRC client
+    >>> Hello everyone. 
+    >>> /part #kamtest
+    >>> /quit
 
 This example sends all plaintext to #kamtest by default. To send to another
 channel by default, change the arguments of channelInformat and
@@ -85,55 +90,72 @@ channelOutformat to the name of a different channel. (E.g. "#python")
 
 For a more comprehensive example, see Logger.py in Tools.
 
+
+
 How does it work?
-------------
+-----------------
+
+Sending messages over IRC
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 IRC_Client accepts commands arriving at its "talk" inbox. A command is a
 list/tuple and is in the form ('cmd', [arg1] [,arg2] [,arg3...]). IRC_Client
 retransmits these as full-fledged IRC commands to its "outbox". Arguments
 following the command are per RFC 1459 and RFC 2812. 
 
 For example,
-    ('NICK', 'Zorknpals')
-    ('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')
-    ('JOIN', '#kamaelia')
-    ('PRIVMSG', '#kamtest', 'hey, how's it going?')
-    ('TOPIC', '#cheese', "Mozzerella vs. Parmesan")
-    ('QUIT')
-    ('QUIT', "Konversation terminated!")
-    ('BERSERKER', "Lvl. 10")
+
+- ('NICK', 'Zorknpals')
+- ('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')
+- ('JOIN', '#kamaelia')
+- ('PRIVMSG', '#kamtest', 'hey, how's it going?')
+- ('TOPIC', '#cheese', "Mozzerella vs. Parmesan")
+- ('QUIT')
+- ('QUIT', "Konversation terminated!")
+- ('BERSERKER', "Lvl. 10")
 
 Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not
 complain about this, as it treats commands uniformly, but you might get
 an error 421, "ERR_UNKNOWNCOMMAND" back from the server.
 
-CTCP commands:
-    ACTION: 
-        ("ME", channel-or-user, the-action-that-you-do). 
-    MSG:
-        If you use the outformat function defined here, 'MSG' commands are
-        treated as 'PRIVMSGs'.
-    No other CTCP commands are implemented.
 
 
+Sending CTCP commands
+~~~~~~~~~~~~~~~~~~~~~~
+IRC_Client also handles a few CTCP commands:
+
+:ACTION: 
+    ("ME", channel-or-user, the-action-that-you-do). 
+:MSG:
+    If you use the outformat function defined here, 'MSG' commands are
+    treated as 'PRIVMSGs'.
+
+No other CTCP commands are implemented.
+
+
+
+Receiving messages
+~~~~~~~~~~~~~~~~~~~
 IRC_Client's "inbox" takes messages from an IRC server and retransmits them to
 its "heard" outbox in tuple format. Currently each tuple has fields (command,
 sender, receiver, rest). This method has worked well so far.
 
 Example output:
-    ('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode
-        IRC Network jinnaslogbot')
-    ('NOTICE', '', 'jinnaslogbot', '***Checking ident')
-    ('PRIVMSG', 'jlei_', '#kamtest', 'stuff')
-    ('PART', 'kambot', '#kamtest', 'see you later)
-    ('ACTION', 'jinnaslogbot',  '#kamtest', 'does the macarena')
+
+|    ('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode
+     IRC Network jinnaslogbot')
+|    ('NOTICE', '', 'jinnaslogbot', '\*\*\*Checking ident')
+|    ('PRIVMSG', 'jlei', '#kamtest', 'stuff')
+|    ('PART', 'kambot', '#kamtest', 'see you later)
+|    ('ACTION', 'jinnaslogbot',  '#kamtest', 'does the macarena')
 
 To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its
 "control" box. The higher-level client must send a login itself and respond to
 pings. IRC_Client will not do this automatically. 
 
 
+
 Known Issues
------------
+-------------
 The prefabs do not terminate.
 Sometimes messages from the server are split up. IRC_Client does not recognize
 these messages and flags them as errors. 
@@ -144,8 +166,11 @@ import Axon as _Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.PureTransformer import PureTransformer
 import string
+
+__kamaelia_components__ = (TCPClient, Graphline, PureTransformer, Pipeline)
 
 class IRC_Client(_Axon.Component.component):
     """
@@ -209,7 +234,10 @@ class IRC_Client(_Axon.Component.component):
         return len(line) > 0
        
     def parseIRCMessage(self, line):
-        """Takes server messages and returns a tuple (message type, sender, recipient, other params)."""
+        """
+        Takes server messages and returns a tuple
+        (message type, sender, recipient, other params).
+        """
         tokens = line.split()
         sender = ""
         recipient = ""
@@ -245,7 +273,9 @@ class IRC_Client(_Axon.Component.component):
             return token[1:]
 
     def extractBody(self, tokens):
-        """returns a string from the joined tokens with the leading colon stripped"""
+        """
+        returns a string from the joined tokens with the leading colon stripped
+        """
         body =  string.join(tokens, ' ')
         if body[0] == ':':
             return body[1:]
@@ -356,7 +386,6 @@ def channelInformat(channel):
     """returns informat with the specified channel as the default channel"""
     return (lambda text: informat(text, defaultChannel=channel))
 
-from Kamaelia.Chassis.Pipeline import Pipeline
 def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
     """\
     SimpleIRCClientPrefab(...) -> IRC_Client connected to tcp via a Graphline.
