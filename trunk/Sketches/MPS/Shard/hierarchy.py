@@ -110,7 +110,14 @@ class MyFoo(PygameComponent):
         return textimage, w,h
 
     def drawBox(self, box):
-        pygame.draw.rect(self.display, 0xaaaaaa, (self.boxes[box],self.boxsize), 0)
+        try:
+            self.nodes[box]
+        except KeyError:
+            return
+        colour = 0xaaaaaa
+        if box == self.selected :
+            colour = 0xff8888
+        pygame.draw.rect(self.display, colour, (self.boxes[box],self.boxsize), 0)
         cx = self.boxes[box][0]+self.boxsize[0]/2
         cy = self.boxes[box][1]+self.boxsize[1]/2
         image, w,h = self.makeLabel(self.nodes[box])
@@ -159,14 +166,25 @@ class MyFoo(PygameComponent):
                     return box
         return None # explicit better than implicit
 
+    def select(self, nodeid):
+        self.selected = nodeid
+        self.send(["SELECT", self.selected ], "outbox")
+        self.reDoTopology()
+
+    def deselect(self):
+        self.selected = None
+        self.send(["DESELECT"], "outbox")
+        self.reDoTopology()
+
     def mousedown_handler(self,*events, **eventd):
+        selected = self.selected
         for event in events:
-            print "CLICK", event.button, event.pos
             if event.button == 1:
-                if self.clickInBox(event.pos):
-                    print "WOO, clicked in box:", self.clickInBox(event.pos)
+                nodeid= self.clickInBox(event.pos)
+                if nodeid:
+                    self.select(nodeid)
                 else:
-                    print "HAHA YOU MISSED"
+                    self.deselect()
 
     def main(self):
         """Main loop."""
@@ -176,6 +194,7 @@ class MyFoo(PygameComponent):
 #        self.addHandler(pygame.KEYDOWN, self.event_handler)
 #        self.addHandler(pygame.KEYUP,   self.event_handler)
 
+        self.selected = None
         self.reDoTopology()
         while 1:
             self._dispatch()
@@ -193,6 +212,41 @@ class MyFoo(PygameComponent):
                 if command[0] == "relabel":
                     nodeid, newlabel = command[1:]
                     self.nodes[nodeid] = newlabel
+                if command[0] == "select":
+                    nodeid, = command[1:]
+                    self.select(nodeid)
+                if command[0] == "deselect":
+                    self.deselect()
+                if command[0] == "del":
+                    if command[1] == "all":
+                        self.selected = None
+                        self.topology = {}
+                        self.boxes = {}
+                        self.nodes = {}
+                    if command[1] == "node":
+                        try:
+                            del self.boxes[command[2]]
+                        except KeyError:
+                            pass
+                        try:
+                            del self.nodes[command[2]]
+                        except KeyError:
+                            pass
+                        try:
+                            del self.topology[command[2]]
+                        except KeyError:
+                            pass
+                        for node in self.topology:
+                            if command[2] in self.topology[node]:
+                                self.topology[node] = [x for x in self.topology[node] if x != command[2] ]
+                if command[0] == "get":
+                    if command[1] == "all":
+                        self.send((self.nodes, self.topology), "outbox")
+                    if command[1] == "node":
+                        print ">>>",command[0],command[1]
+                        n = {command[2] : self.nodes[command[2]]}
+                        t = {command[2] : self.topology.get(command[2],[])}
+                        self.send((n, t), "outbox")
                 self.reDoTopology()
             yield 1
 
@@ -276,6 +330,8 @@ grow_commands = [
 ]
 
 relabel_commands = [
+    ["del", "all"],
+    ["add", 1, "1", None ],
     ["add", 2, "2", 1 ],
     ["add", 3, "3", 1 ],
     ["add", 4, "4", 1 ],
@@ -289,6 +345,25 @@ relabel_commands = [
     ["add", 12, "12", 10 ],
     ["add", 13, "13", 10 ],
 
+    ["del", "node", 6],
+    ["del", "node", 7],
+    ["del", "node", 3],
+    ["del", "node", 8],
+    ["select", 1 ],
+    ["select", 2 ],
+    ["select", 3 ],
+    ["select", 6 ],
+    ["select", 7 ],
+    ["select", 4 ],
+    ["select", 8 ],
+    ["select", 9 ],
+    ["select", 10 ],
+    ["select", 11 ],
+    ["select", 12 ],
+    ["select", 13 ],
+    ["select", 5 ],
+    ["deselect"],
+    
     ["relabel", 2, "init" ],
     ["relabel", 3, "setupdisplay" ],
     ["relabel", 4, "mainloop" ],
@@ -301,8 +376,13 @@ relabel_commands = [
     ["relabel", 11, "mouse dn 1" ],
     ["relabel", 12, "mouse dn 2" ],
     ["relabel", 13, "mouse dn 3" ],
+    ["get", "all"],
+    ["get", "node", 10],
+    ["get", "node", 11],
+    ["get", "node", 9],
 ]
 
+from Kamaelia.Util.Console import ConsoleEchoer
 if 0:
     Pipeline(
         Source(iterable=topologies),
@@ -319,6 +399,8 @@ if 0:
 if 1:
     Pipeline(
         Source(iterable=relabel_commands, delay=0.3),
-        MyBoxes()
+        MyBoxes(),
+        PureTransformer(lambda x : str(x)+"\n"),
+        ConsoleEchoer(),
     ).run()
 
