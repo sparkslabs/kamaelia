@@ -1,7 +1,20 @@
 from Kamaelia.File.Writing import SimpleFileWriter
 import os
+"""
+===================================
+Supporting Functions for IRC Logger
+===================================
+BasicLogger and Logger depend heavily on this library. These functions are in a
+separate module from the Logger components so we can reload these functions
+without stopping Logger
+
+There are no components in this module. 
+"""
 
 def respondToQueries(self, msg):
+    """Takes a BasicLogger as its first argument. If this function recognizes
+    "msg" as a command, then it sends back the appropriate response to IRC
+    """
     replyLines = ""
     tag = 'PRIVMSG'
 
@@ -25,7 +38,7 @@ def respondToQueries(self, msg):
             tag = 'ME'
             replyLines = ['does the macarena']
         elif words[1] == 'poke':
-            replyLines = ['Hehe! That tickles!']
+            replyLines = ['Not the eye! Not the eye!']
         elif words[1] == 'slap':
             replyLines = ['Ouch!']
         elif words[1] == 'ecky':
@@ -71,13 +84,16 @@ def AppendingFileWriter(filename):
     return SimpleFileWriter(filename, mode='ab')
 
 def LoggerWriter(filename):
-    """puts an html header in front of every file it opens. Does not make well-formed HTML, as files
-    are closed without closing the HTML tags. However, most browsers can render the malformed HTML all
-    the same."""
+    """
+    puts an html header in front of every file it opens. Does not make well-
+    formed HTML, as files are closed without closing the HTML tags. However,
+    most browsers don't have a problem with this. =D
+    """
     htmlhead = "<html><body><table>\n"
     if not os.path.exists(filename):
         f = open(filename, "wb")
         f.write(htmlhead)
+        f.close()
     return SimpleFileWriter(filename, mode='ab')
 
 def currentDateString():
@@ -87,6 +103,7 @@ def currentDateString():
 
 
 def currentTimeString():
+    """returns the current time in hour:minute:second format"""
     curtime = time.gmtime()
     return time.strftime("%H:%M:%S", curtime)
 
