@@ -2,21 +2,27 @@ import pygame
 import Axon
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
+# START SHARD: MagnaDoodle -----------------------------------------------------
 class MagnaDoodle(Axon.Component.component):
     """
     Auto-generated pygame component
     """
-    Inboxes = { "inbox": "Receive events from PygameDisplay",
-                "control": "For shutdown messages",
+    Inboxes = { "inbox": "This is where we expect to receive messages for work",
+                "control": "This is where control signals arrive",
                 "callback": "Receive callbacks from PygameDisplay",
               }
-    Outboxes = { "outbox": "not used",
-                 "signal": "For shutdown messages",
+    Outboxes = { "outbox": "This is where we expect to send results/messages to after doing work",
+                 "signal": "This is where control signals are sent out",
                  "display_signal": "Outbox used for communicating to the display surface",
                }
 
+    # START SHARD: __init__ --------------------------------------------------------
     def __init__(self, **argd):
+        # START SHARD: __init__.shard9 -------------------------------------------------
         super(MagnaDoodle, self).__init__()
+        # END SHARD: __init__.shard9 ---------------------------------------------------
+        
+        # START SHARD: __INIT__ --------------------------------------------------------
         self.backgroundColour = argd.get("bgcolour", (124,124,124))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
         self.margin = argd.get("margin", 8)
@@ -38,10 +44,18 @@ class MagnaDoodle(Axon.Component.component):
                              "transparency" : transparency }
         if not argd.get("position", None) is None:
             self.disprequest["position"] = argd.get("position",None)
+        # END SHARD: __INIT__ ----------------------------------------------------------
+        
     
+    # END SHARD: __init__ ----------------------------------------------------------
+    
+    # START SHARD: blitToSurface ---------------------------------------------------
     def blitToSurface(self):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
     
+    # END SHARD: blitToSurface -----------------------------------------------------
+    
+    # START SHARD: waitBox ---------------------------------------------------------
     def waitBox(self,boxname):
         """Generator. yields 1 until data ready on the named inbox."""
         waiting = True
@@ -49,31 +63,59 @@ class MagnaDoodle(Axon.Component.component):
             if self.dataReady(boxname): return
             else: yield 1
     
+    # END SHARD: waitBox -----------------------------------------------------------
+    
+    # START SHARD: drawBG ----------------------------------------------------------
     def drawBG(self):
         self.display.fill( (255,0,0) )
         self.display.fill( self.backgroundColour, self.innerRect )
     
+    # END SHARD: drawBG ------------------------------------------------------------
+    
+    # START SHARD: addListenEvent --------------------------------------------------
     def addListenEvent(self, event):
         self.send({ "ADDLISTENEVENT" : pygame.__getattribute__(event),
                     "surface" : self.display},
                     "display_signal")
     
+    # END SHARD: addListenEvent ----------------------------------------------------
+    
+    # START SHARD: main ------------------------------------------------------------
     def main(self):
+        # START SHARD: RequestDisplay --------------------------------------------------
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayservice)
         self.send( self.disprequest, "display_signal")
+        # END SHARD: RequestDisplay ----------------------------------------------------
+        
+        # START SHARD: wait ------------------------------------------------------------
         for _ in self.waitBox("callback"):
-            # START SHARD: wait.shard3 -----------------------------------------------------
+            # START SHARD: wait.shard10 ----------------------------------------------------
             yield 1
-            # END SHARD: wait.shard3 -------------------------------------------------------
+            # END SHARD: wait.shard10 ------------------------------------------------------
             
+        # END SHARD: wait --------------------------------------------------------------
+        
+        # START SHARD: GrabDisplay -----------------------------------------------------
         self.display = self.recv("callback")
+        # END SHARD: GrabDisplay -------------------------------------------------------
+        
+        # START SHARD: main.shard12 ----------------------------------------------------
         self.drawBG()
         self.blitToSurface()
+        # END SHARD: main.shard12 ------------------------------------------------------
+        
+        # START SHARD: SetEventOptions -------------------------------------------------
         self.addListenEvent("MOUSEBUTTONDOWN")
         self.addListenEvent("MOUSEBUTTONUP")
         self.addListenEvent("MOUSEMOTION")
+        # END SHARD: SetEventOptions ---------------------------------------------------
+        
+        # START SHARD: main.shard13 ----------------------------------------------------
         done = False
+        # END SHARD: main.shard13 ------------------------------------------------------
+        
+        # START SHARD: mainLoop --------------------------------------------------------
         while not done:
             # START SHARD: ShutdownHandler -------------------------------------------------
             while self.dataReady("control"):
@@ -88,8 +130,8 @@ class MagnaDoodle(Axon.Component.component):
             while self.dataReady("inbox"):
                 # START SHARD: eventhandler ----------------------------------------------------
                 for event in self.recv("inbox"):
-                    # START SHARD: shard0 ----------------------------------------------------------
-                    # START SHARD: shard0.shard1 ---------------------------------------------------
+                    # START SHARD: shard7 ----------------------------------------------------------
+                    # START SHARD: shard7.shard8 ---------------------------------------------------
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         # START SHARD: MOUSEBUTTONDOWN_handler -----------------------------------------
                         #print 'down'
@@ -121,17 +163,23 @@ class MagnaDoodle(Axon.Component.component):
                             self.blitToSurface()
                         # END SHARD: MOUSEMOTION_handler -----------------------------------------------
                         
-                    # END SHARD: shard0.shard1 -----------------------------------------------------
+                    # END SHARD: shard7.shard8 -----------------------------------------------------
                     
-                    # END SHARD: shard0 ------------------------------------------------------------
+                    # END SHARD: shard7 ------------------------------------------------------------
                     
                 # END SHARD: eventhandler ------------------------------------------------------
                 
             # END SHARD: pygameEventLoop ---------------------------------------------------
             
-            # START SHARD: mainLoop.shard4 -------------------------------------------------
+            # START SHARD: mainLoop.shard11 ------------------------------------------------
             self.pause()
             yield 1
-            # END SHARD: mainLoop.shard4 ---------------------------------------------------
+            # END SHARD: mainLoop.shard11 --------------------------------------------------
             
+        # END SHARD: mainLoop ----------------------------------------------------------
+        
     
+    # END SHARD: main --------------------------------------------------------------
+    
+# END SHARD: MagnaDoodle -------------------------------------------------------
+
