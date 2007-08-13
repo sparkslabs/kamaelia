@@ -19,6 +19,7 @@ class PygameComponent(Axon.Component.component):
                 "signal" : "",
                 "displaysignal" : "Shutdown signalling & sending requests to Pygame Display service",
               }
+   transparency = None
    def __init__(self, **argd):
        super(PygameComponent,self).__init__(**argd)
        self.eventHandlers = {}
@@ -56,6 +57,7 @@ class PygameComponent(Axon.Component.component):
                                      callback = (self,"display_control"),
                                      events = (self, "events"),
                                      size = size,
+                                     transparency = self.transparency,
                                      position = (0,0)
                  )
                )
@@ -98,6 +100,7 @@ class PygameComponent(Axon.Component.component):
 
 
 class MyFoo(PygameComponent):
+    transparency = 0xffffff
     boxsize = (100,50)
     width = 100
     hspacing = 10
@@ -243,7 +246,6 @@ class MyFoo(PygameComponent):
                     if command[1] == "all":
                         self.send((self.nodes, self.topology), "outbox")
                     if command[1] == "node":
-                        print ">>>",command[0],command[1]
                         n = {command[2] : self.nodes[command[2]]}
                         t = {command[2] : self.topology.get(command[2],[])}
                         self.send((n, t), "outbox")
@@ -396,7 +398,7 @@ if 0:
         MyBoxes()
     ).run()
 
-if 1:
+if 0:
     Pipeline(
         Source(iterable=relabel_commands, delay=0.3),
         MyBoxes(),
@@ -404,3 +406,61 @@ if 1:
         ConsoleEchoer(),
     ).run()
 
+if 1:
+    import random
+    from Kamaelia.UI.Pygame.Button import Button
+    from Kamaelia.Chassis.Graphline import Graphline
+    f = open("/usr/share/dict/words")
+    l = f.readlines()
+    f.close()
+
+    def newNodeId():
+        i = 1
+        while 1:
+            yield i
+            i = i + 1
+
+    class CoreLogic(Axon.Component.component):
+        def main(self):
+            nodeId = 1000
+            selected = None
+            while 1:
+                while self.dataReady("inbox"):
+                    command = self.recv("inbox")
+                    if command[0] == "SELECT":
+                        selected = command[1]
+#                    if command[0] == "DESELECT":
+#                        selected = None
+                    if command[0] == "ADD":
+                        if selected:
+                            nodeId = nodeId + 1
+                            self.send(["add", nodeId, str(nodeId), selected ],"outbox")
+                            self.send(["select", nodeId ],"outbox")
+                    if command[0] == "DEL":
+                        if selected:
+                            nodeId = nodeId + 1
+                            self.send(["del", "node", selected ],"outbox")
+                    if command[0] == "RELABEL":
+                        if selected:
+                            randomword = l[random.randint(0,len(l)-1)].strip()
+                            self.send(["relabel", selected, randomword ],"outbox")
+                            self.send(["select", selected ],"outbox")
+                yield 1
+    Graphline(
+        SOURCE = Source(iterable=relabel_commands, delay=0.3),
+        CLEAR = Button(caption="Clear", msg=["del", "all"], position=(0,690),size=(64,32)),
+        ADD= Button(caption="Add Child Node", msg=["ADD"], position=(70,690),size=(94,32)),
+        DEL= Button(caption="Del Node", msg=["DEL"], position=(170,690),size=(64,32)),
+        RELABEL= Button(caption="Relabel Node", msg=["RELABEL"], position=(240,690),size=(94,32)),
+        CORELOGIC = CoreLogic(),
+        TOPOLOGY = MyBoxes(),
+        linkages = {
+            ("SOURCE", "outbox"): ("TOPOLOGY","inbox"),
+            ("CLEAR", "outbox"): ("TOPOLOGY","inbox"),
+            ("TOPOLOGY","outbox"): ("CORELOGIC", "inbox"),
+            ("ADD","outbox"): ("CORELOGIC", "inbox"),
+            ("DEL","outbox"): ("CORELOGIC", "inbox"),
+            ("RELABEL","outbox"): ("CORELOGIC", "inbox"),
+            ("CORELOGIC","outbox"): ("TOPOLOGY", "inbox"),
+        }
+    ).run()
