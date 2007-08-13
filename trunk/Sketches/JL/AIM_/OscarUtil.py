@@ -25,11 +25,12 @@ OSCAR Utility functions
 This file includes functions for packing and unpacking binary data and defines
 some constants useful for dealing with OSCAR.
 
-This is the first of two utility modules. OscarUtil2 is the other.
+This is the first of two utility modules. OscarUtil2 is the other. Most AIM
+code requires both this module and OscarUtil2. 
 
 Credit goes to Alexandr Shutko for errorCodes dictionary (and for writing an
 excellent guide on the OSCAR protocol). You can find the original table at
-http://iserverd.khstu.ru/oscar/auth_failed.html
+`this page <http://iserverd.khstu.ru/oscar/auth_failed.html>`_.
 """
 import struct
 
@@ -70,9 +71,11 @@ class selfClass(object):
     selfClass() -> selfClass object.
 
     Calling selfClass.sendSnac(fam, sub, binaryData) causes the corresponding
-    SNAC to be printed in Wireshark format
+    SNAC to be printed in Wireshark format. Used to debug AIM component methods.
     """
     def sendSnac(self,fam, sub, text):
+        """constructs the SNAC and prints resulting binary data like a Wireshark
+        packet dump."""
         snac = SNAC(fam, sub, text)
         printWireshark(snac)
 
@@ -109,7 +112,12 @@ errorCodes = {0x0001 :   'Invalid nick or password',
               0x0020 :	  'Invalid SecurID',
               0x0022 :	  'Account suspended because of your age (age < 13)',
               }
-              
+
+def readTLV08(tlvdata):
+    """returns tuple ("error", error message) when given TLV 0x08"""
+    code, = struct.unpack("!H", tlvdata)
+    return ("error", errorCodes[code])
+    
 """Lots of constants defined below"""
 #How many bytes (2 ASCII chars) each variable is
 RATE_ID_WIDTH = 2
