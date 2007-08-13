@@ -29,17 +29,21 @@ sending them out to its "heard" outbox in a slightly more useable form. Also
 sends messages to the server based on commands coming through its "talk" inbox.
 
 
+
 How it works:
-------------
+-------------
 ChatManager expects to receive FLAPs containing SNACs through its "inbox". It
 recognizes certain types of SNACs. For these SNACS, ChatManager parses them, and
 sends the relevant data out to its "heard" outbox in tuple format. The following
-is a list of SNACs ChatManager understands and the tuples that it consequently
+lists the SNACs ChatManager understands and the tuples that it consequently
 sends out:
 
+=========   ================    ====================================
 SNAC        DESCRIPTION         TUPLE SENT TO "heard"
+=========   ================    ====================================
 (03, 0b)    Buddy is online     ("buddy online", {name: buddy name})
 (04, 07)    Incoming message    ("message", sender, message text)
+=========   ================    ====================================
 
 The "buddy online" message contains a dictionary instead of just a text field
 for the buddy name because this will make it easier to add more buddy data
@@ -47,11 +51,17 @@ to a "buddy online" message, such as online time or alias. The server sends this
 data, but right now ChatManager just discards it. 
 
 ChatManager also understands tuple-based commands sent to its "talk" inbox. The
-following is a list of commands it understands, and the corresponding SNACs it
-sends to its "outbox":
+following lists the commands it understands, and the corresponding actions it
+takes.
 
-COMMAND                                             SNAC        
-("message", recipient's screenname, message text)   (04, 06)    
+=================================================   ======================
+COMMAND                                             ACTION
+=================================================   ======================
+("message", recipient's screenname, message text)   Sends instant message to
+                                                    server (SNAC (04, 07))
+=================================================   ======================
+
+
 
 Example Usage
 -------------
@@ -99,6 +109,8 @@ from OscarUtil2 import *
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import re
+
+__kamaelia_components__ = (OSCARClient, TCPClient)
 
 class ChatManager(SNACExchanger):
     """
