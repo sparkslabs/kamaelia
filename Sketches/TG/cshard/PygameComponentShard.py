@@ -31,9 +31,14 @@ class pygameComponentShard(classShard):
     outbxs = { "outbox" : "not used",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
+    
+    # default initialisation parameters
+    initargs = {}
+    initargs['cmpname'] = None
+    initargs['methods'] = []
+    initargs['ishards'] = {}
 
-
-    def __init__(self, cmpname, *methods, **ishards):
+    def __init__(self, cmpname = None, methods = [], ishards = {}):
         """
         Generates a pygame kamaelia component if all required methods
         and shards are supplied, else raises a DependencyError
@@ -41,8 +46,7 @@ class pygameComponentShard(classShard):
         Arguments:
         cmpname = string of component name, will be used as class
                             name. If None, an auto-generated name will be
-                            used. (No default argument used as it will capture
-                            the first method supplied if left blank)
+                            used.
         methods = the methods to be added into the class, as function
                           objects or shard objects. At minimum these must
                           include this class's required methods, else a
@@ -53,30 +57,30 @@ class pygameComponentShard(classShard):
                         from which they are to be imported. Non-required
                         shards will be ignored
         """
-
+        
         mshards = self.makeMethodShards(methods)
-
+        
         self.checkDependencies(mshards, ishards)
-
+        
         # create default methods and add in shards
         compInit = initShard(clsname = cmpname, exkwarg = 'argd',
                                          shards = [ishards['__INIT__']])
-
+        
         waitLoop = forShard(name = 'wait', inVar = r'self.waitBox("callback")',
                                          shards = [['yield 1\n']])
-
+        
         mainLoop = whileShard(name = 'mainLoop', condition = 'not done',
                                               shards = [ishards['HandleShutdown'],
                                                               ishards['LoopOverPygameEvents'],
                                                               ['self.pause()\n', 'yield 1\n']])
-
+        
         compMain = functionShard(funcname = "main", args = ['self'],
                                                     shards = [ishards["RequestDisplay"], waitLoop,
                                                     ishards['GrabDisplay'],
                                                     ['self.drawBG()\n', 'self.blitToSurface()\n'],
                                                     ishards['SetEventOptions'], ['done = False\n'],
                                                     mainLoop])
-
+        
         # construct class with full shard set
         classShard.__init__(self, cmpname, superclasses = self.sclasses,
                                        docstring = self.dstr, inboxes = self.inbxs,
@@ -105,21 +109,27 @@ pyeventloop = forShard(name = 'eventhandler', forVars = ['event'], inVar = r'sel
 pyeventloop = whileShard(name = 'pygameEventLoop', condition = r'self.dataReady("inbox")',
                                           shards = [pyeventloop])
 
+# construct ishard dict
+ishards = {}
+ishards['__INIT__'] = __INIT__
+ishards['SetEventOptions'] = SetEventOptions
+ishards['HandleShutdown'] = ShutdownHandler
+ishards['LoopOverPygameEvents'] = pyeventloop  # replace previous shard here
+ishards['RequestDisplay'] = RequestDisplay
+ishards['GrabDisplay'] = GrabDisplay
+
 # construct magnadoodle class from the above chassis
-chassis = pygameComponentShard("MagnaDoodle",
-                                                         blitToSurface, waitBox, drawBG, addListenEvent,
-                                                         __INIT__ = __INIT__,
-                                                         SetEventOptions = SetEventOptions,
-                                                         HandleShutdown = ShutdownHandler,
-                                                         LoopOverPygameEvents = pyeventloop,  # replace previous shard here
-                                                         RequestDisplay = RequestDisplay,
-                                                         GrabDisplay = GrabDisplay)
+chassis = pygameComponentShard(cmpname = "MagnaDoodle",
+                                                         methods = [blitToSurface, waitBox, drawBG, addListenEvent],
+                                                         ishards = ishards)
 
 # wrap magna with the necessary imports
 file = moduleShard("PygameAppChassis", importmodules = ['pygame', 'Axon'],
                                importfrom = {'Kamaelia.UI.PygameDisplay': ['PygameDisplay']},
                                shards = [chassis])
-file.writeFile()
 
-from PygameAppChassis import *
-MagnaDoodle(size=(800,600)).run()
+if __name__ == '__main__':
+    file.writeFile()
+
+    from PygameAppChassis import *
+    MagnaDoodle(size=(800,600)).run()
