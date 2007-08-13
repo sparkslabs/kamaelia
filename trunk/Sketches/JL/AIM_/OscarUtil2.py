@@ -59,13 +59,13 @@ OSCAR Utility functions
 =======================
 This file includes functions for dealing with OSCAR datatypes and passwords.
 
-This is the second of two utility modules. OscarUtil is the other. 
+This is the second of two utility modules. OscarUtil is the other. Most of
+the AIM components require both OscarUtil and OscarUtil2. All the code in this
+module was originally written for Twisted or is derived from Twisted code. 
 
+Original Maintainer: U{Paul Swartz<mailto:z3p@twistedmatrix.com>} for Twisted
 
-Maintainer: U{Paul Swartz<mailto:z3p@twistedmatrix.com>} for Twisted
-
-12 Jul 2007
-Modified by Jinna Lei for Kamaelia.
+Modified 12 Jul 2007 by Jinna Lei for Kamaelia.
 """
 
 from __future__ import nested_scopes
@@ -82,9 +82,12 @@ def SNAC(fam,sub,data,id=1, flags=[0,0]):
 def readSNAC(data):
     """puts a SNAC off the wire into a slightly more useable form"""
     header="!HHBBL"
-    head=[list(struct.unpack(header,data[:10]))]
-    return head+[data[10:]]
-
+    try:
+        head=[list(struct.unpack(header,data[:10]))]
+        return head+[data[10:]]
+    except struct.error:
+        return error, data
+        
 def TLV(type,value):
     """constructs a TLV based on given data"""
     header="!HH"
@@ -119,7 +122,7 @@ def encryptPasswordMD5(password,key):
 
 def encryptPasswordICQ(password):
     """
-    encrypts passwords the old way, relatively insecure way. Not used very often
+    encrypts passwords the old way, relatively insecure way. Not used very often.
     """
     key=[0xF3,0x26,0x81,0xC4,0x39,0x86,0xDB,0x92,0x71,0xA3,0xB9,0xE6,0x53,0x7A,0x95,0x7C]
     bytes=map(ord,password)
