@@ -26,8 +26,10 @@ AIM Login
 =========
 
 This component logs into to AIM with the given screenname and password. It then
-sends its logged-in OSCAR connection out of its "signal" outbox, followed by any
-non-login-related messages it has received.
+sends its logged-in OSCAR connection out of its "signal" outbox, followed by a
+list of any non-login-related messages it has received.
+
+
 
 Example Usage
 -------------
@@ -58,10 +60,11 @@ Login and wire the resulting OSCARClient up to a ChatManager::
 
     AIMHarness().run()
 
-You can also run LoginHandler by itself. This is mostly useful for debugging
-purposes::
+You can also run LoginHandler by itself. This is useful for debugging::
 
     LoginHandler("kamaelia1", "abc123").run()
+
+
 
 How it works
 ------------
@@ -75,10 +78,9 @@ operation as an AIM client.
 
 At this point the server recognizes us as a functioning AIM client. LoginHandler
 unlinks its internal OSCARClient and passes the OSCARClient out of the "signal"
-outbox. Now any component that connects to that OSCARClient will be able to send
-and receive AIM messages. LoginHandler also collects any additional messages
-from OSCARClient and sends them out of its "signal" outbox. The OSCARClient and
-other messages are now the responsibility of the component that received them. 
+outbox. LoginHandler also collects any additional messages from OSCARClient and
+sends them out of its "signal" outbox. Now any component that connects to that
+OSCARClient will be able to send and receive AIM messages. 
 
 """
 
@@ -90,12 +92,15 @@ from OSCARClient import OSCARClient, SNACExchanger
 import time
 import Axon
 
+__kamaelia_components__ = (OSCARClient, SNACExchanger)
+
 class LoginHandler(SNACExchanger):
     """\
-    LoginHandler(screenname, password, [versionNumber]) -> new LoginHandler component
+    LoginHandler(screenname, password, [versionNumber]) -> new LoginHandler
+    component
 
-    Once started, LoginHandler logs in to AIM and sends the primed connection out of its "signal"
-    outbox.
+    Once started, LoginHandler logs in to AIM and sends the primed connection
+    out of its "signal" outbox.
 
     Keyword arguments:
    
@@ -146,15 +151,21 @@ class LoginHandler(SNACExchanger):
         connection + any non-login-related messages out.
         """
         yield Axon.Ipc.WaitComplete(self.getBOSandCookie())
-        yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
-        yield Axon.Ipc.WaitComplete(self.passTheReins())
+        if self.error:
+            self.send(self.error, "signal")
+        else:
+            yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
+            yield Axon.Ipc.WaitComplete(self.passTheReins())
         
     def getBOSandCookie(self):
         """Gets BOS and auth cookie."""
         yield Axon.Ipc.WaitComplete(self.connectAuth())
         for reply in self.getCookie(): yield 1
-        goal = self.extractBOSandCookie(reply)
-        assert self.debugger.note("LoginHandler.main", 1, "Got cookie!")
+        self.error = self.extractBOSandCookie(reply)
+        if self.error:
+            assert self.debugger.note("LoginHandler.main", 1, self.error)
+        else:
+            assert self.debugger.note("LoginHandler.main", 1, "Got cookie!")
         
     def negotiateProtocol(self):
         """Negotiates protocol."""
@@ -168,7 +179,8 @@ class LoginHandler(SNACExchanger):
         
     def connectAuth(self):
         """
-        Connects to the AIM authorization server, says hi, and waits for acknowledgement.
+        Connects to the AIM authorization server, says hi, and waits for
+        acknowledgement.
         """
         assert self.debugger.note("LoginHandler.connectAuth", 7, "sending new connection...")
         data = struct.pack('!i', self.versionNumber)
@@ -214,6 +226,8 @@ class LoginHandler(SNACExchanger):
     def extractBOSandCookie(self, reply):
         """Extracts BOS server, port, and auth cookie from server reply."""
         parsed = readTLVs(reply)
+        if parsed.has_key(0x08):
+            return readTLV08(parsed[0x08])
         assert parsed.has_key(0x05)
         BOS_server = parsed[0x05]
         BOS_server, port = BOS_server.split(':')
@@ -275,7 +289,8 @@ class LoginHandler(SNACExchanger):
 
     def getRateLimits(self):
         """
-        Request rate limits, wait for reply, and send acknowledgement to the server.
+        Request rate limits, wait for reply, and send acknowledgement to the
+        server.
         """
         
         #request rate limits
@@ -358,7 +373,8 @@ class LoginHandler(SNACExchanger):
     def passTheReins(self):
         """
         Unlink the internal OSCARClient and send it to "signal".
-        Also collect any unused messages from OSCARClient and send them out through "signal".
+        Also collect any unused messages from OSCARClient and send them out
+        through "signal".
         """
         while not self.dataReady():
             yield 1
