@@ -29,6 +29,8 @@ Provides a high-level Kamaelia interface to AIM.
 
 For a Kamaelia interface at the FLAP and SNAC levels, see OSCARClient.py
 
+
+
 Example Usage
 -------------
 A simple command-line client with a truly horrible interface::
@@ -45,6 +47,8 @@ A simple command-line client with a truly horrible interface::
              ConsoleEchoer()
             ).run()
 
+
+
 How it works
 -------------
 AIMHarness ties LoginHandler and ChatManager together. First it initializes a
@@ -57,9 +61,12 @@ To send an instant message to another user, send the command
 
 AIMHarness will send out the following notifications through its "outbox":
 
+======================================  ===================================
 NOTIFICATION                            EVENT
+======================================  ===================================
 ("buddy online", {buddy information})   A buddy comes online
 ("message", sender, message text)       An instant message arrives for you
+======================================  ===================================
 
 """
 
@@ -69,13 +76,16 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import ChatManager
 
+__kamaelia_components__ = (OSCARClient, LoginHandler, ChatManager, TCPClient)
+
 class AIMHarness(component):
     """
     AIMHarness() -> new AIMHarness component
 
-    Send ("message", recipient, message) commands to its "inbox" to send instant messages.
-    It will output ("buddy online", {name: buddyname}) and ("message", sender, message) tuples
-    whenever a buddy comes online or a new message arrives for you.
+    Send ("message", recipient, message) commands to its "inbox" to send
+    instant messages. It will output ("buddy online", {name: buddyname}) and
+    ("message", sender, message) tuples whenever a buddy comes online or a new
+    message arrives for you.
     """
     Inboxes = {"inbox" : "tuple-based commands for ChatManager",
                "control" : "NOT USED",
@@ -88,10 +98,10 @@ class AIMHarness(component):
                 "internal signal" : "sends shutdown handling signals to various child components",
                 }
     
-    def __init__(self):
+    def __init__(self, screenname, password):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(AIMHarness, self).__init__()
-        self.loginer = LoginHandler.LoginHandler('ukelele94720', '123abc').activate()
+        self.loginer = LoginHandler.LoginHandler(screenname, password).activate()
         self.link((self.loginer, "signal"), (self, "internal inbox")) #quite a hack, sending other data out through "signal"
         self.addChildren(self.loginer)
         self.debugger.addDebugSection("AIMHarness.main", 5)
@@ -100,22 +110,27 @@ class AIMHarness(component):
         """Waits for logged-in OSCARClient and links it up to ChatManager"""
         while not self.dataReady("internal inbox"):
             yield 1
-        self.oscar = self.recv("internal inbox")
-        queued = self.recv("internal inbox")
-        self.unlink(self.oscar)
-        
-        assert self.debugger.note("AIMHarness.main", 5, "%i queued messages" % len(queued))
-        self.chatter = ChatManager.ChatManager().activate()
-        self.link((self.chatter, "heard"), (self, "outbox"), passthrough=2)
-        self.link((self, "inbox"), (self.chatter, "talk"), passthrough=1)
-        self.link((self.chatter, "outbox"), (self.oscar, "inbox"))
-        self.link((self.oscar, "outbox"), (self.chatter, "inbox"))
-        self.link((self, "internal outbox"), (self.chatter, "inbox"))
-        while len(queued):
-            self.send(queued[0], "internal outbox")
-            del(queued[0])
-        while True:
-            yield 1
+        result = self.recv("internal inbox")
+        if type(result) == type((1,2)):
+            self.send(result)
+        else:
+            self.oscar = result
+            queued = self.recv("internal inbox")
+            self.unlink(self.oscar)
+            
+            assert self.debugger.note("AIMHarness.main", 9, "%i queued messages" % len(queued))
+            self.chatter = ChatManager.ChatManager().activate()
+            self.link((self.chatter, "heard"), (self, "outbox"), passthrough=2)
+            self.link((self, "inbox"), (self.chatter, "talk"), passthrough=1)
+            self.link((self.chatter, "outbox"), (self.oscar, "inbox"))
+            self.link((self.oscar, "outbox"), (self.chatter, "inbox"))
+            self.link((self, "internal outbox"), (self.chatter, "inbox"))
+            while len(queued):
+                self.send(queued[0], "internal outbox")
+                del(queued[0])
+            assert self.debugger.note("AIMHarness.main", 5, "Everything linked up and initialized, starting normal operation")
+            while True:
+                yield 1
         
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
@@ -130,6 +145,6 @@ if __name__ == '__main__':
            
     Pipeline(ConsoleReader(),
              PureTransformer(tuplefy),
-             AIMHarness(),
+             AIMHarness("kamaelia1", "abc123"),
              ConsoleEchoer()
              ).run()
