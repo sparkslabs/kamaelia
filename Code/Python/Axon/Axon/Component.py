@@ -428,13 +428,14 @@ class component(microprocess):
    
    Usescomponents=[]
 
-   def __init__(self):
+   def __init__(self, *args, **argd):
       """You want to overide this method locally.
 
       You MUST remember to call the superconstructor for things to work however.
       The way you do this is: super(YourClass,self).__init__()
       """
       super(component, self).__init__()
+      self.__dict__.update(argd)
       self.inboxes = dict()
       self.outboxes = dict()
 
