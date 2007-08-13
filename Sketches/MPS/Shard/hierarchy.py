@@ -19,6 +19,9 @@ class PygameComponent(Axon.Component.component):
                 "signal" : "",
                 "displaysignal" : "Shutdown signalling & sending requests to Pygame Display service",
               }
+   configuration = {
+      "transparency" : "Colour to be made transparent. None == no colour transparent",
+   }
    transparency = None
    def __init__(self, **argd):
        super(PygameComponent,self).__init__(**argd)
@@ -100,6 +103,14 @@ class PygameComponent(Axon.Component.component):
 
 
 class MyFoo(PygameComponent):
+    configuration = {
+       "transparency" : "Colour to be made transparent. None == no colour transparent",
+       "boxsize" : "(width,height) representing size of the boxes",
+       "width" : "width of the boxes (yes, I know, this *is* in /Sketches right now",
+       "height" : "height of the boxes (yes, I know, this *is* in /Sketches right now",
+       "hspacing" : "minimum spacing between boxes horizontally",
+       "vspacing" : "minimum spacing between boxes vertically",
+    }
     transparency = 0xffffff
     boxsize = (100,50)
     width = 100
@@ -266,6 +277,17 @@ class MyFoo(PygameComponent):
         return nw
 
 class MyBoxes(MyFoo):
+    configuration = {
+       "transparency" : "Colour to be made transparent. None == no colour transparent",
+       "boxsize" : "(width,height) representing size of the boxes",
+       "width" : "width of the boxes (yes, I know, this *is* in /Sketches right now",
+       "height" : "height of the boxes (yes, I know, this *is* in /Sketches right now",
+       "hspacing" : "minimum spacing between boxes horizontally",
+       "vspacing" : "minimum spacing between boxes vertically",
+       "nodes" : "initial mapping of node ids to node labels. Dict of int to string",
+       "topology" : "mapping of int -> [list of int] (nodes & child nodes)",
+       "boxes" : "mapping of int -> (int,int) initial positions of boxes on surface",
+    }
     nodes = {
        1: "MagnaDoodle",
        2: "init",
@@ -286,6 +308,11 @@ class MyBoxes(MyFoo):
 
 import time
 class Source(Axon.Component.component):
+    configuration = {
+       "iterable": "Something that can be iterated through as in 'for x in iterable', "
+                   "list, dict, generator etc",
+       "delay" : "Delay between sending messages",
+    }
     iterable = []
     delay = 1
     def main(self):
