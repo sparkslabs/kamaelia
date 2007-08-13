@@ -6,7 +6,7 @@ from Axon.Ipc import shutdownMicroprocess
 from Axon.Component import component
 import time
 class TerminatingProtocol(component):
-    """runs for five cycles of the scheduler"""
+    """runs for one second"""
     def main(self):
         lasttime = time.time()
         life = 1 #runs for 1 seconds

@@ -21,8 +21,8 @@ class Terminator(component):
 print "Connecting to nonexistent server, sending 10 messages"
 Pipeline(Terminator(), TCPClient('localhost', 50001)).run()
 
-print "Sending 10 messages to google.com on port 80"
-Pipeline(Terminator(), TCPClient('google.com', 80)).run()
+##print "Sending 10 messages to google.com on port 80"
+##Pipeline(Terminator(), TCPClient('google.com', 80)).run()
 
 #never gets to this code
 #run ./TerminatingServer.py or ./NonTerminatingServer.py.
