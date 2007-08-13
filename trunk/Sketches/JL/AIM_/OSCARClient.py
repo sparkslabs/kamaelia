@@ -24,21 +24,21 @@
 ========================
 Kamaelia OSCAR interface
 ========================
-NOTE: This module provides a low-level interface to OSCAR. For a high-level,
-      easy-to-use interface, see AIMHarness.py.
+NOTE: These components implement the OSCAR protocol at the lowest level and
+require a fairly good knowledge of OSCAR to use them. For a high-level
+interface, see AIMHarness.py.
 
-The OSCARProtocol component provides a Kamaelia interface for the FLAP level of
-OSCAR protocol. You should not be linking to OSCARProtocol directly, but to
-OSCARClient. 
+-   The OSCARProtocol component provides a Kamaelia interface for the FLAP level
+    of OSCAR protocol. You should not be linking to OSCARProtocol directly, but
+    to OSCARClient. 
 
-The OSCARClient prefab returns an OSCARProtocol component wired up to a TCPClient.
+-   The OSCARClient prefab returns an OSCARProtocol component wired up to a
+    TCPClient.
 
-These components implement the OSCAR protocol at the lowest level and still
-require a fairly good knowledge of OSCAR to use them.
+-   SNACExchanger is the base class for all components that deal with the SNAC layer
+    of OSCAR protocol. 
 
 
-SNACExchanger is the base class for all components that deal with the SNAC layer
-of OSCAR protocol. 
 
 Explanation of Terms
 ------------------------
@@ -46,18 +46,19 @@ NOTE: A "byte" in the following documentation refers to an ASCII char, an
 unsigned char in C.
 
 OSCAR messages are transmitted in discrete units called FLAPs, which take the
-following form:
-------------------------------------------
-|FLAP-header                              |
-|   message start character (*) -- 1 byte |
-|   channel -- 1 byte                     |
-|   sequence number -- 2 bytes            |
-|   length of following data -- 2 bytes   |
-|-----------------------------------------|
-| ------------                            |
-||FLAP payload|                           |
-| ------------                            |
-------------------------------------------
+following form::
+
+    -------------------------------------------
+    |FLAP-header                              |
+    |   message start character (*) -- 1 byte |
+    |   channel -- 1 byte                     |
+    |   sequence number -- 2 bytes            |
+    |   length of following data -- 2 bytes   |
+    |-----------------------------------------|
+    | ------------                            |
+    ||FLAP payload|                           |
+    | ------------                            |
+    -------------------------------------------
 
 The sequence number is incremented with every FLAP sent. AOL is very strict
 about in-order sequence numbers and servers may even disconnect a client for not
@@ -67,18 +68,19 @@ The majority of FLAP payloads (everything except new connection notifications,
 really serious errors, shutdown notifications, and keepalives) are units called
 SNACs and are transmitted over channel 2.
 
-The structure of a SNAC: 
-|------------------------|
-|SNAC-header             |
-|  family -- 2 bytes     |
-|  subtype -- 2 bytes    |
-|  request ID -- 2 bytes |
-|  flags -- 4 bytes      |
-|------------------------
-|  --------------        |
-| | SNAC payload |       |
-|  --------------        |
-|------------------------|
+The structure of a SNAC::
+
+    --------------------------
+    |SNAC-header             |
+    |  family -- 2 bytes     |
+    |  subtype -- 2 bytes    |
+    |  request ID -- 2 bytes |
+    |  flags -- 4 bytes      |
+    |------------------------
+    |  --------------        |
+    | | SNAC payload |       |
+    |  --------------        |
+    --------------------------
 
     
 All SNAC payloads must follow a prescribed format unique to the particular type
@@ -90,19 +92,21 @@ to the client, SNAC (01, 11) reports client idle times to the server, and
 
 Yet another type of OSCAR datatype is a type-length-value (TLV) unit.
 
-The structure of a TLV:
+The structure of a TLV::
 
------------------------------------------|
-|TLV-header                              |
-|   type -- 2 bytes                      |
-|   length of following data -- 2 bytes  |
-|----------------------------------------|
-|  ---------                             |
-| |TLV data |                            |
-|  ---------                             |
------------------------------------------
+    ------------------------------------------
+    |TLV-header                              |
+    |   type -- 2 bytes                      |
+    |   length of following data -- 2 bytes  |
+    |----------------------------------------|
+    |  ---------                             |
+    | |TLV data |                            |
+    |  ---------                             |
+    -----------------------------------------
 
 TLVs may appear inside SNACs or just inside FLAPs. 
+
+
 
 How does it work?
 -----------------
@@ -117,40 +121,35 @@ inked to the OSCARProtocol component's "talk" and "heard" boxes, respectively.
 Send (channel, flap body) tuples to its inbox and receive (channel, flap body)
 tuples from the outbox.
 
-SNACExchanger provides specialized methods for dealing with the SNAC layer of
-OSCAR protcol. SNACExchanger.sendSnac wraps the normal send method  
-
-Do not link to it directly, but to one of its subclasses instead. 
-
 SNACExchanger provides specialized methods for dealing with SNACs. You must
 subclass it, as it does not have a main method. 
 
+
+
 Example Usage
 -------------
-Send "Hello World!" to kamaelia1 whenever they send us anything::
-
 To get an MD5 key from the authorization server during login::
 
-class LoginHandler(SNACExchanger):
-    def main(self):
-        self.send((CHANNEL_NEWCONNECTION,
-                   struct.pack('!i', 1)))
-        while not self.dataReady():
-            yield 1
-        reply = self.recv() # server ack of new connection
-        zero = struct.pack('!H', 0)
-        request = TLV(0x01, "kamaelia1") + TLV(0x4b, zero) + TLV(0x5a, zero)
-        self.sendSnac(0x17, 0x06, request)
-        for reply in self.waitSnac(0x17, 0x07): yield 1
-        md5key = reply[2:]
-        print ("%02x " * len(md5key)) % unpackSingles(md5key)
+    class LoginHandler(SNACExchanger):
+        def main(self):
+            self.send((CHANNEL_NEWCONNECTION,
+                       struct.pack('!i', 1)))
+            while not self.dataReady():
+                yield 1
+            reply = self.recv() # server ack of new connection
+            zero = struct.pack('!H', 0)
+            request = TLV(0x01, "kamaelia1") + TLV(0x4b, zero) + TLV(0x5a, zero)
+            self.sendSnac(0x17, 0x06, request)
+            for reply in self.waitSnac(0x17, 0x07): yield 1
+            md5key = reply[2:]
+            print ("%02x " * len(md5key)) % unpackSingles(md5key)
 
-Graphline(osc = OSCARClient('login.oscar.aol.com', 5190),
-          login = LoginHandler(),
-          linkages = {("login", "outbox") : ("osc", "inbox"),
-                      ("osc", "outbox") : ("login", "inbox"),
-                      }
-          ).run()
+    Graphline(osc = OSCARClient('login.oscar.aol.com', 5190),
+              login = LoginHandler(),
+              linkages = {("login", "outbox") : ("osc", "inbox"),
+                          ("osc", "outbox") : ("login", "inbox"),
+                          }
+              ).run()
 
 For a more complete example, see LoginHandler.py
 """
@@ -161,6 +160,11 @@ from OscarUtil import *
 from OscarUtil2 import *
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Internet.TCPClient import TCPClient
+
+
+__kamaelia_components__ = (Graphline, TCPClient)
 
 class OSCARProtocol(component):
     """\
@@ -186,6 +190,12 @@ class OSCARProtocol(component):
         super(OSCARProtocol, self).__init__()
         self.seqnum = 0
         self.done = False
+        self.buffer = ""
+        debugSections = {"OSCARProtocol.main" : 0,
+                         "OSCARProtocol.checkBoxes" : 0,
+                         "OSCARProtocol.handleinbox": 0,
+                         }
+        self.debugger.addDebug(**debugSections)
 
     def main(self):
         """main loop"""
@@ -208,10 +218,17 @@ class OSCARProtocol(component):
         head = '!cBHH'
         while data:
             a, chan, seqnum, datalen = struct.unpack(head, data[:FLAP_HEADER_LEN])
-            assert len(data) >= 6+datalen
-            flapbody = data[FLAP_HEADER_LEN:FLAP_HEADER_LEN+datalen]
-            self.send((chan, flapbody), "heard")  
-            data = data[FLAP_HEADER_LEN+datalen:]
+            if len(data) < 6+datalen:
+                assert self.debugger.note("OSCARProtocol.handleinbox", 1,
+                                          "FLAP shorter than specified length! " +\
+                                          str(datalen) + " " + str(len(data)))
+                flapbody = data[FLAP_HEADER_LEN:]
+                data = ""
+##                self.send((chan, flapbody), "heard")
+            else:
+                flapbody = data[FLAP_HEADER_LEN:FLAP_HEADER_LEN+datalen]
+                self.send((chan, flapbody), "heard")  
+                data = data[FLAP_HEADER_LEN+datalen:]
 
     def handlecontrol(self):
         data = self.recv("control")
@@ -237,9 +254,6 @@ class OSCARProtocol(component):
                          seqnum, len(data))
         self.send(head+str(data))
 
-
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Internet.TCPClient import TCPClient
 
 def OSCARClient(server, port):
     """\
