@@ -1,0 +1,425 @@
+#!/usr/bin/env python
+#
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""
+=================================================
+LikeFile - file-like interaction with components.
+=================================================
+
+LikeFile is a way to run Axon components with code that is not Axon-aware. It
+does this by running the scheduler and all associated microprocesses in a
+separate thread, and using a custom component to communicate if so desired.
+
+
+Using this code
+---------------
+
+With a normal kamaelia system, you would start up a component and start
+running the Axon scheduler as follows, either:
+
+    from Axon.Scheduler import scheduler
+    component.activate()
+    scheduler.run.runThreads()
+    someOtherCode()
+
+or simply:
+
+    component.run()
+    someOtherCode()
+
+In both cases, someOtherCode() only run when the scheduler exits. What do you
+do if you want to (e.g.) run this alongside another external library that has
+the same requirement?
+
+Well, first we start the Axon scheduler in the background as follows:
+
+    from likefile import schedulerThread
+    schedulerThread().start()
+
+The scheduler is now actively running in the background, and you can start
+components on it from the foreground, in the same way as you would from inside
+kamaelia (don't worry, activate() is threadsafe):
+
+    component.activate()
+    someOtherCode()
+
+"component" will immediately start running and processing. This is fine if it's
+something non-interactive like a TCP server, but what do we do if we want to 
+interact with this component from someOtherCode?
+
+In this case, we use LikeFile, instead of activating. This is a wrapper
+which sits around a component and provides a threadsafe way to interact
+with it, whilst it is running in the backgrounded sheduler:
+
+    from Axon.likefile import LikeFile
+    wrappedComponent = LikeFile(component)
+    someOtherCode()
+
+Now, wrappedComponent is an instance of the likefile wrapper, and you can
+interact with "component" by calling get() on wrappedComponent, to get data
+from the outbox on "component", or by calling put(data) to put "data" into
+the inbox of "component" like so:
+
+    p = LikeFile( SimpleHTTPClient() )
+    p.put("http://google.com")
+    google = p.get()
+    p.shutdown()
+    print "google's homepage is", len(google), "bytes long.
+
+for both get() and put(), there is an optional extra parameter boxname,
+allowing you to interact with different boxes, for example to send a message
+with the text "RELOAD" to a component's control inbox, you would do:
+
+    wrappedComponent.put("RELOAD", "control")
+    wrappedComponent.get("signal")
+
+Finally, LikeFile objects have a shutdown() method that sends the usual Axon
+IPC shutdown messages to a wrapped component, and prevents further IO.
+
+
+Advanced LikeFile usage.
+------------------------
+
+LikeFile has some optional extra arguments on creation, for handling custom
+boxes outside the "basic 4". For example, to wrap a component with inboxes
+called "secondary" and "tertiary" and an outbox called "debug", You would do:
+
+    p = LikeFile( componentMaker, 
+                  extraInboxes = ("secondary", "tertiary"),
+                  extraOutboxes = "debug"
+
+Either strings or tuples of strings will work.
+
+
+
+
+
+
+Diagram of LikeFile's functionality
+-----------------------------------
+LikeFile is constructed from components like so:
+
+
+     +----------------------------------+
+     |             LikeFile             |
+     +----------------------------------+
+          |                      / \ 
+          |                       |
+      InQueues                 OutQueues
+          |                       |
++---------+-----------------------+---------+
+|        \ /                      |         |
+|    +---------+               +--------+   |
+|    |  Input  |   Shutdown    | Output |   |
+|    | Wrapper | ------------> |        |   |
+|    | (thread)|   Message     |Wrapper |   |
+|    +---------+               +--------+   |
+|         |                      / \        |
+|         |                       |         |
+|     Inboxes                 Outboxes      |
+|         |                       |         |
+|        \ /                      |         |
+|    +----------------------------------+   |
+|    |      the wrapped component       |   |
+|    +----------------------------------+   |
+|                                           |
+|    +----------------------------------+   |
+|    |       Some other component       |   | 
+|    |     that was only activated      |   |
+|    +----------------------------------+   |
+|                                           |
+|  AXON SCHEDULED COMPONENTS                |
++-------------------------------------------+
+
+
+
+
+Note 1: Threadsafeness of activate().
+
+when a component is activated, it calls the method inherited from microprocess, which calls _addThread(self)
+on an appropriate scheduler. _addThread calls wakeThread, which places the request on a threadsafe queue.
+
+"""
+
+from Scheduler import scheduler
+from Component import component
+from ThreadedComponent import threadedadaptivecommscomponent
+from AdaptiveCommsComponent import AdaptiveCommsComponent
+from AxonExceptions import noSpaceInBox
+from Ipc import producerFinished, shutdownMicroprocess
+import Queue, threading, time, copy, warnings
+queuelengths = 0
+
+DEFIN = ["inbox", "control"]
+DEFOUT = ["outbox", "signal"]
+
+def addBox(names, boxMap, addBox):
+        """Add an extra wrapped box called name, using the addBox function provided
+        (either self.addInbox or self.addOutbox), and adding it to the box mapping
+        which is used to coordinate message routing within component wrappers."""
+        for boxname in names:
+            if boxname in boxMap:
+                raise ValueError, "%s %s already exists!" % (direction, boxname)
+            realboxname = addBox(boxname)
+            boxMap[boxname] = realboxname
+
+
+class dummyComponent(component):
+    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
+    def main(self):
+        while True:
+            self.pause()
+            yield 1
+
+
+class schedulerThread(threading.Thread):
+    """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
+    lock = threading.Lock()
+    def __init__(self,slowmo=0):
+        if not schedulerThread.lock.acquire(False):
+            raise "only one scheduler for now can be run!"
+        self.slowmo = slowmo
+        threading.Thread.__init__(self)
+        self.setDaemon(True) # Die when the caller dies
+    def run(self):
+        dummyComponent().activate() # to keep the scheduler from exiting immediately.
+        # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
+        scheduler.run.runThreads(slowmo = self.slowmo)
+        schedulerThread.lock.release()
+
+
+class componentWrapperInput(threadedadaptivecommscomponent):
+    """A wrapper that takes a child component and waits on an event from the foreground, to signal that there is 
+    queued data to be placed on the child's inboxes."""
+    def __init__(self, child, inboxes = DEFIN):
+        super(componentWrapperInput, self).__init__()
+        self.child = child
+
+        # This is a map from the name of the wrapped inbox on the child, to the
+        # Queue used to convey data into it.
+        self.inQueues = dict()
+
+        # This queue is used by the foreground to tell us what queue it has sent us
+        # data on, so that we do not need to check all our input queues,
+        # and also so that we can block on reading it.
+        self.whatInbox = Queue.Queue()
+        self.isDead = threading.Event()
+
+
+        # This sets up the linkages between us and our child, avoiding extra
+        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
+        self.childInboxMapping = dict()
+        addBox(inboxes, self.childInboxMapping, self.addOutbox)
+        for childSink, parentSource in self.childInboxMapping.iteritems():
+            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
+            self.link((self, parentSource),(self.child, childSink))
+
+        # This outbox is used to tell the output wrapper when to shut down.
+        self.deathbox = self.addOutbox(str(id(self)))
+
+    def main(self):
+        while True:
+            whatInbox = self.whatInbox.get()
+            if not self.pollQueue(whatInbox):
+                # a False return indicates that we should shut down.
+                self.isDead.set()
+                # tells the foreground object that we've successfully processed a shutdown message.
+                # unfortunately, whether the child honours it or not is a matter of debate.
+                self.send(object, self.deathbox)
+                return
+
+    def pollQueue(self, whatInbox):
+        """This method checks all the queues from the outside world, and forwards any waiting data
+        to the child component. Returns False if we propogated a shutdown signal, true otherwise."""
+        parentSource = self.childInboxMapping[whatInbox]
+        queue = self.inQueues[whatInbox]
+        while not queue.empty():
+            if not self.outboxes[parentSource].isFull():
+                msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
+                try:
+                    self.send(msg, parentSource)
+                except noSpaceInBox, e:
+                    raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                    return False
+            else:
+                # if the component's inboxes are full, do something here. Preferably not succeed.
+                break
+        return True
+
+class componentWrapperOutput(AdaptiveCommsComponent):
+    """A component which takes a child component and connects its outboxes to queues, which communicate
+    with the LikeFile component."""
+    def __init__(self, child, inputHandler, outboxes = DEFOUT):
+        super(componentWrapperOutput, self).__init__()
+        self.queuelengths = queuelengths
+        self.child = child
+        self.addChildren(self.child)
+
+        # This queue maps from the name of the outbox on the child which is to be wrapped,
+        # to the Queue which conveys that data to the foreground thread.
+        self.outQueues = dict()
+
+        # set up notification from the input handler to kill us when appropriate.
+        # we cannot rely on shutdown messages being propogated through the child.
+        self.isDead = inputHandler.isDead
+        self.deathbox = self.addInbox(str(id(self)))
+        self.link((inputHandler, inputHandler.deathbox), (self, self.deathbox))
+
+        # This sets up the linkages between us and our child, avoiding extra
+        # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
+        self.childOutboxMapping = dict()
+        addBox(outboxes, self.childOutboxMapping, self.addInbox)
+
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
+            self.link((self.child, childSource),(self, parentSink))
+
+    def main(self):
+        self.child.activate()
+        while True:
+            self.pause()
+            yield 1
+            self.sendPendingOutput()
+            if self.dataReady(self.deathbox):
+                return
+
+
+    def sendPendingOutput(self):
+        """This method will take any outgoing data sent to us from a child component and stick it on a queue 
+        to the outside world."""
+        for childSource, parentSink in self.childOutboxMapping.iteritems():
+            queue = self.outQueues[childSource]
+            while self.dataReady(parentSink):
+                if not queue.full():
+                    msg = self.recv(parentSink)
+                    # TODO - what happens when the wrapped component terminates itself? We keep on going. Not optimal.
+                    queue.put_nowait(msg)
+                else:
+                    break
+                    # permit a horrible backlog to build up inside our boxes. What could go wrong?
+
+
+class LikeFile(object):
+    """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
+    def __init__(self, child, extraInboxes = (), extraOutboxes = ()):
+        if schedulerThread.lock.acquire(False): 
+            schedulerThread.lock.release()
+            raise AttributeError, "no running scheduler found."
+        # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
+        # letter. TODO - this is unelegant code.
+        if not isinstance(extraInboxes, tuple):
+            extraInboxes = (extraInboxes, )
+        if not isinstance(extraOutboxes, tuple):
+            extraOutboxes = (extraOutboxes, )
+        # If the component to wrap is missing, say, "inbox", then don't fail but silently neglect to wrap it.
+        validInboxes = type(child).Inboxes.keys()
+        validOutboxes = type(child).Outboxes.keys()
+        inboxes = []
+        outboxes = []
+        for i in DEFIN:
+            if i in validInboxes: inboxes.append(i)
+        for i in DEFOUT:
+            if i in validOutboxes: outboxes.append(i)
+        inboxes += list(extraInboxes)
+        outboxes += list(extraOutboxes)
+
+        try: inputComponent = componentWrapperInput(child, inboxes)
+        except KeyError, e:
+            raise KeyError, 'component to wrap has no such inbox: %s' % e
+        try: outputComponent = componentWrapperOutput(child, inputComponent, outboxes)
+        except KeyError, e:
+            del inputComponent
+            raise KeyError, 'component to wrap has no such outbox: %s' % e
+        self.inQueues = copy.copy(inputComponent.inQueues)
+        self.outQueues = copy.copy(outputComponent.outQueues)
+        # reaching into the component and its child like this is threadsafe since it has not been activated yet.
+        self.inputComponent = inputComponent
+        self.outputComponent = outputComponent
+        inputComponent.activate()
+        outputComponent.activate()
+        self.alive = True
+
+# methods passed through from the queue.
+    def empty(self, boxname = "outbox"):
+        """Return True if there is no data pending collection on boxname, False otherwise."""
+        return self.outQueues[boxname].empty()
+    def qsize(self, boxname = "outbox"):
+        """Returns the approximate number of pending data items awaiting collection from boxname. Will never be smaller than the actual amount."""
+        return self.outQueues[boxname].qsize()
+
+    def get_nowait(self, boxname = "outbox"):
+        """Equivalent to get(boxname, False)"""
+        return self.get(boxname, blocking = False)
+
+    def get(self, boxname = "outbox", blocking = True, timeout = 86400):
+        """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
+        raises AttributeError if the LikeFile is not alive. Optional parameters blocking and timeout function
+        the same way as in Queue objects, since that is what's used under the surface."""
+        if self.alive:
+            return self.outQueues[boxname].get(blocking, timeout)
+            # TODO - remove this.
+            # Specifying any timeout allows ctrl-c to interrupt the wait, even if the timeout is excessive.
+            # This is one day. this may be a problem, in which case retry after an "empty" exception is raised.
+        else: raise AttributeError, "shutdown was previously called, or we were never activated."
+
+    def put(self, msg, boxname = "inbox"):
+        """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
+        if self.alive:
+            queue = self.inQueues[boxname]
+            queue.put_nowait(msg)
+            self.inputComponent.whatInbox.put_nowait(boxname)
+        else: raise AttributeError, "shutdown was previously called, or we were never activated."
+
+    def shutdown(self):
+        """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
+        will warn if the shutdown took too long to confirm in action."""
+        # TODO - what if the wrapped component has no control box?
+        if self.alive: 
+            self.put(Ipc.shutdown(),               "control") # legacy support.
+            self.put(Ipc.producerFinished(),       "control") # some components only honour this one
+            self.put(Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
+        else:
+            raise AttributeError, "shutdown was previously called, or we were never activated."
+        self.inputComponent.isDead.wait(1)
+        if not self.inputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
+            warnings.warn("Timed out waiting on shutdown confirmation, may not be dead.")
+        self.alive = False
+
+    def __del__(self):
+        if self.alive:
+            self.shutdown()
+
+
+if __name__ == "__main__":
+    background = schedulerThread().start()
+    time.sleep(0.1)
+    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+    import time
+    p = LikeFile(SimpleHTTPClient())
+    p.put("http://google.com")
+    p.put("http://slashdot.org")
+    p.put("http://whatismyip.org")
+    google = p.get()
+    slashdot = p.get()
+    whatismyip = p.get()
+    p.shutdown()
+    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
