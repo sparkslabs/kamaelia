@@ -110,7 +110,8 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import re
 
-__kamaelia_components__ = (OSCARClient, TCPClient)
+__kamaelia_components__ = ( TCPClient,)
+__kamaelia_prefabs__ = (OSCARClient,)
 
 class ChatManager(SNACExchanger):
     """

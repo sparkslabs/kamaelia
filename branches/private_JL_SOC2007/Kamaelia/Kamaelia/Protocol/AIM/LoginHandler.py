@@ -91,7 +91,8 @@ from Axon.Component import component
 import time
 import Axon
 
-__kamaelia_components__ = (OSCARClient, SNACExchanger)
+__kamaelia_components__ = (SNACExchanger,)
+__kamaelia_prefabs__ = (OSCARClient,)
 
 class LoginHandler(SNACExchanger):
     """\

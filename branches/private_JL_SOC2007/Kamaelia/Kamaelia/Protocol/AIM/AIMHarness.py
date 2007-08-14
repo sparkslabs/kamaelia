@@ -82,11 +82,11 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import Kamaelia.Protocol.AIM.ChatManager
 
-__kamaelia_components__ = (OSCARClient,
-                           Kamaelia.Protocol.AIM.LoginHandler.LoginHandler,
+__kamaelia_components__ = (Kamaelia.Protocol.AIM.LoginHandler.LoginHandler,
                            Kamaelia.Protocol.AIM.ChatManager.ChatManager,
                            TCPClient,
                            )
+__kamaelia_prefabs__ = (OSCARClient,)
 
 class AIMHarness(component):
     """
