@@ -11,7 +11,6 @@ schedulerThread(slowmo=0.001).start()
 filename = "./snail.ogg"
 
 playStream = LikeFile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
-playStream.activate()
 # set of components for playing the stream back.
 
 host = "bbc.kamaelia.org"

@@ -52,10 +52,8 @@ spritescheduler = SpriteScheduler(cat_args, [], background, screen_surface, MyGa
 
 newcat = make_cat(*cat_args)
 the_sun = LikeFile(make_cat(*cat_args), extrainboxes = ("translation", "imaging"))
-the_sun.activate()
 
 planet = LikeFile(make_cat(*cat_args), extrainboxes = ("translation", "rotator", "imaging"))
-planet.activate()
 sun_position = tuple([x/2 for x in screensize])
 
 planet_position = (screensize[0]/4.0, screensize[1]/2)

@@ -100,7 +100,6 @@ while True:
         if args and int(args) > 1: count = int(args)
         for i in xrange(0, count):
             newcat = LikeFile(make_cat(*cat_args))
-            newcat.activate()
             catlist.append(newcat)
         print "added %s cats." % count
     elif command == "pause":
