@@ -137,15 +137,6 @@ class BasicLogger(component):
         self.password = password
         self.debugger.addDebugSection("Logger.main", 0)
 
-        Graphline(log = Carousel(SimpleFileWriter),
-                  info = Carousel(SimpleFileWriter),
-                  logger = self,
-                  linkages = {("logger", "log_next") : ("log", "next"),
-                              ("logger", "info_next") : ("info", "next"),
-                              ("logger", "outbox") : ("log", "inbox"),
-                              ("logger", "system") : ("info", "inbox"),
-                              }).activate()
-
     def login(self):
         """registers with the IRC server"""
         self.send(("NICK", self.name), "irc")
