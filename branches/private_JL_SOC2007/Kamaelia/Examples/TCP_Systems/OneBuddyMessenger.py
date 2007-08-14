@@ -69,12 +69,13 @@ def sendTo(recipient, text):
     return ("message", recipient, text)
 
 def outformat(data, buddyname):
-    if data[0] == "buddy online" and data[1]["name"] ==  buddyname:
-        return "%s is online" % buddyname
-    elif data[0] == "message" and data[1] == buddyname:
-        return "%s: %s" % (buddyname, data[2])
+    buddyname = buddyname.lower()
+    if data[0] == "buddy online" and data[1]["name"].lower() ==  buddyname:
+        return "%s is online" % data[1]["name"]
+    elif data[0] == "message" and data[1].lower() == buddyname:
+        return "%s: %s" % (data[1], data[2])
     elif data[0] == "error":
-        ": ".join(data)
+        return ": ".join(data)
 
 def SimpleAIMClient(screenname, password, buddyname):
     Pipeline(Textbox(position=(0, 400)),
