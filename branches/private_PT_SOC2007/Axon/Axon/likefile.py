@@ -411,23 +411,3 @@ class LikeFile(object):
         if self.alive:
             self.shutdown()
 
-
-if __name__ == "__main__":
-    import sys
-    sys.path = sys.path[1:] + [sys.path[0]]
-    print sys.path
-    #move '' to the end of the path...or else other files can't import anything in Axon correctly, since there is an Axon.py in this directory.
-
-    background = schedulerThread().start()
-    time.sleep(0.1)
-    from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
-    import time
-    p = LikeFile(SimpleHTTPClient())
-    p.put("http://google.com")
-    p.put("http://slashdot.org")
-    p.put("http://whatismyip.org")
-    google = p.get()
-    slashdot = p.get()
-    whatismyip = p.get()
-    p.shutdown()
-    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
