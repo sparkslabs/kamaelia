@@ -158,6 +158,7 @@ when a component is activated, it calls the method inherited from microprocess, 
 on an appropriate scheduler. _addThread calls wakeThread, which places the request on a threadsafe queue.
 
 """
+# lei: docstring needs to be ReST-formatted
 
 from Scheduler import scheduler
 from Component import component
@@ -171,13 +172,13 @@ queuelengths = 0
 DEFIN = ["inbox", "control"]
 DEFOUT = ["outbox", "signal"]
 
-def addBox(names, boxMap, addBox):
+def addBox(names, boxMap, addBox): #lei: calling a parameter the function's name is confusing! It might be better if the function were renamed "addBoxes" since it adds more than one box.
         """Add an extra wrapped box called name, using the addBox function provided
         (either self.addInbox or self.addOutbox), and adding it to the box mapping
         which is used to coordinate message routing within component wrappers."""
         for boxname in names:
             if boxname in boxMap:
-                raise ValueError, "%s %s already exists!" % (direction, boxname)
+                raise ValueError, "%s %s already exists!" % (direction, boxname) #lei: direction is not a variable
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
 
@@ -194,7 +195,7 @@ class schedulerThread(threading.Thread):
     """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
     lock = threading.Lock()
     def __init__(self,slowmo=0):
-        if not schedulerThread.lock.acquire(False):
+        if not schedulerThread.lock.acquire(False): #lei-note: trivial question, why say schedulerThread and threading.Thread instead of self or super?
             raise "only one scheduler for now can be run!"
         self.slowmo = slowmo
         threading.Thread.__init__(self)
@@ -237,7 +238,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
 
     def main(self):
         while True:
-            whatInbox = self.whatInbox.get()
+            whatInbox = self.whatInbox.get() #lei: this whatInbox thing is confusing. Why name it "whatInbox"? Why call one of the contents of the queue whatInbox "whatInbox" as well? 
             if not self.pollQueue(whatInbox):
                 # a False return indicates that we should shut down.
                 self.isDead.set()
@@ -326,6 +327,8 @@ class LikeFile(object):
             raise AttributeError, "no running scheduler found."
         # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
         # letter. TODO - this is unelegant code.
+        # lei: :( I ran into the same problem myself. I don't know how else you would solve it, though. This way
+        #       seems the clearest. 
         if not isinstance(extraInboxes, tuple):
             extraInboxes = (extraInboxes, )
         if not isinstance(extraOutboxes, tuple):
@@ -339,9 +342,9 @@ class LikeFile(object):
             if i in validInboxes: inboxes.append(i)
         for i in DEFOUT:
             if i in validOutboxes: outboxes.append(i)
-        inboxes += list(extraInboxes)
+        inboxes += list(extraInboxes) 
         outboxes += list(extraOutboxes)
-
+        
         try: inputComponent = componentWrapperInput(child, inboxes)
         except KeyError, e:
             raise KeyError, 'component to wrap has no such inbox: %s' % e
@@ -410,6 +413,11 @@ class LikeFile(object):
 
 
 if __name__ == "__main__":
+    import sys
+    sys.path = sys.path[1:] + [sys.path[0]]
+    print sys.path
+    #move '' to the end of the path...or else other files can't import anything in Axon correctly, since there is an Axon.py in this directory.
+
     background = schedulerThread().start()
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
