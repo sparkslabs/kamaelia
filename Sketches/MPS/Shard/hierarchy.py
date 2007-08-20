@@ -91,7 +91,10 @@ class PygameComponent(Axon.Component.component):
    def removeHandler(self, eventtype, handler):
        """Remove the specified pygame event handler from the specified event."""
        if self.eventHandlers.has_key(eventtype):
-           self.eventHandlers[eventtype].remove(handler) # Latent bugs in application will cause an error here
+           try:
+               self.eventHandlers[eventtype].remove(handler) # Latent bugs in application will cause an error here
+           except ValueError:
+               pass
            if len(self.eventHandlers[eventtype]) == 0:
                print "NO HANDLER LEFT"
 
@@ -127,7 +130,7 @@ class MyDrawer(mixin):
     def makeLabel(self, text):
         font = self.pygame_font_Font(None, 14)
         textimage = font.render(text,True, (0,0,0),)
-        (w,h) = textimage.get_size()
+        (w,h) = [ x/self.scale for x in textimage.get_size() ]
         return textimage, w,h
 
     def pygame_draw_line(self,
@@ -203,8 +206,8 @@ class MyDrawer(mixin):
 
     def clickInBox(self, pos):
         for box in self.boxes:
-            if self.boxes[box][0]+self.offset[0] <= pos[0] <= self.boxes[box][0]+self.width+self.offset[0]:
-                if self.boxes[box][1]+self.offset[1] <= pos[1] <= self.boxes[box][1]+self.height+self.offset[1]:
+            if self.scale*(self.boxes[box][0]+self.offset[0]) <= pos[0] <= self.scale*(self.boxes[box][0]+self.width+self.offset[0]):
+                if self.scale*(self.boxes[box][1]+self.offset[1]) <= pos[1] <= self.scale*(self.boxes[box][1]+self.height+self.offset[1]):
                     return box
         return None # explicit better than implicit
 
