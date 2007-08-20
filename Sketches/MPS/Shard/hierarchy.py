@@ -247,12 +247,16 @@ class MyFoo(MyDrawer,PygameComponent):
     def select(self, nodeid):
         self.selected = nodeid
         self.send(["SELECT", self.selected ], "outbox")
-        self.reDoTopology()
+        \
+self.redraw()
+#        self.reDoTopology()
 
     def deselect(self):
         print "DESELECTED", self.selected 
         self.selected = None
         self.send(["DESELECT"], "outbox")
+#        \
+#self.redraw()
         self.reDoTopology()
 
     def mousedown_handler(self,*events, **eventd):
@@ -363,6 +367,7 @@ class MyFoo(MyDrawer,PygameComponent):
                 if command[0] == "replace":
                     self.topology = command[1]
                     self.deselect()
+                    self.reDoTopology()
                 if command[0] == "add":
                     nodeid, label, parent = command[1:]
                     self.nodes[nodeid] = label
@@ -370,14 +375,18 @@ class MyFoo(MyDrawer,PygameComponent):
                        self.topology[parent].append(nodeid)
                     except KeyError:
                         self.topology[parent] = [nodeid]
+                    self.reDoTopology()
                 if command[0] == "relabel":
                     nodeid, newlabel = command[1:]
                     self.nodes[nodeid] = newlabel
+                    self.redraw()
                 if command[0] == "select":
                     nodeid, = command[1:]
                     self.select(nodeid)
+                    self.redraw()
                 if command[0] == "deselect":
                     self.deselect()
+                    self.redraw()
                 if command[0] == "del":
                     if command[1] == "all":
                         self.selected = None
@@ -403,6 +412,7 @@ class MyFoo(MyDrawer,PygameComponent):
                         for node in self.topology:
                             if command[2] in self.topology[node]:
                                 self.topology[node] = [x for x in self.topology[node] if x != command[2] ]
+                    self.reDoTopology()
                 if command[0] == "get":
                     if command[1] == "all":
                         self.send((self.nodes, self.topology), "outbox")
@@ -410,7 +420,6 @@ class MyFoo(MyDrawer,PygameComponent):
                         n = {command[2] : self.nodes[command[2]]}
                         t = {command[2] : self.topology.get(command[2],[])}
                         self.send((n, t), "outbox")
-                self.reDoTopology()
             if self.dx != 0 or self.dy != 0 or self.ds !=0:
                 if self.dx != 0 or self.dy:
                    self.offset[0] += self.dx
@@ -421,7 +430,7 @@ class MyFoo(MyDrawer,PygameComponent):
                 if self.dy <0: self.dy -= 2
 
                 if self.ds !=0: self.scale = self.scale*self.ds
-                self.reDoTopology()
+                self.redraw()
             yield 1
 
 class MyBoxes(MyFoo):
