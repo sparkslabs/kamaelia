@@ -120,14 +120,46 @@ class mixin(object):
 
 class MyDrawer(mixin):
     offset = 0,0
+    scale = 0.5
+    def pygame_font_Font(self, Foo, Size):
+        return pygame.font.Font(Foo, self.scale*(Size))
+
     def makeLabel(self, text):
-        font = pygame.font.Font(None, 14)
+        font = self.pygame_font_Font(None, 14)
         textimage = font.render(text,True, (0,0,0),)
         (w,h) = textimage.get_size()
         return textimage, w,h
 
+    def pygame_draw_line(self,
+                         surface,
+                         colour,
+                         startpos,
+                         endpos,
+                         width=1):
+        pygame.draw.line(surface,
+                         colour,
+                        (self.scale*(startpos[0]+self.offset[0]),self.scale*(startpos[1]+self.offset[1])),
+                        (self.scale*(endpos[0]+self.offset[0]),self.scale*(endpos[1]+self.offset[1])),
+                         width)
+
+    def pygame_draw_rect(self,
+                         surface,
+                         colour,
+                         rect,
+                         width=0):
+        pygame.draw.rect(surface, colour, 
+                         (self.scale*(rect[0][0]+self.offset[0]),
+                          self.scale*(rect[0][1]+self.offset[1]),
+                          self.scale*(rect[1][0]),
+                          self.scale*(rect[1][1])),
+                         width)
+        return rect
+
+    def display_blit( self, image, position ):
+        self.display.blit( image, (self.scale*(position[0]+ self.offset[0]),self.scale*(position[1]+ self.offset[1])) )
+
     def drawLine(self, line):
-        pygame.draw.line(self.display, 0,(line[0][0]+self.offset[0],line[0][1]+self.offset[1]),(line[1][0]+self.offset[0],line[1][1]+self.offset[1]),2)
+        self.pygame_draw_line(self.display, 0, line[0], line[1], 2)
 
     def drawPath(self, path):
         for line in path:
@@ -141,11 +173,11 @@ class MyDrawer(mixin):
         colour = 0xaaaaaa
         if box == self.selected :
             colour = 0xff8888
-        pygame.draw.rect(self.display, colour, ((self.boxes[box][0]+self.offset[0],self.boxes[box][1]+self.offset[1]),(self.width,self.height)), 0)
-        cx = (self.boxes[box][0]+self.offset[0])+self.width/2
-        cy = (self.boxes[box][1]+self.offset[1])+self.height/2
+        self.pygame_draw_rect(self.display, colour, (self.boxes[box],(self.width,self.height)), 0)
+        cx = (self.boxes[box][0]+self.width/2)
+        cy = (self.boxes[box][1]+self.height/2)
         image, w,h = self.makeLabel( self.nodes[box] )
-        self.display.blit( image, (cx-w/2,cy-h/2) )
+        self.display_blit( image, (cx-w/2,cy-h/2) )
         if box in self.topology:
            self.drawTree(box)
 
@@ -283,7 +315,7 @@ class MyFoo(MyDrawer,PygameComponent):
     def keyup_handler(self,*events, **eventd):
         for event in events:
             print event, event.key, dir(event)
-            if event.key in [273,274,275,276]:
+            if event.key in [273,274,275,276,61,45]:
                 if event.key == 273: # UP
                     self.dy = 0
                 if event.key == 274: # DOWN
@@ -292,6 +324,12 @@ class MyFoo(MyDrawer,PygameComponent):
                     self.dx = 0
                 if event.key == 276: # LEFT
                     self.dx = 0
+                if event.key == 61: # PLUS
+                    self.scale = self.scale * 1.1
+                    self.reDoTopology()
+                if event.key == 45: # MINUS
+                    self.scale = self.scale / 1.1
+                    self.reDoTopology()
 
     def update_offset(self):
         pass
@@ -310,6 +348,7 @@ class MyFoo(MyDrawer,PygameComponent):
 
         self.selected = None
         self.offset = [x for x in self.offset]
+        self.scale = self.scale
         self.reDoTopology()
         while 1:
             self._dispatch()
