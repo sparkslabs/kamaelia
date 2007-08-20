@@ -180,13 +180,13 @@ queuelengths = 0
 DEFIN = ["inbox", "control"]
 DEFOUT = ["outbox", "signal"]
 
-def addBox(names, boxMap, addBox):
+def addBox(names, boxMap, addBox): # XXX VOMIT: Using the function name as a parameter name
         """Add an extra wrapped box called name, using the addBox function provided
         (either self.addInbox or self.addOutbox), and adding it to the box mapping
         which is used to coordinate message routing within component wrappers."""
         for boxname in names:
             if boxname in boxMap:
-                raise ValueError, "%s %s already exists!" % (direction, boxname)
+                raise ValueError, "%s %s already exists!" % (direction, boxname) # XXX VOMIT: *direction* doesn't actually exist. If this appeared in any other line besides a "raise..." line this would be a problem.
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
 
@@ -267,7 +267,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
                     self.send(msg, parentSource)
                 except noSpaceInBox, e:
                     raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
-                if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+                if isinstance(msg, (Ipc.shutdownMicroprocess, Ipc.producerFinished)):
                     return False
             else:
                 # if the component's inboxes are full, do something here. Preferably not succeed.
@@ -420,6 +420,7 @@ class LikeFile(object):
 
 
 if __name__ == "__main__":
+    #doesn't actually work as of now
     background = schedulerThread().start()
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
