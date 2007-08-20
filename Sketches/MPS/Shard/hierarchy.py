@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import time
 import pygame
 import Axon
 from Axon.Ipc import WaitComplete
@@ -23,6 +24,10 @@ class PygameComponent(Axon.Component.component):
       "transparency" : "Colour to be made transparent. None == no colour transparent",
    }
    transparency = None
+   background = 0xffffff
+   surfacesize = (1024, 768)
+   surfaceposition=(0,0)
+   onlymouseinside = False
    def __init__(self, **argd):
        super(PygameComponent,self).__init__(**argd)
        self.eventHandlers = {}
@@ -54,19 +59,20 @@ class PygameComponent(Axon.Component.component):
             alpha = self.recv("alphacontrol")
             self.display.set_alpha(alpha)
 
-   def doRequestDisplay(self,size):
+   def doRequestDisplay(self):
         return WaitComplete(
                  self.requestDisplay(DISPLAYREQUEST=True,
                                      callback = (self,"display_control"),
                                      events = (self, "events"),
-                                     size = size,
+                                     size = self.surfacesize,
                                      transparency = self.transparency,
-                                     position = (0,0)
+                                     position = self.surfaceposition,
+                                     onlymouseinside = self.onlymouseinside, ### Tempted to do events depth instead
                  )
                )
    def clearDisplay(self):
        """Clears the ticker of any existing text."""
-       self.display.fill(0xffffff)
+       self.display.fill(self.background)
 
    def addHandler(self, eventtype, handler):
         """\
@@ -101,27 +107,23 @@ class PygameComponent(Axon.Component.component):
                     if handler(event):
                         break
 
+class mixin(object):
+    pass
 
-class MyFoo(PygameComponent):
-    configuration = {
-       "transparency" : "Colour to be made transparent. None == no colour transparent",
-       "boxsize" : "(width,height) representing size of the boxes",
-       "width" : "width of the boxes (yes, I know, this *is* in /Sketches right now",
-       "height" : "height of the boxes (yes, I know, this *is* in /Sketches right now",
-       "hspacing" : "minimum spacing between boxes horizontally",
-       "vspacing" : "minimum spacing between boxes vertically",
-    }
-    transparency = 0xffffff
-    boxsize = (100,50)
-    width = 100
-    hspacing = 10
-    height = 50
-    vspacing = 50
+class MyDrawer(mixin):
+    offset = 50,5
     def makeLabel(self, text):
         font = pygame.font.Font(None, 14)
         textimage = font.render(text,True, (0,0,0),)
         (w,h) = textimage.get_size()
         return textimage, w,h
+
+    def drawLine(self, line):
+        pygame.draw.line(self.display, 0,(line[0][0]+self.offset[0],line[0][1]+self.offset[1]),(line[1][0]+self.offset[0],line[1][1]+self.offset[1]),2)
+
+    def drawPath(self, path):
+        for line in path:
+            self.drawLine(line)
 
     def drawBox(self, box):
         try:
@@ -131,21 +133,18 @@ class MyFoo(PygameComponent):
         colour = 0xaaaaaa
         if box == self.selected :
             colour = 0xff8888
-        pygame.draw.rect(self.display, colour, (self.boxes[box],self.boxsize), 0)
-        cx = self.boxes[box][0]+self.boxsize[0]/2
-        cy = self.boxes[box][1]+self.boxsize[1]/2
-        image, w,h = self.makeLabel(self.nodes[box])
+        pygame.draw.rect(self.display, colour, ((self.boxes[box][0]+self.offset[0],self.boxes[box][1]+self.offset[1]),(self.width,self.height)), 0)
+        cx = (self.boxes[box][0]+self.offset[0])+self.width/2
+        cy = (self.boxes[box][1]+self.offset[1])+self.height/2
+        image, w,h = self.makeLabel( self.nodes[box] )
         self.display.blit( image, (cx-w/2,cy-h/2) )
         if box in self.topology:
            self.drawTree(box)
 
-    def drawLine(self, line):
-        pygame.draw.line(self.display, 0,line[0],line[1],2)
-
     def drawTree(self, tree):
         box = tree
-        w = self.boxsize[0]
-        h = self.boxsize[1]
+        w = self.width
+        h = self.height
         x,y = self.boxes[box]
         paths = []
         for subbox in self.topology[box]:
@@ -162,9 +161,35 @@ class MyFoo(PygameComponent):
         for path in paths:
             self.drawPath(path)
 
-    def drawPath(self, path):
-        for line in path:
-            self.drawLine(line)
+    def clickInBox(self, pos):
+        for box in self.boxes:
+            if self.boxes[box][0]+self.offset[0] <= pos[0] <= self.boxes[box][0]+self.width+self.offset[0]:
+                if self.boxes[box][1]+self.offset[1] <= pos[1] <= self.boxes[box][1]+self.height+self.offset[1]:
+                    return box
+        return None # explicit better than implicit
+
+class MyFoo(MyDrawer,PygameComponent):
+    configuration = {
+       "transparency" : "Colour to be made transparent. None == no colour transparent",
+       "boxsize" : "(width,height) representing size of the boxes",
+       "width" : "width of the boxes (yes, I know, this *is* in /Sketches right now",
+       "height" : "height of the boxes (yes, I know, this *is* in /Sketches right now",
+       "hspacing" : "minimum spacing between boxes horizontally",
+       "vspacing" : "minimum spacing between boxes vertically",
+       "nodes" : "initial mapping of node ids to node labels. Dict of int to string",
+       "topology" : "mapping of int -> [list of int] (nodes & child nodes)",
+       "boxes" : "mapping of int -> (int,int) initial positions of boxes on surface",
+    }
+    nodes = { }
+    topology = { }
+    boxes = {}
+    transparency = 0xffffff
+    boxsize = (100,50)
+    width = 100
+    hspacing = 10
+    height = 50
+    vspacing = 50
+    onlymouseinside = True
 
     def reDoTopology(self):
         self.boxes = {}
@@ -173,19 +198,13 @@ class MyFoo(PygameComponent):
         self.drawBox(1)
         self.flip()
 
-    def clickInBox(self, pos):
-        for box in self.boxes:
-            if self.boxes[box][0] <= pos[0] <= self.boxes[box][0]+self.boxsize[0]:
-                if self.boxes[box][1] <= pos[1] <= self.boxes[box][1]+self.boxsize[1]:
-                    return box
-        return None # explicit better than implicit
-
     def select(self, nodeid):
         self.selected = nodeid
         self.send(["SELECT", self.selected ], "outbox")
         self.reDoTopology()
 
     def deselect(self):
+        print "DESELECTED", self.selected 
         self.selected = None
         self.send(["DESELECT"], "outbox")
         self.reDoTopology()
@@ -200,15 +219,72 @@ class MyFoo(PygameComponent):
                 else:
                     self.deselect()
 
+    def layout_tree(self, box, topology, wx, wy):
+        "yes, this took a considerable amount of faffing about"
+        left = wx
+        nw = self.width
+        row_below = wy+self.height+self.vspacing
+        for subbox in topology.get(box,[]):
+            nw = self.layout_tree(subbox, topology, left, row_below)
+            left = left + nw+self.hspacing
+        if left != wx:
+            nw = left-wx-self.hspacing
+        self.boxes[box] = wx+(nw/2), wy
+        return nw
+
+    def mousedown_handler(self,*events, **eventd):
+        selected = self.selected
+        for event in events:
+            if event.button == 1:
+                nodeid= self.clickInBox(event.pos)
+                if nodeid:
+                    self.select(nodeid)
+                else:
+                    self.deselect()
+
+    def keydown_handler(self,*events, **eventd):
+        for event in events:
+            print event, event.key, dir(event)
+            if event.key in [273,274,275,276]:
+                if event.key == 273: # UP
+                    self.dy = -3
+                if event.key == 274: # DOWN
+                    self.dy = 3
+                if event.key == 275: # RIGHT
+                    self.dx = 3
+                if event.key == 276: # LEFT
+                    self.dx = -3
+                self.reDoTopology()
+
+    def keyup_handler(self,*events, **eventd):
+        for event in events:
+            print event, event.key, dir(event)
+            if event.key in [273,274,275,276]:
+                if event.key == 273: # UP
+                    self.dy = 0
+                if event.key == 274: # DOWN
+                    self.dy = 0
+                if event.key == 275: # RIGHT
+                    self.dx = 0
+                if event.key == 276: # LEFT
+                    self.dx = 0
+                self.reDoTopology()
+
+    def update_offset(self):
+        pass
+
     def main(self):
         """Main loop."""
-        yield self.doRequestDisplay((1024, 768))
+        yield self.doRequestDisplay()
+        self.dx = 0
+        self.dy = 0
 
         self.addHandler(pygame.MOUSEBUTTONDOWN, self.mousedown_handler)
-#        self.addHandler(pygame.KEYDOWN, self.event_handler)
-#        self.addHandler(pygame.KEYUP,   self.event_handler)
+        self.addHandler(pygame.KEYDOWN, self.keydown_handler)
+        self.addHandler(pygame.KEYUP,   self.keyup_handler)
 
         self.selected = None
+        self.offset = [x for x in self.offset]
         self.reDoTopology()
         while 1:
             self._dispatch()
@@ -216,6 +292,7 @@ class MyFoo(PygameComponent):
                 command = self.recv("inbox")
                 if command[0] == "replace":
                     self.topology = command[1]
+                    self.deselect()
                 if command[0] == "add":
                     nodeid, label, parent = command[1:]
                     self.nodes[nodeid] = label
@@ -237,9 +314,12 @@ class MyFoo(PygameComponent):
                         self.topology = {}
                         self.boxes = {}
                         self.nodes = {}
+                        self.deselect()
                     if command[1] == "node":
                         try:
                             del self.boxes[command[2]]
+                            if command[2] == self.selected:
+                                self.deselect()
                         except KeyError:
                             pass
                         try:
@@ -261,20 +341,15 @@ class MyFoo(PygameComponent):
                         t = {command[2] : self.topology.get(command[2],[])}
                         self.send((n, t), "outbox")
                 self.reDoTopology()
+            if self.dx != 0 or self.dy != 0:
+                self.offset[0] += self.dx
+                self.offset[1] += self.dy
+                if self.dx >0: self.dx += 2
+                if self.dx <0: self.dx -= 2
+                if self.dy >0: self.dy += 2
+                if self.dy <0: self.dy -= 2
+                self.reDoTopology()
             yield 1
-
-    def layout_tree(self, box, topology, wx, wy):
-        "yes, this took a considerable amount of faffing about"
-        left = wx
-        nw = self.width
-        row_below = wy+self.height+self.vspacing
-        for subbox in topology.get(box,[]):
-            nw = self.layout_tree(subbox, topology, left, row_below)
-            left = left + nw+self.hspacing
-        if left != wx:
-            nw = left-wx-self.hspacing
-        self.boxes[box] = wx+(nw/2), wy
-        return nw
 
 class MyBoxes(MyFoo):
     configuration = {
@@ -303,10 +378,7 @@ class MyBoxes(MyFoo):
       12: "mouse dn 2",
       13: "mouse dn 3",
     }
-    topology = { }
-    boxes = {}
 
-import time
 class Source(Axon.Component.component):
     configuration = {
        "iterable": "Something that can be iterated through as in 'for x in iterable', "
@@ -433,7 +505,7 @@ if 0:
         ConsoleEchoer(),
     ).run()
 
-if 1:
+if 0:
     import random
     from Kamaelia.UI.Pygame.Button import Button
     from Kamaelia.Chassis.Graphline import Graphline
@@ -480,7 +552,69 @@ if 1:
         DEL= Button(caption="Del Node", msg=["DEL"], position=(170,690),size=(64,32)),
         RELABEL= Button(caption="Relabel Node", msg=["RELABEL"], position=(240,690),size=(94,32)),
         CORELOGIC = CoreLogic(),
-        TOPOLOGY = MyBoxes(),
+        TOPOLOGY = MyFoo(),
+        linkages = {
+            ("SOURCE", "outbox"): ("TOPOLOGY","inbox"),
+            ("CLEAR", "outbox"): ("TOPOLOGY","inbox"),
+            ("TOPOLOGY","outbox"): ("CORELOGIC", "inbox"),
+            ("ADD","outbox"): ("CORELOGIC", "inbox"),
+            ("DEL","outbox"): ("CORELOGIC", "inbox"),
+            ("RELABEL","outbox"): ("CORELOGIC", "inbox"),
+            ("CORELOGIC","outbox"): ("TOPOLOGY", "inbox"),
+        }
+    ).run()
+
+
+if 1:
+    import random
+    from Kamaelia.UI.Pygame.Button import Button
+    from Kamaelia.Chassis.Graphline import Graphline
+    f = open("/usr/share/dict/words")
+    l = f.readlines()
+    f.close()
+
+    commands = [ ["replace", { 1: [ 2, 3, 4, 5], 3: [ 6, 7], 4: [ 8, 9], 9: [ 10], 10: [ 11, 12, 13] } ] ]
+    def newNodeId():
+        i = 1
+        while 1:
+            yield i
+            i = i + 1
+
+    class CoreLogic(Axon.Component.component):
+        def main(self):
+            nodeId = 1000
+            selected = None
+            while 1:
+                while self.dataReady("inbox"):
+                    command = self.recv("inbox")
+                    if command[0] == "SELECT":
+                        selected = command[1]
+                    if command[0] == "DESELECT":
+                        selected = None
+                    if command[0] == "ADD":
+                        if selected:
+                            nodeId = nodeId + 1
+                            self.send(["add", nodeId, str(nodeId), selected ],"outbox")
+                    if command[0] == "DEL":
+                        if selected:
+                            nodeId = nodeId + 1
+                            self.send(["del", "node", selected ],"outbox")
+                    if command[0] == "RELABEL":
+                        if selected:
+                            randomword = l[random.randint(0,len(l)-1)].strip()
+                            self.send(["relabel", selected, randomword ],"outbox")
+                yield 1
+
+    Graphline(
+        SOURCE = Source(iterable=commands),
+        CLEAR = Button(caption="Clear", msg=["del", "all"], position=(0,690),size=(64,32)),
+        ADD= Button(caption="Add Child Node", msg=["ADD"], position=(70,690),size=(94,32)),
+        DEL= Button(caption="Del Node", msg=["DEL"], position=(170,690),size=(64,32)),
+        RELABEL= Button(caption="Relabel Node", msg=["RELABEL"], position=(240,690),size=(94,32)),
+        CORELOGIC = CoreLogic(),
+        TOPOLOGY = MyBoxes(background=0xffffaa,
+                           surfacesize=(964,600),
+                           surfaceposition=(30,30)),
         linkages = {
             ("SOURCE", "outbox"): ("TOPOLOGY","inbox"),
             ("CLEAR", "outbox"): ("TOPOLOGY","inbox"),
