@@ -88,6 +88,14 @@ class PygameComponent(Axon.Component.component):
         self.eventHandlers[eventtype] += [handler]
         return handler
 
+   def removeHandler(self, eventtype, handler):
+       """Remove the specified pygame event handler from the specified event."""
+       if self.eventHandlers.has_key(eventtype):
+           self.eventHandlers[eventtype].remove(handler) # Latent bugs in application will cause an error here
+           if len(self.eventHandlers[eventtype]) == 0:
+               print "NO HANDLER LEFT"
+
+
    def events(self):
        """Generator. Receive events on "events" inbox and yield then one at a time."""
        while self.dataReady("events"):
@@ -111,7 +119,7 @@ class mixin(object):
     pass
 
 class MyDrawer(mixin):
-    offset = 50,5
+    offset = 0,0
     def makeLabel(self, text):
         font = pygame.font.Font(None, 14)
         textimage = font.render(text,True, (0,0,0),)
@@ -191,12 +199,15 @@ class MyFoo(MyDrawer,PygameComponent):
     vspacing = 50
     onlymouseinside = True
 
-    def reDoTopology(self):
-        self.boxes = {}
-        self.layout_tree(1, self.topology,0,100)
+    def redraw(self):
         self.clearDisplay()
         self.drawBox(1)
         self.flip()
+
+    def reDoTopology(self):
+        self.boxes = {}
+        self.layout_tree(1, self.topology,0,100)
+        self.redraw()
 
     def select(self, nodeid):
         self.selected = nodeid
@@ -239,8 +250,22 @@ class MyFoo(MyDrawer,PygameComponent):
                 nodeid= self.clickInBox(event.pos)
                 if nodeid:
                     self.select(nodeid)
+                    self.holding = nodeid
+                    print "grabbing", self.holding
+                    self.addHandler(pygame.MOUSEMOTION, self.mousemove_handler)
                 else:
                     self.deselect()
+
+    def mouseup_handler(self, *events, **eventd):
+        self.removeHandler(pygame.MOUSEMOTION, self.mousemove_handler)
+        print "releasing", self.holding,
+        self.holding = None
+        for event in events:
+            if event.button == 1:
+                print "here", event.pos
+
+    def mousemove_handler(self,*events, **eventd):
+        pass
 
     def keydown_handler(self,*events, **eventd):
         for event in events:
@@ -254,7 +279,6 @@ class MyFoo(MyDrawer,PygameComponent):
                     self.dx = 3
                 if event.key == 276: # LEFT
                     self.dx = -3
-                self.reDoTopology()
 
     def keyup_handler(self,*events, **eventd):
         for event in events:
@@ -268,7 +292,6 @@ class MyFoo(MyDrawer,PygameComponent):
                     self.dx = 0
                 if event.key == 276: # LEFT
                     self.dx = 0
-                self.reDoTopology()
 
     def update_offset(self):
         pass
@@ -276,10 +299,12 @@ class MyFoo(MyDrawer,PygameComponent):
     def main(self):
         """Main loop."""
         yield self.doRequestDisplay()
+        self.holding = None
         self.dx = 0
         self.dy = 0
 
         self.addHandler(pygame.MOUSEBUTTONDOWN, self.mousedown_handler)
+        self.addHandler(pygame.MOUSEBUTTONUP, self.mouseup_handler)
         self.addHandler(pygame.KEYDOWN, self.keydown_handler)
         self.addHandler(pygame.KEYUP,   self.keyup_handler)
 
