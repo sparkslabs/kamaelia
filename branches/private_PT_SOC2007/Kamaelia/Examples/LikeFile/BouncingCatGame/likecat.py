@@ -25,7 +25,6 @@ class catMaker(Axon.Component.component):
 
 bg = schedulerThread(slowmo=0.01).start()
 catmaker = LikeFile(catMaker())
-catmaker.activate()
 
 max_cats = 10
 for i in xrange(0, max_cats):
