@@ -104,10 +104,20 @@ called "secondary" and "tertiary" and an outbox called "debug", You would do:
 
     p = LikeFile( componentMaker, 
                   extraInboxes = ("secondary", "tertiary"),
-                  extraOutboxes = "debug"
+                  extraOutboxes = "debug", )
 
 Either strings or tuples of strings will work.
 
+It may be the case that the component you are trying to wrap will link its own 
+inbox/outbox/signal/control, and this will result in a BoxAlreadyLinkedToDestination
+exception. To stop likefile from wrapping the default 4 boxes, pass the parameter 
+wrapDefault = False. Note that you will need to manually wrap every box you want to use,
+for example to wrap a component that has its own linkages for signal/control:
+
+    p = LikeFile( myComponent, 
+                  wrapDefault = False,
+                  extraInboxes = "inbox",
+                  extraOutboxes = "outbox", )
 
 
 
@@ -164,8 +174,7 @@ from Component import component
 from ThreadedComponent import threadedadaptivecommscomponent
 from AdaptiveCommsComponent import AdaptiveCommsComponent
 from AxonExceptions import noSpaceInBox
-from Ipc import producerFinished, shutdownMicroprocess
-import Queue, threading, time, copy, warnings
+import Queue, threading, time, copy, warnings, Ipc
 queuelengths = 0
 
 DEFIN = ["inbox", "control"]
@@ -320,7 +329,7 @@ class componentWrapperOutput(AdaptiveCommsComponent):
 
 class LikeFile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
-    def __init__(self, child, extraInboxes = (), extraOutboxes = ()):
+    def __init__(self, child, extraInboxes = (), extraOutboxes = (), wrapDefault = True):
         if schedulerThread.lock.acquire(False): 
             schedulerThread.lock.release()
             raise AttributeError, "no running scheduler found."
@@ -335,10 +344,11 @@ class LikeFile(object):
         validOutboxes = type(child).Outboxes.keys()
         inboxes = []
         outboxes = []
-        for i in DEFIN:
-            if i in validInboxes: inboxes.append(i)
-        for i in DEFOUT:
-            if i in validOutboxes: outboxes.append(i)
+        if wrapDefault:
+            for i in DEFIN:
+                if i in validInboxes: inboxes.append(i)
+            for i in DEFOUT:
+                if i in validOutboxes: outboxes.append(i)
         inboxes += list(extraInboxes)
         outboxes += list(extraOutboxes)
 
