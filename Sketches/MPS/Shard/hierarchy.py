@@ -305,7 +305,7 @@ class MyFoo(MyDrawer,PygameComponent):
     def keydown_handler(self,*events, **eventd):
         for event in events:
             print event, event.key, dir(event)
-            if event.key in [273,274,275,276]:
+            if event.key in [273,274,275,276,61,45]:
                 if event.key == 273: # UP
                     self.dy = -3
                 if event.key == 274: # DOWN
@@ -314,6 +314,10 @@ class MyFoo(MyDrawer,PygameComponent):
                     self.dx = 3
                 if event.key == 276: # LEFT
                     self.dx = -3
+                if event.key == 61: # PLUS
+                    self.ds = 1.05
+                if event.key == 45: # MINUS
+                    self.ds = 1/1.05
 
     def keyup_handler(self,*events, **eventd):
         for event in events:
@@ -328,11 +332,9 @@ class MyFoo(MyDrawer,PygameComponent):
                 if event.key == 276: # LEFT
                     self.dx = 0
                 if event.key == 61: # PLUS
-                    self.scale = self.scale * 1.1
-                    self.reDoTopology()
+                    self.ds = 0
                 if event.key == 45: # MINUS
-                    self.scale = self.scale / 1.1
-                    self.reDoTopology()
+                    self.ds = 0
 
     def update_offset(self):
         pass
@@ -343,6 +345,7 @@ class MyFoo(MyDrawer,PygameComponent):
         self.holding = None
         self.dx = 0
         self.dy = 0
+        self.ds = 0
 
         self.addHandler(pygame.MOUSEBUTTONDOWN, self.mousedown_handler)
         self.addHandler(pygame.MOUSEBUTTONUP, self.mouseup_handler)
@@ -408,13 +411,16 @@ class MyFoo(MyDrawer,PygameComponent):
                         t = {command[2] : self.topology.get(command[2],[])}
                         self.send((n, t), "outbox")
                 self.reDoTopology()
-            if self.dx != 0 or self.dy != 0:
-                self.offset[0] += self.dx
-                self.offset[1] += self.dy
+            if self.dx != 0 or self.dy != 0 or self.ds !=0:
+                if self.dx != 0 or self.dy:
+                   self.offset[0] += self.dx
+                   self.offset[1] += self.dy
                 if self.dx >0: self.dx += 2
                 if self.dx <0: self.dx -= 2
                 if self.dy >0: self.dy += 2
                 if self.dy <0: self.dy -= 2
+
+                if self.ds !=0: self.scale = self.scale*self.ds
                 self.reDoTopology()
             yield 1
 
