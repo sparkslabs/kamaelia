@@ -294,7 +294,7 @@ class MyFoo(MyDrawer,PygameComponent):
         right = self.scale*(self.boxes[box][0]+self.width+self.offset[0])
         top = self.scale*(self.boxes[box][1]+self.offset[1])
         bottom = self.scale*(self.boxes[box][1]+self.height+self.offset[1])
-        return (pos[0] - left), (pos[1] - top)
+        return (pos[0]*self.scale - left)/self.scale, (pos[1]*self.scale - top)/self.scale
 
     def mousedown_handler(self,*events, **eventd):
         selected = self.selected
