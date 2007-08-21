@@ -321,11 +321,7 @@ class MyFoo(MyDrawer,PygameComponent):
 
     def mousemove_handler(self,*events, **eventd):
         for event in events:
-#            print "WOOOOAAAAAAAHHHHHH!!!!!!!!!!", event.pos, event.type, event.rel,self.holding
             if event.type == 4:
-                print "WOOOOAAAAAAAHHHHHH!!!!!!!!!!", self.holding, self.holdingoffset, event.pos
-                print self.boxes[self.holding]
-                print event.pos[0] - self.holdingoffset[0], event.pos[1] - self.holdingoffset[1]
                 self.boxes[self.holding] = event.pos[0] - self.holdingoffset[0], event.pos[1] - self.holdingoffset[1]
         self.redraw()
 
