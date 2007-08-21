@@ -289,6 +289,13 @@ class MyFoo(MyDrawer,PygameComponent):
         self.boxes[box] = wx+(nw/2), wy
         return nw
 
+    def whereInBox(self, box, pos):
+        left = self.scale*(self.boxes[box][0]+self.offset[0])
+        right = self.scale*(self.boxes[box][0]+self.width+self.offset[0])
+        top = self.scale*(self.boxes[box][1]+self.offset[1])
+        bottom = self.scale*(self.boxes[box][1]+self.height+self.offset[1])
+        return (pos[0] - left), (pos[1] - top)
+
     def mousedown_handler(self,*events, **eventd):
         selected = self.selected
         for event in events:
@@ -297,6 +304,8 @@ class MyFoo(MyDrawer,PygameComponent):
                 if nodeid:
                     self.select(nodeid)
                     self.holding = nodeid
+                    self.holdingoffset = self.whereInBox(nodeid, event.pos)
+
                     print "grabbing", self.holding
                     self.addHandler(pygame.MOUSEMOTION, self.mousemove_handler)
                 else:
@@ -311,7 +320,14 @@ class MyFoo(MyDrawer,PygameComponent):
                 print "here", event.pos
 
     def mousemove_handler(self,*events, **eventd):
-        pass
+        for event in events:
+#            print "WOOOOAAAAAAAHHHHHH!!!!!!!!!!", event.pos, event.type, event.rel,self.holding
+            if event.type == 4:
+                print "WOOOOAAAAAAAHHHHHH!!!!!!!!!!", self.holding, self.holdingoffset, event.pos
+                print self.boxes[self.holding]
+                print event.pos[0] - self.holdingoffset[0], event.pos[1] - self.holdingoffset[1]
+                self.boxes[self.holding] = event.pos[0] - self.holdingoffset[0], event.pos[1] - self.holdingoffset[1]
+        self.redraw()
 
     def keydown_handler(self,*events, **eventd):
         for event in events:
@@ -354,6 +370,7 @@ class MyFoo(MyDrawer,PygameComponent):
         """Main loop."""
         yield self.doRequestDisplay()
         self.holding = None
+        self.holdingoffset = (0,0)
         self.dx = 0
         self.dy = 0
         self.ds = 0
@@ -617,8 +634,8 @@ if 0:
                     command = self.recv("inbox")
                     if command[0] == "SELECT":
                         selected = command[1]
-#                    if command[0] == "DESELECT":
-#                        selected = None
+                    if command[0] == "DESELECT":
+                        selected = None
                     if command[0] == "ADD":
                         if selected:
                             nodeId = nodeId + 1
