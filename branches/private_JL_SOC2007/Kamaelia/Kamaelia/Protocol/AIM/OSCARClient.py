@@ -164,7 +164,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Internet.TCPClient import TCPClient
 
 
-__kamaelia_components__ = (Graphline, TCPClient)
+
 
 class OSCARProtocol(component):
     """\
@@ -210,6 +210,7 @@ class OSCARProtocol(component):
             if self.dataReady(box):
                 cmd = "self.handle%s()" % box
                 exec(cmd)
+                # REVIEW - this could be exploitable?
 
     def handleinbox(self):
         """receives data coming in through the wire, reformats it into a
@@ -278,6 +279,8 @@ def OSCARClient(server, port):
                          }
                      )
     
+
+
 class SNACExchanger(component):
     """\
     SNACExchanger() -> component that has methods specialized for sending and
@@ -324,12 +327,15 @@ class SNACExchanger(component):
         done = False
         while not done:
             while not self.dataReady():
+                self.pause()
                 yield 1
             header, reply = self.recvSnac()
             if header[0] == fam and header[1] == sub:
                 yield reply
                 done = True
 
+__kamaelia_components__ = ( OSCARProtocol, SNACExchanger, )
+__kamaelia_prefabs__ = (OSCARClient,)
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
@@ -341,6 +347,7 @@ if __name__ == '__main__':
             self.send((CHANNEL_NEWCONNECTION,
                        struct.pack('!i', 1)))
             while not self.dataReady():
+                self.pause()
                 yield 1
             reply = self.recv() # server ack of new connection
             zero = struct.pack('!H', 0)

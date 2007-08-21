@@ -64,7 +64,6 @@ from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.PureTransformer import PureTransformer
 
-__kamaelia_components__ = (AIMHarness, TextDisplayer, Textbox, Pipeline, PureTransformer)
 def sendTo(recipient, text):
     return ("message", recipient, text)
 

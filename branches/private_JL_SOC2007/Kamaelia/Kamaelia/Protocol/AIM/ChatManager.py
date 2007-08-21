@@ -110,8 +110,6 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import re
 
-__kamaelia_components__ = ( TCPClient,)
-__kamaelia_prefabs__ = (OSCARClient,)
 
 class ChatManager(SNACExchanger):
     """
@@ -158,6 +156,8 @@ class ChatManager(SNACExchanger):
                 assert self.debugger.note("ChatManager.main", 7, "received " + str(data))
                 if data[0] == "message" :
                     self.sendMessage(data[1], data[2])
+            # self.pause()
+            # TODO - will this pause break anything, or increase performance?
                     
     def receiveMessage(self, body):
         """
@@ -199,6 +199,8 @@ class ChatManager(SNACExchanger):
         p = re.compile("<[^<^>]*>")
         message = p.sub("", message)
         return message
+
+__kamaelia_components__ = (ChatManager, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Graphline import Graphline

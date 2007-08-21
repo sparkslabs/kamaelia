@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -76,7 +76,6 @@ from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished, WaitComplete
 from pygame.locals import *
 
-__kamaelia_components__ = (PygameDisplay, KeyEvent)
     
 class TextDisplayer(component):
     """\
@@ -179,7 +178,7 @@ class TextDisplayer(component):
         self.send({"REDRAW" : True,
                    "surface" : self.screen}, "_pygame")
 
-    def shutdown(self):
+    def shutdown(self): # TODO: Confusingly named. it seems that this initiates a shutdown, whereas it just monitors for one.
         """Checks for control messages"""
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -257,7 +256,8 @@ class Textbox(TextDisplayer):
                     self.setText(string_buffer + '|')
                     self.string_buffer = string_buffer
 
-    
+__kamaelia_components__ = (TextDisplayer, Textbox, )
+
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer

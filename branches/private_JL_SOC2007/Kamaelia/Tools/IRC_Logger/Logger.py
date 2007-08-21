@@ -96,7 +96,7 @@ import Kamaelia.Protocol.IRC.IRCClient
 import LoggerFunctions
 import time, os
 
-__kamaelia_components__ = (SimpleFileWriter, Graphline, Carousel,)
+
 
 class BasicLogger(component):
     """\
@@ -239,6 +239,10 @@ def Logger(channel,
                                 }
                      ) 
     
+
+__kamaelia_components__ = (BasicLogger, )
+__kamaelia_prefabs__ = (Logger, )
+
 if __name__ == '__main__':
     import sys
     channel = "#kamtest"

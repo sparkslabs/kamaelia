@@ -91,9 +91,6 @@ from Axon.Component import component
 import time
 import Axon
 
-__kamaelia_components__ = (SNACExchanger,)
-__kamaelia_prefabs__ = (OSCARClient,)
-
 class LoginHandler(SNACExchanger):
     """\
     LoginHandler(screenname, password, [versionNumber]) -> new LoginHandler
@@ -186,6 +183,7 @@ class LoginHandler(SNACExchanger):
         data = struct.pack('!i', self.versionNumber)
         self.send((CHANNEL_NEWCONNECTION, data))
         while not self.dataReady():
+            self.pause()
             yield 1
         reply = self.recv() #should be server ack of new connection
         assert self.debugger.note("LoginHandler.connectAuth", 5, "received new connection ack")
@@ -218,6 +216,7 @@ class LoginHandler(SNACExchanger):
         for reply in self.waitSnac(0x17, 0x03): yield 1
         assert self.debugger.note("AuthCookieGetter.main", 5, "received BOS/auth cookie")
         while not self.dataReady():
+            self.pause()
             yield 1
         recvdflap = self.recv()
         assert recvdflap[0] == 4 #close connection command
@@ -251,6 +250,7 @@ class LoginHandler(SNACExchanger):
         data += TLV(0x06, cookie)
         self.send((CHANNEL_NEWCONNECTION, data))
         while not self.dataReady():
+            self.pause()
             yield 1
         serverAck = self.recv()
         assert serverAck[0] == CHANNEL_NEWCONNECTION
@@ -334,6 +334,7 @@ class LoginHandler(SNACExchanger):
         done = False
         while not done and len(expecting):
             while not self.dataReady():
+                self.pause()
                 yield 1
             header, reply = self.recvSnac()
             if (header[0], header[1]) in expecting.keys():
@@ -377,6 +378,7 @@ class LoginHandler(SNACExchanger):
         through "signal".
         """
         while not self.dataReady():
+            self.pause()
             yield 1
         queued = []
         while self.dataReady(): #empty the inbox and pass it on to the next component
@@ -386,7 +388,9 @@ class LoginHandler(SNACExchanger):
         self.send(self.oscar, "signal")
         self.send(queued, "signal")
         assert self.debugger.note("LoginHandler.passTheReins", 5, "Login done")
-        
+
+__kamaelia_components__ = (LoginHandler, )
+
 if __name__ == '__main__':
     screenname = 'kamaelia1'
     password = 'abc123'

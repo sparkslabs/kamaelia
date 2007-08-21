@@ -82,11 +82,6 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import Kamaelia.Protocol.AIM.ChatManager
 
-__kamaelia_components__ = (Kamaelia.Protocol.AIM.LoginHandler.LoginHandler,
-                           Kamaelia.Protocol.AIM.ChatManager.ChatManager,
-                           TCPClient,
-                           )
-__kamaelia_prefabs__ = (OSCARClient,)
 
 class AIMHarness(component):
     """
@@ -119,6 +114,7 @@ class AIMHarness(component):
     def main(self):
         """Waits for logged-in OSCARClient and links it up to ChatManager"""
         while not self.dataReady("internal inbox"):
+            self.pause()
             yield 1
         result = self.recv("internal inbox")
         if type(result) == type((1,2)):
@@ -140,8 +136,11 @@ class AIMHarness(component):
                 del(queued[0])
             assert self.debugger.note("AIMHarness.main", 5, "Everything linked up and initialized, starting normal operation")
             while True:
+                self.pause()
                 yield 1
-        
+
+__kamaelia_components__ = (AIMHarness, )
+
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader

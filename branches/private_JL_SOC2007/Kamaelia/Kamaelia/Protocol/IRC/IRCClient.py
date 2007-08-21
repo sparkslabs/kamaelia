@@ -170,7 +170,6 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.PureTransformer import PureTransformer
 import string
 
-__kamaelia_components__ = (TCPClient, Graphline, PureTransformer, Pipeline)
 
 class IRC_Client(_Axon.Component.component):
     """
@@ -411,7 +410,10 @@ def SimpleUserClientPrefab(**tcp_args):
        SimpleIRCClientPrefab(**tcp_args) to
        PureTransformer(outformat)"""
     return Pipeline(PureTransformer(informat), SimpleIRCClientPrefab(**tcp_args), PureTransformer(outformat))
-    
+
+__kamaelia_components_ = (IRC_Client, )
+__kamaelia_prefabs = (SimpleIRCClientPrefab, SimpleUserClientPrefab)
+
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     Pipeline(ConsoleReader(),
