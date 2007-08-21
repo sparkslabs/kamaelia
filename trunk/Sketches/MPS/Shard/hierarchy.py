@@ -123,13 +123,19 @@ class mixin(object):
 
 class MyDrawer(mixin):
     offset = 0,0
-    scale = 0.5
+    scale = 1.0
+    fontsize = 14
+    linewidth = 2
+    fontcolour = (0,0,0)
+    selectedcolour = 0xff8888
+    selectedborder = 0xff3333
+    selectedborderwidth = 3
     def pygame_font_Font(self, Foo, Size):
         return pygame.font.Font(Foo, self.scale*(Size))
 
     def makeLabel(self, text):
-        font = self.pygame_font_Font(None, 14)
-        textimage = font.render(text,True, (0,0,0),)
+        font = self.pygame_font_Font(None, self.fontsize)
+        textimage = font.render(text,True, self.fontcolour)
         (w,h) = [ x/self.scale for x in textimage.get_size() ]
         return textimage, w,h
 
@@ -161,12 +167,12 @@ class MyDrawer(mixin):
     def display_blit( self, image, position ):
         self.display.blit( image, (self.scale*(position[0]+ self.offset[0]),self.scale*(position[1]+ self.offset[1])) )
 
-    def drawLine(self, line):
-        self.pygame_draw_line(self.display, 0, line[0], line[1], 2)
+    def drawLine(self, line,width=2):
+        self.pygame_draw_line(self.display, 0, line[0], line[1], width)
 
-    def drawPath(self, path):
+    def drawPath(self, path,width=2):
         for line in path:
-            self.drawLine(line)
+            self.drawLine(line, width)
 
     def drawBox(self, box):
         try:
@@ -175,8 +181,11 @@ class MyDrawer(mixin):
             return
         colour = 0xaaaaaa
         if box == self.selected :
-            colour = 0xff8888
+            colour = self.selectedcolour
         self.pygame_draw_rect(self.display, colour, (self.boxes[box],(self.width,self.height)), 0)
+        if box == self.selected :
+            colour = self.selectedborder
+            self.pygame_draw_rect(self.display, colour, (self.boxes[box],(self.width,self.height)), self.selectedborderwidth)
         cx = (self.boxes[box][0]+self.width/2)
         cy = (self.boxes[box][1]+self.height/2)
         image, w,h = self.makeLabel( self.nodes[box] )
@@ -202,7 +211,7 @@ class MyDrawer(mixin):
             )
 
         for path in paths:
-            self.drawPath(path)
+            self.drawPath(path,self.linewidth)
 
     def clickInBox(self, pos):
         for box in self.boxes:
@@ -247,9 +256,7 @@ class MyFoo(MyDrawer,PygameComponent):
     def select(self, nodeid):
         self.selected = nodeid
         self.send(["SELECT", self.selected ], "outbox")
-        \
-self.redraw()
-#        self.reDoTopology()
+        self.redraw()
 
     def deselect(self):
         print "DESELECTED", self.selected 
