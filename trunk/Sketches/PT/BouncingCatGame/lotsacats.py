@@ -4,7 +4,7 @@
 # Proper likefile control of a sprite handler
 #
 
-from likefile import LikeFile, schedulerThread
+from Axon.likefile import LikeFile, schedulerThread
 import time, Axon, os, random, pygame, math, threading
 from Sprites.BasicSprite import BasicSprite
 from Sprites.SpriteScheduler import SpriteScheduler
