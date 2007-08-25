@@ -1,4 +1,3 @@
-
 """
 From a GUI perspective, the shardGen object provides the default
 parameters for the shard object it represents (also marking those

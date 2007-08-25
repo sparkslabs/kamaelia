@@ -126,7 +126,7 @@ class MagnaDoodle(Axon.Component.component):
                     done = True
             # END SHARD: ShutdownHandler ---------------------------------------------------
             
-            # START SHARD: pygameEventLoop -------------------------------------------------
+            # START SHARD: LoopOverPygameEvents --------------------------------------------
             while self.dataReady("inbox"):
                 # START SHARD: eventhandler ----------------------------------------------------
                 for event in self.recv("inbox"):
@@ -169,7 +169,7 @@ class MagnaDoodle(Axon.Component.component):
                     
                 # END SHARD: eventhandler ------------------------------------------------------
                 
-            # END SHARD: pygameEventLoop ---------------------------------------------------
+            # END SHARD: LoopOverPygameEvents ----------------------------------------------
             
             # START SHARD: mainLoop.shard4 -------------------------------------------------
             self.pause()
