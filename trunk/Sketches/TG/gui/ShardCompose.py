@@ -1,5 +1,4 @@
 import Axon
-from Tree import BlankTree
 
 from ConnectorShardsGUI import ConnectorShardsGUI
 from ImportShardsGUI import ImportShardsGUI
@@ -32,25 +31,29 @@ class CoreLogic(Axon.Component.component):
                     self.send(['select', 'node', command[1]], 'popup')
                     selected = command[1]
                 
-                if command[0] == "ADD":
+                elif command[0] == "ADD":
                     # add msg is ['ADD', shardgen object, name]
                     self.send(["add", command[1], command[2], selected ],"outbox")
                     self.send(["select", command[1]],"outbox")
                 
-                if command[0] == "GEN":
+                elif command[0] == "GEN":
                     # generate code, no parameters needed
                     self.send('generate', 'outbox')
                 
-                if command[0] == 'disp':
+                elif command[0] == 'disp':
                     # send given text to text display
                     self.send(['text', command[1]], 'textbox')
                 
-                if command[0] == "DEL":
+                elif command[0] == 'SAVE':
+                    # save hierarchy, command format ['SAVE', <to path>], path optional
+                    self.send(command, outbox)
+                
+                elif command[0] == "DEL":
                     if selected:
                         nodeId = nodeId + 1
                         self.send(["del", "node", selected ],"outbox")
                 
-                if command[0] == "RELABEL":
+                elif command[0] == "RELABEL":
                     if selected:
                         self.send(["relabel", selected, command[1]],"outbox")
                         self.send(["select", selected ],"outbox")
@@ -73,33 +76,70 @@ items = [shard, docShard, forShard, switchShard, whileShard, componentShard,
               moduleShard, classShard, funcAppShard, functionShard, initShard,
               importFunctionShard, pygameComponentShard]
 
-if __name__ == '__main__':
-    import sys, os
+def main():
     
-    if len(sys.argv) > 1:
-        importpath = sys.argv[1]
+    import sys, os, getopt
+    from Tree import Tree
     
-    elif os.path.exists('/usr/lib/python2.5/site-packages/Kamaelia/Util'):
-        importpath = '/usr/lib/python2.5/site-packages/Kamaelia/Util'
-        print 'import path for function library not specified, using Kamaelia/Util'
+    usage = "'python ShardCompose.py <options>', no options are compulsory\n\n\
+'help' prints this message\n\n\
+'-p <path>' or '--path <path>' sets the file or directory in which\n\
+ShardCompose will look for python functions to import (subdirectories will\n\
+be searched)\n\n\
+'-l <file>' or '--load <file>' will load the given file on startup, where\n\
+<file> has been saved from ShardCompose, or is a pickled ShardGen object\n\n"
     
-    elif os.path.exists('/usr/local/lib/python2.5/site-packages/Kamaelia/Util'):
-        importpath = '/usr/local/lib/python2.5/site-packages/Kamaelia/Util'
-        print 'import path for function library not specified, using Kamaelia/Util'
     
+    if len(sys.argv) == 2 and sys.argv[1] == 'help':
+        print usage
+        sys.exit()
     else:
-        importpath = os.environ['PWD']
-        print 'import path for function library not specified and '\
-                  'Kamaelia/Util not found, using current directory'
-    
+        options, stuff = getopt.getopt(sys.argv[1:], 'l:p', 'path=:load=')
+        print options, stuff
+        options = dict(options)
+        
+        # set an import path
+        if options.has_key('-p'):
+            importpath = options['-p']
+        
+        elif options.has_key('--path'):
+            importpath = options['--path']
+        
+        elif os.path.exists('/usr/lib/python2.5/site-packages/Kamaelia/Util'):
+            importpath = '/usr/lib/python2.5/site-packages/Kamaelia/Util'
+            print 'import path for function library not specified, using Kamaelia/Util'
+        
+        elif os.path.exists('/usr/local/lib/python2.5/site-packages/Kamaelia/Util'):
+            importpath = '/usr/local/lib/python2.5/site-packages/Kamaelia/Util'
+            print 'import path for function library not specified, using Kamaelia/Util'
+        
+        else:
+            importpath = os.environ['PWD']
+            print 'import path for function library not specified and '\
+                      'Kamaelia/Util not found, using current directory'
+        
+        if not os.path.exists(importpath):
+            print 'invalid function library path given', importpath
+            print usage
+            sys.exit()
+
+        # check for load file
+        if options.has_key('-l'):
+            root = Tree.rootFromPath(options['-l'])
+        elif options.has_key('--load'):
+            root = Tree.rootFromPath(options['--load'])
+        else:
+            root = None
+
     
     Graphline(
         CLEAR = Button(caption="Clear", msg=["del", "all"], position=(0,690),size=(64,32)),
         GEN= Button(caption="Generate", msg=["GEN"], position=(70,690),size=(64,32)),
         DEL= Button(caption="Del Node", msg=["DEL"], position=(140,690),size=(64,32)),
         RELABEL= Button(caption="Relabel Node", msg=["RELABEL"], position=(210,690),size=(94,32)),
+        SAVE= Button(caption="Save", msg=["SAVE"], position=(310,690),size=(64,32)),
         CORELOGIC = CoreLogic(),
-        TOPOLOGY = BlankTree(),
+        TOPOLOGY = Tree(root = root),
         IMP = ImportShardsGUI(importpath),
         CON = ConnectorShardsGUI(items),
         DISP = TextOutputGUI('Generated Code'),
@@ -109,6 +149,7 @@ if __name__ == '__main__':
             ("GEN","outbox"): ("CORELOGIC", "inbox"),
             ("DEL","outbox"): ("CORELOGIC", "inbox"),
             ("RELABEL","outbox"): ("CORELOGIC", "inbox"),
+            ("SAVE", "outbox"): ("TOPOLOGY","inbox"),
             ("CORELOGIC","outbox"): ("TOPOLOGY", "inbox"),
             ("IMP","outbox"): ("CORELOGIC", "inbox"),
             ("CON","outbox"): ("CORELOGIC", "inbox"),
@@ -116,3 +157,6 @@ if __name__ == '__main__':
             ("CORELOGIC", 'textbox'): ('DISP', 'inbox')
         }
     ).run()
+
+if __name__ == '__main__':
+    main()

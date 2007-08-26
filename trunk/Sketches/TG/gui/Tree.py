@@ -1,7 +1,8 @@
 import pygame
 from PygameComponent import PygameComponent
+from pickle import load
 
-class Tree(PygameComponent):
+class TreeStructure(PygameComponent):
     """
     Pygame Component representing a tree of shards.
     The topology of the tree is stored in shardGen objects, which contain the
@@ -33,6 +34,14 @@ class Tree(PygameComponent):
     #boxes: shardGen: (x, y) coordinate of box
     #root : root shardgen object
     #selected: shardGen object selected, if any
+    
+    def writeFile(self, filepath = None):
+        if not self.root:
+            return None
+        else:
+            file = self.root.writeFile(filepath)
+            print 'hierarchy saved to', file.name
+            return file
     
     def generate(self, filepath = None):
         if not self.root:
@@ -111,6 +120,7 @@ class Tree(PygameComponent):
             self._dispatch()
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
+                
                 if command[0] == "add":
                     sg, labeltext, parent = command[1:]
                     sg.label = labeltext
@@ -118,17 +128,22 @@ class Tree(PygameComponent):
                         self.root = sg
                     else:
                         parent.children.append(sg)
-                if command == 'generate':
+                
+                elif command == 'generate':
                     self.generate()
-                if command[0] == "relabel":
+                
+                elif command[0] == "relabel":
                     node, newlabel = command[1:]
                     node.label = newlabel
-                if command[0] == "select":
+                
+                elif command[0] == "select":
                     nodeid, = command[1:]
                     self.select(nodeid)
-                if command[0] == "deselect":
+                
+                elif command[0] == "deselect":
                     self.deselect()
-                if command[0] == "del":
+                
+                elif command[0] == "del":
                     if command[1] == "all":
                         self.selected = None
                         self.root = None
@@ -139,6 +154,14 @@ class Tree(PygameComponent):
                         except KeyError:
                             pass
                         self.removeNode(self.root, command[2])
+                
+                elif command[0] == 'SAVE':
+                    # save hierarchy, command format ['SAVE', <to path>], path optional
+                    path = None
+                    if len(command) > 1:
+                        path = command[1]
+                    self.writeFile(path)
+                
                 self.reDoTopology()
             yield 1
 
@@ -195,10 +218,22 @@ class TreeDraw(object):
             self.drawLine(line)
 
 
-class BlankTree(Tree, TreeDraw):
+class Tree(TreeStructure, TreeDraw):
+    
+    @staticmethod
+    def rootFromPath(path):
+        file = open(path, 'r')
+        return load(file)
+    
+    
     boxes = {}
     root = None
     selected = None
+    
+    def __init__(self, root = None):
+        super(Tree, self).__init__()
+        self.root = root
+    
 
 
 if __name__ == '__main__':
@@ -231,15 +266,12 @@ if __name__ == '__main__':
     ml.args['condition'] = r'self.dataReady("inbox")'
     ml.children += [pyl]
     
-    class PyloopTree(Tree, TreeDraw):
-        boxes = {}
-        root = ml
-        selected = None
-            
-        def __init__(self):
-            super(PyloopTree, self).__init__()
-            self.layout_tree(self.root, 0, 100)
+    # test importing from file as well
+    ml.writeFile('ml')
     
+    class ImportLoopTree(Tree):
+        def __init__(self):
+            super(ImportLoopTree, self).__init__(root = Tree.rootFromPath('ml'))
     
     
     from ShardCompose import *
@@ -249,8 +281,9 @@ if __name__ == '__main__':
         GEN= Button(caption="Generate", msg=["GEN"], position=(70,690),size=(64,32)),
         DEL= Button(caption="Del Node", msg=["DEL"], position=(140,690),size=(64,32)),
         RELABEL= Button(caption="Relabel Node", msg=["RELABEL"], position=(210,690),size=(94,32)),
+        SAVE= Button(caption="Save", msg=["SAVE"], position=(310,690),size=(64,32)),
         CORELOGIC = CoreLogic(),
-        TOPOLOGY = PyloopTree(), # sample tree here
+        TOPOLOGY = ImportLoopTree(), # sample tree here
         IMP = ImportShardsGUI('/usr/lib/python2.5/site-packages/Kamaelia/Util'),
         CON = ConnectorShardsGUI(items),
         DISP = TextOutputGUI('Generated Code'),
@@ -260,6 +293,7 @@ if __name__ == '__main__':
             ("GEN","outbox"): ("CORELOGIC", "inbox"),
             ("DEL","outbox"): ("CORELOGIC", "inbox"),
             ("RELABEL","outbox"): ("CORELOGIC", "inbox"),
+            ("SAVE", "outbox"): ("TOPOLOGY","inbox"),
             ("CORELOGIC","outbox"): ("TOPOLOGY", "inbox"),
             ("IMP","outbox"): ("CORELOGIC", "inbox"),
             ("CON","outbox"): ("CORELOGIC", "inbox"),

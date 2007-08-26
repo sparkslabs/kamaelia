@@ -1,4 +1,3 @@
-
 """
 The shardGen class is an interface between a GUI node and the
 code generation shard system. Each shardGen object wraps a given
@@ -25,6 +24,10 @@ on a root shardGen object will provide a completely initialised hierarchy
 of shards.
 """
 
+from pickle import dump, HIGHEST_PROTOCOL
+import os
+
+
 class shardGen(object):
     
     """
@@ -50,6 +53,19 @@ class shardGen(object):
                 self.args['shards'] += [sg.makeShard()]
         
         return self.shard(**self.args)
+    
+    def writeFile(self, filepath = None):
+        if not hasattr(self, 'label'):
+            self.label = self.shard.__name__
+            
+        if not filepath:
+            filepath = os.sep.join([os.environ['HOME'], self.label +'.py'])
+        
+        file = open(filepath, 'w')
+        dump(self, file, HIGHEST_PROTOCOL)
+        file.close()
+        
+        return file
 
 
 
@@ -97,8 +113,8 @@ if __name__ == '__main__':
                                    shards = [chassis])
 
 
-    file.writeFile()
-
-    from PygameAppChassis import *
+    file.writeFile('MagnaDoodle.py') # default puts file in homedir, override
+    
+    from MagnaDoodle import *
     MagnaDoodle(size=(800,600)).run()
 
