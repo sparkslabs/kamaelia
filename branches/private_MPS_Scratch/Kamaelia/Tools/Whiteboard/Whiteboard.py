@@ -56,7 +56,6 @@ from Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
 
 from Whiteboard.Canvas import Canvas
 from Whiteboard.Painter import Painter
-#from Whiteboard.TwoWaySplitter import TwoWaySplitter
 from Whiteboard.SingleShot import OneShot
 from Whiteboard.CheckpointSequencer import CheckpointSequencer
 from Whiteboard.Entuple import Entuple
@@ -221,20 +220,15 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           },
                     )
 
-mainsketcher = \
-    Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
-               CONSOLE = CommandConsole(),
-
-               linkages = { ('','inbox'):('SKETCHER','inbox'),
-                            ('SKETCHER','outbox'):('','outbox'),
-                            ('CONSOLE','outbox'):('SKETCHER','inbox'),
-                          }
-                 )
-
-
-
 if __name__=="__main__":
-    
+    mainsketcher = \
+        Graphline( SKETCHER = makeBasicSketcher(width=1024,height=768),
+                   CONSOLE = CommandConsole(),
+                   linkages = { ('','inbox'):('SKETCHER','inbox'),
+                                ('SKETCHER','outbox'):('','outbox'),
+                                ('CONSOLE','outbox'):('SKETCHER','inbox'),
+                              }
+                     )
     # primary whiteboard
     Pipeline( SubscribeTo("WHITEBOARD"),
               TagAndFilterWrapper(mainsketcher),

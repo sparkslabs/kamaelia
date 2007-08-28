@@ -337,7 +337,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
-      self.surfaces = []
+      self.surfaces = []  ##HERE
       self.overlays = []
       self.visibility = {}
       self.events_wanted = {}
@@ -365,7 +365,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                message.message = None
                message = None
 #               print "BEFORE", [id(x[0]) for x in self.surfaces]
-               self.surfaces = [ x for x in self.surfaces if x[0] is not surface ]
+               self.surfaces = [ x for x in self.surfaces if x[0] is not surface ] ##H ERE
 #               print "AFTER", self.surfaces
 #               print "Hmm...", self.surface_to_eventcomms.keys()
                try:
@@ -403,7 +403,12 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                   self.surface_to_eventcomms[str(id(surface))] = eventcomms
                self.link((self, callbackcomms), callbackservice)
                self.send(surface, callbackcomms)
-               self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
+               onlymouseinside = message.get("onlymouseinside", False)
+               self.surfaces.append( (surface, position, callbackcomms, eventcomms, onlymouseinside) )
+               if message.get("onlymouseinside", False):
+                   print "ONLYMOUSEINSIDE: TRUE"
+               else:
+                   print "ONLYMOUSEINSIDE: FALSE"
 
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -426,9 +431,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                 break
                             c += 1
                         if found:
-                            (surface, position, callbackcomms, eventcomms) = self.surfaces[c]
+                            (surface, position, callbackcomms, eventcomms, onlymouseinside) = self.surfaces[c]  ## HERE
                             new_position = message.get("position", position)
-                            self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms)
+                            self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms, onlymouseinside) ## HERE
                 except Exception, e:
                     print "It all went horribly wrong", e   
             
@@ -484,7 +489,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """
       display.fill(self.background_colour)
       
-      for surface, position, callbackcomms, eventcomms in self.surfaces:
+      for surface, position, callbackcomms, eventcomms, onlymouseinside in self.surfaces:   ## HERE
          display.blit(surface, position)
          
       for theoverlay in self.overlays:
@@ -535,12 +540,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 self.recv("events")
 
       if len(events):
-       
             for event in events:
                 if event.type in [ pygame.VIDEORESIZE, pygame.VIDEOEXPOSE ]:
                     self.needsRedrawing = True
        
-            for surface, position, callbackcomms, eventcomms in self.surfaces:
+            for surface, position, callbackcomms, eventcomms, onlymouseinside in self.surfaces: ### HERE
                 # see if this component is interested in events
                 if eventcomms is not None:
                     listener = eventcomms
@@ -554,6 +558,15 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             # if event contains positional information, remap it
                             # for the surface's coordiate origin
                             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
+                                if onlymouseinside:
+                                    r = surface.get_rect()
+                                    if r.x+position[0] <= event.pos[0] <= r.width+position[0]:
+                                        if r.y+position[1] <= event.pos[1] <= r.height+position[1]:
+                                            pass # Clearer logic
+                                        else:
+                                            continue # Don't forward event
+                                    else:
+                                        continue # Don't forward event
                                 e = Bunch()
                                 e.type = event.type
                                 pos = event.pos[0],event.pos[1]

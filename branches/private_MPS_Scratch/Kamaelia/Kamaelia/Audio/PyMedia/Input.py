@@ -62,7 +62,6 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 import sys,os
 from Axon.ThreadedComponent import threadedcomponent
 
-
 import time
 from math import log
 
@@ -102,36 +101,50 @@ class Input(threadedcomponent):
         self.format = format
         
     def main(self):
-        self.snd.start()
-        
-        format = {
-            'channels'    : self.channels,
-            'sample_rate' : self.sample_rate,
-            'format'      : self.format,
-        }
-        self.send(format, "format")
-        
-        shutdown=False
-        while self.anyReady() or not shutdown:
-            while self.dataReady("control"):
-                msg=self.recv("control")
-                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                    shutdown=True
-                self.send(msg,"signal")
-                
-            raw = self.snd.getData()
-            if raw and len(raw):
-                data = str(raw)
-                while data:
-                    try:
-                        self.send(data,"outbox")
-                        data=None
-                    except noSpaceInBox:
-                        self.pause()
-            else:
-                self.pause(0.01)
-                    
-        self.snd.stop()
+        # Pymedia is not the most reliabe piece of code in the world
+        # As a result I'm wrapping this entire code with a try..except
+        # designed to catch any & all pymedia errors regarding input.
+        #
+        # This allows the component to (relatively) gracefully shutdown
+        # whilst still bleat about how Pymedia is bust...
+        #
+        try:
+            self.snd.start()
+            
+            format = {
+                'channels'    : self.channels,
+                'sample_rate' : self.sample_rate,
+                'format'      : self.format,
+            }
+            self.send(format, "format")
+            
+            shutdown=False
+            while self.anyReady() or not shutdown:
+                while self.dataReady("control"):
+                    msg=self.recv("control")
+                    if isinstance(msg, (producerFinished,shutdownMicroprocess)):
+                        shutdown=True
+                    self.send(msg,"signal")
+
+                raw = self.snd.getData()
+                if raw and len(raw):
+                    data = str(raw)
+                    while data:
+                        try:
+                            self.send(data,"outbox")
+                            data=None
+                        except noSpaceInBox:
+                            self.pause()
+                else:
+                    self.pause(0.01)
+                        
+            self.snd.stop()
+        except sound.SoundError, e:
+            print "**************************************************************"
+            print "WARNING: Due to a bug in PYMEDIA, Audio input is shutting down"
+            print "ERROR: ",e
+            print "**************************************************************"
+            shutdown = True
 
 
 __kamaelia_components__ = ( Input, )
