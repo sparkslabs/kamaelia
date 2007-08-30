@@ -32,7 +32,7 @@ subscribe as clients, requesting to receive packets with certain PIDs.
 Example Usage
 -------------
 
-See Kamaelia.Devices.DVB.Receiver for examples of use.
+See Kamaelia.Device.DVB.Receiver for examples of use.
 
 
 
