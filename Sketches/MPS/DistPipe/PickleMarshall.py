@@ -62,9 +62,21 @@ def NetworkLinkage(ip1, port1, ip2, port2):
               }
            )
 
-def ____LocalNetworkPipeline(source, transformer1, transformer2, sink):
-    baseport = 1500
-    Pipeline( makeComponent(source),
+if 1:
+    CompClass_M = pickle.dumps(Producer)
+    CompClass_D = pickle.loads(CompClass_M)
+    Pipeline( CompClass_D(),
+              NetworkOutbox(1500)
+            ).activate()
+            
+    Pipeline( NetworkInbox(1501),
+              ConsoleEchoer()
+            ).activate()
+
+    NetworkLinkage("127.0.0.1", 1500, "127.0.0.1", 1501).run()
+
+if 0:
+    Pipeline( Producer(),
               NetworkOutbox(1500)
             ).activate()
 
