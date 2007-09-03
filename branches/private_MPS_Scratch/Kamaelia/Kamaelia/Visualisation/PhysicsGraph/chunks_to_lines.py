@@ -85,7 +85,14 @@ class chunks_to_lines(component):
          
          while self.dataReady("inbox"):
             chunk = self.recv("inbox")
-            chunk = chunk.replace("\r", "")
+            try:
+                chunk = chunk.replace("\r", "")
+            except:
+                print "BAD CHUNK, Arrrgggh", repr(chunk)
+                import time
+                time.sleep(3)
+                raise
+
             line = line + chunk
          
          pos = line.find("\n")
