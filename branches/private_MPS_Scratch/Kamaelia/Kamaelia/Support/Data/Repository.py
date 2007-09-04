@@ -363,6 +363,19 @@ class Scope(object):
         
     def _parse_Function(self, node):
         """Parse a function 'def' statement AST node"""
+        if node.defaults:
+#            print 
+#            print "-------------------"
+            print node.defaults
+#            try:
+#                print dir(node.defaults[0]), node.defaults[0].name, node.defaults[0].asList
+#            except AttributeError:
+#                print; print "AttributeError:"
+##                print
+##                print dir(node.defaults[0])
+##                raise
+#            print dir(node)
+#            print node.asList
         self.assign(node.name, FunctionScope(node,self.imports,self.localModules,self.rootScope))
         
     def _parse_Assign(self, node):
