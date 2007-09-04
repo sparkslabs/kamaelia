@@ -807,7 +807,8 @@ class ImportScope(Scope):
         
         self.doc = ""
         self.importPathName=importPathName
-        if importPathName.count(".")>5: raise "ARGH"
+        if importPathName.count(".")>7: 
+            raise "ARGH : " + importPathName
         
     def resolveName(self,provisionalName):
         """Returns the full (real) path name of this import"""
