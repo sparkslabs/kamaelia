@@ -341,7 +341,17 @@ class HTTPRequestHandler(component):
     #
     # Identify appropriate sendChunk & sendEnd methods - this could be nicer
     #
-    def setChunkingModeMethod(self, lengthMethod, msg, request):
+    def setChunkingModeMethod(self, msg, request):
+        # Identify if the response consists of a single part rather than streaming
+        # many parts consecutively
+        if msg.get("complete"):
+            lengthMethod = "explicit"
+            msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
+        elif msg.has_key("length"):
+            lengthMethod = "explicit"
+        else:
+            lengthMethod = ""
+
         if lengthMethod == "explicit":
             # form and send the header, including a content-length header
             self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
@@ -407,7 +417,6 @@ class HTTPRequestHandler(component):
                 yield 1
                 self.pause()
 
-
     def handleRequest(self, request):
         if not self.isValidRequest(request):
             return # then there's something odd going on, probably the remote
@@ -426,17 +435,8 @@ class HTTPRequestHandler(component):
 
 
         msg = self.recv("_handlerinbox") # XXX OK, due to loop above?
-        # Identify if the response consists of a single part rather than streaming
-        # many parts consecutively
-        if msg.get("complete"):
-            lengthMethod = "explicit"
-            msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
-        elif msg.has_key("length"):
-            lengthMethod = "explicit"
-        else:
-            lengthMethod = ""
 
-        lengthMethod = self.setChunkingModeMethod(lengthMethod, msg, request)
+        lengthMethod = self.setChunkingModeMethod(msg, request)
         for i in self.sendMessageChunks(msg):
             yield i
 
