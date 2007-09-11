@@ -397,10 +397,7 @@ class HTTPRequestHandler(component):
                     assert(isinstance(request, ParsedHTTPBodyChunk))
                     self.send(request.bodychunk, "_handleroutbox")
             elif self.dataReady("_handlerinbox"):
-                if not self.waitingOnNetworkToSend():
-                    msg = self.recv("_handlerinbox")
-                else:
-                    yield 1
+                msg = self.recv("_handlerinbox")
             elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
                 ctrl = self.recv("_handlercontrol")
                 self.debug("_handlercontrol received " + str(ctrl))
@@ -420,14 +417,13 @@ class HTTPRequestHandler(component):
         request = request.header
         self.setUpRequestHandler(request)
 
-        while self.ShouldShutdownCode & 2 == 0 and \
-              ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
+        while not self.dataReady("_handlerinbox"):
             yield 1
             self.updateShouldShutdown()
+            if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
+                raise "BreakOut"
             self.pause()
 
-        if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
-            raise "BreakOut"
 
         msg = self.recv("_handlerinbox") # XXX OK, due to loop above?
         # Identify if the response consists of a single part rather than streaming
