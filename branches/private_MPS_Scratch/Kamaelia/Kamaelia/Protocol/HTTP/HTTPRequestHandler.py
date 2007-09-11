@@ -376,6 +376,41 @@ class HTTPRequestHandler(component):
             yield 1
             return
 
+    def sendMessageChunks(self, msg):
+        # Loop through message sending data chunks
+        requestEndReached = False
+        while 1:
+            if msg:
+                self.sendChunk(msg)
+                msg = None
+
+            self.updateShouldShutdown()
+            if self.ShouldShutdownCode & 2 > 0:
+                break # immediate shutdown
+
+            if self.dataReady("inbox") and not requestEndReached:
+                request = self.recv("inbox")
+                if isinstance(request, ParsedHTTPEnd):
+                    requestEndReached = True
+                    self.send(producerFinished(self), "_handlersignal")
+                else:
+                    assert(isinstance(request, ParsedHTTPBodyChunk))
+                    self.send(request.bodychunk, "_handleroutbox")
+            elif self.dataReady("_handlerinbox"):
+                if not self.waitingOnNetworkToSend():
+                    msg = self.recv("_handlerinbox")
+                else:
+                    yield 1
+            elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
+                ctrl = self.recv("_handlercontrol")
+                self.debug("_handlercontrol received " + str(ctrl))
+                if isinstance(ctrl, producerFinished):
+                    break
+            else:
+                yield 1
+                self.pause()
+
+
     def handleRequest(self, request):
         if not self.isValidRequest(request):
             return # then there's something odd going on, probably the remote
@@ -411,41 +446,6 @@ class HTTPRequestHandler(component):
 
         self.shutdownRequestHandler(lengthMethod)
         yield 1
-
-    def sendMessageChunks(self, msg):
-        # Loop through message sending data chunks
-        requestEndReached = False
-        while 1:
-            if msg:
-                self.sendChunk(msg)
-                msg = None
-
-            self.updateShouldShutdown()
-            if self.ShouldShutdownCode & 2 > 0:
-                break # immediate shutdown
-
-            if self.dataReady("inbox") and not requestEndReached:
-                request = self.recv("inbox")
-                if isinstance(request, ParsedHTTPEnd):
-                    requestEndReached = True
-                    self.send(producerFinished(self), "_handlersignal")
-                else:
-                    assert(isinstance(request, ParsedHTTPBodyChunk))
-                    self.send(request.bodychunk, "_handleroutbox")
-            elif self.dataReady("_handlerinbox"):
-                if not self.waitingOnNetworkToSend():
-                    msg = self.recv("_handlerinbox")
-                else:
-                    yield 1
-            elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
-                ctrl = self.recv("_handlercontrol")
-                self.debug("_handlercontrol received " + str(ctrl))
-                if isinstance(ctrl, producerFinished):
-                    break
-            else:
-                yield 1
-                self.pause()
-
 
     #----------------------REFACTOR ENDZONE
     def main(self):
