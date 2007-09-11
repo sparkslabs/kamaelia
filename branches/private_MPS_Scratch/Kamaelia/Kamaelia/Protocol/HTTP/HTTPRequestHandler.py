@@ -360,19 +360,31 @@ class HTTPRequestHandler(component):
             self.sendEnd = self._sendEndChunked
         return lengthMethod
 
+    def setUpRequestHandler(self, request):
+        # add ["bad"] and ["error-msg"] keys to the request if it is invalid
+        self.checkRequestValidity(request)
+        self.connectiontype = self.determineConnectionType(request)
+        self.connectiontype = self.connectiontype.lower()
+        self.createHandler(request)
+        self.connectResourceHandler()
+
+    def shutdownRequestHandler(self, lengthMethod):
+        self.sendEnd()
+        self.disconnectResourceHandler()
+        self.debug("sendEnd")
+        if lengthMethod == "close" or self.connectiontype == "close":
+            self.send(producerFinished(), "signal") #this functionality is semi-complete
+            yield 1
+            return
+
     def handleRequest(self, request):
         if not self.isValidRequest(request):
             return # then there's something odd going on, probably the remote
                     # host is sending blank lines or some such non-HTTP nonsense
-                    # XXXX actually this looks very borked.
+                    # XXXX actually this looks very borked compared with below
 
         request = request.header
-        # add ["bad"] and ["error-msg"] keys to the request if it is invalid
-        self.checkRequestValidity(request)
-
-        connection = self.determineConnectionType(request)
-        self.createHandler(request)
-        self.connectResourceHandler()
+        self.setUpRequestHandler(request)
 
         while self.ShouldShutdownCode & 2 == 0 and \
               ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
@@ -384,7 +396,6 @@ class HTTPRequestHandler(component):
             raise "BreakOut"
 
         msg = self.recv("_handlerinbox") # XXX OK, due to loop above?
-
         # Identify if the response consists of a single part rather than streaming
         # many parts consecutively
         if msg.get("complete"):
@@ -399,13 +410,8 @@ class HTTPRequestHandler(component):
         for i in self.sendMessageChunks(msg):
             yield i
 
-        self.sendEnd()
-        self.disconnectResourceHandler()
-        self.debug("sendEnd")
-        if lengthMethod == "close" or connection.lower() == "close":
-            self.send(producerFinished(), "signal") #this functionality is semi-complete
-            yield 1
-            return
+        self.shutdownRequestHandler(lengthMethod)
+        yield 1
 
     def sendMessageChunks(self, msg):
         # Loop through message sending data chunks
