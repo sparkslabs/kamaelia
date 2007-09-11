@@ -178,7 +178,7 @@ MapStatusCodeToText = {
 def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
     curtime = time.gmtime()
-    return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
+    return time.strftime("%a, %d %b %Y %H:%M:%S GMT", curtime)
 
 
 class HTTPRequestHandler(component):
@@ -225,27 +225,35 @@ class HTTPRequestHandler(component):
 
         statustext = MapStatusCodeToText.get(resource["statuscode"], "500 Internal Server Error")
 
-        if (protocolversion == "0.9"):
-            header = ""
-        else:
-            header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.4\r\nDate: " + currentTimeHTTP() + "\r\n"
+        hl = []
+        if (protocolversion != "0.9"):
+            status_line = "HTTP/1.1 " + statustext + "\r\n"
+            hl.append( ( "Server" , "Kamaelia HTTP Server (RJL) 0.4" ) )
+            hl.append( ("Date" , currentTimeHTTP() + "" ) )
+
             if resource.has_key("charset"):
-                header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
+                hl.append( ("Content-Type" , resource["type"] + "; " + resource["charset"] + "" ))
             else:
-                header += "Content-Type: " + resource["type"] + "\r\n"
+                hl.append( ("Content-Type" , resource["type"] + "" ) )
 
             if lengthMethod == "explicit":
-                header += "Content-Length: " + str(resource["length"]) + "\r\n"
+                hl.append( ("Content-Length" , str(resource["length"]) + "" ))
 
             elif lengthMethod == "chunked":
-                header += "Transfer-Encoding: chunked\r\n"
-                header += "Connection: keep-alive\r\n"
+                hl.append( ("Transfer-Encoding", "chunked" ) )
+                hl.append( ("Connection", "keep-alive" ) )
 
             else: #connection close
-                header += "Connection: close\r\n"
+                hl.append( ("Connection", "close" ))
 
-            header += "\r\n";
-        return header
+            hl = [ x+": "+y for x,y in hl ]
+
+            header = "\r\n".join(hl) + "\r\n\r\n"
+        else:
+            status_line = ""
+            header = ""
+
+        return status_line + header
 
     def checkRequestValidity(self, request):
         if request["protocol"] != "HTTP":
