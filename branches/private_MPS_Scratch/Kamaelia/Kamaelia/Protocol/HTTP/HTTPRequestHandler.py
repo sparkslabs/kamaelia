@@ -258,14 +258,6 @@ class HTTPRequestHandler(component):
         if request["method"] not in ("GET", "HEAD", "POST"):
             request["bad"] = "501"
 
-    def waitingOnNetworkToSend(self):
-        """Will be used in future to prevent MBs of data piling up at a network bottleneck.
-        Uncommenting the following line will cause connections to hang unless Axon unpauses
-        us when our messages are sent (using TCPServer)."""
-
-        #return len(self.outboxes["outbox"]) > 5
-        return False
-
     def connectResourceHandler(self):
         "Link to the resource handler we've created so we can receive its output"
         self.link((self.handler, "outbox"), (self, "_handlerinbox"))
@@ -310,6 +302,7 @@ class HTTPRequestHandler(component):
         pass
 
     def updateShouldShutdown(self):
+        # XXXX I can see where this is coming from, but it's just icky and needs to change
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdown):
