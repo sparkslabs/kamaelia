@@ -212,10 +212,11 @@ class HTTPRequestHandler(component):
             resource["data"] = resource["data"].encode("utf-8")
             resource["charset"] = "utf-8"
 
-    def __init__(self, createRequestHandler):
+    def __init__(self, requestHandlerFactory):
         super(HTTPRequestHandler, self).__init__()
-        self.ssCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
-        self.createRequestHandler = createRequestHandler
+        self.ShouldShutdownCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
+        self.requestHandlerFactory = requestHandlerFactory
+        self.requestHandlerFactory = requestHandlerFactory
 
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
@@ -283,13 +284,13 @@ class HTTPRequestHandler(component):
         self.unlink((self, "_handlersignal"), (self.handler, "control"))
         self.removeChild(self.handler) 
 
-    def sendChunkExplicit(self, resource):
+    def _sendChunkExplicit(self, resource):
         "Send some more of the resource's data, having already sent a content-length header"
         if len(resource.get("data","")) > 0:
             self.resourceUTF8Encode(resource)
             self.send(resource["data"], "outbox")
 
-    def sendChunkChunked(self, resource):
+    def _sendChunkChunked(self, resource):
         "Send some more of the resource's data, for a response that uses chunked transfer-encoding"    
         if len(resource.get("data","")) > 0:
             self.resourceUTF8Encode(resource)
@@ -297,15 +298,15 @@ class HTTPRequestHandler(component):
             self.send(resource["data"], "outbox")
             self.send("\r\n", "outbox")
 
-    def sendEndChunked(self):
+    def _sendEndChunked(self):
         "Called when a chunk-encoded response ends"
         self.send("0\r\n\r\n", "outbox")
 
-    def sendEndClose(self):
+    def _sendEndClose(self):
         "Called when a connection: close terminated response ends"
         self.send(producerFinished(self), "signal")
 
-    def sendEndExplicit(self):
+    def _sendEndExplicit(self):
         "Called when a response that had a content-length header ends"    
         pass
 
@@ -313,14 +314,30 @@ class HTTPRequestHandler(component):
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdown):
-                self.ssCode |= 2
+                self.ShouldShutdownCode |= 2
             elif isinstance(temp, producerFinished):
-                self.ssCode |= 1
+                self.ShouldShutdownCode |= 1
         return 0
 
     #----------------------REFACTOR START
     def isValidRequest(self, request):
         return isinstance(request, ParsedHTTPHeader)
+
+    def determineConnectionType(self, request):
+        if request["version"] == "1.1":
+            return request["headers"].get("connection", "keep-alive")
+        else:
+            return request["headers"].get("connection", "close")
+
+    def createHandler(self, request):
+        self.handler = self.requestHandlerFactory(request)
+
+        # XXXX Do we *really* want to crash?
+        assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory
+                                     # should produce a 404 handler. Generally even that will not happen
+                                     # because you'll set a "/" handler which catches all then produces
+                                     # its own 404 page if the requested file is not found.
+                                     # i.e. if self.handler == None, the requestHandlerFactory function is wrong.
 
     def handleRequest(self, request):
         if not self.isValidRequest(request):
@@ -333,32 +350,20 @@ class HTTPRequestHandler(component):
         # add ["bad"] and ["error-msg"] keys to the request if it is invalid
         self.checkRequestValidity(request)
 
-        if request["version"] == "1.1":
-            connection = request["headers"].get("connection", "keep-alive")
-        else:
-            connection = request["headers"].get("connection", "close")
-
-        self.handler = self.createRequestHandler(request)
-
-        # XXXX Do we *really* want to crash?
-        assert(self.handler != None) # if no URL handlers match our request then createRequestHandler
-                                     # should produce a 404 handler. Generally even that will not happen
-                                     # because you'll set a "/" handler which catches all then produces
-                                     # its own 404 page if the requested file is not found.
-                                     # i.e. if self.handler == None, the createRequestHandler function is wrong.
+        connection = self.determineConnectionType(request)
+        self.createHandler(request)
         self.connectResourceHandler()
 
         lengthMethod = ""
         senkChunk = None
 
-        while self.ssCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
+        while self.ShouldShutdownCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
             yield 1
             self.updateShouldShutdown()
             self.pause()
 
-        if self.ssCode & 2 > 0: # if we've received a shutdown request
+        if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
             raise "BreakOut"
-
 
         msg = self.recv("_handlerinbox") # XXXX Shouldn't this require checking???
                                          # Ahhhh - this is kinda implicit due to loop above.
@@ -377,19 +382,32 @@ class HTTPRequestHandler(component):
         if lengthMethod == "explicit":
             # form and send the header, including a content-length header
             self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
-            sendChunk = self.sendChunkExplicit
-            sendEnd = self.sendEndExplicit
+            sendChunk = self._sendChunkExplicit
+            sendEnd = self._sendEndExplicit
         elif True: #request["version"] < "1.1":
             lengthMethod = "close"
             self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
-            sendChunk = self.sendChunkExplicit
-            sendEnd = self.sendEndClose
+            sendChunk = self._sendChunkExplicit
+            sendEnd = self._sendEndClose
         else:
             lengthMethod = "chunked"
             self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
-            sendChunk = self.sendChunkChunked
-            sendEnd = self.sendEndChunked
+            sendChunk = self._sendChunkChunked
+            sendEnd = self._sendEndChunked
 
+        for i in self.sendMessageChunks(msg, sendChunk):
+            yield i
+
+        sendEnd()
+        self.disconnectResourceHandler()
+        self.debug("sendEnd")
+        if lengthMethod == "close" or connection.lower() == "close":
+            self.send(producerFinished(), "signal") #this functionality is semi-complete
+            yield 1
+            return
+
+#    def sendMessageChunks(self, msg, sendChunk, sendEnd):
+    def sendMessageChunks(self, msg, sendChunk):
         # Loop through message sending data chunks
         requestEndReached = False
         while 1:
@@ -398,7 +416,7 @@ class HTTPRequestHandler(component):
                 msg = None
 
             self.updateShouldShutdown()
-            if self.ssCode & 2 > 0:
+            if self.ShouldShutdownCode & 2 > 0:
                 break # immediate shutdown
 
             if self.dataReady("inbox") and not requestEndReached:
@@ -424,13 +442,6 @@ class HTTPRequestHandler(component):
                 self.pause()
 
 
-        sendEnd()
-        self.disconnectResourceHandler()
-        self.debug("sendEnd")
-        if lengthMethod == "close" or connection.lower() == "close":
-            self.send(producerFinished(), "signal") #this functionality is semi-complete
-            yield 1
-            return
     #----------------------REFACTOR ENDZONE
     def main(self):
         while 1:
@@ -444,9 +455,9 @@ class HTTPRequestHandler(component):
                 except "BreakOut":
                     break
 #            self.updateShutdownStatus()
-            self.ssCode = 2 # cf the comment above when this is initialised
+            self.ShouldShutdownCode = 2 # cf the comment above when this is initialised
                             # Magic numbers are evil
-            if self.ssCode > 0:
+            if self.ShouldShutdownCode > 0:
                 self.send(producerFinished(), "signal") #this functionality is semi-complete
                 yield 1
                 return
