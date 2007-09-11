@@ -339,6 +339,27 @@ class HTTPRequestHandler(component):
                                      # its own 404 page if the requested file is not found.
                                      # i.e. if self.handler == None, the requestHandlerFactory function is wrong.
 
+    #
+    # Identify appropriate sendChunk & sendEnd methods - this could be nicer
+    #
+    def setChunkingModeMethod(self, lengthMethod, msg, request):
+        if lengthMethod == "explicit":
+            # form and send the header, including a content-length header
+            self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
+            self.sendChunk = self._sendChunkExplicit
+            self.sendEnd = self._sendEndExplicit
+        elif True: #request["version"] < "1.1":
+            lengthMethod = "close"
+            self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
+            self.sendChunk = self._sendChunkExplicit
+            self.sendEnd = self._sendEndClose
+        else:
+            lengthMethod = "chunked"
+            self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
+            self.sendChunk = self._sendChunkChunked
+            self.sendEnd = self._sendEndChunked
+        return lengthMethod
+
     def handleRequest(self, request):
         if not self.isValidRequest(request):
             return # then there's something odd going on, probably the remote
@@ -346,7 +367,6 @@ class HTTPRequestHandler(component):
                     # XXXX actually this looks very borked.
 
         request = request.header
-
         # add ["bad"] and ["error-msg"] keys to the request if it is invalid
         self.checkRequestValidity(request)
 
@@ -354,10 +374,8 @@ class HTTPRequestHandler(component):
         self.createHandler(request)
         self.connectResourceHandler()
 
-        lengthMethod = ""
-        senkChunk = None
-
-        while self.ShouldShutdownCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
+        while self.ShouldShutdownCode & 2 == 0 and \
+              ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
             yield 1
             self.updateShouldShutdown()
             self.pause()
@@ -365,8 +383,7 @@ class HTTPRequestHandler(component):
         if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
             raise "BreakOut"
 
-        msg = self.recv("_handlerinbox") # XXXX Shouldn't this require checking???
-                                         # Ahhhh - this is kinda implicit due to loop above.
+        msg = self.recv("_handlerinbox") # XXX OK, due to loop above?
 
         # Identify if the response consists of a single part rather than streaming
         # many parts consecutively
@@ -375,30 +392,14 @@ class HTTPRequestHandler(component):
             msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
         elif msg.has_key("length"):
             lengthMethod = "explicit"
-
-        #
-        # Identify appropriate sendChunk & sendEnd methods - this could be nicer
-        #
-        if lengthMethod == "explicit":
-            # form and send the header, including a content-length header
-            self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
-            sendChunk = self._sendChunkExplicit
-            sendEnd = self._sendEndExplicit
-        elif True: #request["version"] < "1.1":
-            lengthMethod = "close"
-            self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
-            sendChunk = self._sendChunkExplicit
-            sendEnd = self._sendEndClose
         else:
-            lengthMethod = "chunked"
-            self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
-            sendChunk = self._sendChunkChunked
-            sendEnd = self._sendEndChunked
+            lengthMethod = ""
 
-        for i in self.sendMessageChunks(msg, sendChunk):
+        lengthMethod = self.setChunkingModeMethod(lengthMethod, msg, request)
+        for i in self.sendMessageChunks(msg):
             yield i
 
-        sendEnd()
+        self.sendEnd()
         self.disconnectResourceHandler()
         self.debug("sendEnd")
         if lengthMethod == "close" or connection.lower() == "close":
@@ -406,13 +407,12 @@ class HTTPRequestHandler(component):
             yield 1
             return
 
-#    def sendMessageChunks(self, msg, sendChunk, sendEnd):
-    def sendMessageChunks(self, msg, sendChunk):
+    def sendMessageChunks(self, msg):
         # Loop through message sending data chunks
         requestEndReached = False
         while 1:
             if msg:
-                sendChunk(msg)
+                self.sendChunk(msg)
                 msg = None
 
             self.updateShouldShutdown()
