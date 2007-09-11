@@ -210,6 +210,10 @@ class HTTPServer(component):
         into a more convenient form and a HTTPRequestHandler component to
         sort out the correct response to requests received. Then link them
         together and to the TCP component"""
+        #
+        # XXXX - This code structure implies it should be using a Graphline
+        #        structure
+        #
 
         self.mimehandler = HTTPParser()
         self.httphandler = HTTPRequestHandler(self.createRequestHandler)
@@ -241,7 +245,6 @@ class HTTPServer(component):
                 elif isinstance(temp, shutdown):
                     self.send(shutdown(), "mime-control")
                     self.send(shutdown(), "http-control")
-                    #print "HTTPServer received shutdown"
                     loop = False
                     break
 
@@ -408,113 +411,131 @@ class HTTPRequestHandler(component):
                 self.ssCode |= 1
         return 0
 
-    def main(self):
+    #----------------------REFACTOR START
+    def isValidRequest(self, request):
+        return isinstance(request, ParsedHTTPHeader)
 
+    def handleRequest(self, request):
+        if not self.isValidRequest(request):
+            return # then there's something odd going on, probably the remote
+                    # host is sending blank lines or some such non-HTTP nonsense
+                    # XXXX actually this looks very borked.
+
+        request = request.header
+
+        # add ["bad"] and ["error-msg"] keys to the request if it is invalid
+        self.checkRequestValidity(request)
+
+        if request["version"] == "1.1":
+            connection = request["headers"].get("connection", "keep-alive")
+        else:
+            connection = request["headers"].get("connection", "close")
+
+        self.handler = self.createRequestHandler(request)
+
+        # XXXX Do we *really* want to crash?
+        assert(self.handler != None) # if no URL handlers match our request then createRequestHandler
+                                     # should produce a 404 handler. Generally even that will not happen
+                                     # because you'll set a "/" handler which catches all then produces
+                                     # its own 404 page if the requested file is not found.
+                                     # i.e. if self.handler == None, the createRequestHandler function is wrong.
+        self.connectResourceHandler()
+
+        lengthMethod = ""
+        senkChunk = None
+
+        while self.ssCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
+            yield 1
+            self.updateShouldShutdown()
+            self.pause()
+
+        if self.ssCode & 2 > 0: # if we've received a shutdown request
+            raise "BreakOut"
+
+
+        msg = self.recv("_handlerinbox") # XXXX Shouldn't this require checking???
+                                         # Ahhhh - this is kinda implicit due to loop above.
+
+        # Identify if the response consists of a single part rather than streaming
+        # many parts consecutively
+        if msg.get("complete"):
+            lengthMethod = "explicit"
+            msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
+        elif msg.has_key("length"):
+            lengthMethod = "explicit"
+
+        #
+        # Identify appropriate sendChunk & sendEnd methods - this could be nicer
+        #
+        if lengthMethod == "explicit":
+            # form and send the header, including a content-length header
+            self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
+            sendChunk = self.sendChunkExplicit
+            sendEnd = self.sendEndExplicit
+        elif True: #request["version"] < "1.1":
+            lengthMethod = "close"
+            self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
+            sendChunk = self.sendChunkExplicit
+            sendEnd = self.sendEndClose
+        else:
+            lengthMethod = "chunked"
+            self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
+            sendChunk = self.sendChunkChunked
+            sendEnd = self.sendEndChunked
+
+        # Loop through message sending data chunks
+        requestEndReached = False
+        while 1:
+            if msg:
+                sendChunk(msg)
+                msg = None
+
+            self.updateShouldShutdown()
+            if self.ssCode & 2 > 0:
+                break # immediate shutdown
+
+            if self.dataReady("inbox") and not requestEndReached:
+                request = self.recv("inbox")
+                if isinstance(request, ParsedHTTPEnd):
+                    requestEndReached = True
+                    self.send(producerFinished(self), "_handlersignal")
+                else:
+                    assert(isinstance(request, ParsedHTTPBodyChunk))
+                    self.send(request.bodychunk, "_handleroutbox")
+            elif self.dataReady("_handlerinbox"):
+                if not self.waitingOnNetworkToSend():
+                    msg = self.recv("_handlerinbox")
+                else:
+                    yield 1
+            elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
+                ctrl = self.recv("_handlercontrol")
+                self.debug("_handlercontrol received " + str(ctrl))
+                if isinstance(ctrl, producerFinished):
+                    break
+            else:
+                yield 1
+                self.pause()
+
+
+        sendEnd()
+        self.disconnectResourceHandler()
+        self.debug("sendEnd")
+        if lengthMethod == "close" or connection.lower() == "close":
+            self.send(producerFinished(), "signal") #this functionality is semi-complete
+            yield 1
+            return
+    #----------------------REFACTOR ENDZONE
+    def main(self):
         while 1:
             yield 1
-
             while self.dataReady("inbox"):
                 # we have a new request from the remote HTTP client
                 request = self.recv("inbox")
-                if not isinstance(request, ParsedHTTPHeader):
-                    continue # then there's something odd going on, probably the remote host is sending blank lines or some such non-HTTP nonsense
-                request = request.header
-
-                # output what the requested URL (path) was to stdout - by all means comment this out
-                print "Request for " + request["raw-uri"]
-
-                # add ["bad"] and ["error-msg"] keys to the request if it is invalid
-                self.checkRequestValidity(request)
-
-                if request["version"] == "1.1":
-                    connection = request["headers"].get("connection", "keep-alive")
-                else:
-                    connection = request["headers"].get("connection", "close")
-
-                self.handler = self.createRequestHandler(request)
-
-                assert(self.handler != None) # if no URL handlers match our request then createRequestHandler should produce a 404 handler
-                # Generally even that will not happen because you'll set a "/" handler which catches all then produces its own 404 page
-                # if the requested file is not found. i.e. if self.handler == None, the createRequestHandler function is wrong.
-
-                self.connectResourceHandler()
-
-                lengthMethod = ""
-                senkChunk = None
-
-                while self.ssCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
-                    yield 1
-                    self.updateShouldShutdown()
-                    self.pause()
-
-                if self.ssCode & 2 > 0: # if we've received a shutdown request
+                try:
+                    for i in self.handleRequest(request):
+                        yield i
+                except "BreakOut":
                     break
-
-                msg = self.recv("_handlerinbox")
-
-                if msg.get("complete"): # if the response consists of a single part rather than streaming many parts consecutively
-                    lengthMethod = "explicit"
-                    msg["length"] = len(msg["data"])
-                elif msg.has_key("length"):
-                    lengthMethod = "explicit"
-
-                if lengthMethod == "explicit":
-                    # form and send the header, including a content-length header
-                    self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
-                    sendChunk = self.sendChunkExplicit
-                    sendEnd = self.sendEndExplicit
-
-                elif True: #request["version"] < "1.1":
-                    lengthMethod = "close"
-                    self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
-                    sendChunk = self.sendChunkExplicit
-                    sendEnd = self.sendEndClose
-                else:
-                    lengthMethod = "chunked"
-                    self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
-                    sendChunk = self.sendChunkChunked
-                    sendEnd = self.sendEndChunked
-
-                requestEndReached = False
-                while 1:
-                    if msg:
-                        sendChunk(msg)
-                        msg = None
-
-                    self.updateShouldShutdown()
-                    if self.ssCode & 2 > 0:
-                        break # immediate shutdown
-
-                    if self.dataReady("inbox") and not requestEndReached:
-                        request = self.recv("inbox")
-                        if isinstance(request, ParsedHTTPEnd):
-                            requestEndReached = True
-                            self.send(producerFinished(self), "_handlersignal")
-                        else:
-                            assert(isinstance(request, ParsedHTTPBodyChunk))
-                            self.send(request.bodychunk, "_handleroutbox")
-                    elif self.dataReady("_handlerinbox"):
-                        if not self.waitingOnNetworkToSend():
-                            msg = self.recv("_handlerinbox")
-                        else:
-                            yield 1
-                    elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
-                        ctrl = self.recv("_handlercontrol")
-                        self.debug("_handlercontrol received " + str(ctrl))
-                        if isinstance(ctrl, producerFinished):
-                            break
-                    else:
-                        yield 1
-                        self.pause()
-
-                sendEnd()
-                self.disconnectResourceHandler()
-                self.debug("sendEnd")
-                if lengthMethod == "close" or connection.lower() == "close":
-                    self.send(producerFinished(), "signal") #this functionality is semi-complete
-                    yield 1
-                    return
-
 #            self.updateShutdownStatus()
             self.ssCode = 2 # cf the comment above when this is initialised
                             # Magic numbers are evil

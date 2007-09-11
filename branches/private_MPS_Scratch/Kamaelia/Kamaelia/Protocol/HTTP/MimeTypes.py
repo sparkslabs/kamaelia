@@ -56,7 +56,7 @@ extensionToMimeType = {
 
     "mid"  : "audio/mid",
     "mp3"  : "audio/mpeg",
-    "wav"  : "audio/x-wav"
+    "wav"  : "audio/x-wav",
 
 
     "cool" : "text/cool" # our own made up MIME type
