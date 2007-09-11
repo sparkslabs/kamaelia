@@ -216,7 +216,6 @@ class HTTPRequestHandler(component):
         super(HTTPRequestHandler, self).__init__()
         self.ShouldShutdownCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
         self.requestHandlerFactory = requestHandlerFactory
-        self.requestHandlerFactory = requestHandlerFactory
 
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
