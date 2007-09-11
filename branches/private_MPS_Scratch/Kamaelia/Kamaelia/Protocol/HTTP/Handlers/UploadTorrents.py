@@ -38,7 +38,7 @@ Sessions = {}
 
 def UploadTorrentsWrapper(request):
     """Returns an UploadTorrents component, manages that components lifetime and access."""
-    
+
     sessionid = request["uri-suffix"]
     if Sessions.has_key(sessionid):
         session = Sessions[sessionid]
@@ -51,12 +51,12 @@ def UploadTorrentsWrapper(request):
         Sessions[sessionid] = session
         return session["handler"]
 
-        
+
 class UploadTorrents(component):
     def __init__(self, sessionid):
         super(UploadTorrents, self).__init__()
         self.sessionid = sessionid
-        
+
     def main(self):
         counter = 0
         while 1:
@@ -65,7 +65,7 @@ class UploadTorrents(component):
             metafile = fopen("meta.txt")
             metafile.write(str(counter))
             metafile.close()
-            
+
             resource = {
                 "statuscode" : "200",
                 "data" : u"<html><body>%d</body></html>" % counter,
@@ -81,16 +81,16 @@ class UploadTorrents(component):
                     msg = self.recv("control")
                     if isinstance(msg, producerFinished):
                         receivingpost = False
-                
+
                 if receivingpost:
                     yield 1
                     self.pause()
-            
+
             torrentfile.close()
             self.send(resource, "outbox")
             self.send(producerFinished(self), "signal")
             Sessions[self.sessionid]["busy"] = False
             self.pause()
             yield 1
-            
+
 __kamaelia_components__  = ( UploadTorrents, )

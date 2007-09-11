@@ -136,12 +136,12 @@ MapStatusCodeToText = {
         "100" : "100 Continue",
         "200" : "200 OK",
         "302" : "302 Found",
-        "304" : "304 Non Modified",        
+        "304" : "304 Non Modified",
         "400" : "400 Bad Request",
         "401" : "401 Unauthorised",
         "401" : "403 Forbidden",
         "404" : "404 Not Found",
-                        
+
         #UNCOMMON RESPONSES
         "201" : "201 Created",
         "202" : "202 Accepted", # AKA non-commital response
@@ -179,17 +179,17 @@ def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
     curtime = time.gmtime()
     return time.strftime("Date: %a, %d %b %Y %H:%M:%S GMT", curtime)
-    
+
 class HTTPServer(component):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
-    
+
     Arguments:
        -- createRequestHandler - a function required by HTTPRequestHandler that
                                  creates the appropriate request-handler component
                                  for each request, see HTTPResourceGlue
     """
-    
+
     Inboxes =  { "inbox"         : "TCP data stream - receive",
                  "mime-signal"   : "Error signals from MIME handler",
                  "http-signal"   : "Error signals from the HTTP resource retriever",
@@ -210,25 +210,25 @@ class HTTPServer(component):
         into a more convenient form and a HTTPRequestHandler component to
         sort out the correct response to requests received. Then link them
         together and to the TCP component"""
-        
+
         self.mimehandler = HTTPParser()
         self.httphandler = HTTPRequestHandler(self.createRequestHandler)
-        
+
         self.link( (self,"mime-control"), (self.mimehandler,"control") )
         self.link( (self.mimehandler, "signal"), (self, "mime-signal") )
 
         self.link( (self.mimehandler, "outbox"), (self.httphandler, "inbox") )
-        
+
         self.link( (self, "http-control"), (self.httphandler, "control") )
         self.link( (self.httphandler, "signal"), (self, "http-signal") )
-        
+
         self.addChildren(self.mimehandler, self.httphandler)
         self.httphandler.activate()
         self.mimehandler.activate()
 
         self.link((self.httphandler, "outbox"), (self, "outbox"), passthrough=2)
         self.link((self, "inbox"), (self.mimehandler, "inbox"), passthrough=1)
-      
+
     def main(self):
         self.initialiseComponent()
         loop = True
@@ -244,26 +244,26 @@ class HTTPServer(component):
                     #print "HTTPServer received shutdown"
                     loop = False
                     break
-            
+
             while self.dataReady("mime-signal"):
                 temp = self.recv("mime-signal")
                 if isinstance(temp, producerFinished):
                     pass
                     #we don't need to care yet - wait 'til the request handler finishes
-            
+
             while self.dataReady("http-signal"):
                 temp = self.recv("http-signal")
                 if isinstance(temp, producerFinished):
                     sig = producerFinished(self)
-                    self.send(sig, "mime-control")                
+                    self.send(sig, "mime-control")
                     self.send(sig, "signal")
                     loop = False
                     #close the connection
-            
+
             self.pause()
-                
+
         self.closeDownComponent()
-        
+
     def closeDownComponent(self):
         "Remove my subcomponents (HTTPParser, HTTPRequestHandler)"
         for child in self.childComponents():
@@ -276,14 +276,14 @@ class HTTPRequestHandler(component):
     HTTPRequestHandler() -> new HTTPRequestHandler component capable of fulfilling the requests
     received over a single connection after they have been parsed by HTTPParser
     """
-    
+
     Inboxes =  {
         "inbox"         : "Raw HTTP requests",
         "control"       : "Signal component termination",
         "_handlerinbox"   : "Output from the request handler",
-        "_handlercontrol" : "Signals from the request handler"        
+        "_handlercontrol" : "Signals from the request handler"
     }
-    
+
     Outboxes = {
         "outbox"  : "HTTP responses",
         "debug"   : "Information to aid debugging",
@@ -292,16 +292,16 @@ class HTTPRequestHandler(component):
         "_handlersignal" : "Signals for the request handler"
     }
 
-    
+
     def debug(self, msg):
         self.send(msg, "debug")
-        
+
     def resourceUTF8Encode(self, resource):
         "Encode a resource's unicode data as utf-8 octets"
         if isinstance(resource["data"], unicode):
             resource["data"] = resource["data"].encode("utf-8")
             resource["charset"] = "utf-8"
-        
+
     def __init__(self, createRequestHandler):
         super(HTTPRequestHandler, self).__init__()
         self.ssCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
@@ -312,47 +312,47 @@ class HTTPRequestHandler(component):
             resource["statuscode"] = str(resource["statuscode"])
         elif not isinstance(resource.get("statuscode"), str):
             resource["statuscode"] = "500"
-                    
+
         statustext = MapStatusCodeToText.get(resource["statuscode"], "500 Internal Server Error")
 
         if (protocolversion == "0.9"):
-            header = ""        
+            header = ""
         else:
             header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.4\r\nDate: " + currentTimeHTTP() + "\r\n"
             if resource.has_key("charset"):
                 header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
             else:
                 header += "Content-Type: " + resource["type"] + "\r\n"
-            
+
             if lengthMethod == "explicit":
                 header += "Content-Length: " + str(resource["length"]) + "\r\n"
-                
+
             elif lengthMethod == "chunked":
                 header += "Transfer-Encoding: chunked\r\n"
                 header += "Connection: keep-alive\r\n"
-                
+
             else: #connection close
                 header += "Connection: close\r\n"
 
-            header += "\r\n";            
+            header += "\r\n";
         return header
 
     def checkRequestValidity(self, request):
         if request["protocol"] != "HTTP":
             request["bad"] = "400"
-            
+
         elif request["version"] > "1.0" and not request["headers"].has_key("host"):
             request["bad"] = "400"
             request["error-msg"] = "Host header required."
-            
+
         if request["method"] not in ("GET", "HEAD", "POST"):
             request["bad"] = "501"
-       
+
     def waitingOnNetworkToSend(self):
         """Will be used in future to prevent MBs of data piling up at a network bottleneck.
         Uncommenting the following line will cause connections to hang unless Axon unpauses
         us when our messages are sent (using TCPServer)."""
-        
+
         #return len(self.outboxes["outbox"]) > 5
         return False
 
@@ -378,7 +378,7 @@ class HTTPRequestHandler(component):
         if len(resource.get("data","")) > 0:
             self.resourceUTF8Encode(resource)
             self.send(resource["data"], "outbox")
-                
+
     def sendChunkChunked(self, resource):
         "Send some more of the resource's data, for a response that uses chunked transfer-encoding"    
         if len(resource.get("data","")) > 0:
@@ -394,11 +394,11 @@ class HTTPRequestHandler(component):
     def sendEndClose(self):
         "Called when a connection: close terminated response ends"
         self.send(producerFinished(self), "signal")
-        
+
     def sendEndExplicit(self):
         "Called when a response that had a content-length header ends"    
         pass
-    
+
     def updateShouldShutdown(self):
         while self.dataReady("control"):
             temp = self.recv("control")
@@ -407,11 +407,11 @@ class HTTPRequestHandler(component):
             elif isinstance(temp, producerFinished):
                 self.ssCode |= 1
         return 0
-        
+
     def main(self):
 
         while 1:
-            yield 1        
+            yield 1
 
             while self.dataReady("inbox"):
                 # we have a new request from the remote HTTP client
@@ -419,72 +419,72 @@ class HTTPRequestHandler(component):
                 if not isinstance(request, ParsedHTTPHeader):
                     continue # then there's something odd going on, probably the remote host is sending blank lines or some such non-HTTP nonsense
                 request = request.header
-                
+
                 # output what the requested URL (path) was to stdout - by all means comment this out
                 print "Request for " + request["raw-uri"]
-                
+
                 # add ["bad"] and ["error-msg"] keys to the request if it is invalid
                 self.checkRequestValidity(request)
-                
+
                 if request["version"] == "1.1":
                     connection = request["headers"].get("connection", "keep-alive")
                 else:
                     connection = request["headers"].get("connection", "close")
-                    
+
                 self.handler = self.createRequestHandler(request)
-                
+
                 assert(self.handler != None) # if no URL handlers match our request then createRequestHandler should produce a 404 handler
                 # Generally even that will not happen because you'll set a "/" handler which catches all then produces its own 404 page
                 # if the requested file is not found. i.e. if self.handler == None, the createRequestHandler function is wrong.
-                     
+
                 self.connectResourceHandler()
-                
+
                 lengthMethod = ""
                 senkChunk = None
-                
+
                 while self.ssCode & 2 == 0 and ((not self.dataReady("_handlerinbox")) or self.waitingOnNetworkToSend()):
-                    yield 1                
+                    yield 1
                     self.updateShouldShutdown()
                     self.pause()
 
                 if self.ssCode & 2 > 0: # if we've received a shutdown request
                     break
-                
+
                 msg = self.recv("_handlerinbox")
-                
+
                 if msg.get("complete"): # if the response consists of a single part rather than streaming many parts consecutively
                     lengthMethod = "explicit"
                     msg["length"] = len(msg["data"])
                 elif msg.has_key("length"):
                     lengthMethod = "explicit"
-                        
+
                 if lengthMethod == "explicit":
                     # form and send the header, including a content-length header
                     self.send(self.formResponseHeader(msg, request["version"], "explicit"), "outbox")
                     sendChunk = self.sendChunkExplicit
                     sendEnd = self.sendEndExplicit
-                    
+
                 elif True: #request["version"] < "1.1":
                     lengthMethod = "close"
                     self.send(self.formResponseHeader(msg, request["version"], "close"), "outbox")
                     sendChunk = self.sendChunkExplicit
-                    sendEnd = self.sendEndClose                
+                    sendEnd = self.sendEndClose
                 else:
                     lengthMethod = "chunked"
                     self.send(self.formResponseHeader(msg, request["version"], "chunked"), "outbox")
                     sendChunk = self.sendChunkChunked
                     sendEnd = self.sendEndChunked
-                    
+
                 requestEndReached = False
                 while 1:
                     if msg:
                         sendChunk(msg)
                         msg = None
-                        
+
                     self.updateShouldShutdown()
                     if self.ssCode & 2 > 0:
                         break # immediate shutdown
-                    
+
                     if self.dataReady("inbox") and not requestEndReached:
                         request = self.recv("inbox")
                         if isinstance(request, ParsedHTTPEnd):
@@ -506,7 +506,7 @@ class HTTPRequestHandler(component):
                     else:
                         yield 1
                         self.pause()
-                
+
                 sendEnd()
                 self.disconnectResourceHandler()
                 self.debug("sendEnd")
@@ -529,12 +529,12 @@ __kamaelia_components__  = ( HTTPServer, HTTPRequestHandler, )
 
 if __name__ == '__main__':
     import socket
-    
+
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
-    
+
     # this works out what the correct response to a request is
     from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
-    
+
     def createhttpserver():
         return HTTPServer(createRequestHandler)
 

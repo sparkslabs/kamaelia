@@ -25,7 +25,7 @@ def getErrorPage(errorcode, msg = ""):
     """\
     Get the HTML associated with an (integer) error code.
     """
-    
+
     if errorcode == 400:
         return {
             "statuscode" : "400",
@@ -46,18 +46,18 @@ def getErrorPage(errorcode, msg = ""):
             "data"       : u"<html>\n<title>500 Internal Server Error</title>\n<body style='background-color: black; color: white;'>\n<h2>500 Internal Server Error</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
             "type"       : "text/html"
         }
-        
+
     elif errorcode == 501:
         return {
             "statuscode" : "501",
             "data"       : u"<html>\n<title>501 Not Implemented</title>\n<body style='background-color: black; color: white;'>\n<h2>501 Not Implemented</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
             "type"       : "text/html"
         }
-        
+
     else:
         return {
             "statuscode" : str(errorcode),
             "data"       : u"",
             "type"       : "text/html"
         }
-                 
+

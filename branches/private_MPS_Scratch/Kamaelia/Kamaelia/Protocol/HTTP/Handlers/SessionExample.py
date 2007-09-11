@@ -49,12 +49,12 @@ def SessionExampleWrapper(request):
         Sessions[sessionid] = session
         return session["handler"]
 
-        
+
 class SessionExample(component):
     def __init__(self, sessionid):
         super(SessionExample, self).__init__()
         self.sessionid = sessionid
-        
+
     def main(self):
         counter = 0
         while 1:
@@ -70,5 +70,5 @@ class SessionExample(component):
             Sessions[self.sessionid]["busy"] = False
             self.pause()
             yield 1
-            
+
 __kamaelia_components__  = ( SessionExample, )

@@ -52,7 +52,7 @@ URLHandlers = [
     ["/session/"               , SessionExampleWrapper],
     ["/torrentupload"          , UploadTorrentsWrapper],
     ["/"                       , lambda r : Minimal(request=r, homedirectory="htdocs/", indexfilename="index.html")],
-    
+
     # "/" should always be last as it catches all
 ]
 # the second item should be a component class that takes one parameter (the request)
@@ -69,5 +69,5 @@ def createRequestHandler(request):
                 request["uri-prefix-trigger"] = prefix
                 request["uri-suffix"] = request["raw-uri"][len(prefix):]
                 return handler(request)
-            
+
     return ErrorPages.websiteErrorPage(404, "No resource handlers could be found for the requested URL.")
