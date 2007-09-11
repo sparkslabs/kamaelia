@@ -168,8 +168,8 @@ class _AdaptiveCommsable(object):
    #
    # Public Methods
    #
-   def __init__(self):
-      super(_AdaptiveCommsable, self).__init__()
+   def __init__(self, *args, **argd):
+      super(_AdaptiveCommsable, self).__init__(*args, **argd)
       self._resourceStore = {}
       self._resourceLookup = {}
 
@@ -290,8 +290,8 @@ class AdaptiveCommsComponent(component, _AdaptiveCommsable):
    See Axon.AdaptiveCommsComponent._AdaptiveCommsable for the extra methods that
    this subclass of component has.
    """
-   def __init__(self):
-      component.__init__(self)
+   def __init__(self,*args, **argd):
+      component.__init__(self,*args, **argd)
       _AdaptiveCommsable.__init__(self)
           
 
