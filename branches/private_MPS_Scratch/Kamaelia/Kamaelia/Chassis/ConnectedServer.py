@@ -130,38 +130,40 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     protocol handler component to handle each connection.
 
     Keyword arguments:
-    
+
     - protocol  -- function that returns a protocol handler component
     - port      -- Port number to listen on for connections (default=1601)
     """
-                    
+
     Inboxes = { "_socketactivity" : "Messages about new and closing connections here",
                 "control" : "We expect to get serverShutdown messages here" }
     Outboxes = { "_serversignal" : "we send shutdown messages to the TCP server here",
                }
-    
-    def __init__(self, protocol=None, port=1601, socketOptions=None):
+    port = 1601
+    protocol = None
+    socketOptions=None
+    def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(SimpleServer, self).__init__()
-        if not protocol:
-            raise "Need a protocol to handle!"
-        self.protocolClass = protocol
-        self.listenport = port
+        super(SimpleServer, self).__init__(**argd)
         self.connectedSockets = []
-        self.socketOptions = socketOptions
         self.server = None
+        if not self.protocol:
+            print self.__class__, self.__class__.protocol, self.protocol, protocol
+            raise "Need a protocol to handle!"
+        else:
+            print self.protocol
 
     def initialiseServerSocket(self):
         if self.socketOptions is None:
-            self.server = TCPServer(listenport=self.listenport)
+            self.server = TCPServer(listenport=self.port)
         else:
-            self.server = TCPServer(listenport=self.listenport, socketOptions=self.socketOptions)
+            self.server = TCPServer(listenport=self.port, socketOptions=self.socketOptions)
 
         self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
         self.link((self,"_serversignal"), (self.server,"control"))
         self.addChildren(self.server)
         self.server.activate()
-    
+
     def main(self):
         self.initialiseServerSocket()
         while 1:
@@ -187,30 +189,30 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.send(serverShutdown(), "_serversignal")
 #        print len(self.outboxes["_serversignal"])
 #        print "Simple Server Shutting Down"
-    
+
     def handleNewConnection(self, newCSAMessage):
         """
         handleNewConnection(newCSAMessage) -> Axon.Ipc.newComponent(protocol handler)
-         
+
         Creates and returns a protocol handler for new connection.
 
         Keyword arguments:
-        
+
         - newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection
         """
         connectedSocket = newCSAMessage.object
 
-        protocolHandler = self.protocolClass()
+        protocolHandler = (self.protocol)()
         self.connectedSockets.append(connectedSocket)
-        
+
         outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
         outboxToShutdownConnectedSocket= self.addOutbox("connectedSocketShutdownSignal")
-    
+
         self.trackResourceInformation(connectedSocket, 
                                       [], 
                                       [outboxToShutdownProtocolHandler], 
                                       protocolHandler)
-    
+
         self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
         self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
         self.link((self,outboxToShutdownProtocolHandler), (protocolHandler, "control"))
@@ -221,12 +223,12 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             controllink = self.link((protocolHandler, "serversignal"), (self, "control"))
         else:
             controllink = None
-            
+
         self.trackResourceInformation(connectedSocket, 
                                       [], 
                                       [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
                                       ( protocolHandler, controllink ) )
-    
+
         self.addChildren(connectedSocket,protocolHandler)
         connectedSocket.activate()
         protocolHandler.activate()
@@ -234,7 +236,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def handleClosedCSA(self,shutdownCSAMessage):
         """
         handleClosedCSA(shutdownCSAMessage) -> None
-        
+
         Terminates and unwires the protocol handler for the closing socket.
 
         Keyword arguments:
@@ -245,7 +247,7 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
         self.connectedSockets = [ x for x in self.connectedSockets if x != self.connectedSockets ]
-  
+
         self.unlink(thelinkage=controllink)
 
         self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
@@ -261,15 +263,15 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
 __kamaelia_components__ = ( SimpleServer, )
 
-                
+
 if __name__ == '__main__':
-    
+
     from Axon.Scheduler import scheduler
     class SimpleServerTestProtocol(Axon.Component.component):
         def __init__(self):
             super(SimpleServerTestProtocol, self).__init__()
             assert self.debugger.note("SimpleServerTestProtocol.__init__",1, "Starting test protocol")
-    
+
         def mainBody(self):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
@@ -282,9 +284,9 @@ if __name__ == '__main__':
                 data = self.recv("control")
                 return 0
             return 1
-    
+
         def closeDownComponent(self):
             assert self.debugger.note("SimpleServerTestProtocol.closeDownComponent",1, "Closing down test protcol")
-    
+
     SimpleServer(protocol=SimpleServerTestProtocol).activate()
     scheduler.run.runThreads(slowmo=0)
