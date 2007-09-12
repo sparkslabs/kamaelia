@@ -323,8 +323,9 @@ class nullsink(object):
     def pop(self,index):
         """Returns an item from the list (always raises IndexError"""
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
-    
-    
+    def __repr__(self):
+        return "<>"
+
 class realsink(list):
     """\
     realsink(notify[,size]) -> new realsink object.
@@ -530,7 +531,9 @@ class postbox(object):
     def isFull(self):
         """Returns True if the destination box is full (and has a size limit)"""
         return (self.sink.size != None) and (len(self) >= self.sink.size)
-            
+
+    def __repr__(self):
+        return repr(self.storage)
 
 def makeInbox(notify, size = None):
     """\
