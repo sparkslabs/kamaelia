@@ -313,6 +313,7 @@ class scheduler(microprocess):
       self.threads = {}    # current set of threads and their states (whether sleeping, or running)
       self.wakeRequests = Queue.Queue()
       self.pauseRequests = Queue.Queue()
+      self.debuggingon = False
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -353,6 +354,7 @@ class scheduler(microprocess):
    
    def listAllThreads(self):
        """Returns a list of all microprocesses (both active and sleeping)"""
+       self.debuggingon = True
        return self.threads.keys()
    
    def handleMicroprocessShutdownKnockon(self, knockon):
@@ -416,7 +418,11 @@ class scheduler(microprocess):
            nextrunqueue = []
            
            # run microprocesses in the runqueue
+           if self.debuggingon:
+               print "-->", [ x.name for x in self.threads], [ x.name for x in runqueue]
            for mprocess in runqueue:
+               if self.debuggingon:
+                   print "Before Run", mprocess
                yield 1
                
                if self.threads[mprocess] == _ACTIVE:
@@ -432,6 +438,8 @@ class scheduler(microprocess):
                            del self.threads[mprocess]
                            mprocess = None
                            
+                       if self.debuggingon:
+                           print "After Run", mprocess
                        if mprocess:
                            nextrunqueue.append(mprocess)
                    except StopIteration:
