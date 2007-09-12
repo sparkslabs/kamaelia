@@ -83,7 +83,7 @@ def sanitizePath(uri): #needs work
 #    return {
 #        "statuscode" : "200",
 #        "data"       : data,
-#        "type"       : "text/html"
+#        "content-type"       : "text/html"
 #    }
 
 # a one shot request handler
@@ -135,7 +135,7 @@ class Minimal(component):
             if     os.path.exists(self.homedirectory + filename) and \
                not os.path.isdir(self.homedirectory + filename):
                 resource = {
-                    "type"           : filetype,
+                    "content-type"           : filetype,
                     "statuscode"     : "200",
                     #"length" : os.path.getsize(homedirectory + filename)
                 }

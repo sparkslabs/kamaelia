@@ -230,11 +230,10 @@ class HTTPRequestHandler(component):
             status_line = "HTTP/1.1 " + statustext + "\r\n"
             hl.append( ( "Server" , "Kamaelia HTTP Server (RJL) 0.4" ) )
             hl.append( ("Date" , currentTimeHTTP() + "" ) )
-
             if resource.has_key("charset"):
-                hl.append( ("Content-Type" , resource["type"] + "; " + resource["charset"] + "" ))
+                hl.append( ("Content-Type" , resource["content-type"] + "; " + resource["charset"] + "" ))
             else:
-                hl.append( ("Content-Type" , resource["type"] + "" ) )
+                hl.append( ("Content-Type" , resource["content-type"] + "" ) )
 
             if lengthMethod == "explicit":
                 hl.append( ("Content-Length" , str(resource["length"]) + "" ))

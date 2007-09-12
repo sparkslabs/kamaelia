@@ -70,7 +70,7 @@ class UploadTorrents(component):
                 "statuscode" : "200",
                 "data" : u"<html><body>%d</body></html>" % counter,
                 "incomplete" : False,
-                "type"       : "text/html"
+                "content-type"       : "text/html"
             }
             receivingpost = False
             while receivingpost:

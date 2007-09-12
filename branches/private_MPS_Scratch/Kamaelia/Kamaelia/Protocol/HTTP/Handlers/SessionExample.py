@@ -63,7 +63,7 @@ class SessionExample(component):
                 "statuscode" : "200",
                 "data" : u"<html><body>%d</body></html>" % counter,
                 "incomplete" : False,
-                "type"       : "text/html"
+                "content-type"       : "text/html"
             }
             self.send(resource, "outbox")
             self.send(producerFinished(self), "signal")
