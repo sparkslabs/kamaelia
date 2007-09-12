@@ -282,6 +282,8 @@ tradeoff.
 from AxonExceptions import noSpaceInBox
 from AxonExceptions import BoxAlreadyLinkedToDestination
 
+ShowAllTransits = False
+
 class nullsink(object):
     """\
     nullsink() -> new nullsink object
@@ -297,7 +299,7 @@ class nullsink(object):
         super(nullsink,self).__init__()
         self.size = None
         self.tag = None
-        self.showtransit = None
+        self.showtransit = ShowAllTransits
         self.wakeOnPop = []   # callbacks for when a pop() happens
 
     def append(self, data):
@@ -360,7 +362,7 @@ class realsink(list):
 
         Calls self.notify() callback
         """
-        if self.showtransit:
+        if self.showtransit or ShowAllTransits:
             print "Delivery via [", self.tag, "] of ", repr(data)
         if self.size is not None:
            if len(self) >= self.size:
