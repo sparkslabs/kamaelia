@@ -533,7 +533,7 @@ class postbox(object):
         return (self.sink.size != None) and (len(self) >= self.sink.size)
 
     def __repr__(self):
-        return repr(self.storage)
+        return repr(self.sink)
 
 def makeInbox(notify, size = None):
     """\
