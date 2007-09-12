@@ -223,11 +223,14 @@ class HTTPRequestHandler(component):
         elif not isinstance(resource.get("statuscode"), str):
             resource["statuscode"] = "500"
 
-        statustext = MapStatusCodeToText.get(resource["statuscode"], "500 Internal Server Error")
+        try:
+            statustext = MapStatusCodeToText[resource["statuscode"]]
+        except KeyError:
+            statustext = resource["statuscode"]
 
         hl = []
         if (protocolversion != "0.9"):
-            status_line = "HTTP/1.1 " + statustext + "\r\n"
+            status_line = "HTTP/1.0 " + statustext + "\r\n"
             hl.append( ( "Server" , "Kamaelia HTTP Server (RJL) 0.4" ) )
             hl.append( ("Date" , currentTimeHTTP() + "" ) )
 
