@@ -337,6 +337,39 @@ class HTTPParser(component):
                 self.pause()
                 yield 1
 
+    def getBody_KnownContentLength(self, requestobject):
+        if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
+            #
+            # XXXXX VOMIT.
+            #
+            # we're supposed to say continue, but this is a pain
+            # and everything still works if we don't just with a few secs delay
+            pass
+        self.debug("HTTPParser::main - stage 3.length-known start")
+
+        bodylengthremaining = int(requestobject["headers"]["content-length"])
+
+        while bodylengthremaining > 0:
+            #print "HTTPParser::main - stage 3.length known.1"
+            if self.shouldShutdown(): return
+            while self.dataFetch():
+                pass
+
+            if bodylengthremaining < len(self.readbuffer): #i.e. we have some extra data from the next request
+                self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylengthremaining]), "outbox")
+                self.readbuffer = self.readbuffer[bodylengthremaining:]
+                bodylengthremaining = 0
+            elif len(self.readbuffer) > 0:
+                bodylengthremaining -= len(self.readbuffer)
+                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                self.readbuffer = ""
+
+            if bodylengthremaining > 0:
+                self.pause()
+                yield 1
+
+        self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
+
     def main(self):
 
         while 1:
@@ -412,41 +445,13 @@ class HTTPParser(component):
                 self.debug("HTTPParser::main - stage 3 start")
                 #state 3 - the headers are complete - awaiting the message
                 if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
+
                     yield WaitComplete(self.getBody_ChunkTransferEncoding(requestobject))
-                    currentline = self.currentline
 
                 elif requestobject["headers"].has_key("content-length"):
-                    if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
-                        #
-                        # XXXXX VOMIT.
-                        #
-                        # we're supposed to say continue, but this is a pain
-                        # and everything still works if we don't just with a few secs delay
-                        pass
-                    self.debug("HTTPParser::main - stage 3.length-known start")
 
-                    bodylengthremaining = int(requestobject["headers"]["content-length"])
+                    yield WaitComplete(self.getBody_KnownContentLength(requestobject))
 
-                    while bodylengthremaining > 0:
-                        #print "HTTPParser::main - stage 3.length known.1"
-                        if self.shouldShutdown(): return
-                        while self.dataFetch():
-                            pass
-
-                        if bodylengthremaining < len(self.readbuffer): #i.e. we have some extra data from the next request
-                            self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylengthremaining]), "outbox")
-                            self.readbuffer = self.readbuffer[bodylengthremaining:]
-                            bodylengthremaining = 0
-                        elif len(self.readbuffer) > 0:
-                            bodylengthremaining -= len(self.readbuffer)
-                            self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
-                            self.readbuffer = ""
-
-                        if bodylengthremaining > 0:
-                            self.pause()
-                            yield 1
-
-                    self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
                 else: #we'll assume it's a connection: close jobby
 
                     yield WaitComplete(self.getBodyDependingOnHalfClose())
