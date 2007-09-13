@@ -131,6 +131,7 @@ from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Protocol.HTTP.HTTPParser import *
 from Kamaelia.Protocol.HTTP.HTTPRequestHandler import HTTPRequestHandler
 
@@ -177,7 +178,53 @@ MapStatusCodeToText = {
         "505" : "HTTP Version Not Supported"
     }
 
-class HTTPServer(component):
+class HTTPShutdownLogicHandling(component):
+    Inboxes = {
+        "inbox": "unused - this is a pure signalling component",
+        "Pcontrol": "To signal to the http parser",
+        "Hcontrol": "To signal to the http connection handler",
+        "control": "Standard inbox where we get shutdown messages from the socket",
+    }
+    Outboxes = {
+        "outbox": "unused - this is a pure signalling component",
+        "Psignal": "To signal to the http parser",
+        "Hsignal": "To signal to the http connection handler",
+        "signal": "Standard outbox - re-shutdown",
+    }
+    def main(self):
+        keepconnectionopen= True
+        while keepconnectionopen:
+            yield 1
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            while self.dataReady("control"):           # Control messages from the socket
+                temp = self.recv("control")
+                if isinstance(temp, producerFinished): # Socket has stopped sending us data (can still send data to it)
+                    self.send(temp, "Psignal")         # pass on to the HTTP Parser. (eg could be a POST request)
+
+                elif isinstance(temp, shutdown):       # Socket is telling us connection is dead
+                    self.send(shutdown(), "Psignal")
+                    self.send(shutdown(), "Hsignal")
+                    keepconnectionopen = False
+
+            while self.dataReady("Pcontrol"):          # Control messages from the HTTP Parser
+                temp = self.recv("Pcontrol")
+                if isinstance(temp, producerFinished): # HTTP Parser is telling us they're done parsing
+                    pass                               # XXXX Handling of shutdown messages from parser ???
+
+            while self.dataReady("Hcontrol"):          # Control messages from the HTTP Handler
+                temp = self.recv("Hcontrol")
+                if isinstance(temp, producerFinished): # Have finished sending data to the client
+                    sig = producerFinished(self)       #
+                    self.send(sig, "Psignal")          # Make sure HTTP Parser is shutting down - (should send a "shutdown" message)
+                    self.send(sig, "signal")
+                    keepconnectionopen = False
+
+        self.send(producerFinished(), "signal")        # We're done, close the connection.
+        yield 1                                        # And quit
+
+def HTTPServer(createRequestHandler):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
 
@@ -186,92 +233,29 @@ class HTTPServer(component):
                                  creates the appropriate request-handler component
                                  for each request, see HTTPResourceGlue
     """
+    return Graphline(
+        PARSER = HTTPParser(),
+        HANDLER = HTTPRequestHandler(createRequestHandler),
+        CORELOGIC = HTTPShutdownLogicHandling(),
+        linkages = {
+            # Data Handling
+            ("self",   "inbox"):  ("PARSER","inbox"),
+            ("PARSER", "outbox"): ("HANDLER","inbox"),
+            ("HANDLER","outbox"): ("self","outbox"),
 
-    Inboxes =  { "inbox"         : "TCP data stream - receive",
-                 "mime-signal"   : "Error signals from MIME handler",
-                 "http-signal"   : "Error signals from the HTTP resource retriever",
-                 "control"       : "Receive shutdown etc. signals" }
+            # Signalling Handling
+            ("self","control"):      ("CORELOGIC","control"),
+            ("CORELOGIC","Psignal"): ("PARSER","control"),
+            ("CORELOGIC","Hsignal"): ("HANDLER","control"),
+            ("CORELOGIC","signal"):  ("self","signal"),
 
+            ("PARSER","signal"):     ("CORELOGIC","Pcontrol"),
+            ("HANDLER","signal"):    ("CORELOGIC","Hcontrol"),
+        }
+    )
 
-    Outboxes = { "outbox"        : "TCP data stream - send",
-                 "mime-control"  : "To MIME handler",
-                 "http-control"  : "To HTTP resource retriever's signalling inbox",
-                 "signal"        : "UNUSED" }
-
-    def __init__(self, createRequestHandler):
-        super(HTTPServer, self).__init__()
-        self.createRequestHandler = createRequestHandler
-
-    def initialiseComponent(self):
-        """Create an HTTPParser component to convert the requests we receive
-        into a more convenient form and a HTTPRequestHandler component to
-        sort out the correct response to requests received. Then link them
-        together and to the TCP component"""
-        #
-        # XXXX - This code structure implies it should be using a Graphline
-        #        structure with a central control component
-        #
-
-        self.mimehandler = HTTPParser()
-        self.httphandler = HTTPRequestHandler(self.createRequestHandler)
-
-        self.link( (self,"mime-control"), (self.mimehandler,"control") )
-        self.link( (self.mimehandler, "signal"), (self, "mime-signal") )
-
-        self.link( (self.mimehandler, "outbox"), (self.httphandler, "inbox") )
-
-        self.link( (self, "http-control"), (self.httphandler, "control") )
-        self.link( (self.httphandler, "signal"), (self, "http-signal") )
-
-        self.addChildren(self.mimehandler, self.httphandler)
-        self.httphandler.activate()
-        self.mimehandler.activate()
-
-        self.link((self.httphandler, "outbox"), (self, "outbox"), passthrough=2)
-        self.link((self, "inbox"), (self.mimehandler, "inbox"), passthrough=1)
-
-    def main(self):
-        self.initialiseComponent()
-        loop = True
-        while loop:
-            yield 1
-            while self.dataReady("control"):
-                temp = self.recv("control")
-                if isinstance(temp, producerFinished):
-                    self.send(temp, "mime-control")
-                elif isinstance(temp, shutdown):
-                    self.send(shutdown(), "mime-control")
-                    self.send(shutdown(), "http-control")
-                    loop = False
-                    break
-
-            while self.dataReady("mime-signal"):
-                temp = self.recv("mime-signal")
-                if isinstance(temp, producerFinished):
-                    pass
-                    #we don't need to care yet - wait 'til the request handler finishes
-
-            while self.dataReady("http-signal"):
-                temp = self.recv("http-signal")
-                if isinstance(temp, producerFinished):
-                    sig = producerFinished(self)
-                    self.send(sig, "mime-control")
-                    self.send(sig, "signal")
-                    loop = False
-                    #close the connection
-
-            self.pause()
-
-        self.closeDownComponent()
-
-    def closeDownComponent(self):
-        "Remove my subcomponents (HTTPParser, HTTPRequestHandler)"
-        for child in self.childComponents():
-            self.removeChild(child)
-        self.mimehandler = None
-        self.httphandler = None
-
-__kamaelia_components__  = ( HTTPServer,)
+__kamaelia_components__  = ( HTTPShutdownLogicHandling )
+__kamaelia_prefabs__  = ( HTTPServer, )
 
 if __name__ == '__main__':
     import socket
