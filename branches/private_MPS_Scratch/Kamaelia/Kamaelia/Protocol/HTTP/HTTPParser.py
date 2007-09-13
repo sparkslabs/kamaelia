@@ -435,7 +435,11 @@ class HTTPParser(component):
 
 
             self.send(ParsedHTTPEnd(), "outbox")
-            if string.lower(requestobject["headers"].get("connection", "")) == "close":
+#
+#           # This next chunk of code is intended to assist with pipelining & keep alives, but
+#           # gets it wrong, so it's commented out/forced to true
+#            if string.lower(requestobject["headers"].get("connection", "")) == "close":
+            if 1:
                 self.debug("HTTPParser connection close\n")
                 self.send(producerFinished(self), "signal") #this functionality is semi-complete
                 return
