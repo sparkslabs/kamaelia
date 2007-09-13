@@ -300,144 +300,143 @@ class HTTPParser(component):
                 self.send(producerFinished(self), "signal") #this functionality is semi-complete
                 return
 
-            if 1:
-                if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
-                    self.bodiedrequest = True
-                else:
-                    self.bodiedrequest = False
+            if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
+                self.bodiedrequest = True
+            else:
+                self.bodiedrequest = False
 
-                yield WaitComplete(self.getHeaders(requestobject))
-                currentline = self.currentline
+            yield WaitComplete(self.getHeaders(requestobject))
+            currentline = self.currentline
 
-                self.debug("HTTPParser::main - stage 2 complete")
+            self.debug("HTTPParser::main - stage 2 complete")
 
-                if requestobject["headers"].has_key("host"):
-                    requestobject["uri-server"] = requestobject["headers"]["host"]
+            if requestobject["headers"].has_key("host"):
+                requestobject["uri-server"] = requestobject["headers"]["host"]
 
-                if requestobject["version"] == "1.1":
-                    requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
-                else:
-                    requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
+            if requestobject["version"] == "1.1":
+                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
+            else:
+                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
 
-                # The header section is complete, so send it on.
-                self.send(ParsedHTTPHeader(requestobject), "outbox")
+            # The header section is complete, so send it on.
+            self.send(ParsedHTTPHeader(requestobject), "outbox")
 
-                if self.bodiedrequest:
-                    self.debug("HTTPParser::main - stage 3 start")
-                    #state 3 - the headers are complete - awaiting the message
-                    if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
-                        bodylength = -1
-                        while bodylength != 0:
-                            self.debug("HTTPParser::main - stage 3.chunked")
-                            currentline = None
-                            while currentline == None:
-                                self.debug("HTTPParser::main - stage 3.chunked.1")
+            if self.bodiedrequest:
+                self.debug("HTTPParser::main - stage 3 start")
+                #state 3 - the headers are complete - awaiting the message
+                if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
+                    bodylength = -1
+                    while bodylength != 0:
+                        self.debug("HTTPParser::main - stage 3.chunked")
+                        currentline = None
+                        while currentline == None:
+                            self.debug("HTTPParser::main - stage 3.chunked.1")
+                            if self.shouldShutdown(): return
+                            while self.dataFetch():
+                                pass
+                            currentline = self.nextLine()
+                            if currentline == None:
+                                self.pause()
+                                yield 1
+                        #print requestobject
+                        splitline = currentline.split(";")
+
+                        try:
+                            bodylength = string.atoi(splitline[0], 16)
+                        except ValueError:
+                            print "Warning: bad chunk length in request/response being parsed by HTTPParser"
+                            bodylength = 0
+                            requestobject["bad"] = True
+
+                        self.debug("HTTPParser::main - chunking: '%s' '%s' %d" % (currentline, splitline, bodylength))
+
+                        if bodylength != 0:
+                            while len(self.readbuffer) < bodylength:
+                                self.debug("HTTPParser::main - stage 3.chunked.2")
                                 if self.shouldShutdown(): return
                                 while self.dataFetch():
                                     pass
-                                currentline = self.nextLine()
-                                if currentline == None:
+
+                                if len(self.readbuffer) < bodylength:
                                     self.pause()
                                     yield 1
-                            #print requestobject
-                            splitline = currentline.split(";")
+                            # we could do better than this - this will eat memory when overly large chunks are used
+                            self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylength]), "outbox")
 
-                            try:
-                                bodylength = string.atoi(splitline[0], 16)
-                            except ValueError:
-                                print "Warning: bad chunk length in request/response being parsed by HTTPParser"
-                                bodylength = 0
-                                requestobject["bad"] = True
+                        if self.readbuffer[bodylength:bodylength + 2] == "\r\n":
+                            self.readbuffer = self.readbuffer[bodylength + 2:]
+                        elif self.readbuffer[bodylength:bodylength + 1] == "\n":
+                            self.readbuffer = self.readbuffer[bodylength + 1:]
+                        else:
+                            print "Warning: no trailing new line on chunk in HTTPParser"
+                            requestobject["bad"] = True
+                            break
 
-                            self.debug("HTTPParser::main - chunking: '%s' '%s' %d" % (currentline, splitline, bodylength))
+                        if bodylength == 0:
+                            break
+                elif requestobject["headers"].has_key("content-length"):
+                    if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
+                        # we're supposed to say continue, but this is a pain
+                        # and everything still works if we don't just with a few secs delay
+                        pass
+                    self.debug("HTTPParser::main - stage 3.length-known start")
 
-                            if bodylength != 0:
-                                while len(self.readbuffer) < bodylength:
-                                    self.debug("HTTPParser::main - stage 3.chunked.2")
-                                    if self.shouldShutdown(): return
-                                    while self.dataFetch():
-                                        pass
+                    bodylengthremaining = int(requestobject["headers"]["content-length"])
 
-                                    if len(self.readbuffer) < bodylength:
-                                        self.pause()
-                                        yield 1
-                                # we could do better than this - this will eat memory when overly large chunks are used
-                                self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylength]), "outbox")
-
-                            if self.readbuffer[bodylength:bodylength + 2] == "\r\n":
-                                self.readbuffer = self.readbuffer[bodylength + 2:]
-                            elif self.readbuffer[bodylength:bodylength + 1] == "\n":
-                                self.readbuffer = self.readbuffer[bodylength + 1:]
-                            else:
-                                print "Warning: no trailing new line on chunk in HTTPParser"
-                                requestobject["bad"] = True
-                                break
-
-                            if bodylength == 0:
-                                break
-                    elif requestobject["headers"].has_key("content-length"):
-                        if string.lower(requestobject["headers"].get("expect", "")) == "100-continue":
-                            # we're supposed to say continue, but this is a pain
-                            # and everything still works if we don't just with a few secs delay
+                    while bodylengthremaining > 0:
+                        #print "HTTPParser::main - stage 3.length known.1"
+                        if self.shouldShutdown(): return
+                        while self.dataFetch():
                             pass
-                        self.debug("HTTPParser::main - stage 3.length-known start")
 
-                        bodylengthremaining = int(requestobject["headers"]["content-length"])
+                        if bodylengthremaining < len(self.readbuffer): #i.e. we have some extra data from the next request
+                            self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylengthremaining]), "outbox")
+                            self.readbuffer = self.readbuffer[bodylengthremaining:]
+                            bodylengthremaining = 0
+                        elif len(self.readbuffer) > 0:
+                            bodylengthremaining -= len(self.readbuffer)
+                            self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                            self.readbuffer = ""
 
-                        while bodylengthremaining > 0:
-                            #print "HTTPParser::main - stage 3.length known.1"
-                            if self.shouldShutdown(): return
-                            while self.dataFetch():
-                                pass
+                        if bodylengthremaining > 0:
+                            self.pause()
+                            yield 1
 
-                            if bodylengthremaining < len(self.readbuffer): #i.e. we have some extra data from the next request
-                                self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylengthremaining]), "outbox")
-                                self.readbuffer = self.readbuffer[bodylengthremaining:]
-                                bodylengthremaining = 0
-                            elif len(self.readbuffer) > 0:
-                                bodylengthremaining -= len(self.readbuffer)
-                                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
-                                self.readbuffer = ""
+                    self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
+                else: #we'll assume it's a connection: close jobby
+                    #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
+                    self.debug("HTTPParser::main - stage 3.connection-close start\n")
+                    connectionopen = True
+                    while connectionopen:
+                        #print "HTTPParser::main - stage 3.connection close.1"
+                        if self.shouldShutdown(): return
+                        while self.dataFetch():
+                            #print "!"
+                            pass
 
-                            if bodylengthremaining > 0:
-                                self.pause()
-                                yield 1
+                        if len(self.readbuffer) > 0:
+                            self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                            self.readbuffer = ""
 
-                        self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
-                    else: #we'll assume it's a connection: close jobby
-                        #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
-                        self.debug("HTTPParser::main - stage 3.connection-close start\n")
-                        connectionopen = True
-                        while connectionopen:
-                            #print "HTTPParser::main - stage 3.connection close.1"
-                            if self.shouldShutdown(): return
-                            while self.dataFetch():
-                                #print "!"
-                                pass
-
-                            if len(self.readbuffer) > 0:
-                                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
-                                self.readbuffer = ""
-
-                            while self.dataReady("control"):
-                                #print "!"
-                                temp = self.recv("control")
-                                if isinstance(temp, producerFinished):
-                                    connectionopen = False
-                                    break
-                                elif isinstance(temp, shutdown):
-                                    return
+                        while self.dataReady("control"):
+                            #print "!"
+                            temp = self.recv("control")
+                            if isinstance(temp, producerFinished):
+                                connectionopen = False
+                                break
+                            elif isinstance(temp, shutdown):
+                                return
 
 
-                            if connectionopen:
-                                self.pause()
-                                yield 1
-                    #else:
-                    #    #no way of knowing how long the body is
-                    #    requestobject["bad"] = 411 #length required
-                    #    #print "HTTPParser::main - stage 3.bad"
+                        if connectionopen:
+                            self.pause()
+                            yield 1
+                #else:
+                #    #no way of knowing how long the body is
+                #    requestobject["bad"] = 411 #length required
+                #    #print "HTTPParser::main - stage 3.bad"
 
-                #state 4 - request complete, send it on
+            #state 4 - request complete, send it on
 
             self.debug("HTTPParser::main - request sent on\n")
             #print requestobject
