@@ -60,6 +60,7 @@ class HelloHandler(Axon.Component.component):
 #
 # Simple WSGI Handler
 #
+import time
 def simple_app(environ, start_response):
     """Simplest possible application object""" 
     status = '200 OK'
@@ -68,6 +69,7 @@ def simple_app(environ, start_response):
     yield '<P> My Own Hello World!\n'
     for i in environ:
         yield "<li>%s: %s\n" % (i, environ[i])
+    yield "<li> Date:" + time.ctime()
 
 # ----------------------------------------------------------------------------------------------------
 #
