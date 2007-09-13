@@ -308,6 +308,35 @@ class HTTPParser(component):
 
         self.currentline = currentline
 
+    def getBodyDependingOnHalfClose(self):
+        #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
+        self.debug("HTTPParser::main - stage 3.connection-close start\n")
+        connectionopen = True
+        while connectionopen:
+            #print "HTTPParser::main - stage 3.connection close.1"
+            if self.shouldShutdown(): return
+            while self.dataFetch():
+                #print "!"
+                pass
+
+            if len(self.readbuffer) > 0:
+                self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
+                self.readbuffer = ""
+
+            while self.dataReady("control"):
+                #print "!"
+                temp = self.recv("control")
+                if isinstance(temp, producerFinished):
+                    connectionopen = False
+                    break
+                elif isinstance(temp, shutdown):
+                    return
+
+
+            if connectionopen:
+                self.pause()
+                yield 1
+
     def main(self):
 
         while 1:
@@ -419,33 +448,9 @@ class HTTPParser(component):
 
                     self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
                 else: #we'll assume it's a connection: close jobby
-                    #THIS CODE IS BROKEN AND WILL NOT TERMINATE UNTIL CSA SIGNALS HALF-CLOSURE OF CONNECTIONS!
-                    self.debug("HTTPParser::main - stage 3.connection-close start\n")
-                    connectionopen = True
-                    while connectionopen:
-                        #print "HTTPParser::main - stage 3.connection close.1"
-                        if self.shouldShutdown(): return
-                        while self.dataFetch():
-                            #print "!"
-                            pass
 
-                        if len(self.readbuffer) > 0:
-                            self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
-                            self.readbuffer = ""
+                    yield WaitComplete(self.getBodyDependingOnHalfClose())
 
-                        while self.dataReady("control"):
-                            #print "!"
-                            temp = self.recv("control")
-                            if isinstance(temp, producerFinished):
-                                connectionopen = False
-                                break
-                            elif isinstance(temp, shutdown):
-                                return
-
-
-                        if connectionopen:
-                            self.pause()
-                            yield 1
                 #else:
                 #    #no way of knowing how long the body is
                 #    requestobject["bad"] = 411 #length required
