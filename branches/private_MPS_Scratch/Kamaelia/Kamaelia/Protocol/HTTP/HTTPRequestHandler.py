@@ -316,6 +316,7 @@ class HTTPRequestHandler(component):
     def updateShouldShutdown(self):
         # XXXX I can see where this is coming from, but it's just icky and needs to change
         while self.dataReady("control"):
+            print "MESSAGE RECEIVED ON CONTROL PORT"
             temp = self.recv("control")
             if isinstance(temp, shutdown):
                 self.ShouldShutdownCode |= 2
@@ -460,11 +461,13 @@ class HTTPRequestHandler(component):
                         yield i
                 except "BreakOut":
                     break
+            self.updateShouldShutdown()
 #            self.updateShutdownStatus()
-            self.ShouldShutdownCode = 2 # cf the comment above when this is initialised
+#            self.ShouldShutdownCode = 2 # cf the comment above when this is initialised
                             # Magic numbers are evil
             if self.ShouldShutdownCode > 0:
                 self.send(producerFinished(), "signal") #this functionality is semi-complete
+                print "HERE"
                 yield 1
                 return
 
