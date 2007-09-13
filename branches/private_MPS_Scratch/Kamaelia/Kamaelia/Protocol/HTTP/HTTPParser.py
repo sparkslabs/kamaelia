@@ -211,6 +211,7 @@ class HTTPParser(component):
 
     def getInitialLine(self):
         #state 1 - awaiting initial line
+        self.debug("HTTPParser::main - awaiting initial line")
         currentline = None
         while currentline == None:
             self.debug("HTTPParser::main - stage 1")
@@ -229,7 +230,7 @@ class HTTPParser(component):
         previousheader = ""
         endofheaders = False
         while not endofheaders:
-            self.debug("HTTPParser::main - stage 2")
+            self.debug("HTTPParser::main - stage 2  - Get Headers")
             if self.shouldShutdown(): return
             while self.dataFetch():
                 pass
@@ -255,6 +256,7 @@ class HTTPParser(component):
                 yield 1
 
         self.currentline = currentline
+        self.debug("HTTPParser::main - stage 2 complete - Got Headers")
 
     def getBody_ChunkTransferEncoding(self, requestobject):
 
@@ -370,109 +372,99 @@ class HTTPParser(component):
 
         self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
 
+    def setServer(self, requestobject):
+        if requestobject["headers"].has_key("host"):
+            requestobject["uri-server"] = requestobject["headers"]["host"]
+
+    def setConnectionMode(self, requestobject):
+        if requestobject["version"] == "1.1":
+            requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
+        else:
+            requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
+
+    def getBody(self, requestobject):
+
+        self.debug("HTTPParser::main - stage 3 start - Get Post Body")
+        #state 3 - the headers are complete - awaiting the message
+        if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
+
+            yield WaitComplete(self.getBody_ChunkTransferEncoding(requestobject))
+
+        elif requestobject["headers"].has_key("content-length"):
+
+            yield WaitComplete(self.getBody_KnownContentLength(requestobject))
+
+        else: #we'll assume it's a connection: close jobby
+
+            yield WaitComplete(self.getBodyDependingOnHalfClose())
+        #else:
+        #    #no way of knowing how long the body is
+        #    requestobject["bad"] = 411 #length required
+        #    #print "HTTPParser::main - stage 3.bad"
+        self.debug("HTTPParser::main - stage 3 end - Got Post Body")
+
+    def initialiseRequestObject(self):
+        self.debug("HTTPParser::main - stage 0")
+        requestobject = { "bad": False,
+                          "headers": {},
+                          "version": "0.9",
+                          "method": "",
+                          "protocol": "",
+                          "body": "" ,
+                        }
+        if self.mode == "request":
+            requestobject["raw-uri"] = ""
+        else:
+            requestobject["responsecode"] = ""
+        return requestobject
+
+    def handleInitialLine(self, requestobject):
+        self.debug("HTTPParser::main - initial line found")
+        splitline = string.split(self.currentline, " ")
+
+        if self.mode == "request":
+            self.handle_requestline(splitline, requestobject)
+        else:
+            #e.g. HTTP/1.1 200 OK that's fine
+            if len(splitline) < 2:
+                requestobject["bad"] = True
+            else:
+                requestobject["responsecode"] = splitline[1]
+                self.splitProtocolVersion(splitline[0], requestobject)
+
+    def closeConnection(self):
+        self.send(ParsedHTTPEnd(), "outbox")
+        self.debug("HTTPParser connection close\n")
+        self.send(producerFinished(self), "signal") #this functionality is semi-complete
+
     def main(self):
+        requestobject = self.initialiseRequestObject()
 
-        while 1:
-            self.debug("HTTPParser::main - stage 0")
-            requestobject = { "bad": False,
-                              "headers": {},
-                              "version": "0.9",
-                              "method": "",
-                              "protocol": "",
-                              "body": "" ,
-                            }
-            if self.mode == "request":
-                requestobject["raw-uri"] = ""
-            else:
-                requestobject["responsecode"] = ""
+        yield WaitComplete(self.getInitialLine())
+        self.handleInitialLine(requestobject)
 
-            self.debug("HTTPParser::main - awaiting initial line")
+        if requestobject["bad"]: # Initial line may be dud
+            self.debug("HTTPParser::main - request line bad\n")
+            self.closeConnection()
+            return
 
-            yield WaitComplete(self.getInitialLine())
-            currentline = self.currentline
+        if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
+            self.bodiedrequest = True
+        else:
+            self.bodiedrequest = False
 
-# -----------------------------------
-            self.debug("HTTPParser::main - initial line found")
-            splitline = string.split(currentline, " ")
+        yield WaitComplete(self.getHeaders(requestobject))
+        self.setServer(requestobject)
+        self.setConnectionMode(requestobject)
+        self.send(ParsedHTTPHeader(requestobject), "outbox") # Pass on completed header
 
-            if self.mode == "request":
-                self.handle_requestline(splitline, requestobject)
-            else:
-                #e.g. HTTP/1.1 200 OK that's fine
-                if len(splitline) < 2:
-                    requestobject["bad"] = True
-                else:
-                    requestobject["responsecode"] = splitline[1]
-                    self.splitProtocolVersion(splitline[0], requestobject)
+        if self.bodiedrequest:
+            yield WaitComplete(self.getBody(requestobject))
 
-# -----------------------------------
-            if requestobject["bad"]:
-                self.debug("HTTPParser::main - request object bad\n")
-                #print requestobject
-                self.send(ParsedHTTPEnd(), "outbox")
-                self.debug("HTTPParser connection close\n")
-                self.send(producerFinished(self), "signal") #this functionality is semi-complete
-                return
-
-            if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
-                self.bodiedrequest = True
-            else:
-                self.bodiedrequest = False
-
-            yield WaitComplete(self.getHeaders(requestobject))
-            currentline = self.currentline
-
-            self.debug("HTTPParser::main - stage 2 complete")
-
-# -----------------------------------
-
-            if requestobject["headers"].has_key("host"):
-                requestobject["uri-server"] = requestobject["headers"]["host"]
-
-            if requestobject["version"] == "1.1":
-                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "keep-alive")
-            else:
-                requestobject["headers"]["connection"] = requestobject["headers"].get("connection", "close")
-
-# -----------------------------------
-
-            # The header section is complete, so send it on.
-            self.send(ParsedHTTPHeader(requestobject), "outbox")
-
-# -----------------------------------
-
-            if self.bodiedrequest:
-                self.debug("HTTPParser::main - stage 3 start")
-                #state 3 - the headers are complete - awaiting the message
-                if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
-
-                    yield WaitComplete(self.getBody_ChunkTransferEncoding(requestobject))
-
-                elif requestobject["headers"].has_key("content-length"):
-
-                    yield WaitComplete(self.getBody_KnownContentLength(requestobject))
-
-                else: #we'll assume it's a connection: close jobby
-
-                    yield WaitComplete(self.getBodyDependingOnHalfClose())
-
-                #else:
-                #    #no way of knowing how long the body is
-                #    requestobject["bad"] = 411 #length required
-                #    #print "HTTPParser::main - stage 3.bad"
-
-            #state 4 - request complete, send it on
-
-            self.debug("HTTPParser::main - request sent on\n")
-            #print requestobject
-            self.send(ParsedHTTPEnd(), "outbox")
-#
-#           # This next chunk of code is intended to assist with pipelining & keep alives, but
-#           # gets it wrong, so it's commented out/forced to true
-#            if string.lower(requestobject["headers"].get("connection", "")) == "close":
-            if 1:
-                self.debug("HTTPParser connection close\n")
-                self.send(producerFinished(self), "signal") #this functionality is semi-complete
-                return
+        #state 4 - request complete, send it on
+        self.debug("HTTPParser::main - request sent on\n")
+        #print requestobject
+        self.closeConnection()
+        yield 1
 
 __kamaelia_components__  = ( HTTPParser, )
