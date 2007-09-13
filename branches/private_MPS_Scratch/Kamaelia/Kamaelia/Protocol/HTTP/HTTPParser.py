@@ -188,73 +188,73 @@ class HTTPParser(component):
             return line
 
     def handle_requestline(self, splitline, requestobject):
-                # e.g. GET / HTTP/1.0
-                if len(splitline) < 2:
-                    requestobject["bad"] = True
-                elif len(splitline) == 2:
-                    # must be HTTP/0.9
-                    requestobject["method"] = splitline[0]
-                    requestobject["raw-uri"] = splitline[1]
-                    requestobject["protocol"] = "HTTP"
-                    requestobject["version"] = "0.9"
-                else: #deal with normal HTTP including badly formed URIs
-                    requestobject["method"] = splitline[0]
+        # e.g. GET / HTTP/1.0
+        if len(splitline) < 2:
+            requestobject["bad"] = True
+        elif len(splitline) == 2:
+            # must be HTTP/0.9
+            requestobject["method"] = splitline[0]
+            requestobject["raw-uri"] = splitline[1]
+            requestobject["protocol"] = "HTTP"
+            requestobject["version"] = "0.9"
+        else: #deal with normal HTTP including badly formed URIs
+            requestobject["method"] = splitline[0]
 
-                    #next line supports all working clients but also 
-                    #some broken clients that don't encode spaces properly!
-                    #update is used to merge the uri-dictionary with the request object
-                    requestobject.update(splitUri(string.join(splitline[1:-1], "%20")))
-                    self.splitProtocolVersion(splitline[-1], requestobject)
+            #next line supports all working clients but also 
+            #some broken clients that don't encode spaces properly!
+            #update is used to merge the uri-dictionary with the request object
+            requestobject.update(splitUri(string.join(splitline[1:-1], "%20")))
+            self.splitProtocolVersion(splitline[-1], requestobject)
 
-                    #if requestobject["protocol"] != "HTTP":
-                    #    requestobject["bad"] = True
+            #if requestobject["protocol"] != "HTTP":
+            #    requestobject["bad"] = True
 
     def getInitialLine(self):
-            #state 1 - awaiting initial line
-            currentline = None
-            while currentline == None:
-                self.debug("HTTPParser::main - stage 1")
-                if self.shouldShutdown(): return
-                while self.dataFetch():
-                    pass
-                currentline = self.nextLine()
-                if currentline == None:
-                    self.pause()
-                    yield 1
-            self.currentline = currentline
+        #state 1 - awaiting initial line
+        currentline = None
+        while currentline == None:
+            self.debug("HTTPParser::main - stage 1")
+            if self.shouldShutdown(): return
+            while self.dataFetch():
+                pass
+            currentline = self.nextLine()
+            if currentline == None:
+                self.pause()
+                yield 1
+        self.currentline = currentline
 
     def getHeaders(self, requestobject):
-                #state 2 - as this is a valid request, we now accept headers
+        #state 2 - as this is a valid request, we now accept headers
 
-                previousheader = ""
-                endofheaders = False
-                while not endofheaders:
-                    self.debug("HTTPParser::main - stage 2")
-                    if self.shouldShutdown(): return
-                    while self.dataFetch():
-                        pass
+        previousheader = ""
+        endofheaders = False
+        while not endofheaders:
+            self.debug("HTTPParser::main - stage 2")
+            if self.shouldShutdown(): return
+            while self.dataFetch():
+                pass
 
-                    currentline = self.nextLine()
-                    while currentline != None:
-                        self.debug("HTTPParser::main - stage 2.1")
-                        if currentline == "":
-                            #print "End of headers found"
-                            endofheaders = True
-                            break
-                        else:
-                            if currentline[0] == " " or currentline[0] == "\t": #continued header
-                                requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
-                            else:
-                                splitheader = string.split(currentline, ":")
-                                #print "Found header: " + splitheader[0]
-                                requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
-                        currentline = self.nextLine()
-                        #should parse headers header
-                    if not endofheaders:
-                        self.pause()
-                        yield 1
+            currentline = self.nextLine()
+            while currentline != None:
+                self.debug("HTTPParser::main - stage 2.1")
+                if currentline == "":
+                    #print "End of headers found"
+                    endofheaders = True
+                    break
+                else:
+                    if currentline[0] == " " or currentline[0] == "\t": #continued header
+                        requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
+                    else:
+                        splitheader = string.split(currentline, ":")
+                        #print "Found header: " + splitheader[0]
+                        requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
+                currentline = self.nextLine()
+                #should parse headers header
+            if not endofheaders:
+                self.pause()
+                yield 1
 
-                self.currentline = currentline
+        self.currentline = currentline
 
     def main(self):
 
@@ -299,8 +299,8 @@ class HTTPParser(component):
                     self.bodiedrequest = False
 
                 yield WaitComplete(self.getHeaders(requestobject))
-
                 currentline = self.currentline
+
                 self.debug("HTTPParser::main - stage 2 complete")
 
                 if requestobject["headers"].has_key("host"):
