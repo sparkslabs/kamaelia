@@ -292,7 +292,15 @@ class HTTPParser(component):
                     self.splitProtocolVersion(splitline[0], requestobject)
 
 # -----------------------------------
-            if not requestobject["bad"]:
+            if requestobject["bad"]:
+                self.debug("HTTPParser::main - request object bad\n")
+                #print requestobject
+                self.send(ParsedHTTPEnd(), "outbox")
+                self.debug("HTTPParser connection close\n")
+                self.send(producerFinished(self), "signal") #this functionality is semi-complete
+                return
+
+            if 1:
                 if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
                     self.bodiedrequest = True
                 else:
@@ -430,10 +438,9 @@ class HTTPParser(component):
                     #    #print "HTTPParser::main - stage 3.bad"
 
                 #state 4 - request complete, send it on
+
             self.debug("HTTPParser::main - request sent on\n")
             #print requestobject
-
-
             self.send(ParsedHTTPEnd(), "outbox")
 #
 #           # This next chunk of code is intended to assist with pipelining & keep alives, but
