@@ -120,6 +120,8 @@ class ParsedHTTPBodyChunk(object):
 class ParsedHTTPEnd(object):
     pass
 
+from Axon.Ipc import WaitComplete
+
 class HTTPParser(component):
     """Component that transforms HTTP requests or responses from a
     single TCP connection into multiple easy-to-use dictionary objects."""
@@ -140,6 +142,8 @@ class HTTPParser(component):
 
         self.lines = []
         self.readbuffer = ""
+        self.currentline = ""
+        self.bodiedrequest = False
 
     def splitProtocolVersion(self, protvers, requestobject):
         protvers = protvers.split("/")
@@ -183,39 +187,7 @@ class HTTPParser(component):
             self.debug("Fetched line: " + line)
             return line
 
-    def main(self):
-
-        while 1:
-            self.debug("HTTPParser::main - stage 0")
-            requestobject = { "bad": False,
-                              "headers": {},
-                              "version": "0.9",
-                              "method": "",
-                              "protocol": "",
-                              "body": "" ,
-                            }
-            if self.mode == "request":
-                requestobject["raw-uri"] = ""
-            else:
-                requestobject["responsecode"] = ""
-
-            self.debug("HTTPParser::main - awaiting initial line")
-            #state 1 - awaiting initial line
-            currentline = None
-            while currentline == None:
-                self.debug("HTTPParser::main - stage 1")
-                if self.shouldShutdown(): return
-                while self.dataFetch():
-                    pass
-                currentline = self.nextLine()
-                if currentline == None:
-                    self.pause()
-                    yield 1
-
-            self.debug("HTTPParser::main - initial line found")
-            splitline = string.split(currentline, " ")
-
-            if self.mode == "request":
+    def handle_requestline(self, splitline, requestobject):
                 # e.g. GET / HTTP/1.0
                 if len(splitline) < 2:
                     requestobject["bad"] = True
@@ -236,21 +208,24 @@ class HTTPParser(component):
 
                     #if requestobject["protocol"] != "HTTP":
                     #    requestobject["bad"] = True
-            else:
-                #e.g. HTTP/1.1 200 OK that's fine
-                if len(splitline) < 2:
-                    requestobject["bad"] = True
-                else:
-                    requestobject["responsecode"] = splitline[1]
-                    self.splitProtocolVersion(splitline[0], requestobject)
 
-            if not requestobject["bad"]:
-                if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
-                    bodiedrequest = True
-                else:
-                    bodiedrequest = False
+    def getInitialLine(self):
+            #state 1 - awaiting initial line
+            currentline = None
+            while currentline == None:
+                self.debug("HTTPParser::main - stage 1")
+                if self.shouldShutdown(): return
+                while self.dataFetch():
+                    pass
+                currentline = self.nextLine()
+                if currentline == None:
+                    self.pause()
+                    yield 1
+            self.currentline = currentline
 
-                #state 2 - as this is a valid request, we now accept headers	
+    def getHeaders(self, requestobject):
+                #state 2 - as this is a valid request, we now accept headers
+
                 previousheader = ""
                 endofheaders = False
                 while not endofheaders:
@@ -279,7 +254,55 @@ class HTTPParser(component):
                         self.pause()
                         yield 1
 
+                self.currentline = currentline
+
+    def main(self):
+
+        while 1:
+            self.debug("HTTPParser::main - stage 0")
+            requestobject = { "bad": False,
+                              "headers": {},
+                              "version": "0.9",
+                              "method": "",
+                              "protocol": "",
+                              "body": "" ,
+                            }
+            if self.mode == "request":
+                requestobject["raw-uri"] = ""
+            else:
+                requestobject["responsecode"] = ""
+
+            self.debug("HTTPParser::main - awaiting initial line")
+
+            yield WaitComplete(self.getInitialLine())
+            currentline = self.currentline
+
+# -----------------------------------
+            self.debug("HTTPParser::main - initial line found")
+            splitline = string.split(currentline, " ")
+
+            if self.mode == "request":
+                self.handle_requestline(splitline, requestobject)
+            else:
+                #e.g. HTTP/1.1 200 OK that's fine
+                if len(splitline) < 2:
+                    requestobject["bad"] = True
+                else:
+                    requestobject["responsecode"] = splitline[1]
+                    self.splitProtocolVersion(splitline[0], requestobject)
+
+# -----------------------------------
+            if not requestobject["bad"]:
+                if self.mode == "response" or requestobject["method"] == "PUT" or requestobject["method"] == "POST":
+                    self.bodiedrequest = True
+                else:
+                    self.bodiedrequest = False
+
+                yield WaitComplete(self.getHeaders(requestobject))
+
+                currentline = self.currentline
                 self.debug("HTTPParser::main - stage 2 complete")
+
                 if requestobject["headers"].has_key("host"):
                     requestobject["uri-server"] = requestobject["headers"]["host"]
 
@@ -290,7 +313,8 @@ class HTTPParser(component):
 
                 # The header section is complete, so send it on.
                 self.send(ParsedHTTPHeader(requestobject), "outbox")
-                if bodiedrequest:
+
+                if self.bodiedrequest:
                     self.debug("HTTPParser::main - stage 3 start")
                     #state 3 - the headers are complete - awaiting the message
                     if requestobject["headers"].get("transfer-encoding","").lower() == "chunked":
