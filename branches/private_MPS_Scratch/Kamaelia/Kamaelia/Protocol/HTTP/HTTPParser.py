@@ -160,6 +160,7 @@ class HTTPParser(component):
             return 0
 
     def debug(self, msg):
+        print "DEBUG", msg
         self.send(msg, "debug")
 
     def shouldShutdown(self):
@@ -186,22 +187,17 @@ class HTTPParser(component):
 
         while 1:
             self.debug("HTTPParser::main - stage 0")
+            requestobject = { "bad": False,
+                              "headers": {},
+                              "version": "0.9",
+                              "method": "",
+                              "protocol": "",
+                              "body": "" ,
+                            }
             if self.mode == "request":
-                requestobject = { "bad": False,
-                                  "headers": {},
-                                  "raw-uri": "",
-                                  "version": "0.9",
-                                  "method": "",
-                                  "protocol": "",
-                                  "body": "" }
+                requestobject["raw-uri"] = ""
             else:
-                requestobject = { "bad": False,
-                                  "headers": {},
-                                  "responsecode": "",
-                                  "version": "0.9",
-                                  "method": "",
-                                  "protocol": "",
-                                  "body": "" }
+                requestobject["responsecode"] = ""
 
             self.debug("HTTPParser::main - awaiting initial line")
             #state 1 - awaiting initial line
