@@ -122,18 +122,19 @@ def WSGIHandler(app):
         return _WSGIHandler(request,app)
     return R
 
-def HTTPProtocol(self):
-    return HTTPServer(requestHandlers([
-                          ["/", WSGIHandler(
-                                  HTML_WRAP(
-                                    simple_app))
-                          ],
-                      ]))
+def HTTPProtocol():
+    def foo(self):
+        print self.routing
+        return HTTPServer(requestHandlers(self.routing))
+    return foo
 
 # Finally we create the actual server and run it.
 
 class WebServer(SimpleServer):
-    protocol=HTTPProtocol
+    routing = [
+               ["/", WSGIHandler(HTML_WRAP(simple_app)) ],
+              ]
+    protocol=HTTPProtocol()
     port=8082
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
