@@ -258,55 +258,55 @@ class HTTPParser(component):
 
     def getBody_ChunkTransferEncoding(self, requestobject):
 
-                    bodylength = -1
-                    while bodylength != 0: # Get Body
-                        self.debug("HTTPParser::main - stage 3.chunked")
-                        currentline = None
-                        while currentline == None:
-                            self.debug("HTTPParser::main - stage 3.chunked.1")
-                            if self.shouldShutdown(): return
-                            while self.dataFetch():
-                                pass
-                            currentline = self.nextLine()
-                            if currentline == None:
-                                self.pause()
-                                yield 1
-                        #print requestobject
-                        splitline = currentline.split(";")
+        bodylength = -1
+        while bodylength != 0: # Get Body
+            self.debug("HTTPParser::main - stage 3.chunked")
+            currentline = None
+            while currentline == None:
+                self.debug("HTTPParser::main - stage 3.chunked.1")
+                if self.shouldShutdown(): return
+                while self.dataFetch():
+                    pass
+                currentline = self.nextLine()
+                if currentline == None:
+                    self.pause()
+                    yield 1
+            #print requestobject
+            splitline = currentline.split(";")
 
-                        try:
-                            bodylength = string.atoi(splitline[0], 16)
-                        except ValueError:
-                            print "Warning: bad chunk length in request/response being parsed by HTTPParser"
-                            bodylength = 0
-                            requestobject["bad"] = True
-                        self.debug("HTTPParser::main - chunking: '%s' '%s' %d" % (currentline, splitline, bodylength))
-                        if bodylength != 0:
-                            while len(self.readbuffer) < bodylength:
-                                self.debug("HTTPParser::main - stage 3.chunked.2")
-                                if self.shouldShutdown(): return
-                                while self.dataFetch():
-                                    pass
+            try:
+                bodylength = string.atoi(splitline[0], 16)
+            except ValueError:
+                print "Warning: bad chunk length in request/response being parsed by HTTPParser"
+                bodylength = 0
+                requestobject["bad"] = True
+            self.debug("HTTPParser::main - chunking: '%s' '%s' %d" % (currentline, splitline, bodylength))
+            if bodylength != 0:
+                while len(self.readbuffer) < bodylength:
+                    self.debug("HTTPParser::main - stage 3.chunked.2")
+                    if self.shouldShutdown(): return
+                    while self.dataFetch():
+                        pass
 
-                                if len(self.readbuffer) < bodylength:
-                                    self.pause()
-                                    yield 1
-                            # we could do better than this - this will eat memory when overly large chunks are used
-                            self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylength]), "outbox")
+                    if len(self.readbuffer) < bodylength:
+                        self.pause()
+                        yield 1
+                # we could do better than this - this will eat memory when overly large chunks are used
+                self.send(ParsedHTTPBodyChunk(self.readbuffer[:bodylength]), "outbox")
 
-                        if self.readbuffer[bodylength:bodylength + 2] == "\r\n":
-                            self.readbuffer = self.readbuffer[bodylength + 2:]
-                        elif self.readbuffer[bodylength:bodylength + 1] == "\n":
-                            self.readbuffer = self.readbuffer[bodylength + 1:]
-                        else:
-                            print "Warning: no trailing new line on chunk in HTTPParser"
-                            requestobject["bad"] = True
-                            break   # Get Body
+            if self.readbuffer[bodylength:bodylength + 2] == "\r\n":
+                self.readbuffer = self.readbuffer[bodylength + 2:]
+            elif self.readbuffer[bodylength:bodylength + 1] == "\n":
+                self.readbuffer = self.readbuffer[bodylength + 1:]
+            else:
+                print "Warning: no trailing new line on chunk in HTTPParser"
+                requestobject["bad"] = True
+                break   # Get Body
 
-                        if bodylength == 0:
-                            break    # Get Body
+            if bodylength == 0:
+                break    # Get Body
 
-                    self.currentline = currentline
+        self.currentline = currentline
 
     def main(self):
 
