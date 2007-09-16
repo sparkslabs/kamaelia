@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import time, sys, Axon
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 
 schedulerThread().start()
 
@@ -17,9 +17,12 @@ class Reverser(Axon.Component.component):
 
 sys.stderr.write("""_Similar_ to Unix's "rev" tool, implemented using likefile., type stuff, it reverses it\n""")
 
-reverser = LikeFile(Reverser())
+reverser = likefile(Reverser())
 
-for line in sys.stdin:
+while True:
+    line = sys.stdin.readline()
+    if line == "":
+       break
     line = line.rstrip() # get rid of the newline (Doesn't just strip newline, so rev(rev()) would not work 'correctly')
     reverser.put(line)
     enil = reverser.get()
