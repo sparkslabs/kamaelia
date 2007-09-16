@@ -418,11 +418,11 @@ class scheduler(microprocess):
            nextrunqueue = []
            
            # run microprocesses in the runqueue
-           if self.debuggingon:
-               print "-->", [ x.name for x in self.threads], [ x.name for x in runqueue]
+#           if self.debuggingon:
+#               print "-->", [ x.name for x in self.threads], [ x.name for x in runqueue]
            for mprocess in runqueue:
-               if self.debuggingon:
-                   print "Before Run", mprocess
+#               if self.debuggingon:
+#                   print "Before Run", mprocess
                yield 1
                
                if self.threads[mprocess] == _ACTIVE:
@@ -438,8 +438,8 @@ class scheduler(microprocess):
                            del self.threads[mprocess]
                            mprocess = None
                            
-                       if self.debuggingon:
-                           print "After Run", mprocess
+#                       if self.debuggingon:
+#                           print "After Run", mprocess
                        if mprocess:
                            nextrunqueue.append(mprocess)
                    except StopIteration:
