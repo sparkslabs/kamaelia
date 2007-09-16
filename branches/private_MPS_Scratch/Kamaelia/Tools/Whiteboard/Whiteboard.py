@@ -39,8 +39,15 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
+from Kamaelia.Util.NullSink import nullSinkComponent
 
-from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+try:
+    from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+except Exception, e:
+    print "Speex not available, using null components instead"
+    SpeexEncode = nullSinkComponent
+    SpeexDecode = nullSinkComponent
+
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Detuple import SimpleDetupler
 from Kamaelia.Util.Console import ConsoleEchoer
@@ -61,9 +68,24 @@ from Whiteboard.CheckpointSequencer import CheckpointSequencer
 from Whiteboard.Entuple import Entuple
 from Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
 
-from Whiteboard.Audio import SoundInput
-from Whiteboard.Audio import SoundOutput
-from Whiteboard.Audio import RawAudioMixer
+try:
+    from Whiteboard.Audio import SoundInput
+except ImportError:
+    print "SoundInput not available, using NullSink instead"
+    SoundInput = nullSinkComponent
+
+try:
+    from Whiteboard.Audio import SoundOutput
+except ImportError:
+    print "SoundOutput not available, using NullSink instead"
+    SoundOutput = nullSinkComponent
+
+try:
+    from Whiteboard.Audio import RawAudioMixer
+except ImportError:
+    print "RawAudioMixer not available, using NullSink instead"
+    RawAudioMixer = nullSinkComponent
+
 from Whiteboard.Palette import buildPalette, colours
 from Whiteboard.Options import parseOptions
 from Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage
