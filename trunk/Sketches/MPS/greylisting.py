@@ -3,7 +3,8 @@
 import Axon
 import socket
 import time
-import pprint
+import math
+# import pprint
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
@@ -16,16 +17,17 @@ class MailHandler(Axon.Component.component):
 
     def logging_recv_connection(self):
         self.line = self.recv("inbox")
+#        print repr(self.line)
         self.inbox_log.append(self.line)
 
     def getline(self):
-        while not self.anyReady():
+        while not self.dataReady("inbox"):
+#            print "WAITING getline"
             self.pause()
             yield 1
         self.logging_recv_connection()
 
     def handleCommand(self,command):
-        print "command", repr(command)
         if len(command) < 1:
             self.netPrint("500 Sorry we don't like broken mailers")
             self.breakConnection = True
@@ -43,9 +45,9 @@ class MailHandler(Axon.Component.component):
         self.netPrint("500 Sorry we don't like broken mailers")
         self.breakConnection = True
 
-
     def netPrint(self, *args):
         for i in args:
+            print i
             self.send(i+"\r\n", "outbox")
 
     def handleConnect(self): pass
@@ -59,6 +61,7 @@ class MailHandler(Axon.Component.component):
     def handleNoop(self,command): pass
     def handleVrfy(self,command): pass
     def handleHelp(self,command): pass
+    def logResult(self): pass
     def handleDisconnect(self): yield 1
 
     def main(self):
@@ -77,10 +80,20 @@ class MailHandler(Axon.Component.component):
             while not EndOfMessage:
                 yield WaitComplete(self.getline())
                 if self.line == ".\r\n": EndOfMessage = True
+                if len(self.line) >=5:
+                    if self.line[-5:] == "\r\n.\r\n":
+                        EndOfMessage = True
+                if len(self.line) >=5:
+                    if self.line[-5:] == "\r\n.\r\n":
+                        EndOfMessage = True
+                if len(self.line) >=4:
+                    if self.line[-4:] == "\n.\r\n":
+                        EndOfMessage = True
             self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
         yield WaitComplete(self.handleDisconnect())
+        self.logResult()
 
 class ConcreteMailHandler(MailHandler):
     Inboxes = {
@@ -120,6 +133,7 @@ class ConcreteMailHandler(MailHandler):
         self.seenMail = False
         self.seenRcpt = False
         self.acceptingMail = False
+        self.mailStatus = ""
 
     def error(self, message):  # Yes, we're quite nasty - we break the connection if the person makes a mistake
         self.netPrint(message) # This violate's Postel's law. The idea is to catch out broken spam mailers...
@@ -154,10 +168,10 @@ class ConcreteMailHandler(MailHandler):
     def handleHelp(self,command): 
         self.error("500 unrecognised command")
 
-    def handleVrfy(self,command): pass
+    def handleVrfy(self,command):
         self.netPrint("252 Cannot VRFY user")
 
-    def handleRset(self,command): pass
+    def handleRset(self,command):
         # self.seenHelo = self.seenHelo - leave unchanged
         self.recipients = []
         self.sender = None
@@ -165,6 +179,7 @@ class ConcreteMailHandler(MailHandler):
         self.seenRcpt = False
         self.acceptingMail = False
         self.netPrint("250 OK")
+        self.mailStatus = ""
 
     def handleNoop(self,command):
         self.netPrint("250 OK")
@@ -175,10 +190,13 @@ class ConcreteMailHandler(MailHandler):
             return
 
         if len(command) == 2:
-            self.error("501 MAIL must have an address operand")
-            return
+            if command[1][:5].upper() == "FROM:" and len(command[1])>5 :
+                command = [ command[0], "FROM:", command[1][5:] ]
+            else:
+                self.error("501 MAIL must have an address operand"+repr(command))
+                return
 
-        if command[1] != "FROM:":
+        if command[1].upper() != "FROM:":
             self.error("500 unrecognised command")
             return
 
@@ -199,10 +217,13 @@ class ConcreteMailHandler(MailHandler):
             self.error("500 unrecognised command")
             return
         if len(command) == 2:  # Protocol syntax error
-            self.error("501 RCPT must have an address operand")
-            return
+            if command[1][:3].upper() == "TO:" and len(command[1])>3 :
+                command = [ command[0], "TO:", command[1][3:] ]
+            else:
+                self.error("501 RCPT must have an address operand"+repr(command))
+                return
 
-        if command[1] != "TO:":  # Protocol syntax error
+        if command[1].upper() != "TO:":  # Protocol syntax error
             self.error("500 unrecognised command")
             return
 
@@ -234,10 +255,12 @@ class ConcreteMailHandler(MailHandler):
     def deferMail(self):
         self.netPrint("451 4.7.1 Please try again later")
         self.breakConnection = True
+        self.mailStatus = "DEFERRED"
 
     def acceptMail(self):
         self.gettingdata = True
         self.acceptingMail = True
+        self.mailStatus = "ACCEPTED"
 
     def getline_fromsmtpserver(self):
         while not self.dataReady("tcp_inbox"):
@@ -265,14 +288,14 @@ class GreyListingPolicy(ConcreteMailHandler):
 
     def sentFromAllowedIPAddress(self):
         if self.peer in self.allowed_senders:
-            print "ALLOWED TO SEND, since is an allowed_sender"
+            # print "ALLOWED TO SEND, since is an allowed_sender"
             return True
         return False
 
     def sentFromAllowedNetwork(self):
         for network_prefix in self.allowed_sender_nets:
             if self.peer[:len(network_prefix)] == network_prefix:
-                print "ALLOWED TO SEND, since is in an approved network"
+                # print "ALLOWED TO SEND, since is in an approved network"
                 return True
         return False
 
@@ -283,36 +306,57 @@ class GreyListingPolicy(ConcreteMailHandler):
             try:
                 domain = recipient[recipient.find("@")+1:]
                 if not (domain in self.allowed_domains):
-                    print "NOT ALLOWED TO SEND - recipient not in allowed_domains", recipient, domain, self.allowed_domains
+                    # print "NOT ALLOWED TO SEND - recipient not in allowed_domains", recipient, domain, self.allowed_domains
                     return False
             except:
-                print "NOT ALLOWED TO SEND - bad recipient", recipient
+                # print "NOT ALLOWED TO SEND - bad recipient", recipient
                 raise
                 return False # don't care why it fails if it fails
         return True # Only reach here if all domains in allowed_domains
 
     def shouldWeAcceptMail(self):
-        print "Now we would decide whether to recieve based on"
-        print "Claimed remote name", self.remotename
-        print "Actual remote IP", self.peer
-        print "The claimed sender email", self.sender
-        print "The named recipients", ", ".join(self.recipients)
-        print "We do one of these:"
-        print "    - self.deferMail()"
-        print "    - self.acceptMail()"
-        pprint.pprint(self.inbox_log)
+        # print "Now we would decide whether to recieve based on"
+        # print "Claimed remote name", self.remotename
+        # print "Actual remote IP", self.peer
+        # print "The claimed sender email", self.sender
+        # print "The named recipients", ", ".join(self.recipients)
+        # print "We do one of these:"
+        # print "    - self.deferMail()"
+        # print "    - self.acceptMail()"
+        # pprint.pprint(self.inbox_log)
 
         if self.sentFromAllowedIPAddress():  return True # Allowed hosts can always send to anywhere through us
         if self.sentFromAllowedNetwork():    return True # People on truste networks can always do the same
         if self.sentToADomainWeForwardFor(): return True # Anyone can always send to hosts we own
 
-        print "NOT ALLOWED TO SEND, no valid forwarding"
+        # print "NOT ALLOWED TO SEND, no valid forwarding"
         return False
+
+    def logResult(self):
+        def m(x, w=2):
+            return "0"*(w-len(str(x)))+str(x)
+        now = time.time()
+        msec = int((now -math.floor(now))*1000)
+        x= time.gmtime(now)
+        stamp =  "".join([ str(z) for z in [ m(x.tm_year,4), m(x.tm_mon,2), m(x.tm_mday,2), m(x.tm_hour,2), m(x.tm_min,2), m(x.tm_sec,2), ".", m(msec,3) ] ])
+
+        logline  = str(stamp) + " | "
+        logline += str(self.remotename) + " | "
+        logline += str(self.peer) + " | "
+        logline += str(self.sender) + " | "
+        logline += str(", ".join(self.recipients)) + " | "
+        logline += str(self.mailStatus) + " | "
+
+        print logline
 
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    port = 8026
+    port = 25
     class protocol(GreyListingPolicy):
+        servername = "mail.cerenity.org"
+        serverid = "MPS-SMTP 1.0"
+        smtp_ip = "192.168.2.9"
+        smtp_port = 8025
         allowed_senders = ["127.0.0.1"]
         allowed_sender_nets = ["192.168.2"] # Yes, only class C network style
         allowed_domains = [ "private.thwackety.com",
