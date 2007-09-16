@@ -4,7 +4,7 @@
 # Proper likefile control of a sprite handler
 #
 
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 import time, Axon, os, random, pygame, math, threading
 from Sprites.BasicSprite import BasicSprite
 from Sprites.SpriteScheduler import SpriteScheduler
@@ -99,7 +99,7 @@ while True:
         count = 1
         if args and int(args) > 1: count = int(args)
         for i in xrange(0, count):
-            newcat = LikeFile(make_cat(*cat_args))
+            newcat = likefile(make_cat(*cat_args))
             catlist.append(newcat)
         print "added %s cats." % count
     elif command == "pause":

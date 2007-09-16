@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 from Kamaelia.UI.Pygame.Ticker import Ticker
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
@@ -8,7 +8,7 @@ import time
 
 bg = schedulerThread(slowmo=0.01).start()
 
-ticker1 = LikeFile(Pipeline(
+ticker1 = likefile(Pipeline(
         Ticker(background_colour=(128,48,128),
             render_left = 1,
             render_top = 1,
@@ -18,7 +18,7 @@ ticker1 = LikeFile(Pipeline(
             )
         )
     )
-ticker2 = LikeFile(Pipeline( 
+ticker2 = likefile(Pipeline( 
         Ticker(background_colour=(128,48,128),
             render_left = 1,
             render_top = 1,
@@ -29,7 +29,7 @@ ticker2 = LikeFile(Pipeline(
         )
     )
 
-ticker3 = LikeFile(Pipeline( 
+ticker3 = likefile(Pipeline( 
         Ticker(background_colour=(128,48,128),
             render_left = 1,
             render_top = 1,

@@ -26,7 +26,7 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.EchoProtocol import EchoProtocol
 from Kamaelia.Internet.TCPClient import TCPClient
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 import time
 
 schedulerThread(slowmo=0.01).start()
@@ -38,7 +38,7 @@ SimpleServer(protocol = EchoProtocol, port = PORT).activate()
 # give the component time to commence listening on a port.
 time.sleep(0.5)
 
-echoClient = LikeFile(TCPClient(host = "localhost", port = PORT))
+echoClient = likefile(TCPClient(host = "localhost", port = PORT))
 while True:
     echoClient.put(raw_input(">>> "))
     print echoClient.get()

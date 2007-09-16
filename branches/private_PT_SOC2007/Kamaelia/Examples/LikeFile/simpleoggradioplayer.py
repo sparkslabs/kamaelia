@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
@@ -10,13 +10,13 @@ schedulerThread(slowmo=0.001).start()
 
 filename = "./snail.ogg"
 
-playStream = LikeFile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
+playStream = likefile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
 # set of components for playing the stream back.
 
 host = "bbc.kamaelia.org"
 port = 1500
 
-client = LikeFile(TCPClient(host = host, port = port))
+client = likefile(TCPClient(host = host, port = port))
 # component to grab a stream from the internet
 
 filedump = open("streamdump.ogg", "w+b")

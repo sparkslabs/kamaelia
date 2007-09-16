@@ -20,10 +20,10 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 background = schedulerThread().start()
-p = LikeFile(SimpleHTTPClient())
+p = likefile(SimpleHTTPClient())
 p.put("http://google.com")
 p.put("http://slashdot.org")
 p.put("http://whatismyip.org")

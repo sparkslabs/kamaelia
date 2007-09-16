@@ -22,15 +22,15 @@
 
 # An example of using likefile to pass audo data for on the fly compression.
 
-import Axon.likefile, time
+import Axon.LikeFile, time
 from Kamaelia.Audio.Codec.PyMedia.Encoder import Encoder
 from Kamaelia.Internet.TCPClient import TCPClient
-Axon.likefile.schedulerThread(slowmo=0.01).start()
+Axon.LikeFile.schedulerThread(slowmo=0.01).start()
 
 infile = "./stereo.wav"
 outfile = "./outfile.mp3"
 
-enc = Axon.likefile.LikeFile(Encoder("mp3", bitrate=128000, sample_rate=44100, channels=2))
+enc = Axon.LikeFile.likefile(Encoder("mp3", bitrate=128000, sample_rate=44100, channels=2))
 
 input1 = open(infile, "r+b")
 output = open(outfile, "w+b")

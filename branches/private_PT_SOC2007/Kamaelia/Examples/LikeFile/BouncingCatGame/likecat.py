@@ -3,7 +3,7 @@
 
 # testing a sprite-based system with likefile parts.
 
-from Axon.likefile import LikeFile, schedulerThread
+from Axon.LikeFile import likefile, schedulerThread
 import time, Axon
 from Sprites.BasicSprite import BasicSprite
 from Sprites.SpriteScheduler import SpriteScheduler
@@ -24,7 +24,7 @@ class catMaker(Axon.Component.component):
             yield 1
 
 bg = schedulerThread(slowmo=0.01).start()
-catmaker = LikeFile(catMaker())
+catmaker = likefile(catMaker())
 
 max_cats = 10
 for i in xrange(0, max_cats):

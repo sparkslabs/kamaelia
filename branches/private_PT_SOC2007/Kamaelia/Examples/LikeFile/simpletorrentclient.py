@@ -2,13 +2,13 @@
 
 # A demonstration of using likefile to control a torrent downloader.
 
-import Axon.likefile, time, sys
+import Axon.LikeFile, time, sys
 from Kamaelia.Protocol.Torrent.TorrentPatron import TorrentPatron
 from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
 from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-likefile.schedulerThread(slowmo=0.01).start()
+Axon.LikeFile.schedulerThread(slowmo=0.01).start()
 
 try: filename = sys.argv[1]
 except IndexError:
@@ -16,7 +16,7 @@ except IndexError:
     sys.exit(1)
 
 
-torrenter = likefile.LikeFile(
+torrenter = Axon.LikeFile.likefile(
     Pipeline(TriggeredFileReader(),
         TorrentPatron(),
         BasicTorrentExplainer(),
