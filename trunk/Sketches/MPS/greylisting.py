@@ -1,10 +1,14 @@
 #!/usr/bin/python
 
 import Axon
+from Axon.LikeFile import background, likefile
+background().start()
+
 import socket
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
-from Kamaelia.Chassis.Graphline import Graphline
+# from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Internet.TCPClient import TCPClient
 import pprint
 import time
 #        for line in self.Inbox("inbox"):
@@ -50,7 +54,7 @@ class MailHandler(Axon.Component.component):
     def handleQuit(self,command): pass
     def handleRset(self,command): pass
     def handleHelp(self,command): pass
-    def handleDisconnect(self): pass
+    def handleDisconnect(self): yield 1
 
     def main(self):
         self.handleConnect()
@@ -71,7 +75,7 @@ class MailHandler(Axon.Component.component):
             self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
-        self.handleDisconnect()
+        yield WaitComplete(self.handleDisconnect())
 
 class ConcreteMailHandler(MailHandler):
     peer = "*** UNDEFINED ***"
@@ -80,6 +84,8 @@ class ConcreteMailHandler(MailHandler):
     localport = "*** UNDEFINED ***"
     servername = "Testing.server.local"
     serverid = "MPS SMTP 1.0"
+    smtp_ip = "192.168.2.9"
+    smtp_port = 25
     def __init__(self, **argv):
         super(ConcreteMailHandler, self).__init__(**argv)
         self.recipients = []
@@ -94,9 +100,6 @@ class ConcreteMailHandler(MailHandler):
 
     def RelayError(self):
         self.error("550 relay not permitted")
-
-    def handleDisconnect(self):
-        pprint.pprint( self.inbox_log )
 
     def handleConnect(self):
         self.netPrint("220 %s ESMTP %s %s" %
@@ -189,9 +192,32 @@ class ConcreteMailHandler(MailHandler):
         self.netPrint("221 %s closing connection" % (self.servername,))
         self.breakConnection = True
 
+    #def replayToSMTPServer(self):
+    def handleDisconnect(self):
+        """
+        On disconect we replay what we've seen to the real SMTP server.
+        This code using LikeFile *SHOULD* work.
+
+        However it doesn't. :-(((
+
+        Clearly Likefile wasn't sufficiently tested with realistic usecases.
+        """
+        pprint.pprint( self.inbox_log )
+        yield 1
+
+        server = likefile(TCPClient(host = self.smtp_ip, port = self.smtp_port))
+        for line in self.inbox_log:
+            print "SEND", repr(line)
+            server.put(line, "inbox")
+            print "RESPONSE:", repr(server.get("outbox"))
+            yield 1
+
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     port = 8026
     protocol = ConcreteMailHandler
 
-GreylistServer().run()
+GreylistServer().activate()
+
+while 1:
+   time.sleep(10000000)
