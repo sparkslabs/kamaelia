@@ -593,7 +593,10 @@ class component(microprocess):
       """
       return self.inboxes[boxname].pop(0)
 
-   
+   def Inbox(self, boxname="inbox"):
+       while self.dataReady("inbox"):
+           yield self.recv("inbox")
+
    def send(self,message, boxname="outbox"):
       """\
       appends message to the requested outbox.
