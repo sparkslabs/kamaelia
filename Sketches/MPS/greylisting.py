@@ -26,23 +26,29 @@ class MailHandler(Axon.Component.component):
 
     def handleCommand(self,command):
         print "command", repr(command)
-        if command[0] == "AUTH":
-            self.handleAuth(command)
-        if command[0] == "HELO": self.handleHelo(command)
-        if command[0] == "EHLO": self.handleEhlo(command)
-        if command[0] == "MAIL": self.handleMail(command)
-        if command[0] == "RCPT": self.handleRcpt(command)
-        if command[0] == "DATA": self.handleData(command)
-        if command[0] == "QUIT": self.handleQuit(command)
-        if command[0] == "RSET": self.handleRset(command)
-        if command[0] == "HELP": self.handleHelp(command)
+        if len(command) < 1:
+            self.netPrint("500 Sorry we don't like broken mailers")
+            self.breakConnection = True
+            return
+        if command[0] == "HELO": return self.handleHelo(command) # RFC 2821 4.5.1 required
+        if command[0] == "EHLO": return self.handleEhlo(command) # RFC 2821 4.5.1 required
+        if command[0] == "MAIL": return self.handleMail(command) # RFC 2821 4.5.1 required
+        if command[0] == "RCPT": return self.handleRcpt(command) # RFC 2821 4.5.1 required
+        if command[0] == "DATA": return self.handleData(command) # RFC 2821 4.5.1 required
+        if command[0] == "QUIT": return self.handleQuit(command) # RFC 2821 4.5.1 required
+        if command[0] == "RSET": return self.handleRset(command) # RFC 2821 4.5.1 required
+        if command[0] == "NOOP": return self.handleNoop(command) # RFC 2821 4.5.1 required
+        if command[0] == "VRFY": return self.handleVrfy(command) # RFC 2821 4.5.1 required
+        if command[0] == "HELP": return self.handleHelp(command)
+        self.netPrint("500 Sorry we don't like broken mailers")
+        self.breakConnection = True
+
 
     def netPrint(self, *args):
         for i in args:
             self.send(i+"\r\n", "outbox")
 
     def handleConnect(self): pass
-    def handleAuth(self,command): pass
     def handleHelo(self,command): pass
     def handleEhlo(self,command): pass
     def handleMail(self,command): pass
@@ -50,6 +56,8 @@ class MailHandler(Axon.Component.component):
     def handleData(self,command): pass
     def handleQuit(self,command): pass
     def handleRset(self,command): pass
+    def handleNoop(self,command): pass
+    def handleVrfy(self,command): pass
     def handleHelp(self,command): pass
     def handleDisconnect(self): yield 1
 
@@ -107,6 +115,7 @@ class ConcreteMailHandler(MailHandler):
         super(ConcreteMailHandler, self).__init__(**argv)
         self.recipients = []
         self.sender = None
+        self.remotename = ""
         self.seenHelo = False
         self.seenMail = False
         self.seenRcpt = False
@@ -126,6 +135,9 @@ class ConcreteMailHandler(MailHandler):
                        time.ctime())
         )
 
+    def handleEhlo(self,command):
+        self.netPrint('500 Command Not Recognised')
+
     def handleHelo(self,command):
         self.actual_remote_ip = "192.168.2.5"
         if len(command) != 2:
@@ -138,6 +150,24 @@ class ConcreteMailHandler(MailHandler):
                       )
         self.inbox_log = self.inbox_log[-1:] # Remove all previous items
         self.seenHelo = True
+
+    def handleHelp(self,command): 
+        self.error("500 unrecognised command")
+
+    def handleVrfy(self,command): pass
+        self.netPrint("252 Cannot VRFY user")
+
+    def handleRset(self,command): pass
+        # self.seenHelo = self.seenHelo - leave unchanged
+        self.recipients = []
+        self.sender = None
+        self.seenMail = False
+        self.seenRcpt = False
+        self.acceptingMail = False
+        self.netPrint("250 OK")
+
+    def handleNoop(self,command):
+        self.netPrint("250 OK")
 
     def handleMail(self,command):
         if len(command) < 2:
@@ -194,6 +224,10 @@ class ConcreteMailHandler(MailHandler):
         else:
             self.deferMail()
 
+    def handleQuit(self,command):
+        self.netPrint("221 %s closing connection" % (self.servername,))
+        self.breakConnection = True
+
     def shouldWeAcceptMail(self):
         return False # Default policy - don't accept any email
 
@@ -204,10 +238,6 @@ class ConcreteMailHandler(MailHandler):
     def acceptMail(self):
         self.gettingdata = True
         self.acceptingMail = True
-
-    def handleQuit(self,command):
-        self.netPrint("221 %s closing connection" % (self.servername,))
-        self.breakConnection = True
 
     def getline_fromsmtpserver(self):
         while not self.dataReady("tcp_inbox"):
