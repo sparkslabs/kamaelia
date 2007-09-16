@@ -291,7 +291,8 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             print self.__class__, self.__class__.protocol, self.protocol, protocol
             raise "Need a protocol to handle!"
         else:
-            print self.protocol
+            pass
+            # print self.protocol
 
     def initialiseServerSocket(self):
         if self.socketOptions is None:
