@@ -1,17 +1,14 @@
 #!/usr/bin/python
 
 import Axon
-from Axon.LikeFile import background, likefile
-background().start()
-
 import socket
+import time
+import pprint
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
-# from Kamaelia.Chassis.Graphline import Graphline
+
 from Kamaelia.Internet.TCPClient import TCPClient
-import pprint
-import time
-#        for line in self.Inbox("inbox"):
+
 class MailHandler(Axon.Component.component):
     def __init__(self,**argd):
         super(MailHandler, self).__init__(**argd)
@@ -78,6 +75,18 @@ class MailHandler(Axon.Component.component):
         yield WaitComplete(self.handleDisconnect())
 
 class ConcreteMailHandler(MailHandler):
+    Inboxes = {
+        "inbox" : "Data from the client connecting to the server comes in here",
+        "control" : "Shutdown & control messages regarding client side socket handling",
+        "tcp_inbox" : "This is where we get respones from the real SMTP server",
+        "tcp_control" : "This is where we get shutdown information from the real SMTP server",
+    }
+    Outboxes = {
+        "outbox" : "Data sent here goes back the the client connecting to the server",
+        "signal" : "Shutdown & control messages regarding client side socket handling",
+        "tcp_outbox" : "Data sent here is sent to the real SMTP server",
+        "tcp_signal" : "We send messages here to shutdown the connection to the real SMTP connection",
+    }
     peer = "*** UNDEFINED ***"
     peerport = "*** UNDEFINED ***"
     local = "*** UNDEFINED ***"
@@ -86,6 +95,14 @@ class ConcreteMailHandler(MailHandler):
     serverid = "MPS SMTP 1.0"
     smtp_ip = "192.168.2.9"
     smtp_port = 25
+
+    def connectToRealSMTPServer(self):
+        self.TCPClient = TCPClient(self.smtp_ip, self.smtp_port).activate()
+        self.link((self, "tcp_outbox"), (self.TCPClient, "inbox"))
+        self.link((self, "tcp_signal"), (self.TCPClient, "control"))
+        self.link((self.TCPClient, "outbox"), (self,"tcp_inbox"))
+        self.link((self.TCPClient, "signal"), (self,"tcp_control"))
+
     def __init__(self, **argv):
         super(ConcreteMailHandler, self).__init__(**argv)
         self.recipients = []
@@ -93,6 +110,7 @@ class ConcreteMailHandler(MailHandler):
         self.seenHelo = False
         self.seenMail = False
         self.seenRcpt = False
+        self.acceptingMail = False
 
     def error(self, message):  # Yes, we're quite nasty - we break the connection if the person makes a mistake
         self.netPrint(message) # This violate's Postel's law. The idea is to catch out broken spam mailers...
@@ -162,9 +180,8 @@ class ConcreteMailHandler(MailHandler):
             self.error("503 sender not yet given")
             return
 
-        recipient = command[2]
         self.netPrint("250 ACCEPTED")
-        self.recipients.append(recipient)
+        self.recipients.append(command[2])
         self.seenRcpt = True
 
     def handleData(self, command):
@@ -172,6 +189,79 @@ class ConcreteMailHandler(MailHandler):
             self.error("503 valid RCPT command must precede DATA")
             return
 
+        if self.shouldWeAcceptMail():
+            self.acceptMail()
+        else:
+            self.deferMail()
+
+    def shouldWeAcceptMail(self):
+        return False # Default policy - don't accept any email
+
+    def deferMail(self):
+        self.netPrint("451 4.7.1 Please try again later")
+        self.breakConnection = True
+
+    def acceptMail(self):
+        self.gettingdata = True
+        self.acceptingMail = True
+
+    def handleQuit(self,command):
+        self.netPrint("221 %s closing connection" % (self.servername,))
+        self.breakConnection = True
+
+    def getline_fromsmtpserver(self):
+        while not self.dataReady("tcp_inbox"):
+            self.pause()
+            yield 1
+        self.smtp_line = self.recv("tcp_inbox")
+
+    def handleDisconnect(self):
+        if not self.acceptingMail: return
+        self.connectToRealSMTPServer()
+        yield 1
+        sentDataLine = False
+        for line in self.inbox_log:
+            if not sentDataLine: # wait for a response from the server before sending next line
+                yield WaitComplete(self.getline_fromsmtpserver())
+
+            self.send(line, "tcp_outbox")
+            if not sentDataLine:
+                sentDataLine = (line == "DATA\r\n")
+
+class GreyListingPolicy(ConcreteMailHandler):
+    allowed_senders = [] # List of senders
+    allowed_sender_nets = [] # Only class A,B, C network style networks at present (ie IP prefixes)
+    allowed_domains = [ ] # list of IPs
+
+    def sentFromAllowedIPAddress(self):
+        if self.peer in self.allowed_senders:
+            print "ALLOWED TO SEND, since is an allowed_sender"
+            return True
+        return False
+
+    def sentFromAllowedNetwork(self):
+        for network_prefix in self.allowed_sender_nets:
+            if self.peer[:len(network_prefix)] == network_prefix:
+                print "ALLOWED TO SEND, since is in an approved network"
+                return True
+        return False
+
+    def sentToADomainWeForwardFor(self):
+        for recipient in self.recipients:
+            recipient = recipient.replace("<", "")
+            recipient = recipient.replace(">", "")
+            try:
+                domain = recipient[recipient.find("@")+1:]
+                if not (domain in self.allowed_domains):
+                    print "NOT ALLOWED TO SEND - recipient not in allowed_domains", recipient, domain, self.allowed_domains
+                    return False
+            except:
+                print "NOT ALLOWED TO SEND - bad recipient", recipient
+                raise
+                return False # don't care why it fails if it fails
+        return True # Only reach here if all domains in allowed_domains
+
+    def shouldWeAcceptMail(self):
         print "Now we would decide whether to recieve based on"
         print "Claimed remote name", self.remotename
         print "Actual remote IP", self.peer
@@ -179,45 +269,32 @@ class ConcreteMailHandler(MailHandler):
         print "The named recipients", ", ".join(self.recipients)
         print "We do one of these:"
         print "    - self.deferMail()"
-        self.acceptMail()
+        print "    - self.acceptMail()"
+        pprint.pprint(self.inbox_log)
 
-    def deferMail(self, command):
-        self.netPrint("451 4.7.1 Please try again later")
-        self.breakConnection = True
+        if self.sentFromAllowedIPAddress():  return True # Allowed hosts can always send to anywhere through us
+        if self.sentFromAllowedNetwork():    return True # People on truste networks can always do the same
+        if self.sentToADomainWeForwardFor(): return True # Anyone can always send to hosts we own
 
-    def acceptMail(self):
-        self.gettingdata = True
-
-    def handleQuit(self,command):
-        self.netPrint("221 %s closing connection" % (self.servername,))
-        self.breakConnection = True
-
-    #def replayToSMTPServer(self):
-    def handleDisconnect(self):
-        """
-        On disconect we replay what we've seen to the real SMTP server.
-        This code using LikeFile *SHOULD* work.
-
-        However it doesn't. :-(((
-
-        Clearly Likefile wasn't sufficiently tested with realistic usecases.
-        """
-        pprint.pprint( self.inbox_log )
-        yield 1
-
-        server = likefile(TCPClient(host = self.smtp_ip, port = self.smtp_port))
-        for line in self.inbox_log:
-            print "SEND", repr(line)
-            server.put(line, "inbox")
-            print "RESPONSE:", repr(server.get("outbox"))
-            yield 1
+        print "NOT ALLOWED TO SEND, no valid forwarding"
+        return False
 
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     port = 8026
-    protocol = ConcreteMailHandler
+    class protocol(GreyListingPolicy):
+        allowed_senders = ["127.0.0.1"]
+        allowed_sender_nets = ["192.168.2"] # Yes, only class C network style
+        allowed_domains = [ "private.thwackety.com",
+                            "thwackety.com",
+                            "thwackety.net",
+                            "yeoldeclue.com",
+                            "michaelsparks.info",
+                            "lansdowneresidents.org",
+                            "polinasparks.com",
+                            "pixienest.com",
+                            "owiki.org",
+                            "cerenity.org"]
 
-GreylistServer().activate()
+GreylistServer().run()
 
-while 1:
-   time.sleep(10000000)
