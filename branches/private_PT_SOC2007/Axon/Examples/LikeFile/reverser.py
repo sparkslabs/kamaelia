@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import time, sys, Axon
-from Axon.LikeFile import likefile, backround
+from Axon.LikeFile import likefile, background
 
-backround().start()
+background().start()
 
 
 class Reverser(Axon.Component.component):
