@@ -116,7 +116,7 @@ This component currently lacks an inbox and corresponding code to allow it to
 be shut down (in a controlled fashion). Needs a "control" inbox that responds to
 shutdownMicroprocess messages.
 """
-
+import socket
 import Axon
 from Kamaelia.Internet.TCPServer import TCPServer
 from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
@@ -343,8 +343,12 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """
         connectedSocket = newCSAMessage.object
         sock = newCSAMessage.object.socket
-        peer, peerport = sock.getpeername()
-        localip, localport = sock.getsockname()
+        try:
+            peer, peerport = sock.getpeername()
+            localip, localport = sock.getsockname()
+        except socket.error, e:
+            peer, peerport = "0.0.0.0", 0
+            localip, localport = "127.0.0.1", self.port
 
         protocolHandler = (self.protocol)(peer = peer,
                                           peerport = peerport,

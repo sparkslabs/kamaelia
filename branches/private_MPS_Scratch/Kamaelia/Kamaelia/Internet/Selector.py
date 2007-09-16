@@ -285,6 +285,19 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # For the moment, we simply raise an exception.
                             # We could brute force our way through the list of descriptors
                             # to find the broken ones, and remove
+#                            print "We're failing here for some reason"
+#                            print "readers, writers, exceptionals", readers, writers, exceptionals
+                            raise e
+
+                except select.error, e:
+                    if e[0] == 9:
+                        numberOfFailedSelectsDueToBadFileDescriptor +=1
+                        if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
+                            # For the moment, we simply raise an exception.
+                            # We could brute force our way through the list of descriptors
+                            # to find the broken ones, and remove
+#                            print "We're failing here for some reason"
+#                            print "readers, writers, exceptionals", readers, writers, exceptionals
                             raise e
 
                 self.sync()
