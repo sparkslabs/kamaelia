@@ -15,12 +15,12 @@ class Reverser(Axon.Component.component):
             yield 1
 
 
-# Unix's "rev" tool, implemented using likefile.
+sys.stderr.write("""_Similar_ to Unix's "rev" tool, implemented using likefile., type stuff, it reverses it\n""")
 
 reverser = LikeFile(Reverser())
 
-while True:
-    line = sys.stdin.readline().rstrip() # get rid of the newline
+for line in sys.stdin:
+    line = line.rstrip() # get rid of the newline (Doesn't just strip newline, so rev(rev()) would not work 'correctly')
     reverser.put(line)
     enil = reverser.get()
-    print enil
+    print enil # This is doesn't necessarily put the right whitespace back
