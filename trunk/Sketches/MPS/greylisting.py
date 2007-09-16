@@ -47,6 +47,10 @@ class MailHandler(Axon.Component.component):
 
     def netPrint(self, *args):
         for i in args:
+            x = open("greylist.log","a")
+            x.write(i+"\n")
+            x.flush()
+            x.close()
             print i
             self.send(i+"\r\n", "outbox")
 
@@ -278,8 +282,11 @@ class ConcreteMailHandler(MailHandler):
                 yield WaitComplete(self.getline_fromsmtpserver())
 
             self.send(line, "tcp_outbox")
+            yield 1
             if not sentDataLine:
                 sentDataLine = (line == "DATA\r\n")
+        yield 1
+        self.send(producerFinished(), "tcp_signal")
 
 class GreyListingPolicy(ConcreteMailHandler):
     allowed_senders = [] # List of senders
@@ -347,7 +354,12 @@ class GreyListingPolicy(ConcreteMailHandler):
         logline += str(", ".join(self.recipients)) + " | "
         logline += str(self.mailStatus) + " | "
 
+        x = open("greylist.log","a")
+        x.write(logline+"\n")
+        x.flush()
+        x.close()
         print logline
+
 
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -369,6 +381,34 @@ class GreylistServer(MoreComplexServer):
                             "pixienest.com",
                             "owiki.org",
                             "cerenity.org"]
+
+class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
+    interval = 120
+    def main(self):
+        while 1:
+            time.sleep(self.interval)
+            self.send("tick", "outbox")
+
+class WakeableIntrospector(Axon.Component.component):
+    def main(self):
+        while 1:
+            x = open("greylist.log","a")
+            x.write("*debug* THREADS"+ str(self.scheduler.listAllThreads())+ "\n")
+            x.flush()
+            x.close()
+            print "*debug* THREADS", self.scheduler.listAllThreads()	
+            self.scheduler.debuggingon = False
+            yield 1
+            while not self.dataReady("inbox"):
+                self.pause()
+                yield 1
+            while self.dataReady("inbox"): self.recv("inbox")
+
+from Kamaelia.Chassis.Pipeline import Pipeline
+Pipeline(
+    PeriodicWakeup(),
+    WakeableIntrospector(),
+).activate()
 
 GreylistServer().run()
 
