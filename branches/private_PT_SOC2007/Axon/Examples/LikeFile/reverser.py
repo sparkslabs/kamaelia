@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import time, sys, Axon
-from Axon.LikeFile import likefile, schedulerThread
+from Axon.LikeFile import likefile, backround
 
-schedulerThread().start()
+backround().start()
 
 
 class Reverser(Axon.Component.component):

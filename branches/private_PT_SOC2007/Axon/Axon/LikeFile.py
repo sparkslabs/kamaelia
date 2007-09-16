@@ -51,8 +51,8 @@ the same requirement?
 
 Well, first we start the Axon scheduler in the background as follows:
 
-    from likefile import schedulerThread
-    schedulerThread().start()
+    from likefile import backround
+    backround().start()
 
 The scheduler is now actively running in the background, and you can start
 components on it from the foreground, in the same way as you would from inside
@@ -199,11 +199,11 @@ class dummyComponent(component):
             yield 1
 
 
-class schedulerThread(threading.Thread):
+class backround(threading.Thread):
     """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
     lock = threading.Lock()
     def __init__(self,slowmo=0):
-        if not schedulerThread.lock.acquire(False):
+        if not backround.lock.acquire(False):
             raise "only one scheduler for now can be run!"
         self.slowmo = slowmo
         threading.Thread.__init__(self)
@@ -212,7 +212,7 @@ class schedulerThread(threading.Thread):
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
         # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
         scheduler.run.runThreads(slowmo = self.slowmo)
-        schedulerThread.lock.release()
+        backround.lock.release()
 
 
 class componentWrapperInput(threadedadaptivecommscomponent):
@@ -330,8 +330,8 @@ class componentWrapperOutput(AdaptiveCommsComponent):
 class likefile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, child, extraInboxes = (), extraOutboxes = (), wrapDefault = True):
-        if schedulerThread.lock.acquire(False): 
-            schedulerThread.lock.release()
+        if backround.lock.acquire(False): 
+            backround.lock.release()
             raise AttributeError, "no running scheduler found."
         # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
         # letter. TODO - this is unelegant code.
@@ -421,7 +421,7 @@ class likefile(object):
 
 if __name__ == "__main__":
     #doesn't actually work as of now
-    background = schedulerThread().start()
+    background = backround().start()
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     import time
