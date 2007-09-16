@@ -164,7 +164,7 @@ class HTTPParser(component):
             return 0
 
     def debug(self, msg):
-        print "DEBUG", msg
+#        print "DEBUG", msg
         self.send(msg, "debug")
 
     def shouldShutdown(self):
