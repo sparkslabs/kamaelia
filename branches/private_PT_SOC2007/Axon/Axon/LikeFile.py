@@ -21,10 +21,10 @@
 # -------------------------------------------------------------------------
 """
 =================================================
-LikeFile - file-like interaction with components.
+likefile - file-like interaction with components.
 =================================================
 
-LikeFile is a way to run Axon components with code that is not Axon-aware. It
+likefile is a way to run Axon components with code that is not Axon-aware. It
 does this by running the scheduler and all associated microprocesses in a
 separate thread, and using a custom component to communicate if so desired.
 
@@ -65,12 +65,12 @@ kamaelia (don't worry, activate() is threadsafe):
 something non-interactive like a TCP server, but what do we do if we want to 
 interact with this component from someOtherCode?
 
-In this case, we use LikeFile, instead of activating. This is a wrapper
+In this case, we use 'likefile', instead of activating. This is a wrapper
 which sits around a component and provides a threadsafe way to interact
 with it, whilst it is running in the backgrounded sheduler:
 
-    from Axon.likefile import LikeFile
-    wrappedComponent = LikeFile(component)
+    from Axon.LikeFile import likefile
+    wrappedComponent = likefile(component)
     someOtherCode()
 
 Now, wrappedComponent is an instance of the likefile wrapper, and you can
@@ -78,7 +78,7 @@ interact with "component" by calling get() on wrappedComponent, to get data
 from the outbox on "component", or by calling put(data) to put "data" into
 the inbox of "component" like so:
 
-    p = LikeFile( SimpleHTTPClient() )
+    p = likefile( SimpleHTTPClient() )
     p.put("http://google.com")
     google = p.get()
     p.shutdown()
@@ -91,18 +91,18 @@ with the text "RELOAD" to a component's control inbox, you would do:
     wrappedComponent.put("RELOAD", "control")
     wrappedComponent.get("signal")
 
-Finally, LikeFile objects have a shutdown() method that sends the usual Axon
+Finally, likefile objects have a shutdown() method that sends the usual Axon
 IPC shutdown messages to a wrapped component, and prevents further IO.
 
 
-Advanced LikeFile usage.
+Advanced likefile usage.
 ------------------------
 
-LikeFile has some optional extra arguments on creation, for handling custom
+likefile has some optional extra arguments on creation, for handling custom
 boxes outside the "basic 4". For example, to wrap a component with inboxes
 called "secondary" and "tertiary" and an outbox called "debug", You would do:
 
-    p = LikeFile( componentMaker, 
+    p = likefile( componentMaker, 
                   extraInboxes = ("secondary", "tertiary"),
                   extraOutboxes = "debug", )
 
@@ -114,7 +114,7 @@ exception. To stop likefile from wrapping the default 4 boxes, pass the paramete
 wrapDefault = False. Note that you will need to manually wrap every box you want to use,
 for example to wrap a component that has its own linkages for signal/control:
 
-    p = LikeFile( myComponent, 
+    p = likefile( myComponent, 
                   wrapDefault = False,
                   extraInboxes = "inbox",
                   extraOutboxes = "outbox", )
@@ -123,13 +123,13 @@ for example to wrap a component that has its own linkages for signal/control:
 
 
 
-Diagram of LikeFile's functionality
+Diagram of likefile's functionality
 -----------------------------------
-LikeFile is constructed from components like so:
+likefile is constructed from components like so:
 
 
      +----------------------------------+
-     |             LikeFile             |
+     |             likefile             |
      +----------------------------------+
           |                      / \ 
           |                       |
@@ -276,7 +276,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
 
 class componentWrapperOutput(AdaptiveCommsComponent):
     """A component which takes a child component and connects its outboxes to queues, which communicate
-    with the LikeFile component."""
+    with the likefile component."""
     def __init__(self, child, inputHandler, outboxes = DEFOUT):
         super(componentWrapperOutput, self).__init__()
         self.queuelengths = queuelengths
@@ -327,7 +327,7 @@ class componentWrapperOutput(AdaptiveCommsComponent):
                     # permit a horrible backlog to build up inside our boxes. What could go wrong?
 
 
-class LikeFile(object):
+class likefile(object):
     """An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler."""
     def __init__(self, child, extraInboxes = (), extraOutboxes = (), wrapDefault = True):
         if schedulerThread.lock.acquire(False): 
@@ -382,7 +382,7 @@ class LikeFile(object):
 
     def get(self, boxname = "outbox", blocking = True, timeout = 86400):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
-        raises AttributeError if the LikeFile is not alive. Optional parameters blocking and timeout function
+        raises AttributeError if the likefile is not alive. Optional parameters blocking and timeout function
         the same way as in Queue objects, since that is what's used under the surface."""
         if self.alive:
             return self.outQueues[boxname].get(blocking, timeout)
@@ -425,7 +425,7 @@ if __name__ == "__main__":
     time.sleep(0.1)
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     import time
-    p = LikeFile(SimpleHTTPClient())
+    p = likefile(SimpleHTTPClient())
     p.put("http://google.com")
     p.put("http://slashdot.org")
     p.put("http://whatismyip.org")
