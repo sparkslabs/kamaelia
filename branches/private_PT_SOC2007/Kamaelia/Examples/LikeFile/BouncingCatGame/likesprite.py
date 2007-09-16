@@ -4,14 +4,14 @@
 # Proper likefile control of a sprite handler
 #
 
-from likefile import LikeFile, schedulerThread
+from likefile import LikeFile, background
 import time, Axon, os, random, pygame, math
 from Sprites.BasicSprite import BasicSprite
 from Sprites.SpriteScheduler import SpriteScheduler
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
 from Simplegame import cat_location, screensize, border, background, screen_surface, randomFromRangeExcludingZero
 
-bg = schedulerThread(slowmo=0.01).start()
+bg = background(slowmo=0.01).start()
 
 global spritescheduler
 

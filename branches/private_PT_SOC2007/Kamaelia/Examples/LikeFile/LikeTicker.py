@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
-from Axon.LikeFile import likefile, schedulerThread
+import Axon
+from Axon.LikeFile import likefile, background
 from Kamaelia.UI.Pygame.Ticker import Ticker
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 import time
 
-bg = schedulerThread(slowmo=0.01).start()
+bg = background(slowmo=0.01).start()
 
 ticker1 = likefile(Pipeline(
         Ticker(background_colour=(128,48,128),

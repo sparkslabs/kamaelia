@@ -26,10 +26,10 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.EchoProtocol import EchoProtocol
 from Kamaelia.Internet.TCPClient import TCPClient
-from Axon.LikeFile import likefile, schedulerThread
+from Axon.LikeFile import likefile, background
 import time
 
-schedulerThread(slowmo=0.01).start()
+background(slowmo=0.01).start()
 
 PORT = 1900
 # This starts an echo server in the background.

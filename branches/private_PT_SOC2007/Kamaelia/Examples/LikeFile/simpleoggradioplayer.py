@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from Axon.LikeFile import likefile, schedulerThread
+from Axon.LikeFile import likefile, background
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Internet.TCPClient import TCPClient
 import ao
-schedulerThread(slowmo=0.001).start()
+background(slowmo=0.001).start()
 
 filename = "./snail.ogg"
 

@@ -8,7 +8,7 @@ from Kamaelia.Protocol.Torrent.TorrentClient import BasicTorrentExplainer
 from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-Axon.LikeFile.schedulerThread(slowmo=0.01).start()
+Axon.LikeFile.background(slowmo=0.01).start()
 
 try: filename = sys.argv[1]
 except IndexError:

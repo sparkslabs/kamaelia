@@ -25,7 +25,7 @@
 import Axon.LikeFile, time
 from Kamaelia.Audio.Codec.PyMedia.Encoder import Encoder
 from Kamaelia.Internet.TCPClient import TCPClient
-Axon.LikeFile.schedulerThread(slowmo=0.01).start()
+Axon.LikeFile.background(slowmo=0.01).start()
 
 infile = "./stereo.wav"
 outfile = "./outfile.mp3"

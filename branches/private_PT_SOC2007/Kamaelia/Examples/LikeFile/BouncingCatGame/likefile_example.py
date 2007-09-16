@@ -4,7 +4,7 @@
 # Proper likefile control of a sprite handler
 #
 
-from Axon.LikeFile import likefile, schedulerThread
+from Axon.LikeFile import likefile, background
 import time, Axon, os, random, pygame, math, threading
 from Sprites.BasicSprite import BasicSprite
 from Sprites.SpriteScheduler import SpriteScheduler
@@ -14,7 +14,7 @@ from Simplegame import *
 from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
 from Kamaelia.Util.Fanout import Fanout
 
-bg = schedulerThread().start()
+bg = background().start()
 
 global spritescheduler
 

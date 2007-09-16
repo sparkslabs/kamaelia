@@ -29,7 +29,7 @@ port = 6667
 import Axon.LikeFile, time
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Internet.TCPClient import TCPClient
-Axon.LikeFile.schedulerThread().start()
+Axon.LikeFile.background().start()
 
 print "what channel on freenode?"
 channel = raw_input(">>> ") # this is to prevent spammage of the default settings.
