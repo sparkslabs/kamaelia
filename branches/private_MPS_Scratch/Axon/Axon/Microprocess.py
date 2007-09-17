@@ -351,7 +351,7 @@ class microprocess(Axon.AxonObject):
    setSchedulerClass=classmethod(setSchedulerClass)
 
 
-   def __init__(self, thread = None, closeDownValue = 0):
+   def __init__(self, thread = None, closeDownValue = 0, tag=""):
       """\
       Microprocess initialiser.
       
@@ -359,6 +359,7 @@ class microprocess(Axon.AxonObject):
       """
       self.init  = 1
       self.id,self.name = tupleId(self)
+      self.name = self.name + tag
       self.__stopped = 0
       if thread is not None:
          self.__thread = thread

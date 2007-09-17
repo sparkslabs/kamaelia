@@ -433,7 +433,8 @@ class scheduler(microprocess):
                            for c in result.components():
                                c.activate()
                        if isinstance(result, WaitComplete):
-                           newThread = microprocess(result.args[0], reactivate(mprocess))
+                           tag = result.argd.get("tag","")
+                           newThread = microprocess(result.args[0], reactivate(mprocess), tag = tag )
                            newThread.activate()
                            del self.threads[mprocess]
                            mprocess = None
