@@ -4,6 +4,7 @@ import Axon
 import socket
 import time
 import math
+import anydbm
 # import pprint
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
@@ -74,7 +75,7 @@ class MailHandler(Axon.Component.component):
         self.breakConnection = False
 
         while (not self.gettingdata) and (not self.breakConnection):
-            yield WaitComplete(self.getline())
+            yield WaitComplete(self.getline(), tag="_getline1")
             command = self.line.split()
             self.handleCommand(command)
 
@@ -82,7 +83,7 @@ class MailHandler(Axon.Component.component):
             EndOfMessage = False
             self.netPrint('354 Enter message, ending with "." on a line by itself')
             while not EndOfMessage:
-                yield WaitComplete(self.getline())
+                yield WaitComplete(self.getline(), tag="getline2")
                 if self.line == ".\r\n": EndOfMessage = True
                 if len(self.line) >=5:
                     if self.line[-5:] == "\r\n.\r\n":
@@ -96,7 +97,7 @@ class MailHandler(Axon.Component.component):
             self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
-        yield WaitComplete(self.handleDisconnect())
+        yield WaitComplete(self.handleDisconnect(),tag="_handleDisconnect")
         self.logResult()
 
 class ConcreteMailHandler(MailHandler):
@@ -279,7 +280,7 @@ class ConcreteMailHandler(MailHandler):
         sentDataLine = False
         for line in self.inbox_log:
             if not sentDataLine: # wait for a response from the server before sending next line
-                yield WaitComplete(self.getline_fromsmtpserver())
+                yield WaitComplete(self.getline_fromsmtpserver(),tag="getline_smtp")
 
             self.send(line, "tcp_outbox")
             yield 1
@@ -321,20 +322,96 @@ class GreyListingPolicy(ConcreteMailHandler):
                 return False # don't care why it fails if it fails
         return True # Only reach here if all domains in allowed_domains
 
-    def shouldWeAcceptMail(self):
-        # print "Now we would decide whether to recieve based on"
-        # print "Claimed remote name", self.remotename
-        # print "Actual remote IP", self.peer
-        # print "The claimed sender email", self.sender
-        # print "The named recipients", ", ".join(self.recipients)
-        # print "We do one of these:"
-        # print "    - self.deferMail()"
-        # print "    - self.acceptMail()"
-        # pprint.pprint(self.inbox_log)
+    def isGreylisted(self, recipient):
+        max_grey = 3000000
+        too_soon = 180
+        min_defer_time = 3600
+        max_defer_time = 25000
 
+        IP = self.peer
+        sender = self.sender
+        def _isGreylisted(greylist, seen, IP,sender,recipient):
+            print "GREY?", IP, sender, recipient
+            # If greylisted, and not been there too long, allow through
+            if greylist.get(triplet,None) is not None:
+                greytime = float(greylist[triplet])
+                if (time.time() - greytime) > max_grey:
+                    del greylist[triplet]
+                    try:
+                        del seen[triplet]
+                    except KeyError:
+                        # We don't care if it's already gone
+                        pass
+                    print "REFUSED: grey too long"
+                else:
+                    print "ACCEPTED: already grey (have reset greytime)" ,
+                    greylist[triplet] = str(time.time())
+                    return True
+            
+            # If not seen this triplet before, defer and note triplet    
+            if seen.get( triplet, None) is None:
+                seen[triplet] = str(time.time())
+                print "REFUSED: Not seen before" ,
+                return False
+        
+            # If triplet retrying waaay too soon, reset their timer & defer
+            last_tried = float(seen[triplet])
+            if (time.time() - last_tried) < too_soon:
+                seen[triplet] = str(time.time())
+                print "REFUSED: Retrying waaay too soon so resetting you!" ,
+                return False
+        
+            # If triplet retrying too soon generally speaking just defer
+            if (time.time() - last_tried) < min_defer_time :
+                print "REFUSED: Retrying too soon, deferring" ,
+                return False
+        
+            # If triplet hasn't been seen in aaaages, defer
+            if (time.time() - last_tried) > max_defer_time :
+                seen[triplet] = str(time.time())
+                print "REFUSED: Retrying too late, sorry - reseting you!" ,
+                return False
+        
+            # Otherwise, allow through & greylist then
+            print "ACCEPTED: Now added to greylist!" ,
+            greylist[triplet] = str(time.time())
+            return True
+
+        greylist = anydbm.open("greylisted.dbm","c")
+        seen = anydbm.open("attempters.dbm","c")
+        triplet = repr((IP,sender,recipient))
+        result = _isGreylisted(greylist, seen, IP,sender,recipient)
+        seen.close()
+        greylist.close()
+        return result
+
+    def whiteListed(self, recipient):
+        for (IP, sender, r) in self.whitelisted_triples:
+            if self.peer == IP:
+                if self.sender == sender:
+                    if recipient == r:
+                        return True
+        for (remotename, IP, r) in self.whitelisted_nonstandard_triples:
+            if remotename == self.remotename:
+                if IP == self.peer:
+                    if r == recipient:
+                        return True
+        return False
+
+
+    def shouldWeAcceptMail(self):
         if self.sentFromAllowedIPAddress():  return True # Allowed hosts can always send to anywhere through us
         if self.sentFromAllowedNetwork():    return True # People on truste networks can always do the same
-        if self.sentToADomainWeForwardFor(): return True # Anyone can always send to hosts we own
+        if self.sentToADomainWeForwardFor():
+            try:
+                for recipient in self.recipients:
+                    if self.whiteListed(recipient):
+                        return True
+                    if not self.isGreylisted(recipient):
+                        return False
+            except Exception, e:
+                print "Whoops", e
+            return True # Anyone can always send to hosts we own
 
         # print "NOT ALLOWED TO SEND, no valid forwarding"
         return False
@@ -379,8 +456,11 @@ class GreylistServer(MoreComplexServer):
                             "lansdowneresidents.org",
                             "polinasparks.com",
                             "pixienest.com",
+                            "kamaelia.org",
                             "owiki.org",
                             "cerenity.org"]
+        whitelisted_triples = [ ]
+        whitelisted_nonstandard_triples = [ ]
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
     interval = 120
@@ -393,10 +473,10 @@ class WakeableIntrospector(Axon.Component.component):
     def main(self):
         while 1:
             x = open("greylist.log","a")
-            x.write("*debug* THREADS"+ str(self.scheduler.listAllThreads())+ "\n")
+            x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
             x.flush()
             x.close()
-            print "*debug* THREADS", self.scheduler.listAllThreads()	
+            print "*debug* THREADS", [ x.name for x in self.scheduler.listAllThreads() ]
             self.scheduler.debuggingon = False
             yield 1
             while not self.dataReady("inbox"):
@@ -411,4 +491,3 @@ Pipeline(
 ).activate()
 
 GreylistServer().run()
-
