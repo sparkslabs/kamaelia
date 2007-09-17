@@ -313,6 +313,7 @@ class GreyListingPolicy(ConcreteMailHandler):
             recipient = recipient.replace(">", "")
             try:
                 domain = recipient[recipient.find("@")+1:]
+                domain = domain.lower()
                 if not (domain in self.allowed_domains):
                     # print "NOT ALLOWED TO SEND - recipient not in allowed_domains", recipient, domain, self.allowed_domains
                     return False
