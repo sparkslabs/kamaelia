@@ -116,6 +116,16 @@ Exceptions, Messages and Misc
 * **Axon.util**
 
   - various miscellaneous support utility methods
+
+
+
+Integration with other systems
+------------------------------
+
+* **Axon.LikeFile**
+
+  - use Axon components within other python programs by wrapping them in
+    a file-like interface you and read from and write to.
   
 
 
