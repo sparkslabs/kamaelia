@@ -9,12 +9,15 @@ import anydbm
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
+from Kamaelia.IPC import socketShutdown
+
 from Kamaelia.Internet.TCPClient import TCPClient
 
 class MailHandler(Axon.Component.component):
     def __init__(self,**argd):
         super(MailHandler, self).__init__(**argd)
         self.inbox_log = []
+        self.line = None
 
     def logging_recv_connection(self):
         self.line = self.recv("inbox")
@@ -22,8 +25,37 @@ class MailHandler(Axon.Component.component):
         self.inbox_log.append(self.line)
 
     def getline(self):
+        control_message = ""
+        while 1:
+            while not self.anyReady():
+                self.pause();  # print "PAUSING", repr(self.inbox_log), repr(self.line)
+                yield 1
+#            if self.anyReady():
+#               print self.anyReady()
+            while self.dataReady("control"):
+                control_message = self.recv("control")
+#                print "CONTROL", control_message
+                if isinstance(control_message, socketShutdown):
+#                    print "FINISH"
+                    self.client_connected = False
+            if self.dataReady("inbox"):
+#                print "GETTING DATA"
+                self.logging_recv_connection()
+#                print "GOT", self.line
+                return
+            else:
+#                print "NO DATA", control_message
+                if not self.client_connected :
+#                    print "CLIENT DISCONNECTED"
+                    self.breakConnection = True
+                    return
+#            print "TRY AGAIN", control_message
+            yield 1
+
+    def _getline(self):
         while not self.dataReady("inbox"):
-#            print "WAITING getline"
+#            if self.anyReady() == "control":
+#                print "control message waiting"
             self.pause()
             yield 1
         self.logging_recv_connection()
@@ -70,34 +102,41 @@ class MailHandler(Axon.Component.component):
     def handleDisconnect(self): yield 1
 
     def main(self):
+        brokenClient = False
         self.handleConnect()
         self.gettingdata = False
+        self.client_connected = True
         self.breakConnection = False
 
         while (not self.gettingdata) and (not self.breakConnection):
             yield WaitComplete(self.getline(), tag="_getline1")
-            command = self.line.split()
+            try:
+                command = self.line.split()
+            except AttributeError:
+                brokenClient = True
+                break
             self.handleCommand(command)
-
-        if (not self.breakConnection):
-            EndOfMessage = False
-            self.netPrint('354 Enter message, ending with "." on a line by itself')
-            while not EndOfMessage:
-                yield WaitComplete(self.getline(), tag="getline2")
-                if self.line == ".\r\n": EndOfMessage = True
-                if len(self.line) >=5:
-                    if self.line[-5:] == "\r\n.\r\n":
-                        EndOfMessage = True
-                if len(self.line) >=5:
-                    if self.line[-5:] == "\r\n.\r\n":
-                        EndOfMessage = True
-                if len(self.line) >=4:
-                    if self.line[-4:] == "\n.\r\n":
-                        EndOfMessage = True
-            self.netPrint("250 OK id-deferred")
+        if not brokenClient:
+            if (not self.breakConnection):
+                EndOfMessage = False
+                self.netPrint('354 Enter message, ending with "." on a line by itself')
+                while not EndOfMessage:
+                    yield WaitComplete(self.getline(), tag="getline2")
+                    if self.line == ".\r\n": EndOfMessage = True
+                    if len(self.line) >=5:
+                        if self.line[-5:] == "\r\n.\r\n":
+                            EndOfMessage = True
+                    if len(self.line) >=5:
+                        if self.line[-5:] == "\r\n.\r\n":
+                            EndOfMessage = True
+                    if len(self.line) >=4:
+                        if self.line[-4:] == "\n.\r\n":
+                            EndOfMessage = True
+                self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
-        yield WaitComplete(self.handleDisconnect(),tag="_handleDisconnect")
+        if not brokenClient:
+            yield WaitComplete(self.handleDisconnect(),tag="_handleDisconnect")
         self.logResult()
 
 class ConcreteMailHandler(MailHandler):
@@ -332,7 +371,7 @@ class GreyListingPolicy(ConcreteMailHandler):
         IP = self.peer
         sender = self.sender
         def _isGreylisted(greylist, seen, IP,sender,recipient):
-            print "GREY?", IP, sender, recipient
+#            print "GREY?", IP, sender, recipient
             # If greylisted, and not been there too long, allow through
             if greylist.get(triplet,None) is not None:
                 greytime = float(greylist[triplet])
@@ -392,9 +431,9 @@ class GreyListingPolicy(ConcreteMailHandler):
                 if self.sender == sender:
                     if recipient == r:
                         return True
-        for (remotename, IP, r) in self.whitelisted_nonstandard_triples:
+        for (remotename, network_prefix, r) in self.whitelisted_nonstandard_triples:
             if remotename == self.remotename:
-                if IP == self.peer:
+                if self.peer[:len(network_prefix)] == network_prefix:
                     if r == recipient:
                         return True
         return False
@@ -464,7 +503,7 @@ class GreylistServer(MoreComplexServer):
         whitelisted_nonstandard_triples = [ ]
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
-    interval = 120
+    interval = 300
     def main(self):
         while 1:
             time.sleep(self.interval)
