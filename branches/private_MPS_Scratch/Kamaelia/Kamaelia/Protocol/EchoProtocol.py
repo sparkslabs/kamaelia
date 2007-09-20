@@ -73,9 +73,9 @@ class EchoProtocol(component):
    outbox.
    """
 
-   def __init__(self):
+   def __init__(self, **argd):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(EchoProtocol, self).__init__() # Accept default in/outboxes
+      super(EchoProtocol, self).__init__( **argd) # Accept default in/outboxes
 
    def mainBody(self):
       """Main body."""
