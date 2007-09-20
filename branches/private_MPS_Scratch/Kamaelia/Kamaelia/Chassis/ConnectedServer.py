@@ -282,6 +282,7 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     port = 1601
     protocol = None
     socketOptions=None
+    TCPS=TCPServer
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(MoreComplexServer, self).__init__(**argd)
@@ -296,9 +297,9 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def initialiseServerSocket(self):
         if self.socketOptions is None:
-            self.server = TCPServer(listenport=self.port)
+            self.server = (self.TCPS)(listenport=self.port)
         else:
-            self.server = TCPServer(listenport=self.port, socketOptions=self.socketOptions)
+            self.server = (self.TCPS)(listenport=self.port, socketOptions=self.socketOptions)
 
         self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
         self.link((self,"_serversignal"), (self.server,"control"))
@@ -342,7 +343,7 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         - newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection
         """
         connectedSocket = newCSAMessage.object
-        sock = newCSAMessage.object.socket
+        sock = newCSAMessage.sock
         try:
             peer, peerport = sock.getpeername()
             localip, localport = sock.getsockname()
