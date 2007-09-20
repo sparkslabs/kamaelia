@@ -33,8 +33,9 @@ class serverShutdown(producerFinished):
 class newCSA(notify):
    """Helper class to notify of new CSAs as they are created.  newCSA.object
    will return the CSA."""
-   def __init__(self, caller, CSA):
+   def __init__(self, caller, CSA, sock=None):
       super(newCSA, self).__init__(caller, CSA)
+      self.sock = sock
    def handlesWriting(self):
       return True
 
