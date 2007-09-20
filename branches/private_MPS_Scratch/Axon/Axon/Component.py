@@ -557,7 +557,7 @@ class component(microprocess):
 
       See Axon.Postoffice.postoffice.link() for more information.
       """
-
+      print "DEBUGLINK", self.name, source, sink
       return self.postoffice.link(source, sink, *optionalargs, **kwoptionalargs)
 
 
