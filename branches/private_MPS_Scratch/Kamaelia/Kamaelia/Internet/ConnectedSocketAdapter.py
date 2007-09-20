@@ -245,6 +245,7 @@ class ConnectedSocketAdapter(component):
        return False
 
    def main(self):
+#       print "self.selectorService", self, self.selectorService
        self.link((self, "_selectorSignal"), self.selectorService)
        # self.selectorService ...
        self.sending = True
