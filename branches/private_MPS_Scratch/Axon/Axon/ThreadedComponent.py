@@ -394,8 +394,8 @@ class threadedcomponent(Component.component):
                       self.pause()
    """
 
-   def __init__(self,queuelengths=DefaultQueueSize):
-      super(threadedcomponent,self).__init__()
+   def __init__(self,queuelengths=DefaultQueueSize, **argd):
+      super(threadedcomponent,self).__init__(**argd)
       
       self._threadrunning = False
       
