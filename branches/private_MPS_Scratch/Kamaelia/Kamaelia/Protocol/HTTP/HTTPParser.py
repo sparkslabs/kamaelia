@@ -135,9 +135,13 @@ class HTTPParser(component):
         "debug"         : "Debugging information",
         "signal"        : "UNUSED"
     }
+    peer = "*** UNDEFINED ***"
+    peerport = 0
+    localip = "*** UNDEFINED ***"
+    localport = 8080
 
-    def __init__(self, mode="request"):
-        super(HTTPParser, self).__init__()
+    def __init__(self, mode="request",**argd):
+        super(HTTPParser, self).__init__(**argd)
         self.mode = mode
 
         self.lines = []
@@ -226,6 +230,9 @@ class HTTPParser(component):
 
     def getHeaders(self, requestobject):
         #state 2 - as this is a valid request, we now accept headers
+        #
+        # XXXX FIXME : This code does not deal with repeated headers sensibly.
+        #
 
         previousheader = ""
         endofheaders = False
@@ -406,7 +413,7 @@ class HTTPParser(component):
     def initialiseRequestObject(self):
         self.debug("HTTPParser::main - stage 0")
         requestobject = { "bad": False,
-                          "headers": {},
+                          "headers": {}, # XXXX FIXME - this can't be a dict because headers can be repeated. eg www-authorize headers
                           "version": "0.9",
                           "method": "",
                           "protocol": "",
@@ -456,6 +463,10 @@ class HTTPParser(component):
         yield WaitComplete(self.getHeaders(requestobject))
         self.setServer(requestobject)
         self.setConnectionMode(requestobject)
+        requestobject["peer"] = self.peer
+        requestobject["peerport"] = self.peerport
+        requestobject["localip"] = self.localip
+        requestobject["localport"] = self.localport
         self.send(ParsedHTTPHeader(requestobject), "outbox") # Pass on completed header
 
         if self.bodiedrequest:
