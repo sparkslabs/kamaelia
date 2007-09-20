@@ -229,7 +229,7 @@ class HTTPShutdownLogicHandling(component):
         self.send(producerFinished(), "signal")        # We're done, close the connection.
         yield 1                                        # And quit
 
-def HTTPServer(createRequestHandler):
+def HTTPServer(createRequestHandler, **argd):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
 
@@ -239,7 +239,7 @@ def HTTPServer(createRequestHandler):
                                  for each request, see HTTPResourceGlue
     """
     return Graphline(
-        PARSER = HTTPParser(),
+        PARSER = HTTPParser(**argd), # Since this is where the data goes first!
         HANDLER = HTTPRequestHandler(createRequestHandler),
         CORELOGIC = HTTPShutdownLogicHandling(),
         linkages = {
