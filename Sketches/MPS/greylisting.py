@@ -101,6 +101,20 @@ class MailHandler(Axon.Component.component):
     def logResult(self): pass
     def handleDisconnect(self): yield 1
 
+    def lastline(self):
+        if self.line == ".\r\n":
+            return True
+        if len(self.line) >=5:
+            if self.line[-5:] == "\r\n.\r\n":
+                return True
+        if len(self.line) >=5:
+            if self.line[-5:] == "\r\n.\r\n":
+                return True
+        if len(self.line) >=4:
+            if self.line[-4:] == "\n.\r\n":
+                return True
+        return False
+
     def main(self):
         brokenClient = False
         self.handleConnect()
@@ -122,16 +136,8 @@ class MailHandler(Axon.Component.component):
                 self.netPrint('354 Enter message, ending with "." on a line by itself')
                 while not EndOfMessage:
                     yield WaitComplete(self.getline(), tag="getline2")
-                    if self.line == ".\r\n": EndOfMessage = True
-                    if len(self.line) >=5:
-                        if self.line[-5:] == "\r\n.\r\n":
-                            EndOfMessage = True
-                    if len(self.line) >=5:
-                        if self.line[-5:] == "\r\n.\r\n":
-                            EndOfMessage = True
-                    if len(self.line) >=4:
-                        if self.line[-4:] == "\n.\r\n":
-                            EndOfMessage = True
+                    if self.lastline():
+                        EndOfMessage = self.endOfMessage()
                 self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
@@ -478,30 +484,6 @@ class GreyListingPolicy(ConcreteMailHandler):
         print logline
 
 
-class GreylistServer(MoreComplexServer):
-    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    port = 25
-    class protocol(GreyListingPolicy):
-        servername = "mail.cerenity.org"
-        serverid = "MPS-SMTP 1.0"
-        smtp_ip = "192.168.2.9"
-        smtp_port = 8025
-        allowed_senders = ["127.0.0.1"]
-        allowed_sender_nets = ["192.168.2"] # Yes, only class C network style
-        allowed_domains = [ "private.thwackety.com",
-                            "thwackety.com",
-                            "thwackety.net",
-                            "yeoldeclue.com",
-                            "michaelsparks.info",
-                            "lansdowneresidents.org",
-                            "polinasparks.com",
-                            "pixienest.com",
-                            "kamaelia.org",
-                            "owiki.org",
-                            "cerenity.org"]
-        whitelisted_triples = [ ]
-        whitelisted_nonstandard_triples = [ ]
-
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
     interval = 300
     def main(self):
@@ -525,9 +507,46 @@ class WakeableIntrospector(Axon.Component.component):
             while self.dataReady("inbox"): self.recv("inbox")
 
 from Kamaelia.Chassis.Pipeline import Pipeline
+
 Pipeline(
     PeriodicWakeup(),
     WakeableIntrospector(),
 ).activate()
 
+#from Kamaelia.Internet.TimeOutCSA import ResettableSender
+#from Kamaelia.Internet.TimeOutCSA import ActivityMonitor
+from Kamaelia.Internet.TimeOutCSA import NoActivityTimeout
+
+from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
+from Kamaelia.Internet.TCPServer import TCPServer
+
+class GreylistServer(MoreComplexServer):
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    port = 1025
+    class TCPS(TCPServer):
+        CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=60, debug=True)
+    class protocol(GreyListingPolicy):
+        servername = "mail.cerenity.org"
+        serverid = "MPS-SMTP 1.0"
+        smtp_ip = "192.168.2.9"
+        smtp_port = 8025
+        allowed_senders = ["127.0.0.1"]
+        allowed_sender_nets = ["192.168.2"] # Yes, only class C network style
+        allowed_domains = [ "private.thwackety.com",
+                            "thwackety.com",
+                            "thwackety.net",
+                            "yeoldeclue.com",
+                            "michaelsparks.info",
+                            "lansdowneresidents.org",
+                            "polinasparks.com",
+                            "pixienest.com",
+                            "kamaelia.org",
+                            "owiki.org",
+                            "cerenity.org"]
+        whitelisted_triples = [ ]
+        whitelisted_nonstandard_triples = [ ]
+
+#GreylistServer.TCPS.CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 GreylistServer().run()
+
+
