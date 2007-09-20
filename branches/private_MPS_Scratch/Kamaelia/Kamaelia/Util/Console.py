@@ -104,11 +104,18 @@ class ConsoleReader(threadedcomponent):
 
    def main(self):
       """Main thread loop."""
-      while 1:
-         line = raw_input(self.prompt)
-         line = line + self.eol
-         self.send(line, "outbox")
+      while not self.shutdown():       # XXXX: NOTE We check self.shutdown *AFTER* waiting for input, meaning
+         line = raw_input(self.prompt) # XXXX: NOTE the last line *will* be read. This is probably good
+         line = line + self.eol        # XXXX: NOTE  motivation at some point for moving away from using
+         self.send(line, "outbox")     # XXXX: NOTE  raw_input.
 
+   def shutdown(self):
+       while self.dataReady("control"):
+           data = self.recv("control")
+           if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
+               self.send(data,"signal")
+               return True
+       return 0
 
 
 class ConsoleEchoer(component):
