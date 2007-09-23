@@ -434,6 +434,8 @@ class scheduler(microprocess):
                                c.activate()
                        if isinstance(result, WaitComplete):
                            tag = result.argd.get("tag","")
+                           if tag == "":
+                              tag = "__" + mprocess.name[-10:] # So we have a clue of parentage(!)
                            newThread = microprocess(result.args[0], reactivate(mprocess), tag = tag )
                            newThread.activate()
                            del self.threads[mprocess]
