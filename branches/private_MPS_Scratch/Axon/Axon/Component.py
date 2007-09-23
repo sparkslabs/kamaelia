@@ -525,7 +525,10 @@ class component(microprocess):
        """
        for box in self.inboxes:
           if self.dataReady(box):
-             return True
+             if box:
+                return box 
+             else:
+                return True
        return False
 
    def dataReady(self,boxname="inbox"):
