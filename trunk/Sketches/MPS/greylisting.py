@@ -83,7 +83,10 @@ class MailHandler(Axon.Component.component):
         self.breakConnection = True
 
     def noteToLog(self, line):
-        x = open(self.logfile,"a")
+        try:
+            x = open(self.logfile,"a")
+        except IOError:
+            x = open(self.logfile,"w")
 #        x = open("greylist.log","a")
         x.write(line+"\n")
         x.flush()
@@ -509,7 +512,10 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
 class WakeableIntrospector(Axon.Component.component):
     logfile = "greylist-debug.log"
     def noteToLog(self, line):
-        x = open(self.logfile,"a")
+        try:
+            x = open(self.logfile,"a")
+        except IOError:
+            x = open(self.logfile,"w")
 #        x = open("greylist.log","a")
         x.write(line+"\n")
         x.flush()
@@ -649,6 +655,7 @@ class GreylistServer(MoreComplexServer):
         whitelisted_nonstandard_triples = config["whitelisted_nonstandard_triples"]
 
 WakeableIntrospector.logfile = config["greylist_debuglog"]
+MailHandler.logfile = config["greylist_log"]
 
 #GreylistServer.TCPS.CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 GreylistServer().run()
