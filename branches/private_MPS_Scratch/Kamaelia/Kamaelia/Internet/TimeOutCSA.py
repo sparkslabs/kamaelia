@@ -26,7 +26,7 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
             elif self.debug:
                 print "."
         self.send(self.message, "outbox")
-        print "SHUTDOWN", self.name
+        # print "SHUTDOWN", self.name
 
 class ActivityMonitor(Axon.Component.component):
     Inboxes = {
@@ -64,7 +64,8 @@ class ActivityMonitor(Axon.Component.component):
                 elif isinstance(p, shutdownCSA):
                     shutdown = True
                 else:
-                    print "IGNORING", type(p), self.name
+                    # print "IGNORING", type(p), self.name
+                    pass
                 self.send(p, "signal")
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
@@ -85,7 +86,7 @@ class WakeableIntrospector(Axon.Component.component):
     def main(self):
         while 1:
             names = [ q.name for q in self.scheduler.listAllThreads() ]
-            print "*debug* THREADS", names
+            # print "*debug* THREADS", names
             if len(names)==3:
                 names.sort()
                 names = [ N[N.rfind(".")+1:] for N in names ]
@@ -93,7 +94,7 @@ class WakeableIntrospector(Axon.Component.component):
                 N = N.replace("5","")
                 N = N.replace("6","")
                 N = N.replace("7","")
-                print "FOO", N
+                # print "FOO", N
                 if N == "Graphline_PeriodicWakeup_WakeableIntrospector_":
                     break
             self.scheduler.debuggingon = False
