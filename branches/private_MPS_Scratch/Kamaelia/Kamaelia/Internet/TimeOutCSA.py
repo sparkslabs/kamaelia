@@ -7,6 +7,7 @@ from Axon.Ipc import producerFinished
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import *
+from Kamaelia.IPC import shutdownCSA
 
 class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
     timeout=5
@@ -25,6 +26,7 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
             elif self.debug:
                 print "."
         self.send(self.message, "outbox")
+        print "SHUTDOWN", self.name
 
 class ActivityMonitor(Axon.Component.component):
     Inboxes = {
@@ -59,6 +61,10 @@ class ActivityMonitor(Axon.Component.component):
                 p = self.recv("control")
                 if isinstance(p, producerFinished):
                     shutdown = True
+                elif isinstance(p, shutdownCSA):
+                    shutdown = True
+                else:
+                    print "IGNORING", type(p), self.name
                 self.send(p, "signal")
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
@@ -98,24 +104,14 @@ class WakeableIntrospector(Axon.Component.component):
             while self.dataReady("inbox"): self.recv("inbox")
         self.send(producerFinished(), "signal")
 
-Graphline(
-    PW = PeriodicWakeup(interval=5),
-    WI = WakeableIntrospector(),
-    linkages = {
-        ("PW","outbox"):("WI","inbox"),
-        ("PW","signal"):("WI","control"),
-        ("WI","outbox"):("PW","inbox"),
-        ("WI","signal"):("PW","control"),
-    }
-).activate()
 
 def NoActivityTimeout(someclass, timeout=2, debug=False):
     def maker(self, *args,**argd):
-        print "MAKING", someclass.__name__
-        print "ARGS", args
-        print "ARGD", argd
+#        print "MAKING", someclass.__name__
+#        print "ARGS", args
+#        print "ARGD", argd
         X = InactivityChassis(someclass(*args,**argd), timeout=timeout, debug=debug)
-        print "MADE", X.name
+#        print "MADE", X.name
         return X
     return maker
 
@@ -127,11 +123,11 @@ def ExtendedInactivity(someclass):
 import pprint
 # Chassis
 def InactivityChassis(somecomponent, timeout=2, debug=False):
-    print "Trying to be a chassis for", somecomponent
-    print "INBOXES"
-    pprint.pprint(somecomponent.inboxes)
-    print "OUTBOXES"
-    pprint.pprint(somecomponent.outboxes)
+#    print "Trying to be a chassis for", somecomponent
+#    print "INBOXES"
+#    pprint.pprint(somecomponent.inboxes)
+#    print "OUTBOXES"
+#    pprint.pprint(somecomponent.outboxes)
     linkages = {
         ("SHUTTERDOWNER","outbox"):("OBJ","control"),
 
@@ -201,3 +197,14 @@ if __name__ == "__main__":
             NoActivityTimeout(ConsoleReader, timeout=1, debug=True)(),
             ConsoleEchoer(),
         ).run()
+
+        Graphline(
+            PW = PeriodicWakeup(interval=5),
+            WI = WakeableIntrospector(),
+            linkages = {
+                ("PW","outbox"):("WI","inbox"),
+                ("PW","signal"):("WI","control"),
+                ("WI","outbox"):("PW","inbox"),
+                ("WI","signal"):("PW","control"),
+            }
+        ).activate()
