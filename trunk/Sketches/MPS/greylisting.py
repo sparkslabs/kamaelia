@@ -5,7 +5,10 @@ import socket
 import time
 import math
 import anydbm
-# import pprint
+import pprint
+import copy
+import os
+
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
@@ -137,7 +140,7 @@ class MailHandler(Axon.Component.component):
                 while not EndOfMessage:
                     yield WaitComplete(self.getline(), tag="getline2")
                     if self.lastline():
-                        EndOfMessage = self.endOfMessage()
+                        EndOfMessage = True
                 self.netPrint("250 OK id-deferred")
 
         self.send(producerFinished(),"signal")
@@ -490,6 +493,7 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
         while 1:
             time.sleep(self.interval)
             self.send("tick", "outbox")
+#            print "TICK"
 
 class WakeableIntrospector(Axon.Component.component):
     def main(self):
@@ -504,6 +508,7 @@ class WakeableIntrospector(Axon.Component.component):
             while not self.dataReady("inbox"):
                 self.pause()
                 yield 1
+#            print "ME???"
             while self.dataReady("inbox"): self.recv("inbox")
 
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -520,33 +525,105 @@ from Kamaelia.Internet.TimeOutCSA import NoActivityTimeout
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 from Kamaelia.Internet.TCPServer import TCPServer
 
+config_files = ["/usr/local/etc/Kamaelia/greylist.conf",
+                "/usr/local/etc/greylist.conf",
+                "/etc/Kamaelia/greylist.conf",
+                "/etc/greylist.conf",
+                "greylist.conf",
+                "/usr/local/etc/Kamaelia/greylist.conf.dist",
+                "/usr/local/etc/greylist.conf.dist",
+                "/etc/Kamaelia/greylist.conf.dist",
+                "/etc/greylist.conf.dist",
+                "greylist.conf.dist" ]
+
+default_config = { 'allowed_domains': [],
+                   'allowed_sender_nets': [],
+                   'allowed_senders': ['127.0.0.1'],
+                   'port': 25,
+                   'serverid': 'Kamaelia-SMTP 1.0',
+                   'servername': 'mail.example.com',
+                   'smtp_ip': '192.168.2.9',
+                   'smtp_port': 8025,
+                   'whitelisted_nonstandard_triples': [],
+                   'whitelisted_triples': []
+        }
+
+def openConfig(config_file):
+    f = open(config_file)
+    lines = f.readlines()
+    f.close()
+    return lines
+
+def parseConfigFile(lines, default_config):
+    config = copy.deepcopy(default_config)
+    l = 0
+    while l<len(lines):
+        line = lines[l][:-1] # remove newline
+        line = line.rstrip()
+        if len(line) != 0:
+            if "#" == line[0]:
+                pass # skip
+            elif "=" in line:
+                bits = line.split("=")
+                thing = bits[0].strip().rstrip()
+                what = bits[1].strip().rstrip()
+                if (thing == "port") or (thing == "smtp_port"):
+                    what = int(what)
+                config[thing] = what
+            else:
+                if line[-1] == ":":
+                    thing = line[:-1]
+                    if config.get(thing) == None:
+                        config[thing] = []
+                    while (l+1)<len(lines):
+                        l+=1
+                        line = lines[l][:-1] # remove newline
+                        x = line.rstrip()
+                        y = line.strip()
+                        if x==y:
+                            break
+                        if " " in y:
+                            config[thing].append(tuple(y.split(" ")))
+                        else:
+                            config[thing].append(y)
+                    l-=1
+        l+=1
+    return config
+
+config_used = None
+for config_file in config_files:
+    try:
+        lines = openConfig(config_file)
+    except IOError:
+        pass
+    else:
+        config_used =config_file
+        break
+
+if config_used is not None:
+    config = parseConfigFile(lines,default_config)
+else:
+    config = default_config
+    config_used = "DEFAULT INTERNAL"
+
+pprint.pprint(config)
+print "Using config:", config_used,"(cwd:", os.getcwd(),")"
+
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    port = 1025
+    port = config["port"]
     class TCPS(TCPServer):
-        CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=60, debug=True)
+        CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=60, debug=False)
     class protocol(GreyListingPolicy):
-        servername = "mail.cerenity.org"
-        serverid = "MPS-SMTP 1.0"
-        smtp_ip = "192.168.2.9"
-        smtp_port = 8025
-        allowed_senders = ["127.0.0.1"]
-        allowed_sender_nets = ["192.168.2"] # Yes, only class C network style
-        allowed_domains = [ "private.thwackety.com",
-                            "thwackety.com",
-                            "thwackety.net",
-                            "yeoldeclue.com",
-                            "michaelsparks.info",
-                            "lansdowneresidents.org",
-                            "polinasparks.com",
-                            "pixienest.com",
-                            "kamaelia.org",
-                            "owiki.org",
-                            "cerenity.org"]
-        whitelisted_triples = [ ]
-        whitelisted_nonstandard_triples = [ ]
+        servername = config["servername"]
+        serverid = config["serverid"]
+        smtp_ip = config["smtp_ip"]
+        smtp_port = config["smtp_port"]
+        allowed_senders = config["allowed_senders"]
+        allowed_sender_nets = config["allowed_sender_nets"] # Yes, only class C network style
+        allowed_domains = config["allowed_domains"]
+        whitelisted_triples = config["whitelisted_triples"]
+        whitelisted_nonstandard_triples = config["whitelisted_nonstandard_triples"]
 
 #GreylistServer.TCPS.CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 GreylistServer().run()
-
-
