@@ -17,6 +17,7 @@ from Kamaelia.IPC import socketShutdown
 from Kamaelia.Internet.TCPClient import TCPClient
 
 class MailHandler(Axon.Component.component):
+    logfile = "greylist.log"
     def __init__(self,**argd):
         super(MailHandler, self).__init__(**argd)
         self.inbox_log = []
@@ -81,12 +82,20 @@ class MailHandler(Axon.Component.component):
         self.netPrint("500 Sorry we don't like broken mailers")
         self.breakConnection = True
 
+    def noteToLog(self, line):
+        x = open(self.logfile,"a")
+#        x = open("greylist.log","a")
+        x.write(line+"\n")
+        x.flush()
+        x.close()
+
     def netPrint(self, *args):
         for i in args:
-            x = open("greylist.log","a")
-            x.write(i+"\n")
-            x.flush()
-            x.close()
+            self.noteToLog(i)
+#            x = open("greylist.log","a")
+#            x.write(i+"\n")
+#            x.flush()
+#            x.close()
             # print i
             self.send(i+"\r\n", "outbox")
 
@@ -480,10 +489,11 @@ class GreyListingPolicy(ConcreteMailHandler):
         logline += str(", ".join(self.recipients)) + " | "
         logline += str(self.mailStatus) + " | "
 
-        x = open("greylist.log","a")
-        x.write(logline+"\n")
-        x.flush()
-        x.close()
+        self.noteToLog(logline)
+#        x = open("greylist.log","a")
+#        x.write(logline+"\n")
+#        x.flush()
+#        x.close()
         # print logline
 
 
@@ -498,10 +508,11 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
 class WakeableIntrospector(Axon.Component.component):
     def main(self):
         while 1:
-            x = open("greylist.log","a")
-            x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
-            x.flush()
-            x.close()
+            self.noteToLog("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ]))
+#            x = open("greylist.log","a")
+#            x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
+#            x.flush()
+#            x.close()
             # print "*debug* THREADS", [ x.name for x in self.scheduler.listAllThreads() ]
             self.scheduler.debuggingon = False
             yield 1
