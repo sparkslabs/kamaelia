@@ -208,7 +208,7 @@ class _AdaptiveCommsable(object):
       Retrieve a tuple (inboxes, outboxes, otherdata) that has been stored as
       the specified resource.
       """
-      print self._resourceStore
+#      print self._resourceStore
       return self._resourceStore[resource]
 
    def addInbox(self,*args):
