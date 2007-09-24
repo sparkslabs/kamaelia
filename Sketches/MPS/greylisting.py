@@ -87,7 +87,7 @@ class MailHandler(Axon.Component.component):
             x.write(i+"\n")
             x.flush()
             x.close()
-            print i
+            # print i
             self.send(i+"\r\n", "outbox")
 
     def handleConnect(self): pass
@@ -391,38 +391,38 @@ class GreyListingPolicy(ConcreteMailHandler):
                     except KeyError:
                         # We don't care if it's already gone
                         pass
-                    print "REFUSED: grey too long"
+                    # print "REFUSED: grey too long"
                 else:
-                    print "ACCEPTED: already grey (have reset greytime)" ,
+                    # print "ACCEPTED: already grey (have reset greytime)" ,
                     greylist[triplet] = str(time.time())
                     return True
             
             # If not seen this triplet before, defer and note triplet    
             if seen.get( triplet, None) is None:
                 seen[triplet] = str(time.time())
-                print "REFUSED: Not seen before" ,
+                # print "REFUSED: Not seen before" ,
                 return False
         
             # If triplet retrying waaay too soon, reset their timer & defer
             last_tried = float(seen[triplet])
             if (time.time() - last_tried) < too_soon:
                 seen[triplet] = str(time.time())
-                print "REFUSED: Retrying waaay too soon so resetting you!" ,
+                # print "REFUSED: Retrying waaay too soon so resetting you!" ,
                 return False
         
             # If triplet retrying too soon generally speaking just defer
             if (time.time() - last_tried) < min_defer_time :
-                print "REFUSED: Retrying too soon, deferring" ,
+                # print "REFUSED: Retrying too soon, deferring" ,
                 return False
         
             # If triplet hasn't been seen in aaaages, defer
             if (time.time() - last_tried) > max_defer_time :
                 seen[triplet] = str(time.time())
-                print "REFUSED: Retrying too late, sorry - reseting you!" ,
+                # print "REFUSED: Retrying too late, sorry - reseting you!" ,
                 return False
         
             # Otherwise, allow through & greylist then
-            print "ACCEPTED: Now added to greylist!" ,
+            # print "ACCEPTED: Now added to greylist!" ,
             greylist[triplet] = str(time.time())
             return True
 
@@ -459,7 +459,7 @@ class GreyListingPolicy(ConcreteMailHandler):
                     if not self.isGreylisted(recipient):
                         return False
             except Exception, e:
-                print "Whoops", e
+                # print "Whoops", e
             return True # Anyone can always send to hosts we own
 
         # print "NOT ALLOWED TO SEND, no valid forwarding"
@@ -484,7 +484,7 @@ class GreyListingPolicy(ConcreteMailHandler):
         x.write(logline+"\n")
         x.flush()
         x.close()
-        print logline
+        # print logline
 
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
@@ -502,7 +502,7 @@ class WakeableIntrospector(Axon.Component.component):
             x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
             x.flush()
             x.close()
-            print "*debug* THREADS", [ x.name for x in self.scheduler.listAllThreads() ]
+            # print "*debug* THREADS", [ x.name for x in self.scheduler.listAllThreads() ]
             self.scheduler.debuggingon = False
             yield 1
             while not self.dataReady("inbox"):
@@ -540,6 +540,7 @@ default_config = { 'allowed_domains': [],
                    'allowed_sender_nets': [],
                    'allowed_senders': ['127.0.0.1'],
                    'port': 25,
+                   "inactivity_timeout": 60,
                    'serverid': 'Kamaelia-SMTP 1.0',
                    'servername': 'mail.example.com',
                    'smtp_ip': '192.168.2.9',
@@ -606,14 +607,14 @@ else:
     config = default_config
     config_used = "DEFAULT INTERNAL"
 
-pprint.pprint(config)
-print "Using config:", config_used,"(cwd:", os.getcwd(),")"
+# pprint.pprint(config)
+# print "Using config:", config_used,"(cwd:", os.getcwd(),")"
 
 class GreylistServer(MoreComplexServer):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     port = config["port"]
     class TCPS(TCPServer):
-        CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=60, debug=False)
+        CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=config["inactivity_timeout"], debug=False)
     class protocol(GreyListingPolicy):
         servername = config["servername"]
         serverid = config["serverid"]
