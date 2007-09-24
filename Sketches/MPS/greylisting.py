@@ -559,6 +559,8 @@ default_config = { 'allowed_domains': [],
                    'allowed_sender_nets': [],
                    'allowed_senders': ['127.0.0.1'],
                    'port': 25,
+                   "greylist_log": "greylist.log",
+                   "greylist_debuglog" : "greylist-debug.log",
                    "inactivity_timeout": 60,
                    'serverid': 'Kamaelia-SMTP 1.0',
                    'servername': 'mail.example.com',
@@ -630,6 +632,7 @@ else:
 # print "Using config:", config_used,"(cwd:", os.getcwd(),")"
 
 class GreylistServer(MoreComplexServer):
+    logfile = config["greylist_log"]
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     port = config["port"]
     class TCPS(TCPServer):
@@ -644,6 +647,8 @@ class GreylistServer(MoreComplexServer):
         allowed_domains = config["allowed_domains"]
         whitelisted_triples = config["whitelisted_triples"]
         whitelisted_nonstandard_triples = config["whitelisted_nonstandard_triples"]
+
+WakeableIntrospector.logfile = config["greylist_debuglog"]
 
 #GreylistServer.TCPS.CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 GreylistServer().run()
