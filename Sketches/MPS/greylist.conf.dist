@@ -18,6 +18,16 @@ smtp_ip = 192.168.0.25
 # Port number the real SMTP server is listening on
 smtp_port = 8025
 
+# How long we allow a connection to be inactive before dropping the
+# connection
+inactivity_timeout = 60
+
+# Main logfile
+greylist_log = "/var/log/greylist.log"
+
+# Logfile useful during debugging
+greylist_debuglog = "/var/log/greylist-debug.log"
+
 #---------------------------------------------------------------------------
 # List of IP addresses that are allowed to send to anywhere
 # Put each IP address on its own line, indented
