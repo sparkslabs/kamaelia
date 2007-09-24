@@ -469,6 +469,7 @@ class GreyListingPolicy(ConcreteMailHandler):
                         return False
             except Exception, e:
                 # print "Whoops", e
+                pass
             return True # Anyone can always send to hosts we own
 
         # print "NOT ALLOWED TO SEND, no valid forwarding"
@@ -506,6 +507,13 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
 #            print "TICK"
 
 class WakeableIntrospector(Axon.Component.component):
+    logfile = "greylist-debug.log"
+    def noteToLog(self, line):
+        x = open(self.logfile,"a")
+#        x = open("greylist.log","a")
+        x.write(line+"\n")
+        x.flush()
+        x.close()
     def main(self):
         while 1:
             self.noteToLog("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ]))
