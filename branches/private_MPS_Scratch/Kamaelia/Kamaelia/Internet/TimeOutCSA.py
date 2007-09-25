@@ -14,6 +14,7 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
     message="NEXT"
     debug = False
     def main(self):
+        # print "TIMEOUT", repr(self.timeout)
         now = time.time()
         while 1:
             time.sleep(1) # Yes, there's nicer ways of doing this, but this is clear :-)
