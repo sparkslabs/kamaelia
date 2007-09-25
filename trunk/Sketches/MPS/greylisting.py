@@ -522,7 +522,9 @@ class WakeableIntrospector(Axon.Component.component):
         x.close()
     def main(self):
         while 1:
-            self.noteToLog("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ]))
+            Q = [ q.name for q in self.scheduler.listAllThreads() ]
+            Q.sort()
+            self.noteToLog("*debug* THREADS"+ str(Q))
 #            x = open("greylist.log","a")
 #            x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
 #            x.flush()
@@ -595,7 +597,7 @@ def parseConfigFile(lines, default_config):
                 bits = line.split("=")
                 thing = bits[0].strip().rstrip()
                 what = bits[1].strip().rstrip()
-                if (thing == "port") or (thing == "smtp_port"):
+                if (thing == "port") or (thing == "smtp_port") or (thing == "inactivity_timeout"):
                     what = int(what)
                 config[thing] = what
             else:
