@@ -4,10 +4,8 @@ import time
 import Axon
 import sys
 from Axon.Ipc import producerFinished
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.Console import *
 from Kamaelia.IPC import shutdownCSA
+from Kamaelia.Chassis.Graphline import Graphline
 
 class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
     timeout=5
@@ -109,11 +107,7 @@ class WakeableIntrospector(Axon.Component.component):
 
 def NoActivityTimeout(someclass, timeout=2, debug=False):
     def maker(self, *args,**argd):
-#        print "MAKING", someclass.__name__
-#        print "ARGS", args
-#        print "ARGD", argd
         X = InactivityChassis(someclass(*args,**argd), timeout=timeout, debug=debug)
-#        print "MADE", X.name
         return X
     return maker
 
@@ -122,14 +116,7 @@ def ExtendedInactivity(someclass):
         return InactivityChassis(someclass(*args,**argd), timeout=timeout, debug=debug)
     return maker
 
-import pprint
-# Chassis
 def InactivityChassis(somecomponent, timeout=2, debug=False):
-#    print "Trying to be a chassis for", somecomponent
-#    print "INBOXES"
-#    pprint.pprint(somecomponent.inboxes)
-#    print "OUTBOXES"
-#    pprint.pprint(somecomponent.outboxes)
     linkages = {
         ("SHUTTERDOWNER","outbox"):("OBJ","control"),
 
@@ -163,7 +150,6 @@ from Kamaelia.Internet.TCPServer import TCPServer
 from Kamaelia.Protocol.EchoProtocol import EchoProtocol
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
-#class MyTCPServer
 class EchoServer(MoreComplexServer):
     protocol=EchoProtocol
     port=1500
@@ -172,6 +158,8 @@ class EchoServer(MoreComplexServer):
         CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 
 if __name__ == "__main__":
+    from Kamaelia.Util.Console import *
+    from Kamaelia.Chassis.Pipeline import Pipeline
     EchoServer().run()
     
     sys.exit(0)
