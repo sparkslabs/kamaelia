@@ -18,6 +18,7 @@ from Kamaelia.Internet.TCPClient import TCPClient
 
 class MailHandler(Axon.Component.component):
     logfile = "greylist.log"
+    debuglogfile = "greylist-debug.log"
     def __init__(self,**argd):
         super(MailHandler, self).__init__(**argd)
         self.inbox_log = []
@@ -25,7 +26,6 @@ class MailHandler(Axon.Component.component):
 
     def logging_recv_connection(self):
         self.line = self.recv("inbox")
-#        print repr(self.line)
         self.inbox_log.append(self.line)
 
     def getline(self):
@@ -34,35 +34,18 @@ class MailHandler(Axon.Component.component):
             while not self.anyReady():
                 self.pause();  # print "PAUSING", repr(self.inbox_log), repr(self.line)
                 yield 1
-#            if self.anyReady():
-#               print self.anyReady()
             while self.dataReady("control"):
                 control_message = self.recv("control")
-#                print "CONTROL", control_message
                 if isinstance(control_message, socketShutdown):
-#                    print "FINISH"
                     self.client_connected = False
             if self.dataReady("inbox"):
-#                print "GETTING DATA"
                 self.logging_recv_connection()
-#                print "GOT", self.line
                 return
             else:
-#                print "NO DATA", control_message
                 if not self.client_connected :
-#                    print "CLIENT DISCONNECTED"
                     self.breakConnection = True
                     return
-#            print "TRY AGAIN", control_message
             yield 1
-
-    def _getline(self):
-        while not self.dataReady("inbox"):
-#            if self.anyReady() == "control":
-#                print "control message waiting"
-            self.pause()
-            yield 1
-        self.logging_recv_connection()
 
     def handleCommand(self,command):
         if len(command) < 1:
@@ -87,19 +70,22 @@ class MailHandler(Axon.Component.component):
             x = open(self.logfile,"a")
         except IOError:
             x = open(self.logfile,"w")
-#        x = open("greylist.log","a")
+        x.write(line+"\n")
+        x.flush()
+        x.close()
+
+    def noteToDebugLog(self, line):
+        try:
+            x = open(self.debuglogfile,"a")
+        except IOError:
+            x = open(self.debuglogfile,"w")
         x.write(line+"\n")
         x.flush()
         x.close()
 
     def netPrint(self, *args):
         for i in args:
-            self.noteToLog(i)
-#            x = open("greylist.log","a")
-#            x.write(i+"\n")
-#            x.flush()
-#            x.close()
-            # print i
+            self.noteToDebugLog(i)
             self.send(i+"\r\n", "outbox")
 
     def handleConnect(self): pass
@@ -237,7 +223,7 @@ class ConcreteMailHandler(MailHandler):
         self.netPrint("252 Cannot VRFY user")
 
     def handleRset(self,command):
-        # self.seenHelo = self.seenHelo - leave unchanged
+        # self.seenHelo = self.seenHelo - leave unchanged (comment is to note we *have* thought about this!)
         self.recipients = []
         self.sender = None
         self.seenMail = False
@@ -356,14 +342,12 @@ class GreyListingPolicy(ConcreteMailHandler):
 
     def sentFromAllowedIPAddress(self):
         if self.peer in self.allowed_senders:
-            # print "ALLOWED TO SEND, since is an allowed_sender"
             return True
         return False
 
     def sentFromAllowedNetwork(self):
         for network_prefix in self.allowed_sender_nets:
             if self.peer[:len(network_prefix)] == network_prefix:
-                # print "ALLOWED TO SEND, since is in an approved network"
                 return True
         return False
 
@@ -375,10 +359,8 @@ class GreyListingPolicy(ConcreteMailHandler):
                 domain = recipient[recipient.find("@")+1:]
                 domain = domain.lower()
                 if not (domain in self.allowed_domains):
-                    # print "NOT ALLOWED TO SEND - recipient not in allowed_domains", recipient, domain, self.allowed_domains
                     return False
             except:
-                # print "NOT ALLOWED TO SEND - bad recipient", recipient
                 raise
                 return False # don't care why it fails if it fails
         return True # Only reach here if all domains in allowed_domains
@@ -392,7 +374,6 @@ class GreyListingPolicy(ConcreteMailHandler):
         IP = self.peer
         sender = self.sender
         def _isGreylisted(greylist, seen, IP,sender,recipient):
-#            print "GREY?", IP, sender, recipient
             # If greylisted, and not been there too long, allow through
             if greylist.get(triplet,None) is not None:
                 greytime = float(greylist[triplet])
@@ -403,38 +384,33 @@ class GreyListingPolicy(ConcreteMailHandler):
                     except KeyError:
                         # We don't care if it's already gone
                         pass
-                    # print "REFUSED: grey too long"
+                    # REFUSED: grey too long
                 else:
-                    # print "ACCEPTED: already grey (have reset greytime)" ,
+                    # ACCEPTED: already grey (have reset greytime)
                     greylist[triplet] = str(time.time())
                     return True
             
             # If not seen this triplet before, defer and note triplet    
             if seen.get( triplet, None) is None:
                 seen[triplet] = str(time.time())
-                # print "REFUSED: Not seen before" ,
                 return False
         
             # If triplet retrying waaay too soon, reset their timer & defer
             last_tried = float(seen[triplet])
             if (time.time() - last_tried) < too_soon:
                 seen[triplet] = str(time.time())
-                # print "REFUSED: Retrying waaay too soon so resetting you!" ,
                 return False
         
             # If triplet retrying too soon generally speaking just defer
             if (time.time() - last_tried) < min_defer_time :
-                # print "REFUSED: Retrying too soon, deferring" ,
                 return False
         
             # If triplet hasn't been seen in aaaages, defer
             if (time.time() - last_tried) > max_defer_time :
                 seen[triplet] = str(time.time())
-                # print "REFUSED: Retrying too late, sorry - reseting you!" ,
                 return False
         
             # Otherwise, allow through & greylist then
-            # print "ACCEPTED: Now added to greylist!" ,
             greylist[triplet] = str(time.time())
             return True
 
@@ -475,7 +451,6 @@ class GreyListingPolicy(ConcreteMailHandler):
                 pass
             return True # Anyone can always send to hosts we own
 
-        # print "NOT ALLOWED TO SEND, no valid forwarding"
         return False
 
     def logResult(self):
@@ -494,10 +469,6 @@ class GreyListingPolicy(ConcreteMailHandler):
         logline += str(self.mailStatus) + " | "
 
         self.noteToLog(logline)
-#        x = open("greylist.log","a")
-#        x.write(logline+"\n")
-#        x.flush()
-#        x.close()
         # print logline
 
 
@@ -507,7 +478,6 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
         while 1:
             time.sleep(self.interval)
             self.send("tick", "outbox")
-#            print "TICK"
 
 class WakeableIntrospector(Axon.Component.component):
     logfile = "greylist-debug.log"
@@ -516,7 +486,6 @@ class WakeableIntrospector(Axon.Component.component):
             x = open(self.logfile,"a")
         except IOError:
             x = open(self.logfile,"w")
-#        x = open("greylist.log","a")
         x.write(line+"\n")
         x.flush()
         x.close()
@@ -525,17 +494,11 @@ class WakeableIntrospector(Axon.Component.component):
             Q = [ q.name for q in self.scheduler.listAllThreads() ]
             Q.sort()
             self.noteToLog("*debug* THREADS"+ str(Q))
-#            x = open("greylist.log","a")
-#            x.write("*debug* THREADS"+ str([ q.name for q in self.scheduler.listAllThreads() ])+ "\n")
-#            x.flush()
-#            x.close()
-            # print "*debug* THREADS", [ x.name for x in self.scheduler.listAllThreads() ]
             self.scheduler.debuggingon = False
             yield 1
             while not self.dataReady("inbox"):
                 self.pause()
                 yield 1
-#            print "ME???"
             while self.dataReady("inbox"): self.recv("inbox")
 
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -545,8 +508,6 @@ Pipeline(
     WakeableIntrospector(),
 ).activate()
 
-#from Kamaelia.Internet.TimeOutCSA import ResettableSender
-#from Kamaelia.Internet.TimeOutCSA import ActivityMonitor
 from Kamaelia.Internet.TimeOutCSA import NoActivityTimeout
 
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
@@ -636,11 +597,9 @@ else:
     config = default_config
     config_used = "DEFAULT INTERNAL"
 
-# pprint.pprint(config)
-# print "Using config:", config_used,"(cwd:", os.getcwd(),")"
-
 class GreylistServer(MoreComplexServer):
     logfile = config["greylist_log"]
+    debuglogfile = config["greylist_debuglog"]
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     port = config["port"]
     class TCPS(TCPServer):
@@ -658,6 +617,6 @@ class GreylistServer(MoreComplexServer):
 
 WakeableIntrospector.logfile = config["greylist_debuglog"]
 MailHandler.logfile = config["greylist_log"]
+MailHandler.debuglogfile = config["greylist_debuglog"]
 
-#GreylistServer.TCPS.CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 GreylistServer().run()
