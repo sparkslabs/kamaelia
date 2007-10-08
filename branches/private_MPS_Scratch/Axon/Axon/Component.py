@@ -450,6 +450,10 @@ class component(microprocess):
 
       self.postoffice = postoffice("component :" + self.name)
 
+   def setInboxSize(self, boxname, size):
+       "boxname - some boxname, must be an inbox ; size - maximum number of items we're happy with"
+       self.inboxes[boxname].setSize(size)
+
    def __str__(self):
       """Provides a useful string representation of the component.
       You probably want to override this, and append this description using
