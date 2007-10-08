@@ -28,6 +28,9 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
         # print "SHUTDOWN", self.name
 
 class ActivityMonitor(Axon.Component.component):
+    # XXXX FIXME: This should be an adaptive component, and only proxy inboxes and outboxs that
+    # XXXX FIXME: are NOT preceded by an underscore. If it is wrapping an AdaptiveCommsComponent,
+    # XXXX FIXME: we ought to warn we can't necessarily wrap those properly yet(!)
     Inboxes = {
         "inbox": "",
         "inbox2": "",
