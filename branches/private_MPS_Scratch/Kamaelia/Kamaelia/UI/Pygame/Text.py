@@ -106,15 +106,20 @@ class TextDisplayer(component):
                 "signal" : "propagates out shutdown signals"}
     
     def __init__(self, screen_width=500, screen_height=300, text_height=18,
-                 background_color = (255,255,200), text_color=(0,0,0), position=(0,0)):
+                 background_color = (255,255,200), text_color=(0,0,0), position=(0,0),
+                 margin=10):
         """Initialises"""
         super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
+        self.textbox_width = screen_width -margin*2
         self.screen_height = screen_height
+        self.textbox_height = screen_height-margin*2
         self.text_height = text_height
         self.background_color = background_color
         self.text_color = text_color
         self.position = position
+        self.textbox_position = position[0]+margin, position[1]+margin
+        self.margin = margin
         self.done = False
         
     def initPygame(self, **argd):
@@ -133,13 +138,16 @@ class TextDisplayer(component):
         yield 1
 
         h = self.screen_height
+        h = self.textbox_height
         w = self.screen_width
+        w = self.textbox_width
         th = self.text_height
         self.font = pygame.font.Font(None, th)
-        self.linelen = w/self.font.size('a')[0]
-        self.keepRect = pygame.Rect((0, th),(w, h - th))
-        self.scrollingRect = pygame.Rect((0, 0), (w, h - th))
-        self.writeRect = pygame.Rect((0, h - th), (w, th))
+        M = self.margin
+        self.linelen = self.textbox_width/self.font.size('a')[0]
+        self.keepRect = pygame.Rect((M, th+M),(w, h - th))
+        self.scrollingRect = pygame.Rect((M, M), (w, h - th))
+        self.writeRect = pygame.Rect((M, h - th+M), (w, th))
 
     def main(self):
         """Main loop"""
@@ -241,6 +249,7 @@ class Textbox(TextDisplayer):
         while not self.shutdown():
             yield 1
             string_buffer = self.string_buffer
+            self.setText(string_buffer + '|')
             while self.dataReady('_events'):
                 for event in self.recv('_events'):
                     char = event.unicode
