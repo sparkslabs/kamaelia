@@ -132,6 +132,7 @@ class ConnectedSocketAdapter(component):
       self.noisyErrors = noisyErrors
       self.selectorService = selectorService
       self.howDied = False
+      self.couldnt_send = None
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
@@ -215,16 +216,24 @@ class ConnectedSocketAdapter(component):
    def handleReceive(self):
        successful = True
        while successful and self.connectionRECVLive: ### Fixme - probably want maximum iterations here
+         if self.couldnt_send is not None:
+             try:
+                 self.send(self.couldnt_send, "outbox")
+                 self.couldnt_send = None
+             except Axon.AxonExceptions.noSpaceInBox:
+                 return
+
          socketdata = self._saferecv(self.socket, 32768) ### Receiving may die horribly         
          if (socketdata):
-             self.send(socketdata, "outbox")
-             successful = True
+             try:
+                 self.send(socketdata, "outbox")
+             except Axon.AxonExceptions.noSpaceInBox:
+                 self.couldnt_send = socketdata
+                 successful = False
+             else:
+                 successful = True
          else:
              successful = False
-#       print "There!",successful
-#       if not self.connectionRECVLive:
-#           print len(self.outboxes["outbox"]), "FOO", socketdata
-#           print "self.howDied", self.howDied
 
    def checkSocketStatus(self):
        if self.dataReady("ReadReady"):
