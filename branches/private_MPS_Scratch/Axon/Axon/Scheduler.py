@@ -311,6 +311,7 @@ class scheduler(microprocess):
       self.time = time.time()
       
       self.threads = {}    # current set of threads and their states (whether sleeping, or running)
+      self.stopRequests = Queue.Queue()
       self.wakeRequests = Queue.Queue()
       self.pauseRequests = Queue.Queue()
       self.debuggingon = False
@@ -498,9 +499,27 @@ class scheduler(microprocess):
                except Queue.Empty:
                     # catch timeout
                     pass
-           
+               if not self.stopRequests.empty():
+                   print "Do we get here? 1"
+                   break
+
+           if not self.stopRequests.empty():
+               print "Do we get here? 2"
+               break
            running = len(self.threads)
-               
+
+       if not self.stopRequests.empty():
+           print "WE GOT HERE! :-)"
+           for X in self.threads:
+               print "We now call .stop() on ", X.name, type(X)
+               X.stop()
+       print "All microprocesses now stopped. Halting"
+
+   def stop(self):
+       print "ADDING STOP REQUEST"
+       self.stopRequests.put( self )
+       super(scheduler, self).stop()
+
    def runThreads(self,slowmo=0):
       """\
       Runs the scheduler until there are no activated microprocesses left
