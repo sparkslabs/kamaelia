@@ -183,12 +183,21 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if isinstance(data, serverShutdown):
                     break
             yield 1
+        
+        self.stop()
+#        for CSA in self.connectedSockets:
+#            self.handleClosedCSA(shutdownCSA(self,CSA))
+#
+#        self.send(serverShutdown(), "_serversignal")
+#        print len(self.outboxes["_serversignal"])
+#        print "Simple Server Shutting Down"
+
+    def stop(self):
         for CSA in self.connectedSockets:
             self.handleClosedCSA(shutdownCSA(self,CSA))
 
         self.send(serverShutdown(), "_serversignal")
-#        print len(self.outboxes["_serversignal"])
-#        print "Simple Server Shutting Down"
+        super(SimpleServer, self).stop()
 
     def handleNewConnection(self, newCSAMessage):
         """
@@ -325,12 +334,19 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if isinstance(data, serverShutdown):
                     break
             yield 1
+#        for CSA in self.connectedSockets:
+#            self.handleClosedCSA(shutdownCSA(self,CSA))
+#
+#        self.send(serverShutdown(), "_serversignal")
+#        print len(self.outboxes["_serversignal"])
+#        print "Simple Server Shutting Down"
+
+    def stop(self):
         for CSA in self.connectedSockets:
             self.handleClosedCSA(shutdownCSA(self,CSA))
 
         self.send(serverShutdown(), "_serversignal")
-#        print len(self.outboxes["_serversignal"])
-#        print "Simple Server Shutting Down"
+        super(SimpleServer, self).stop()
 
     def handleNewConnection(self, newCSAMessage):
         """

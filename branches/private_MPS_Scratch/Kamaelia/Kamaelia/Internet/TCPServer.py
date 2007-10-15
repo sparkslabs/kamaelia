@@ -252,6 +252,15 @@ class TCPServer(Axon.Component.component):
 #       for i in xrange(100): yield 1
        self.send(shutdown(), "_selectorShutdownSignal")
 
+   def stop(self):
+       self.send(removeReader(self, self.listener), "_selectorSignal") 
+#       for i in xrange(100): yield 1
+       self.send(shutdown(), "_selectorShutdownSignal")
+       self.listener.close() # Ensure we close the server socket. Only really likely to
+                             # be called from the scheduler shutting down due to a stop.
+       super(TCPServer,self).stop()
+
+
 __kamaelia_components__  = ( TCPServer, )
 
 if __name__ == '__main__':

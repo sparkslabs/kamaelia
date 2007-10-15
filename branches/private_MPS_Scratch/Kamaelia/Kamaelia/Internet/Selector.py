@@ -161,10 +161,16 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         except:
             pass
 
+    def stop(self):
+        if self.trackedby is not None:
+            self.trackedby.deRegisterService("selector")
+            self.trackedby.deRegisterService("selectorshutdown")
+        super(Selector, self).stop()
+
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
         """\
         Adds a file descriptor (selectable).
-        
+
         Creates a corresponding outbox, with name based on boxBase; links it to
         the component that wants to be notified; adds the file descriptor to the
         set of selectables; and records the box and linkage info in meta.
