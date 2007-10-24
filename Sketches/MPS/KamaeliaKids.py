@@ -135,15 +135,16 @@ class Turtle(PygameComponent):
     surfacesize = (570, 650)
     surfaceposition=(430,90)
     colour = (0,0,0)
-    width = 10
+    width = 2
     pos = [285,325]
     logical_pos = (0,0)
     turtle = (
-            ((0, -5), (5, 5)),
-            ((5, 5), (-5, 5)),
-            ((-5, 5),( 0,-5)),
+            ((0, -8), (4, 8)),
+            ((4, 8), (-4, 8)),
+            ((-4, 8),( 0,-8)),
     )
     orientation = 0
+    curr_scale = 2
 
     def rotate(self,pos):
         return (pos[0] * cos( (-pi*self.orientation)/180))+(pos[1] * sin( (-pi*self.orientation)/180)) , \
@@ -152,41 +153,85 @@ class Turtle(PygameComponent):
     def translate(self, pos):
         return (self.pos[0]+pos[0], self.pos[1]+pos[1])
 
+    def scale(self,pos):
+        return (pos[0]*self.curr_scale, pos[1]*self.curr_scale)
+
     def render_turtle(self):
+        self.clearDisplay()
         for S,E in self.turtle:
             pygame.draw.line(self.display, self.colour,
-                            self.translate(self.rotate(S)),
-                            self.translate(self.rotate(E)),
+                            self.translate(self.rotate(self.scale(S))),
+                            self.translate(self.rotate(self.scale(E))),
                             self.width)
         self.send(self.pos, "outbox")
+        self.flip()
 
     def main(self):
         yield self.doRequestDisplay()
-        self.clearDisplay()
         self.render_turtle()
-        self.flip()
         yield 1
         tlast = self.scheduler.time
+        target_pos = self.pos
+        target_orientation = self.orientation
         while 1:
             yield 1
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command[0] == "forward":
+                    # Would be nice for this to be animated!
                     distance = int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
                     self.send("POS" + repr(self.pos), "outbox")
+                    print "XY"
+                    self.render_turtle()
                 if command[0] == "back":
+                    # Would be nice for this to be animated!
                     distance = -int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
                     self.send("POS" + repr(self.pos), "outbox")
+                    self.render_turtle()
                 if command[0] == "left":
+                    # Would be nice for this to be animated!
                     angle = int(command[1])
                     self.orientation = self.orientation - angle
+                    self.render_turtle()
                 if command[0] == "right":
+                    # Would be nice for this to be animated!
                     angle = int(command[1])
                     self.orientation = self.orientation + angle
+                    print "R"
+                    self.render_turtle()
+                if command[0] == "bigger":
+                    self.curr_scale += 1
+                    self.render_turtle()
+                if command[0] == "smaller":
+                    self.curr_scale -= 1
+                    if self.curr_scale < 1:
+                        self.curr_scale = 1
+                    self.render_turtle()
+                if command[0] == "spin":
+                    # Would be nice for this to be animated!
+                    direction = 1
+                    try:
+                        count = int(command[1])
+                    except IndexError:
+                        count = 1
+                    except ValueError:
+                        if command[1] == "left":
+                            direction = -1
+                        try:
+                            count = int(command[2])
+                        except IndexError:
+                            count = 1
+                    for i in range(count):
+                        for _ in range(20):
+                            self.orientation = self.orientation + direction*18
+                            self.render_turtle()
+                            yield 1
+                    self.render_turtle()
+                yield 1
 
 class DrawingCanvas(PygameComponent):
     background = 0x820046
@@ -228,6 +273,7 @@ class Memory(Axon.Component.component):
         "outbox",
         "signal",
         "toconsole",
+        "recurse",
     ]
     recording = False
     def __init__(self, **argd):
@@ -239,6 +285,7 @@ class Memory(Axon.Component.component):
             "to": self.start_recording,
             "end": self.stop_recording,
         }
+        self.link((self, "recurse"), (self, "inbox"))
 
     def sleep(self):
         while not self.anyReady():
@@ -261,7 +308,8 @@ class Memory(Axon.Component.component):
     def doCommand(self,d):
         if d[0] in self.notes:
             for command in self.notes[d[0]]:
-                self.send(command, "outbox")
+#                self.send(command, "outbox")
+                self.send(command, "recurse")
         else:
             self.send(d, "outbox")
 
