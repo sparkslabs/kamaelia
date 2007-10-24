@@ -139,15 +139,9 @@ class Turtle(PygameComponent):
     pos = [285,325]
     logical_pos = (0,0)
     turtle = (
-            ((-50, -50), (50, -50)),
-            (( 50, -50), (50,  50)),
-            (( 50,  50),(-50,  50)),
-            ((-50,  50),(-50, -50)),
-    )
-    turtle = (
-            ((0, -50), (50, 50)),
-            ((50, 50), (-50, 50)),
-            ((-50, 50),( 0, -50)),
+            ((0, -5), (5, 5)),
+            ((5, 5), (-5, 5)),
+            ((-5, 5),( 0,-5)),
     )
     orientation = 0
 
@@ -180,11 +174,13 @@ class Turtle(PygameComponent):
                 if command[0] == "forward":
                     distance = int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
-                    self.send("DELTA:"+repr(delta), "outbox")
+                    self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
+                    self.send("POS" + repr(self.pos), "outbox")
                 if command[0] == "back":
                     distance = -int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
-                    self.send("DELTA:"+repr(delta), "outbox")
+                    self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
+                    self.send("POS" + repr(self.pos), "outbox")
                 if command[0] == "left":
                     angle = int(command[1])
                     self.orientation = self.orientation - angle
@@ -299,7 +295,7 @@ if __name__ == '__main__':
     Backplane("RAWINPUT").activate()
     Backplane("PARSEDINPUT").activate()
     Backplane("DISPLAYCONSOLE").activate()
-
+    Backplane("TURTLEPOS").activate()
 
     Image(image="kamaelia_logo.png",
           bgcolour=(255,255,255),
@@ -339,6 +335,11 @@ if __name__ == '__main__':
     Pipeline(
         SubscribeTo("PARSEDINPUT"),
         Turtle(),
+        PublishTo("TURTLEPOS"),
+    ).activate()
+
+    Pipeline(
+        SubscribeTo("TURTLEPOS"),
         PublishTo("DISPLAYCONSOLE"),
     ).activate()
 
