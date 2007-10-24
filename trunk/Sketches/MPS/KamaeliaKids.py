@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-##
-## (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
-##     All Rights Reserved.
-##
+#
+# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
 import Axon
 import pygame
 from Axon.Ipc import WaitComplete
@@ -128,7 +128,69 @@ class PygameComponent(Axon.Component.component):
                     if handler(event):
                         break
 
+from math import *
+class Turtle(PygameComponent):
+    transparency = 0xffffff
+    background = 0xffffff
+    surfacesize = (570, 650)
+    surfaceposition=(430,90)
+    colour = (0,0,0)
+    width = 10
+    pos = [285,325]
+    logical_pos = (0,0)
+    turtle = (
+            ((-50, -50), (50, -50)),
+            (( 50, -50), (50,  50)),
+            (( 50,  50),(-50,  50)),
+            ((-50,  50),(-50, -50)),
+    )
+    turtle = (
+            ((0, -50), (50, 50)),
+            ((50, 50), (-50, 50)),
+            ((-50, 50),( 0, -50)),
+    )
+    orientation = 0
 
+    def rotate(self,pos):
+        return (pos[0] * cos( (-pi*self.orientation)/180))+(pos[1] * sin( (-pi*self.orientation)/180)) , \
+               (-pos[0] * sin( (-pi*self.orientation)/180))+(pos[1] * cos( (-pi*self.orientation)/180))
+
+    def translate(self, pos):
+        return (self.pos[0]+pos[0], self.pos[1]+pos[1])
+
+    def render_turtle(self):
+        for S,E in self.turtle:
+            pygame.draw.line(self.display, self.colour,
+                            self.translate(self.rotate(S)),
+                            self.translate(self.rotate(E)),
+                            self.width)
+        self.send(self.pos, "outbox")
+
+    def main(self):
+        yield self.doRequestDisplay()
+        self.clearDisplay()
+        self.render_turtle()
+        self.flip()
+        yield 1
+        tlast = self.scheduler.time
+        while 1:
+            yield 1
+            while self.dataReady("inbox"):
+                command = self.recv("inbox")
+                if command[0] == "forward":
+                    distance = int(command[1])
+                    delta = [-x for x in self.rotate( (0,distance)) ]
+                    self.send("DELTA:"+repr(delta), "outbox")
+                if command[0] == "back":
+                    distance = -int(command[1])
+                    delta = [-x for x in self.rotate( (0,distance)) ]
+                    self.send("DELTA:"+repr(delta), "outbox")
+                if command[0] == "left":
+                    angle = int(command[1])
+                    self.orientation = self.orientation - angle
+                if command[0] == "right":
+                    angle = int(command[1])
+                    self.orientation = self.orientation + angle
 
 class DrawingCanvas(PygameComponent):
     background = 0x820046
@@ -146,7 +208,7 @@ class DrawingCanvas(PygameComponent):
         """Main loop."""
         yield self.doRequestDisplay()
         self.redraw()
-        pygame.display.toggle_fullscreen() # ICK ICK ICK, but looks pwetty
+#        pygame.display.toggle_fullscreen() # ICK ICK ICK, but looks pwetty
         yield 1
         while 1:
             while not self.anyReady():
@@ -164,12 +226,12 @@ class DrawingCanvas(PygameComponent):
                 if self.dirty:
                     self.flip()
                 yield 1
-                
+
 class Memory(Axon.Component.component):
     Outboxes = [
         "outbox",
         "signal",
-        "toconsole",   
+        "toconsole",
     ]
     recording = False
     def __init__(self, **argd):
@@ -181,7 +243,7 @@ class Memory(Axon.Component.component):
             "to": self.start_recording,
             "end": self.stop_recording,
         }
-        
+
     def sleep(self):
         while not self.anyReady():
             self.pause()
@@ -232,7 +294,7 @@ class Memory(Axon.Component.component):
         print "Noting ", self.noting, repr(d)
         self.notes[self.noting].append(d)
         print self.notes
-            
+
 if __name__ == '__main__':
     Backplane("RAWINPUT").activate()
     Backplane("PARSEDINPUT").activate()
@@ -245,7 +307,7 @@ if __name__ == '__main__':
           size = (64,64),
           maxpect = (64,64),
           ).activate()
-    
+
     Graphline(
         RAW = SubscribeTo("RAWINPUT"),
         PARSER = text_to_tokenlists(),
@@ -259,22 +321,26 @@ if __name__ == '__main__':
             ("RAW","signal"): ("PARSER","control"),
             ("PARSER","signal"): ("MEM","control"),
             ("MEM","signal"): ("PARSED","control"),
-            
         }
     ).activate()
 
-    
     Pipeline(
         SubscribeTo("RAWINPUT"),
         PublishTo("DISPLAYCONSOLE"),
     ).activate()
-    
+
     Pipeline(
         SubscribeTo("PARSEDINPUT"),
         DrawingCanvas(background = 0xD0D0D0, # Grey!
                       surfacesize = (570, 650),
                       surfaceposition=(430,90)),
         ).activate()
+
+    Pipeline(
+        SubscribeTo("PARSEDINPUT"),
+        Turtle(),
+        PublishTo("DISPLAYCONSOLE"),
+    ).activate()
 
     Pipeline(Textbox(position=(20, 640),
                      text_height=36,
