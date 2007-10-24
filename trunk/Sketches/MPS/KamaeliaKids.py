@@ -182,7 +182,7 @@ class Turtle(PygameComponent):
                     distance = int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
-                    self.send("POS" + repr(self.pos), "outbox")
+                    self.send(self.pos, "outbox")
                     print "XY"
                     self.render_turtle()
                 if command[0] == "back":
@@ -190,7 +190,7 @@ class Turtle(PygameComponent):
                     distance = -int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
-                    self.send("POS" + repr(self.pos), "outbox")
+                    self.send(self.pos, "outbox")
                     self.render_turtle()
                 if command[0] == "left":
                     # Would be nice for this to be animated!
@@ -249,7 +249,7 @@ class DrawingCanvas(PygameComponent):
         """Main loop."""
         yield self.doRequestDisplay()
         self.redraw()
-#        pygame.display.toggle_fullscreen() # ICK ICK ICK, but looks pwetty
+        pygame.display.toggle_fullscreen() # ICK ICK ICK, but looks pwetty
         yield 1
         while 1:
             while not self.anyReady():
@@ -340,6 +340,8 @@ class Memory(Axon.Component.component):
         print self.notes
 
 if __name__ == '__main__':
+    from Kamaelia.Util.PureTransformer import PureTransformer as Transform
+
     Backplane("RAWINPUT").activate()
     Backplane("PARSEDINPUT").activate()
     Backplane("DISPLAYCONSOLE").activate()
@@ -383,6 +385,7 @@ if __name__ == '__main__':
     Pipeline(
         SubscribeTo("PARSEDINPUT"),
         Turtle(),
+        Transform(lambda x: (int(x[0]),int(x[1]))),
         PublishTo("TURTLEPOS"),
     ).activate()
 
