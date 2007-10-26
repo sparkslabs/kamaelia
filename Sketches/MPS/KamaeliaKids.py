@@ -424,7 +424,6 @@ if __name__ == '__main__':
     Backplane("RAWINPUT").activate()
     Backplane("PARSEDINPUT").activate()
     Backplane("DISPLAYCONSOLE").activate()
-    Backplane("TURTLEPOS").activate()
 
     Image(image="kamaelia_logo.png",
           bgcolour=(255,255,255),
@@ -433,26 +432,13 @@ if __name__ == '__main__':
           maxpect = (64,64),
           ).activate()
 
-    Graphline(
-        RAW = SubscribeTo("RAWINPUT"),
-        PARSER = text_to_tokenlists(),
-        MEM = Memory(),
-        REP = Repeater(),
-        PARSED = PublishTo("PARSEDINPUT"),
-        linkages = {
-            ("RAW","outbox"): ("PARSER","inbox"),
-            ("PARSER","outbox"): ("MEM","inbox"),
-            ("MEM","outbox"): ("REP","inbox"),
-            ("REP","outbox"): ("PARSED","inbox"),
-
-            ("RAW","signal"): ("PARSER","control"),
-            ("PARSER","signal"): ("MEM","control"),
-            ("MEM","signal"): ("REP","control"),
-            ("REP","signal"): ("PARSED","control"),
-        }
+    Pipeline(
+        SubscribeTo("RAWINPUT"),
+        text_to_tokenlists(),
+        Memory(),    # These two can be mutually exclusive at times
+        Repeater(),  # Which is interesting. Probably want a TPipe with some interesting control.
+        PublishTo("PARSEDINPUT"),
     ).activate()
-
-
 
     Pipeline(
         SubscribeTo("RAWINPUT"),
@@ -469,16 +455,6 @@ if __name__ == '__main__':
     Pipeline(
         SubscribeTo("PARSEDINPUT"),
         Turtle(),
-        PublishTo("TURTLEPOS"),
-    ).activate()
-
-    Pipeline(
-        SubscribeTo("TURTLEPOS"),
-        PublishTo("DISPLAYCONSOLE"),
-    ).activate()
-
-    Pipeline(
-        SubscribeTo("TURTLEPOS"),
         PublishTo("PARSEDINPUT"),
     ).activate()
 
