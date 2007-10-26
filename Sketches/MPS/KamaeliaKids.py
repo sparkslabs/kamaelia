@@ -135,6 +135,7 @@ class Turtle(PygameComponent):
     surfacesize = (570, 650)
     surfaceposition=(430,90)
     colour = (0,0,0)
+    turtle_colour = (255,0,0)
     width = 2
     pos = [285,325]
     logical_pos = (0,0)
@@ -158,23 +159,25 @@ class Turtle(PygameComponent):
 
     def render_turtle(self):
         self.clearDisplay()
-        for S,E in self.turtle:
-            pygame.draw.line(self.display, self.colour,
-                            self.translate(self.rotate(self.scale(S))),
-                            self.translate(self.rotate(self.scale(E))),
-                            self.width)
+        mapped = [ self.translate(self.rotate(self.scale(S))) for S,E in self.turtle ]
+        print mapped
+        pygame.draw.polygon(self.display, self.turtle_colour, mapped)
+        pygame.draw.polygon(self.display, self.turtle_colour, mapped, self.width)
         self.send(self.pos, "outbox")
         self.flip()
 
     def main(self):
         yield self.doRequestDisplay()
         self.render_turtle()
+        action = "moveto"
+        self.send((action, int(self.pos[0]),int(self.pos[1])), "outbox")
         yield 1
         tlast = self.scheduler.time
         target_pos = self.pos
         target_orientation = self.orientation
         while 1:
             yield 1
+            action = "drawto"
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command[0] == "forward":
@@ -182,7 +185,7 @@ class Turtle(PygameComponent):
                     distance = int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
-                    self.send(self.pos, "outbox")
+                    self.send((action, int(self.pos[0]),int(self.pos[1])), "outbox")
                     print "XY"
                     self.render_turtle()
                 if command[0] == "back":
@@ -190,7 +193,7 @@ class Turtle(PygameComponent):
                     distance = -int(command[1])
                     delta = [-x for x in self.rotate( (0,distance)) ]
                     self.pos  = self.pos[0]+delta[0], self.pos[1]+delta[1]
-                    self.send(self.pos, "outbox")
+                    self.send((action, int(self.pos[0]),int(self.pos[1])), "outbox")
                     self.render_turtle()
                 if command[0] == "left":
                     # Would be nice for this to be animated!
@@ -211,6 +214,14 @@ class Turtle(PygameComponent):
                     if self.curr_scale < 1:
                         self.curr_scale = 1
                     self.render_turtle()
+                if command[0] == "reset":
+                    self.curr_scale = self.__class__.curr_scale 
+                    self.pos = self.__class__.pos
+                    self.orientation = self.__class__.orientation
+                    self.render_turtle()
+                    action = "moveto"
+                    self.send((action, int(self.pos[0]),int(self.pos[1])), "outbox")
+                    action = "drawto"
                 if command[0] == "spin":
                     # Would be nice for this to be animated!
                     direction = 1
@@ -232,13 +243,14 @@ class Turtle(PygameComponent):
                             yield 1
                     self.render_turtle()
                 yield 1
+            yield 1
 
 class DrawingCanvas(PygameComponent):
     background = 0x820046
     surfacesize = (400, 610)
     surfaceposition=(550,20)
-    x = 200
-    y = 200
+    x = 0
+    y = 0
     orientation = 0
     width = 1
     colour = (0,0,0)
@@ -249,7 +261,6 @@ class DrawingCanvas(PygameComponent):
         """Main loop."""
         yield self.doRequestDisplay()
         self.redraw()
-        pygame.display.toggle_fullscreen() # ICK ICK ICK, but looks pwetty
         yield 1
         while 1:
             while not self.anyReady():
@@ -264,6 +275,7 @@ class DrawingCanvas(PygameComponent):
                 for command,handler in Actions.actions:
                     if d[0] == command:
                         handler(self, *d[1:])
+                        yield 1
                 if self.dirty:
                     self.flip()
                 yield 1
@@ -308,7 +320,6 @@ class Memory(Axon.Component.component):
     def doCommand(self,d):
         if d[0] in self.notes:
             for command in self.notes[d[0]]:
-#                self.send(command, "outbox")
                 self.send(command, "recurse")
         else:
             self.send(d, "outbox")
@@ -339,6 +350,74 @@ class Memory(Axon.Component.component):
         self.notes[self.noting].append(d)
         print self.notes
 
+class Repeater(Axon.Component.component):
+    Outboxes = [
+        "outbox",
+        "signal",
+        "toconsole",
+    ]
+    recording = False
+    def __init__(self, **argd):
+        super(Repeater, self).__init__(**argd)
+        self.noting = None
+        self.notes = {}
+        self.contextactions = [self.doCommand]
+        self.commands = {
+            "repeat": self.start_recording,
+            "done": self.stop_recording,
+        }
+
+    def sleep(self):
+        while not self.anyReady():
+            self.pause()
+            yield 1
+
+    def main(self):
+        while 1:
+            yield WaitComplete(self.sleep())
+            for d in self.Inbox("inbox"):
+                command = None
+                try:
+                    command = self.commands.get(d[0])
+                except KeyError:
+                    pass
+                if command:
+                    command(d[1:])
+                else:
+                    (self.contextactions[-1])(d)
+
+    def doCommand(self,d):
+        if d[0] in self.notes:
+            for command in self.notes[d[0]]:
+#                self.send(command, "outbox")
+                self.send(command, "recurse")
+        else:
+            self.send(d, "outbox")
+
+    def start_recording(self, d):
+        if len(d) != 1:
+            return
+        print "recording", d[0]
+        self.count = int(d[0])
+        self.seq = []
+        self.contextactions.append(self.note)
+        self.recording = True
+
+    def note(self, d):
+        print "NOTING:",
+        self.seq.append(d)
+        print self.seq
+
+    def stop_recording(self, d):
+        self.noting = None
+        self.recording = False
+        self.contextactions.pop()
+        for count in range(self.count):
+            for command in self.seq:
+                self.send(command, "outbox")
+
+        print self.notes
+
 if __name__ == '__main__':
     from Kamaelia.Util.PureTransformer import PureTransformer as Transform
 
@@ -358,17 +437,22 @@ if __name__ == '__main__':
         RAW = SubscribeTo("RAWINPUT"),
         PARSER = text_to_tokenlists(),
         MEM = Memory(),
+        REP = Repeater(),
         PARSED = PublishTo("PARSEDINPUT"),
         linkages = {
             ("RAW","outbox"): ("PARSER","inbox"),
             ("PARSER","outbox"): ("MEM","inbox"),
-            ("MEM","outbox"): ("PARSED","inbox"),
+            ("MEM","outbox"): ("REP","inbox"),
+            ("REP","outbox"): ("PARSED","inbox"),
 
             ("RAW","signal"): ("PARSER","control"),
             ("PARSER","signal"): ("MEM","control"),
-            ("MEM","signal"): ("PARSED","control"),
+            ("MEM","signal"): ("REP","control"),
+            ("REP","signal"): ("PARSED","control"),
         }
     ).activate()
+
+
 
     Pipeline(
         SubscribeTo("RAWINPUT"),
@@ -385,13 +469,17 @@ if __name__ == '__main__':
     Pipeline(
         SubscribeTo("PARSEDINPUT"),
         Turtle(),
-        Transform(lambda x: (int(x[0]),int(x[1]))),
         PublishTo("TURTLEPOS"),
     ).activate()
 
     Pipeline(
         SubscribeTo("TURTLEPOS"),
         PublishTo("DISPLAYCONSOLE"),
+    ).activate()
+
+    Pipeline(
+        SubscribeTo("TURTLEPOS"),
+        PublishTo("PARSEDINPUT"),
     ).activate()
 
     Pipeline(Textbox(position=(20, 640),
