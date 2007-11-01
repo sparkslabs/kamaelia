@@ -9,12 +9,12 @@ class STM(object):
     def __init__(self, filename, **argd):
         super(STM, self).__init__(**argd)
         self.filename = filename
-        self.dbm = shelve.open(filename, "c")
+#        self.dbm = shelve.open(filename, "c")
+        self.dbm = {}
 
     def zap(self):
         for k in self.dbm.keys():
             del self.dbm[k]
-
 
     def store(self, key, value, version=0):
         try:
@@ -23,7 +23,7 @@ class STM(object):
            if oldversion == version:
                if self.debugging: print "OK, no updates since you"
                version = version +1
-               self.dbm[key] = (value, version)
+               self.dbm[key] = [value, version]
                if self.debugging: print "added..."
                return version
            else:
@@ -31,69 +31,78 @@ class STM(object):
            
         except KeyError:
           version = 1
-          self.dbm[key] = (value, version)
+          self.dbm[key] = [value, version]
           if self.debugging: print "added..."
           return version
     
     def get(self, key):
         return self.dbm[key]
 
-        
+#
+# A *little* kludgey, but look at ClientOne/Rest for how this is used which is quite nice.
+#
+VALUE = 0
+VERSION = 1
+
+class STM_User(object):
+    def __init__(self, stm):
+        super(STM_User, self).__init__()
+        self.stm = stm
+        self.local = {}
+    def update(self, key, action,*args):
+        success = False
+        while not success:
+            try:
+                self.local[key][VALUE] = action(self.local[key][VALUE], *args); yield 1
+                self.local[key][VERSION] = self.stm.store(key, self.local[key][VALUE], self.local[key][VERSION]) ; yield 1
+                success = True
+            except ConcurrentUpdate, e:
+                self.local[key] = [e[0],e[1]]
+    def retrieve(self, key):
+        self.local[key] = X.get(key);
+        return self.local[key][0]
+
+    def store(self, key, value):
+        try:
+            version = self.local[key][VERSION]
+        except KeyError:
+            self.local[key] = [ 0,0]
+            version = 0
+        self.local[key][VERSION] = self.stm.store(key, value, version)
+        self.local[key][VALUE] = value
+
+    def main(self):
+        yield 1
+
+class ClientOne(STM_User):
+    def main(self):
+        self.store("Balance", 0)
+        print "STARTING",self.retrieve("Balance") ;  yield 1
+        for i in self.update("Balance", lambda x: x+10): yield 1
+        for i in self.update("Balance", lambda x: x+20): yield 1
+        for i in self.update("Balance", lambda x: x+30): yield 1
+
+class ClientRest(STM_User):
+    def main(self):
+        print "STARTING",self.retrieve("Balance") ;  yield 1
+        for i in self.update("Balance", lambda x: x+10): yield 1
+        for i in self.update("Balance", lambda x: x+20): yield 1
+        for i in self.update("Balance", lambda x: x+30): yield 1
+
 X = STM("mystate",zap=True)
 X.zap()
 
-version = X.store("Balance", 0) # Create version 1
-balance,version = X.get("Balance")
-print "BALANCE", balance
-
-def clientone(X):
-    balance,version = X.get("Balance") ; yield 1
-
-    success = False
-    while not success:
+L = [ [ ClientOne(X).main() ], [ ClientRest(X).main() ], [ ClientRest(X).main() ]]
+NL = []
+while len(L)>0:
+    for G in L:
         try:
-            balance = balance + 10 ; yield 1
-            version = X.store("Balance", balance, version) ; yield 1
-            success = True
-        except ConcurrentUpdate, e:
-            balance, version = e
-
-    success = False
-    while not success:
-        try:
-            balance = balance + 20 ; yield 1
-            version = X.store("Balance", balance, version) ; yield 1
-            success = True
-        except ConcurrentUpdate, e:
-            balance, version = e
-
-    success = False
-    while not success:
-        try:
-            balance = balance + 30 ; yield 1
-            version = X.store("Balance", balance, version) ; yield 1
-            success = True
-        except ConcurrentUpdate, e:
-            balance, version = e
-
-
-if 1:
-    L = [clientone(X), clientone(X),clientone(X),clientone(X)]
+            G[0].next()
+            NL.append(G)
+        except StopIteration:
+            pass
+    L = NL
     NL = []
-    while len(L)>0:
-        for G in L:
-            try:
-                G.next()
-                NL.append(G)
-            except StopIteration:
-                pass
-        L = NL
-        NL = []
 
 balance,version = X.get("Balance")
 print "BALANCE", balance
-
-
-
-
-
