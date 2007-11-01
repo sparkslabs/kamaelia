@@ -162,6 +162,9 @@ class TextDisplayer(component):
                 line = str(self.recv('inbox'))
                 self.update(line)
 
+            if not self.anyReady():
+                self.pause()
+
     def update(self, text):
         """Updates text to the bottom of the screen while scrolling old text
         upwards. Delegates most of the work to updateLine"""
@@ -246,10 +249,10 @@ class Textbox(TextDisplayer):
                    }
                   , '_pygame')
         
+        string_buffer = self.string_buffer
+        self.setText(string_buffer + '|')
         while not self.shutdown():
             yield 1
-            string_buffer = self.string_buffer
-            self.setText(string_buffer + '|')
             while self.dataReady('_events'):
                 for event in self.recv('_events'):
                     char = event.unicode
@@ -264,6 +267,9 @@ class Textbox(TextDisplayer):
                         string_buffer += char
                     self.setText(string_buffer + '|')
                     self.string_buffer = string_buffer
+
+            if not self.anyReady():
+                self.pause()
 
 __kamaelia_components__ = (TextDisplayer, Textbox, )
 
