@@ -145,17 +145,17 @@ class Inputs(object):
     def developers_ashtml(self):
         R = []
         for D in self.developers:
-            R.append("<div class='dev'>"+D+"</div>")
+            R.append("<span class='dev'>"+D+"</span>")
         return "\n".join(R)
     def users_ashtml(self):
         R = []
         for D in self.users:
-            R.append("<div class='user'>"+D+"</div>")
+            R.append("<span class='user'>"+D+"</span>")
         return "\n".join(R)
     def interested_ashtml(self):
         R = []
         for D in self.users:
-            R.append("<div class='interested'>"+D+"</div>")
+            R.append("<span class='interested'>"+D+"</span>")
         return "\n".join(R)
     def factors_ashtml(self):
         if self.influencingfactors == []:
@@ -182,6 +182,7 @@ class Inputs(object):
         X["requirements"] = "<div class='label'>Requirements</div> <div class='requirements'>" + self.reqs_ashtml() + "</div>"
         return """
 <div class="Inputs">
+<h2 id="input_heading">Inputs</h2>
 %(tasksponsor)s
 %(taskowner)s
 %(developers)s
@@ -224,6 +225,7 @@ class Descripton(object):
         X["benefits"] = "<div class='label'>Benefits</div> <div class='benefits'>" + self.benefits_ashtml() +"</div>"
         return """
 <div class="Description">
+<h2 id="description_heading">Description</h2>
 %(goal)s
 %(result)s
 %(context)s
@@ -263,17 +265,17 @@ class Dashboard(object):
         }
     def ashtml(self):
         X = self.asdict()
-        X["status"] = "<div class='label'>Status</div> <div class='status'>" + X["status"] +"</div>"
-        X["status_text"] = "<div class='status_text'>" + X["status_text"] +"</div>"
-        X["currentdevelopers"] = "<div class='label'>Current Developers</div> <div class='currentdevelopers'>" + X["currentdevelopers"] +"</div>"
-        X["devlocation"] = "<div class='label'>Dev Location</div> <div class='devlocation'>" + X["devlocation"] +"</div>"
-        X["startdate"] = "<div class='label'>Started</div> <div class='startdate'>" + X["startdate"] +"</div>"
-        X["milestonedate"] = "<div class='label'>Major Milestone Date</div> <div class='milestonedate'>" + X["milestonedate"] +"</div>"
-        X["milestonetag"] = "<div class='milestonetag'>" + X["milestonetag"] +"</div>"
-        X["expectedenddate"] = "<div class='label'>Expected End</div> <div class='expectedenddate'>" + X["expectedenddate"] +"</div>"
-        X["enddate"] = "<div class='label'>Ended</div> <div class='enddate'>" + X["enddate"] +"</div>"
-        X["dateupdated"] = "<div class='label'>Last updated</div> <div class='dateupdated'>" + X["dateupdated"] +"</div>"
-        X["estimatedeffortsofar"] = "<div class='label'>Effort (est, days)</div> <div class='estimatedeffortsofar'>" + X["estimatedeffortsofar"] +"</div>"
+        X["status"] = "<div class='dashitem'><span class='label'>Status</span> <span class='status'>" + X["status"] +"</span></div>"
+        X["status_text"] = "<div class='dashitem'><span class='status_text'>" + X["status_text"] +"</span></div>"
+        X["currentdevelopers"] = "<div class='dashitem'><span class='label'>Current Developers</span> <span class='currentdevelopers'>" + X["currentdevelopers"] +"</span></div>"
+        X["devlocation"] = "<div class='dashitem'><span class='label'>Dev Location</span> <span class='devlocation'>" + X["devlocation"] +"</span></div>"
+        X["startdate"] = "<div class='dashitem'><span class='label'>Started</span> <span class='startdate'>" + X["startdate"] +"</span></div>"
+        X["milestonedate"] = "<div class='dashitem'><span class='label'>Major Milestone Date</span> <span class='milestonedate'>" + X["milestonedate"] +"</span></div>"
+        X["milestonetag"] = "<div class='dashitem'><span class='milestonetag'>" + X["milestonetag"] +"</span></div>"
+        X["expectedenddate"] = "<div class='dashitem'><span class='label'>Expected End</span> <span class='expectedenddate'>" + X["expectedenddate"] +"</span></div>"
+        X["enddate"] = "<div class='dashitem'><span class='label'>Ended</span> <span class='enddate'>" + X["enddate"] +"</span></div>"
+        X["dateupdated"] = "<div class='dashitem'><span class='label'>Last updated</span> <span class='dateupdated'>" + X["dateupdated"] +"</span></div>"
+        X["estimatedeffortsofar"] = "<div class='dashitem'><span class='label'>Effort (est, days)</span> <span class='estimatedeffortsofar'>" + X["estimatedeffortsofar"] +"</span></div>"
         return """
 <div class="Dashboard">
 %(status)s
@@ -289,7 +291,6 @@ class Dashboard(object):
 %(estimatedeffortsofar)s
 </div>
 """ % X
-
 
 # -------------------------- TO BE DIVVED ----------------------------------------------------
 class Update(object):
@@ -369,8 +370,12 @@ class Outputs(object):
         X = self.asdict()
         return """
 <div class="Outputs">
+<h2 id="outputs_heading">Outputs</h2>
+<h3 id="expected_heading">Expected</h3>
 %(expected)s
+<h3 id="expected_heading">Actual</h3>
 %(actual)s
+<h3 id="arisingpossibilities_heading">Realistic possibilities arising as a result of activity on this task</h3>
 %(arisingpossibilities)s
 </div>
 """ % X
@@ -395,17 +400,20 @@ class Relatedtasks(object):
 #        X["relatedtasks"] = X.ashtml()
         return """
 <div class="Relatedtasks">
+<h2 id="relatedtasks_heading">Related Tasks</h2>
+<h3 id="tasksenablingthis_heading">Tasks that directly enable this task (dependencies)</h3>
 %(tasksenablingthis)s
+<h3 id="subtasks_heading">Sub Tasks</h3>
 %(subtasks)s
+<h3 id="cotasks_heading">Co-Tasks</h3>
 %(cotasks)s
 </div>
 """ % X
 
-
 class Task(object):
     def __init__(self, taskid):
         self.taskid =  taskid              # OK
-        self.name =  ""                    # OK
+        self.taskname=  ""                 # OK
         self.description = Descripton()    # OK
         self.dashboard = Dashboard()       # OK
         self.inputs = Inputs()             # OK
@@ -418,7 +426,7 @@ class Task(object):
     def asdict(self):
         return {
             "taskid" :  self.taskid,
-            "name" :  self.name,
+            "taskname" :  self.taskname,
             "description" : self.description.asdict(),
             "dashboard" : self.dashboard.asdict(),
             "inputs" : self.inputs.asdict(),
@@ -439,14 +447,17 @@ class Task(object):
 <div class="Task">
 <div class="taskheader">Task</div>
 <div class="taskid">%(taskid)s</div>
-<div class="name">%(name)s</div>
-%(description)s
+<h1 class="taskname">%(taskname)s</h1>
 %(dashboard)s
+%(description)s
 %(inputs)s
 %(outputs)s
 %(relatedtasks)s
+<h2 id="tasklog_heading">Task Log</h2>
 <div class="tasklog">%(tasklog)s</div>
+<h2 id="discussion_heading">Discussion</h2>
 <div class="discussion">%(discussion)s</div>
+<h2 id="consolidateddiscussion_heading">Consensus</h2>
 <div class="consolidateddiscussion">%(consolidateddiscussion)s</div>
 </div>
 """ % X
@@ -485,7 +496,7 @@ T.zap()
 
 task = T.new_task()
 
-task.name = "Translated Template"
+task.taskname = "Translated Template"
 task.description.goal = "Short one line of what the task is designed to achieve/create."
 task.description.result = "A practical, clear result of what will be possible as a result of achieving this task. This is best described in the case of a user story."
 task.description.context = "The context in which this task sits. Has this task any history? Is it the result of any previous tasks - either within the project or outside."
@@ -493,7 +504,7 @@ task.description.benefits.append( "What benefits will be gained by working on th
 task.description.benefits.append( "... and achieving its goals?")
 task.description.benefits.append("Speculative as well as certained/realistically expected benefits are valid here.")
 
-task.dashboard.status = "(Started|Running|Completed|Dropped|Stasis|Blocked)"
+task.dashboard.status = "(Started, Running, Completed, Dropped, Stasis, Blocked)"
 task.dashboard.status_text = "Associated single sentence (eg why blocked)"
 task.dashboard.currentdevelopers = "you!"
 task.dashboard.devlocation = "Normally /Sketches/ initially"
@@ -607,20 +618,50 @@ def dumptask(D,indent=0):
 
 # FIXME - currently this STILL outputs things like (...,...,...) and some lists.
 # Generally where there is a list or dict or tuple of base types
-print """<html>
+print "<html>"
+print """<head>
 <style>
-.label {
-    font-weight:bold;
+.taskheader { display: None; }
+.taskid { display: None; }
+.label { font-weight: bold; }
+h1 {
+    font-weight: bold;
+    font-size:20pt;
+}
+h2 {
+    font-weight: bold;
+    font-size:17pt;
+}
+.taskname {
+    margin-bottom: 1em;
+}
+.Dashboard {
+    width: 20em;
+    margin: 5px;
+    padding: 5px;
+    border-style: solid;
+    border-width: thin;
+    float: right;
+}
+.dashitem { clear:both; }
+
+.goal , .result , .context {
+    margin-bottom: 1em;
 }
 body {
-    font-size:10px;
+    font-size:10pt;
     font-family:verdana,arial,helvetica,sans-serif;
-    line-height:1.2;}
+    line-height:1.5;
+    padding: 0 30 0 40;
+}
 </style>
+</head>
 """
 print "<body>"
 print foo.ashtml()
 print "</body></html>"
 
+"""
+, .Dashboard.status_text, .Dashboard.currentdevelopers, .Dashboard.devlocation, .Dashboard.startdate, .Dashboard.milestonedate, .Dashboard.milestonetag, .Dashboard.expectedenddate, .Dashboard.enddate, .Dashboard.dateupdated, .Dashboard.estimatedeffortsofar """
 
 
