@@ -209,7 +209,7 @@ def task_app(environ, start_response):
 class WebServer(MoreComplexServer):
     routing = [
                ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(simple_app)) ],
-               ["/task", WSGIHandler("/wsgi", task_app) ],
+               ["/task", WSGIHandler("/task", task_app) ],
               ]
     protocol=HTTPProtocol()
     port=8080
