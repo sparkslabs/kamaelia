@@ -193,26 +193,105 @@ class Inputs(object):
 """ % X
 
 
+class Descripton(object):
+    def __init__(self):
+        self.goal = ""
+        self.result = ""
+        self.context = ""
+        self.benefits = []
+
+    def asdict(self):
+        return {
+            "goal": self.goal,
+            "result" : self.result,
+            "context" : self.context,
+            "benefits" : self.benefits,
+        }
+    def benefits_ashtml(self):
+        if self.benefits == []:
+            return ""
+        R = ["<ul>"]
+        for i in self.benefits:
+            R.append("\n<li class='benefit'>")
+            R.append(i)
+        R.append("\n</ul>")
+        return "".join(R)
+    def ashtml(self):
+        X = self.asdict()
+        X["goal"] = "<div class='goal'>" + X["goal"] +"</div>"
+        X["result"] = "<div class='result'>" + X["result"] +"</div>"
+        X["context"] = "<div class='context'>" + X["context"] +"</div>"
+        X["benefits"] = "<div class='label'>Benefits</div> <div class='benefits'>" + self.benefits_ashtml() +"</div>"
+        return """
+<div class="Description">
+%(goal)s
+%(result)s
+%(context)s
+%(benefits)s
+</div>
+""" % X
 
 
 
+class Dashboard(object):
+    def __init__(self):
+        self.status = ""
+        self.status_text = ""
+        self.currentdevelopers = ""
+        self.devlocation = ""
+        self.startdate = ""
+        self.milestonedate = ""
+        self.milestonetag = ""
+        self.expectedenddate = ""
+        self.enddate = ""
+        self.dateupdated = ""
+        self.estimatedeffortsofar = ""
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def asdict(self):
+        return {
+            "status": self.status,
+            "status_text": self.status_text,
+            "currentdevelopers": self.currentdevelopers,
+            "devlocation": self.devlocation,
+            "startdate": self.startdate,
+            "milestonedate": self.milestonedate,
+            "milestonetag": self.milestonetag,
+            "expectedenddate": self.expectedenddate,
+            "enddate": self.enddate,
+            "dateupdated": self.dateupdated,
+            "estimatedeffortsofar": self.estimatedeffortsofar,
+        }
+    def ashtml(self):
+        X = self.asdict()
+        X["status"] = "<div class='label'>Status</div> <div class='status'>" + X["status"] +"</div>"
+        X["status_text"] = "<div class='status_text'>" + X["status_text"] +"</div>"
+        X["currentdevelopers"] = "<div class='label'>Current Developers</div> <div class='currentdevelopers'>" + X["currentdevelopers"] +"</div>"
+        X["devlocation"] = "<div class='label'>Dev Location</div> <div class='devlocation'>" + X["devlocation"] +"</div>"
+        X["startdate"] = "<div class='label'>Started</div> <div class='startdate'>" + X["startdate"] +"</div>"
+        X["milestonedate"] = "<div class='label'>Major Milestone Date</div> <div class='milestonedate'>" + X["milestonedate"] +"</div>"
+        X["milestonetag"] = "<div class='milestonetag'>" + X["milestonetag"] +"</div>"
+        X["expectedenddate"] = "<div class='label'>Expected End</div> <div class='expectedenddate'>" + X["expectedenddate"] +"</div>"
+        X["enddate"] = "<div class='label'>Ended</div> <div class='enddate'>" + X["enddate"] +"</div>"
+        X["dateupdated"] = "<div class='label'>Last updated</div> <div class='dateupdated'>" + X["dateupdated"] +"</div>"
+        X["estimatedeffortsofar"] = "<div class='label'>Effort (est, days)</div> <div class='estimatedeffortsofar'>" + X["estimatedeffortsofar"] +"</div>"
+        return """
+<div class="Dashboard">
+%(status)s
+%(status_text)s
+%(currentdevelopers)s
+%(devlocation)s
+%(startdate)s
+%(milestonedate)s
+%(milestonetag)s
+%(expectedenddate)s
+%(enddate)s
+%(dateupdated)s
+%(estimatedeffortsofar)s
+</div>
+""" % X
 
 
 # -------------------------- TO BE DIVVED ----------------------------------------------------
-
 class Update(object):
     def __init__(self, what, who, when, timespent, output, statuschange):
         self.what = what
@@ -252,80 +331,6 @@ class Subtask(object):
             "tasktype" : self.tasktype,
             "what" : self.what,
         }
-
-#def Subtask(tasktype, what):
-#    return [ tasktype, what ]
-
-class Dashboard(object):
-    def __init__(self):
-        self.status = ""
-        self.status_text = ""
-        self.currentdevelopers = ""
-        self.devlocation = ""
-        self.startdate = ""
-        self.milestonedate = ""
-        self.milestonetag = ""
-        self.expectedenddate = ""
-        self.enddate = ""
-        self.dateupdated = ""
-        self.estimatedeffortsofar = ""
-
-    def asdict(self):
-        return {
-            "status": self.status,
-            "status_text": self.status_text,
-            "currentdevelopers": self.currentdevelopers,
-            "devlocation": self.devlocation,
-            "startdate": self.startdate,
-            "milestonedate": self.milestonedate,
-            "milestonetag": self.milestonetag,
-            "expectedenddate": self.expectedenddate,
-            "enddate": self.enddate,
-            "dateupdated": self.dateupdated,
-            "estimatedeffortsofar": self.estimatedeffortsofar,
-        }
-    def ashtml(self):
-        X = self.asdict()
-        return """
-<div class="Dashboard">
-%(status)s
-%(status_text)s
-%(currentdevelopers)s
-%(devlocation)s
-%(startdate)s
-%(milestonedate)s
-%(milestonetag)s
-%(expectedenddate)s
-%(enddate)s
-%(dateupdated)s
-%(estimatedeffortsofar)s
-</div>
-""" % X
-
-class Descripton(object):
-    def __init__(self):
-        self.goal = ""
-        self.result = ""
-        self.context = ""
-        self.benefits = []
-
-    def asdict(self):
-        return {
-            "goal": self.goal,
-            "result" : self.result,
-            "context" : self.context,
-            "benefits" : self.benefits,
-        }
-    def ashtml(self):
-        X = self.asdict()
-        return """
-<div class="Description">
-%(goal)s
-%(result)s
-%(context)s
-%(benefits)s
-</div>
-""" % X
 
 
 class Output(object):
@@ -598,8 +603,20 @@ def dumptask(D,indent=0):
 
 # FIXME - currently this STILL outputs things like (...,...,...) and some lists.
 # Generally where there is a list or dict or tuple of base types
+print """<html>
+<style>
+.label {
+    font-weight:bold;
+}
+body {
+    font-size:10px;
+    font-family:verdana,arial,helvetica,sans-serif;
+    line-height:1.2;}
+</style>
+"""
+print "<body>"
 print foo.ashtml()
-
+print "</body></html>"
 
 
 
