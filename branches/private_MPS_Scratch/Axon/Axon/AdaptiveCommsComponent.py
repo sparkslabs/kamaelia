@@ -155,6 +155,7 @@ box name with a suffixed unique ID number until there is no longer any clash.
 
 """
 
+import sys
 from Component import component
 import idGen
 from Box import makeInbox, makeOutbox
@@ -194,6 +195,10 @@ class _AdaptiveCommsable(object):
       The inboxes and outboxes specified must exist.
       """
       "Provides a lookup service associating inboxes/outboxes & user information with a resource. Uses GIGO principle."
+      #sys.stderr.write("OHHHH We're in HERE???!!\n"); sys.stderr.flush()
+      # print "TRACKING", inboxes, outboxes, information
+      # print "USING", repr(resource)
+
       [ self.inboxes[x] for x in inboxes] # Force an assertion if any inbox does not exist
       [ self.outboxes[x] for x in outboxes] # Force an assertion if any inbox does not exist
       self._resourceStore[resource] = (inboxes, outboxes, information)
@@ -201,6 +206,7 @@ class _AdaptiveCommsable(object):
 
    def ceaseTrackingResource(self, resource):
       """Stop tracking a resource and release references to it"""
+      # print "CEASING TO TRACK RESOURCE", repr(resource)
       del self._resourceStore[resource]
 
    def retrieveTrackedResourceInformation(self, resource):
