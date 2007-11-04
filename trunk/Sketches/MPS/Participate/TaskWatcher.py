@@ -109,7 +109,7 @@ class Dashboard(object):
         self.dateupdated = ""
         self.estimatedeffortsofar = ""
 
-    def asdict(self):
+    def json(self):
         return {
             "status": self.status,
             "status_text": self.status_text,
@@ -124,7 +124,7 @@ class Dashboard(object):
             "estimatedeffortsofar": self.estimatedeffortsofar,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["status"] = "<div class='dashitem'><span class='label'>Status</span> <span class='status'>" + X["status"] +"</span></div>"
         X["status_text"] = "<div class='dashitem'><span class='status_text'>" + X["status_text"] +"</span></div>"
         X["currentdevelopers"] = "<div class='dashitem'><span class='label'>Current Developers</span> <span class='currentdevelopers'>" + X["currentdevelopers"] +"</span></div>"
@@ -159,7 +159,7 @@ class Description(object):
         self.context = ""
         self.benefits = []
 
-    def asdict(self):
+    def json(self):
         return {
             "goal": self.goal,
             "result" : self.result,
@@ -176,7 +176,7 @@ class Description(object):
         R.append("\n</ul>")
         return "".join(R)
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["goal"] = "<div class='goal'>" + X["goal"] +"</div>"
         X["result"] = "<div class='result'>" + X["result"] +"</div>"
         X["context"] = "<div class='context'>" + X["context"] +"</div>"
@@ -199,7 +199,7 @@ class Requirement(object):
         self.when = when
         self.by = by
         self.why = why
-    def asdict(self):
+    def json(self):
         return {
             "reqtype" : self.reqtype,
             "who" : self.who,
@@ -209,7 +209,7 @@ class Requirement(object):
             "why" : self.why,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["who"] = "<span class='who'>"+X["who"] +"</span>"
         X["what"] = "<span class='what'>"+ X["what"] +"</span>"
         if X["when"] != "":
@@ -230,7 +230,7 @@ class Inputs(object):
         self.interestedparties = []
         self.influencingfactors = []
         self.requirements = []
-    def asdict(self):
+    def json(self):
         return {
             "tasksponsor" : self.tasksponsor,
             "taskowner" : self.taskowner,
@@ -238,7 +238,7 @@ class Inputs(object):
             "users" : self.users,
             "interestedparties" : self.interestedparties,
             "influencingfactors" : self.influencingfactors,
-            "requirements" : [ x.asdict() for x in self.requirements],
+            "requirements" : [ x.json() for x in self.requirements],
         }
     def developers_ashtml(self):
         R = []
@@ -272,7 +272,7 @@ class Inputs(object):
         R.append("\n</ul>")
         return "".join(R)
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["tasksponsor"] = "<div class='label'>Sponsor</div> <ul class='sponsor'> <li>" + X["tasksponsor"] +"</ul>"
         X["taskowner"] = "<div class='label'>Owner</div>  <ul class='owner'><li>" + X["taskowner"] + "</ul>"
         X["developers"] = "<div class='label'>Developers</div> <ul class='developers'>" + self.developers_ashtml() + "</ul>"
@@ -299,14 +299,14 @@ class Output(object):
         self.output_type = output_type
         self.location = location
         self.description = description
-    def asdict(self):
+    def json(self):
         return {
             "output_type" : self.output_type,
             "location" : self.location,
             "description" : self.description,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         return """
 <div class="Output">
 <b>%(output_type)s</b>
@@ -321,10 +321,10 @@ class Outputs(object):
         self.expected = []
         self.actual = []
         self.arisingpossibilities = []
-    def asdict(self):
+    def json(self):
         return {
             "expected" : self.expected,
-            "actual" : [ x.asdict() for x in self.actual ],
+            "actual" : [ x.json() for x in self.actual ],
             "arisingpossibilities" : self.arisingpossibilities,
         }
     def expected_ashtml(self):
@@ -355,7 +355,7 @@ class Outputs(object):
         R.append("\n</ul>")
         return "".join(R)
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["expected"] = "<div class='expected'>" + self.expected_ashtml() +"</div>"
         X["actual"] = "<div class='actual'>" + self.actual_ashtml() +"</div>"
         X["arisingpossibilities"] = "<div class=''>" + self.arising_ashtml() +"</div>"
@@ -375,7 +375,7 @@ class Subtask(object):
     def __init__(self, tasktype, what ):
         self.tasktype = tasktype
         self.what = what
-    def asdict(self):
+    def json(self):
         return {
             "tasktype" : self.tasktype,
             "what" : self.what,
@@ -390,10 +390,10 @@ class Relatedtasks(object):
         self.tasksenablingthis = []
         self.subtasks = []
         self.cotasks = []
-    def asdict(self):
+    def json(self):
         return {
             "tasksenablingthis" : self.tasksenablingthis,
-            "subtasks" : [x.asdict() for x in self.subtasks],
+            "subtasks" : [x.json() for x in self.subtasks],
             "cotasks" : self.cotasks,
         }
     def subtasks_ashtml(self):
@@ -407,7 +407,7 @@ class Relatedtasks(object):
             elif i.tasktype == "microtask":
                 R.append(str(i.what))
             else:
-                R.append(repr(i.asdict()))
+                R.append(repr(i.json()))
         R.append("\n</ul>")
         return "".join(R)
 
@@ -430,7 +430,7 @@ class Relatedtasks(object):
         R.append("\n</ul>")
         return "".join(R)
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["tasksenablingthis"] = "<div class='tasksenablingthis'>" + self.tasksenablingthis_ashtml() +"</div>"
         X["subtasks"] = "<div class='subtasks'>" + self.subtasks_ashtml() +"</div>"
         X["cotasks"] = "<div class='cotasks'>" + self.cotasks_ashtml() +"</div>"
@@ -453,14 +453,14 @@ class Comment(object):
         self.who = who
         self.when = when
         self.what = what
-    def asdict(self):
+    def json(self):
         return {
             "who" : self.who,
             "when" : self.when,
             "what" : self.what,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         return "%(what)s<br>--<span class='commenter'>%(who)s</span>, <span class='commentdate'>%(when)s</span>\n" % X
 
 class Update(object):
@@ -471,7 +471,7 @@ class Update(object):
         self.timespent = timespent
         self.output = output
         self.statuschange = statuschange
-    def asdict(self):
+    def json(self):
         return {
             "what" : self.what,
             "who" : self.who,
@@ -481,7 +481,7 @@ class Update(object):
             "statuschange" : self.statuschange,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         if X["output"] != "":
             X["output"] = "Output: " + X["output"]
         if X["statuschange"] != "":
@@ -523,21 +523,21 @@ class Task(object):
             R.append("</div>\n")
         return "".join(R)
 
-    def asdict(self):
+    def json(self):
         return {
             "taskid" :  self.taskid,
             "taskname" :  self.taskname,
-            "description" : self.description.asdict(),
-            "dashboard" : self.dashboard.asdict(),
-            "inputs" : self.inputs.asdict(),
-            "outputs" : self.outputs.asdict(),
-            "relatedtasks" : self.relatedtasks.asdict(),
-            "tasklog" : [x.asdict() for x in self.tasklog],
-            "discussion" : [x.asdict() for x in self.discussion],
+            "description" : self.description.json(),
+            "dashboard" : self.dashboard.json(),
+            "inputs" : self.inputs.json(),
+            "outputs" : self.outputs.json(),
+            "relatedtasks" : self.relatedtasks.json(),
+            "tasklog" : [x.json() for x in self.tasklog],
+            "discussion" : [x.json() for x in self.discussion],
             "consolidateddiscussion" : self.consolidateddiscussion ,
         }
     def ashtml(self):
-        X = self.asdict()
+        X = self.json()
         X["description"] = self.description.ashtml()
         X["dashboard"] = self.dashboard.ashtml()
         X["inputs"] = self.inputs.ashtml()
@@ -672,7 +672,7 @@ task.relatedtasks.cotasks.append( 8 )
 task.relatedtasks.cotasks.append( 9 )
 task.relatedtasks.cotasks.append( 10 )
 
-# pprint.pprint ( task.asdict(), width=170 )
+# pprint.pprint ( task.json(), width=170 )
 
 T.store_task(task)
 T.close()
@@ -680,7 +680,7 @@ T.close()
 U = Tasks("taskfile")
 foo = U.get_task(1)
 # print "========================================================================================================="
-# pprint.pprint ( foo.asdict(), width=170 )
+# pprint.pprint ( foo.json(), width=170 )
 U.close()
 
 def dumptask(D,indent=0):
@@ -717,7 +717,7 @@ def dumptask(D,indent=0):
     print "TASK:"
     mydisplay(D,1)
 
-# dumptask(foo.asdict())
+# dumptask(foo.json())
 
 # FIXME - currently this STILL outputs things like (...,...,...) and some lists.
 # Generally where there is a list or dict or tuple of base types
@@ -769,8 +769,3 @@ body {
 print "<body>"
 print foo.ashtml()
 print "</body></html>"
-
-"""
-, .Dashboard.status_text, .Dashboard.currentdevelopers, .Dashboard.devlocation, .Dashboard.startdate, .Dashboard.milestonedate, .Dashboard.milestonetag, .Dashboard.expectedenddate, .Dashboard.enddate, .Dashboard.dateupdated, .Dashboard.estimatedeffortsofar """
-
-
