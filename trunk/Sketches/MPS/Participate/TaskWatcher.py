@@ -95,6 +95,124 @@ class _spec_Task(object):
     consolidateddiscussion = "string"
 
 # -- Concrete ------------------------------------------------
+
+class Requirement(object):
+    def __init__(self, reqtype, who, what, when="", by="", why=""):
+        self.reqtype = reqtype
+        self.who = who
+        self.what = what
+        self.when = when
+        self.by = by
+        self.why = why
+    def asdict(self):
+        return {
+            "reqtype" : self.reqtype,
+            "who" : self.who,
+            "what" : self.what,
+            "when" : self.when,
+            "by" : self.by,
+            "why" : self.why,
+        }
+    def ashtml(self):
+        return """<div class="requirement">
+            <div class="reqtype"> %(reqtype)s </div>
+            <div class="who"> %(who)s </div>
+            <div class="what"> %(what)s </div>
+            <div class="when"> %(when)s </div>
+            <div class="by"> %(by)s </div>
+            <div class="why"> %(why)s </div>
+        </div>""" % self.asdict()
+
+class Inputs(object):
+    def __init__(self):
+        self.tasksponsor = ""
+        self.taskowner = ""
+        self.developers = []
+        self.users = []
+        self.interestedparties = []
+        self.influencingfactors = []
+        self.requirements = []
+    def asdict(self):
+        return {
+            "tasksponsor" : self.tasksponsor,
+            "taskowner" : self.taskowner,
+            "developers" : self.developers,
+            "users" : self.users,
+            "interestedparties" : self.interestedparties,
+            "influencingfactors" : self.influencingfactors,
+            "requirements" : [ x.asdict() for x in self.requirements],
+        }
+    def developers_ashtml(self):
+        R = []
+        for D in self.developers:
+            R.append("<div class='dev'>"+D+"</div>")
+        return "\n".join(R)
+    def users_ashtml(self):
+        R = []
+        for D in self.users:
+            R.append("<div class='user'>"+D+"</div>")
+        return "\n".join(R)
+    def interested_ashtml(self):
+        R = []
+        for D in self.users:
+            R.append("<div class='interested'>"+D+"</div>")
+        return "\n".join(R)
+    def factors_ashtml(self):
+        if self.influencingfactors == []:
+            return ""
+        R = ["<ul>"]
+        for i in self.influencingfactors:
+            R.append("\n<li class='factor'>")
+            R.append(i)
+        R.append("\n</ul>")
+        return "".join(R)
+    def reqs_ashtml(self):
+        R = []
+        for req in self.requirements:
+            R.append(req.ashtml())
+        return "".join(R)
+    def ashtml(self):
+        X = self.asdict()
+        X["tasksponsor"] = "<div class='label'>Sponsor</div> <div class='sponsor'>" + X["tasksponsor"] +"</div>"
+        X["taskowner"] = "<div class='label'>Owner</div>  <div class='owner'>" + X["taskowner"] + "</div>"
+        X["developers"] = "<div class='label'>Developers</div> <div class='developers'>" + self.developers_ashtml() + "</div>"
+        X["users"] = "<div class='label'>Users</div> <div class='users'>" + self.users_ashtml() + "</div>"
+        X["interestedparties"] = "<div class='label'>Interested Parties</div> <div class='interestedparties'>" + self.interested_ashtml() + "</div>"
+        X["influencingfactors"] = "<div class='label'>Influencing Factors</div> <div class='factors'>" + self.factors_ashtml()+ "</div>"
+        X["requirements"] = "<div class='label'>Requirements</div> <div class='requirements'>" + self.reqs_ashtml() + "</div>"
+        return """
+<div class="Inputs">
+%(tasksponsor)s
+%(taskowner)s
+%(developers)s
+%(users)s
+%(interestedparties)s
+%(influencingfactors)s
+%(requirements)s
+</div>
+""" % X
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------- TO BE DIVVED ----------------------------------------------------
+
 class Update(object):
     def __init__(self, what, who, when, timespent, output, statuschange):
         self.what = what
@@ -153,6 +271,23 @@ class Dashboard(object):
             "dateupdated": self.dateupdated,
             "estimatedeffortsofar": self.estimatedeffortsofar,
         }
+    def ashtml(self):
+        X = self.asdict()
+        return """
+<div class="Dashboard">
+%(status)s
+%(status_text)s
+%(currentdevelopers)s
+%(devlocation)s
+%(startdate)s
+%(milestonedate)s
+%(milestonetag)s
+%(expectedenddate)s
+%(enddate)s
+%(dateupdated)s
+%(estimatedeffortsofar)s
+</div>
+""" % X
 
 class Descripton(object):
     def __init__(self):
@@ -168,44 +303,17 @@ class Descripton(object):
             "context" : self.context,
             "benefits" : self.benefits,
         }
+    def ashtml(self):
+        X = self.asdict()
+        return """
+<div class="Description">
+%(goal)s
+%(result)s
+%(context)s
+%(benefits)s
+</div>
+""" % X
 
-class Requirement(object):
-    def __init__(self, reqtype, who, what, when=None, by=None, why=None):
-        self.reqtype = reqtype
-        self.who = who
-        self.what = what
-        self.when = when
-        self.by = by
-        self.why = why
-    def asdict(self):
-        return {
-            "reqtype" : self.reqtype,
-            "who" : self.who,
-            "what" : self.what,
-            "when" : self.when,
-            "by" : self.by,
-            "why" : self.why,
-        }
-
-class Inputs(object):
-    def __init__(self):
-        self.tasksponsor = ""
-        self.taskowner = ""
-        self.developers = []
-        self.users = []
-        self.interestedparties = []
-        self.influencingfactors = []
-        self.requirements = []
-    def asdict(self):
-        return {
-            "tasksponsor" : self.tasksponsor,
-            "taskowner" : self.taskowner,
-            "developers" : self.developers,
-            "users" : self.users,
-            "interestedparties" : self.interestedparties,
-            "influencingfactors" : self.influencingfactors,
-            "requirements" : [ x.asdict() for x in self.requirements],
-        }
 
 class Output(object):
     def __init__(self, output_type, location, description):
@@ -218,6 +326,15 @@ class Output(object):
             "location" : self.location,
             "description" : self.description,
         }
+    def ashtml(self):
+        X = self.asdict()
+        return """
+<div class="Output">
+%(output_type)s
+%(location)s
+%(description)s
+</div>
+""" % X
 
 class Outputs(object):
     def __init__(self):
@@ -230,6 +347,15 @@ class Outputs(object):
             "actual" : [ x.asdict() for x in self.actual ],
             "arisingpossibilities" : self.arisingpossibilities,
         }
+    def ashtml(self):
+        X = self.asdict()
+        return """
+<div class="Outputs">
+%(expected)s
+%(actual)s
+%(arisingpossibilities)s
+</div>
+""" % X
 
 class Relatedtasks(object):
     def __init__(self):
@@ -242,6 +368,20 @@ class Relatedtasks(object):
             "subtasks" : self.subtasks,
             "cotasks" : self.cotasks,
         }
+    def ashtml(self):
+        X = self.asdict()
+#        X["description"] = X.ashtml()
+#        X["dashboard"] = X.ashtml()
+#        X["inputs"] = X.ashtml()
+#        X["outputs"] = X.ashtml()
+#        X["relatedtasks"] = X.ashtml()
+        return """
+<div class="Relatedtasks">
+%(tasksenablingthis)s
+%(subtasks)s
+%(cotasks)s
+</div>
+""" % X
 
 
 class Task(object):
@@ -268,6 +408,27 @@ class Task(object):
             "discussion" : [x.asdict() for x in self.discussion],
             "consolidateddiscussion" : self.consolidateddiscussion ,
         }
+    def ashtml(self):
+        X = self.asdict()
+        X["description"] = self.description.ashtml()
+        X["dashboard"] = self.dashboard.ashtml()
+        X["inputs"] = self.inputs.ashtml()
+        X["outputs"] = self.outputs.ashtml()
+        X["relatedtasks"] = self.relatedtasks.ashtml()
+        return """\
+<div class="Task">
+<div class="taskheader">Task</div>
+<div class="taskid">%(taskid)s</div>
+%(description)s
+%(dashboard)s
+%(inputs)s
+%(outputs)s
+%(relatedtasks)s
+<div class="tasklog">%(tasklog)s</div>
+<div class="discussion">%(discussion)s</div>
+<div class="consolidateddiscussion">%(consolidateddiscussion)s</div>
+</div>
+""" % X
 
 class Tasks(object):
     def __init__(self, filename):
@@ -332,7 +493,6 @@ task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", 
 task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", output="", statuschange="") )
 task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", output="", statuschange="") )
 
-
 task.inputs.tasksponsor = "Tom"
 task.inputs.taskowner = "Tom"
 task.inputs.developers.append( "Tom" )
@@ -376,14 +536,57 @@ task.relatedtasks.cotasks.append( 8 )
 task.relatedtasks.cotasks.append( 9 )
 task.relatedtasks.cotasks.append( 10 )
 
-
-pprint.pprint ( task.asdict(), width=170 )
+# pprint.pprint ( task.asdict(), width=170 )
 
 T.store_task(task)
 T.close()
 
 U = Tasks("taskfile")
 foo = U.get_task(1)
-print "========================================================================================================="
-pprint.pprint ( foo.asdict(), width=170 )
+# print "========================================================================================================="
+# pprint.pprint ( foo.asdict(), width=170 )
 U.close()
+
+def dumptask(D,indent=0):
+    def mydisplay(D,indent=0):
+        if type(D) == dict:
+            for K in D:
+                print indent*"   "+K+":",
+                if type(D[K])== list or type(D[K]) ==dict:
+                    print
+                mydisplay(D[K], indent+1)
+        elif type(D) == list:
+            for I in D:
+                if (type(I) != list) and (type(I) != dict):
+                  print indent*"   ",
+                  mydisplay(I, indent+1)
+                elif type(I) == dict:
+                    print indent*"   ","{{{"
+                    mydisplay(I, indent+1)
+                    print indent*"   ","}}}"
+                else:
+                    mydisplay(I, indent+1)
+        elif type(D) == str:
+            print repr(D)
+        elif type(D) == tuple:
+            for I in D:
+                print repr(I),
+            print
+        elif type(D) == int:
+            print repr(D)
+        else:
+            raise ValueError("Unexpected type for D:"+str(type(D)))
+
+    print "========================================================================================================="
+    print "TASK:"
+    mydisplay(D,1)
+
+# dumptask(foo.asdict())
+
+# FIXME - currently this STILL outputs things like (...,...,...) and some lists.
+# Generally where there is a list or dict or tuple of base types
+print foo.ashtml()
+
+
+
+
