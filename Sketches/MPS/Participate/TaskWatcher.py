@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Sketchcode outline of task list manager for Kamaelia (and software in general)
+OK, hideous for lots of reasons, but an OK starting point...
 """
 
 import shelve
@@ -446,7 +446,6 @@ class Relatedtasks(object):
 </div>
 """ % X
 
-
 # -------------------------- TO BE DIVVED ----------------------------------------------------
 class Comment(object):
     def __init__(self, who, when , what ):
@@ -594,94 +593,6 @@ class Tasks(object):
     def get_task(self, taskid):
         return self.db[str(taskid)]
 
-T = Tasks("taskfile")
-T.zap()
-
-task = T.new_task()
-
-task.taskname = "Translated Template"
-task.description.goal = "Short one line of what the task is designed to achieve/create."
-task.description.result = "A practical, clear result of what will be possible as a result of achieving this task. This is best described in the case of a user story."
-task.description.context = "The context in which this task sits. Has this task any history? Is it the result of any previous tasks - either within the project or outside."
-task.description.benefits.append( "What benefits will be gained by working on this task")
-task.description.benefits.append( "... and achieving its goals?")
-task.description.benefits.append("Speculative as well as certained/realistically expected benefits are valid here.")
-
-task.dashboard.status = "(Started, Running, Completed, Dropped, Stasis, Blocked)"
-task.dashboard.status_text = "Associated single sentence (eg why blocked)"
-task.dashboard.currentdevelopers = "you!"
-task.dashboard.devlocation = "Normally /Sketches/ initially"
-task.dashboard.startdate = "date"
-task.dashboard.milestonedate ="date"
-task.dashboard.milestonetag = "(met|slipped|missed)"
-task.dashboard.expectedenddate = "(date|n/a)"
-task.dashboard.enddate = "date"
-task.dashboard.dateupdated = "date"
-task.dashboard.estimatedeffortsofar = "int"
-
-task.discussion.append( Comment(who = "name1", when = "timedate", what = "YES!") )
-task.discussion.append( Comment(who = "name1", when = "timedate", what = "NO!") )
-task.discussion.append( Comment(who = "name1", when = "timedate", what = "MAYBE!") )
-
-task.consolidateddiscussion = "--\n".join([ x.what for x in task.discussion ])
-
-task.tasklog.append( Update(what="frob the flibble", who="tom", when="then", timespent="5", output="", statuschange="") )
-task.tasklog.append( Update(what="jibble the jabble", who="dick", when="now", timespent="5", output="", statuschange="") )
-task.tasklog.append( Update(what="bibble bobble", who="harry", when="soon", timespent="5", output="", statuschange="") )
-
-task.inputs.tasksponsor = "Tom"
-task.inputs.taskowner = "Tom"
-task.inputs.developers.append( "Tom" )
-task.inputs.users.append( "Tom" )
-task.inputs.users.append( "Dick" )
-task.inputs.users.append( "Harry" )
-task.inputs.interestedparties.append("Jane")
-task.inputs.interestedparties.append("Deliah")
-task.inputs.influencingfactors.append("Would be really cool")
-task.inputs.influencingfactors.append("Wanted this for ages!")
-
-task.inputs.requirements.append( Requirement(reqtype="MUST", who="Jane", what="Pink") )
-task.inputs.requirements.append( Requirement(reqtype="SHOULD", who="Jane", what="Chocolate") )
-task.inputs.requirements.append( Requirement(reqtype="MAY", who="Tom", what="Work") )
-task.inputs.requirements.append( Requirement(reqtype="WOULDLIKE", who="Deliah", what="Fluffy") )
-
-task.outputs.expected.append("The widget should curl")
-task.outputs.expected.append("The widget should frown")
-task.outputs.expected.append("The widget should stamp")
-
-task.outputs.actual.append(Output(output_type="code", location="svn://.../..py",description="fish"))
-task.outputs.actual.append(Output(output_type="presentation", location="PYCONUK08",description="Woo"))
-task.outputs.actual.append(Output(output_type="documentation", location="http:/..../",description="Docs"))
-task.outputs.actual.append(Output(output_type="other", location="Kitchen",description="Cake"))
-
-task.outputs.arisingpossibilities.append("Should be able to sing a musical!")
-task.outputs.arisingpossibilities.append("Should be able to put on a show!")
-
-task.relatedtasks.tasksenablingthis.append( 2 )
-task.relatedtasks.tasksenablingthis.append( 3 )
-task.relatedtasks.tasksenablingthis.append( 4 )
-
-task.relatedtasks.subtasks.append( Subtask("microtask", "Step to the left"))
-task.relatedtasks.subtasks.append( Subtask("microtask", "jump to the right" ))
-task.relatedtasks.subtasks.append( Subtask("microtask", "pull knees in tight" ))
-task.relatedtasks.subtasks.append( Subtask("task", 5 ))
-task.relatedtasks.subtasks.append( Subtask("task", 6 ))
-task.relatedtasks.subtasks.append( Subtask("task", 7 ))
-
-task.relatedtasks.cotasks.append( 8 )
-task.relatedtasks.cotasks.append( 9 )
-task.relatedtasks.cotasks.append( 10 )
-
-# pprint.pprint ( task.json(), width=170 )
-
-T.store_task(task)
-T.close()
-
-U = Tasks("taskfile")
-foo = U.get_task(1)
-# print "========================================================================================================="
-# pprint.pprint ( foo.json(), width=170 )
-U.close()
 
 def dumptask(D,indent=0):
     def mydisplay(D,indent=0):
@@ -717,55 +628,145 @@ def dumptask(D,indent=0):
     print "TASK:"
     mydisplay(D,1)
 
-# dumptask(foo.json())
+def render_html(task):
+    yield "<html>"
+    yield """<head>
+    <style>
+    .taskheader { display: None; }
+    .label { font-weight: bold; }
+    h1 {
+        font-weight: bold;
+        font-size:20pt;
+    }
+    h2 {
+        font-weight: bold;
+        font-size:17pt;
+    }
+    .taskname {
+        margin-bottom: 1em;
+    }
+    .Dashboard {
+        width: 20em;
+        margin: 5px;
+        padding: 5px;
+        border-style: solid;
+        border-width: thin;
+        float: right;
+    }
+    .dashitem { clear:both; }
+    .discussioncomment {
+        margin-bottom: 1em;
+        clear:both; 
+    }
+    .commenter, .commentdate {
+        font-style: italic;
+    }
+    .goal , .result , .context {
+        margin-bottom: 1em;
+    }
+    body {
+        font-size:10pt;
+        font-family:verdana,arial,helvetica,sans-serif;
+        line-height:1.5;
+        padding: 0 30 0 40;
+    }
+    </style>
+    </head>
+    """
+    yield "<body>"
+    yield task.ashtml()
+    yield "</body></html>"
 
-# FIXME - currently this STILL outputs things like (...,...,...) and some lists.
-# Generally where there is a list or dict or tuple of base types
-print "<html>"
-print """<head>
-<style>
-.taskheader { display: None; }
-.label { font-weight: bold; }
-h1 {
-    font-weight: bold;
-    font-size:20pt;
-}
-h2 {
-    font-weight: bold;
-    font-size:17pt;
-}
-.taskname {
-    margin-bottom: 1em;
-}
-.Dashboard {
-    width: 20em;
-    margin: 5px;
-    padding: 5px;
-    border-style: solid;
-    border-width: thin;
-    float: right;
-}
-.dashitem { clear:both; }
-.discussioncomment {
-    margin-bottom: 1em;
-    clear:both; 
-}
-.commenter, .commentdate {
-    font-style: italic;
-}
 
-.goal , .result , .context {
-    margin-bottom: 1em;
-}
-body {
-    font-size:10pt;
-    font-family:verdana,arial,helvetica,sans-serif;
-    line-height:1.5;
-    padding: 0 30 0 40;
-}
-</style>
-</head>
-"""
-print "<body>"
-print foo.ashtml()
-print "</body></html>"
+if __name__ == "__main__":
+    T = Tasks("taskfile")
+#    T.zap()
+
+    task = T.new_task()
+
+    task.taskname = "Demonstration Task/Template"
+    task.description.goal = "Short one line of what the task is designed to achieve/create."
+    task.description.result = "A practical, clear result of what will be possible as a result of achieving this task. This is best described in the case of a user story."
+    task.description.context = "The context in which this task sits. Has this task any history? Is it the result of any previous tasks - either within the project or outside."
+    task.description.benefits.append( "What benefits will be gained by working on this task")
+    task.description.benefits.append( "... and achieving its goals?")
+    task.description.benefits.append("Speculative as well as certained/realistically expected benefits are valid here.")
+
+    task.dashboard.status = "(Started, Running, Completed, Dropped, Stasis, Blocked)"
+    task.dashboard.status_text = "Associated single sentence (eg why blocked)"
+    task.dashboard.currentdevelopers = "you!"
+    task.dashboard.devlocation = "Normally /Sketches/ initially"
+    task.dashboard.startdate = "date"
+    task.dashboard.milestonedate ="date"
+    task.dashboard.milestonetag = "(met|slipped|missed)"
+    task.dashboard.expectedenddate = "(date|n/a)"
+    task.dashboard.enddate = "date"
+    task.dashboard.dateupdated = "date"
+    task.dashboard.estimatedeffortsofar = "int"
+
+    task.discussion.append( Comment(who = "name1", when = "timedate", what = "YES!") )
+    task.discussion.append( Comment(who = "name1", when = "timedate", what = "NO!") )
+    task.discussion.append( Comment(who = "name1", when = "timedate", what = "MAYBE!") )
+
+    task.consolidateddiscussion = "--\n".join([ x.what for x in task.discussion ])
+
+    task.tasklog.append( Update(what="frob the flibble", who="tom", when="then", timespent="5", output="", statuschange="") )
+    task.tasklog.append( Update(what="jibble the jabble", who="dick", when="now", timespent="5", output="", statuschange="") )
+    task.tasklog.append( Update(what="bibble bobble", who="harry", when="soon", timespent="5", output="", statuschange="") )
+
+    task.inputs.tasksponsor = "Tom"
+    task.inputs.taskowner = "Tom"
+    task.inputs.developers.append( "Tom" )
+    task.inputs.users.append( "Tom" )
+    task.inputs.users.append( "Dick" )
+    task.inputs.users.append( "Harry" )
+    task.inputs.interestedparties.append("Jane")
+    task.inputs.interestedparties.append("Deliah")
+    task.inputs.influencingfactors.append("Would be really cool")
+    task.inputs.influencingfactors.append("Wanted this for ages!")
+
+    task.inputs.requirements.append( Requirement(reqtype="MUST", who="Jane", what="Pink") )
+    task.inputs.requirements.append( Requirement(reqtype="SHOULD", who="Jane", what="Chocolate") )
+    task.inputs.requirements.append( Requirement(reqtype="MAY", who="Tom", what="Work") )
+    task.inputs.requirements.append( Requirement(reqtype="WOULDLIKE", who="Deliah", what="Fluffy") )
+
+    task.outputs.expected.append("The widget should curl")
+    task.outputs.expected.append("The widget should frown")
+    task.outputs.expected.append("The widget should stamp")
+
+    task.outputs.actual.append(Output(output_type="code", location="svn://.../..py",description="fish"))
+    task.outputs.actual.append(Output(output_type="presentation", location="PYCONUK08",description="Woo"))
+    task.outputs.actual.append(Output(output_type="documentation", location="http:/..../",description="Docs"))
+    task.outputs.actual.append(Output(output_type="other", location="Kitchen",description="Cake"))
+
+    task.outputs.arisingpossibilities.append("Should be able to sing a musical!")
+    task.outputs.arisingpossibilities.append("Should be able to put on a show!")
+
+    task.relatedtasks.tasksenablingthis.append( 2 )
+    task.relatedtasks.tasksenablingthis.append( 3 )
+    task.relatedtasks.tasksenablingthis.append( 4 )
+
+    task.relatedtasks.subtasks.append( Subtask("microtask", "Step to the left"))
+    task.relatedtasks.subtasks.append( Subtask("microtask", "jump to the right" ))
+    task.relatedtasks.subtasks.append( Subtask("microtask", "pull knees in tight" ))
+    task.relatedtasks.subtasks.append( Subtask("task", 5 ))
+    task.relatedtasks.subtasks.append( Subtask("task", 6 ))
+    task.relatedtasks.subtasks.append( Subtask("task", 7 ))
+
+    task.relatedtasks.cotasks.append( 8 )
+    task.relatedtasks.cotasks.append( 9 )
+    task.relatedtasks.cotasks.append( 10 )
+
+    # pprint.pprint ( task.json(), width=170 )
+
+    T.store_task(task)
+
+#    task_copy = T.get_task(2)
+    task_copy = task
+    T.close()
+
+    # Things we could do:
+    # pprint.pprint ( foo.json(), width=170 )
+    # dumptask(foo.json())
+    for part in render_html(task_copy):
+        print part
