@@ -243,6 +243,19 @@ class Comment(object):
             "what" : self.what,
         }
 
+class Subtask(object):
+    def __init__(self, tasktype, what ):
+        self.tasktype = tasktype
+        self.what = what
+    def asdict(self):
+        return {
+            "tasktype" : self.tasktype,
+            "what" : self.what,
+        }
+
+#def Subtask(tasktype, what):
+#    return [ tasktype, what ]
+
 class Dashboard(object):
     def __init__(self):
         self.status = ""
@@ -365,7 +378,7 @@ class Relatedtasks(object):
     def asdict(self):
         return {
             "tasksenablingthis" : self.tasksenablingthis,
-            "subtasks" : self.subtasks,
+            "subtasks" : [x.asdict() for x in self.subtasks],
             "cotasks" : self.cotasks,
         }
     def ashtml(self):
@@ -525,12 +538,12 @@ task.relatedtasks.tasksenablingthis.append( 2 )
 task.relatedtasks.tasksenablingthis.append( 3 )
 task.relatedtasks.tasksenablingthis.append( 4 )
 
-task.relatedtasks.subtasks.append( ("microtask", "Step to the left" ))
-task.relatedtasks.subtasks.append( ("microtask", "jump to the right" ))
-task.relatedtasks.subtasks.append( ("microtask", "pull knees in tight" ))
-task.relatedtasks.subtasks.append( ("task", 5 ))
-task.relatedtasks.subtasks.append( ("task", 6 ))
-task.relatedtasks.subtasks.append( ("task", 7 ))
+task.relatedtasks.subtasks.append( Subtask("microtask", "Step to the left"))
+task.relatedtasks.subtasks.append( Subtask("microtask", "jump to the right" ))
+task.relatedtasks.subtasks.append( Subtask("microtask", "pull knees in tight" ))
+task.relatedtasks.subtasks.append( Subtask("task", 5 ))
+task.relatedtasks.subtasks.append( Subtask("task", 6 ))
+task.relatedtasks.subtasks.append( Subtask("task", 7 ))
 
 task.relatedtasks.cotasks.append( 8 )
 task.relatedtasks.cotasks.append( 9 )
