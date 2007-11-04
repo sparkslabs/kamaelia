@@ -116,6 +116,7 @@ This component currently lacks an inbox and corresponding code to allow it to
 be shut down (in a controlled fashion). Needs a "control" inbox that responds to
 shutdownMicroprocess messages.
 """
+import sys
 import socket
 import Axon
 from Kamaelia.Internet.TCPServer import TCPServer
@@ -376,10 +377,13 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
         outboxToShutdownConnectedSocket= self.addOutbox("connectedSocketShutdownSignal")
 
+        # sys.stderr.write("Wooo!\n"); sys.stderr.flush()
+
         self.trackResourceInformation(connectedSocket, 
                                       [], 
                                       [outboxToShutdownProtocolHandler], 
                                       protocolHandler)
+        # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
 
         self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
         self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
@@ -411,7 +415,11 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
         """
         connectedSocket = shutdownCSAMessage.object
-        bundle=self.retrieveTrackedResourceInformation(connectedSocket)
+        try:
+            bundle=self.retrieveTrackedResourceInformation(connectedSocket)
+        except KeyError:
+            # This means we've actually already done this...
+            return
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
         self.connectedSockets = [ x for x in self.connectedSockets if x != self.connectedSockets ]
