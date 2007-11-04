@@ -371,8 +371,98 @@ class Outputs(object):
 </div>
 """ % X
 
+class Subtask(object):
+    def __init__(self, tasktype, what ):
+        self.tasktype = tasktype
+        self.what = what
+    def asdict(self):
+        return {
+            "tasktype" : self.tasktype,
+            "what" : self.what,
+        }
+
+def see_task(taskid):
+    # FIXME: This would be nicer to link to where the task is visible, but this is good enough for now.
+    return "See task: "+repr(taskid)
+
+class Relatedtasks(object):
+    def __init__(self):
+        self.tasksenablingthis = []
+        self.subtasks = []
+        self.cotasks = []
+    def asdict(self):
+        return {
+            "tasksenablingthis" : self.tasksenablingthis,
+            "subtasks" : [x.asdict() for x in self.subtasks],
+            "cotasks" : self.cotasks,
+        }
+    def subtasks_ashtml(self):
+        if self.subtasks== []:
+            return ""
+        R = ["<ul>"]
+        for i in self.subtasks:
+            R.append("\n<li class='subtask_item'>")
+            if i.tasktype == "task":
+                R.append(see_task(i.what))
+            elif i.tasktype == "microtask":
+                R.append(str(i.what))
+            else:
+                R.append(repr(i.asdict()))
+        R.append("\n</ul>")
+        return "".join(R)
+
+    def tasksenablingthis_ashtml(self):
+        if self.tasksenablingthis== []:
+            return ""
+        R = ["<ul>"]
+        for i in self.tasksenablingthis:
+            R.append("\n<li class='tasksenablingthis_item'>")
+            R.append(see_task(i))
+        R.append("\n</ul>")
+        return "".join(R)
+    def cotasks_ashtml(self):
+        if self.cotasks== []:
+            return ""
+        R = ["<ul>"]
+        for i in self.cotasks:
+            R.append("\n<li class='cotask_item'>")
+            R.append(see_task(i))
+        R.append("\n</ul>")
+        return "".join(R)
+    def ashtml(self):
+        X = self.asdict()
+        X["tasksenablingthis"] = "<div class='tasksenablingthis'>" + self.tasksenablingthis_ashtml() +"</div>"
+        X["subtasks"] = "<div class='subtasks'>" + self.subtasks_ashtml() +"</div>"
+        X["cotasks"] = "<div class='cotasks'>" + self.cotasks_ashtml() +"</div>"
+        return """
+<div class="Relatedtasks">
+<h2 id="relatedtasks_heading">Related Tasks</h2>
+<h3 id="tasksenablingthis_heading">Tasks that directly enable this task (dependencies)</h3>
+%(tasksenablingthis)s
+<h3 id="subtasks_heading">Sub Tasks</h3>
+%(subtasks)s
+<h3 id="cotasks_heading">Co-Tasks</h3>
+%(cotasks)s
+</div>
+""" % X
+
 
 # -------------------------- TO BE DIVVED ----------------------------------------------------
+class Comment(object):
+    def __init__(self, who, when , what ):
+        self.who = who
+        self.when = when
+        self.what = what
+    def asdict(self):
+        return {
+            "who" : self.who,
+            "when" : self.when,
+            "what" : self.what,
+        }
+    def ashtml(self):
+        X = self.asdict()
+        return "%(what)s<br>--<span class='commenter'>%(who)s</span>, <span class='commentdate'>%(when)s</span>\n" % X
+
 class Update(object):
     def __init__(self, what, who, when, timespent, output, statuschange):
         self.what = what
@@ -390,58 +480,15 @@ class Update(object):
             "output" : self.output,
             "statuschange" : self.statuschange,
         }
-
-class Comment(object):
-    def __init__(self, who, when , what ):
-        self.who = who
-        self.when = when
-        self.what = what
-    def asdict(self):
-        return {
-            "who" : self.who,
-            "when" : self.when,
-            "what" : self.what,
-        }
-
-class Subtask(object):
-    def __init__(self, tasktype, what ):
-        self.tasktype = tasktype
-        self.what = what
-    def asdict(self):
-        return {
-            "tasktype" : self.tasktype,
-            "what" : self.what,
-        }
-
-class Relatedtasks(object):
-    def __init__(self):
-        self.tasksenablingthis = []
-        self.subtasks = []
-        self.cotasks = []
-    def asdict(self):
-        return {
-            "tasksenablingthis" : self.tasksenablingthis,
-            "subtasks" : [x.asdict() for x in self.subtasks],
-            "cotasks" : self.cotasks,
-        }
     def ashtml(self):
         X = self.asdict()
-#        X["description"] = X.ashtml()
-#        X["dashboard"] = X.ashtml()
-#        X["inputs"] = X.ashtml()
-#        X["outputs"] = X.ashtml()
-#        X["relatedtasks"] = X.ashtml()
-        return """
-<div class="Relatedtasks">
-<h2 id="relatedtasks_heading">Related Tasks</h2>
-<h3 id="tasksenablingthis_heading">Tasks that directly enable this task (dependencies)</h3>
-%(tasksenablingthis)s
-<h3 id="subtasks_heading">Sub Tasks</h3>
-%(subtasks)s
-<h3 id="cotasks_heading">Co-Tasks</h3>
-%(cotasks)s
-</div>
-""" % X
+        if X["output"] != "":
+            X["output"] = "Output: " + X["output"]
+        if X["statuschange"] != "":
+            X["statuschange"] = "Task status changed:" + X["statuschange"]
+        return "%(date)s - %(who)s - %(what)s %(output)s %(statuschange)s , Time spent: %(timespent)s" % X
+
+
 
 class Task(object):
     def __init__(self, taskid):
@@ -455,6 +502,26 @@ class Task(object):
         self.tasklog = []                  # OK
         self.discussion = []               # OK
         self.consolidateddiscussion = ""   # OK
+
+    def tasklog_ashtml(self):
+        if self.tasklog == []:
+            return ""
+        R = ["<ul>"]
+        for update in self.tasklog:
+            R.append("<li class='logupdate'>")
+            R.append(update.ashtml())
+        R.append("</ul>")
+        return "".join(R)
+
+    def discussion_ashtml(self):
+        if self.discussion == []:
+            return ""
+        R = []
+        for comment in self.discussion:
+            R.append("<div class='discussioncomment'>\n")
+            R.append(comment.ashtml())
+            R.append("</div>\n")
+        return "".join(R)
 
     def asdict(self):
         return {
@@ -475,7 +542,12 @@ class Task(object):
         X["dashboard"] = self.dashboard.ashtml()
         X["inputs"] = self.inputs.ashtml()
         X["outputs"] = self.outputs.ashtml()
+        X["tasklog"] = self.tasklog_ashtml()
+        X["discussion"] = self.discussion_ashtml()
         X["relatedtasks"] = self.relatedtasks.ashtml()
+        if X["consolidateddiscussion"] != "":
+            X["consolidateddiscussion"] = """<h2 id="consolidateddiscussion_heading">Consensus</h2>\n<div class="consolidateddiscussion">%s</div>\n """ % (X["consolidateddiscussion"] ,)
+
         return """\
 <div class="Task">
 <div class="taskheader">Task</div>
@@ -489,8 +561,7 @@ class Task(object):
 <div class="tasklog">%(tasklog)s</div>
 <h2 id="discussion_heading">Discussion</h2>
 <div class="discussion">%(discussion)s</div>
-<h2 id="consolidateddiscussion_heading">Consensus</h2>
-<div class="consolidateddiscussion">%(consolidateddiscussion)s</div>
+%(consolidateddiscussion)s
 </div>
 """ % X
 
@@ -554,9 +625,9 @@ task.discussion.append( Comment(who = "name1", when = "timedate", what = "MAYBE!
 
 task.consolidateddiscussion = "--\n".join([ x.what for x in task.discussion ])
 
-task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", output="", statuschange="") )
-task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", output="", statuschange="") )
-task.tasklog.append( Update(what="what", who="name", when="now", timespent="5", output="", statuschange="") )
+task.tasklog.append( Update(what="frob the flibble", who="tom", when="then", timespent="5", output="", statuschange="") )
+task.tasklog.append( Update(what="jibble the jabble", who="dick", when="now", timespent="5", output="", statuschange="") )
+task.tasklog.append( Update(what="bibble bobble", who="harry", when="soon", timespent="5", output="", statuschange="") )
 
 task.inputs.tasksponsor = "Tom"
 task.inputs.taskowner = "Tom"
@@ -675,6 +746,13 @@ h2 {
     float: right;
 }
 .dashitem { clear:both; }
+.discussioncomment {
+    margin-bottom: 1em;
+    clear:both; 
+}
+.commenter, .commentdate {
+    font-style: italic;
+}
 
 .goal , .result , .context {
     margin-bottom: 1em;
