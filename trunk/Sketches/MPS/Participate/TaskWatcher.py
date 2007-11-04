@@ -405,6 +405,7 @@ class Relatedtasks(object):
 class Task(object):
     def __init__(self, taskid):
         self.taskid =  taskid              # OK
+        self.name =  ""                    # OK
         self.description = Descripton()    # OK
         self.dashboard = Dashboard()       # OK
         self.inputs = Inputs()             # OK
@@ -417,6 +418,7 @@ class Task(object):
     def asdict(self):
         return {
             "taskid" :  self.taskid,
+            "name" :  self.name,
             "description" : self.description.asdict(),
             "dashboard" : self.dashboard.asdict(),
             "inputs" : self.inputs.asdict(),
@@ -437,6 +439,7 @@ class Task(object):
 <div class="Task">
 <div class="taskheader">Task</div>
 <div class="taskid">%(taskid)s</div>
+<div class="name">%(name)s</div>
 %(description)s
 %(dashboard)s
 %(inputs)s
@@ -482,6 +485,7 @@ T.zap()
 
 task = T.new_task()
 
+task.name = "Translated Template"
 task.description.goal = "Short one line of what the task is designed to achieve/create."
 task.description.result = "A practical, clear result of what will be possible as a result of achieving this task. This is best described in the case of a user story."
 task.description.context = "The context in which this task sits. Has this task any history? Is it the result of any previous tasks - either within the project or outside."
