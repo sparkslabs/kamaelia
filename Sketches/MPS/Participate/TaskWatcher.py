@@ -246,7 +246,7 @@ class Relatedtasks(object):
 
 class Task(object):
     def __init__(self, taskid):
-        self.taskid =  taskid,             # OK
+        self.taskid =  taskid              # OK
         self.description = Descripton()    # OK
         self.dashboard = Dashboard()       # OK
         self.inputs = Inputs()             # OK
@@ -288,6 +288,15 @@ class Tasks(object):
             del self.meta[i]
         for i in self.db.keys():
             del self.db[i]
+
+    def store_task(self,task):
+        self.db[str(task.taskid)] = task
+
+    def close(self):
+        self.db.close()
+
+    def get_task(self, taskid):
+        return self.db[str(taskid)]
 
 T = Tasks("taskfile")
 T.zap()
@@ -370,5 +379,11 @@ task.relatedtasks.cotasks.append( 10 )
 
 pprint.pprint ( task.asdict(), width=170 )
 
+T.store_task(task)
+T.close()
 
-
+U = Tasks("taskfile")
+foo = U.get_task(1)
+print "========================================================================================================="
+pprint.pprint ( foo.asdict(), width=170 )
+U.close()
