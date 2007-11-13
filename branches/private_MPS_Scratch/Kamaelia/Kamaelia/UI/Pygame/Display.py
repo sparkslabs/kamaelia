@@ -409,6 +409,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                    print "ONLYMOUSEINSIDE: TRUE"
                else:
                    print "ONLYMOUSEINSIDE: FALSE"
+               if message.get("fullscreen", False):
+                   if not self.fullscreen:
+                       self.fullscreen = 1
+                       pygame.display.toggle_fullscreen()
 
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
