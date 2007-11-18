@@ -19,6 +19,7 @@ Santa should give priority to the reindeer in the case that there is
 both a group of elves and a group of reindeer waiting.
 """
 import Axon
+import time
 from Axon.Ipc import WaitComplete
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -52,21 +53,63 @@ if debugging:
         ).activate()
 
 class Santa(Axon.Component.component):
+    Name = "Santa"
     Outboxes = [ "feet", "voicebox", ]
+
     def main(self):
         print "Santa's up and about!"
         self.send("santasworkshop", "feet")
-        yield 1
+        for i in xrange(4): yield 1 # Nasty hack - we need to here from our feet when we've arrived(!)
         self.send("Ho Ho Ho!", "voicebox")
+        yield WaitComplete( self.doSleeping() )
+
+    def doSleeping(self):
+        self.send("Snore!", "voicebox")
+        yield 1
+        while 1:
+            while not self.dataReady("inbox"):
+                self.pause()
+                yield 1
+            if self.dataReady("inbox"):
+                message = self.recv("inbox")
+                print self.Name, "heard:", repr(message)
 
 class Reindeer(Axon.Component.component):
-    name = "Reindeer"
+    Name = "Reindeer"
     Outboxes = [ "feet", "voicebox", ]
     def main(self):
-        print "Reindeer", self.name, "is up and about!"
+        print "Reindeer", self.Name, "is up and about!"
         self.send("holiday", "feet")
-        yield 1
+        for i in xrange(4): yield 1 # Nasty hack - we need to here from our feet when we've arrived(!)
+        yield WaitComplete( self.onHoliday() )
+        while 1:
+            yield WaitComplete( self.doSantasWorkshop())
+
+    def onHoliday(self):
         self.send("snort!", "voicebox")
+        t = time.time()
+        while time.time() -t < 2:
+#            print time.time() -t
+#            while not self.dataReady("inbox"):
+#                self.pause()
+#                yield 1
+            yield 1
+            if self.dataReady("inbox"):
+                message = self.recv("inbox")
+                print self.Name, "heard:", repr(message)
+
+    def doSantasWorkshop(self):
+        self.send("santasworkshop", "feet") ;
+        for i in xrange(4): yield 1 # Nasty hack - we need to here from our feet when we've arrived(!)
+        print self.Name, "entered santas workshop"
+        self.send("snort!", "voicebox") # reindeer don't really say much
+        while 1:
+            while not self.dataReady("inbox"):
+                self.pause()
+                yield 1
+            if self.dataReady("inbox"):
+                message = self.recv("inbox")
+                print self.Name, "heard:", repr(message)
 
 def Presence(actor, actor_name):
     return Graphline(
@@ -85,7 +128,7 @@ def Presence(actor, actor_name):
         }
     )
 for name in ["Dasher", "Dancer", "Prancer", "Vixen", "Comet", "Cupid", "Donder", "Blitzen", "Rudolph" ]:
-    Presence(Reindeer(name=name), name).activate()
+    Presence(Reindeer(Name=name), name).activate()
 Presence(Santa(), "Santa").run()
 
 
