@@ -479,6 +479,7 @@ class microprocess(Axon.AxonObject):
       """
       if self.debugger.areDebugging("microprocess.main", 0):
          self.debugger.debugmessage("microprocess.main", self.name,"OI! You're only supposed to blow the bloody doors off!")
+         self.debugger.debugmessage("microprocess.main", self.name,"You're likely to have called WaitComplete *BUT* with a function call not a generator call")
       "If you ever see the above message in your debug output, you've made a big mistake!"
       yield 1
       return
