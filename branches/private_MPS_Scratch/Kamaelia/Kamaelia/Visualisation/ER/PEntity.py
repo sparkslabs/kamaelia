@@ -105,9 +105,46 @@ class PEntity(BaseParticle):
 
         yield 1
         for p in self.bondedTo:
-            px = int(p.pos[0] - self.left)
-            py = int(p.pos[1] - self.top )
-            pygame.draw.line(surface, (192,192,192), (x,y), (px,py))
+            print type(p)
+            endx = int(p.pos[0] - self.left)
+            endy = int(p.pos[1] - self.top )
+            pygame.draw.line(surface, (192,192,192), (x,y), (endx,endy))
+
+
+            if "PISA" in str(type(p)):
+                colour = (192,192,192)
+    
+                midx = (x-endx)/3+endx
+                midy = (y-endy)/3+endy
+                mid = (midx,midy)
+    
+                direction = ( (endx-x), (endy-y) )
+                length    = ( direction[0]**2 + direction[1]**2 )**0.5
+                direction = [ 6*n / length for n in direction ]
+    
+                norm      = ( -direction[1], direction[0] )
+    
+                leftarrow  = ( mid[0] - direction[0] - norm[0], mid[1] - direction[1] - norm[1] )
+                rightarrow = ( mid[0] - direction[0] + norm[0], mid[1] - direction[1] + norm[1] )
+    
+                pygame.draw.line(surface, colour, mid, leftarrow,2  )
+                pygame.draw.line(surface, colour, mid, rightarrow,2 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         yield 2
 
