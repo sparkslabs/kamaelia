@@ -55,8 +55,16 @@ class AxonLaws(MultipleLaws):
                                           dampcutoff        = dampcutoff,
                                           maxVelocity       = maxvel
                                         )
-        entity_relation   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*2,
+        entity_attribute   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*2,
                                           maxRepelRadius    = _COMPONENT_RADIUS*2,
+                                          repulsionStrength = 2.0 * forceScaler,
+                                          maxBondForce      = 10.0 * forceScaler,
+                                          damp              = damp,
+                                          dampcutoff        = dampcutoff,
+                                          maxVelocity       = maxvel
+                                        )
+        entity_relation   = SimpleLaws( bondLength        = _COMPONENT_RADIUS*3,
+                                          maxRepelRadius    = _COMPONENT_RADIUS*3,
                                           repulsionStrength = 2.0 * forceScaler,
                                           maxBondForce      = 10.0 * forceScaler,
                                           damp              = damp,
@@ -73,6 +81,7 @@ class AxonLaws(MultipleLaws):
                         ("entity", "isa")   : entity_relation,
                         ("relation",   "entity") : entity_relation,
                         ("isa",   "entity") : entity_relation,
+                        ("entity", "attribute")   : entity_attribute,
                       }
 
-        super(AxonLaws, self).__init__( typesToLaws = typesToLaws )
+        super(AxonLaws, self).__init__( typesToLaws = typesToLaws,defaultLaw = entity_relation )

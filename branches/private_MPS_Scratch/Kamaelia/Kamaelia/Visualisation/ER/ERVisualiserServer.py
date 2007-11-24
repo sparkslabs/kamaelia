@@ -28,6 +28,7 @@ _TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
 from PEntity import PEntity
 from PRelation import PRelation
 from PISA import PISA
+from PAttribute import PAttribute
 from ERLaws import AxonLaws
 from ExtraWindowFurniture import ExtraWindowFurniture
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -44,6 +45,7 @@ def ERVisualiserServer(**dictArgs):
     particleTypes = { "entity" : PEntity,
                       "relation"     : PRelation.Relation,
                       "isa"     : PISA.Isa,
+                      "attribute"     : PAttribute.Attribute,
                     }
     return _TopologyViewerServer( particleTypes = particleTypes,
                                   laws = AxonLaws(),
@@ -70,6 +72,7 @@ def ERVisualiser( **dictArgs):
     particleTypes = { "entity" : PEntity,
                       "relation"     : PRelation.Relation,
                       "isa"     : PISA.Isa,
+                      "attribute"     : PAttribute.Attribute,
                     }
 #    particleTypes.update( (args.get("particleTypes",{})) )
     args["particleTypes"] = particleTypes
