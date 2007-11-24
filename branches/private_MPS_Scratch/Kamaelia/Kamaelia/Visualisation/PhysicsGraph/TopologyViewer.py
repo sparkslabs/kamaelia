@@ -548,6 +548,12 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 elif cmd == ("DEL", "ALL") and len(msg) == 2:
                     self.removeParticle(*self.physics.particleDict.keys())
 
+                elif cmd == ("FREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
+                elif cmd == ("UNFREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
                 elif cmd == ("GET", "ALL") and len(msg) == 2:
                     topology = [("DEL","ALL")]
                     topology.extend(self.getTopology())
@@ -580,6 +586,14 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             if p.ID == node_id:
                 p.set_label(new_name)
                 return
+
+    def freezeAll(self):
+        for p in self.physics.particles:
+            p.freeze()
+    
+    def unFreezeAll(self):
+        for p in self.physics.particles:
+            p.unfreeze()
 
     def getParticleLabel(self, node_id):
         """\
