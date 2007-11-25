@@ -32,13 +32,7 @@ class SimplestProcessComponent(object):
         return self.inbound.pop(0)
 
     def main(self):
-        while 1:
-            yield 1
-            time.sleep(0.3)
-            if self.dataReady():
-                print time.time(),"main : RECEIVE FROM CHANNEL", self.recv()
-            else:
-                print time.time(),"main: CHANNEL NOT READY"
+        yield 1
 
 class FirstProcessBasedComponent(SimplestProcessComponent):
     def main(self):
