@@ -36,6 +36,11 @@ class SimplestProcessComponent(object):
 
 class FirstProcessBasedComponent(SimplestProcessComponent):
     def main(self):
+        import pygame
+        import time
+        
+        display = pygame.display.set_mode((800, 600), pygame.DOUBLEBUF)
+        
         while 1:
             yield 1
             time.sleep(0.3)
@@ -45,6 +50,9 @@ class FirstProcessBasedComponent(SimplestProcessComponent):
                 print time.time(),"main: CHANNEL NOT READY"
 
 exchange = FirstProcessBasedComponent().activate()
+R = []
+for _ in xrange(5):
+     R.append(FirstProcessBasedComponent().activate())
 
 while 1:
     time.sleep(0.7)
