@@ -39,7 +39,7 @@ class FirstProcessBasedComponent(SimplestProcessComponent):
         import pygame
         import time
         
-        display = pygame.display.set_mode((800, 600), pygame.DOUBLEBUF)
+        display = pygame.display.set_mode((200, 100), pygame.DOUBLEBUF)
         
         while 1:
             yield 1
