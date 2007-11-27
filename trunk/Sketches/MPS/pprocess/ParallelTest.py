@@ -49,10 +49,19 @@ class FirstProcessBasedComponent(SimplestProcessComponent):
             else:
                 print time.time(),"main: CHANNEL NOT READY"
 
-exchange = FirstProcessBasedComponent().activate()
+class SecondProcessBasedComponent(SimplestProcessComponent):
+    def main(self):
+        from Kamaelia.UI.Pygame.Display import PygameDisplay
+        from Kamaelia.UI.Pygame.MagnaDoodle import MagnaDoodle
+
+        X=PygameDisplay(width=200,height=200).activate()
+        PygameDisplay.setDisplayService(X)
+        MagnaDoodle().run()
+        
+exchange = SecondProcessBasedComponent().activate()
 R = []
 for _ in xrange(5):
-     R.append(FirstProcessBasedComponent().activate())
+     R.append(SecondProcessBasedComponent().activate())
 
 while 1:
     time.sleep(0.7)
