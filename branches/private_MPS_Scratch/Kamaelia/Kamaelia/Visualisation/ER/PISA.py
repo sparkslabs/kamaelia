@@ -131,7 +131,7 @@ class PISA(BaseParticle):
         self.slabel.append(slabel)
         self.slabel.append(rotozoom(slabel, -45, 1.0))
 
-        print self.slabel[0].get_width(),self.slabel[0].get_height()
+#         self.slabel[0].get_width(),self.slabel[0].get_height()
 
         self.radius = max(self.slabel[0].get_width(),self.slabel[0].get_height())/2
 
@@ -222,6 +222,7 @@ class PISA(BaseParticle):
                 (x,y-16),
         ]
 #        pygame.draw.polygon(surface, colour, points)
+        pygame.draw.circle(surface, (255,255,255), (x,y), self.radius)
         pygame.draw.circle(surface, bordercolour, (x,y), self.radius, 2)
 
         if self.selected:
