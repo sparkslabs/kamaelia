@@ -76,8 +76,10 @@ class ExtraWindowFurniture(object):
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ExtraWindowFurniture,self).__init__()
-        
-        self.logo = pygame.image.load("kamaelia_logo.png")
+        try:
+            self.logo = pygame.image.load("kamaelia_logo.png")
+        except pygame.error:
+            self.logo = pygame.image.load("/usr/local/share/kamaelia/kamaelia_logo.png")
         
         biggest = max( self.logo.get_width(), self.logo.get_height() )
         from pygame.transform import rotozoom
