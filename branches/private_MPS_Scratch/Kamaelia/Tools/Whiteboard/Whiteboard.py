@@ -32,21 +32,12 @@ from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
-
 from Kamaelia.Internet.TCPClient import TCPClient
 
-# from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 from Kamaelia.Util.NullSink import nullSinkComponent
-
-try:
-    from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
-except Exception, e:
-    print "Speex not available, using null components instead"
-    SpeexEncode = nullSinkComponent
-    SpeexDecode = nullSinkComponent
 
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Detuple import SimpleDetupler
@@ -56,47 +47,75 @@ from Kamaelia.Util.Console import ConsoleEchoer
 # The following application specific components will probably be rolled
 # back into the repository.
 #
-
-from Whiteboard.TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
-from Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
-from Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
-
-from Whiteboard.Canvas import Canvas
-from Whiteboard.Painter import Painter
-from Whiteboard.SingleShot import OneShot
-from Whiteboard.CheckpointSequencer import CheckpointSequencer
-from Whiteboard.Entuple import Entuple
-from Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
+from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
+from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
+from Kamaelia.Apps.Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
+from Kamaelia.Apps.Whiteboard.Canvas import Canvas
+from Kamaelia.Apps.Whiteboard.Painter import Painter
+from Kamaelia.Apps.Whiteboard.SingleShot import OneShot
+from Kamaelia.Apps.Whiteboard.CheckpointSequencer import CheckpointSequencer
+from Kamaelia.Apps.Whiteboard.Entuple import Entuple
+from Kamaelia.Apps.Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
+from Kamaelia.Apps.Whiteboard.Palette import buildPalette, colours
+from Kamaelia.Apps.Whiteboard.Options import parseOptions
+from Kamaelia.Apps.Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage
+from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 
 try:
-    from Whiteboard.Audio import SoundInput
+    from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
+except Exception, e:
+    print "Speex not available, using null components instead"
+    SpeexEncode = nullSinkComponent
+    SpeexDecode = nullSinkComponent
+
+try:
+    from Kamaelia.Apps.Whiteboard.Audio import SoundInput
 except ImportError:
     print "SoundInput not available, using NullSink instead"
     SoundInput = nullSinkComponent
 
 try:
-    from Whiteboard.Audio import SoundOutput
+    from Kamaelia.Apps.Whiteboard.Audio import SoundOutput
 except ImportError:
     print "SoundOutput not available, using NullSink instead"
     SoundOutput = nullSinkComponent
 
 try:
-    from Whiteboard.Audio import RawAudioMixer
+    from Kamaelia.Apps.Whiteboard.Audio import RawAudioMixer
 except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
 
-from Whiteboard.Palette import buildPalette, colours
-from Whiteboard.Options import parseOptions
-from Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage
-from Whiteboard.CommandConsole import CommandConsole
+notepad = None
+if len(sys.argv) >1:
+    if os.path.exists(sys.argv[1]):
+        if os.path.isdir(sys.argv[1]):
+            notepad = sys.argv[1]
+            
+if (notepad is None) and os.path.exists("Scribbles"):
+    if os.path.isdir("Scribbles"):
+        notepad = "Scribbles"
+
+if (notepad is None):
+   N = os.path.join(os.path.expanduser("~"),"Scribbles")
+   if not os.path.exists(N):
+       os.makedirs(N)
+   if os.path.isdir(N):
+       notepad = N
+
+if (notepad is None):
+    print "Can't figure out what to do with piccies. Exitting"
+    sys.exit(0)
+
+
 
 #
-# Misplaced encapsulation --> Whiteboard.Palette
+# Misplaced encapsulation --> Kamaelia.Apps.Whiteboard.Palette
 #
 colours_order = [ "black", "red", "orange", "yellow", "green", "turquoise", "blue", "purple", "darkgrey", "lightgrey" ]
 
-num_pages = len(os.listdir("Scribbles"))
+
+num_pages = len(os.listdir(notepad))
 
 def FilteringPubsubBackplane(backplaneID,**FilterTagWrapperOptions):
   """Sends tagged events to a backplane. Emits events not tagged by this pubsub."""
@@ -195,6 +214,9 @@ class LocalPageEventsFilter(ConditionalSplitter): # This is a data tap/siphon/de
     def true(self,data):
         self.send((data[0][0], "local"), "true")
 
+SLIDESPEC = notepad+"/slide.%d.png"
+
+
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
     return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,height-32) ),
                       PAINTER = Painter(),
@@ -206,8 +228,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
                       LOCALPAGEEVENTS = LocalPageEventsFilter(),
 
-                      HISTORY = CheckpointSequencer(lambda X: [["LOAD", "Scribbles/slide.%d.png" % (X,)]],
-                                                    lambda X: [["SAVE", "Scribbles//slide.%d.png" % (X,)]],
+                      HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
+                                                    lambda X: [["SAVE", SLIDESPEC % (X,)]],
                                                     lambda X: [["CLEAR"]],
                                                     initial = 1,
                                                     highest = num_pages,
