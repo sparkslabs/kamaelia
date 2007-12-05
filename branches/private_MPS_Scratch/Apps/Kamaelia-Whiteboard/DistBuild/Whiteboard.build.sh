@@ -16,12 +16,5 @@ cp -R ../../../Axon/Axon/ ../Axon
 echo "Copying current Kamaelia"
 cp -R ../../../Kamaelia/Kamaelia/ ../Kamaelia
 
-echo "stripping .svn directories"
-(
-cd ..
-find . -type d|grep .svn$ |while read dirname; do
-    echo "rm -rf $dirname"
-done
-)
 
-( cd ../..; tar zcvf Kamaelia-Whiteboard.tar.gz Kamaelia-Whiteboard )
+( cd ../..; tar zcvf Kamaelia-Whiteboard.tar.gz Kamaelia-Whiteboard --exclude=.svn )
