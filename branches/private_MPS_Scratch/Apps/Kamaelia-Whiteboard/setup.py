@@ -22,9 +22,9 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia-Whiteboard",
+setup(name = "Kamaelia-Modeller",
       version = "1.0.0",
-      description = "Kamaelia Whiteboard - a P2P collaborative paged whiteboard",
+      description = "Kamaelia Modeller - a P2P collaborative paged whiteboard",
       author = "Michael Sparks & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/KamaeliaGrey",
@@ -77,11 +77,10 @@ setup(name = "Kamaelia-Whiteboard",
                   "Kamaelia.Visualisation.PhysicsGraph",
                   "Kamaelia.XML",
                   ""],
-      scripts = [ 'App/Whiteboard.py' ],
-      data_files=[ ],
+      scripts = [ 'App/Modeller.py' ],
+      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
       long_description = """
-Kamaelia Whitebaord s a whiteboarding application written using Kamaelia.
-It is network aware and can build collaboration trees in a manual P2P
-fashion.
+Kamaelia Modeller is a modelling tool initially aimed a graph systems,
+such as entity relationship systems.
 """,
       )
