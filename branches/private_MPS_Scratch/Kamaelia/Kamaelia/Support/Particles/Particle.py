@@ -261,4 +261,4 @@ class Particle(object):
             self.velocity = [0 for x in self.velocity]
         else:
             self.velocity = laws.dampening(self.ptype, self.velocity)
-            self.pos      = map(_add, self.pos, self.velocity)
+            self.pos = map(_add, self.pos, self.velocity)
