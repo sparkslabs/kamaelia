@@ -161,7 +161,7 @@ class ConnectedSocketAdapter(component):
        self.socket.shutdown(2)
        self.socket.close()
        self.passOnShutdown()
-       if (self.sock is not None) and (self.CSA is not None):
+       if (self.socket is not None):
            self.send(removeReader(self, self.socket), "_selectorSignal")
            self.send(removeWriter(self, self.socket), "_selectorSignal")
 
