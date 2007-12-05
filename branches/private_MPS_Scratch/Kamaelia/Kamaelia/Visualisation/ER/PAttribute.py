@@ -139,7 +139,7 @@ class PAttribute(BaseParticle):
         self.slabel.append(slabel)
         self.slabel.append(rotozoom(slabel, -45, 1.0))
 
-        print self.slabel[0].get_width(),self.slabel[0].get_height()
+#        print self.slabel[0].get_width(),self.slabel[0].get_height()
 
         self.radius = max(self.slabel[0].get_width(),self.slabel[0].get_height())/2
 #        self.radius = max(self.slabel[0].get_width(),self.slabel[0].get_height())
@@ -229,7 +229,11 @@ class PAttribute(BaseParticle):
         ]
 #        pygame.draw.polygon(surface, colour, points)
 #        pygame.draw.polygon(surface, bordercolour, points,1)
-        w,h = self.label[i].get_width()*1.3, self.label[i].get_height()*1.3
+        w,h = self.label[i].get_width()*1.4, self.label[i].get_height()*1.4
+        pygame.draw.ellipse(surface,
+                            (255,255,255),
+                            ((x-w/2,y-h/2),(w,h)),
+                            0)
         pygame.draw.ellipse(surface,
                             (0,0,0),
                             ((x-w/2,y-h/2),(w,h)),
