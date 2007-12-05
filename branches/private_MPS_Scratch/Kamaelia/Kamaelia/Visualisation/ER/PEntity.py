@@ -72,7 +72,7 @@ class PEntity(BaseParticle):
         oldhue = []
         for i in xrange(len(acro)):
             factor = acro[:i+1]
-            print factor
+#            print factor
             hue = list(colours [ factor.__hash__() % len(colours)])
             if oldhue == []:
                oldhue = hue
@@ -105,7 +105,7 @@ class PEntity(BaseParticle):
 
         yield 1
         for p in self.bondedTo:
-            print type(p)
+#            print type(p)
             endx = int(p.pos[0] - self.left)
             endy = int(p.pos[1] - self.top )
             pygame.draw.line(surface, (192,192,192), (x,y), (endx,endy))
