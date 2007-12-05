@@ -147,7 +147,7 @@ class PRelation(BaseParticle):
         self.slabel.append(slabel)
         self.slabel.append(rotozoom(slabel, -45, 1.0))
 
-        print self.slabel[0].get_width(),self.slabel[0].get_height()
+#        print self.slabel[0].get_width(),self.slabel[0].get_height()
 
         self.radius = max(self.slabel[0].get_width(),self.slabel[0].get_height())/2
 #        self.radius = max(self.slabel[0].get_width(),self.slabel[0].get_height())
@@ -236,6 +236,7 @@ class PRelation(BaseParticle):
                 (x,y-16),
         ]
 #        pygame.draw.polygon(surface, colour, points)
+        pygame.draw.polygon(surface, (255,255,255), points)
         pygame.draw.polygon(surface, bordercolour, points,1)
 
         if self.selected:
