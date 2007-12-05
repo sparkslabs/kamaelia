@@ -40,7 +40,7 @@ from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 
 # We should start thinking about how we handle the lines below better:
 
-from Show.GraphSlides import onDemandGraphFileParser_Prefab
+from Kamaelia.Apps.Show.GraphSlides import onDemandGraphFileParser_Prefab
 
 if len(sys.argv) > 1:
     basepath = sys.argv[1]
