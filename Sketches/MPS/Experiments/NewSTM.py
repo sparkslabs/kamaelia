@@ -35,7 +35,7 @@ class Store(object):
     def set(self, key, value):
         success = False
         try:
-            self.lock.acquire():
+            self.lock.acquire()
             if not (self.store[key].version > value.version):
                 self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
                 value.version= value.version+1
@@ -56,7 +56,8 @@ class Store(object):
             finally:
                 self.lock.release()
 
-            return self.get(key) # Yes, this can still fail
+            return self.get(key) # Yes, this can still fail, this is still perhaps non-ideal - should probably
+                                 # have a flag to allow retrying a few times first.
 
     def dump(self):
         for k in self.store:
