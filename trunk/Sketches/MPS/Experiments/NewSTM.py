@@ -1,5 +1,17 @@
 #!/usr/bin/python
-#
+"""
+ARGGH....
+
+Don't use this yet, locking functions differently from how I expected it to.
+I'm pretty certain this code is safe, but the difference in behaviour is a tad
+annoying.
+(Looking at other code, I think I want RLock, though I actually wanted something
+that would fail if I tried to acquire a lock and couldn't get it immediately.
+Heh, kinda ironic that I've spent 5 years writing highly concurrent, safe, code
+and only now start get being bitten by locking issues :-D
+)
+"""
+
 # (C) 2007 Kamaelia Contributors(1) All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
