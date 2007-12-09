@@ -33,23 +33,30 @@ class Store(object):
         return self.store[key].clone()
 
     def set(self, key, value):
-        if self.lock.acquire():
+        success = False
+        try:
+            self.lock.acquire():
             if not (self.store[key].version > value.version):
                 self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
                 value.version= value.version+1
-                self.lock.release()
-                return
+                success = True
+        finally:
             self.lock.release()
-        else:
-            print "Could Not Acquire Lock"
-        raise ConcurrentUpdate
+
+        if not success:
+            raise ConcurrentUpdate
 
     def using(self, key):
         try:
             return self.get(key)
         except KeyError:
-            self.store[key] = Value(0, None,self,key)
-            return self.get(key)
+            try:
+                self.lock.acquire()
+                self.store[key] = Value(0, None,self,key)
+            finally:
+                self.lock.release()
+
+            return self.get(key) # Yes, this can still fail
 
     def dump(self):
         for k in self.store:
