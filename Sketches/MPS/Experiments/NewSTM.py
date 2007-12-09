@@ -45,6 +45,13 @@ class Value(object):
     def clone(self):
         return Value(self.version, copy.deepcopy(self.value),self.store,self.key)
 
+class Collection(dict):
+    def set_store(self,store):
+        self.store = store
+    def commit(self):
+        self.store.set_values(self)
+
+
 class Store(object):
     def __init__(self):
         self.store = {}
@@ -52,6 +59,26 @@ class Store(object):
 
     def get(self, key):
         return self.store[key].clone()
+
+    def set_values(self, D):
+        Fail = False
+        if self.lock.acquire(0):
+            try:
+                for key in D:
+                    value = D[key]
+                    if not (self.store[key].version > value.version):
+                        self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
+                        value.version= value.version+1
+                    else:
+                        Fail = True
+                        break
+            finally:
+                self.lock.release()
+        else:
+            raise BusyRetry
+
+        if Fail:
+            raise ConcurrentUpdate
 
     def set(self, key, value):
         success = False
@@ -69,7 +96,31 @@ class Store(object):
         if not success:
             raise ConcurrentUpdate
 
-    def using(self, key):
+    def using(self, *keys):
+        D = Collection()
+        new = []
+
+        # Grab the values that already exist
+        for key in keys:
+            if key in self.store:
+                D[key] = self.store[key].clone()
+            else:
+                new.append(key)
+
+        # Now add in the values that don't already exist
+        if self.lock.acquire(0):
+            try:
+                for key in new:
+                    self.store[key] = Value(0, None,self,key)
+                    D[key] = self.store[key].clone()
+            finally:
+                self.lock.release()
+        else:
+            raise BusyRetry
+        D.set_store(self)
+        return D
+
+    def usevar(self, key):
         try:
             return self.get(key)
         except KeyError:
@@ -81,40 +132,79 @@ class Store(object):
             else:
                 raise BusyRetry
 
-            return self.get(key) # Yes, this can still fail, this is still perhaps non-ideal - should probably
-                                 # have a flag to allow retrying a few times first.
+            return self.get(key)
+
 
     def dump(self):
+        print "DEBUG: Store dump ------------------------------"
         for k in self.store:
-            print k, ":", self.store[k]
+            print "     ",k, ":", self.store[k]
+        print
 
 
-S = Store()
-D = S.using("accounts")
-D.set({"account_one":50, "account_two":100, "myaccount":0})
-D.commit() # First
-S.dump()
-X = D.value
-X["myaccount"] = X["account_one"] + X["account_two"]
-X["account_one"] = 0
+if 1:
+    S = Store()
+    D = S.using("account_one", "account_two", "myaccount")
+    D["myaccount"].set(0)
+    D["account_one"].set(50)
+    D["account_two"].set(100)
+    D.commit() # 1
+    S.dump()
 
-E = S.using("accounts")
-Y = E.value
-Y["myaccount"] = Y["myaccount"]-100
-Y["account_one"]= 100
-E.set(Y)
-E.commit() # Second
-S.dump()
-
-X["account_two"] = 0
-D.set(X)
-D.commit()  # Third
-S.dump()
-print "Committed", D.value["myaccount"]
+    D = S.using("account_one", "account_two", "myaccount")
+    D["myaccount"].set(D["account_one"].value+D["account_two"].value)
+    E = S.using("account_one", "myaccount")
+    E["myaccount"].set(E["myaccount"].value-100)
+    E["account_one"].set(100)
+    E.commit() # 2
+    D["account_one"].set(0)
+    D["account_two"].set(0)
+    D.commit() # 3 - should fail
+    S.dump()
 
 if 0:
     S = Store()
-    greeting = S.using("hello")
+    D = S.using("account_one", "account_two", "myaccount")
+    D["account_one"].set(50)
+    D["account_two"].set(100)
+    D.commit()
+    S.dump()
+
+    D = S.using("account_one", "account_two", "myaccount")
+    D["myaccount"].set(D["account_one"].value+D["account_two"].value)
+    D["account_one"].set(0)
+    D["account_two"].set(0)
+    D.commit()
+    S.dump()
+
+
+if 0:
+    S = Store()
+    D = S.usevar("accounts")
+    D.set({"account_one":50, "account_two":100, "myaccount":0})
+    D.commit() # First
+    S.dump()
+    X = D.value
+    X["myaccount"] = X["account_one"] + X["account_two"]
+    X["account_one"] = 0
+
+    E = S.usevar("accounts")
+    Y = E.value
+    Y["myaccount"] = Y["myaccount"]-100
+    Y["account_one"]= 100
+    E.set(Y)
+    E.commit() # Second
+    S.dump()
+
+    X["account_two"] = 0
+    D.set(X)
+    D.commit()  # Third
+    S.dump()
+    print "Committed", D.value["myaccount"]
+
+if 0:
+    S = Store()
+    greeting = S.usevar("hello")
     print repr(greeting.value)
     greeting.set("Hello World")
     greeting.commit()
@@ -122,7 +212,7 @@ if 0:
     print greeting
     S.dump()
     # ------------------------------------------------------
-    par = S.using("hello")
+    par = S.usevar("hello")
     par.set("Woo")
     par.commit()
     # ------------------------------------------------------
