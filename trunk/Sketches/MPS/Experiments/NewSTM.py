@@ -1,17 +1,5 @@
 #!/usr/bin/python
-"""
-ARGGH....
-
-Don't use this yet, locking functions differently from how I expected it to.
-I'm pretty certain this code is safe, but the difference in behaviour is a tad
-annoying.
-(Looking at other code, I think I want RLock, though I actually wanted something
-that would fail if I tried to acquire a lock and couldn't get it immediately.
-Heh, kinda ironic that I've spent 5 years writing highly concurrent, safe, code
-and only now start get being bitten by locking issues :-D
-)
-"""
-
+#
 # (C) 2007 Kamaelia Contributors(1) All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,6 +24,7 @@ import copy
 import threading
 
 class ConcurrentUpdate(Exception): pass
+class BusyRetry(Exception): pass
 
 class Value(object):
     def __init__(self, version, value,store,key):
@@ -66,14 +55,16 @@ class Store(object):
 
     def set(self, key, value):
         success = False
-        try:
-            self.lock.acquire()
-            if not (self.store[key].version > value.version):
-                self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
-                value.version= value.version+1
-                success = True
-        finally:
-            self.lock.release()
+        if self.lock.acquire(0):
+            try:
+                if not (self.store[key].version > value.version):
+                    self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
+                    value.version= value.version+1
+                    success = True
+            finally:
+                self.lock.release()
+        else:
+            raise BusyRetry
 
         if not success:
             raise ConcurrentUpdate
@@ -82,11 +73,13 @@ class Store(object):
         try:
             return self.get(key)
         except KeyError:
-            try:
-                self.lock.acquire()
-                self.store[key] = Value(0, None,self,key)
-            finally:
-                self.lock.release()
+            if self.lock.acquire(0):
+                try:
+                    self.store[key] = Value(0, None,self,key)
+                finally:
+                    self.lock.release()
+            else:
+                raise BusyRetry
 
             return self.get(key) # Yes, this can still fail, this is still perhaps non-ideal - should probably
                                  # have a flag to allow retrying a few times first.
