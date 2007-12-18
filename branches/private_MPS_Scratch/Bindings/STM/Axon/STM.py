@@ -54,96 +54,133 @@ class Collection(dict):
 
 class Store(object):
     def __init__(self):
-        self.store = {}
+        self.store = {}                # Threadsafe
         self.lock = threading.Lock()
 
-    def get(self, key):
+    # ////---------------------- Direct access -----------------------\\\\
+    # Let's make this lock free, and force the assumption that to do this the store must be locked.
+    # Let's make this clear by marking these private
+    def __get(self, key):                # Reads Store Value - need to protect during clone
         return self.store[key].clone()
 
-    def set_values(self, D):
-        Fail = False
-        if self.lock.acquire(0):
+    def __make(self, key):               # Writes Store Value - need to prevent multiple concurrent write
+        self.store[key] = Value(0, None,self,key)
+
+    def __do_update(self, key, value):   # Writes Store Value  - need to prevent multiple concurrent write
+        self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
+        value.version= value.version+1
+
+    def __can_update(self,key, value):   # Reads Store Value - possibly thread safe, depending on VM implementation
+        return not (self.store[key].version > value.version)
+    # \\\\---------------------- Direct access -----------------------////
+
+
+
+    # ////----------------- Single Value Mediation ------------------\\\\
+    # Both of these are read-write
+    def usevar(self, key, islocked=False):   # Reads and Writes Values (since value may not exist)
+        locked = islocked
+        if not locked:
+            locked = self.lock.acquire(0)
+        result = None
+        if locked:
+#            print "OK:usevar"
             try:
-                for key in D:
-                    value = D[key]
-                    if not (self.store[key].version > value.version):
-                        self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
-                        value.version= value.version+1
-                    else:
-                        Fail = True
-                        break
+                try:
+                    result = self.__get(key)
+                except KeyError:
+                    self.__make(key)
+                    result = self.__get(key)
+#                print "OK:usevar", result
+            finally:
+                if not islocked:
+                    self.lock.release() # only release if we acquire
+        else:
+            raise BusyRetry
+        return result
+
+
+    def set(self, key, value): # Reads and Writes Values (has to check store contents)
+        locked = self.lock.acquire(0)
+        HasBeenSet = False
+        if locked:
+#            print "OK:set"
+            try:
+                if self.__can_update(key, value):
+                    self.__do_update(key, value)
+                    HasBeenSet = True
             finally:
                 self.lock.release()
         else:
             raise BusyRetry
-
-        if Fail:
+        if not HasBeenSet:
             raise ConcurrentUpdate
 
-    def set(self, key, value):
-        success = False
-        if self.lock.acquire(0):
+    # \\\\----------------- Single Value Mediation ------------------////
+
+    # ////----------------- Multi-Value Mediation ------------------\\\\
+    # Both of these are read-write
+    def using(self, *keys):    # Reads and Writes Values (since values may not exist)
+        locked = self.lock.acquire(0)
+        if locked:
+#            print "OK:using"
             try:
-                if not (self.store[key].version > value.version):
-                    self.store[key] = Value(value.version+1, copy.deepcopy(value.value), self, key)
-                    value.version= value.version+1
-                    success = True
+
+                D = Collection()
+                for key in keys:
+                    D[key] = self.usevar(key,islocked=True)
+                D.set_store(self)
+
             finally:
                 self.lock.release()
         else:
             raise BusyRetry
 
-        if not success:
-            raise ConcurrentUpdate
-
-    def using(self, *keys):
-        D = Collection()
-        new = []
-
-        # Grab the values that already exist
-        for key in keys:
-            if key in self.store:
-                D[key] = self.store[key].clone()
-            else:
-                new.append(key)
-
-        # Now add in the values that don't already exist
-        if self.lock.acquire(0):
-            try:
-                for key in new:
-                    self.store[key] = Value(0, None,self,key)
-                    D[key] = self.store[key].clone()
-            finally:
-                self.lock.release()
-        else:
-            raise BusyRetry
-        D.set_store(self)
         return D
 
-    def usevar(self, key):
-        try:
-            return self.get(key)
-        except KeyError:
-            if self.lock.acquire(0):
-                try:
-                    self.store[key] = Value(0, None,self,key)
-                finally:
-                    self.lock.release()
-            else:
-                raise BusyRetry
+    def set_values(self, D):  # Reads and Writes Values (has to check store contents)
+        CanUpdateAll = True # Hope for the best :-)
 
-            return self.get(key)
+        locked = self.lock.acquire(0)
+        if locked:
+#            print "OK:set_values"
+            try:
+                for key in D:
+                    # Let experience teach us otherwise :-)
+                    CanUpdateAll = CanUpdateAll and self.__can_update(key, D[key]) # Reading Store
 
+                if CanUpdateAll:
+                    for key in D:
+                        self.__do_update(key, D[key]) # Writing Store
+            finally:
+                self.lock.release()
+        else:
+            raise BusyRetry
+
+        if not CanUpdateAll:
+            raise ConcurrentUpdate
+    # \\\\----------------- Multi-Value Mediation ------------------////
 
     def dump(self):
+        # Who cares really? This is a debug :-)
         print "DEBUG: Store dump ------------------------------"
         for k in self.store:
             print "     ",k, ":", self.store[k]
         print
 
+"""
+        locked = self.lock.acquire(0)
+        if locked:
+            try:
+            finally:
+                self.lock.release()
+        else:
+            raise BusyRetry
+"""
+
 
 if __name__ == "__main__":
-    if 1:
+    if 0:
         S = Store()
         D = S.using("account_one", "account_two", "myaccount")
         D["myaccount"].set(0)
@@ -198,11 +235,11 @@ if __name__ == "__main__":
 
         X["account_two"] = 0
         D.set(X)
-        D.commit()  # Third
+        D.commit()  # Third - This Should fail
         S.dump()
         print "Committed", D.value["myaccount"]
 
-    if 0:
+    if 1:
         S = Store()
         greeting = S.usevar("hello")
         print repr(greeting.value)
@@ -220,6 +257,6 @@ if __name__ == "__main__":
         S.dump()
         # ------------------------------------------------------
         greeting.set("Woo")
-        greeting.commit()
+        greeting.commit() # Should fail
         print repr(greeting), repr(greeting.value)
         S.dump()
