@@ -84,14 +84,12 @@ class Store(object):
             locked = self.lock.acquire(0)
         result = None
         if locked:
-#            print "OK:usevar"
             try:
                 try:
                     result = self.__get(key)
                 except KeyError:
                     self.__make(key)
                     result = self.__get(key)
-#                print "OK:usevar", result
             finally:
                 if not islocked:
                     self.lock.release() # only release if we acquire
@@ -104,7 +102,6 @@ class Store(object):
         locked = self.lock.acquire(0)
         HasBeenSet = False
         if locked:
-#            print "OK:set"
             try:
                 if self.__can_update(key, value):
                     self.__do_update(key, value)
@@ -123,7 +120,6 @@ class Store(object):
     def using(self, *keys):    # Reads and Writes Values (since values may not exist)
         locked = self.lock.acquire(0)
         if locked:
-#            print "OK:using"
             try:
 
                 D = Collection()
@@ -143,7 +139,6 @@ class Store(object):
 
         locked = self.lock.acquire(0)
         if locked:
-#            print "OK:set_values"
             try:
                 for key in D:
                     # Let experience teach us otherwise :-)
@@ -167,17 +162,6 @@ class Store(object):
         for k in self.store:
             print "     ",k, ":", self.store[k]
         print
-
-"""
-        locked = self.lock.acquire(0)
-        if locked:
-            try:
-            finally:
-                self.lock.release()
-        else:
-            raise BusyRetry
-"""
-
 
 if __name__ == "__main__":
     if 0:
