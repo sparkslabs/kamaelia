@@ -1,2 +1,6 @@
+1.0.1
+   * Improved locking. (fixed race hazards during copying for reading)
+   * Added Dining Philosophers examples (threading & Axon threading)
+
 1.0.0
    * Initial release
