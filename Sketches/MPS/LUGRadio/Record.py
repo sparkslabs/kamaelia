@@ -12,12 +12,19 @@ from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
-freq = 834.166670
+# freq = 834.166670
+freq = 754.166670
+#feparams = {
+#    "inversion" : dvb3.frontend.INVERSION_AUTO,
+#    "constellation" : dvb3.frontend.QAM_64,
+#    "coderate_HP" : dvb3.frontend.FEC_2_3,
+#    "coderate_LP" : dvb3.frontend.FEC_1_2,
+#}
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
-    "constellation" : dvb3.frontend.QAM_64,
-    "coderate_HP" : dvb3.frontend.FEC_2_3,
-    "coderate_LP" : dvb3.frontend.FEC_1_2,
+    "constellation" : dvb3.frontend.QAM_16,
+    "coderate_HP" : dvb3.frontend.FEC_3_4,
+    "coderate_LP" : dvb3.frontend.FEC_3_4
 }
 
 
@@ -25,7 +32,7 @@ print sys.argv
 if len(sys.argv)>1:
     channels = [ int(x) for x in sys.argv[1:] ]
 else:
-    channels = [600,601,18]
+    channels = [610,611,18]
 
 print "RECORDING CHANNELS", channels
 
