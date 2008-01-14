@@ -228,6 +228,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
         shuttingDown = False
+        timewithNone = 0
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
 #                print "recieved control message"
@@ -241,6 +242,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                       print "we are indeed tracked"
                        self.trackedby.deRegisterService("selector")
                        self.trackedby.deRegisterService("selectorshutdown")
+                       self.trackedby == None
             if shuttingDown:
 #               print "we're shutting down"
                if len(readers) + len(writers) + len(exceptionals) == 0:
@@ -259,6 +261,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                    
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
+                timewithNone = 0
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,0.05) #0.05
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
@@ -289,9 +292,20 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
                 self.sync()
             elif not self.anyReady():
-                self.pause(0.5)        # pause - we're not selecting on anything, timeout becuase of shutdown timeout needs
-#            else:
-#                print "HMM"
+                #  no readers, writers, or anything - wait a few moments just in case
+                timewithNone += 1
+                self.pause(0.5)        # pause - we're not selecting on anything, timeout because of shutdown timeout needs
+            else:
+                timewithNone += 1
+                print "HMM"
+
+            if timewithNone > 6: # XXXX replace with STM code
+                break
+        if self.trackedby is not None:
+               self.trackedby.deRegisterService("selector")
+               self.trackedby.deRegisterService("selectorshutdown")
+
+
 ##        print "SELECTOR HAS EXITTED"
 
 
