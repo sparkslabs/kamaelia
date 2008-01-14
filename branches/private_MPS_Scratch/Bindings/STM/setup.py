@@ -23,7 +23,7 @@
 from distutils.core import setup    
 
 setup(name = "Axon.STM",
-      version = "1.0.0",
+      version = "1.0.1",
       description = "Axon: Software Transactional Memory",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
