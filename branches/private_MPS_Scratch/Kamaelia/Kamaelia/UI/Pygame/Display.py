@@ -405,10 +405,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                self.send(surface, callbackcomms)
                onlymouseinside = message.get("onlymouseinside", False)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms, onlymouseinside) )
-               if message.get("onlymouseinside", False):
-                   print "ONLYMOUSEINSIDE: TRUE"
-               else:
-                   print "ONLYMOUSEINSIDE: FALSE"
+#               if message.get("onlymouseinside", False):
+#                   print "ONLYMOUSEINSIDE: TRUE"
+#               else:
+#                   print "ONLYMOUSEINSIDE: FALSE"
                if message.get("fullscreen", False):
                    if not self.fullscreen:
                        self.fullscreen = 1
