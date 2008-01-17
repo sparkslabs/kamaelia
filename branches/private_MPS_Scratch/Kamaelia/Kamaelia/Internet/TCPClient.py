@@ -243,6 +243,7 @@ class TCPClient(Axon.Component.component):
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
          except Exception, x:
+#            print "I ALSO AM CALLED"
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
       except Finality:
@@ -261,17 +262,23 @@ class TCPClient(Axon.Component.component):
         # "TCPC: Exitting run client"
    
    def stop(self):
-       self.sock.shutdown(2)
-       self.sock.close()
+       try:
+           self.sock.shutdown(2)
+           self.sock.close()
+       except:
+           pass # Well, we tried.
        self.send(producerFinished(self,self.howDied), "signal")
        if (self.sock is not None) and (self.CSA is not None):
            self.send(removeReader(self.CSA, self.sock), "_selectorSignal")
            self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
+           self.send(producerFinished(),"signal")
+       super(TCPClient, self).stop()
 
    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
            self.send(msg,"signal")
+#           print "woo?"
            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                return True
        return False
