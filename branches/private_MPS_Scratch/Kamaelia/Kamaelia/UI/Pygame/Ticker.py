@@ -58,7 +58,7 @@ The text is normalised by the ticker. Multiple spaces between words are
 collapsed to a single space. Linefeeds are ignored.
 
 NOTE: 2 consecutive linefeeds currently results in a special message being
-sent out of the "signal" outbox. This is work-in-progress aimed at new features.
+sent out of the "_displaysignal" outbox. This is work-in-progress aimed at new features.
 It is only documented here for completeness and should not be relied upon.
 
 You can set the text size, colour and line spacing. You can also set the
@@ -149,13 +149,16 @@ class Ticker(Axon.Component.component):
    """
     
    Inboxes = { "inbox"        : "Specify (new) filename",
-               "control"      : "Shutdown messages & feedback from Pygame Display service",
+               "control"      : "NOT USED (yet)",
                "alphacontrol" : "Transparency of the ticker (0=fully transparent, 255=fully opaque)",
                "pausebox"     : "Any message pauses the ticker",
                "unpausebox"   : "Any message unpauses the ticker",
+
+               "_displaycontrol" : "Shutdown messages & feedback from Pygame Display service",
              }
    Outboxes = { "outbox" : "NOT USED",
-                "signal" : "Shutdown signalling & sending requests to Pygame Display service",
+                "signal" : "NOT USED (yet)",
+                "_displaysignal" : "Shutdown signalling & sending requests to Pygame Display service",
               }
 
    def __init__(self, **argd):
@@ -190,7 +193,7 @@ class Ticker(Axon.Component.component):
        """Clears the ticker of any existing text."""
        self.display.fill(self.background_colour)
        self.renderBorder(self.display)
-       self.send({"REDRAW":True, "surface":self.display}, "signal")
+       self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
             
    def renderBorder(self, display):
       """Draws a rectangle to form the 'border' of the ticker"""
@@ -210,10 +213,10 @@ class Ticker(Axon.Component.component):
       Makes the request, then yields 1 until a display surface is returned.
       """
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
-      self.send(argd, "signal")
-      for _ in self.waitBox("control"): yield 1
-      display = self.recv("control")
+      self.link((self,"_displaysignal"), displayservice)
+      self.send(argd, "_displaysignal")
+      for _ in self.waitBox("_displaycontrol"): yield 1
+      display = self.recv("_displaycontrol")
       self.display = display
 
 
@@ -226,7 +229,7 @@ class Ticker(Axon.Component.component):
     """Main loop."""
     yield WaitComplete(
           self.requestDisplay(DISPLAYREQUEST=True,
-                              callback = (self,"control"),
+                              callback = (self,"_displaycontrol"),
 # SMELL                              transparency = (128,48,128),
                             size = (self.render_area.width, self.render_area.height),
                             position = self.position
@@ -323,7 +326,7 @@ class Ticker(Axon.Component.component):
                         position[1] += maxheight + self.line_spacing
 
                   display.blit(word_render, position)
-                  self.send({"REDRAW":True, "surface":self.display}, "signal")
+                  self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
                   position[0] += wordsize[0]
                   if wordsize[1] > maxheight:
                      maxheight = wordsize[1]
