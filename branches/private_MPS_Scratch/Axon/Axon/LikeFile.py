@@ -177,6 +177,9 @@ from AxonExceptions import noSpaceInBox
 import Queue, threading, time, copy, warnings, Ipc
 queuelengths = 0
 
+import CoordinatingAssistantTracker as cat
+
+
 DEFIN = ["inbox", "control"]
 DEFOUT = ["outbox", "signal"]
 
@@ -202,16 +205,26 @@ class dummyComponent(component):
 class background(threading.Thread):
     """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
     lock = threading.Lock()
-    def __init__(self,slowmo=0):
+    def __init__(self,slowmo=0,zap=False):
         if not background.lock.acquire(False):
             raise "only one scheduler for now can be run!"
         self.slowmo = slowmo
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
+        self.zap = zap
     def run(self):
+        if self.zap:
+            print "zapping", scheduler.run.threads
+            X = scheduler()
+            scheduler.run = X
+            print "zapped", scheduler.run.threads
+            cat.coordinatingassistanttracker.basecat.zap()
+        print "Here? (run)"
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
+        print "zoiped", scheduler.run.threads
         # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
         scheduler.run.runThreads(slowmo = self.slowmo)
+#        print "There?"
         background.lock.release()
 
 
@@ -303,6 +316,7 @@ class componentWrapperOutput(AdaptiveCommsComponent):
             self.link((self.child, childSource),(self, parentSink))
 
     def main(self):
+        print "componentWrapperOutput", self.child
         self.child.activate()
         while True:
             self.pause()
@@ -372,6 +386,7 @@ class likefile(object):
     def empty(self, boxname = "outbox"):
         """Return True if there is no data pending collection on boxname, False otherwise."""
         return self.outQueues[boxname].empty()
+
     def qsize(self, boxname = "outbox"):
         """Returns the approximate number of pending data items awaiting collection from boxname. Will never be smaller than the actual amount."""
         return self.outQueues[boxname].qsize()
@@ -379,6 +394,17 @@ class likefile(object):
     def get_nowait(self, boxname = "outbox"):
         """Equivalent to get(boxname, False)"""
         return self.get(boxname, blocking = False)
+
+    def anyReady(self):
+        names = []
+        for boxname in self.outQueues.keys():
+            if self.qsize(boxname):
+                names.append(boxname)
+
+        if names != []:
+            return names
+
+        return None
 
     def get(self, boxname = "outbox", blocking = True, timeout = 86400):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.

@@ -271,6 +271,7 @@ requests to wake or pause components.
 """
 import time
 import gc as _gc
+import os
 
 from util import removeAll
 from idGen import strId, numId
@@ -322,6 +323,7 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
+      print "Addthread", os.getpid(), mprocess
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
@@ -401,6 +403,7 @@ class scheduler(microprocess):
        nextrunqueue = []
        running = True
        
+       print "OK, starting up....", os.getpid()
        while running:
            
            # slowmo
@@ -506,6 +509,7 @@ class scheduler(microprocess):
            if not self.stopRequests.empty():
 #               print "Do we get here? 2"
                break
+#           print "len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests
            running = len(self.threads)
 
        if not self.stopRequests.empty():
@@ -514,6 +518,7 @@ class scheduler(microprocess):
 #               print "We now call .stop() on ", X.name, type(X)
                X.stop()
 #       print "All microprocesses now stopped. Halting"
+       print "OK, shutting down", os.getpid()
 
    def stop(self):
 #       print "ADDING STOP REQUEST"
