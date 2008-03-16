@@ -71,18 +71,38 @@ def ProcessPipeline(component_one, component_two):
 
 from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 
-ProcessPipeline(
+from Kamaelia.Chassis.Pipeline import Pipeline
+import sys
+
+if len(sys.argv) <2:
+    ProcessPipeline(
                 Textbox(position=(20, 340),
                                  text_height=36,
                                  screen_width=900,
-                                 screen_height=400,
+                                 screen_height=200,
                                  background_color=(130,0,70),
                                  text_color=(255,255,255)),
                 TextDisplayer(position=(20, 90),
                                         text_height=36,
-                                        screen_width=400,
-                                        screen_height=540,
+                                        screen_width=900,
+                                        screen_height=200,
                                         background_color=(130,0,70),
                                         text_color=(255,255,255))
                 )
+else:
+    Pipeline(
+                Textbox(position=(20, 340),
+                                 text_height=36,
+                                 screen_width=900,
+                                 screen_height=200,
+                                 background_color=(130,0,70),
+                                 text_color=(255,255,255)),
+                TextDisplayer(position=(20, 90),
+                                        text_height=36,
+                                        screen_width=900,
+                                        screen_height=200,
+                                        background_color=(130,0,70),
+                                        text_color=(255,255,255))
+                ).run()
+
 
