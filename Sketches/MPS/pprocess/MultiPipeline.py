@@ -57,17 +57,11 @@ def ProcessPipeline(*components):
         chans.append( chan )
         exchange.add(chan )
 
-    mappings = {
-         (chans[0], "outbox") : (chans[1], "inbox"),
-         (chans[0], "signal") : (chans[1], "control"),
+    mappings = {}
+    for i in xrange(len(components)-1):
+         mappings[ (chans[i], "outbox") ] = (chans[i+1], "inbox")
+         mappings[ (chans[i], "signal") ] = (chans[i+1], "control")
 
-         (chans[1], "outbox") : (chans[2], "inbox"),
-         (chans[1], "signal") : (chans[2], "control"),
-
-         (chans[2], "outbox") : (chans[3], "inbox"),
-         (chans[2], "signal") : (chans[3], "control"),
-
-    }
     while 1:
         for chan in exchange.ready(0):
             D = chan._receive()
@@ -98,18 +92,6 @@ if len(sys.argv) <2:
                                         screen_height=200,
                                         background_color=(130,0,70),
                                         text_color=(255,255,255)),
-                Textbox(position=(20, 340),
-                                 text_height=36,
-                                 screen_width=900,
-                                 screen_height=200,
-                                 background_color=(130,0,70),
-                                 text_color=(255,255,255)),
-                TextDisplayer(position=(20, 90),
-                                        text_height=36,
-                                        screen_width=900,
-                                        screen_height=200,
-                                        background_color=(130,0,70),
-                                        text_color=(255,255,255))
                 )
 else:
     Pipeline(
