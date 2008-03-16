@@ -46,33 +46,26 @@ class ProcessWrapComponent(object):
                     self.channel._send((D, boxname))
             yield 1
 
-def ProcessPipeline(component_one, component_two, component_three, component_four):
-    X = ProcessWrapComponent(component_one)
-    Y = ProcessWrapComponent( component_two)
-
-    A = ProcessWrapComponent( component_three )
-    B = ProcessWrapComponent( component_four)
-
+def ProcessPipeline(*components):
     exchange = pprocess.Exchange()
-    chan1 = X.activate()
-    chan2 = Y.activate()
-    chan3 = A.activate()
-    chan4 = B.activate()
 
-    exchange.add(chan1)
-    exchange.add(chan2)
-    exchange.add(chan3)
-    exchange.add(chan4)
+    chans = []
+
+    for comp in components:
+        A = ProcessWrapComponent( comp )
+        chan = A.activate()
+        chans.append( chan )
+        exchange.add(chan )
 
     mappings = {
-         (chan1, "outbox") : (chan2, "inbox"),
-         (chan1, "signal") : (chan2, "control"),
+         (chans[0], "outbox") : (chans[1], "inbox"),
+         (chans[0], "signal") : (chans[1], "control"),
 
-         (chan2, "outbox") : (chan3, "inbox"),
-         (chan2, "signal") : (chan3, "control"),
+         (chans[1], "outbox") : (chans[2], "inbox"),
+         (chans[1], "signal") : (chans[2], "control"),
 
-         (chan3, "outbox") : (chan4, "inbox"),
-         (chan3, "signal") : (chan4, "control"),
+         (chans[2], "outbox") : (chans[3], "inbox"),
+         (chans[2], "signal") : (chans[3], "control"),
 
     }
     while 1:
