@@ -161,7 +161,7 @@ if __name__ == "__main__":
                         ("component_one", "signal") : ("component_two", "control"),
                     }
         )
-    if 1:
+    if 0:
         ProcessPipelineComponent(
                     Textbox(position=(20, 340),
                                      text_height=36,
@@ -175,5 +175,24 @@ if __name__ == "__main__":
                                             screen_height=200,
                                             background_color=(130,0,70),
                                             text_color=(255,255,255))
+        ).run()
+
+    if 1:
+        from Kamaelia.Chassis.Pipeline import Pipeline
+        Pipeline(
+                    Textbox(position=(20, 340),
+                                     text_height=36,
+                                     screen_width=900,
+                                     screen_height=200,
+                                     background_color=(130,0,70),
+                                     text_color=(255,255,255)),
+            ProcessPipelineComponent(
+                    TextDisplayer(position=(20, 90),
+                                            text_height=36,
+                                            screen_width=900,
+                                            screen_height=200,
+                                            background_color=(130,0,70),
+                                            text_color=(255,255,255))
+            ),
         ).run()
 
