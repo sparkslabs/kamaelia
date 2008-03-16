@@ -46,20 +46,34 @@ class ProcessWrapComponent(object):
                     self.channel._send((D, boxname))
             yield 1
 
-def ProcessPipeline(component_one, component_two):
+def ProcessPipeline(component_one, component_two, component_three, component_four):
     X = ProcessWrapComponent(component_one)
     Y = ProcessWrapComponent( component_two)
+
+    A = ProcessWrapComponent( component_three )
+    B = ProcessWrapComponent( component_four)
 
     exchange = pprocess.Exchange()
     chan1 = X.activate()
     chan2 = Y.activate()
+    chan3 = A.activate()
+    chan4 = B.activate()
 
     exchange.add(chan1)
     exchange.add(chan2)
+    exchange.add(chan3)
+    exchange.add(chan4)
 
     mappings = {
          (chan1, "outbox") : (chan2, "inbox"),
          (chan1, "signal") : (chan2, "control"),
+
+         (chan2, "outbox") : (chan3, "inbox"),
+         (chan2, "signal") : (chan3, "control"),
+
+         (chan3, "outbox") : (chan4, "inbox"),
+         (chan3, "signal") : (chan4, "control"),
+
     }
     while 1:
         for chan in exchange.ready(0):
@@ -79,6 +93,18 @@ import sys
 
 if len(sys.argv) <2:
     ProcessPipeline(
+                Textbox(position=(20, 340),
+                                 text_height=36,
+                                 screen_width=900,
+                                 screen_height=200,
+                                 background_color=(130,0,70),
+                                 text_color=(255,255,255)),
+                TextDisplayer(position=(20, 90),
+                                        text_height=36,
+                                        screen_width=900,
+                                        screen_height=200,
+                                        background_color=(130,0,70),
+                                        text_color=(255,255,255)),
                 Textbox(position=(20, 340),
                                  text_height=36,
                                  screen_width=900,
