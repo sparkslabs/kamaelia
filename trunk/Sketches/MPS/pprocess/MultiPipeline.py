@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import Axon
+from Axon.Scheduler import scheduler
 import Axon.LikeFile
 import pprocess
 import time
@@ -14,11 +15,14 @@ class ProcessWrapComponent(object):
         self.thecomponent = somecomponent
         self.ce = None
 
-
-
     def run(self, channel):
+        print "ZZZZZZZZ"
         from Axon.LikeFile import likefile, background
-        background().start()
+        print "Hi",scheduler.run.threads
+        background(zap=True).start()
+        print "Bye",scheduler.run.threads
+        print "Here???"
+
         self.exchange.add(channel)
         self.channel = channel
         self.ce = likefile(self.thecomponent)
@@ -26,10 +30,13 @@ class ProcessWrapComponent(object):
             pass
 
     def activate(self):
+        print "XXXXXXX"
         channel = pprocess.start(self.run)
+        print "YYYYYYY"
         return channel
 
     def main(self):
+        print "Running?"
         t = 0
         while 1:
             if time.time() - t > 0.2:
@@ -180,12 +187,14 @@ if __name__ == "__main__":
     if 1:
         from Kamaelia.Chassis.Pipeline import Pipeline
         Pipeline(
+#            ProcessPipelineComponent(
                     Textbox(position=(20, 340),
                                      text_height=36,
                                      screen_width=900,
                                      screen_height=200,
                                      background_color=(130,0,70),
                                      text_color=(255,255,255)),
+#            ),
             ProcessPipelineComponent(
                     TextDisplayer(position=(20, 90),
                                             text_height=36,
