@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import Axon
 import Axon.LikeFile
 import pprocess
 import time
@@ -99,26 +100,80 @@ def ProcessGraphline(**graphline_spec):
             dest[0]._send( (D[0], dest[1] ) )
         time.sleep(0.001)
 
+
+class ProcessPipelineComponent(Axon.Component.component):
+    def __init__(self, *components, **argd):
+        super(ProcessPipelineComponent,self).__init__(**argd)
+        self.components = components
+
+    def main(self):
+        exchange = pprocess.Exchange()
+        chans = []
+        for comp in self.components:
+            A = ProcessWrapComponent( comp )
+            chan = A.activate()
+            chans.append( chan )
+            exchange.add(chan )
+
+        mappings = {}
+        for i in xrange(len(self.components)-1):
+             mappings[ (chans[i], "outbox") ] = (chans[i+1], "inbox")
+             mappings[ (chans[i], "signal") ] = (chans[i+1], "control")
+
+        while 1:
+            for chan in exchange.ready(0):
+                D = chan._receive()
+                dest = mappings[ ( chan, D[1] ) ]
+                if chan != chans[-1]:
+                    dest[0]._send( (D[0], dest[1] ) )
+                else:
+                    self.send(D[0], D[1]) # Pass through outbound
+            while self.dataReady("inbox"):
+                D = self.recv("inbox")
+                chans[0]._send( (D, "inbox") ) # Pass through inbound
+            while self.dataReady("control"):
+                D = self.recv("inbox")
+                chans[0]._send( (D, "control") ) # Pass through inbound
+            yield 1
+
+
 # --- End Support code ---------------------------------------------------------
 
 if __name__ == "__main__":
     from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 
-    ProcessGraphline(
-                component_one = Textbox(position=(20, 340),
-                                 text_height=36,
-                                 screen_width=900,
-                                 screen_height=200,
-                                 background_color=(130,0,70),
-                                 text_color=(255,255,255)),
-                component_two = TextDisplayer(position=(20, 90),
-                                        text_height=36,
-                                        screen_width=900,
-                                        screen_height=200,
-                                        background_color=(130,0,70),
-                                        text_color=(255,255,255)),
-                linkages = {
-                    ("component_one", "outbox") : ("component_two", "inbox"),
-                    ("component_one", "signal") : ("component_two", "control"),
-                }
-    )
+    if 0:
+        ProcessGraphline(
+                    component_one = Textbox(position=(20, 340),
+                                     text_height=36,
+                                     screen_width=900,
+                                     screen_height=200,
+                                     background_color=(130,0,70),
+                                     text_color=(255,255,255)),
+                    component_two = TextDisplayer(position=(20, 90),
+                                            text_height=36,
+                                            screen_width=900,
+                                            screen_height=200,
+                                            background_color=(130,0,70),
+                                            text_color=(255,255,255)),
+                    linkages = {
+                        ("component_one", "outbox") : ("component_two", "inbox"),
+                        ("component_one", "signal") : ("component_two", "control"),
+                    }
+        )
+    if 1:
+        ProcessPipelineComponent(
+                    Textbox(position=(20, 340),
+                                     text_height=36,
+                                     screen_width=900,
+                                     screen_height=200,
+                                     background_color=(130,0,70),
+                                     text_color=(255,255,255)),
+                    TextDisplayer(position=(20, 90),
+                                            text_height=36,
+                                            screen_width=900,
+                                            screen_height=200,
+                                            background_color=(130,0,70),
+                                            text_color=(255,255,255))
+        ).run()
+
