@@ -57,12 +57,15 @@ def ProcessPipeline(component_one, component_two):
     exchange.add(chan1)
     exchange.add(chan2)
 
+    mappings = {
+         (chan1, "outbox") : (chan2, "inbox"),
+         (chan1, "signal") : (chan2, "control"),
+    }
     while 1:
         for chan in exchange.ready(0):
-            if chan == chan1:
-                D = chan._receive()
-                if D[1] == "outbox":
-                    chan2._send( (D[0], "inbox") )
+            D = chan._receive()
+            dest = mappings[ ( chan, D[1] ) ]
+            dest[0]._send( (D[0], dest[1] ) )
         time.sleep(0.1)
 
 # --- End Support code ---------------------------------------------------------
