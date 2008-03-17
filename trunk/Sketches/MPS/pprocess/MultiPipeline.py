@@ -16,27 +16,28 @@ class ProcessWrapComponent(object):
         self.ce = None
 
     def run(self, channel):
-        print "ZZZZZZZZ"
-        from Axon.LikeFile import likefile, background
-        print "Hi",scheduler.run.threads
-        background(zap=True).start()
-        print "Bye",scheduler.run.threads
-        print "Here???"
-
         self.exchange.add(channel)
         self.channel = channel
+#        print "ZZZZZZZZ"
+        from Axon.LikeFile import likefile, background
+#        print "Hi",scheduler.run.threads
+        background(zap=True).start()
+        time.sleep(0.1)
+#        print "Bye",scheduler.run.threads
+#        print "Here???"
+
         self.ce = likefile(self.thecomponent)
         for i in self.main():
             pass
 
     def activate(self):
-        print "XXXXXXX"
+#        print "XXXXXXX"
         channel = pprocess.start(self.run)
-        print "YYYYYYY"
+#        print "YYYYYYY"
         return channel
 
     def main(self):
-        print "Running?"
+#        print "Running?"
         t = 0
         while 1:
             if time.time() - t > 0.2:
@@ -92,7 +93,7 @@ def ProcessGraphline(**graphline_spec):
             chans.append( chan )
             exchange.add(chan )
             component_to_chan[comp] = chan
-            print comp, chan
+#            print comp, chan
             count += 1
 
     linkages = graphline_spec.get("linkages", {})
