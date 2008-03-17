@@ -323,7 +323,6 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
-      print "Addthread", os.getpid(), mprocess
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
@@ -403,9 +402,7 @@ class scheduler(microprocess):
        nextrunqueue = []
        running = True
        
-       print "OK, starting up....", os.getpid()
        while running:
-           
            # slowmo
            now = time.time()
            until = now + slowmo
@@ -518,7 +515,6 @@ class scheduler(microprocess):
 #               print "We now call .stop() on ", X.name, type(X)
                X.stop()
 #       print "All microprocesses now stopped. Halting"
-       print "OK, shutting down", os.getpid()
 
    def stop(self):
 #       print "ADDING STOP REQUEST"

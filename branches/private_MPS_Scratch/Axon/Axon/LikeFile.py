@@ -214,14 +214,14 @@ class background(threading.Thread):
         self.zap = zap
     def run(self):
         if self.zap:
-            print "zapping", scheduler.run.threads
+#            print "zapping", scheduler.run.threads
             X = scheduler()
             scheduler.run = X
-            print "zapped", scheduler.run.threads
+#            print "zapped", scheduler.run.threads
             cat.coordinatingassistanttracker.basecat.zap()
-        print "Here? (run)"
+#        print "Here? (run)"
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
-        print "zoiped", scheduler.run.threads
+#        print "zoiped", scheduler.run.threads
         # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
         scheduler.run.runThreads(slowmo = self.slowmo)
 #        print "There?"
@@ -316,7 +316,7 @@ class componentWrapperOutput(AdaptiveCommsComponent):
             self.link((self.child, childSource),(self, parentSink))
 
     def main(self):
-        print "componentWrapperOutput", self.child
+#        print "componentWrapperOutput", self.child
         self.child.activate()
         while True:
             self.pause()
