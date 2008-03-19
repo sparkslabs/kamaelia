@@ -13,6 +13,9 @@ def parser(model_lines):
             block = True
             line = line[:-1]
         yield line
+    if block:
+        yield "ENDBLOCK"
+        block = False
 
 def parseEntityLine(P):
     toks = P.split()
@@ -83,6 +86,7 @@ def parse_model(model_lines):
                 record = parseRelationLine(P)
             yield record
 
+
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import pprint
@@ -102,6 +106,7 @@ class ERParser(Axon.Component.component):
             while not self.anyReady():
                 self.pause()
                 yield 1
+
             while self.dataReady("inbox"):
                 L = self.recv("inbox")
                 L = L[:-1]
@@ -124,6 +129,7 @@ class ERModel2Visualiser(Axon.Component.component):
                 self.shutdown_mess = data
                 return True
         return 0
+
     def main(self):
         X = []
         while not self.shutdown():
