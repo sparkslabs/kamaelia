@@ -8,7 +8,7 @@
 case "$1" in
   start)
         echo "Starting KamaeliaLogger daemon"
-        runKamaeliaLogger.sh
+        /usr/local/bin/runKamaeliaLogger.sh
         ;;
     stop)
         echo "Currently we don't support killing the greylisting daemon -"

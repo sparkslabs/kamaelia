@@ -9,7 +9,7 @@ StartService ()
 {
     if [ "${MAILSERVER:=-NO-}" = "-YES-" ]; then
         ConsoleMessage "Starting kamaelia logger daemon"
-        runKamaeliaLogger.sh            
+        /usr/local/bin/runKamaeliaLogger.sh
     fi
 }
 
