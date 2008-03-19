@@ -96,6 +96,8 @@ import Kamaelia.Protocol.IRC.IRCClient
 
 import Kamaelia.Apps.IRCLogger.Support
 import time, os
+import random
+import copy
 
 
 
@@ -241,14 +243,71 @@ def Logger(channel,
                      ) 
     
 
+config_files = ["/usr/local/etc/Kamaelia/kamaelia_logger.conf",
+                "/usr/local/etc/kamaelia_logger.conf",
+                "/etc/Kamaelia/kamaelia_logger.conf",
+                "/etc/kamaelia_logger.conf",
+                "kamaelia_logger.conf",
+                "/usr/local/etc/Kamaelia/kamaelia_logger.conf.dist",
+                "/usr/local/etc/kamaelia_logger.conf.dist",
+                "/etc/Kamaelia/kamaelia_logger.conf.dist",
+                "/etc/kamaelia_logger.conf.dist",
+                "kamaelia_logger.conf.dist" ]
+
+def openConfig(config_file):
+    f = open(config_file)
+    lines = f.readlines()
+    f.close()
+    return lines
+
+def get_config_lines():
+    for config_file in config_files:
+        try:
+            lines = openConfig(config_file)
+        except IOError:
+            pass
+        else:
+            config_used =config_file
+            break
+    return lines
+
+default_config = {
+    "channel" : "#kamaelia-test",
+    "name": "kamaeliabot" + str(random.randint(1,10000000)),
+    "pwd" : None,
+    "logdir": "",
+}
+
+def parse_config(lines):
+   config = copy.deepcopy(default_config)
+   for line in lines:
+       if line[0] == "#":
+           continue
+       parts = line.split()
+       print parts
+       if len(parts) == 3:
+          if parts[1] == "=":
+             key = parts[0]
+             value = parts[2]
+             config[key] = value
+   return config
+
+
 __kamaelia_components__ = (BasicLogger, )
 __kamaelia_prefabs__ = (Logger, )
 
 if __name__ == '__main__':
     import sys
+
+    raw_config = get_config_lines()
+    C = parse_config(raw_config)
+#    print config
+#    C = default_config
     channel = "#kamaelia-test"
     Name = "kamaeliabot"
     pwd = None
+    logdir = ""
+
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
     if len(sys.argv) > 3: pwd = sys.argv[3]
@@ -257,10 +316,11 @@ if __name__ == '__main__':
     from Kamaelia.Util.Introspector import Introspector
     from Kamaelia.Chassis.Pipeline import Pipeline
     Pipeline( Introspector(), TCPClient("127.0.0.1",1501) ).activate()
-    print "Logging %s as %s" % (channel, Name)
-    Logger(channel,
-           name=Name,
-           password=pwd,
+    print "Logging %s as %s" % (C["channel"], C["name"],)
+    Logger(C["channel"],
+           name=C["name"],
+           password=C["pwd"],
+           logdir=C["logdir"],
            formatter=(lambda data: Kamaelia.Apps.IRCLogger.Support.HTMLOutformat(data)),
            filewriter = Kamaelia.Apps.IRCLogger.Support.LoggerWriter,
            ).run()

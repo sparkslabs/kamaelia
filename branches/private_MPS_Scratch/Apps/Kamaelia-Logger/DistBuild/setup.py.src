@@ -55,7 +55,7 @@ setup(name = "Kamaelia-Logger",
       packages = [\
 # REPLACE
                   ""],
-      scripts = ['App/logger.py', 'App/runKamaeliaLogger.sh'],
+      scripts = ['App/KamaeliaLogger.py', 'App/runKamaeliaLogger.sh'],
       data_files=[ ('/etc', ['Config/kamaelia_logger.conf.dist']),
                    (init_script_dir, [init_script]) ],
       long_description = """
