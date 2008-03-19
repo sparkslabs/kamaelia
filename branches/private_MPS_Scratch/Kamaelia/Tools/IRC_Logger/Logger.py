@@ -93,7 +93,8 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Component import component
 import Kamaelia.Protocol.IRC.IRCClient
-import LoggerFunctions
+
+import Kamaelia.Apps.IRCLogger.Support
 import time, os
 
 
@@ -182,19 +183,19 @@ class BasicLogger(component):
                     reply = "'%s' isn't a module, or at least not one I can reload.\n" % words[1]
                 self.send(('PRIVMSG', self.channel, reply), "irc")
                 self.send(self.format(reply), "outbox")
-        LoggerFunctions.respondToQueries(self, msg)
+        Kamaelia.Apps.IRCLogger.Support.respondToQueries(self, msg)
 
     def currentDateString(self):
         """returns the current date"""
-        return LoggerFunctions.currentDateString()
+        return Kamaelia.Apps.IRCLogger.Support.currentDateString()
 
     def currentTimeString(self):
         """returns current time"""
-        return LoggerFunctions.currentTimeString()
+        return Kamaelia.Apps.IRCLogger.Support.currentTimeString()
 
     def getFilenames(self):
         """returns tuple (logname, infoname) according to the parameters given"""
-        return LoggerFunctions.getFilenames(self.logdir, self.channel)
+        return Kamaelia.Apps.IRCLogger.Support.getFilenames(self.logdir, self.channel)
     
     def changeDate(self):
         """updates the date and requests new log files to reflect the date"""
@@ -206,10 +207,10 @@ class BasicLogger(component):
     
 def Logger(channel,
            name=None,
-           formatter=LoggerFunctions.TimedOutformat,
+           formatter=Kamaelia.Apps.IRCLogger.Support.TimedOutformat,
            logdir="",
            password=None,
-           filewriter = LoggerFunctions.AppendingFileWriter,
+           filewriter = Kamaelia.Apps.IRCLogger.Support.AppendingFileWriter,
            **irc_args):
     """\
     Logger(channel, **kwargs) ->
@@ -260,6 +261,6 @@ if __name__ == '__main__':
     Logger(channel,
            name=Name,
            password=pwd,
-           formatter=(lambda data: LoggerFunctions.HTMLOutformat(data)),
-           filewriter = LoggerFunctions.LoggerWriter,
+           formatter=(lambda data: Kamaelia.Apps.IRCLogger.Support.HTMLOutformat(data)),
+           filewriter = Kamaelia.Apps.IRCLogger.Support.LoggerWriter,
            ).run()
