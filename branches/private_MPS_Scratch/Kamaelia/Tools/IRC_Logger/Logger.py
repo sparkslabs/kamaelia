@@ -245,8 +245,8 @@ __kamaelia_prefabs__ = (Logger, )
 
 if __name__ == '__main__':
     import sys
-    channel = "#kamtest"
-    Name = "jinnaslogbot"
+    channel = "#kamaelia-test"
+    Name = "kamaeliabot"
     pwd = None
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
