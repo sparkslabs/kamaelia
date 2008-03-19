@@ -30,7 +30,7 @@ setup(name = "Axon",
       url = "http://kamaelia.sourceforge.net/",
       license = "(c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [
-                  "Axon", ###
+                  "Axon", ### START LAST
                   ],
       long_description = """
 Axon is a software component system. In Axon, components are active and
