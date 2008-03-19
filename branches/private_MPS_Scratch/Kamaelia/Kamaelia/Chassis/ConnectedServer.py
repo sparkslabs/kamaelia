@@ -253,6 +253,13 @@ class SimpleServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
         """
         connectedSocket = shutdownCSAMessage.object
+        try:
+            bundle=self.retrieveTrackedResourceInformation(connectedSocket)
+        except KeyError:
+            # This means we've actually already done this...
+            return
+#        connectedSocket = shutdownCSAMessage.object
+#        print connectedSocket
         bundle=self.retrieveTrackedResourceInformation(connectedSocket)
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
