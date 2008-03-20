@@ -28,7 +28,8 @@ setup(name = "Kamaelia",
       author = "Michael & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
-      packages = ["Kamaelia",
+      packages = [\
+                  "Kamaelia", # START
                   "Kamaelia.Apps",
                   "Kamaelia.Apps.Compose",
                   "Kamaelia.Apps.Compose.GUI",
@@ -74,7 +75,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.ER",
                   "Kamaelia.Visualisation.PhysicsGraph",
-                  "Kamaelia.XML",
+                  "Kamaelia.XML", # LAST
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
