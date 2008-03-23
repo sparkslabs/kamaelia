@@ -71,7 +71,14 @@ def respondToQueries(self, msg):
             replyLines = ['Ptang!']
         elif words[1] == 'boo':
             replyLines = ['Nice try, but that didn\'t scare me']
+        elif words[1] == 'learn':
+            replyLines = ['OK, trying, but not ready to do that yet - I will though' + str(len(words)) ]
         
+    if msg[0] == 'PRIVMSG':
+       words = msg[3].split()
+       if ("anyone" in words) and ("know" in words):
+           replyLines = ['Hm?']
+
     if replyLines:
         for reply in replyLines:
             self.send((tag, self.channel, reply), "irc")
