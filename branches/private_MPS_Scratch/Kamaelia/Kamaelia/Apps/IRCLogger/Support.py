@@ -37,6 +37,25 @@ without stopping Logger
 There are no components in this module. 
 """
 
+def cannedResponse():
+    return [
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/",
+   "Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question",
+   "or post your idea, you are likely to get a response from someone - either from someone on the channel or",
+   "from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a",
+   "personal response quickly for sheer practicality reasons.",
+   "The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008",
+   "The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template",
+   "This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode",
+           ]
+
+def cannedYesTheyreAround():
+    return [
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/",
+   "Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since the person(s) you asked for",
+   "reads the logs. Idle on the channel if you want and answer and don't get an immediate one."
+           ]
+
 def respondToQueries(self, msg):
     """Takes a BasicLogger as its first argument. If this function recognizes
     "msg" as a command, then it sends back the appropriate response to IRC
@@ -75,9 +94,30 @@ def respondToQueries(self, msg):
             replyLines = ['OK, trying, but not ready to do that yet - I will though' + str(len(words)) ]
         
     if msg[0] == 'PRIVMSG':
-       words = msg[3].split()
+       words = [ x.lower() for x in msg[3].split() ]
        if ("anyone" in words) and ("know" in words):
            replyLines = ['Hm?']
+
+       if  ("any" in words) \
+           and (("mentors" in words) or ("mentor" in words)):
+           replyLines = cannedResponse()
+
+       elif  ("who" in words) \
+           and ("can" in words) \
+           and ("i" in words) \
+           and ("ask" in words) \
+           and (("soc" in words) or ("gsoc" in words)):
+           replyLines = cannedResponse()
+
+       elif  (("about" in words) or ("around" in words)) \
+           and (("is" in words) or ("are" in words)) \
+           and (("mentors-" in words) or ("ms-" in words) or ("mhrd" in words) or ("lawouach" in words)):
+           replyLines = cannedYesTheyreAround()
+
+       elif  ("anyone" in words) \
+           and ("seen" in words) \
+           and (("mentors-" in words) or ("ms-" in words) or ("mhrd" in words) or ("lawouach" in words)):
+           replyLines = cannedYesTheyreAround()
 
     if replyLines:
         for reply in replyLines:
