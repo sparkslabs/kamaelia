@@ -1,4 +1,12 @@
 #!/usr/bin/python
+#
+# On the surface of things, this code *should* work completely correctly.
+# However if you run it, you will see that it doesn't.
+#
+# This appears to be an issue with propogation of events in wxPython/wxWindows
+# rather than a kamaelia issue. Quite why this happens is a little unclear.
+#
+#
 
 import wx
 import Axon
