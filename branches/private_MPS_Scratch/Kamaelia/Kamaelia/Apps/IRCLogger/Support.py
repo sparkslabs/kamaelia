@@ -37,23 +37,23 @@ without stopping Logger
 There are no components in this module. 
 """
 
+logging = True
+lastlog = time.time()
+
 def cannedResponse():
     return [
-   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/",
-   "Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question",
-   "or post your idea, you are likely to get a response from someone - either from someone on the channel or",
-   "from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a",
-   "personal response quickly for sheer practicality reasons.",
-   "The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008",
-   "The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template",
-   "This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode",
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question",
+   "or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.",
+   "Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news",
+   "Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode",
+   "Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783",
            ]
 
 def cannedYesTheyreAround():
     return [
-   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/",
-   "Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since the person(s) you asked for",
-   "reads the logs. Idle on the channel if you want and answer and don't get an immediate one."
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ . Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since",
+   "the person(s) you asked for reads the logs. Idle on the channel if you want and answer and don't get an immediate one. In the meantime this page is the sort of questions we'd ask you to improve your app are here:",
+   "http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783 . Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news",
            ]
 
 def respondToQueries(self, msg):
@@ -95,18 +95,28 @@ def respondToQueries(self, msg):
         
     if msg[0] == 'PRIVMSG':
        words = [ x.lower() for x in msg[3].split() ]
-       if ("anyone" in words) and ("know" in words):
-           replyLines = ['Hm?']
 
        if  ("any" in words) \
            and (("mentors" in words) or ("mentor" in words)):
+           replyLines = cannedResponse()
+       elif  ("when" in words) \
+           and (("feedback" in words) or ("expect" in words)):
+           replyLines = cannedResponse()
+
+       elif  ("when" in words) \
+           and (("feedback" in words) or ("expect" in words)):
+           replyLines = cannedResponse()
+
+       elif   ("i" in words) \
+           and (("have" in words) or ("had" in words)) \
+           and (("question" in words) or ("query" in words) or ("doubt" in words)):
            replyLines = cannedResponse()
 
        elif  ("who" in words) \
            and ("can" in words) \
            and ("i" in words) \
            and ("ask" in words) \
-           and (("soc" in words) or ("gsoc" in words)):
+           and (("soc" in words) or ("gcos" in words) or ("gsoc" in words)):
            replyLines = cannedResponse()
 
        elif  (("about" in words) or ("around" in words)) \
@@ -118,6 +128,21 @@ def respondToQueries(self, msg):
            and ("seen" in words) \
            and (("mentors-" in words) or ("ms-" in words) or ("mhrd" in words) or ("lawouach" in words)):
            replyLines = cannedYesTheyreAround()
+
+       elif  ("hi" in words) \
+           and (("everybody" in words) or ("evreybody" in words)):
+           replyLines = [ "hi" ]
+
+       elif ("kamaeliabot" in words):
+          if ("bonjour" in words):
+               replyLines = ["Bonjour"]
+          elif ("parrot" in words):
+               replyLines = [ repr(words) ]
+
+       if replyLines == "":
+          if ("anyone" in words) and ("know" in words):
+              replyLines = ['Hm?']
+
 
     if replyLines:
         for reply in replyLines:
@@ -142,13 +167,15 @@ def TimedOutformat(data):
 
 def HTMLOutformat(data):
     """each formatted line becomes a line on a table."""
-    head = "            <tr><td>"
-    end = "</td></tr>\n"    
-    formatted = TimedOutformat(data)
-    if formatted:
-        formatted = formatted.replace('<', '&lt ')
-        formatted = formatted.replace('>', '&gt')
-        return head + formatted.rstrip() + end
+    global logging
+    if logging:
+        head = "            <tr><td>"
+        end = "</td></tr>\n"    
+        formatted = TimedOutformat(data)
+        if formatted:
+            formatted = formatted.replace('<', '&lt ')
+            formatted = formatted.replace('>', '&gt')
+            return head + formatted.rstrip() + end
 
 def AppendingFileWriter(filename):
     """appends to instead of overwrites logs"""
