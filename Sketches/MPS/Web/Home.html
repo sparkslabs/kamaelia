@@ -1,0 +1,78 @@
+<html>
+<head>
+  <title>New Kamaelia Home Page</title>
+    <style>
+    .panel { 
+        font-family:undotum,verdana,arial,helvetica,sans-serif;
+    }
+    </style>
+</head>
+
+<body class="overview">
+<div id="panel-show">
+  <div class="panel" id="panel1">
+    <h1> Kamaelia: Sociable Software </h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel2" style="display:none">
+    <h1> Kamaelia: Concurrency Made Easy and Fun</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel3" style="display:none">
+    <h1> Kamaelia: Component Based Software</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel4" style="display:none">
+    <h1> Kamaelia: Lego/K'Nex for Software!</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel5" style="display:none">
+    <h1> Kamaelia: Opening the Toybox</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel6" style="display:none">
+    <h1> Kamaelia: More Hype</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel7" style="display:none">
+    <h1> Kamaelia: Better Hype</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel8" style="display:none">
+    <h1> Kamaelia: Hype? Who wants it?</h1>
+    <P> Dump something here...
+  </div>
+  <div> Some other random paragraph. </div>
+</div>
+
+<script type="text/javascript">
+  var myps = document.getElementsByTagName("div");
+  var mypanels = new Array();
+
+  for (i = 0;i < myps.length;i++) {
+      if (myps[i].className == "panel") {
+          mypanels.push( myps[i] );
+      }
+  }
+
+  function switchNext(elem) {
+      var X = mypanels[elem].style.display;
+      var elem_next = (elem + 1) % mypanels.length;
+      mypanels[elem].style.display = mypanels[elem_next].style.display;
+      mypanels[elem_next].style.display = X;
+      var t=setTimeout("switchNext("+elem_next.toString()+")",2000);
+  };
+
+  var t=setTimeout("switchNext(0)",2000);
+
+</script>
+
+</body>
+</html>
