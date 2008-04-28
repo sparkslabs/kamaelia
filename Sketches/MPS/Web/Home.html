@@ -2,14 +2,67 @@
 <head>
   <title>New Kamaelia Home Page</title>
     <style>
-    .panel { 
+    body {
+        font-size:16px;
+        font-family:undotum,verdana,arial,helvetica,sans-serif;
+        line-height:1.2;
+        color:#000;
+        background-color:#cdff9d;
+    }
+    #toolbar {
+        clear:both;
+        background-color:#bddd8d;
+        text-align:center;
+        padding:3px 5px 3px 0px;
+        font-size:12px;
+        margin:0;
         font-family:undotum,verdana,arial,helvetica,sans-serif;
     }
-    </style>
+    #toolbar p {padding:0; margin:0; }
+    #homelink { float:right; }
+    a { text-decoration:none; color:#260; }
+    #bannerlogo { float:left; padding-left: 50px;padding-right: 10px; }
+</style>
+
+<script type="text/javascript">
+
+  function kickoff() {
+      var t=setTimeout("switchNext(0)",2000);
+  }
+
+  function switchNext(elem) {
+      var myps = document.getElementsByTagName("div");
+      var mypanels = new Array();
+
+      for (i = 0;i < myps.length;i++) {
+          if (myps[i].className == "panel") {
+              mypanels.push( myps[i] );
+          }
+      }
+      var X = mypanels[elem].style.display;
+      var elem_next = (elem + 1) % mypanels.length;
+      mypanels[elem].style.display = mypanels[elem_next].style.display;
+      mypanels[elem_next].style.display = X;
+      var t=setTimeout("switchNext("+elem_next.toString()+")",2000);
+  };
+  var t=setTimeout("kickoff()",50);
+</script>
+
 </head>
 
 <body class="overview">
+
+<div id="toolbar">
+    <P><a id="homelink" href="Home.html">Home</a>
+    <p><a href="">Axon</a> &nbsp;
+       <a href="">Components</a> &nbsp;
+       <a href="">Cookbook</a> &nbsp;
+       <a href="">Systems</a>
+       <a href="">Community</a>
+</div>
+
 <div id="panel-show">
+  <img id="bannerlogo" src="cat-trans-medium.png">
   <div class="panel" id="panel1">
     <h1> Kamaelia: Sociable Software </h1>
     <P> Dump something here...
@@ -51,28 +104,5 @@
   </div>
   <div> Some other random paragraph. </div>
 </div>
-
-<script type="text/javascript">
-  var myps = document.getElementsByTagName("div");
-  var mypanels = new Array();
-
-  for (i = 0;i < myps.length;i++) {
-      if (myps[i].className == "panel") {
-          mypanels.push( myps[i] );
-      }
-  }
-
-  function switchNext(elem) {
-      var X = mypanels[elem].style.display;
-      var elem_next = (elem + 1) % mypanels.length;
-      mypanels[elem].style.display = mypanels[elem_next].style.display;
-      mypanels[elem_next].style.display = X;
-      var t=setTimeout("switchNext("+elem_next.toString()+")",2000);
-  };
-
-  var t=setTimeout("switchNext(0)",2000);
-
-</script>
-
 </body>
 </html>
