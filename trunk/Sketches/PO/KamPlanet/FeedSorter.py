@@ -13,9 +13,9 @@ def _check_l10n(x,y):
 
 def _cmp_entries(x,y):
 	""" Given two FeedParserDicts, compare them taking into account their updated_parsed fields """
-	_check_l10n(x[1],y[1])
-	for pos, val in enumerate(x[1].updated_parsed):
-		result = cmp(val, y[1].updated_parsed[pos])
+	_check_l10n(x['entry'],y['entry'])
+	for pos, val in enumerate(x['entry'].updated_parsed):
+		result = cmp(val, y['entry'].updated_parsed[pos])
 		if result != 0:
 			return result * -1
 	return 0
@@ -50,7 +50,12 @@ class FeedSorter(Axon.Component.component):
 
 		while self.dataReady("inbox"):
 			data = self.recv("inbox")
-			self._ordered_entries.extend([ (data.feed, i) for i in data.entries ])
+			self._ordered_entries.extend([ 
+			                        { 
+			                            'feed' : data.feed, 
+			                            'entry' : i,
+			                            'encoding' : data.encoding
+			                        } for i in data.entries ])
 			self._ordered_entries.sort(_cmp_entries)
 			self._ordered_entries = self._ordered_entries[:self._max_posts]
 			self._counted += 1

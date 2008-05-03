@@ -4,6 +4,13 @@
 import Axon
 
 class Feed2html(Axon.Component.component):
+	Inboxes = {
+			'control'      : 'From component', 
+			'inbox'        : 'Not used', 
+			'feeds-inbox'  : 'Not used', 
+			'config-inbox' : 'Not used'
+		}
+		
 	def __init__(self):
 		super(Feed2html, self).__init__()
 
@@ -15,9 +22,14 @@ class Feed2html(Axon.Component.component):
 			self.send(data, "signal")
 			return 0
 
-		while self.dataReady("inbox"):
-			data = self.recv("inbox")
-			print "html",data[1].updated
+		while self.dataReady("feeds-inbox"):
+			data = self.recv("feeds-inbox")
+			print "html",data['entry'].updated
+
+		while self.dataReady("config-inbox"):
+			data = self.recv("config-inbox")
+			self._config = data
+			print "html-config", data.name, data.link
 
 		if not self.anyReady():
 			self.pause()
