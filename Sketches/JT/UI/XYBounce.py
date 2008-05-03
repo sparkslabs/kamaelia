@@ -7,7 +7,7 @@ from Kamaelia.UI.GraphicDisplay import PygameDisplay
 class XYBounce(Axon.Component.component):
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
               "control"  : "For shutdown messages",
-              "callback" : "Receive callbacks from Pygame Display"
+              "callback" : "Receive callbacks from Pygame Display"}
               
     Outboxes = {"outbox" : "XY positions emitted here",
                 "signal" : "For shutdown messages",
