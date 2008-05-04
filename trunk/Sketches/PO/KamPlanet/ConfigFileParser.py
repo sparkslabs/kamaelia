@@ -10,57 +10,56 @@ from Axon.Ipc import producerFinished
 # (and would use Backplanes)
 
 class GeneralConfig(object):
-	def __init__(self,  name, link):
-		self.name = name
-		self.link = link
+    def __init__(self,  name, link):
+        self.name = name
+        self.link = link
 
 class ConfigFileParser(Axon.Component.component):
-	Outboxes = {
-		"outbox"           : "Not used",
-		"signal"           : "From component...",
-		"feeds-outbox"     : "Feeds",
-		"config-outbox"    : "General configuration",
-		"counter-outbox"   : "Will announce how many feeds were found through this channel"
-	}
+    Outboxes = {
+        "outbox"           : "Not used",
+        "signal"           : "From component...",
+        "feeds-outbox"     : "Feeds",
+        "config-outbox"    : "General configuration",
+        "counter-outbox"   : "Will announce how many feeds were found through this channel"
+    }
+    def __init__(self, **argd):
+        super(ConfigFileParser, self).__init__(**argd)
+        # TODO: First version, I should parse a configuration file or sth :-)
+        # Right now all the config has been hardcoded
+        self.ptr = 0
+        self.feeds = [
+            'http://pablo.ordunya.com/weblog/feed/',
+            'http://pablo.ordunya.com/weblog/feed/',
+            'http://pablo.ordunya.com/weblog/feed/',
+            'http://pablo.ordunya.com/weblog/feed/',
+        ]
+        self.counter      = 0
+        self.counter_sent = False
+        self.config       = GeneralConfig("Kamaelia Planet", "http://somewhere/")
+        self.config_sent  = False
 
-	def __init__(self):
-		super(ConfigFileParser, self).__init__()
-		# TODO: First version, I should parse a configuration file or sth :-)
-		# Right now all the config has been hardcoded
-		self.__ptr = 0
-		self._feeds = [
-			'http://pablo.ordunya.com/weblog/feed/',
-			'http://pablo.ordunya.com/weblog/feed/',
-			'http://pablo.ordunya.com/weblog/feed/',
-			'http://pablo.ordunya.com/weblog/feed/',
-		]
-		self._counter      = 0
-		self._counter_sent = False
-		self._config       = GeneralConfig("Kamaelia Planet", "http://somewhere/")
-		self._config_sent  = False
+    def mainBody(self):
+        if len(self.feeds) <= self.counter:
+            if not self.counter_sent:
+                self.send(len(self.feeds), 'counter-outbox')
+                self.counter_sent = True
+                return 1
+            if not self.config_sent:
+                self.send(self.config,  'config-outbox')
+                self.config_sent = True
+                return 1
+            self.send(producerFinished(), "signal")
+            return 0
 
-	def mainBody(self):
-		if len(self._feeds) <= self._counter:
-			if not self._counter_sent:
-				self.send(len(self._feeds), 'counter-outbox')
-				self._counter_sent = True
-				return 1
-			if not self._config_sent:
-				self.send(self._config,  'config-outbox')
-				self._config_sent = True
-				return 1
-			self.send(producerFinished(), "signal")
-			return 0
+        if len(self.feeds) > self.ptr:
+            feed = self.feeds[self.ptr]
+            self.ptr = self.ptr + 1
+            self.send(feed,"feeds-outbox")
+            self.counter = self.counter + 1
+            return 1
+        
+        if not self.anyReady():
+            self.pause()
 
-		if len(self._feeds) > self.__ptr:
-			feed = self._feeds[self.__ptr]
-			self.__ptr = self.__ptr + 1
-			self.send(feed,"feeds-outbox")
-			self._counter = self._counter + 1
-			return 1
-		
-		if not self.anyReady():
-			self.pause()
-
-		return 1
+        return 1
 
