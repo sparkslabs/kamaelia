@@ -10,7 +10,7 @@ import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-homedirectory = "/media/usbdisk/SF/hotdocs/"
+homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
 
 def requestHandlers(URLHandlers):
