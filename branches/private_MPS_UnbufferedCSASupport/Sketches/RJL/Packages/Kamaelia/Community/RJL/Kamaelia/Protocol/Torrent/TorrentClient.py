@@ -14,7 +14,7 @@
 # Kamaelia-ized by Ryan Lothian
 
 # Modified parts of code:
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 
 from __future__ import division

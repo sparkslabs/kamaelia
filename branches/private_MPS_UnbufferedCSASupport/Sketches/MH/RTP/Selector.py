@@ -5,7 +5,7 @@
 #        causes is that the selector has no simple means of shutting
 #        down when no one is using it.
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
