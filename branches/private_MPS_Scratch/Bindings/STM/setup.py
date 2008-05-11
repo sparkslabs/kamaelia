@@ -28,7 +28,7 @@ setup(name = "Axon.STM",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
-      license = "(c)2007 Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      license = "Copyright (c)2007 Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       py_modules = ["Axon.STM",
                    ],
       long_description = """
