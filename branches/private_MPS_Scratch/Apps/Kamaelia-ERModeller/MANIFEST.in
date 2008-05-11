@@ -3,6 +3,4 @@ include AUTHORS
 include CHANGELOG
 include Doc/*
 include App/*
-include App/*/*
-include Config/*
 
