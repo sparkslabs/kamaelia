@@ -4,7 +4,7 @@
 #        selector service that its services are no longer required.
 #        This needs resolving.
 #
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
