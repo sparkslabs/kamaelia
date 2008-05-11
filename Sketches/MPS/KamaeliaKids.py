@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 import Axon
