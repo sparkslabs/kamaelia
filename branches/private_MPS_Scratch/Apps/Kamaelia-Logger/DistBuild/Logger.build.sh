@@ -20,14 +20,3 @@ egrep -A1000 "# REPLACE" setup.py.src |grep -v "# REPLACE" >> ../setup.py
 cd ..
 python setup.py sdist
 
-
-#echo "stripping .svn directories"
-#(
-#cd ..
-#find . -type d|grep .svn$ |while read dirname; do
-#    echo "rm -rf $dirname"
-#done
-#)
-#
-#( cd ../..; tar zcvf Kamaelia-Logger.tar.gz Kamaelia-Logger )
-
