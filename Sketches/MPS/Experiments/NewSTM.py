@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) 2007 Kamaelia Contributors(1) All Rights Reserved.
+# Copyright (C) 2007 Kamaelia Contributors(1) All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
 # following licenses(2): Mozilla Public License, V1.1, GNU General
