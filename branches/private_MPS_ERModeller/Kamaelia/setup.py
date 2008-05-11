@@ -28,7 +28,8 @@ setup(name = "Kamaelia",
       author = "Michael & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
-      packages = ["Kamaelia",
+      packages = [\
+                  "Kamaelia", # START
                   "Kamaelia.Automata",
                   "Kamaelia.Audio",
                   "Kamaelia.Audio.PyMedia",
@@ -64,8 +65,9 @@ setup(name = "Kamaelia",
                   "Kamaelia.Video",
                   "Kamaelia.Visualisation",
                   "Kamaelia.Visualisation.Axon",
+                  "Kamaelia.Visualisation.ER",
                   "Kamaelia.Visualisation.PhysicsGraph",
-                  "Kamaelia.XML",
+                  "Kamaelia.XML", # LAST
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
