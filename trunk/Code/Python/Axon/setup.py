@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -28,7 +28,7 @@ setup(name = "Axon",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
-      license = "(c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      license = "Copyright (c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = ["Axon",
                   ""],
       long_description = """
