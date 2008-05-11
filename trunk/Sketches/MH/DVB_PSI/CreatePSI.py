@@ -50,15 +50,16 @@ class SerialiseEITSection(object):
         
         data.insert( chr(section["table_id"]) )
         seclen_index = len(data) # note where the section length field will be inserted once we know its value
-        data.insert( chr((section["service_id"] >> 8) & 0xff) )
-        data.insert( chr((section["service_id"]     ) & 0xff) )
-        data.insert( chr(((section["version"] & 0x1f) << 1) + currentNextFlag) )
-        data.insert( chr(section["section"]) )
-        data.insert( chr(section["last_section"]) )
-        data.insert( chr((section["transport_stream_id"] >> 8) & 0xff) )
-        data.insert( chr((section["transport_stream_id"]     ) & 0xff) )
-        data.insert( chr((section["original_network_id"] >> 8) & 0xff) )
-        data.insert( chr((section["original_network_id"]     ) & 0xff) )
+        data.insert( chr((section["service_id"] >> 8) & 0xff) \
+                   + chr((section["service_id"]     ) & 0xff) \
+                   + chr(((section["version"] & 0x1f) << 1) + currentNextFlag) \
+                   + chr(section["section"]) \
+                   + chr(section["last_section"]) \
+                   + chr((section["transport_stream_id"] >> 8) & 0xff) \
+                   + chr((section["transport_stream_id"]     ) & 0xff) \
+                   + chr((section["original_network_id"] >> 8) & 0xff) \
+                   + chr((section["original_network_id"]     ) & 0xff) \
+                   )
         try:
             data.insert( chr((section["segment_last_section_number")) )
         except KeyError:
