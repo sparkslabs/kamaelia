@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -30,6 +30,7 @@ not yet tested ... or kamaelia-ised!
 
 """
 from Kamaelia.Support.DVB.CRC import __dvbcrc as doDvbCRC
+from CreateDescriptors import serialiseDescriptors
 
 
 class SerialiseEITSection(object):
@@ -140,10 +141,6 @@ def createBCDtime(hour,minute,second):
         HHMMSS = (HHMMSS<<4) + ord(digit)-ord("0")
     return HHMMSS
 
-
-def serialiseDescriptors(descriptors):
-    data = []
-    pass
 
 
 class PacketiseTableSections(object):
