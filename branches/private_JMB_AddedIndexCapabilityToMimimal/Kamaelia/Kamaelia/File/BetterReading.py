@@ -41,7 +41,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.KamaeliaIPC import newReader
+from Kamaelia.IPC import newReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.Selector import Selector
