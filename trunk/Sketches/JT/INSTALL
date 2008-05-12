@@ -13,7 +13,7 @@ MIDI
 MIDI support depends on pyPortMidi, which can be obtained from:
 http://nosuch.com/tjt/nosuchsoft/
 Steps to install:
-1) Make sure you have pyrex installed - it is packaged for almost all major distibutions.  Run python pyrexc --version to check whether it is already installed
+1) Make sure you have pyrex installed - it is packaged for almost all major distibutions.  Run pyrexc --version to check whether it is already installed
 2) Grab the package which fits with your version of python (2.4 or 2.5)
 3) Unzip the archive
 4) Run python setup.py install as root from within the extracted archive
@@ -31,7 +31,7 @@ MIDI
 MIDI support depends on pyPortMidi, which can be obtained from:
 http://nosuch.com/tjt/nosuchsoft/
 Steps to install:
-1) Make sure you have pyrex installed - it is available from Darwinports as py-pyrex.  Run python pyrexc --version to check whether it is already installed
+1) Make sure you have pyrex installed - it is available from Darwinports as py-pyrex.  Run pyrexc --version to check whether it is already installed
 2) Grab the package which fits with your version of python (2.4 or 2.5)
 3) Unzip the archive
 4) Run python setup.py install as root from within the extracted archive
