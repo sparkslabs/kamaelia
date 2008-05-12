@@ -109,11 +109,13 @@ class TCPClient(Axon.Component.component):
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
-                "control"         : "Shutdown signalling"
+                "control"         : "Shutdown signalling",
+                "makessl"         : "Notifications to the ConnectedSocketAdapter that we want to negotiate SSL",
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
                 "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
+                "sslready"       : "SSL negotiated successfully",
 
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -162,8 +164,10 @@ class TCPClient(Axon.Component.component):
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
+      self.link((CSA, "sslready"), (self, "sslready"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
-      
+      self.link((self, "makessl"), (CSA, "makessl"), passthrough=1)
+
       self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            

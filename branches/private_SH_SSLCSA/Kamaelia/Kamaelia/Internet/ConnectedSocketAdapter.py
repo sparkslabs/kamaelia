@@ -88,7 +88,7 @@ from Axon.Component import component
 from Axon.Ipc import wouldblock, status, producerFinished, shutdownMicroprocess
 from Kamaelia.IPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.IPC import removeReader, removeWriter
-from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 
 from Kamaelia.KamaeliaExceptions import *
 import traceback
@@ -99,6 +99,38 @@ crashAndBurn = { "uncheckedSocketShutdown" : True,
                             "receivingDataFailed" : True,
                             "sendingDataFailed" : True }
 
+class SSLSocket(object):
+   def __init__(self, sock):
+      self.sslobj = socket.ssl(sock)
+      # we keep a handle to the real socket 
+      # so that we can perform some operations on it
+      self.sock = sock
+      
+   def fileno(self):
+      return self.sock.fileno()
+   
+   def setblocking(self, state):
+      self.sock.setblocking(state)
+      
+   def recv(self, size=1024):
+      try:
+         return self.sslobj.read(size)
+      except socket.sslerror, e:
+         # We allow those errors to go through
+         if e.args[0] not in [socket.SSL_ERROR_WANT_READ, 
+                              socket.SSL_ERROR_WANT_WRITE]:
+            raise
+         return ''
+
+   def send(self, data):
+      try:
+         return self.sslobj.write(data)
+      except socket.sslerror, e:
+         # We allow those errors to go through
+         if e.args[0] not in [socket.SSL_ERROR_WANT_READ, 
+                              socket.SSL_ERROR_WANT_WRITE]:
+            raise
+         return 0
 
 
 class ConnectedSocketAdapter(component):
@@ -116,11 +148,13 @@ class ConnectedSocketAdapter(component):
                 "control"    : "Shutdown on producerFinished message (incoming & outgoing data is flushed first)",
                 "ReadReady"  : "Notify this CSA that there is incoming data ready on the socket",
                 "SendReady" : "Notify this CSA that the socket is ready to send",
+                "makessl": "Notify this CSA that the socket should be wrapped into SSL",
               }
    Outboxes = { "outbox"          : "Data received from the socket",
                 "CreatorFeedback" : "Expected to be connected to some form of signal input on the CSA's creator. Signals socketShutdown (this socket has closed)",
                 "signal"          : "Signals shutdownCSA (this CSA is shutting down)",
                 "_selectorSignal" : "For communication to the selector",
+                "sslready": "Notifies components that the socket is now wrapped into SSL",
               }
 
    def __init__(self, listensocket, selectorService, crashOnBadDataToSend=False, noisyErrors = True):
@@ -132,6 +166,7 @@ class ConnectedSocketAdapter(component):
       self.noisyErrors = noisyErrors
       self.selectorService = selectorService
       self.howDied = False
+      self.isSSL = False
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
@@ -198,7 +233,10 @@ class ConnectedSocketAdapter(component):
           if data:
               self.failcount = 0
               return data
-          else: # This implies the connection has closed for some reason
+          # In case of a SSL object we may read no data although
+          # the connection per se is still up
+          # We therefore don't treat such possibility as an error
+          elif not self.isSSL: # This implies the connection has closed for some reason
                  self.connectionRECVLive = False
 
        except socket.error, socket.msg:
@@ -254,6 +292,24 @@ class ConnectedSocketAdapter(component):
        self.connectionSENDLive = True
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
+          if self.dataReady("makessl"):
+             self.recv('makessl')
+
+             self.send(removeReader(self, self.socket), "_selectorSignal")
+             self.send(removeWriter(self, self.socket), "_selectorSignal")
+
+             # We need to block to allow the handshake to complete
+             self.socket.setblocking(True)
+             self.socket = SSLSocket(self.socket)
+             self.isSSL = True
+             self.socket.setblocking(False)
+
+             self.send(newReader(self, ((self, "ReadReady"), self.socket)), "_selectorSignal")
+             self.send(newWriter(self, ((self, "SendReady"), self.socket)), "_selectorSignal")
+
+             self.send('', 'sslready')
+             yield 1
+
           self.checkSocketStatus() # To be written
           self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
           if self.sending:
