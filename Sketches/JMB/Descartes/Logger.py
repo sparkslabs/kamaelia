@@ -3,7 +3,7 @@
 """
 Logger.py
 """
-import datetime
+from datetime import datetime
 
 def Log(prefix, message):
     output = "%s %s:  %s" % (datetime.now().isoformat(), prefix, message)
