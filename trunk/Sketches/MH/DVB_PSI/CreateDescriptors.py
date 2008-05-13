@@ -171,7 +171,13 @@ def serialise_time_shifted_service_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_short_event_Descriptor(descriptor):
-    raise "Not yet implemented"
+    return [ descriptor["language_code"],   \
+             chr(len(descriptor["name"])),  \
+             descriptor["name"],            \
+             chr(len(descriptor["text"])),  \
+             descriptor["text"]             \
+           ], \
+           5 + len(descriptor["name"]) + len(descriptor["text"])
 
 def serialise_extended_event_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -180,13 +186,29 @@ def serialise_time_shifted_event_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_component_Descriptor(descriptor):
-    raise "Not yet implemented"
+    retval = []
+    if descriptor.has_key("stream_content") and descriptor.has_key("component_type"):
+        retval.insert(chr(descriptor["stream_content"] & 0x0f))
+        retval.insert(chr(descriptor["component_type"] & 0xff))
+    
+    else if descriptor.has_key("content,type"):
+        sc, ct = _stream_component_mappings_rev.get(descriptor["content,type"], descriptor["content,type"])
+        retval.insert(chr(sc))
+        retval.insert(chr(ct))
+        
+    else
+        raise "no stream_content and component_type info"
+        
+    retval.insert(chr(descriptor["component_tag" ] & 0xff))
+    retval.insert(descriptor["language_code"])
+    retval.insert(descriptor["text"])
+    return retval, 6+len(descriptor["text"])
 
 def serialise_mosaic_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_stream_identifier_Descriptor(descriptor):
-    raise "Not yet implemented"
+    return [ chr(descriptor["component_tag"]) ], 1
 
 def serialise_CA_identifier_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -204,7 +226,30 @@ def serialise_telephone_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_local_time_offset_Descriptor(descriptor):
-    raise "Not yet implemented"
+    offset = descriptor["offset"]
+    nextoffset = descriptor["nextOffset"]
+    
+    if offset[0] < 0:
+        offset = (-offset[0], -offset[0])
+        nextoffset = (-nextoffset[0], -nextoffset[0])
+        
+    offsetBCD = createBCDtime(*offset)
+    nextoffsetBCD = createBCDtime(*nextoffset)
+    
+    mjd,utc = createMJDUTC(*descriptor["timeOfChange"])
+    
+    return [ descriptor["country"] + \
+             chr((descriptor["region"] & 0x3f)<<2) + \
+             chr((offsetBCD >> 8) & 0xff) + \
+             chr((offsetBCD     ) & 0xff) + \
+             chr((mjd >> 8) & 0xff)  + \
+             chr((mjd     ) & 0xff)  + \
+             chr((utc >> 16) & 0xff) + \
+             chr((utc >> 8 ) & 0xff) + \
+             chr((utc      ) & 0xff) + \
+             chr((nextoffsetBCD >> 8) & 0xff) + \
+             chr((nextoffsetBCD     ) & 0xff),
+           ], 13
 
 def serialise_subtitling_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -296,6 +341,28 @@ def serialise_short_service_name_Descriptor(descriptor):
 
 # =============================================================================
 
+def createMJDUTC(year,month,day,hour,minute,second):
+    if month == 1 or month == 2:
+        L = 1
+    else:
+        L = 0
+    MJD = 14956 + day + int( (year - L) * 365.25) + int ( (month + 1 + L * 12) * 30.6001 )
+    
+    return MJD, createBCDtime(hour,minute,second)
+
+def createBCDtime(hour,minute,second):
+    HHMMSS = 0
+    for digit in "%02d%02d%02d" % (hour,minute,second):
+        HHMMSS = (HHMMSS<<4) + ord(digit)-ord("0")
+    return HHMMSS
+
+
+def createBCDtime(hour,minute):
+    HHMM = 0
+    for digit in "%02d%02d" % (hour,minute):
+        HHMM = (HHMM<<4) + ord(digit)-ord("0")
+    return HHMM
+
 __descriptor_serialisers = {
     # ISO 13818-1 defined descriptors
         "video_stream"          : (0x02, serialise_video_stream_Descriptor),
@@ -385,3 +452,7 @@ _iso639_audiotypes_rev = dict([(v,k) for (k,v) in _iso639_audiotypes.items()])
 from Kamaelia.Support.DVB.Descriptors import _service_types
 
 _service_types_rev = dict([(v,k) for (k,v) in _service_types.items()])
+
+from Kamaelia.Support.DVB.Descriptors import _stream_component_mappings
+
+_stream_component_mappings_rev = dict([(v,k) for (k,v) in _stream_component_mappings()])
