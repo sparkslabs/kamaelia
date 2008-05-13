@@ -126,22 +126,6 @@ class SerialiseEITSection(object):
 
 
 
-def createMJDUTC(year,month,day,hour,minute,second):
-    if month == 1 or month == 2:
-        L = 1
-    else:
-        L = 0
-    MJD = 14956 + day + int( (year - L) * 365.25) + int ( (month + 1 + L * 12) * 30.6001 )
-    
-    return MJD, createBCDtime(hour,minute,second)
-
-def createBCDtime(hour,minute,second):
-    HHMMSS = 0
-    for digit in "%02d%02d%02d" % (hour,minute,second):
-        HHMMSS = (HHMMSS<<4) + ord(digit)-ord("0")
-    return HHMMSS
-
-
 
 class PacketiseTableSections(object):
     """\
