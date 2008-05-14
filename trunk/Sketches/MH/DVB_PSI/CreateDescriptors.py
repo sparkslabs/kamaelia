@@ -280,31 +280,18 @@ def serialise_terrestrial_delivery_system_Descriptor(descriptor):
              chr(((dparams["frequency"] / 10) >> 16) & 0xff) + \
              chr(((dparams["frequency"] / 10) >> 8 ) & 0xff) + \
              chr(((dparams["frequency"] / 10) >>   ) & 0xff) + \
-             chr(dparams["bandwidth"]) + \
-
-    params = {}
-    params['frequency'] = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
-    v = e[4] >> 5
-    params['bandwidth'] = _dvbt_bandwidths.get(v,v)
-    v = e[5] >> 6
-    params['constellation'] = _dvbt_constellations.get(v,v)
-    v = (e[5] >> 3) & 0x07
-    params['hierarchy_information'] = _dvbt_hierarchy.get(v,v)
-    v = e[5] & 0x07
-    params['code_rate_HP'] = _dvbt_code_rate_hp.get(v,v)
-    v = e[6] >> 5
-    params['code_rate_LP'] = _dvbt_code_rate_lp.get(v,v)
-    v = (e[6] >> 3) & 0x03
-    params['guard_interval'] = _dvbt_guard_interval.get(v,v)
-    v = (e[6] >> 1) & 0x03
-    params['transmission_mode'] = _dvbt_transmission_mode.get(v,v)
-    
-    # other desirable params
-    params['inversion'] = dvb3f.INVERSION_AUTO
-    
-    d['params'] = params
-    d['other_frequencies'] = e[6] & 0x01
-
+             chr(_dvbt_bandwidths_rev[dparams["bandwidth"]] << 5) + \
+             chr( (_dvbt_constellations_rev[dparams["constellation"]] << 6) + \
+                  (_dvbt_hierarchy_rev[dparams["hierarchy_information"]] << 3) + \
+                  (_dvbt_code_rate_hp_rev[dparams["code_rate_HP"]]) \
+                ) + \
+             chr( (_dvbt_code_rate_lp_rev[dparams["code_rate_LP"]] << 5) + \
+                  (_dvbt_guard_interval_rev[dparams["guard_interval"]] << 3) + \
+                  (_dvbt_transmission_mode_rev[dparams["transmission_mode"]] << 1) + \
+                  other_freq_flag \
+                ) + \
+             "\0\0\0\0" \
+           ], 11
 
 def serialise_multilingual_network_name_Descriptor(descriptor):
     raise "Not yet implemented"
