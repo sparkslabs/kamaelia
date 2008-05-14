@@ -106,9 +106,10 @@ def getServerInfo(uri_server):
     split_server = uri_server.split(":")
     return (split_server[0], split_server[1])
 
-def stringifyEnviron(environ):
+def normalizeEnviron(environ):
     """
-    Converts environ variables to strings for wsgi compliance
+    Converts environ variables to strings for wsgi compliance and deletes extraneous
+    fields.
     """
     header_list = []
     header_dict = environ['headers']
@@ -119,6 +120,9 @@ def stringifyEnviron(environ):
     
     environ['headers'] = ''.join(header_list)
     environ['peerport'] = str(environ['peerport'])
+    environ['localport'] = str(environ['localport'])
+    del environ['bad']
+    del environ['body']
     
 
 class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
@@ -134,12 +138,14 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
         
         
 
-    def start_response(self, status, response_headers):
+    def start_response(self, status, response_headers, exc_info=None):
         """
         Method to be passed to WSGI application object
         
         TODO:  implement exc_info
         """
+        if exc_info:
+            raise exc_info[0], exc_info[1], exc_info[2]
         
         self.status = status
         self.response_headers = response_headers
@@ -233,7 +239,7 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
         self.munge_headers()
         
         #stringify all variables for wsgi compliance
-        stringifyEnviron(self.environ)
+        normalizeEnviron(self.environ)
         
         R = [ x for x in self.app(self.environ, self.start_response) ]
         resource = {
@@ -263,12 +269,13 @@ def HTTPProtocol():
 
 class WebServer(MoreComplexServer):
     routing = [
-               ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(simple_app)) ],
+               ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(validator(simple_app))) ],
               ]
     protocol=HTTPProtocol()
     port=8082
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+print "Serving on port 8082"
 WebServer().run()
 
 """
