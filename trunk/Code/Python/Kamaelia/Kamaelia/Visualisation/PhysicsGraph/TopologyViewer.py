@@ -157,9 +157,18 @@ may be output:
         The list will start with a ("DEL","ALL") command.
         This is sent in response to receiving a ("GET","ALL") command.
 
-If a shutdownMicroprocess or producerFinished message is received on this
-component's "control" inbox this it will pass it on out of its "signal" outbox
-and immediately terminate.
+Termination
+-----------
+
+If a shutdownMicroprocess message is received on this component's "control"
+inbox this it will pass it on out of its "signal" outbox and immediately
+terminate.
+
+Historical note for short term: this has changed as of May 2008. In the past,
+this component would also shutdown when it recieved a producerFinished message.
+This has transpired to be a mistake for a number of different systems, hence
+the change to only shutting down when it recieves a  shutdownMicroprocess
+message.
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
 will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
@@ -427,7 +436,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
 
         if self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):
+            if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                 self.send(msg, "signal")
                 self.quit()
             
