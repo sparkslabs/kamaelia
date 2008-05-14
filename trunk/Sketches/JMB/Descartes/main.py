@@ -20,8 +20,17 @@ indexfilename = "index.html"
 # for merging into the mainline code. Effectively this is a factory that creates functions
 # capable of choosing which request handler to use.
 
+def logRequest(request):
+	file = open("request.log", "a")
+	for key in request:
+		output_string = '"%s" : "%s"\n' % (key, request[key])
+		file.write(output_string)
+	file.close()
+	
+
 def requestHandlers(URLHandlers):
     def createRequestHandler(request):
+        logRequest(request)
         if request.get("bad"):
             return ErrorPages.websiteErrorPage(400, request.get("errormsg",""))
         else:
