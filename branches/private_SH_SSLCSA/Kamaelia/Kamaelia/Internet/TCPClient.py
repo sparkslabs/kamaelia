@@ -44,6 +44,25 @@ Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
             ).activate()
 
 
+Example Usage - SSL
+-------------------
+
+It is also possible to cause the TCPClient to switch into SSL mode. To do this
+you send it a message on its "makessl" inbox. It is necessary for a number of
+protocols to be able to switch between non-ssl and ssl, hence this approach
+rather than simply saying "ssl client" or "non-ssl client"::
+
+    Graphline(
+           MAKESSL = OneShot(" make ssl "),
+           CONSOLE = ConsoleReader(),
+           ECHO = ConsoleEchoer(),
+           CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
+           linkages = {
+               ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+               ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
+               ("CONNECTION", "outbox"): ("ECHO", "inbox"),
+           }
+    )
 
 How does it work?
 -----------------
