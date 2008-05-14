@@ -23,6 +23,7 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Chassis.Pipeline import Pipeline
 
+# ConsoleReader->lines_to_tokenlists->TopologyViewer
 Pipeline(
     ConsoleReader(">>> "),
     lines_to_tokenlists(),
