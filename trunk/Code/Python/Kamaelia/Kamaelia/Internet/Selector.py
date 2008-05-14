@@ -187,6 +187,18 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             message = self.recv("notify")
 #            \
 #print type(message)
+            if isinstance(message, removeReader):
+                selectable = message.object
+                self.removeLinks(selectable, meta[READERS], readers)
+
+            if isinstance(message, removeWriter):
+                selectable = message.object
+                self.removeLinks(selectable, meta[WRITERS], writers)
+
+            if isinstance(message, removeExceptional):
+                selectable = message.object
+                self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
+
             if isinstance(message, newReader):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
@@ -201,18 +213,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             if isinstance(message, newExceptional):
                 replyService, selectable = message.object
                 self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
-
-            if isinstance(message, removeReader):
-                selectable = message.object
-                self.removeLinks(selectable, meta[READERS], readers)
-
-            if isinstance(message, removeWriter):
-                selectable = message.object
-                self.removeLinks(selectable, meta[WRITERS], writers)
-
-            if isinstance(message, removeExceptional):
-                selectable = message.object
-                self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
     def trackedBy(self, tracker):
         self.trackedby = tracker
