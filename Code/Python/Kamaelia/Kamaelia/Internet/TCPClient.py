@@ -44,6 +44,25 @@ Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
             ).activate()
 
 
+Example Usage - SSL
+-------------------
+
+It is also possible to cause the TCPClient to switch into SSL mode. To do this
+you send it a message on its "makessl" inbox. It is necessary for a number of
+protocols to be able to switch between non-ssl and ssl, hence this approach
+rather than simply saying "ssl client" or "non-ssl client"::
+
+    Graphline(
+           MAKESSL = OneShot(" make ssl "),
+           CONSOLE = ConsoleReader(),
+           ECHO = ConsoleEchoer(),
+           CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
+           linkages = {
+               ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+               ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
+               ("CONNECTION", "outbox"): ("ECHO", "inbox"),
+           }
+    )
 
 How does it work?
 -----------------
@@ -109,11 +128,13 @@ class TCPClient(Axon.Component.component):
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
-                "control"         : "Shutdown signalling"
+                "control"         : "Shutdown signalling",
+                "makessl"         : "Notifications to the ConnectedSocketAdapter that we want to negotiate SSL",
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
                 "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
+                "sslready"       : "SSL negotiated successfully",
 
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -162,8 +183,10 @@ class TCPClient(Axon.Component.component):
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
+      self.link((CSA, "sslready"), (self, "sslready"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
-      
+      self.link((self, "makessl"), (CSA, "makessl"), passthrough=1)
+
       self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
