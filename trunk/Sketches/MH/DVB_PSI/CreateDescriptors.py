@@ -252,10 +252,59 @@ def serialise_local_time_offset_Descriptor(descriptor):
            ], 13
 
 def serialise_subtitling_Descriptor(descriptor):
-    raise "Not yet implemented"
+    parts = []
+    for part in descriptor["entries"]:
+        stype = _stream_component_mappings_rev.get( \
+            descriptor["subtitling_type"][0], \
+            descriptor["subtitling_type"] \
+            )
+        cpid = descriptor["composition_page_id"]
+        apid = descriptor["ancilliary_page_id"]
+        parts.insert( \
+            descriptor["language_code"] + \
+            chr(stype[0]) + \
+            chr((cpid >> 8) & 0xff) + \
+            chr((cpid     ) & 0xff) + \
+            chr((apid >> 8) & 0xff) + \
+            chr((apid     ) & 0xff) \
+        )
+    return parts, \
+        len(descriptor["entries"]) * 8
+    
 
 def serialise_terrestrial_delivery_system_Descriptor(descriptor):
-    raise "Not yet implemented"
+    dparams = descriptor["params"]
+    dfreqs = descriptor["other_frequencies"]
+
+    return [ chr(((dparams["frequency"] / 10) >> 24) & 0xff) + \
+             chr(((dparams["frequency"] / 10) >> 16) & 0xff) + \
+             chr(((dparams["frequency"] / 10) >> 8 ) & 0xff) + \
+             chr(((dparams["frequency"] / 10) >>   ) & 0xff) + \
+             chr(dparams["bandwidth"]) + \
+
+    params = {}
+    params['frequency'] = 10 * ((e[0]<<24) + (e[1]<<16) + (e[2]<<8) + e[3])
+    v = e[4] >> 5
+    params['bandwidth'] = _dvbt_bandwidths.get(v,v)
+    v = e[5] >> 6
+    params['constellation'] = _dvbt_constellations.get(v,v)
+    v = (e[5] >> 3) & 0x07
+    params['hierarchy_information'] = _dvbt_hierarchy.get(v,v)
+    v = e[5] & 0x07
+    params['code_rate_HP'] = _dvbt_code_rate_hp.get(v,v)
+    v = e[6] >> 5
+    params['code_rate_LP'] = _dvbt_code_rate_lp.get(v,v)
+    v = (e[6] >> 3) & 0x03
+    params['guard_interval'] = _dvbt_guard_interval.get(v,v)
+    v = (e[6] >> 1) & 0x03
+    params['transmission_mode'] = _dvbt_transmission_mode.get(v,v)
+    
+    # other desirable params
+    params['inversion'] = dvb3f.INVERSION_AUTO
+    
+    d['params'] = params
+    d['other_frequencies'] = e[6] & 0x01
+
 
 def serialise_multilingual_network_name_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -446,13 +495,27 @@ __descriptor_serialisers = {
 
 # table for iso_639_descriptor
 from Kamaelia.Support.DVB.Descriptors import _iso639_audiotypes
-
-_iso639_audiotypes_rev = dict([(v,k) for (k,v) in _iso639_audiotypes.items()])
-
 from Kamaelia.Support.DVB.Descriptors import _service_types
-
-_service_types_rev = dict([(v,k) for (k,v) in _service_types.items()])
-
 from Kamaelia.Support.DVB.Descriptors import _stream_component_mappings
+from Kamaelia.Support.DVB.Descriptors import _dvbt_bandwidths
+from Kamaelia.Support.DVB.Descriptors import _dvbt_constellations
+from Kamaelia.Support.DVB.Descriptors import _dvbt_hierarchy
+from Kamaelia.Support.DVB.Descriptors import _dvbt_code_rate_hp
+from Kamaelia.Support.DVB.Descriptors import _dvbt_code_rate_lp
+from Kamaelia.Support.DVB.Descriptors import _dvbt_guard_interval
+from Kamaelia.Support.DVB.Descriptors import _dvbt_transmission_mode
 
-_stream_component_mappings_rev = dict([(v,k) for (k,v) in _stream_component_mappings()])
+def __invert(fwdDict):
+    return dict([(v,k) for (k,v) in fwdDict.items()])
+
+_iso639_audiotypes_rev         = __invert(_iso639_audiotypes)
+_service_types_rev             = __invert(_service_types)
+_stream_component_mappings_rev = __invert(_stream_component_mappings)
+_dvbt_bandwidths_rev           = __invert(_dvbt_bandwidths)
+_dvbt_constellations_rev       = __invert(_dvbt_constellations)
+_dvbt_hierarchy_rev            = __invert(_dvbt_hierarchy)
+_dvbt_code_rate_hp_rev         = __invert(_dvbt_code_rate_hp)
+_dvbt_code_rate_lp_rev         = __invert(_dvbt_code_rate_lp)
+_dvbt_guard_interval_rev       = __invert(_dvbt_guard_interval)
+_dvbt_transmission_mode_rev    = __invert(_dvbt_transmission_mode)
+
