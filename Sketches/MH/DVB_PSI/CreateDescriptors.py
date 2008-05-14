@@ -274,7 +274,10 @@ def serialise_subtitling_Descriptor(descriptor):
 
 def serialise_terrestrial_delivery_system_Descriptor(descriptor):
     dparams = descriptor["params"]
-    dfreqs = descriptor["other_frequencies"]
+    if descriptor["other_frequencies"]:
+        other_freq_flag = 1
+    else:
+        other_freq_flag = 0
 
     return [ chr(((dparams["frequency"] / 10) >> 24) & 0xff) + \
              chr(((dparams["frequency"] / 10) >> 16) & 0xff) + \
@@ -306,7 +309,12 @@ def serialise_multilingual_component_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_private_data_specifier_Descriptor(descriptor):
-    raise "Not yet implemented"
+    pds = _private_data_specifiers_rev[descriptor["private_data_specifier"]]
+    return [ chr((pds >> 24) & 0xff) + \
+             chr((pds >> 16) & 0xff) + \
+             chr((pds >> 8 ) & 0xff) + \
+             chr((pds      ) & 0xff) \
+           ], 4
 
 def serialise_service_move_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -315,7 +323,30 @@ def serialise_short_smoothing_buffer_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_frequency_list_Descriptor(descriptor):
-    raise "Not yet implemented"
+    freqs = []
+    if descriptor['coding_type'] == "terrestrial":
+        freqs.insert(chr(3))
+        for freq in descriptor["frequencies"]:
+            freqs.insert( chr(((freq/10) >> 24) & 0xff) + \
+                          chr(((freq/10) >> 16) & 0xff) + \
+                          chr(((freq/10) >> 8 ) & 0xff) + \
+                          chr(((freq/10)      ) & 0xff) \
+                        )
+    
+    else if descriptor['coding_type'] == "cable":
+        freqs.insert(chr(2))
+        for freq in descriptor["frequencies"]:
+            freqs.insert(createBCD32(freq/100))
+    
+    else if descriptor['coding_type'] == "satellite":
+        freqs.insert(chr(1))
+        for freq in descriptor["frequencies"]:
+            freqs.insert(createBCD32(freq/10000))
+    
+    else
+        raise "unrecognised 'coding_type'"
+    
+    return freqs, 1 + 4*len(descriptor["frequencies"])
 
 def serialise_partial_transport_stream_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -327,7 +358,10 @@ def serialise_CA_system_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_data_broadcast_id_Descriptor(descriptor):
-    raise "Not yet implemented"
+    return [ chr(((descriptor["id") >> 8) & 0xff) + \
+             chr(((descriptor["id")     ) & 0xff) + \
+             descriptor["selectors"] \
+           ], 2+len(descriptor["selectors"])
 
 def serialise_transport_stream_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -359,7 +393,14 @@ def serialise_announcement_support_Descriptor(descriptor):
 # UK Digital Television Group (www.dtg.org.uk) document descriptors
 
 def serialise_logical_channel_Descriptor(descriptor):
-    raise "Not yet implemented"
+    services = []
+    for (service_id, logical_channel_number) in descriptor["mappings"].items():
+        services.insert( chr((service_id << 8) & 0xff) + \
+                         chr((service_id     ) & 0xff) + \
+                         chr((logical_channel_number << 8) & 0x3f) + \
+                         chr((logical_channel_number     ) & 0xff) \
+                       )
+    return services, 4*len(descriptor["mappings"])
 
 def serialise_preferred_name_list_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -398,6 +439,12 @@ def createBCDtime(hour,minute):
     for digit in "%02d%02d" % (hour,minute):
         HHMM = (HHMM<<4) + ord(digit)-ord("0")
     return HHMM
+
+def createBCD32(value):
+    AABBCCDD = 0
+    for digit in "%08" % value:
+        AABBCCDD = (AABBCCDD<<4) + ord(digit)-ord("0")
+    return AABBCCDD
 
 __descriptor_serialisers = {
     # ISO 13818-1 defined descriptors
@@ -491,6 +538,7 @@ from Kamaelia.Support.DVB.Descriptors import _dvbt_code_rate_hp
 from Kamaelia.Support.DVB.Descriptors import _dvbt_code_rate_lp
 from Kamaelia.Support.DVB.Descriptors import _dvbt_guard_interval
 from Kamaelia.Support.DVB.Descriptors import _dvbt_transmission_mode
+from Kamaelia.Support.DVB.Descriptors import _private_data_specifiers
 
 def __invert(fwdDict):
     return dict([(v,k) for (k,v) in fwdDict.items()])
@@ -505,4 +553,4 @@ _dvbt_code_rate_hp_rev         = __invert(_dvbt_code_rate_hp)
 _dvbt_code_rate_lp_rev         = __invert(_dvbt_code_rate_lp)
 _dvbt_guard_interval_rev       = __invert(_dvbt_guard_interval)
 _dvbt_transmission_mode_rev    = __invert(_dvbt_transmission_mode)
-
+_private_data_specifiers_rev   = __invert(_private_data_specifiers)
