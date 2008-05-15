@@ -73,15 +73,15 @@ if __name__ == '__main__':
         def run(self):
             while 1:
                 time.sleep(1)
-		print
-		print
-                print (graph.children, 
+    print
+    print
+    print (graph.children, 
                         backplane_feeds._isStopped(), 
                         backplane_config._isStopped(), 
                         graphXml._isStopped(),
                         graphHtml._isStopped()
                     )
-		print
+    print
     w = Watcher()
     w.setDaemon(1)
     w.start()

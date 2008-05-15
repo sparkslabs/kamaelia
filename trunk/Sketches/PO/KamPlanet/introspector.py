@@ -17,7 +17,7 @@ class WakeableIntrospector(Axon.Component.component):
         while 1:
             Q = [ q.name for q in self.scheduler.listAllThreads() ]
             Q.sort()
-            self.send("*debug* THREADS"+ str(Q), "outbox")
+            self.send("\n*debug* THREADS"+ str(Q)+"\n", "outbox")
             self.scheduler.debuggingon = False
             yield 1
             while not self.dataReady("inbox"):

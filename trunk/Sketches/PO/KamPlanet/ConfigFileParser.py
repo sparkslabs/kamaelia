@@ -26,12 +26,23 @@ class ConfigFileParser(Axon.Component.component):
         super(ConfigFileParser, self).__init__(**argd)
         # TODO: First version, I should parse a configuration file or sth :-)
         # Right now all the config has been hardcoded
+        # * SimpleXMLParser
+        # * IntelligentFileReader @ BetterReading
         self.ptr = 0
         self.feeds = [
-            'http://pablo.ordunya.com/weblog/feed/',
-            'http://pablo.ordunya.com/weblog/feed/',
-            'http://pablo.ordunya.com/weblog/feed/',
-            'http://pablo.ordunya.com/weblog/feed/',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
+            'http://localhost/wordpress/?feed=rss2',
         ]
         self.counter      = 0
         self.counter_sent = False

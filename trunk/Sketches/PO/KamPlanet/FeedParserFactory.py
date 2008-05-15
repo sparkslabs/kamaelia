@@ -28,7 +28,7 @@ class Feedparser(Axon.Component.component):
 def makeFeedParser(feedUrl):
     return Pipeline(
             OneShot(feedUrl), 
-            SimpleHTTPClient(),
+            SimpleHTTPClient(), #TODO: SimpleHTTPClient doesn't seem to have proxy support
             Feedparser()
         )
 
