@@ -1,0 +1,22 @@
+PlayMP3.py / PlayMP3s.py
+     * Simple MP3 player - uses a Carousel to instantiate the audio Output
+       component at runtime with parameters read from the decoded audio.
+     * PlayMP3s.py plays a playlist of mp3 files one after the other.
+     * Requires PyMedia
+
+SimpleMultiFileStreamer.py
+     * Simple streamer that repeatedly streams (3 times) the same audio
+       file.
+     * This is a mainly a demonstration of how to use the
+       JoinChooserToCarousel Chassis, and the
+       FixedRateControlledReusableFileReader
+     * What really happens is a "chooser" takes a playlist of things to
+       serve, and the filereader asks the chooser what file it should be
+       reading next when it finishes reading a file.
+
+ClientStreamToFile.py
+     * Simple client for the above streamer
+
+
+Michael, October 2005
+Matt, December 2006
