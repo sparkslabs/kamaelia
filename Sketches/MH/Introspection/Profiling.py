@@ -76,19 +76,28 @@ class Profiler(threadedcomponent):
             if now >= nextoutput:
                 nextoutput = now+self.outputstep
                 
-                print "-----Run----Active--%Usage--LineNo--Name-----------------"
+                outmsg = []
+#                print "-----Run----Active--%Usage--LineNo--Name-----------------"
                 todel=[]
                 for name,(running,active,shortactive,mru,lineno) in microprocesses.iteritems():
+                    outmsg.append( { "running" : running,
+                                     "active"  : active,
+                                     "%usage"  : 100.0*shortactive/cycles,
+                                     "lineno"  : lineno,
+                                     "name"    : name,
+                                     "done"    : mru!=latest
+                                 } )
                     if mru!=latest:
                         todel.append(name)
                         name += " [DONE]"
                     else:
                         microprocesses[name] = (running,active,0,mru,lineno)
-                    print "%8d  %8d  %6.2f  %6d  %s" % (running,active,100.0*shortactive/cycles,lineno,name)
-                print "------------------------------------------"
+#                    print "%8d  %8d  %6.2f  %6d  %s" % (running,active,100.0*shortactive/cycles,lineno,name)
+#                print "------------------------------------------"
                 cycles=0
                 for name in todel:
                     del microprocesses[name]
+                self.send(outmsg, "outbox")
             
 
 
@@ -106,11 +115,13 @@ class ProfilerOutputFormatter(component):
         
             while self.dataReady("inbox"):
                 profile = self.recv("inbox")
-                output = "-----Run----Active--Name-----------------\n"
-                for name in profile:
-                    running,active = profile[name]
-                    output += "%8d  %8d  %s" % (running,active,name)
-                output += "------------------------------------------"
+                output =  "-----Run----Active--%Usage--LineNo--Name-----------------\n"
+                for mp in profile:
+                    flags = []
+                    if mp["done"]:
+                        flags.append("[DONE]")
+                    output += "%8d  %8d  %6.2f  %6d  %s %s\n" % (mp["running"],mp["active"],mp["%usage"],mp["lineno"],mp["name"]," ".join(flags))
+                output += "---------------------------------------------------------\n"
                 self.send(output,"outbox")
         
             yield 1
