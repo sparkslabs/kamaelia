@@ -29,8 +29,6 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-#from Kamaelia.Util.Console import ConsoleEchoer
-
 # To see if the file name is included in the arguments
 if len(sys.argv)==1:
     print "Bingo! not enough inputs: please type the file name you want to draw as well"
@@ -39,6 +37,5 @@ else:
     Pipeline(
         ReadFileAdaptor(filename=sys.argv[1], readmode="line"),
         lines_to_tokenlists(),
-        #ConsoleEchoer()
         TopologyViewer(),
     ).run()    

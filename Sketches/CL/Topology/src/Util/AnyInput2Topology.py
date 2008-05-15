@@ -25,7 +25,6 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-
 if len(sys.argv)==1:
     print "Please type the command you want to draw"
     # ConsoleReader->lines_to_tokenlists->TopologyViewer
