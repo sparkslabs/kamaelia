@@ -52,16 +52,8 @@ class Feed2xml(Axon.Component.component):
                     entry    = complete_entry['entry']
                     encoding = complete_entry['encoding']
                     
-                    item = {}
-                    item['channel_name'] = feed.title.encode(encoding)
-                    item['title']        = True
-                    item['title_plain']  = feed.title.encode(encoding)
-                    item['id']           = entry.link.encode(encoding)
-                    item['link']         = entry.link.encode(encoding)
-                    item['content']      = entry.summary.encode(encoding)
-                    item['date_822']     = entry.updated.encode(encoding)
-                    item['author_email'] = False
-                    item['author_name']  = entry.author.encode(encoding)
+                    item = self.createItem(feed, entry, encoding)
+                    
                     items.append(item)
                     
                 tproc.set('Items',  items)
@@ -69,7 +61,7 @@ class Feed2xml(Axon.Component.component):
                 
                 template = TemplateManager().prepare("rss20.xml.tmpl") #TODO: constant
                 result = tproc.process(template)
-                file_name = '/tmp/kamplanet.output.rss20.xml.tmpl'
+                file_name = 'output/rss20.xml' #TODO: constant
                 open(file_name, 'w').write(result)
                 print "Check", file_name
                 yield 1
@@ -79,3 +71,15 @@ class Feed2xml(Axon.Component.component):
 
             yield 1
 
+    def createItem(self, feed, entry, encoding):
+        item = {}
+        item['channel_name'] = feed.title.encode(encoding)
+        item['title']        = True
+        item['title_plain']  = feed.title.encode(encoding)
+        item['id']           = entry.link.encode(encoding)
+        item['link']         = entry.link.encode(encoding)
+        item['content']      = entry.summary.encode(encoding)
+        item['date_822']     = entry.updated.encode(encoding)
+        item['author_email'] = False
+        item['author_name']  = entry.author.encode(encoding)
+        return item
