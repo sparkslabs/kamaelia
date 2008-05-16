@@ -1,3 +1,6 @@
+   * Fix to reliability of DVB support
+   * Basic SSL support added - allow, for example, HTTPS components
+
    NEW TOOLS:
 
    Simple Video Player:

@@ -192,7 +192,7 @@ class Tuner(threadedcomponent):
         If it is, exit with a StopIteration. (allows use in a for
         loop)
         """
-        return (self.fe.read_status() & dvb3.frontend.FE_HAS_LOCK) != 0
+        return (self.fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0
     
     def addPID(self,pid):
         """\
