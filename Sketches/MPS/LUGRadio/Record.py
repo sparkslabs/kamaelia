@@ -13,13 +13,13 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 # freq = 834.166670
+# feparams = {
+#     "inversion" : dvb3.frontend.INVERSION_AUTO,
+#     "constellation" : dvb3.frontend.QAM_64,
+#     "coderate_HP" : dvb3.frontend.FEC_2_3,
+#     "coderate_LP" : dvb3.frontend.FEC_1_2,
+# }
 freq = 754.166670
-#feparams = {
-#    "inversion" : dvb3.frontend.INVERSION_AUTO,
-#    "constellation" : dvb3.frontend.QAM_64,
-#    "coderate_HP" : dvb3.frontend.FEC_2_3,
-#    "coderate_LP" : dvb3.frontend.FEC_1_2,
-#}
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
     "constellation" : dvb3.frontend.QAM_16,
