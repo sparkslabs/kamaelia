@@ -37,7 +37,7 @@ def notLocked(fe):
     If it is, exit with a StopIteration. (allows use in a for
     loop)
     """
-    return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) != 0
+    return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0
 
 def addPIDS(pids):
     """\
