@@ -5,8 +5,9 @@ import socket
 import pprint
 import string
 import sys
-from datetime import datetime
 import serverinfo
+import cStringIO
+from datetime import datetime
 from wsgiref.validate import validator
 
 # We need to import Axon - Kamaelia's core component system - to write Kamaelia components!
@@ -14,7 +15,6 @@ import Axon
 
 # Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers
 
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
@@ -45,8 +45,7 @@ def requestHandlers(URLHandlers, errorpages=None):
         
 def sanitizePath():
     """Joins sys.path into a : separated string with no empty elements"""
-    path = sys.path
-    filter(lambda elem: elem, path)    #remove all empty elements
+    path = [x for x in sys.path if x]
     return string.join(path, ':')
 
 class HelloHandler(Axon.Component.component):
@@ -82,7 +81,10 @@ def simple_app(environ, start_response):
     yield '<P> My Own Hello World!\n'
     for i in sorted(environ.keys()):
         yield "<li>%s: %s\n" % (i, environ[i])
-    yield "<li> Date:" + time.ctime()
+    yield "<li> wsgi.input:<br/><br/><kbd>"
+    for line in environ['wsgi.input'].readlines():
+        yield "%s<br/>" % (line)
+    yield "</kbd>"
 
 # ----------------------------------------------------------------------------------------------------
 #
@@ -122,13 +124,13 @@ def normalizeEnviron(environ):
     environ['peerport'] = str(environ['peerport'])
     environ['localport'] = str(environ['localport'])
     del environ['bad']
-    del environ['body']
     
 
 class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
     """Choosing to run the WSGI app in a thread rather than the same
        context, this means we don't have to worry what they get up
        to really"""
+    
     def __init__(self, app_name, request, app):
         super(_WSGIHandler, self).__init__()
         self.app_name = app_name
@@ -141,9 +143,8 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
     def start_response(self, status, response_headers, exc_info=None):
         """
         Method to be passed to WSGI application object
-        
-        TODO:  implement exc_info
         """
+        #TODO:  Add more exc_info support
         if exc_info:
             raise exc_info[0], exc_info[1], exc_info[2]
         
@@ -157,6 +158,26 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
             
         pprint.pprint(self.environ)
         pprint.pprint(self.environ["headers"])
+        
+    def generateRequestMemFile(self):
+        """
+        Creates a memfile to be stored in wsgi.input
+        """
+        CRLF = '\r\n'
+        
+        full_request = "%s %s %s/%s%s" % \
+            (self.environ['method'], self.environ['raw-uri'], self.environ['protocol'], self.environ['version'], CRLF)
+        
+        header_list = []
+        for key in self.environ['headers']:
+            header_list.append("%s: %s%s" % (key, self.environ['headers'][key], CRLF))
+        print header_list
+        
+        full_request = full_request + string.join(header_list)
+        
+        print "full_request: \n" + full_request
+        
+        return cStringIO.StringIO(full_request)
         
     def initRequiredVars(self):
         """
@@ -189,7 +210,7 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
         self.environ["wsgi.multithread"] = 0
         self.environ["wsgi.multiprocess"] = 0
         self.environ["wsgi.run_once"] = 0
-        self.environ["wsgi.input"] = sys.stdin   #TODO:  FIX THIS
+        self.environ["wsgi.input"] = self.generateRequestMemFile()
         
     def initOptVars(self):
         """This method initializes all variables that are optional"""
