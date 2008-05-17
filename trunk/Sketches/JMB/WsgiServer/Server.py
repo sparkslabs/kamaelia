@@ -171,10 +171,8 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
         header_list = []
         for key in self.environ['headers']:
             header_list.append("%s: %s%s" % (key, self.environ['headers'][key], CRLF))
-        print header_list
         
-        full_request = full_request + string.join(header_list)
-        
+        full_request = full_request + string.join(header_list) + '\n' + self.environ['body']
         print "full_request: \n" + full_request
         
         return cStringIO.StringIO(full_request)
