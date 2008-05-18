@@ -36,8 +36,8 @@ import dvb3.frontend
 FREQUENCY = 505833330/1000000.0
 FE_PARAMS = { "inversion" : dvb3.frontend.INVERSION_AUTO,
               "constellation" : dvb3.frontend.QAM_16,
-              "coderate_HP" : dvb3.frontend.FEC_3_4,
-              "coderate_LP" : dvb3.frontend.FEC_3_4,
+              "code_rate_HP" : dvb3.frontend.FEC_3_4,
+              "code_rate_LP" : dvb3.frontend.FEC_3_4,
             }
             
 programmes_to_record = [
