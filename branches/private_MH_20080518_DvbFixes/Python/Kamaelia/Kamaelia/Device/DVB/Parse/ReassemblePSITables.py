@@ -256,6 +256,25 @@ class ReassemblePSITables(component):
                         buffer = ""
                     
                     buffer = buffer + data[payload_start:]
+                    
+                    # examine PSI section at start of buffer
+                    i=0
+                    while len(buffer)>=1:
+                        if buffer[0] == chr(0xff):
+                            # table ID is 'stuffing' id, indicating that everything after
+                            # this point is just stuffing, so can be discarded
+                            buffer = ""
+                            break
+                            
+                        if len(buffer)>=3:
+                            # extract the table length field and see if we have a complete table in the buffer
+                            tlen = ( (ord(buffer[1]) << 8) + ord(buffer[2]) ) & 0x0fff
+                            if len(buffer) >= 3+tlen:
+                                self.send( buffer[:3+tlen], "outbox" )
+                                buffer = buffer[3+tlen:]
+                            else:
+                                break
+                    
                     nextCont = (contcount + 1) & 0xf
                 else:
                     # reset for crash relock
