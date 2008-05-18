@@ -214,7 +214,13 @@ def serialise_CA_identifier_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_content_Descriptor(descriptor):
-    raise "Not yet implemented"
+    level1 = _content_types_level_1_rev.get(descriptor["content_level_1"], descriptor["content_level_1"])
+    level2 = _content_types_level_2_rev.get((level1, descriptor["content_level_2"]), descriptor["content_level_2"])
+    user1 = descriptor["user1"]
+    user2 = descriptor["user2"]
+    return [ chr((level1 & 0xf) << 4 + (level2 & 0xf)),
+             chr((user1  & 0xf) << 4 + (user2  & 0xf))
+           ], 2
 
 def serialise_parental_rating_Descriptor(descriptor):
     raise "Not yet implemented"
@@ -539,6 +545,8 @@ from Kamaelia.Support.DVB.Descriptors import _dvbt_code_rate_lp
 from Kamaelia.Support.DVB.Descriptors import _dvbt_guard_interval
 from Kamaelia.Support.DVB.Descriptors import _dvbt_transmission_mode
 from Kamaelia.Support.DVB.Descriptors import _private_data_specifiers
+from Kamaelia.Support.DVB.Descriptors import _content_types_level_1
+from Kamaelia.Support.DVB.Descriptors import _content_types_level_2
 
 def __invert(fwdDict):
     return dict([(v,k) for (k,v) in fwdDict.items()])
@@ -554,3 +562,5 @@ _dvbt_code_rate_lp_rev         = __invert(_dvbt_code_rate_lp)
 _dvbt_guard_interval_rev       = __invert(_dvbt_guard_interval)
 _dvbt_transmission_mode_rev    = __invert(_dvbt_transmission_mode)
 _private_data_specifiers_rev   = __invert(_private_data_specifiers)
+_content_types_level_1_rev     = __invert(_content_types_level_1)
+_content_types_level_2_rev = dict([((k>>4,v),k) for (k,v) in _content_types_level_2_rev.items()])
