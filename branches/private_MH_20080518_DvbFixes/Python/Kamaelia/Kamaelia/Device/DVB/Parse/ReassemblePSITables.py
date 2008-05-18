@@ -236,7 +236,6 @@ class ReassemblePSITables(component):
                 # check continuity counter is okay (otherwise ignore packet)
                 # or that its the start of a new packet and we've not started receiving yet
                 if (nextCont == None and start_indicator) or nextCont == contcount:
-                    
                     # determine start of payload offset
                     if adaption == 1:
                         payload_start = 4
@@ -258,7 +257,6 @@ class ReassemblePSITables(component):
                     buffer = buffer + data[payload_start:]
                     
                     # examine PSI section at start of buffer
-                    i=0
                     while len(buffer)>=1:
                         if buffer[0] == chr(0xff):
                             # table ID is 'stuffing' id, indicating that everything after
@@ -272,8 +270,12 @@ class ReassemblePSITables(component):
                             if len(buffer) >= 3+tlen:
                                 self.send( buffer[:3+tlen], "outbox" )
                                 buffer = buffer[3+tlen:]
+                                continue
                             else:
                                 break
+                            
+                        else:
+                          break
                     
                     nextCont = (contcount + 1) & 0xf
                 else:
