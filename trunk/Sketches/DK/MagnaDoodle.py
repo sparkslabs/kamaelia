@@ -74,6 +74,7 @@ class MagnaDoodle(Axon.Component.component):
       self.margin = margin
       self.oldpos = None
       self.drawing = False
+      self.shape = "line"
 ###      print "KEY",key
       
       self.size = size
@@ -102,7 +103,7 @@ class MagnaDoodle(Axon.Component.component):
       while waiting:
         if self.dataReady(boxname): return
         else: yield 1
-
+   
    def drawBG(self):
       self.display.fill( (255,0,0) )
       self.display.fill( self.backgroundColour, self.innerRect )
@@ -132,6 +133,11 @@ class MagnaDoodle(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
                   "surface" : self.display},
                   "display_signal")
+		  
+      self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
+		  "surface" : self.display},
+		  "display_signal")
+
 
       done = False
       while not done:
@@ -140,16 +146,28 @@ class MagnaDoodle(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-         
+
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if  event.button == 1:
-                        self.drawing = True
+                    if self.shape == "circle":
+                        if event.button == 1:
+                            pygame.draw.circle(self.display, (0,0,0), event.pos, 10, 0)
+                            self.blitToSurface()
+                    if self.shape == "line":
+                        if event.button == 1:
+                            self.drawing = True
                     elif event.button == 3:
                         self.oldpos = None
                         self.drawBG()
                         self.blitToSurface()
+                elif event.type == (pygame.KEYDOWN):
+                    if event.key == pygame.K_ESCAPE:
+                       done = True
+                    if event.key == pygame.K_c:
+                       self.shape = "circle"
+                    if event.key == pygame.K_l:
+                       self.shape = "line"
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     self.drawing = False
