@@ -21,11 +21,10 @@ import Axon.AdaptiveCommsComponent
     
 def tune_DVBT(fe, frequency, feparams={}):
     # Build the tuning parameters (DVB-T)
-    params = dvb3.frontend.OFDMParameters()
-    params.frequency = frequency * 1000 * 1000
-    # load up any extra params specified for the frontend
-    for key in feparams:
-        params.__dict__[key] = feparams[key]
+    params = dvb3.frontend.OFDMParameters(
+        frequency = frequency * 1000 * 1000,
+        **feparams
+        )
 
     # Start the tuning
     fe.set_frontend(params)
@@ -213,8 +212,8 @@ if __name__ == "__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
     channels_london =  {
