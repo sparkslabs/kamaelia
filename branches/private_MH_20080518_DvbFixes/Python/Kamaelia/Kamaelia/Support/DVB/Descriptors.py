@@ -210,7 +210,9 @@ Level 1 content types/genres::
     0x9 : "Childrens/Youth Education/Science/Factual",
     0xa : "Leisure hobbies",
     0xb : "Misc",
+    0xf : "Drama", # user defined (specified in the UK "D book")
 
+Note that 0xf is a user defined field. The mapping it is assigned here is that used in the UK "D book" specification.
 
 Level 2 content types/genres::
     
@@ -314,6 +316,20 @@ Level 2 content types/genres::
     0xb1 : "Black and White",
     0xb2 : "Unpublished",
     0xb3 : "Live Broadcast",
+
+    # drama (user defined, specced in the UK "D-Book")
+    0xf0 : "General",
+    0xf1 : "Detective/Thriller",
+    0xf2 : "Adventure/Western/War",
+    0xf3 : "Science Fiction/Fantasy/Horror",
+    0xf4 : "Comedy",
+    0xf5 : "Soap/Melodrama/Folkloric",
+    0xf6 : "Romance",
+    0xf7 : "Serious/ClassicalReligion/Historical",
+    0xf8 : "Adult",
+
+Note that 0xf0 to 0xff range is a user defined field. The mapping it is assigned here is that used in the UK "D book" specification.
+
 
 """
 
@@ -1763,6 +1779,7 @@ _content_types_level_1 = {
     0x9 : "Childrens/Youth Education/Science/Factual",
     0xa : "Leisure hobbies",
     0xb : "Misc",
+    0xf : "Drama", # defined in the "D book"
 }
 
 _content_types = {
@@ -1775,7 +1792,7 @@ _content_types = {
     0x15 : "Soap/Melodrama/Folkloric",
     0x16 : "Romance",
     0x17 : "Serious/ClassicalReligion/Historical",
-    0x18 : "Adult Movie/Drama",
+    0x18 : "Adult",
     
     # news/current affairs
     0x20 : "General",
@@ -1866,6 +1883,17 @@ _content_types = {
     0xb1 : "Black and White",
     0xb2 : "Unpublished",
     0xb3 : "Live Broadcast",
+
+    # drama
+    0xf0 : "General",
+    0xf1 : "Detective/Thriller",
+    0xf2 : "Adventure/Western/War",
+    0xf3 : "Science Fiction/Fantasy/Horror",
+    0xf4 : "Comedy",
+    0xf5 : "Soap/Melodrama/Folkloric",
+    0xf6 : "Romance",
+    0xf7 : "Serious/ClassicalReligion/Historical",
+    0xf8 : "Adult",
 
 }
 
