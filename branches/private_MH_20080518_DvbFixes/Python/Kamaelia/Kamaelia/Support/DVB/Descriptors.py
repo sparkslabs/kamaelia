@@ -1003,7 +1003,7 @@ def parser_content_Descriptor(data,i,length,end):
     level1 = ord(data[i+2]) >> 4
     level2 = ord(data[i+2]) & 0x0f
     level1_desc = _content_types_level_1.get(level1, level1)
-    level2_desc = _content_types.get((level1 << 4) + level2, level2)
+    level2_desc = _content_types_level_2.get((level1 << 4) + level2, level2)
     user1 = ord(data[i+3]) >> 4
     user2 = ord(data[i+3]) & 0x0f
 
@@ -1782,7 +1782,7 @@ _content_types_level_1 = {
     0xf : "Drama", # defined in the "D book"
 }
 
-_content_types = {
+_content_types_level_2 = {
     # movie/drama
     0x10 : "General",
     0x11 : "Detective/Thriller",
