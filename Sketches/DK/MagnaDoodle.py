@@ -34,6 +34,7 @@ right to erase your artwork.
 
 import pygame
 import Axon
+import math
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
@@ -152,8 +153,9 @@ class MagnaDoodle(Axon.Component.component):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.shape == "circle":
                         if event.button == 1:
-                            pygame.draw.circle(self.display, (0,0,0), event.pos, 10, 0)
-                            self.blitToSurface()
+                            self.oldpos = event.pos
+                            print event.pos
+                            self.drawing = True
                     if self.shape == "line":
                         if event.button == 1:
                             self.drawing = True
@@ -170,17 +172,24 @@ class MagnaDoodle(Axon.Component.component):
                        self.shape = "line"
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    if self.shape == "circle":
+                        rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
+                        print event.pos
+                        print rad
+                        pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
+                        self.blitToSurface()
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
 #                   print "BUTTON", event.button
-                    if self.drawing and self.innerRect.collidepoint(*event.pos):
-                        if self.oldpos == None:
-                            self.oldpos = event.pos
-                        else:
-                            pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
-                            self.oldpos = event.pos
-                        self.blitToSurface()
+                    if self.shape == "line":
+                        if self.drawing and self.innerRect.collidepoint(*event.pos):
+                              if self.oldpos == None:
+                                 self.oldpos = event.pos
+                              else:
+                                 pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+                                 self.oldpos = event.pos
+                              self.blitToSurface()
          self.pause()
          yield 1
             
