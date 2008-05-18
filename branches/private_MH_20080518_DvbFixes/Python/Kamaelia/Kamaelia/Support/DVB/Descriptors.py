@@ -194,6 +194,127 @@ Specifiers defining various types of private data payload::
     0x46524549 : "News Datacom (IL) 1",
     0x53415053 : "Scientific Atlanta",
 
+
+Content Types
+-------------
+Level 1 content types/genres::
+
+    0x1 : "Movie/Drama",
+    0x2 : "News/Current Affairs",
+    0x3 : "Show/Game show",
+    0x4 : "Sports",
+    0x5 : "Children's/Youth",
+    0x6 : "Music/Ballet/Dance",
+    0x7 : "Arts/Culture (without music)",
+    0x8 : "Social/Political issues/Economics",
+    0x9 : "Childrens/Youth Education/Science/Factual",
+    0xa : "Leisure hobbies",
+    0xb : "Misc",
+
+
+Level 2 content types/genres::
+    
+    # movie/drama
+    0x10 : "General",
+    0x11 : "Detective/Thriller",
+    0x12 : "Adventure/Western/War",
+    0x13 : "Science Fiction/Fantasy/Horror",
+    0x14 : "Comedy",
+    0x15 : "Soap/Melodrama/Folkloric",
+    0x16 : "Romance",
+    0x17 : "Serious/ClassicalReligion/Historical",
+    0x18 : "Adult Movie/Drama",
+    
+    # news/current affairs
+    0x20 : "General",
+    0x21 : "News/Weather Report",
+    0x22 : "Magazine",
+    0x23 : "Documentary",
+    0x24 : "Discussion/Interview/Debate",
+    
+    # show/game show
+    0x30 : "General",
+    0x31 : "Game show/Quiz/Contest",
+    0x32 : "Variety",
+    0x33 : "Talk",
+    
+    # sports
+    0x40 : "General",
+    0x41 : "Special Event (Olympics/World cup/...)",
+    0x42 : "Magazine",
+    0x43 : "Football/Soccer",
+    0x44 : "Tennis/Squash",
+    0x45 : "Team sports (excluding football)",
+    0x46 : "Athletics",
+    0x47 : "Motor Sport",
+    0x48 : "Water Sport",
+    0x49 : "Winter Sports",
+    0x4a : "Equestrian",
+    0x4b : "Martial sports",
+    
+    # childrens/youth
+    0x50 : "General",
+    0x51 : "Pre-school",
+    0x52 : "Entertainment (6 to 14 year-olds)",
+    0x53 : "Entertainment (10 to 16 year-olds)",
+    0x54 : "Informational/Educational/Schools",
+    0x55 : "Cartoons/Puppets",
+    
+    # music/ballet/dance
+    0x60 : "General",
+    0x61 : "Rock/Pop",
+    0x62 : "Serious music/Classical Music",
+    0x63 : "Folk/Traditional music",
+    0x64 : "Jazz",
+    0x65 : "Musical/Opera",
+    0x66 : "Ballet",
+    
+    # arts/culture
+    0x70 : "General",
+    0x71 : "Performing Arts",
+    0x72 : "Fine Arts",
+    0x73 : "Religion",
+    0x74 : "Popular Culture/Tradital Arts",
+    0x75 : "Literature",
+    0x76 : "Film/Cinema",
+    0x77 : "Experimental Film/Video",
+    0x78 : "Broadcasting/Press",
+    0x79 : "New Media",
+    0x7a : "Magazine",
+    0x7b : "Fashion",
+    
+    # social/political/economic
+    0x80 : "General",
+    0x81 : "Magazine/Report/Domentary",
+    0x82 : "Economics/Social Advisory",
+    0x83 : "Remarkable People",
+    
+    # children's youth: educational/science/factual
+    0x90 : "General",
+    0x91 : "Nature/Animals/Environment",
+    0x92 : "Technology/Natural sciences",
+    0x93 : "Medicine/Physiology/Psychology",
+    0x94 : "Foreign Countries/Expeditions",
+    0x95 : "Social/Spiritual Sciences",
+    0x96 : "Further Education",
+    0x97 : "Languages",
+    
+    # leisure hobbies
+    0xa0 : "General",
+    0xa1 : "Tourism/Travel",
+    0xa2 : "Handicraft",
+    0xa3 : "Motoring",
+    0xa4 : "Fitness & Health",
+    0xa5 : "Cooking",
+    0xa6 : "Advertisement/Shopping",
+    0xa7 : "Gardening",
+
+    # misc
+    0xb0 : "Original Language",
+    0xb1 : "Black and White",
+    0xb2 : "Unpublished",
+    0xb3 : "Live Broadcast",
+
 """
 
 # parsing routines for DVB PSI table descriptors
@@ -556,7 +677,7 @@ def parser_stuffing_Descriptor(data,i,length,end):
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "stuffing" }
+    return { "type" : "stuffing", "length" : length }
 
 
 def parser_satellite_delivery_system_Descriptor(data,i,length,end):
@@ -848,12 +969,35 @@ def parser_content_Descriptor(data,i,length,end):
     """\
     parser_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
     
-    This descriptor is not parsed at the moment. The dict returned is:
-       { "type": "content", "contents" : unparsed_descriptor_contents }
+    Parses descriptor describing the type/genre of programme material.
+    
+       { "type": "content",
+         "level1" : Level 1 descriptor (overall type/genre),
+         "level2" : Level 2 descriptor (detailed),
+         "user1" : User nibble 1,
+         "user2" : User nibble 2
+         "contents" : unparsed_descriptor_contents }
+    
+    See "Content Types" for a full list of the level 1 and level 2 content types that
+    can be returned. Values not mapped to their string descriptions will simply be
+    returned as their numeric values.
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "content", "contents" : data[i+2:end] }
+    level1 = ord(data[i+2]) >> 4
+    level2 = ord(data[i+2]) & 0x0f
+    level1_desc = _content_types_level_1.get(level1, level1)
+    level2_desc = _content_types.get((level1 << 4) + level2, level2)
+    user1 = ord(data[i+3]) >> 4
+    user2 = ord(data[i+3]) & 0x0f
+
+    return { "type" : "content",
+             "contents" : data[i+2:end],
+             "content_level_1" : level1_desc,
+             "content_level_2" : level2_desc,
+             "user1" : user1,
+             "user2" : user2,
+           }
 
 
 def parser_parental_rating_Descriptor(data,i,length,end):
@@ -1606,3 +1750,122 @@ _private_data_specifiers = {
         0x46524549 : "News Datacom (IL) 1",
         0x53415053 : "Scientific Atlanta",
     }
+
+_content_types_level_1 = {
+    0x1 : "Movie/Drama",
+    0x2 : "News/Current Affairs",
+    0x3 : "Show/Game show",
+    0x4 : "Sports",
+    0x5 : "Children's/Youth",
+    0x6 : "Music/Ballet/Dance",
+    0x7 : "Arts/Culture (without music)",
+    0x8 : "Social/Political issues/Economics",
+    0x9 : "Childrens/Youth Education/Science/Factual",
+    0xa : "Leisure hobbies",
+    0xb : "Misc",
+}
+
+_content_types = {
+    # movie/drama
+    0x10 : "General",
+    0x11 : "Detective/Thriller",
+    0x12 : "Adventure/Western/War",
+    0x13 : "Science Fiction/Fantasy/Horror",
+    0x14 : "Comedy",
+    0x15 : "Soap/Melodrama/Folkloric",
+    0x16 : "Romance",
+    0x17 : "Serious/ClassicalReligion/Historical",
+    0x18 : "Adult Movie/Drama",
+    
+    # news/current affairs
+    0x20 : "General",
+    0x21 : "News/Weather Report",
+    0x22 : "Magazine",
+    0x23 : "Documentary",
+    0x24 : "Discussion/Interview/Debate",
+    
+    # show/game show
+    0x30 : "General",
+    0x31 : "Game show/Quiz/Contest",
+    0x32 : "Variety",
+    0x33 : "Talk",
+    
+    # sports
+    0x40 : "General",
+    0x41 : "Special Event (Olympics/World cup/...)",
+    0x42 : "Magazine",
+    0x43 : "Football/Soccer",
+    0x44 : "Tennis/Squash",
+    0x45 : "Team sports (excluding football)",
+    0x46 : "Athletics",
+    0x47 : "Motor Sport",
+    0x48 : "Water Sport",
+    0x49 : "Winter Sports",
+    0x4a : "Equestrian",
+    0x4b : "Martial sports",
+    
+    # childrens/youth
+    0x50 : "General",
+    0x51 : "Pre-school",
+    0x52 : "Entertainment (6 to 14 year-olds)",
+    0x53 : "Entertainment (10 to 16 year-olds)",
+    0x54 : "Informational/Educational/Schools",
+    0x55 : "Cartoons/Puppets",
+    
+    # music/ballet/dance
+    0x60 : "General",
+    0x61 : "Rock/Pop",
+    0x62 : "Serious music/Classical Music",
+    0x63 : "Folk/Traditional music",
+    0x64 : "Jazz",
+    0x65 : "Musical/Opera",
+    0x66 : "Ballet",
+    
+    # arts/culture
+    0x70 : "General",
+    0x71 : "Performing Arts",
+    0x72 : "Fine Arts",
+    0x73 : "Religion",
+    0x74 : "Popular Culture/Tradital Arts",
+    0x75 : "Literature",
+    0x76 : "Film/Cinema",
+    0x77 : "Experimental Film/Video",
+    0x78 : "Broadcasting/Press",
+    0x79 : "New Media",
+    0x7a : "Magazine",
+    0x7b : "Fashion",
+    
+    # social/political/economic
+    0x80 : "General",
+    0x81 : "Magazine/Report/Domentary",
+    0x82 : "Economics/Social Advisory",
+    0x83 : "Remarkable People",
+    
+    # children's youth: educational/science/factual
+    0x90 : "General",
+    0x91 : "Nature/Animals/Environment",
+    0x92 : "Technology/Natural sciences",
+    0x93 : "Medicine/Physiology/Psychology",
+    0x94 : "Foreign Countries/Expeditions",
+    0x95 : "Social/Spiritual Sciences",
+    0x96 : "Further Education",
+    0x97 : "Languages",
+    
+    # leisure hobbies
+    0xa0 : "General",
+    0xa1 : "Tourism/Travel",
+    0xa2 : "Handicraft",
+    0xa3 : "Motoring",
+    0xa4 : "Fitness & Health",
+    0xa5 : "Cooking",
+    0xa6 : "Advertisement/Shopping",
+    0xa7 : "Gardening",
+
+    # misc
+    0xb0 : "Original Language",
+    0xb1 : "Black and White",
+    0xb2 : "Unpublished",
+    0xb3 : "Live Broadcast",
+
+}
+
