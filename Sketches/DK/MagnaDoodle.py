@@ -31,6 +31,8 @@ Use your left mouse button to draw to the board and the
 right to erase your artwork.
 
 """
+import sys; sys.path.append("../MPS/pprocess/");
+from MultiPipeline import ProcessPipeline
 
 import pygame
 import Axon
@@ -159,7 +161,7 @@ class MagnaDoodle(Axon.Component.component):
                     if self.shape == "line":
                         if event.button == 1:
                             self.drawing = True
-                    elif event.button == 3:
+                    if event.button == 3:
                         self.oldpos = None
                         self.drawBG()
                         self.blitToSurface()
@@ -204,7 +206,10 @@ if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    
-   Magna = MagnaDoodle().activate()
+  # from Kamaelia.Chassis.ProcessPipeline import ProcessPipeline
+  # Magna = MagnaDoodle().activate()
+  
+   ProcessPipeline(MagnaDoodle(), MagnaDoodle()).run()
    
-   Axon.Scheduler.scheduler.run.runThreads()  
+  # Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF
