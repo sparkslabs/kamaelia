@@ -1,3 +1,4 @@
+   * Added minor bugfix for Windows support for TCP clients
    * Fix to reliability of DVB support
    * Basic SSL support added - allow, for example, HTTPS components
 
