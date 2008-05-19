@@ -3,7 +3,7 @@ from Kamaelia.Internet.TCPServer import TCPServer
 from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
 from Axon.Ipc import newComponent, shutdownMicroprocess
 
-class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
     MoreComplexServer(protocol[,port]) -> new Simple protocol server component
 
@@ -26,7 +26,7 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     TCPS=TCPServer
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(MoreComplexServer, self).__init__(**argd)
+        super(ServerCore, self).__init__(**argd)
         self.connectedSockets = []
         self.server = None
         if not self.protocol:
@@ -110,9 +110,9 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # sys.stderr.write("Wooo!\n"); sys.stderr.flush()
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler], 
+        self.trackResourceInformation(connectedSocket,
+                                      [],
+                                      [outboxToShutdownProtocolHandler],
                                       protocolHandler)
         # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
 
@@ -127,9 +127,9 @@ class MoreComplexServer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
             controllink = None
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
+        self.trackResourceInformation(connectedSocket,
+                                      [],
+                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket],
                                       ( protocolHandler, controllink ) )
 
         self.addChildren(connectedSocket,protocolHandler)
