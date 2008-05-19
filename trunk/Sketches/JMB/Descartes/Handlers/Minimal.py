@@ -57,7 +57,7 @@ def sanitizePath(uri): #needs work
     while uri[0] == "/": #remove leading slashes
         uri = uri[1:]
         if len(uri) == 0: break
-    
+
     splitpath = string.split(uri, "/")
     for directory in splitpath:
         if directory == ".":
@@ -69,17 +69,22 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
+def Handler(app_name, app):
+    def R(request):
+        return Minimal(app_name, request,app)
+    return R
+
 # old setup used functions - this needs to be converted to work with
 # the new component-based handler system
 #def websiteListFilesPage(directory):
 #    files = dircache.listdir(homedirectory + directory)
 #    data = u"<html>\n<title>" + directory + u"</title>\n<body style='background-color: black; color: white;'>\n<h2>" + #directory + u"</h2>\n<p>Files</p><ul>"
-#    
-#    
+#
+#
 #    for entry in files:
 #        data += u"<li><a href=\"" + directory + entry + u"\">" + entry + u"</a></li>\n"
 #    data += u"</ul></body>\n</html>\n\n"
-#    
+#
 #    return {
 #        "statuscode" : "200",
 #        "data"       : data,
@@ -91,7 +96,7 @@ class Minimal(component):
     """\
     A simple HTTP request handler for HTTPServer which serves files within a
     given directory, guessing their MIME-type from their file extension.
-    
+
     Arguments:
     -- request - the request dictionary object that spawned this component
     -- homedirectory - the path to prepend to paths requested
@@ -106,17 +111,17 @@ class Minimal(component):
     Outboxes = {
         "outbox"      : "Response dictionaries",
         "signal"      : "UNUSED",
-		"_fileprompt" : "Get the file reader to do some reading",
+        "_fileprompt" : "Get the file reader to do some reading",
         "_filesignal" : "Shutdown the file reader"
-	}
-    
-    
+    }
+
+
     def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
-	    self.request = request
-	    self.indexfilename = indexfilename
-	    self.homedirectory = homedirectory
-	    super(Minimal, self).__init__()
-        
+        self.request = request
+        self.indexfilename = indexfilename
+        self.homedirectory = homedirectory
+        super(Minimal, self).__init__()
+
     def main(self):
         """Produce the appropriate response then terminate."""
         filename = sanitizePath(self.request["raw-uri"])
@@ -128,19 +133,19 @@ class Minimal(component):
         #    else:
         #        yield websiteListFilesPage(filename)
         #        return
-        
+
         error = None
         try:
             if     os.path.exists(filepath):
                 if os.path.isdir(filepath):
                     filepath += self.indexfilename
-                    
+
                 print filepath
                 filetype = MimeTypes.workoutMimeType(filepath)
                 resource = {
                     "type"           : filetype,
                     "statuscode"     : "200",
-                    #"length" : os.path.getsize(homedirectory + filename) 
+                    #"length" : os.path.getsize(homedirectory + filename)
                     }
                 print resource
                 self.send(resource, "outbox")
@@ -150,17 +155,17 @@ class Minimal(component):
                 print "os.path.exists(filepath)", os.path.exists(filepath)
                 print "os.path.isdir(filepath)", (os.path.isdir(filepath))
                 error = 404
-                
+
         except OSError, e:
             error = 404
-            
+
         if error == 404:
             resource = ErrorPages.getErrorPage(404)
             resource["incomplete"] = False
             self.send(resource, "outbox")
             self.send(producerFinished(self), "signal")
             return
-            
+
         self.filereader = IntelligentFileReader(filepath, 50000, 10)
         self.link((self, "_fileprompt"), (self.filereader, "inbox"))
         self.link((self, "_filesignal"), (self.filereader, "control"))
@@ -168,8 +173,8 @@ class Minimal(component):
         self.link((self.filereader, "signal"), (self, "_filecontrol"))
         self.addChildren(self.filereader)
         self.filereader.activate()
-        yield 1        
-        
+        yield 1
+
         done = False
         while not done:
             yield 1
@@ -177,17 +182,17 @@ class Minimal(component):
                 msg = self.recv("_fileread")
                 resource = { "data" : msg }
                 self.send(resource, "outbox")
-                
+
             if len(self.outboxes["outbox"]) < 3:
                 self.send("GARBAGE", "_fileprompt") # we use this to wakeup the filereader
-                        
+
             while self.dataReady("_filecontrol") and not self.dataReady("_fileread"):
                 msg = self.recv("_filecontrol")
                 if isinstance(msg, producerFinished):
                     done = True
-                    
+
             self.pause()
-        
+
         self.send(producerFinished(self), "signal")
 
 __kamaelia_components__  = ( Minimal, )
