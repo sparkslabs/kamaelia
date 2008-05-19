@@ -1,9 +1,0 @@
-This directory contains (or at least will contain) a number of rough sketches for bits and pieces of audio editing and control stuff for use in Kamaelia.  Also it's home to the soon-to-be-awesome Kamaelia Jam.
-
-Current Sketches
-================
-OSCTest.py - This sends simple OSC messages containing a random float between 0 and 1 to /OSCTest on port 2000.  It does this as quickly as possible.
-
-MidiTest.py - A (very) simple drum machine using a pygame gui.  It gives you three buttons, bass drum, snare and hi-hat. When the are clicked it output a midi note-on message to the first midi port available, using the GM drum mapping.
-
-UI/XYBounce.py - A first attempt at a pygame component.  It draws a square with a circle in it which you can move around.
