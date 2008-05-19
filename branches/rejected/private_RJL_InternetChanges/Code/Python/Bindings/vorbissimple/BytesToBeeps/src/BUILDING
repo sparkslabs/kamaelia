@@ -1,0 +1,21 @@
+To build the sample decoder, you first of all need to compile the code:
+
+   gcc -I /usr/local/include -O20 -ffast-math -mno-ieee-fp -fsigned-char  -c simple_decoder.c
+
+You then link with the vorbis and ogg libraries:
+
+   gcc -O20 -ffast-math -mno-ieee-fp -fsigned-char -l vorbis -lm -logg -o simple_decoder simple_decoder.o
+
+You can then run the program:
+
+   * To play back an ogg file encoded from a CD:
+
+     ./simple_decoder <some_ogg_file.ogg | aplay -fcd -
+
+
+Michael Sparks, July 2004   
+
+Note: You probably want to using the version of libvorbissimple a couple of
+directories higher up in real code.
+
+Michael, March 2006
