@@ -1,0 +1,169 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">Component.py</span></p>
+<p>Version: Axon 1.0</p>
+<p><span style="font-weight:600">TODO: </span>Document the fact that <span style="font-family:Courier 10 Pitch">runBody</span> is actually the <span style="font-family:Courier 10 Pitch">main()</span> function, and hence using a standard generator where <span style="font-family:Courier 10 Pitch">main()</span> is, is fine.</p>
+<p><span style="font-weight:600">TODO: </span>Make a note that microthread is meant as a term to mean &quot;active generator object&quot;. (This was written during python 2.2 days when generators were uncommon, hence convoluted over explanation)</p>
+<p><span style="font-weight:600">TODO: </span>Generally chop down and rewrite better</p>
+<p>A component is a microprocess with a microthread of control, input/output queues (inboxes/ outboxes) connected by linkages to other components, with postmen taking messages from output queues, passing them along linkages to inboxes.</p>
+<p>A microprocess is a class that supports parallel execution using microthreads.</p>
+<p>A microthread takes more explanation is a thread of control resulting from a function of the following form:</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> foo():</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> 1<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">while</span><span style="font-family:Courier 10 Pitch"> 1:</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;this&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> 1<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;that&quot;</span></div></ul></ul></ul>
+<p><span style="font-family:Courier 10 Pitch">bla = foo()</span> results in bla containing an intelligent function representing the thread of control <span style="font-weight:600">inside</span> the function - in this case inside the while loop - that remembers where the program counter was when control was yielded back to the caller. Repeated calls to <span style="font-family:Courier 10 Pitch">bla.next()</span> continue where you left off.</p>
+<p>First call to <span style="font-family:Courier 10 Pitch">bla()</span> &amp; you get &quot;this&quot; printed. Next time you get &quot;that&quot; then &quot;this&quot; printed (when you go back round the loop). The time after that, you get &quot;that&quot; then &quot;this&quot; printed, and so on.</p>
+<p>If you have 10 calls to <span style="font-family:Courier 10 Pitch">foo()</span> you end up with 10 function calls that remember where they were in <span style="font-family:Courier 10 Pitch">foo()</span>, which run for a bit and then return control back to the caller. If you repeatedly call all of these function calls, you essentially end up with <span style="font-family:Courier 10 Pitch">foo()</span> running 10 times in parallel. It's these special &quot;position remembering&quot; functions that get termed microthreads.</p>
+<p>Clearly in order to have a microthread, you have to have a piece of code capable of being called in this manner - ie it yields control back to it's caller periodically  - this is a what a microprocess in this context. An object that has a &quot;special method&quot; that can be treated in this manner.</p>
+<p>A component puts a layer of wrapper on top of the microprocess, which adds in input &amp; output queues (inboxes/outboxes). To make life easier, a component has some wrappers around the &quot;special function&quot; to make user code less obfuscated. The life cycle for a component runs as follows:</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">myComponent = FooComponent()  # </span><span style="font-family:Courier 10 Pitch;font-style:italic">Calls Foo.__init__() constructor,</span><span style="font-family:Courier 10 Pitch"><br /># </span><span style="font-family:Courier 10 Pitch;font-style:italic">which must call super class constructor</span></div></ul>
+<p><span style="font-family:Courier 10 Pitch">myComponent</span> gets activated at some point later.</p>
+<p>When <span style="font-family:Courier 10 Pitch">myComponent</span> is activated the following logic happens for the runtime of <span style="font-family:Courier 10 Pitch">myComponent</span> :</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> runComponent(someComponent):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">result = someComponent.initialiseComponent()<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">if</span><span style="font-family:Courier 10 Pitch"> result: </span><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> result<br />result = 1<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">while</span><span style="font-family:Courier 10 Pitch"> result:</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">result = someComponent.mainBody()<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">if</span><span style="font-family:Courier 10 Pitch"> result: </span><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> result</span></div></ul>
+<div><span style="font-family:Courier 10 Pitch">someComponent.closeDownComponent<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> result<br /># Component ceases running</span></div></ul></ul>
+<p>Dummy methods for the methods listed here are provided, so missing these out won't result in broken code. The upshot is a user component can look like this:</p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">class</span><span style="font-family:Courier 10 Pitch"> myComponent(component):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">count = 0<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> __init__(self,somearg):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">self.__class__.count = self.__class__.count + 1<br />self.somearg = somearg<br />self.Component() # !!!! Must happen if this method exists</span></div></ul></ul></ul>
+<p></p>
+<ul type="disc"><ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> initialiseComponent(self):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;We can perform pre-loop initialisation here!&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;If we created a new component here, we'd have&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;     return newComponent[theComponent]&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot; as the last line of this function&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">return</span><span style="font-family:Courier 10 Pitch"> 1</span></div></ul></ul></ul>
+<p></p>
+<ul type="disc"><ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def</span><span style="font-family:Courier 10 Pitch"> mainLoop(self):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;We're now in the main loop&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;If we wanted to exit the loop, we return a false value&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;at the end of this function&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;If we want to continue round, we return a true, non-None,&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;value. This component is set to run &amp; run...&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">return</span><span style="font-family:Courier 10 Pitch"> 1</span></div></ul></ul></ul>
+<p></p>
+<ul type="disc"><ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">def </span><span style="font-family:Courier 10 Pitch">closeDownComponent(self):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;We can't get here since mainLoop above always returns true&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;If it returned false however, we would get sent here for&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;shutdown code.&quot;<br /></span><span style="font-family:Courier 10 Pitch;font-weight:600">print</span><span style="font-family:Courier 10 Pitch"> &quot;After executing this, the component stops execution&quot;<br /></span></div></ul></ul></ul>
+<p>This creates a component class which has the default input/output boxes of &quot;inbox&quot; and &quot;outbox&quot;.</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p>class component(Axon.Microprocess.microprocess)</p>
+<p>Method resolution order:</p>
+<ul type="disc"><li>component</li>
+<li>Axon.Microprocess.microprocess</li>
+<li>Axon.Axon.AxonObject</li>
+<li>__builtin__.object</li></ul>
+<p>Data and other attributes defined here:</p>
+<ul type="disc"><li>Inboxes = ['inbox', 'control']</li>
+<li>Outboxes = ['outbox', 'signal']</li>
+<li>Usescomponents = []</li></ul>
+<p></p>
+<p>Methods defined here:</p>
+<p></p>
+<p><span style="font-weight:600">__init__(self)</span></p>
+<ul type="disc"><li>You want to overide this method locally. You MUST call this superconstructor for things to work however. </li>
+<div><span style="font-weight:600">NOTE: </span>The way you do this is <span style="font-family:Courier 10 Pitch">self.__super.__init__()</span></div></ul>
+<p></p>
+<p><span style="font-weight:600">__str__(self)</span></p>
+<ul type="disc"><li>Provides a useful string representation of the component. You probably want to override this, and append this description using something like: <span style="font-family:Courier 10 Pitch">component.__str__(self)</span></li></ul>
+<p></p>
+<p><span style="font-weight:600">addChildren(self, *children)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.addChildren(list,of,components)</span> - Register the components as children/subcomponents This takes a list of children components and adds them to the children list of this component. This is done by looping of the list and adding each one individually by calling addChild. addChild has a number of effects internally described above.</li></ul>
+<p></p>
+<p><span style="font-weight:600">childComponents(self)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.childComponents()</span> - Simple accessor method, returns list of child components</li></ul>
+<p></p>
+<p><span style="font-weight:600">closeDownComponent(self)</span></p>
+<ul type="disc"><li>Stub method. <span style="font-style:italic;font-weight:600">This method is designed to be overridden.</span></li></ul>
+<p></p>
+<p><span style="font-weight:600">dataReady(self, boxname='inbox')</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.dataReady(&quot;boxname&quot;)</span> - test, returns true if data is available in the requested inbox. Used by a component to check an inbox for ready data. You will want to call this method to periodically check whether you've been sent any messages to deal with!<br />You are unlikely to want to override this method.</li></ul>
+<p></p>
+<p><span style="font-weight:600">initialiseComponent(self)</span></p>
+<ul type="disc"><li>Stub method. <span style="font-style:italic;font-weight:600">This method is designed to be overridden.</span></li></ul>
+<p></p>
+<p><span style="font-weight:600">link(self, source, sink, passthrough=0, pipewidth=0, synchronous=None)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.link(source,sink)</span> - create linkage between a source and sink.<br />source is a tuple: (source_component, source_box)<br />sink is a tuple: (sink_component, sink_box)<br />passthrough, pipewidth and synchronous are defined as in the linkage class</li></ul>
+<p></p>
+<p><span style="font-weight:600">main(self)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.main()</span> - <span style="font-style:italic;font-weight:600">You may want to override this method instead of using callbacks<br /></span>This is the function that gets called by microprocess. If you override this do so with care. If you don't do it properly, your <span style="font-family:Courier 10 Pitch">initialiseComponent</span>, <span style="font-family:Courier 10 Pitch">mainBody</span> &amp; <span style="font-family:Courier 10 Pitch">closeDownComponent</span> parts will not be called. Ideally you should not NEED to override this method. You also should not call this method directly since activate does this for you in order to create a microthread of control.</li></ul>
+<p></p>
+<p><span style="font-weight:600">mainBody(self)</span></p>
+<ul type="disc"><li>Stub method. <span style="font-style:italic;font-weight:600">This method is designed to be overridden.</span></li></ul>
+<p></p>
+<p><span style="font-weight:600">recv(self, boxname='inbox')</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.recv(&quot;boxname&quot;)</span> - returns the first piece of data in the requested inbox.<br />Used by a component to recieve a message from the outside world. All comms goes via a named box/input queue<br />You will want to call this method to actually recieve messages you've been sent. You will want to check for new messages using <span style="font-family:Courier 10 Pitch">dataReady</span> first though.<br />You are unlikely to want to override this method.</li></ul>
+<p></p>
+<p><span style="font-weight:600">removeChild(self, child)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.removeChild(component)</span> - Deregister component as a child.<br />Removes the child component, and deregisters it as capable of recieving messages. You probably want to do this when you enter a closedown state of some kind for either your component, or the child component.<br />You will want to call this function when shutting down child components of your component.</li></ul>
+<p></p>
+<p><span style="font-weight:600">send(self, message, boxname='outbox', force=False)</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.send(message, &quot;boxname&quot;)</span> - appends message to the requested outbox.<br />Used by a component to send a message to the outside world.A ll comms goes via a named box/output queue.<br />You will want to call this method to send messages. They are NOT sent immediately. They are placed in your outbox called 'boxname', and are periodically collected &amp; delivered by the postman. This is not guaranteed to stay the same. (ie immediate delivery may happen)<br />If the outbox is synchronised then noSpaceInBox will be raised if the box is full unless force is True which should only be used with great care.<br />You are unlikely to want to override this method.</li></ul>
+<p></p>
+<p><span style="font-weight:600">synchronisedSend(self, thingsToSend, outbox='outbox')</span></p>
+<ul type="disc"><li><span style="font-family:Courier 10 Pitch">C.synchronisedSend(list, of, things,to, send)</span> -&gt; generator for sending the objects when space is available. Expected to be used as:</li>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">for</span><span style="font-family:Courier 10 Pitch"> i </span><span style="font-family:Courier 10 Pitch;font-weight:600">in</span><span style="font-family:Courier 10 Pitch"> self.synchronisedSend(thingsToSend):</span></div>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch;font-weight:600">yield</span><span style="font-family:Courier 10 Pitch"> 1</span></div></ul></ul>
+<div>Largely has to be done that way due to not being able to wrap yield. See test/SynchronousLinks_SystemTest.py for an example</div></ul>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p><span style="font-weight:600">__init__</span></p>
+<ul type="disc"><li>Class constructor is expected to be called without arguments.</li></ul>
+<p><span style="font-weight:600">__str__</span></p>
+<ul type="disc"><li>Returns a string representation of the component- consisting of Component,representation of inboxes, representation of outboxes.</li>
+<li>Returns a string that contains the fact that it is a component object and the name of it.</li></ul>
+<p><span style="font-weight:600">addChildren</span></p>
+<ul type="disc"><li>All arguments are added as child components of the component.</li></ul>
+<p><span style="font-weight:600">childComponents</span></p>
+<ul type="disc"><li>Returns the list of children components of this component.</li></ul>
+<p><span style="font-weight:600">closeDownComponent</span></p>
+<ul type="disc"><li>stub method, returns 1, expected to be overridden by clients.</li></ul>
+<p><span style="font-weight:600">dataReady</span></p>
+<ul type="disc"><li>Returns true if the supplied inbox has data ready for processing.</li></ul>
+<p><span style="font-weight:600">initialiseComponent</span></p>
+<ul type="disc"><li>Stub method, returns 1, expected to be overridden by clients.</li></ul>
+<p><span style="font-weight:600">link</span></p>
+<ul type="disc"><li>Creates a link, handled by the component's postman, that links a source component to it's sink, honouring passthrough, pipewidth and synchronous attributes.</li></ul>
+<p><span style="font-weight:600">main</span></p>
+<ul type="disc"><li>Returns a generator that implements the documented behaviour of a highly simplistic approach component statemachine.</li>
+<li>This ensures that the closeDownComponent method is called at the end of the loop.  It also repeats the above test.</li></ul>
+<p><span style="font-weight:600">mainBody</span></p>
+<ul type="disc"><li>stub method, returns None, expected to be overridden by clients as the main loop.</li></ul>
+<p><span style="font-weight:600">recv</span></p>
+<ul type="disc"><li>Takes the first item available off the specified inbox, and returns it.</li></ul>
+<p><span style="font-weight:600">removeChild</span></p>
+<ul type="disc"><li>Removes the specified component from the set of child components and deregisters it from the postoffice.</li></ul>
+<p><span style="font-weight:600">send</span></p>
+<ul type="disc"><li>Takes the message and places it into the specified outbox, throws an exception if there is no space in a  synchronous outbox.</li>
+<li>Takes the message and places it into the specified outbox, throws an exception if there is no space in a  synchronous outbox.</li></ul>
+<p><span style="font-weight:600">synchronisedBox</span></p>
+<ul type="disc"><li>Called with no arguments sets the outbox 'outbox' to being a synchronised box, with a maximum depth of 1.</li></ul>
+<p><span style="font-weight:600">synchronisedSend</span></p>
+<ul type="disc"><li>Takes a list of things to send, and returns a generator that when repeatedly called tries to send data over a synchronised outbox.</li></ul>
+<p><span style="font-weight:600">_activityCreator</span></p>
+<ul type="disc"><li>Always returns true.  Components are microprocesses instantiated by users typically - thus they are creators of activity, not slaves to it. Internal function. </li></ul>
+<p><span style="font-weight:600">_closeDownMicroprocess</span></p>
+<ul type="disc"><li>Checks the shutdownMicroprocess message for the scheduler contains a reference to the postoffice associated with the component.</li>
+<li>Returns a shutdownMicroprocess. Internal Function.</li></ul>
+<p><span style="font-weight:600">_collect</span></p>
+<ul type="disc"><li>Takes the first piece of data in an outbox and returns it. Raises IndexError if empty. Internal function.</li></ul>
+<p><span style="font-weight:600">_collectInbox</span></p>
+<ul type="disc"><li>Tests with default args. All these deliveries should suceed. Internal Function.</li>
+<li>Tests with default args. Should raise IndexError as the box should be empty in this test. Internal Function.</li>
+<li>Tests with inbox arg. Should raise IndexError as the box should be empty in this test. Internal Function.</li>
+<li>Tests with inbox arg. Tests collection. Internal Function.</li></ul>
+<p><span style="font-weight:600">_deliver</span></p>
+<ul type="disc"><li>Appends the given message to the given inbox. Internal Function.</li>
+<li>Checks delivery to a synchronised inbox fails when it is full using the force method.</li>
+<li>Checks delivery to a synchronised inbox fails when it is full. &lt;br&gt;</li></ul>
+<p><span style="font-weight:600">_passThroughDeliverIn</span></p>
+<ul type="disc"><li>Appends the given message to the given inbox. Internal Function.</li>
+<li>Should throw noSpaceInBox if a synchronised box is full.</li>
+<li>When force is passed as true the box can be overfilled.</li></ul>
+<p><span style="font-weight:600">_passThroughDeliverOut</span></p>
+<ul type="disc"><li>Appends the given message to the given outbox. Internal Function.</li>
+<li>Checks delivery is limited to the pipewidth.</li>
+<li>Checks delivery is limited to the pipewidth.</li></ul>
+<p><span style="font-weight:600">_passThroughDeliverOut_Sync</span></p>
+<ul type="disc"><li>Appends messages to given outbox.  Should throw noSpaceInBox when full.</li></ul>
+<p><span style="font-weight:600">_safeCollect</span></p>
+<ul type="disc"><li>Wrapper around _collect - returns None where an IndexError would normally be thrown. Internal Function.</li></ul>
+<p><span style="font-weight:600">__addChild</span></p>
+<ul type="disc"><li>Registers the component as a child of the component. Internal function. ttbw</li></ul>
+<p></p>
+<p></p>
+<p></p>
+<p>Michael, December 2004</p>
+<p></p>
+</body></html>

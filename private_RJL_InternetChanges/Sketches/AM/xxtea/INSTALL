@@ -1,0 +1,16 @@
+In order to install the xxtea module
+cd libxxtea/src
+make
+
+You need to have Pyrex installed in order to build the python bindings.
+If you don't already have this, do the following
+   * Grab pyrex - we used Pyrex-0.9.2.1.tar.gz here
+   * tar zxf Pyrex-0.9.2.1.tar.gz
+   * cd Pyrex-0.9.2.1
+   * python setup.py install
+
+Then you build and  install the python bindings:
+   * cd python
+   * python setup.py install
+
+Anagha, June 2006
