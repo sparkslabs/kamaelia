@@ -2,6 +2,7 @@ import ServerConfig
 from Handlers.WsgiHandler import HTML_WRAP,  Handler
 from wsgiref.validate import validator
 from DescartesCore import ServerCore
+import socket
 
 def simple_app(environ, start_response):
     """Simplest possible application object"""
@@ -40,7 +41,9 @@ def requestHandlers(URLHandlers, errorpages=None):
 
     return createRequestHandler
 
-Server = ServerCore(protocol=HTTPProtocol,  port=ServerConfig.PORT, routing = [
+Server = ServerCore(protocol=HTTPProtocol,  port=ServerConfig.PORT,
+            socketOptions =(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
+            routing = [
                ["/wsgi", Handler("/wsgi", HTML_WRAP(validator(simple_app))) ],
             ])
 
