@@ -106,6 +106,12 @@ DVB standards documents:
   (aka "The D book")
   UK Digital Television Group
 
+- ETSI TS 102 323
+  Technical Specification: "Digital Video Broadcasting (DVB); Carriage and
+  signalling of TV-Anytime information in DVB transport streams"
+  ETSI / EBU (DVB group)
+
+
 
 
 Mappings, Tables, Values
@@ -346,26 +352,47 @@ except ImportError:
 
 from DateTime import unBCD, parseMJD
 
-def parseDescriptor(i,data):
+def parseDescriptor(i,data,parser_sets=None):
     """\
-    parseDescriptor(i, data) -> (tag, parsedData), new_i
+    parseDescriptor(i, data[, parser_sets]) -> (tag, parsedData), new_i
     
     Parses the desciptor in the string 'data', that starts at index 'i'.
     Returns the descriptor's tag; the parsed descriptor contents as a dict
     and the index of the first byte after the end of the descriptor.
+    
+    You can, optionally, override the list of mapping tables used to map
+    descriptor IDs to functions that parse them. parser_sets is a list of
+    mapping tables. Each mapping table is a dictionary mapping a descriptor
+    type number to a parsing function. The list is processed from left to right.
+    The first mapping dictionary that contains a mapping will be the one used.
     """
     
     # just a simple extract the tag and body of the descriptor
     tag    = ord(data[i])
     length = ord(data[i+1])
     end    = i+2+length
+    
+    if parser_sets is None:
+        parser_sets = [ __core_descriptor_parsers ]
 
-    parser = __descriptor_parsers.get(tag,parser_Null_Descriptor)
+    # go through each mapping table, in order, stopping at the first we find a
+    # suitable parser function in
+    # failing that, we'll gracefully degrate to a null parser
+    for parser_set in parser_sets:
+        parser = parser_set.get(tag,parser_Null_Descriptor)
+        if parser != parser_Null_Descriptor:
+            break
 
     output = parser(data,i,length,end)
 
     return (tag,output), end
 
+
+def parseDescriptors_TS102323(i,data):
+    return parseDescriptor(i,data,
+        [ __ts102323_override_descriptor_parsers,
+          __core_descriptor_parsers
+        ])
 
 # ==============================================================================
 # now parsers for all descriptor types
@@ -1553,7 +1580,152 @@ def parser_short_service_name_Descriptor(data,i,length,end):
     return { "type" : "short_service_name", "contents" : data[i+2:end] }
 
 
-__descriptor_parsers = {
+# ------------------------------------------------------------------------------
+# ETSI TS 102 323 defined descriptors
+# ------------------------------------------------------------------------------
+
+def parser_content_labelling_Descriptor(data,i,length,end):
+    """\
+    parser_content_labelling_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "content_labelling", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "content_labelling", "contents" : data[i+2:end] }
+
+def parser_metadata_pointer_Descriptor(data,i,length,end):
+    """\
+    parser_metadata_pointer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "metadata_pointer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "metadata_pointer", "contents" : data[i+2:end] }
+
+
+def parser_metadata_Descriptor(data,i,length,end):
+    """\
+    parser_metadata_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "metadata", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "metadata", "contents" : data[i+2:end] }
+
+
+def parser_rar_over_dvb_stream_Descriptor(data,i,length,end):
+    """\
+    parser_rar_over_dvb_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rar_over_dvb_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rar_over_dvb_stream", "contents" : data[i+2:end] }
+
+
+def parser_rar_over_ip_Descriptor(data,i,length,end):
+    """\
+    parser_rar_over_ip_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rar_over_ip", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rar_over_ip", "contents" : data[i+2:end] }
+
+
+def parser_rnt_scan_Descriptor(data,i,length,end):
+    """\
+    parser_rnt_scan_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rnt_scan", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rnt_scan", "contents" : data[i+2:end] }
+
+
+def parse_default_authority_Descriptor(data,i,length,end):
+    """\
+    parse_default_authority_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that described a default TV-Anytime Content Reference ID (CRID) authority
+    (the domain part of the URI). The returned dict is:    
+        { "type" : "default_authority",
+        "authority" : the default authority as a string
+        }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "default_authority",
+             "authority" : data[i+2:end]
+           }
+
+def parse_related_content_Descriptor(data,i,length,end):
+    """\
+    parse_related_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that identifies that the elementary stream it is part of delivers a
+    'related content' subtable. The returned dict is:
+        { "type" : "related_content" }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    
+    return { "type" : "related_content" }
+
+def parse_content_identifier_Descriptor(data,i,length,end):
+    """\
+    parse_content_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that assigns a TV-Anyime Content Reference ID (CRID). The dict returned is:
+        { "type"    : "content_identifier",
+          "crids"   : list(crid entries)
+        }
+    
+    Each crid entry is a dict of the form:
+        { "type" : "instance" or "part of series" or "recommendation",
+          "crid" or "ref" : if the crid is 'explicit', "crid" will contain the crid string
+          otherwise "ref" will contain a reference to be looked up in a Content Identifier Table
+        }
+  
+    (Defined in ETSI TS 102 323 specification)
+    """
+    crids = []
+    i=i+2
+    while i<end:
+        flags = ord(data[i])
+        cridType = _content_identifier_content_type.get((flags>>2), (flags>>2))
+        cridLocation = flags & 0x3
+        crid = { "type" : cridType, }
+        if cridLocation == 0:
+            cLen = ord(data[i+1])
+            crid["crid"] = data[i+2:i+2+cLen]
+            i=i+2+cLen
+        elif cridLocation == 1:
+            crid["ref"] = (ord(data[i+2]) << 8) + ord(data[i+3])
+            i=i+3
+        else:
+            raise "Unable to parse Content Identifier Descriptor - unknown cridLocation type"
+        crids.append(crid)
+        
+    return { "type"  : "content_identifier",
+             "crids" : crids,
+           }
+
+
+
+__core_descriptor_parsers = {
     # ISO 13818-1 defined descriptors
         0x02 : parser_video_stream_Descriptor,
         0x03 : parser_audio_stream_Descriptor,
@@ -1572,6 +1744,12 @@ __descriptor_parsers = {
         0x10 : parser_smoothing_buffer_Descriptor,
         0x11 : parser_STD_Descriptor,
         0x12 : parser_IBP_Descriptor,
+
+    # ETSI TS 102 323 defined descriptors
+
+        0x24 : parser_content_labelling_Descriptor,
+        0x25 : parser_metadata_pointer_Descriptor,
+        0x26 : parser_metadata_Descriptor,
 
     # ETSI EN 300 468 defined descriptors
 
@@ -1623,6 +1801,12 @@ __descriptor_parsers = {
         0x6D : parser_cell_frequency_link_Descriptor,
         0x6E : parser_announcement_support_Descriptor,
         
+    # ETSI TS 102 323 defined descriptors
+    
+        0x73 : parse_default_authority_Descriptor,
+        0x74 : parse_related_content_Descriptor,
+        0x76 : parse_content_identifier_Descriptor,
+    
     # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
     # UK Digital Television Group (www.dtg.org.uk) document descriptors
     
@@ -1632,6 +1816,20 @@ __descriptor_parsers = {
         0x86 : parser_service_attribute_Descriptor,
         0x87 : parser_short_service_name_Descriptor,
 }
+
+
+
+__ts102323_override_descriptor_parsers = {
+    # ETSI TS 102 323 defined descriptors
+    # that override core ones
+    
+        0x40 : parser_rar_over_dvb_stream_Descriptor,
+        0x41 : parser_rar_over_ip_Descriptor,
+        0x42 : parser_rnt_scan_Descriptor,
+        
+}
+
+
 
 # Aciliary support stuff
 
@@ -1895,5 +2093,11 @@ _content_types_level_2 = {
     0xf7 : "Serious/ClassicalReligion/Historical",
     0xf8 : "Adult",
 
+}
+
+_content_identifier_content_type = {
+    0x01 : "instance",
+    0x02 : "part of series",
+    0x03 : "recommendation",
 }
 
