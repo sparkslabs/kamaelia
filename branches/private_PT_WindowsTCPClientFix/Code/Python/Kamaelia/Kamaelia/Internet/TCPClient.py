@@ -217,11 +217,12 @@ class TCPClient(Axon.Component.component):
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
              return True
-         elif hasattr(errno, "WSAEINVAL") and errorno == errno.WSAEINVAL:
-            # If we are on windows, this will be the error instead of EALREADY
-            # above.
-            assert(self.connecting==1)
-            return False
+         elif hasattr(errno, "WSAEINVAL")
+            if errorno == errno.WSAEINVAL:
+                # If we are on windows, this will be the error instead of EALREADY
+                # above.
+                assert(self.connecting==1)
+                return False
          # Anything else is an error we don't handle
          else:
             raise socket.msg
