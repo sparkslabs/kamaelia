@@ -8,6 +8,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.OneShot import OneShot
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
+# TODO: does this component make any sense at all? xD
 class Feedparser(Axon.Component.component):
     def main(self):
         while True:
@@ -36,7 +37,7 @@ class FeedParserFactory(Axon.Component.component):
     Inboxes = {
         "inbox"         : "Information coming from the socket",
         "control"       : "From component...",
-        "parsed-feeds"  : "Feedparser drops here the feeds" 
+        "_parsed-feeds"  : "Feedparser drops here the feeds" 
     }
     def __init__(self, **argd):
         super(FeedParserFactory, self).__init__(**argd)
@@ -71,13 +72,13 @@ class FeedParserFactory(Axon.Component.component):
             while self.dataReady("inbox"):
                 feed = self.recv("inbox")
                 child = makeFeedParser(feed)
-                self.link( (child, 'outbox'), (self, 'parsed-feeds') )
+                self.link( (child, 'outbox'), (self, '_parsed-feeds') )
                 self.addChildren(child)
                 child.activate()
                 yield 1
 
-            while self.dataReady("parsed-feeds"):
-                parseddata = self.recv("parsed-feeds")
+            while self.dataReady("_parsed-feeds"):
+                parseddata = self.recv("_parsed-feeds")
                 self.send(parseddata,"outbox")
                 yield 1
 

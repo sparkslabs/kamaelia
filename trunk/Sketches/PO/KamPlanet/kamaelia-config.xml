@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kamplanetconfig>
+	<general>
+		<name>Kamaelia Planet</name>
+		<link>http://somewhere/</link>
+	</general>
+	<feeds>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/wordpress/?feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+	</feeds>
+</kamplanetconfig>
+
