@@ -18,7 +18,7 @@ ADD LINK TCPClient VorbisDecode
 DEL ALL
 """
 
-from Kamaelia.Util.Console import ConsoleReader
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -29,4 +29,5 @@ Pipeline(
     ConsoleReader(">>> "),
     lines_to_tokenlists(),
     TopologyViewer(),
+    ConsoleEchoer(),
 ).run()
