@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 print 'sent %s' % (self.message)
                 yield 1
             
-            self.send(shutdownMicroprocess(), 'signal')
+            self.send(producerFinished(), 'signal')
             
     log = Logger('blah.log')
     log.activate()
