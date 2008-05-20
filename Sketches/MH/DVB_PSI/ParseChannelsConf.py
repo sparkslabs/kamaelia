@@ -67,9 +67,8 @@ class ParseChannelsConf(component):
             if not line:
                 return None
             name, freq, inv, bw, fec_hi, fec_lo, qam, tm, gi, h, vpid, apid, sid = line.split(":")
-            return name, \
-                {   "frequency"             : float(freq)/1000.0/1000.0,
-                    "inversion"             : _inversion[inv.upper()],
+            return name, ( float(freq)/1000.0/1000.0,
+                {   "inversion"             : _inversion[inv.upper()],
                     "bandwidth"             : _bandwidth[bw.upper()],
                     "code_rate_HP"          : _fec[fec_hi.upper()],
                     "code_rate_LP"          : _fec[fec_lo.upper()],
@@ -77,7 +76,7 @@ class ParseChannelsConf(component):
                     "transmission_mode"     : _tm[tm.upper()],
                     "guard_interval"        : _gi[gi.upper()],
                     "hierarchy_information" : _h[h.upper()],
-                }, \
+                }, ), \
                 {   "video_pid" : int(vpid),
                     "audio_pid" : int(apid),
                     "service_id" : int(sid),
@@ -191,19 +190,25 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.Util.PureTransformer import PureTransformer
+    from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
+    from Kamaelia.File.Writing import SimpleFileWriter
+    from Kamaelia.Chassis.Carousel import Carousel
+    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Device.DVB.Tuner import Tuner
     
     import sys
     
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
       print "Usage:"
       print
-      print "    %s <channels.conf file> \"channel name\"" % sys.argv[0]
+      print "    %s <channels.conf file> \"channel name\" <output ts filename>" % sys.argv[0]
       print
       sys.exit(1)
     
     channelsConfFile = sys.argv[1]
     channelName = sys.argv[2].upper().strip()
+    outFileName = sys.argv[3]
     
     def chooseChannelName((name,params,ids)):
         if name == channelName:
@@ -215,6 +220,22 @@ if __name__ == "__main__":
         RateControlledFileReader(channelsConfFile, readmode="lines", rate=1000, chunksize=1),
         ParseChannelsConf(),
         PureTransformer(chooseChannelName),
-        ConsoleEchoer(),
+        Graphline(
+            Router = TwoWaySplitter(),
+            DVBReceiver = Carousel(lambda (_,(freq,params),__) : Tuner(freq, params)),
+            PidReq = PureTransformer(lambda (n,(f, p),pids)
+                        : ("ADD", [pids["audio_pid"],pids["video_pid"]])),
+            linkages = {
+                ("", "inbox") : ("Router", "inbox"),
+                
+                ("Router", "outbox") : ("DVBReceiver", "next"),
+                
+                ("Router", "outbox2") : ("PidReq", "inbox"),
+                ("PidReq", "outbox") : ("DVBReceiver", "inbox"),
+            
+                ("DVBReceiver", "outbox") : ("", "outbox"),
+            }
+        ),
+        SimpleFileWriter(outFileName),
     ).run()
     
