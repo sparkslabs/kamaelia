@@ -1,6 +1,8 @@
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.File.Reading import RateControlledFileReader
+from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
 from ConfigFileParser import ConfigFileParser
 from FeedParserFactory import FeedParserFactory
@@ -14,7 +16,6 @@ from Feed2xml import Feed2xml
 #    - if I link FEED_SORTER signal with backplane, backplane dies but publisher is still active
 #    * How do I resolve this?
 # * Actually implement the ConfigParser reading a configuration file :-D
-# * Actually implement the 2html and 2xml stuff :-D
 # * Quite several doubts written at tomboy :-o
 
 if __name__ == '__main__':
@@ -48,12 +49,18 @@ if __name__ == '__main__':
 
     feedSorter = FeedSorter()
     graph = Graphline(
+            XML_PARSER          = Pipeline(
+                                           RateControlledFileReader("kamaelia-config.xml"),
+                                           SimpleXMLParser()
+                                        ),
             CONFIG_PARSER       = ConfigFileParser(),
             FEED_PARSER_FACTORY = FeedParserFactory(),
             FEED_SORTER         = feedSorter,
             FEED_PUBLISHER      = PublishTo("KAMPLANET_FEEDS"),
             CONFIG_PUBLISHER    = PublishTo("KAMPLANET_CONFIG"),
             linkages = {
+                ('XML_PARSER', 'signal')            : ('CONFIG_PARSER','control'),
+                ('XML_PARSER', 'outbox')            : ('CONFIG_PARSER','inbox'),
                 ('CONFIG_PARSER', 'feeds-outbox')   : ('FEED_PARSER_FACTORY','inbox'),
                 ('CONFIG_PARSER', 'signal')         : ('FEED_PARSER_FACTORY','control'),
                 ('FEED_PARSER_FACTORY', 'outbox')   : ('FEED_SORTER','inbox'),
