@@ -190,22 +190,31 @@ if __name__ == "__main__":
   
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.Reading import RateControlledFileReader
+    from Kamaelia.Util.PureTransformer import PureTransformer
     from Kamaelia.Util.Console import ConsoleEchoer
     
     import sys
     
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
       print "Usage:"
       print
-      print "    %s <channels.conf file>" % sys.argv[0]
+      print "    %s <channels.conf file> \"channel name\"" % sys.argv[0]
       print
       sys.exit(1)
     
     channelsConfFile = sys.argv[1]
+    channelName = sys.argv[2].upper().strip()
+    
+    def chooseChannelName((name,params,ids)):
+        if name == channelName:
+            return (name,params,ids)
+        else:
+            return None
     
     Pipeline(
         RateControlledFileReader(channelsConfFile, readmode="lines", rate=1000, chunksize=1),
         ParseChannelsConf(),
+        PureTransformer(chooseChannelName),
         ConsoleEchoer(),
     ).run()
     
