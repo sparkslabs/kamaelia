@@ -11,7 +11,7 @@ from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Util.Console import ConsoleEchoer
 
 import sys
-sys.path.append("svn/trunk/Sketches/MH/Introspection")
+sys.path.append("../Introspection")
 from Profiling import FormattedProfiler
 
 #TS_FILE = "2008-05-16 11.27.13 MUX1_EIT_TOT_TDT.ts"
@@ -47,12 +47,12 @@ def Tee(*destinations):
     **plugs
     )
 
-Pipeline( FormattedProfiler(10.0, 1.0),
-          ConsoleEchoer(),
-        ).activate()
+#Pipeline( FormattedProfiler(10.0, 1.0),
+#          ConsoleEchoer(),
+#        ).activate()
 
 
-Pipeline( RateControlledFileReader(TS_FILE, "bytes", rate=25000, chunksize=188, allowchunkaggregation=True),
+Pipeline( RateControlledFileReader(TS_FILE, "bytes", rate=2500000, chunksize=188, allowchunkaggregation=True),
 #          Tee( 
 #              Pipeline( DVB_SoftDemuxer({0x14 : ["outbox"]}),
 #                        ReassemblePSITables(),
