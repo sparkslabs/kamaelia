@@ -4,6 +4,8 @@ from wsgiref.validate import validator
 from DescartesCore import ServerCore
 import socket
 
+from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
+
 def simple_app(environ, start_response):
     """Simplest possible application object"""
     status = '200 OK'
@@ -41,10 +43,12 @@ def requestHandlers(URLHandlers, errorpages=None):
 
     return createRequestHandler
 
-Server = ServerCore(protocol=HTTPProtocol,  port=ServerConfig.PORT,
-            socketOptions =(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
-            routing = [
+class DescartesServer(ServerCore):
+    routing = [  #TODO:  Component-ize routing
                ["/wsgi", Handler("/wsgi", HTML_WRAP(validator(simple_app))) ],
-            ])
+              ]
+    protocol=HTTPProtocol()
+    port=8082
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-Server.run()
+DescartesServer().run()

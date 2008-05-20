@@ -1,9 +1,28 @@
+import socket
+import pprint
+import string
+import sys
+import serverinfo
+import cStringIO
+from datetime import datetime
+from wsgiref.validate import validator
 import Axon
 
+from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
+
+from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
+
+Axon.Box.ShowAllTransits = False
 # ----------------------------------------------------------------------------------------------------
 #
 # Simple WSGI Handler
 #
+
+def sanitizePath():
+    """Joins sys.path into a : separated string with no empty elements"""
+    path = [x for x in sys.path if x]
+    return string.join(path, ':')
+
 def HTML_WRAP(app):
     """
     Wraps the Application object's results in HTML
@@ -46,7 +65,7 @@ class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
        to really"""
 
     def __init__(self, app_name, request, app):
-        super(_WSGIHandler, self).__init__()
+        super(_WsgiHandler, self).__init__()
         self.app_name = app_name
         self.request = request
         self.environ = request
@@ -189,7 +208,7 @@ class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
 
 def Handler(app_name,  app):
     def R(request):
-        return _WSGIHandler(app_name, request,app)
+        return _WsgiHandler(app_name, request,app)
     return R
 
 def HTTPProtocol():
