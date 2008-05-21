@@ -5,26 +5,30 @@ import Axon
 import time
 from htmltmpl import TemplateManager, TemplateProcessor
 
+from Axon.Ipc import producerFinished
+
+# Todo: this class and Feed2xml should obviously have a common class through inheritance
 class Feed2html(Axon.Component.component):
-    # TODO: another inbox like "channels-inbox" is needed
     Inboxes = {
-            'control'      : 'From component', 
-            'inbox'        : 'Not used', 
-            'feeds-inbox'  : 'Not used', 
-            'config-inbox' : 'Not used', 
+            'control'        : 'From component', 
+            'inbox'          : 'Not used', 
+            'feeds-inbox'    : 'Not used', 
+            'config-inbox'   : 'Not used',
+            'channels-inbox' : 'Not used', 
         }
-        
     def __init__(self, **argd):
         super(Feed2html, self).__init__(**argd)
         self.feeds = []
         self.config = None
 
     def main(self):
+        # TODO: channels are not read from channels-inbox
         while True:
             while self.dataReady("control"):
                 # TODO
                 data = self.recv("control")
-                print "%s: %s" % (type(self), data)
+                for i in range(100):
+                    print "%s: %s" % (type(self), data)
                 self.send(data, "signal")
                 return
 
@@ -42,7 +46,6 @@ class Feed2html(Axon.Component.component):
             if self.config is not None and len(self.feeds) == 10: #TODO: 10
                 # TODO: first approach: 
                 # * no use of sanitize.py (although feedparser seems to scape HTML)
-                # * it generages and writes the file "in a single shot" (some filewriter should be used)
                 # 
                 tproc = TemplateProcessor()
                 tproc.set('generator',  "KamPlanet 0.1")
@@ -68,10 +71,10 @@ class Feed2html(Axon.Component.component):
                 
                 template = TemplateManager().prepare("index.html.tmpl") #TODO: constant
                 result = tproc.process(template)
-                file_name = 'output/index.html' #TODO: constant
-                open(file_name, 'w').write(result)
-                print "Check", file_name
-                yield 1
+                self.send(result, "outbox")
+                print "HTML written"
+                self.send(producerFinished(self), "signal")
+                return
 
             if not self.anyReady():
                 self.pause()

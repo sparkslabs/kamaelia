@@ -4,12 +4,16 @@
 import Axon
 from htmltmpl import TemplateManager, TemplateProcessor
 
+from Axon.Ipc import producerFinished
+
+# Todo: this class and Feed2html should obviously have a common class through inheritance
 class Feed2xml(Axon.Component.component):
     Inboxes = {
-            'control'      : 'From component', 
-            'inbox'        : 'Not used', 
-            'feeds-inbox'  : 'Not used', 
-            'config-inbox' : 'Not used'
+            'control'        : 'From component', 
+            'inbox'          : 'Not used', 
+            'feeds-inbox'    : 'Not used', 
+            'config-inbox'   : 'Not used', 
+            'channels-inbox' : 'Not used', 
         }
     def __init__(self, **argd):
         super(Feed2xml, self).__init__(**argd)
@@ -17,6 +21,7 @@ class Feed2xml(Axon.Component.component):
         self.config = None
 
     def main(self):
+        # TODO: channels are not read from channels-inbox
         while True:
             while self.dataReady("control"):
                 # TODO
@@ -39,7 +44,6 @@ class Feed2xml(Axon.Component.component):
             if self.config is not None and len(self.feeds) == 10: #TODO: 10
                 # TODO: first approach: 
                 # * no use of sanitize.py (although feedparser seems to scape HTML)
-                # * it generages and writes the file "in a single shot" (some filewriter should be used)
                 # 
                 tproc = TemplateProcessor()
                 tproc.set('name',  self.config.name)
@@ -61,10 +65,10 @@ class Feed2xml(Axon.Component.component):
                 
                 template = TemplateManager().prepare("rss20.xml.tmpl") #TODO: constant
                 result = tproc.process(template)
-                file_name = 'output/rss20.xml' #TODO: constant
-                open(file_name, 'w').write(result)
-                print "Check", file_name
-                yield 1
+                self.send(result, "outbox")
+                print "XML written"
+                self.send(producerFinished(self), "signal")
+                return
 
             if not self.anyReady():
                 self.pause()

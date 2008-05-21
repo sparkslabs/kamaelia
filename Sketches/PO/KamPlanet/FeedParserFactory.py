@@ -41,17 +41,17 @@ class FeedParserFactory(Axon.Component.component):
     }
     def __init__(self, **argd):
         super(FeedParserFactory, self).__init__(**argd)
-        self.mustStop = None
-        self.pleaseStop = None
+        self.mustStop         = None
+        self.providerFinished = False
 
-    def checkControl(self): #taken from Carousel.py
+    def checkControl(self):
         while self.dataReady("control"):
             msg = self.recv("control")
             if isinstance(msg,producerFinished):
-                self.pleaseStop = msg
+                self.providerFinished = True
             elif isinstance(msg,shutdownMicroprocess):
                 self.mustStop = msg
-        return self.mustStop, self.pleaseStop
+        return self.mustStop, self.providerFinished
 
     def handleChildTerminations(self): #taken from Carousel.py
         for child in self.childComponents():
@@ -60,15 +60,14 @@ class FeedParserFactory(Axon.Component.component):
 
     def main(self):
         while True:
-            # TODO: make two states, just as in Carousel.py, to avoid new parsed-feeds
-            # /inbox when pleaseStop != None
-            mustStop, pleaseStop = self.checkControl()
+            mustStop, providerFinished = self.checkControl()
             if mustStop:
                 self.send(mustStop,"signal")
+                # TODO: should I send this message to my children?
                 return
-
+            
             self.handleChildTerminations()
-
+            
             while self.dataReady("inbox"):
                 feed = self.recv("inbox")
                 child = makeFeedParser(feed)
@@ -76,16 +75,16 @@ class FeedParserFactory(Axon.Component.component):
                 self.addChildren(child)
                 child.activate()
                 yield 1
-
+            
             while self.dataReady("_parsed-feeds"):
                 parseddata = self.recv("_parsed-feeds")
                 self.send(parseddata,"outbox")
                 yield 1
-
-            if pleaseStop and len(self.childComponents()) == 0:
-                self.send(pleaseStop,"signal")
+            
+            if providerFinished and len(self.childComponents()) == 0:
+                self.send(producerFinished(self),"signal")
                 return
-
+            
             if not self.anyReady():
                 self.pause()
             yield 1
