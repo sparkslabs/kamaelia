@@ -16,8 +16,8 @@ feparams = {
 }
 
 Pipeline(
-   DVB_Multiplex(754-754+505.8, [640, 641], feparams), # BBC NEWS 24
-   SimpleFileWriter("BBC_NEWS_24.ts")
+   DVB_Multiplex(505.8, [640, 641], feparams), # BBC NEWS CHANNEL
+   SimpleFileWriter("BBC_NEWS_CHANNEL.ts")
 ).run()
 
 # RELEASE: MH, MPS
