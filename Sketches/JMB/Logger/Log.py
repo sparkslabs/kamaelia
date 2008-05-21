@@ -30,13 +30,11 @@ class Logger(component):
         self.link((self.subscriber,  'outbox'),  (self,  'inbox'))
         self.link((self, 'signal'), (self.bplane, 'control'))
 
-        self.first_run = True
 
     def main(self):
-        if self.first_run:
-            self.bplane.activate()
-            self.subscriber.activate()
-            self.first_run = False
+        self.bplane.activate()
+        self.subscriber.activate()
+        self.first_run = False
 
         not_done = True
         while not_done:
@@ -63,6 +61,18 @@ class Logger(component):
         print 'dataReady("inbox") = ' + str(self.dataReady('inbox'))
         self.removeChild(self.bplane)
         self.removeChild(self.subscriber)
+
+def connectToLogger(component, logger_name):
+    """
+    This method is used to connect a method with a log outbox to a logger.
+    """
+    component.LoggerName = logger_name
+
+    publisher = PublishTo('LOG_' + logger_name)
+    pipe = Pipeline(component, publisher)
+    pipe.activate()
+    component.addChildren(publisher, pipe)
+
 if __name__ == '__main__':
     from Kamaelia.Util.Backplane import PublishTo
 
@@ -114,7 +124,7 @@ if __name__ == '__main__':
 
         def main(self):
             self.Logger.activate()
-            Pipeline(self.Producer, PublishTo('LOG_' + self.logname)).activate()
+            connectToLogger(self.Producer, self.logname)
             i = 0
 
             while i < 50:
@@ -127,4 +137,4 @@ if __name__ == '__main__':
             self.send(shutdownMicroprocess(), 'signal-producer')
 
 
-SomeChassis(Producer = Producer('blah'), logname = 'blah.log').run()
+    SomeChassis(Producer = Producer('blah'), logname = 'blah.log').run()
