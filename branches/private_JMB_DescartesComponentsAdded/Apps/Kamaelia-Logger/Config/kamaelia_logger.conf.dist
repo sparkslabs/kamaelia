@@ -1,0 +1,19 @@
+#
+# Kamaelia: Logger
+#
+# Copy this file and rename it to kamaelia_logger.conf to configure the
+# logger. If you change this file, kill the daemon to restart it to pick
+# up the changes.
+#
+
+# Channel this bot joins.
+# channel = #kamaelia-test
+
+# Name of this log bot - defaults to kamaeliabot<randomname>
+# name = kamaeliabot
+
+# password - if needed for connection. (defaults to no)
+# pwd = p4ssw0rd
+
+# logdir - change this to a directory the log bot can handle and a place which the webserver can serve - defaults to cwd
+# logdir = 
