@@ -15,17 +15,14 @@ class ConfigFileParser(Axon.Component.component):
         "signal"           : "From component...",
         "feeds-outbox"     : "It will send one by one the parsed feeds. Instances of str by the moment",
         "config-outbox"    : "It will send an instance of GeneralConfig when parsed",
-        "counter-outbox"   : "It will announce how many feeds were found through this channel"
     }
     def __init__(self, **argd):
         super(ConfigFileParser, self).__init__(**argd)
         self.feeds = []
-        self.counter      = -1
         self.config       = None
         self.finished     = False
 
         # Temporal variables, for xml parsing
-        self.temp_counter          = 0
         self.temp_config           = GeneralConfig(u'', u'')
         self.temp_feed             = None
         self.parsing_general       = False
@@ -46,7 +43,6 @@ class ConfigFileParser(Axon.Component.component):
             self.parsing_feeds = True
         elif data[0] == '/element' and data[1] == 'feeds':
             self.parsing_feeds = False
-            self.counter = self.temp_counter
         
         # Parsing general head
         if self.parsing_general:
@@ -72,19 +68,12 @@ class ConfigFileParser(Axon.Component.component):
             elif data[0] == '/element' and data[1] == 'feed':
                 self.parsing_feed = False
                 self.feeds.append(self.temp_feed)
-                self.temp_counter += 1
-                
-
+        
     def main(self):
         while True:
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 self.parsingXml(data)
-
-            # If the counter has been parsed, send it
-            if self.counter != -1:
-                self.send(self.counter,  "counter-outbox")
-                self.counter = -1
 
             # If the general config has been parsed, send it
             if self.config is not None:
@@ -99,11 +88,10 @@ class ConfigFileParser(Axon.Component.component):
             
             # If we're done, finish
             if self.finished:
-                self.send(producerFinished(), "signal")
-                yield 0
+                self.send(producerFinished(self), "signal")
+                return
                 
             if not self.anyReady():
                 self.pause()
                 
             yield 1
-

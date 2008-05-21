@@ -30,8 +30,6 @@ class FeedSorter(Axon.Component.component):
     def __init__(self, **argd):
         super(FeedSorter, self).__init__(**argd)
         self.ordered_entries = []
-        self.counter         = None
-        self.counted         = 0
         self.max_posts       = 10 #TODO: configure me
         self.pleaseSleep     = False
 
@@ -42,33 +40,26 @@ class FeedSorter(Axon.Component.component):
                 if isinstance(data, shutdownMicroprocess):
                     self.send(data, "signal")
                     return
-                # TODO: Even if the producer finished, I want to wait 
-                # until self.counted == self.counter
-                # Is there any other way to handle this situation?
+                elif isinstance(data,  producerFinished):
+                    for entry in self.ordered_entries:
+                        self.send(entry, 'outbox')
+                    return
 
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                self.ordered_entries.extend([ 
-                                        { 
-                                            'feed' : data.feed, 
-                                            'entry' : x,
+                self.ordered_entries.extend([
+                                        {
+                                            'feed'     : data.feed,
+                                            'entry'    : x,
                                             'encoding' : data.encoding
-                                        } for x in data.entries ])
+                                        } for x in data.entries
+                        ])
                 self.ordered_entries.sort(_cmp_entries)
                 self.ordered_entries = self.ordered_entries[:self.max_posts]
-                self.counted += 1
-
-            while self.dataReady("counter-inbox"):
-                data = self.recv("counter-inbox")
-                self.counter = data
-            
-            if self.counter is not None and self.counted >= self.counter:
-                for entry in self.ordered_entries:
-                    self.send(entry, 'outbox')
-                self.send(producerFinished(), 'signal')
-                return
+                yield 1
 
             if not self.anyReady():
                 self.pause()
+                
             yield 1
 
