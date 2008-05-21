@@ -13,6 +13,13 @@ def wrapMessage(message):
     dt = datetime.datetime.now().isoformat()
     return '%s: %s\n' % (dt, message)
 
+def nullWrapper(message):
+    """
+    This method returns the message that was sent to it.  It is used in situations
+    where you just want to post the raw text to the log.
+    """
+    return message
+
 
 class Logger(component):
     """
