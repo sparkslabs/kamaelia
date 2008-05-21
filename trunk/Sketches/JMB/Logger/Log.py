@@ -1,7 +1,18 @@
 from Axon.Component import component
 from Kamaelia.Util.Backplane import Backplane,  SubscribeTo
 from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Chassis.Graphline import Graphline
+import datetime
+
+def wrapMessage(message):
+    """
+    This function is intended to be the default message wrapper.  It returns
+    the given message with the date/time in isoformat at the beginning and a
+    newline at the end.
+    """
+    dt = datetime.datetime.now().isoformat()
+    return '%s: %s\n' % (dt, message)
+
 
 class Logger(component):
     """
@@ -19,11 +30,19 @@ class Logger(component):
     Outboxes = {'outbox' : 'NOT USED',
                 'signal' : 'Send shutdown messages',}
 
-    def __init__(self,  logname):
+    def __init__(self,  logname, wrapper = wrapMessage):
+        """
+        Initializes a new Logger.
+
+        -logname - the name of the log to write to
+        -wrapper - a method that takes a message as an argument and returns a
+            formatted string to put in the log.
+        """
         super(Logger,  self).__init__()
         self.logname = logname
         self.bplane = Backplane('LOG_' + logname)
         self.subscriber = SubscribeTo('LOG_' + logname)
+        self.wrapper = wrapper
 
         #add the components as children
         self.addChildren(self.subscriber, self.bplane)
@@ -38,12 +57,11 @@ class Logger(component):
 
         not_done = True
         while not_done:
-            while self.dataReady('inbox'):
-                msg = self.recv('inbox')
-                print "received %s" % (msg)
-
+            if self.dataReady('inbox'):
                 file = open(self.logname, 'a')
-                file.write(msg)
+                while self.dataReady('inbox'):
+                    msg = self.recv('inbox')
+                    file.write(self.wrapper(msg))
                 file.close()
 
             while self.dataReady('control'):
@@ -56,9 +74,10 @@ class Logger(component):
                 yield 1
 
     def shutdown(self, msg):
+        """
+        Sends shutdown message to signal box and removes children.
+        """
         self.send(msg, 'signal')
-        print 'shutting down logger!'
-        print 'dataReady("inbox") = ' + str(self.dataReady('inbox'))
         self.removeChild(self.bplane)
         self.removeChild(self.subscriber)
 
@@ -69,9 +88,14 @@ def connectToLogger(component, logger_name):
     component.LoggerName = logger_name
 
     publisher = PublishTo('LOG_' + logger_name)
-    pipe = Pipeline(component, publisher)
-    pipe.activate()
-    component.addChildren(publisher, pipe)
+    graph = Graphline( COMPONENT = component,
+                       PUBLISHER = publisher,
+                       linkages = {
+                            ('COMPONENT', 'log') : ('PUBLISHER', 'inbox'),
+                            ('COMPONENT', 'signal') : ('PUBLISHER', 'control'),
+                        })
+    graph.activate()
+    component.addChildren(publisher, graph)
 
 if __name__ == '__main__':
     from Kamaelia.Util.Backplane import PublishTo
@@ -83,7 +107,8 @@ if __name__ == '__main__':
         Inboxes = {'inbox' : 'NOT USED',
                     'control' : 'receive shutdown messages',}
         Outboxes = {'outbox' : 'push data out',
-                    'signal' : 'send shutdown messages',}
+                    'signal' : 'send shutdown messages',
+                    'log' : 'post messages to the log'}
         def __init__(self, message):
             super(Producer, self).__init__()
             self.message = message
@@ -91,7 +116,7 @@ if __name__ == '__main__':
         def main(self):
             not_done = True
             while not_done:
-                self.send(self.message, 'outbox')
+                self.send(self.message, 'log')
                 print 'sent %s' % (self.message)
                 while self.dataReady('control'):
                     msg = self.recv('control')
