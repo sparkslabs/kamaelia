@@ -187,9 +187,8 @@ class Tuner(threadedcomponent):
     
     def notLocked(self):
         """\
-        Wait for lock, if it's not available, yield a true value.
-        If it is, exit with a StopIteration. (allows use in a for
-        loop)
+        Returns True if the frontend is not yet locked.
+        Returns False if it is locked.
         """
         return (self.fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0
     
