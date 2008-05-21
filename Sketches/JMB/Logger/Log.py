@@ -10,7 +10,9 @@ class Logger(component):
     'foo.bar' would be registered under 'LOG_foo.bar'.
 
     Please note that the Logger will not be shut down automatically.  It must be
-    sent a shutdown message via its control box.
+    sent a shutdown message via its control box.  Typically this component is to
+    be used by a Chassis or some other Parent component to provide a log for its
+    children.
     """
     Inboxes = { 'inbox' : 'Receive a tuple containing the filename and message to log',
                 'control' : 'Receive shutdown messages',}
@@ -21,7 +23,7 @@ class Logger(component):
         super(Logger,  self).__init__()
         self.logname = logname
         self.bplane = Backplane('LOG_' + logname)
-        self.subscriber = SubscribeTo(logname)
+        self.subscriber = SubscribeTo('LOG_' + logname)
 
         #add the components as children
         self.addChildren(self.subscriber, self.bplane)
@@ -47,6 +49,7 @@ class Logger(component):
                 file.close()
 
             while self.dataReady('control'):
+                msg = self.recv('control')
                 if isinstance(msg, (shutdownMicroprocess)):
                     not_done = False
                     self.shutdown(msg)
@@ -85,10 +88,10 @@ if __name__ == '__main__':
                     self.send(msg, 'signal')
                     if isinstance(msg, (shutdownMicroprocess, producerFinished)):
                         not_done = False
+                        print 'Producer shutting down!'
                 yield 1
 
             self.send(producerFinished(), 'signal')
-            self.send(producerFinished(), 'logger-signal')
 
     class SomeChassis(component):
         """
@@ -119,6 +122,7 @@ if __name__ == '__main__':
                 i += 1
                 yield 1
 
+            print 'SomeChassis shutting down!'
             self.send(shutdownMicroprocess(), 'signal-logger')
             self.send(shutdownMicroprocess(), 'signal-producer')
 
