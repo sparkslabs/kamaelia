@@ -1,79 +1,31 @@
 #!/usr/bin/env python
 #-*-*- encoding: utf-8 -*-*-
 
-import Axon
-from htmltmpl import TemplateManager, TemplateProcessor
+from KamTemplateProcessor import KamTemplateProcessor
 
-from Axon.Ipc import producerFinished
-
-# Todo: this class and Feed2html should obviously have a common class through inheritance
-class Feed2xml(Axon.Component.component):
-    Inboxes = {
-            'control'        : 'From component', 
-            'inbox'          : 'Not used', 
-            'feeds-inbox'    : 'Not used', 
-            'config-inbox'   : 'Not used', 
-            'channels-inbox' : 'Not used', 
-        }
+class Feed2xml(KamTemplateProcessor):
     def __init__(self, **argd):
         super(Feed2xml, self).__init__(**argd)
-        self.feeds = []
-        self.config = None
 
-    def main(self):
-        # TODO: channels are not read from channels-inbox
-        while True:
-            while self.dataReady("control"):
-                # TODO
-                data = self.recv("control")
-                print "%s: %s" % (type(self), data)
-                self.send(data, "signal")
-                return
+    def getTemplateFileName(self):
+        return self.config.rssTemplateName
 
-            while self.dataReady("feeds-inbox"):
-                data = self.recv("feeds-inbox")
-                self.feeds.append(data)
-                print "xml", data['entry'].updated
-                yield 1
-
-            while self.dataReady("config-inbox"):
-                data = self.recv("config-inbox")
-                self.config = data
-                print "xml-config", data.name, data.link
-
-            if self.config is not None and len(self.feeds) == 10: #TODO: 10
-                # TODO: first approach: 
-                # * no use of sanitize.py (although feedparser seems to scape HTML)
-                # 
-                tproc = TemplateProcessor()
-                tproc.set('name',  self.config.name)
-                tproc.set('link',  self.config.link)
-                
-                items = []
-                
-                for complete_entry in self.feeds:
-                    feed     = complete_entry['feed']
-                    entry    = complete_entry['entry']
-                    encoding = complete_entry['encoding']
-                    
-                    item = self.createItem(feed, entry, encoding)
-                    
-                    items.append(item)
-                    
-                tproc.set('Items',  items)
-                yield 1
-                
-                template = TemplateManager().prepare("rss20.xml.tmpl") #TODO: constant
-                result = tproc.process(template)
-                self.send(result, "outbox")
-                print "XML written"
-                self.send(producerFinished(self), "signal")
-                return
-
-            if not self.anyReady():
-                self.pause()
-
-            yield 1
+    def fillTemplate(self,  templateProcessor):
+        templateProcessor.set('name',  self.config.name)
+        templateProcessor.set('link',  self.config.link)
+        
+        items = []
+        
+        for complete_entry in self.feeds:
+            feed     = complete_entry['feed']
+            entry    = complete_entry['entry']
+            encoding = complete_entry['encoding']
+            
+            item = self.createItem(feed, entry, encoding)
+            
+            items.append(item)
+            
+        templateProcessor.set('Items',  items)
 
     def createItem(self, feed, entry, encoding):
         item = {}

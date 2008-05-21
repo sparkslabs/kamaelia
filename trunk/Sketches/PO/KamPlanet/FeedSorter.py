@@ -43,6 +43,12 @@ class FeedSorter(Axon.Component.component):
                 elif isinstance(data,  producerFinished):
                     for entry in self.ordered_entries:
                         self.send(entry, 'outbox')
+                    yield 1
+                    # TODO 
+                    for _ in range(100):
+                        yield 1
+                    print "KILLING " * 100
+                    self.send(producerFinished(self), 'signal')
                     return
 
             while self.dataReady("inbox"):

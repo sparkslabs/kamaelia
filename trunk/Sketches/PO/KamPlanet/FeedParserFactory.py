@@ -70,7 +70,7 @@ class FeedParserFactory(Axon.Component.component):
             
             while self.dataReady("inbox"):
                 feed = self.recv("inbox")
-                child = makeFeedParser(feed)
+                child = makeFeedParser(feed.url)
                 self.link( (child, 'outbox'), (self, '_parsed-feeds') )
                 self.addChildren(child)
                 child.activate()
