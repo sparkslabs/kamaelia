@@ -43,8 +43,8 @@ recording a stream and some event information::
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
     
     RegisterService( Receiver(505.833330, feparams),
@@ -190,8 +190,8 @@ if __name__=="__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
     print "Tunes to UK Crystal palace transmitter MUX 1"

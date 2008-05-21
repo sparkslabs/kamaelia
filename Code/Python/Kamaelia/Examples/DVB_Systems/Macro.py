@@ -156,16 +156,16 @@ if location == "london": # Crystal Palace
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 elif location == "manchester": # WinterHill
     freq = 754.166670
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor

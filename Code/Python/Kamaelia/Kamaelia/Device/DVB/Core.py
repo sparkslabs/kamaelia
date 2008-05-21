@@ -1,9 +1,191 @@
 #!/usr/bin/python
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
 #
-# DVB Transport stream should pick out entire DVB services and send those to
-# named outboxes. (Send DVB Services to a Kamaelia Service...(!))
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
 #
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+"""\
+==========================================
+SimpleDVB-T (Digital Terrestrial TV) Tuner
+==========================================
 
+DVB_Multiplex tunes to the specified DVB-T multiplex and outputs received MPEG
+Transport Stream packets that have a PID in the list of PIDs specified.
+
+If you need to change which PIDs you receive at runtime, consider using
+Kamaelia.Device.DVB.Tuner
+
+
+
+Example Usage
+-------------
+
+Receiving PIDs 600 and 601 from MUX 1 broadcast from Crystal Palace in the UK
+(this should, effectively, receive the video and audio for the channel
+'BBC ONE')::
+  
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Device.DVB.Core import DVB_Multiplex
+    from Kamaelia.File.Writing import SimpleFileWriter
+    import dvb3.frontend
+
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+    }
+
+    Pipeline( DVB_Multiplex(505.833330, [600,601], feparams),
+              SimpleFileWriter("BBC ONE.ts"),
+            ).run()
+
+Receive and record the whole multiplex (all pids)::
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Device.DVB.Core import DVB_Multiplex
+    from Kamaelia.File.Writing import SimpleFileWriter
+    import dvb3.frontend
+
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+    }
+
+    Pipeline( DVB_Multiplex(505.833330, [0x2000], feparams),
+              SimpleFileWriter("BBC ONE.ts"),
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+DVB_Multiplex tunes, using the specified tuning parameters to a DVB-T
+transmitted multiplex.
+
+It will output received transport stream packets out of its "outbox" outbox for
+those packets with a PID in the list of PIDs specified at initialization.
+
+Most DVB tuner devices understand a special packet ID of 0x2000 to request the
+entire transport stream of all packets with all IDs. Specify a list containing
+only this PID to receive the whole transport stream.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+
+
+
+============================================
+SimpleDVB-T (Digital Terrestrial TV) Demuxer
+============================================
+
+DVB_Demuxer take in MPEG transport stream packets and routes them to different
+outboxes, as specified in a mapping table.
+
+If you need to change which PIDs you receive at runtime, consider using
+Kamaelia.Device.DVB.DemuxerService.
+
+
+
+Example Usage
+-------------
+
+Receiving PIDs 600 and 601 from MUX 1 broadcast from Crystal Palace in the UK
+(this should, effectively, receive the video and audio for the channel
+'BBC ONE') and write them to separate files, plus also to a combined file. Plus
+also record PIDS 610 and 611 (audio and video for 'BBC TWO') to a fourth file::
+
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Device.DVB.Core import DVB_Multiplex
+    from Kamaelia.Device.DVB.Core import DVB_Demuxer
+    from Kamaelia.File.Writing import SimpleFileWriter
+    import dvb3.frontend
+
+    feparams = {
+        "inversion" : dvb3.frontend.INVERSION_AUTO,
+        "constellation" : dvb3.frontend.QAM_16,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+    }
+
+    Graphline(
+        RECV   = DVB_Multiplex(505.833330, [600,601, 610,611], feparams),
+        DEMUX  = DVB_Demuxer( { 600 : ["outbox","video"],
+                                601 : ["outbox","audio"],
+                                610 : ["two"],
+                                611 : ["two"] } ),
+        REC_A  = SimpleFileWriter("audio.ts"),
+        REC_V  = SimpleFileWriter("video.ts"),
+        REC_AV = SimpleFileWriter("audio_and_video.ts"),
+        REC_2  = SimpleFileWriter("audio_and_video2.ts"),
+        
+        linkages = { ("RECV",  "outbox")  : ("DEMUX",  "inbox"),
+        
+                     ("DEMUX", "outbox") : ("REC_AV", "inbox"),
+                     ("DEMUX", "audio")  : ("REC_A",  "inbox"),
+                     ("DEMUX", "video")  : ("REC_V",  "inbox"),
+                     
+                     ("DEMUX", "two")    : ("REC_2",  "inbox"),
+                   }
+    ).run()
+
+
+
+How does it work?
+-----------------
+
+DVB_Demuxer takes MPEG transport stream packets, sent to its "inbox" inbox
+and determines the packet ID (PID) of each, then distributes them to different
+outboxes according to a mapping dictionary specified at intialization.
+
+The dictionary maps individual PIDs to lists of outbox names (the outboxes to
+which packets with that given PID should be sent), for example::
+  
+    {
+      600 : ["outbox","video"],
+      601 : ["outbox","audio"],
+      610 : ["two"],
+      611 : ["two"]
+    }
+
+This example mapping specified that packets with 600 and 601 should be sent to
+the "outbox" outbox. Packets with PID 600 should also be sent to the "video"
+outbox and packets with PID 601 should also be sent to the "audio" outbox.
+Finally, packets with PIDs 610 and 611 should b sent to the "two" outbox.
+
+The relevant outboxes are automatically created.
+
+If a packet arrives with a PID not featured in the mapping table, that packet
+will be discarded.
+
+As in the above example, a packet with a given PID can be mapped to more than
+one destination outbox. It will be sent to all outboxes to which it is mapped.
+
+Packets which have their 'error' or 'scrambled' flag bits set will be discarded.
+
+This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the "control" inbox. The message will be forwarded on out of
+the "signal" outbox just before termination.
+
+"""
 
 import os
 import dvb3.frontend
@@ -21,11 +203,10 @@ import Axon.AdaptiveCommsComponent
     
 def tune_DVBT(fe, frequency, feparams={}):
     # Build the tuning parameters (DVB-T)
-    params = dvb3.frontend.OFDMParameters()
-    params.frequency = frequency * 1000 * 1000
-    # load up any extra params specified for the frontend
-    for key in feparams:
-        params.__dict__[key] = feparams[key]
+    params = dvb3.frontend.OFDMParameters(
+        frequency = frequency * 1000 * 1000,
+        **feparams
+        )
 
     # Start the tuning
     fe.set_frontend(params)
@@ -33,9 +214,8 @@ def tune_DVBT(fe, frequency, feparams={}):
 
 def notLocked(fe):
     """\
-    Wait for lock, if it's not available, yield a true value.
-    If it is, exit with a StopIteration. (allows use in a for
-    loop)
+    Returns True if the frontend is not yet locked.
+    Returns False if it is locked.
     """
     return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0
 
@@ -213,8 +393,8 @@ if __name__ == "__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
     channels_london =  {
