@@ -157,7 +157,7 @@ class ParseTimeOffsetTable(component):
 
                 # extract basic info from this PSI packet - enough to work
                 # out what table it is; what section, and the version
-                e = [ord(data[i]) for i in range(0,10) ]
+                e = [ord(data[i]) for i in range(0,3) ]
 
                 table_id = e[0]
                 if table_id != 0x73:
@@ -171,6 +171,10 @@ class ParseTimeOffsetTable(component):
 
                 if not dvbcrc(data[:3+section_length]):
                     continue
+                
+                # now were reasonably certain we've got a correct packet
+                # we'll convert the rest of the packet
+                e = [ord(data[i]) for i in range(0,10) ]
                 
                 timeNow = list( parseMJD((e[3]<<8) + e[4]) )
                 timeNow.extend( [unBCD(e[5]), unBCD(e[6]), unBCD(e[7])] )
@@ -215,8 +219,8 @@ if __name__ == "__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
     
     Pipeline( DVB_Multiplex(505833330.0/1000000.0, [0x2000], feparams),

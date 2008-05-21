@@ -419,7 +419,7 @@ class ParseEventInformationTable(component):
                 
                 # extract basic info from this PSI packet - enough to work
                 # out what table it is; what section, and the version
-                e = [ord(data[i]) for i in range(0,12) ]
+                e = [ord(data[i]) for i in range(0,3) ]
                 
                 table_id = e[0]
                 if table_id not in self.acceptTables.keys():
@@ -428,9 +428,13 @@ class ParseEventInformationTable(component):
                 syntax = e[1] & 0x80
                 if not syntax:
                     continue
-                service_id = (e[3]<<8) + e[4]
-                
                 section_length = ((e[1]<<8) + e[2]) & 0x0fff
+                
+                # now were reasonably certain we've got a correct packet
+                # we'll convert the rest of the packet
+                e = [ord(data[i]) for i in range(0,12) ]
+                
+                service_id = (e[3]<<8) + e[4]
                 
                 version = (e[5] & 0x3e)  # no need to >> 1
                 current_next = e[5] & 0x01
@@ -560,8 +564,8 @@ if __name__ == "__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
     
     demo="Now and next"

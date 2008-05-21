@@ -215,7 +215,7 @@ class ParseProgramAssociationTable(component):
                 
                 # extract basic info from this PSI packet - enough to work
                 # out what table it is; what section, and the version
-                e = [ord(data[i]) for i in (0,1,2,5,6,7) ]
+                e = [ord(data[i]) for i in (0,1,2) ]
 
                 table_id = e[0]
                 if table_id != 0:
@@ -226,6 +226,10 @@ class ParseProgramAssociationTable(component):
                     continue
                 
                 section_length = ((e[1]<<8) + e[2]) & 0x0fff
+                
+                # now were reasonably certain we've got a correct packet
+                # we'll convert the rest of the packet
+                e = [ord(data[i]) for i in (0,1,2,5,6,7) ]
                 
                 version = (e[3] &0x3e)  # no need to >> 1
                 current_next = e[3] & 0x01
@@ -275,8 +279,8 @@ if __name__ == "__main__":
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
     Pipeline( DVB_Multiplex(505833330.0/1000000.0, [PAT_PID], feparams),
