@@ -38,8 +38,8 @@ set of tuning parameters to file::
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "coderate_HP" : dvb3.frontend.FEC_3_4,
-        "coderate_LP" : dvb3.frontend.FEC_3_4,
+        "code_rate_HP" : dvb3.frontend.FEC_3_4,
+        "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
     
     Pipeline( OneShot( msg=["ADD", [0x2000] ] ),    # send the msg ["ADD", [0x2000]]
@@ -176,11 +176,10 @@ class Tuner(threadedcomponent):
 
     def tune_DVBT(self, frequency, feparams={}):
         # Build the tuning parameters (DVB-T)
-        params = dvb3.frontend.OFDMParameters()
-        params.frequency = frequency * 1000 * 1000
-        # load up any extra params specified for the frontend
-        for key in feparams:
-            params.__dict__[key] = feparams[key]
+        params = dvb3.frontend.OFDMParameters(
+            frequency = frequency * 1000 * 1000,
+            **feparams
+        )
     
         # Start the tuning
         self.fe.set_frontend(params)
@@ -188,9 +187,8 @@ class Tuner(threadedcomponent):
     
     def notLocked(self):
         """\
-        Wait for lock, if it's not available, yield a true value.
-        If it is, exit with a StopIteration. (allows use in a for
-        loop)
+        Returns True if the frontend is not yet locked.
+        Returns False if it is locked.
         """
         return (self.fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0
     

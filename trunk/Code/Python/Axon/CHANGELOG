@@ -1,3 +1,7 @@
+    Added in LikeFile
+    Added in support for monkey patching the internals of a component
+    system.
+
 1.5.1 -> 1.x.x
     An exception is now raised if you try to create a linkage going
     from an inbox/outbox that already has a linkage going from it.

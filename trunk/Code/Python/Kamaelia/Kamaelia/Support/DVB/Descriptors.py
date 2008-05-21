@@ -106,6 +106,12 @@ DVB standards documents:
   (aka "The D book")
   UK Digital Television Group
 
+- ETSI TS 102 323
+  Technical Specification: "Digital Video Broadcasting (DVB); Carriage and
+  signalling of TV-Anytime information in DVB transport streams"
+  ETSI / EBU (DVB group)
+
+
 
 
 Mappings, Tables, Values
@@ -194,6 +200,143 @@ Specifiers defining various types of private data payload::
     0x46524549 : "News Datacom (IL) 1",
     0x53415053 : "Scientific Atlanta",
 
+
+Content Types
+-------------
+Level 1 content types/genres::
+
+    0x1 : "Movie/Drama",
+    0x2 : "News/Current Affairs",
+    0x3 : "Show/Game show",
+    0x4 : "Sports",
+    0x5 : "Children's/Youth",
+    0x6 : "Music/Ballet/Dance",
+    0x7 : "Arts/Culture (without music)",
+    0x8 : "Social/Political issues/Economics",
+    0x9 : "Childrens/Youth Education/Science/Factual",
+    0xa : "Leisure hobbies",
+    0xb : "Misc",
+    0xf : "Drama", # user defined (specified in the UK "D book")
+
+Note that 0xf is a user defined field. The mapping it is assigned here is that used in the UK "D book" specification.
+
+Level 2 content types/genres::
+    
+    # movie/drama
+    0x10 : "General",
+    0x11 : "Detective/Thriller",
+    0x12 : "Adventure/Western/War",
+    0x13 : "Science Fiction/Fantasy/Horror",
+    0x14 : "Comedy",
+    0x15 : "Soap/Melodrama/Folkloric",
+    0x16 : "Romance",
+    0x17 : "Serious/ClassicalReligion/Historical",
+    0x18 : "Adult Movie/Drama",
+    
+    # news/current affairs
+    0x20 : "General",
+    0x21 : "News/Weather Report",
+    0x22 : "Magazine",
+    0x23 : "Documentary",
+    0x24 : "Discussion/Interview/Debate",
+    
+    # show/game show
+    0x30 : "General",
+    0x31 : "Game show/Quiz/Contest",
+    0x32 : "Variety",
+    0x33 : "Talk",
+    
+    # sports
+    0x40 : "General",
+    0x41 : "Special Event (Olympics/World cup/...)",
+    0x42 : "Magazine",
+    0x43 : "Football/Soccer",
+    0x44 : "Tennis/Squash",
+    0x45 : "Team sports (excluding football)",
+    0x46 : "Athletics",
+    0x47 : "Motor Sport",
+    0x48 : "Water Sport",
+    0x49 : "Winter Sports",
+    0x4a : "Equestrian",
+    0x4b : "Martial sports",
+    
+    # childrens/youth
+    0x50 : "General",
+    0x51 : "Pre-school",
+    0x52 : "Entertainment (6 to 14 year-olds)",
+    0x53 : "Entertainment (10 to 16 year-olds)",
+    0x54 : "Informational/Educational/Schools",
+    0x55 : "Cartoons/Puppets",
+    
+    # music/ballet/dance
+    0x60 : "General",
+    0x61 : "Rock/Pop",
+    0x62 : "Serious music/Classical Music",
+    0x63 : "Folk/Traditional music",
+    0x64 : "Jazz",
+    0x65 : "Musical/Opera",
+    0x66 : "Ballet",
+    
+    # arts/culture
+    0x70 : "General",
+    0x71 : "Performing Arts",
+    0x72 : "Fine Arts",
+    0x73 : "Religion",
+    0x74 : "Popular Culture/Tradital Arts",
+    0x75 : "Literature",
+    0x76 : "Film/Cinema",
+    0x77 : "Experimental Film/Video",
+    0x78 : "Broadcasting/Press",
+    0x79 : "New Media",
+    0x7a : "Magazine",
+    0x7b : "Fashion",
+    
+    # social/political/economic
+    0x80 : "General",
+    0x81 : "Magazine/Report/Domentary",
+    0x82 : "Economics/Social Advisory",
+    0x83 : "Remarkable People",
+    
+    # children's youth: educational/science/factual
+    0x90 : "General",
+    0x91 : "Nature/Animals/Environment",
+    0x92 : "Technology/Natural sciences",
+    0x93 : "Medicine/Physiology/Psychology",
+    0x94 : "Foreign Countries/Expeditions",
+    0x95 : "Social/Spiritual Sciences",
+    0x96 : "Further Education",
+    0x97 : "Languages",
+    
+    # leisure hobbies
+    0xa0 : "General",
+    0xa1 : "Tourism/Travel",
+    0xa2 : "Handicraft",
+    0xa3 : "Motoring",
+    0xa4 : "Fitness & Health",
+    0xa5 : "Cooking",
+    0xa6 : "Advertisement/Shopping",
+    0xa7 : "Gardening",
+
+    # misc
+    0xb0 : "Original Language",
+    0xb1 : "Black and White",
+    0xb2 : "Unpublished",
+    0xb3 : "Live Broadcast",
+
+    # drama (user defined, specced in the UK "D-Book")
+    0xf0 : "General",
+    0xf1 : "Detective/Thriller",
+    0xf2 : "Adventure/Western/War",
+    0xf3 : "Science Fiction/Fantasy/Horror",
+    0xf4 : "Comedy",
+    0xf5 : "Soap/Melodrama/Folkloric",
+    0xf6 : "Romance",
+    0xf7 : "Serious/ClassicalReligion/Historical",
+    0xf8 : "Adult",
+
+Note that 0xf0 to 0xff range is a user defined field. The mapping it is assigned here is that used in the UK "D book" specification.
+
+
 """
 
 # parsing routines for DVB PSI table descriptors
@@ -209,26 +352,47 @@ except ImportError:
 
 from DateTime import unBCD, parseMJD
 
-def parseDescriptor(i,data):
+def parseDescriptor(i,data,parser_sets=None):
     """\
-    parseDescriptor(i, data) -> (tag, parsedData), new_i
+    parseDescriptor(i, data[, parser_sets]) -> (tag, parsedData), new_i
     
     Parses the desciptor in the string 'data', that starts at index 'i'.
     Returns the descriptor's tag; the parsed descriptor contents as a dict
     and the index of the first byte after the end of the descriptor.
+    
+    You can, optionally, override the list of mapping tables used to map
+    descriptor IDs to functions that parse them. parser_sets is a list of
+    mapping tables. Each mapping table is a dictionary mapping a descriptor
+    type number to a parsing function. The list is processed from left to right.
+    The first mapping dictionary that contains a mapping will be the one used.
     """
     
     # just a simple extract the tag and body of the descriptor
     tag    = ord(data[i])
     length = ord(data[i+1])
     end    = i+2+length
+    
+    if parser_sets is None:
+        parser_sets = [ __core_descriptor_parsers ]
 
-    parser = __descriptor_parsers.get(tag,parser_Null_Descriptor)
+    # go through each mapping table, in order, stopping at the first we find a
+    # suitable parser function in
+    # failing that, we'll gracefully degrate to a null parser
+    for parser_set in parser_sets:
+        parser = parser_set.get(tag,parser_Null_Descriptor)
+        if parser != parser_Null_Descriptor:
+            break
 
     output = parser(data,i,length,end)
 
     return (tag,output), end
 
+
+def parseDescriptors_TS102323(i,data):
+    return parseDescriptor(i,data,
+        [ __ts102323_override_descriptor_parsers,
+          __core_descriptor_parsers
+        ])
 
 # ==============================================================================
 # now parsers for all descriptor types
@@ -556,7 +720,7 @@ def parser_stuffing_Descriptor(data,i,length,end):
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "stuffing" }
+    return { "type" : "stuffing", "length" : length }
 
 
 def parser_satellite_delivery_system_Descriptor(data,i,length,end):
@@ -848,12 +1012,35 @@ def parser_content_Descriptor(data,i,length,end):
     """\
     parser_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
     
-    This descriptor is not parsed at the moment. The dict returned is:
-       { "type": "content", "contents" : unparsed_descriptor_contents }
+    Parses descriptor describing the type/genre of programme material.
+    
+       { "type": "content",
+         "level1" : Level 1 descriptor (overall type/genre),
+         "level2" : Level 2 descriptor (detailed),
+         "user1" : User nibble 1,
+         "user2" : User nibble 2
+         "contents" : unparsed_descriptor_contents }
+    
+    See "Content Types" for a full list of the level 1 and level 2 content types that
+    can be returned. Values not mapped to their string descriptions will simply be
+    returned as their numeric values.
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "content", "contents" : data[i+2:end] }
+    level1 = ord(data[i+2]) >> 4
+    level2 = ord(data[i+2]) & 0x0f
+    level1_desc = _content_types_level_1.get(level1, level1)
+    level2_desc = _content_types_level_2.get((level1 << 4) + level2, level2)
+    user1 = ord(data[i+3]) >> 4
+    user2 = ord(data[i+3]) & 0x0f
+
+    return { "type" : "content",
+             "contents" : data[i+2:end],
+             "content_level_1" : level1_desc,
+             "content_level_2" : level2_desc,
+             "user1" : user1,
+             "user2" : user2,
+           }
 
 
 def parser_parental_rating_Descriptor(data,i,length,end):
@@ -1393,7 +1580,152 @@ def parser_short_service_name_Descriptor(data,i,length,end):
     return { "type" : "short_service_name", "contents" : data[i+2:end] }
 
 
-__descriptor_parsers = {
+# ------------------------------------------------------------------------------
+# ETSI TS 102 323 defined descriptors
+# ------------------------------------------------------------------------------
+
+def parser_content_labelling_Descriptor(data,i,length,end):
+    """\
+    parser_content_labelling_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "content_labelling", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "content_labelling", "contents" : data[i+2:end] }
+
+def parser_metadata_pointer_Descriptor(data,i,length,end):
+    """\
+    parser_metadata_pointer_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "metadata_pointer", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "metadata_pointer", "contents" : data[i+2:end] }
+
+
+def parser_metadata_Descriptor(data,i,length,end):
+    """\
+    parser_metadata_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "metadata", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "metadata", "contents" : data[i+2:end] }
+
+
+def parser_rar_over_dvb_stream_Descriptor(data,i,length,end):
+    """\
+    parser_rar_over_dvb_stream_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rar_over_dvb_stream", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rar_over_dvb_stream", "contents" : data[i+2:end] }
+
+
+def parser_rar_over_ip_Descriptor(data,i,length,end):
+    """\
+    parser_rar_over_ip_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rar_over_ip", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rar_over_ip", "contents" : data[i+2:end] }
+
+
+def parser_rnt_scan_Descriptor(data,i,length,end):
+    """\
+    parser_rnt_scan_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is not parsed at the moment. The dict returned is:
+       { "type": "rnt_scan", "contents" : unparsed_descriptor_contents }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "rnt_scan", "contents" : data[i+2:end] }
+
+
+def parse_default_authority_Descriptor(data,i,length,end):
+    """\
+    parse_default_authority_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that described a default TV-Anytime Content Reference ID (CRID) authority
+    (the domain part of the URI). The returned dict is:    
+        { "type" : "default_authority",
+        "authority" : the default authority as a string
+        }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    return { "type" : "default_authority",
+             "authority" : data[i+2:end]
+           }
+
+def parse_related_content_Descriptor(data,i,length,end):
+    """\
+    parse_related_content_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that identifies that the elementary stream it is part of delivers a
+    'related content' subtable. The returned dict is:
+        { "type" : "related_content" }
+    
+    (Defined in ETSI TS 102 323 specification)
+    """
+    
+    return { "type" : "related_content" }
+
+def parse_content_identifier_Descriptor(data,i,length,end):
+    """\
+    parse_content_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that assigns a TV-Anyime Content Reference ID (CRID). The dict returned is:
+        { "type"    : "content_identifier",
+          "crids"   : list(crid entries)
+        }
+    
+    Each crid entry is a dict of the form:
+        { "type" : "instance" or "part of series" or "recommendation",
+          "crid" or "ref" : if the crid is 'explicit', "crid" will contain the crid string
+          otherwise "ref" will contain a reference to be looked up in a Content Identifier Table
+        }
+  
+    (Defined in ETSI TS 102 323 specification)
+    """
+    crids = []
+    i=i+2
+    while i<end:
+        flags = ord(data[i])
+        cridType = _content_identifier_content_type.get((flags>>2), (flags>>2))
+        cridLocation = flags & 0x3
+        crid = { "type" : cridType, }
+        if cridLocation == 0:
+            cLen = ord(data[i+1])
+            crid["crid"] = data[i+2:i+2+cLen]
+            i=i+2+cLen
+        elif cridLocation == 1:
+            crid["ref"] = (ord(data[i+2]) << 8) + ord(data[i+3])
+            i=i+3
+        else:
+            raise "Unable to parse Content Identifier Descriptor - unknown cridLocation type"
+        crids.append(crid)
+        
+    return { "type"  : "content_identifier",
+             "crids" : crids,
+           }
+
+
+
+__core_descriptor_parsers = {
     # ISO 13818-1 defined descriptors
         0x02 : parser_video_stream_Descriptor,
         0x03 : parser_audio_stream_Descriptor,
@@ -1412,6 +1744,12 @@ __descriptor_parsers = {
         0x10 : parser_smoothing_buffer_Descriptor,
         0x11 : parser_STD_Descriptor,
         0x12 : parser_IBP_Descriptor,
+
+    # ETSI TS 102 323 defined descriptors
+
+        0x24 : parser_content_labelling_Descriptor,
+        0x25 : parser_metadata_pointer_Descriptor,
+        0x26 : parser_metadata_Descriptor,
 
     # ETSI EN 300 468 defined descriptors
 
@@ -1463,6 +1801,12 @@ __descriptor_parsers = {
         0x6D : parser_cell_frequency_link_Descriptor,
         0x6E : parser_announcement_support_Descriptor,
         
+    # ETSI TS 102 323 defined descriptors
+    
+        0x73 : parse_default_authority_Descriptor,
+        0x74 : parse_related_content_Descriptor,
+        0x76 : parse_content_identifier_Descriptor,
+    
     # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
     # UK Digital Television Group (www.dtg.org.uk) document descriptors
     
@@ -1472,6 +1816,20 @@ __descriptor_parsers = {
         0x86 : parser_service_attribute_Descriptor,
         0x87 : parser_short_service_name_Descriptor,
 }
+
+
+
+__ts102323_override_descriptor_parsers = {
+    # ETSI TS 102 323 defined descriptors
+    # that override core ones
+    
+        0x40 : parser_rar_over_dvb_stream_Descriptor,
+        0x41 : parser_rar_over_ip_Descriptor,
+        0x42 : parser_rnt_scan_Descriptor,
+        
+}
+
+
 
 # Aciliary support stuff
 
@@ -1606,3 +1964,140 @@ _private_data_specifiers = {
         0x46524549 : "News Datacom (IL) 1",
         0x53415053 : "Scientific Atlanta",
     }
+
+_content_types_level_1 = {
+    0x1 : "Movie/Drama",
+    0x2 : "News/Current Affairs",
+    0x3 : "Show/Game show",
+    0x4 : "Sports",
+    0x5 : "Children's/Youth",
+    0x6 : "Music/Ballet/Dance",
+    0x7 : "Arts/Culture (without music)",
+    0x8 : "Social/Political issues/Economics",
+    0x9 : "Childrens/Youth Education/Science/Factual",
+    0xa : "Leisure hobbies",
+    0xb : "Misc",
+    0xf : "Drama", # defined in the "D book"
+}
+
+_content_types_level_2 = {
+    # movie/drama
+    0x10 : "General",
+    0x11 : "Detective/Thriller",
+    0x12 : "Adventure/Western/War",
+    0x13 : "Science Fiction/Fantasy/Horror",
+    0x14 : "Comedy",
+    0x15 : "Soap/Melodrama/Folkloric",
+    0x16 : "Romance",
+    0x17 : "Serious/ClassicalReligion/Historical",
+    0x18 : "Adult",
+    
+    # news/current affairs
+    0x20 : "General",
+    0x21 : "News/Weather Report",
+    0x22 : "Magazine",
+    0x23 : "Documentary",
+    0x24 : "Discussion/Interview/Debate",
+    
+    # show/game show
+    0x30 : "General",
+    0x31 : "Game show/Quiz/Contest",
+    0x32 : "Variety",
+    0x33 : "Talk",
+    
+    # sports
+    0x40 : "General",
+    0x41 : "Special Event (Olympics/World cup/...)",
+    0x42 : "Magazine",
+    0x43 : "Football/Soccer",
+    0x44 : "Tennis/Squash",
+    0x45 : "Team sports (excluding football)",
+    0x46 : "Athletics",
+    0x47 : "Motor Sport",
+    0x48 : "Water Sport",
+    0x49 : "Winter Sports",
+    0x4a : "Equestrian",
+    0x4b : "Martial sports",
+    
+    # childrens/youth
+    0x50 : "General",
+    0x51 : "Pre-school",
+    0x52 : "Entertainment (6 to 14 year-olds)",
+    0x53 : "Entertainment (10 to 16 year-olds)",
+    0x54 : "Informational/Educational/Schools",
+    0x55 : "Cartoons/Puppets",
+    
+    # music/ballet/dance
+    0x60 : "General",
+    0x61 : "Rock/Pop",
+    0x62 : "Serious music/Classical Music",
+    0x63 : "Folk/Traditional music",
+    0x64 : "Jazz",
+    0x65 : "Musical/Opera",
+    0x66 : "Ballet",
+    
+    # arts/culture
+    0x70 : "General",
+    0x71 : "Performing Arts",
+    0x72 : "Fine Arts",
+    0x73 : "Religion",
+    0x74 : "Popular Culture/Tradital Arts",
+    0x75 : "Literature",
+    0x76 : "Film/Cinema",
+    0x77 : "Experimental Film/Video",
+    0x78 : "Broadcasting/Press",
+    0x79 : "New Media",
+    0x7a : "Magazine",
+    0x7b : "Fashion",
+    
+    # social/political/economic
+    0x80 : "General",
+    0x81 : "Magazine/Report/Domentary",
+    0x82 : "Economics/Social Advisory",
+    0x83 : "Remarkable People",
+    
+    # children's youth: educational/science/factual
+    0x90 : "General",
+    0x91 : "Nature/Animals/Environment",
+    0x92 : "Technology/Natural sciences",
+    0x93 : "Medicine/Physiology/Psychology",
+    0x94 : "Foreign Countries/Expeditions",
+    0x95 : "Social/Spiritual Sciences",
+    0x96 : "Further Education",
+    0x97 : "Languages",
+    
+    # leisure hobbies
+    0xa0 : "General",
+    0xa1 : "Tourism/Travel",
+    0xa2 : "Handicraft",
+    0xa3 : "Motoring",
+    0xa4 : "Fitness & Health",
+    0xa5 : "Cooking",
+    0xa6 : "Advertisement/Shopping",
+    0xa7 : "Gardening",
+
+    # misc
+    0xb0 : "Original Language",
+    0xb1 : "Black and White",
+    0xb2 : "Unpublished",
+    0xb3 : "Live Broadcast",
+
+    # drama
+    0xf0 : "General",
+    0xf1 : "Detective/Thriller",
+    0xf2 : "Adventure/Western/War",
+    0xf3 : "Science Fiction/Fantasy/Horror",
+    0xf4 : "Comedy",
+    0xf5 : "Soap/Melodrama/Folkloric",
+    0xf6 : "Romance",
+    0xf7 : "Serious/ClassicalReligion/Historical",
+    0xf8 : "Adult",
+
+}
+
+_content_identifier_content_type = {
+    0x01 : "instance",
+    0x02 : "part of series",
+    0x03 : "recommendation",
+}
+

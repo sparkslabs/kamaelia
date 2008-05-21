@@ -16,8 +16,8 @@ freq = 505.833330 # 529.833330   # 505.833330
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
     "constellation" : dvb3.frontend.QAM_16,
-    "coderate_HP" : dvb3.frontend.FEC_3_4,
-    "coderate_LP" : dvb3.frontend.FEC_3_4,
+    "code_rate_HP" : dvb3.frontend.FEC_3_4,
+    "code_rate_LP" : dvb3.frontend.FEC_3_4,
 }
 
 Pipeline(
