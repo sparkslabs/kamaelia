@@ -39,11 +39,9 @@ Example Usage
 
 To take user input in Textbox and display it in TextDisplayer::
 
-    Pipeline(Textbox(screen_width = 800,
-                     screen_height = 300,
+    Pipeline(Textbox(size = (800, 300),
                      position = (0,0)),
-             TextDisplayer(screen_width = 800,
-                           screen_height = 300,
+             TextDisplayer(size = (800, 300),
                            position = (0,340))
              ).run()
 
@@ -52,7 +50,7 @@ To take user input in Textbox and display it in TextDisplayer::
 How does it work? 
 -----------------
 TextDisplayer requests a display from the Pygame Display service and requests
-that Pygame Display send all keypresses to it. Everytime TextDisplayer receives
+that Pygame Display send all keypresses to it. Every time TextDisplayer receives
 a keypress, it updates its string buffer and the display. 
 
 If it receives a newline, or if text must wrap, it moves the existing text
@@ -83,14 +81,12 @@ class TextDisplayer(component):
 
     Keyword arguments:
 
-    - screen_width     -- width of the TextDisplayer surface, in pixels.
-                          Default 500.
-    - screen_height    -- height of the TextDisplayer surface, in pixels.
-                          Default 300.
+    - size             -- (w, h) size of the TextDisplayer surface, in pixels.
+                          Default (500, 300).
     - text_height      -- font size. Default 18.
-    - background_color -- tuple containing RGB values for the background color.
+    - bgcolour         -- tuple containing RGB values for the background color.
                           Default is a pale yellow.
-    - text_color       -- tuple containing RGB values for the text color.
+    - fgcolour         -- tuple containing RGB values for the text color.
                           Default is black.
     - position         -- tuple containing x,y coordinates of the surface's
                           upper left corner in relation to the Pygame
@@ -105,15 +101,15 @@ class TextDisplayer(component):
                 "_pygame" : "for sending requests to PygameDisplay",
                 "signal" : "propagates out shutdown signals"}
     
-    def __init__(self, screen_width=500, screen_height=300, text_height=18,
-                 background_color = (255,255,200), text_color=(0,0,0), position=(0,0)):
+    def __init__(self, size=(500, 300), text_height=18, bgcolour=(255,255,200),
+                 fgcolour=(0,0,0), position=(0,0)):
         """Initialises"""
         super(TextDisplayer, self).__init__()
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+        self.screen_width = size[0]
+        self.screen_height = size[1]
         self.text_height = text_height
-        self.background_color = background_color
-        self.text_color = text_color
+        self.background_color = bgcolour
+        self.text_color = fgcolour
         self.position = position
         self.done = False
         
@@ -144,15 +140,18 @@ class TextDisplayer(component):
     def main(self):
         """Main loop"""
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
-                                           size = (self.screen_width, self.screen_height),
+                                           size = (self.screen_width,
+                                                   self.screen_height),
                                            callback = (self, '_surface'),
                                            position = self.position))
         
-        while not self.shutdown():
+        while not self.needShutdown():
             yield 1
             if self.dataReady('inbox'):
                 line = str(self.recv('inbox'))
                 self.update(line)
+            if not self.anyReady():
+                self.pause()
 
     def update(self, text):
         """Updates text to the bottom of the screen while scrolling old text
@@ -166,7 +165,8 @@ class TextDisplayer(component):
         self.updateLine(text)
             
     def updateLine(self, line):
-        """Updates one line of text to bottom of screen, scrolling old text upwards."""
+        """Updates one line of text to bottom of screen, scrolling old text
+           upwards."""
         line = line.replace('\r', ' ')
         line = line.replace('\n', ' ')
         lineSurf = self.font.render(line, True, self.text_color)    
@@ -178,11 +178,12 @@ class TextDisplayer(component):
         self.send({"REDRAW" : True,
                    "surface" : self.screen}, "_pygame")
 
-    def shutdown(self): # TODO: Confusingly named. it seems that this initiates a shutdown, whereas it just monitors for one.
+    def needShutdown(self):
         """Checks for control messages"""
         while self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+            if (isinstance(msg, producerFinished) or
+                isinstance(msg, shutdownMicroprocess)):
                 self.done = True
         if self.dataReady("_quitevents"):
             self.done = True
@@ -214,7 +215,10 @@ class Textbox(TextDisplayer):
                 "_pygame" : "for sending requests to PygameDisplay",
                 "signal" : "propagates out shutdown signals"}
 
-    string_buffer = ""
+    def __init__(self, *args, **kwargs):
+        super(Textbox, self).__init__(*args, **kwargs)
+        self.string_buffer = ""
+
     def setText(self, text):
         """erases the screen and updates it with text"""
         self.screen.fill(self.background_color)
@@ -223,57 +227,55 @@ class Textbox(TextDisplayer):
 
     def main(self):
         """\
-        Requests a surface from PygameDisplay and registers to listen for events.
+        Requests a surface from PygameDisplay and registers to listen for
+        events.
         Then enters the main loop, which checks for Pygame events and updates
         them to the screen.
         """
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
-                                 size = (self.screen_width, self.screen_height),
-                                 callback = (self, '_surface'),
-                                 position = self.position,
-                                 events = (self, "_events")))
+                                           size = (self.screen_width,
+                                                   self.screen_height),
+                                           callback = (self, '_surface'),
+                                           position = self.position,
+                                           events = (self, "_events")))
 
         self.send({'ADDLISTENEVENT' : pygame.KEYDOWN,
-                   'surface' : self.screen
-                   }
-                  , '_pygame')
+                   'surface' : self.screen},
+                  '_pygame')
         
-        while not self.shutdown():
+        while not self.needShutdown():
             yield 1
-            string_buffer = self.string_buffer
             while self.dataReady('_events'):
                 for event in self.recv('_events'):
                     char = event.unicode
                     if char == '\n' or char == '\r':
-                        self.send(string_buffer)
-                        string_buffer = ''
+                        self.send(self.string_buffer)
+                        self.string_buffer = ''
                     elif event.key == K_BACKSPACE:
-                        string_buffer = string_buffer[:len(string_buffer)-1]
+                        self.string_buffer = self.string_buffer[:-1]
                     elif event.key == K_ESCAPE:
                         self.done = True
                     else:
-                        string_buffer += char
-                    self.setText(string_buffer + '|')
-                    self.string_buffer = string_buffer
+                        self.string_buffer += char
+                    # Add a '|' character as a text cursor
+                    self.setText(self.string_buffer + '|')
+            if not self.anyReady():
+                self.pause()
 
 __kamaelia_components__ = (TextDisplayer, Textbox, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Chassis.Graphline import Graphline
     
-    Pipeline(Textbox(screen_width = 800,
-                     screen_height = 300,
+    Pipeline(Textbox(size = (800, 300),
                      position = (0,0)),
-             TextDisplayer(screen_width = 800,
-                           screen_height = 300,
+             TextDisplayer(size = (800, 300),
                            position = (0,340))
              ).run()
 
 if 0: #old test just involving TextDisplayer
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleReader
     import time
     #the long lines are there on purpose, to see if the component wraps text correctly.
