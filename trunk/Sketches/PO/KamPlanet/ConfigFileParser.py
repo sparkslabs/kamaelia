@@ -99,7 +99,7 @@ class ConfigFileParser(Axon.Component.component):
         
     def main(self):
         while True:
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 self.parsingXml(data)
 
