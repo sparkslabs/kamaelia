@@ -50,8 +50,8 @@ class SerialiseEITSection(object):
         
         data.append( chr(section["table_id"]) )
         seclen_index = len(data) # note where the section length field will be inserted once we know its value
-        data.append( chr((section["events"][0]["service_id"] >> 8) & 0xff) \
-                   + chr((section["events"][0]["service_id"]     ) & 0xff) \
+        data.append( chr((section["service_id"] >> 8) & 0xff) \
+                   + chr((section["service_id"]     ) & 0xff) \
                    + chr(((section["version"] & 0x1f) << 1) + currentNextFlag) \
                    + chr(section["section"]) \
                    + chr(section["last_section"]) \
