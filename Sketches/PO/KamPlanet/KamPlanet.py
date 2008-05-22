@@ -1,6 +1,7 @@
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Util.Splitter import PlugSplitter,  Plug
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
@@ -10,7 +11,9 @@ from FeedParserFactory import FeedParserFactory
 from FeedSorter import FeedSorter
 from Feed2html import Feed2html
 from Feed2xml import Feed2xml
+from ForwarderComponent import Forwarder
 
+# TODO: change names: publisher vs splitters, post vs feed, etc.
 class KamPlanet(object):
     Feed2xml_class          = Feed2xml
     Feed2html_class         = Feed2html
@@ -27,22 +30,28 @@ class KamPlanet(object):
                 RateControlledFileReader(self._fileName ),
                 SimpleXMLParser()
             )
+            
+    def subscribeToPlugsplitter(self,  plugsplitter):
+        forwarder        = Forwarder()
+        plug             = Plug(plugsplitter,  forwarder)
+        plug.activate()
+        outsideForwarder = Forwarder()
+        plug.link((plug, 'outbox'), (outsideForwarder, 'secondary-inbox'))
+        plug.link((plug, 'signal'), (outsideForwarder, 'secondary-control'))
+        return outsideForwarder
     
     def run(self):
-        backplane_channels = Backplane("KAMPLANET_CHANNELS")
-        backplane_channels.activate()
+        channels_plugsplitter                 = PlugSplitter()
+        feeds_plugsplitter                    = PlugSplitter()
+        config_plugsplitter                   = PlugSplitter()
+        config_parser_finished_plugsplitter   = PlugSplitter()
         
-        backplane_feeds = Backplane("KAMPLANET_FEEDS")
-        backplane_feeds.activate()
-        
-        backplane_config = Backplane("KAMPLANET_CONFIG")
-        backplane_config.activate()
-
-        configSubscriberXml  = SubscribeTo("KAMPLANET_CONFIG")
-        channelSubscriberXml = SubscribeTo("KAMPLANET_CHANNELS")
-        feedSubscriberXml    = SubscribeTo("KAMPLANET_FEEDS")
+        channelSubscriberXml = self.subscribeToPlugsplitter(channels_plugsplitter)
+        configSubscriberXml  = self.subscribeToPlugsplitter(config_plugsplitter)
+        feedSubscriberXml    = self.subscribeToPlugsplitter(feeds_plugsplitter)
         feed2xml             = self.Feed2xml_class()
-        fileWriterXml        = SimpleFileWriter("output/rss20.xml") #TODO: constant
+        #TODO: a carrousel might allow to retrieve this constant from the configuration file
+        fileWriterXml        = SimpleFileWriter("output/rss20.xml")
         graphXml = Graphline(
             CHANNELS_SUBSCRIBER = channelSubscriberXml, 
             FEEDS_SUBSCRIBER    = feedSubscriberXml,
@@ -54,15 +63,19 @@ class KamPlanet(object):
                 ('CONFIG_SUBSCRIBER', 'outbox') : ('FEED2XML', 'config-inbox'), 
                 ('CHANNELS_SUBSCRIBER', 'outbox') : ('FEED2HTML', 'channels-inbox'), 
                 ('FEED2XML', 'outbox')          : ('FILE_WRITER', 'inbox'), 
+                
+                # Signals
+                ('FEED2XML', 'signal')           : ('FILE_WRITER', 'control'), 
             }
         )
         graphXml.activate()
         
-        configSubscriberHtml  = SubscribeTo("KAMPLANET_CONFIG")
-        channelSubscriberHtml = SubscribeTo("KAMPLANET_CHANNELS")
-        feedSubscriberHtml    = SubscribeTo("KAMPLANET_FEEDS")
+        configSubscriberHtml  = self.subscribeToPlugsplitter(config_plugsplitter)
+        channelSubscriberHtml = self.subscribeToPlugsplitter(channels_plugsplitter)
+        feedSubscriberHtml    = self.subscribeToPlugsplitter(feeds_plugsplitter)
         feed2html             = self.Feed2html_class()
-        fileWriterHtml        = SimpleFileWriter("output/index.html")   #TODO: constant
+        #TODO: a carrousel might allow to retrieve this constant from the configuration file
+        fileWriterHtml        = SimpleFileWriter("output/index.html")
         graphHtml = Graphline(
             CHANNELS_SUBSCRIBER = channelSubscriberHtml, 
             FEEDS_SUBSCRIBER  = feedSubscriberHtml,
@@ -73,74 +86,56 @@ class KamPlanet(object):
                 ('FEEDS_SUBSCRIBER', 'outbox')    : ('FEED2HTML', 'feeds-inbox'), 
                 ('CONFIG_SUBSCRIBER', 'outbox')   : ('FEED2HTML', 'config-inbox'), 
                 ('CHANNELS_SUBSCRIBER', 'outbox') : ('FEED2HTML', 'channels-inbox'), 
-                ('FEED2HTML', 'outbox')           : ('FILE_WRITER', 'inbox'),                 
+                ('FEED2HTML', 'outbox')           : ('FILE_WRITER', 'inbox'),      
+                
+                # Signals
+                ('FEED2HTML', 'signal')           : ('FILE_WRITER', 'control'), 
             }
         )
         graphHtml.activate()
         
         feedSorter         = self.FeedSorter_class()
         configFileParser   = self.ConfigFileParser_class()
-        feedsPublisher     = PublishTo("KAMPLANET_FEEDS")
+        feedsPublisher     = feeds_plugsplitter
         feedParserFactory  = self.FeedParserFactory_class()
-        channelsSubscriber = SubscribeTo("KAMPLANET_CHANNELS")
-        channelsPublisher  = PublishTo("KAMPLANET_CHANNELS")
-        configPublisher    = PublishTo("KAMPLANET_CONFIG")
+        channelsSubscriber = self.subscribeToPlugsplitter(channels_plugsplitter)
+        channelsPublisher  = channels_plugsplitter
+        configPublisher    = config_plugsplitter
         graph = Graphline(
-                XML_PARSER          = self._create_xml_parser(),
-                CONFIG_PARSER       = configFileParser,
-                FEED_PARSER_FACTORY = feedParserFactory,
-                CHANNELS_SUBSCRIBER = channelsSubscriber, 
-                CHANNELS_PUBLISHER  = channelsPublisher, 
-                FEED_SORTER         = feedSorter,
-                FEED_PUBLISHER      = feedsPublisher,
-                CONFIG_PUBLISHER    = configPublisher,
+                XML_PARSER             = self._create_xml_parser(),
+                CONFIG_PARSER          = configFileParser,
+                FEED_PARSER_FACTORY    = feedParserFactory,
+                CHANNELS_SUBSCRIBER    = channelsSubscriber, 
+                CHANNELS_PUBLISHER     = channelsPublisher, 
+                FEED_SORTER            = feedSorter,
+                FEED_PUBLISHER         = feedsPublisher,
+                CONFIG_PUBLISHER       = configPublisher,
+                CONFIG_PARSER_FINISHED_SUBS1 = self.subscribeToPlugsplitter(config_parser_finished_plugsplitter), 
+                CONFIG_PARSER_FINISHED_SUBS2 = self.subscribeToPlugsplitter(config_parser_finished_plugsplitter), 
+                CONFIG_PARSER_FINISHED_SUBS3 = self.subscribeToPlugsplitter(config_parser_finished_plugsplitter), 
+                CONFIG_PARSER_FINISHED      = config_parser_finished_plugsplitter, 
                 linkages = {
-                    ('XML_PARSER', 'outbox')            : ('CONFIG_PARSER','inbox'),
+                    ('XML_PARSER', 'outbox')             : ('CONFIG_PARSER','inbox'),
                     
-                    ('CONFIG_PARSER', 'feeds-outbox')   : ('CHANNELS_PUBLISHER','inbox'),
-                    ('CONFIG_PARSER', 'config-outbox')  : ('CONFIG_PUBLISHER','inbox'),
+                    ('CONFIG_PARSER', 'feeds-outbox')    : ('CHANNELS_PUBLISHER','inbox'),
+                    ('CONFIG_PARSER', 'config-outbox')   : ('CONFIG_PUBLISHER','inbox'),
                     
-                    ('CHANNELS_SUBSCRIBER', 'outbox')   : ('FEED_PARSER_FACTORY','inbox'),
+                    ('CHANNELS_SUBSCRIBER', 'outbox')    : ('FEED_PARSER_FACTORY','inbox'),
                     
-                    ('FEED_PARSER_FACTORY', 'outbox')   : ('FEED_SORTER','inbox'),
+                    ('FEED_PARSER_FACTORY', 'outbox')    : ('FEED_SORTER','inbox'),
                     
-                    ('FEED_SORTER', 'outbox')           : ('FEED_PUBLISHER','inbox'),
+                    ('FEED_SORTER', 'outbox')            : ('FEED_PUBLISHER','inbox'),
                     
                     # Signals
-                    ('XML_PARSER', 'signal')            : ('CONFIG_PARSER','control'),
-                    ('CONFIG_PARSER', 'signal')         : ('FEED_PARSER_FACTORY','control'),
-                    ('FEED_PARSER_FACTORY', 'signal')   : ('FEED_SORTER','control'),
+                    ('XML_PARSER', 'signal')                   : ('CONFIG_PARSER','control'),
+                    ('CONFIG_PARSER', 'signal')                : ('CONFIG_PARSER_FINISHED','control'),
+                    ('CONFIG_PARSER_FINISHED_SUBS1', 'signal') : ('FEED_PARSER_FACTORY', 'control'), 
+                    ('CONFIG_PARSER_FINISHED_SUBS2', 'signal') : ('CHANNELS_PUBLISHER', 'control'), 
+                    ('CONFIG_PARSER_FINISHED_SUBS3', 'signal') : ('CONFIG_PUBLISHER', 'control'), 
+                    ('FEED_PARSER_FACTORY', 'signal')          : ('FEED_SORTER','control'),
+                    ('FEED_SORTER', 'signal')                  : ('FEED_PUBLISHER', 'control'), 
                 }
         )
-        
-        # At this point, I haven't found any way to multiplex a signal outbox
-        # to multiple control inboxes, which becomes a problem when dealing with
-        # backplanes. This way, I draw a line through all the components that, in 
-        # the end, are not called by anyone. You can easily see this line in the
-        # documentation (basic_design.odg)
-        
-        # <Signal linkages (following the line drawed in the documentation)>
-        feedSorter.link((feedSorter, 'signal'),                       (backplane_feeds, 'control'))
-        backplane_feeds.link((backplane_feeds, 'signal'),             (feedSubscriberHtml, 'control'))
-        feedSubscriberHtml.link((feedSubscriberHtml, 'signal'),       (feedsPublisher, 'control'))
-        feedsPublisher.link((feedsPublisher, 'signal'),               (feedSubscriberXml, 'control'))
-        feedSubscriberXml.link((feedSubscriberXml, 'signal'),         (backplane_channels, 'control'))
-        backplane_channels.link((backplane_channels, 'signal'),       (channelsPublisher, 'control'))
-        channelsPublisher.link((channelsPublisher, 'signal'),         (channelsSubscriber, 'control'))
-        channelsSubscriber.link((channelsSubscriber, 'signal'),       (channelSubscriberHtml, 'control'))
-        channelSubscriberHtml.link((channelSubscriberHtml, 'signal'), (channelSubscriberXml, 'control'))
-        channelSubscriberXml.link((channelSubscriberXml, 'signal'),   (backplane_config, 'control'))
-        backplane_config.link((backplane_config, 'signal'),           (configPublisher, 'control'))
-        configPublisher.link((configPublisher, 'signal'),             (configSubscriberXml, 'control'))
-        configSubscriberXml.link((configSubscriberXml, 'signal'),     (configSubscriberHtml, 'control'))
-        configSubscriberHtml.link((configSubscriberHtml, 'signal'),   (feed2html, 'control'))
-        feed2html.link((feed2html, 'signal'),                         (fileWriterHtml, 'control'))
-        fileWriterHtml.link((fileWriterHtml, 'signal'),               (feed2xml, 'control'))
-        feed2xml.link((feed2xml, 'signal'),                           (fileWriterXml, 'control'))
-        fileWriterXml.link((fileWriterXml, 'signal'),                 (graph, 'control'))
-        graph.link((graph, 'signal'),                                 (graphXml, 'control'))
-        graphXml.link((graphXml, 'signal'),                           (graphHtml, 'control'))
-        # </Signal linkages>
         
         graph.run()
 
