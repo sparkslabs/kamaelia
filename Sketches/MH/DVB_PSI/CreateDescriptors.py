@@ -396,6 +396,38 @@ def serialise_announcement_support_Descriptor(descriptor):
 
     
 # -----------------------------------------------------------------------------
+# ETSI TS 102 323 defined descriptors
+# -----------------------------------------------------------------------------
+    
+def serialise_default_authority_Descriptor(descriptor):
+    return [ descriptor["authority"],
+           ], len(descriptor["authority"])
+
+def serialise_related_content_Descriptor(descriptor):
+    return [], 0
+
+def serialise_content_identifier_Descriptor(descriptor):
+    crids = []
+    clen = 0
+    for crid in descriptor["crids"]:
+        ctype = _content_identifier_content_type_rev.get(crid["type"], crid["type"]) & 0x3f
+        loc = 0
+        if crid.has_key("ref"):
+            loc = 1
+        elif crid.has_key("crid"):
+            loc = 0
+        
+        crids.append(chr((ctype<<2) + loc))
+        if loc==0:
+            clen += 2+len(crid["crid"])
+            crids.append(chr(len(crid["crid"])) + crid["crid"])
+        elif loc==1:
+            clen += 3
+            crids.append(chr(2) + chr((crid["ref"] >> 8) & 0xff) + chr(crid["ref"] & 0xff))
+        
+    return crids, clen
+
+# -----------------------------------------------------------------------------
 # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
 # UK Digital Television Group (www.dtg.org.uk) document descriptors
 
@@ -523,6 +555,12 @@ __descriptor_serialisers = {
         "cell_frequency_link"   : (0x6D, serialise_cell_frequency_link_Descriptor),
         "announcement_support"  : (0x6E, serialise_announcement_support_Descriptor),
         
+    # ETSI TS 102 323 defined descriptors
+    
+        "default_authority"     : (0x73, serialise_default_authority_Descriptor),
+        "related_content"       : (0x74, serialise_related_content_Descriptor),
+        "content_identifier"    : (0x76, serialise_content_identifier_Descriptor),
+
     # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
     # UK Digital Television Group (www.dtg.org.uk) document descriptors
     
@@ -548,6 +586,7 @@ from Kamaelia.Support.DVB.Descriptors import _dvbt_transmission_mode
 from Kamaelia.Support.DVB.Descriptors import _private_data_specifiers
 from Kamaelia.Support.DVB.Descriptors import _content_types_level_1
 from Kamaelia.Support.DVB.Descriptors import _content_types_level_2
+from Kamaelia.Support.DVB.Descriptors import _content_identifier_content_type
 
 def __invert(fwdDict):
     return dict([(v,k) for (k,v) in fwdDict.items()])
@@ -565,3 +604,4 @@ _dvbt_transmission_mode_rev    = __invert(_dvbt_transmission_mode)
 _private_data_specifiers_rev   = __invert(_private_data_specifiers)
 _content_types_level_1_rev     = __invert(_content_types_level_1)
 _content_types_level_2_rev = dict([((k>>4,v),k) for (k,v) in _content_types_level_2.items()])
+_content_identifier_content_type_rev = __invert(_content_identifier_content_type)
