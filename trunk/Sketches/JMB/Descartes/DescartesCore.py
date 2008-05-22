@@ -1,5 +1,6 @@
 import Axon
 from Kamaelia.Internet.TCPServer import TCPServer
+from Kamaelia.Util.Log import Logger
 from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
 from Axon.Ipc import newComponent, shutdownMicroprocess
 
@@ -24,11 +25,14 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     protocol = None
     socketOptions=None
     TCPS=TCPServer
-    def __init__(self, **argd):
+    def __init__(self, Logger=Logger('Descartes.log'), **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ServerCore, self).__init__(**argd)
         self.connectedSockets = []
         self.server = None
+
+        self.Logger = Logger
+
         if not self.protocol:
             print self.__class__, self.__class__.protocol, self.protocol, protocol
             raise "Need a protocol to handle!"
