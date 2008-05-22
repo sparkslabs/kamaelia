@@ -30,16 +30,15 @@ not yet tested ... or kamaelia-ised!
 
 """
 from Kamaelia.Support.DVB.CRC import __dvbcrc as doDvbCRC
-from CreateDescriptors import serialiseDescriptors
+from CreateDescriptors import serialiseDescriptors, createMJDUTC, createBCDtimeHMS
 
 
 class SerialiseEITSection(object):
     """\
     EIT PSI section dictionary structure in ... binary PSI table section out
     """
-    def __init__(self, sectionPacketiser):
-        super(SerialiseEIT,self).__init__()
-        self.sectionPacketiser = sectionPacketiser
+    def __init__(self):
+        super(SerialiseEITSection,self).__init__()
       
     def serialise(self, section):
         data = []
@@ -49,10 +48,10 @@ class SerialiseEITSection(object):
         else:
             currentNextFlag=0
         
-        data.insert( chr(section["table_id"]) )
+        data.append( chr(section["table_id"]) )
         seclen_index = len(data) # note where the section length field will be inserted once we know its value
-        data.insert( chr((section["service_id"] >> 8) & 0xff) \
-                   + chr((section["service_id"]     ) & 0xff) \
+        data.append( chr((section["events"][0]["service_id"] >> 8) & 0xff) \
+                   + chr((section["events"][0]["service_id"]     ) & 0xff) \
                    + chr(((section["version"] & 0x1f) << 1) + currentNextFlag) \
                    + chr(section["section"]) \
                    + chr(section["last_section"]) \
@@ -62,24 +61,24 @@ class SerialiseEITSection(object):
                    + chr((section["original_network_id"]     ) & 0xff) \
                    )
         try:
-            data.insert( chr((section["segment_last_section_number")) )
+            data.append( chr((section["segment_last_section_number"])) )
         except KeyError:
-            data.insert( chr((section["last_section_number")) )
+            data.append( chr((section["last_section"])) )
         try:
-            data.insert( chr((section["last_table_id")) )
+            data.append( chr((section["last_table_id"])) )
         except KeyError:
-            data.insert( chr((section["table_id")) )
+            data.append( chr((section["table_id"])) )
         
         # now do events
         events = []
         for event in section["events"]:
             mjd, utc = createMJDUTC(*event["starttime"])
-            dur = createBCDtime(*event["duration"])
+            dur = createBCDtimeHMS(*event["duration"])
             flags = ((event["running_status"] & 0x7) << 5)
             if event["free_CA_mode"]:
                 flags += 0x10
             
-            events.insert( chr((event["event_id"] >> 8) & 0xff) \
+            events.append( chr((event["event_id"] >> 8) & 0xff) \
                          + chr((event["event_id"]     ) & 0xff) \
                          + chr((mjd >> 8) & 0xff)  \
                          + chr((mjd     ) & 0xff)  \
@@ -94,35 +93,35 @@ class SerialiseEITSection(object):
             elen_index = len(events)  # note where flags and descriptor_loop_length will be inserted
             
             # add descriptors
-            descriptors = serialiseDescriptors(event["descriptors"]
-            events.insert(descriptors)
+            descriptors = serialiseDescriptors(event["descriptors"])
+            events.append(descriptors)
             descriptors_loop_length = len(descriptors)
             
             # now we know how long the descriptor loop is, we write the event's length
             events.insert(elen_index,
                 chr(flags + (descriptors_loop_length >> 8) & 0x0f) \
-              + chr(        (descriptors_loop_length >> 8) & 0xff) \
+              + chr(        (descriptors_loop_length     ) & 0xff) \
             )
 
         # add events onto the end of the packet we're building
         data.extend(events)
         
         # calculate total length of section
-        sectionLength = reduce(lambda total,nextStr: total+nextStr, data, 0)
+        sectionLength = reduce(lambda total,nextStr: total+len(nextStr), data, 0)
         sectionLength -= 1  # doesn't include bytes up to and including the section length field itself (which hasn't been inserted yet)
         sectionLength += 4 # lets not forget the CRC
         
-        data[seclen_index] = chr(0x80 + ((sectionLength >> 8) & 0x0f)) + chr(sectionLength & 0xff)
+        data.insert(seclen_index, chr(0x80 + ((sectionLength >> 8) & 0x0f)) + chr(sectionLength & 0xff))
         
         # now we've assembled everything, calc the CRC, then write the CRC value at the end
-        data = data.join("")
+        data = "".join(data)
         crcval = doDvbCRC(data)
         crc = chr((crcval >> 24) & 0xff) \
             + chr((crcval >> 16) & 0xff) \
             + chr((crcval >> 8 ) & 0xff) \
             + chr((crcval      ) & 0xff)
         
-        self.sectionPacketiser.packetise(data + crc)
+        return data + crc
 
 
 
@@ -152,7 +151,7 @@ class PacketiseTableSections(object):
         
         # first packet
         chunkLen = min(bytesLeft, 184-1-startOffset)  # -1 for the pointer_field
-        payload.insert(section[sStart:sStart+chunkLen)
+        payload.insert(section[sStart:sStart+chunkLen])
         print self.tsPacketiser.packetise(payload.join(""), True, chr(0xff))
         sStart+=chunkLen
         bytesLeft-=chunkLen
@@ -165,7 +164,7 @@ class PacketiseTableSections(object):
 
             # subsequent packets
             chunkLen = min(bytesLeft, 184)  # -1 for the pointer_field
-            payload.insert(section[sStart:sStart+chunkLen)
+            payload.insert(section[sStart:sStart+chunkLen])
             print self.tsPacketiser.packetise(payload.join(""), False, chr(0xff))
             sStart+=chunkLen
             bytesLeft-=chunkLen
