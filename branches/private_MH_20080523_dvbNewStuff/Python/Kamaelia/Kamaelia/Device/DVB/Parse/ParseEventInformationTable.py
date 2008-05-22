@@ -459,6 +459,7 @@ class ParseEventInformationTable(component):
                 
 #                 if index[0] == 0x50:
 #                     print index, section_number
+
                 if not sections_found[index][section_number]:
                     if crcpass or dvbcrc(data[:3+section_length]):
                         
@@ -470,6 +471,9 @@ class ParseEventInformationTable(component):
                         # each fragment we get and output it (if we've not seen it before)
                         tablesection = self.parseTableSection(index, (data, section_length))
 #                       print table['actual_other'], table['pf_schedule']
+                        tablesection["version"] = latest_versions[index]
+                        tablesection["section"] = section_number
+                        tablesection["last_section"] = len(sections_found[index])-1
                         self.send( tablesection, "outbox")
                     else:
                         pass  # ignore data with a bad crc
