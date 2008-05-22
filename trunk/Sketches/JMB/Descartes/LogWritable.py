@@ -4,6 +4,11 @@ from Axon.Component import component
 import Axon.Ipc as Ipc
 
 class WsgiLogWritable(component):
+    """
+    This component is meant to be passed to a WSGI application to be used as a
+    wsgi.errrors writable.  All input that is written to it will be sent to a log
+    component that will write the input to file.
+    """
     Inboxes = {'inbox' : 'NOT USED',
                 'control' : 'receive shutdown messages',}
     Outboxes = {'outbox' : 'NOT USED',
@@ -29,14 +34,16 @@ class WsgiLogWritable(component):
     def main(self):
         not_done = True
         while not_done:
-            self.flush()
-
             while self.dataReady('control'):
                 msg = self.recv('control')
                 self.send(msg, 'signal')
                 if isinstance(msg, Ipc.shutdownMicroprocess):
                     not_done = False
             yield 1
+
+            self.flush()
+
+
 
 if __name__ == '__main__':
     class Caller(component):
@@ -65,6 +72,8 @@ if __name__ == '__main__':
                 else:
                     ilist.append(str(i))
                 if i == 50:
+                    self.log.writelines(ilist)
+                    self.log.flush()
                     not_done = False
                 yield 1
             self.send(Ipc.shutdownMicroprocess(), 'signal')
