@@ -35,10 +35,11 @@ def serialiseDescriptors(descriptors):
     data = []
     for descriptor in descriptors:
         data.extend(serialiseDescriptor(descriptor))
-    return data.join("")
+    return "".join(data)
 
 
 def serialiseDescriptor(descriptor):
+    (code, descriptor) = descriptor
     dtype = descriptor["type"]
     dId, serialiser = __descriptor_serialisers[dtype]
     if descriptor.has_key("contents"):
@@ -83,7 +84,7 @@ def serialise_CA_Descriptor(descriptor):
           chr((descriptor["pid"]     ) & 0xff), \
           descriptor["private_data"] \
         ] , \
-        4+len(descriptor["private_data"]
+        4+len(descriptor["private_data"])
 
 def serialise_ISO_639_Descriptor(descriptor):
     parts = []
@@ -126,7 +127,7 @@ def serialise_network_name_Descriptor(descriptor):
 def serialise_service_list_Descriptor(descriptor):
     services = []
     for service in descriptor["services"]:
-        services.insert( chr((service["service_id"] >> 8) & 0xff) + \
+        services.append( chr((service["service_id"] >> 8) & 0xff) + \
                          chr((service["service_id"]     ) & 0xff) + \
                          chr(_service_types_rev[service["service_type"]]) )
     return services, len(services)*3
@@ -188,20 +189,20 @@ def serialise_time_shifted_event_Descriptor(descriptor):
 def serialise_component_Descriptor(descriptor):
     retval = []
     if descriptor.has_key("stream_content") and descriptor.has_key("component_type"):
-        retval.insert(chr(descriptor["stream_content"] & 0x0f))
-        retval.insert(chr(descriptor["component_type"] & 0xff))
+        retval.append(chr(descriptor["stream_content"] & 0x0f))
+        retval.append(chr(descriptor["component_type"] & 0xff))
     
-    else if descriptor.has_key("content,type"):
+    elif descriptor.has_key("content,type"):
         sc, ct = _stream_component_mappings_rev.get(descriptor["content,type"], descriptor["content,type"])
-        retval.insert(chr(sc))
-        retval.insert(chr(ct))
+        retval.append(chr(sc))
+        retval.append(chr(ct))
         
-    else
+    else:
         raise "no stream_content and component_type info"
         
-    retval.insert(chr(descriptor["component_tag" ] & 0xff))
-    retval.insert(descriptor["language_code"])
-    retval.insert(descriptor["text"])
+    retval.append(chr(descriptor["component_tag" ] & 0xff))
+    retval.append(descriptor["language_code"])
+    retval.append(descriptor["text"])
     return retval, 6+len(descriptor["text"])
 
 def serialise_mosaic_Descriptor(descriptor):
@@ -239,8 +240,8 @@ def serialise_local_time_offset_Descriptor(descriptor):
         offset = (-offset[0], -offset[0])
         nextoffset = (-nextoffset[0], -nextoffset[0])
         
-    offsetBCD = createBCDtime(*offset)
-    nextoffsetBCD = createBCDtime(*nextoffset)
+    offsetBCD = createBCDtimeHM(*offset)
+    nextoffsetBCD = createBCDtimeHM(*nextoffset)
     
     mjd,utc = createMJDUTC(*descriptor["timeOfChange"])
     
@@ -266,7 +267,7 @@ def serialise_subtitling_Descriptor(descriptor):
             )
         cpid = descriptor["composition_page_id"]
         apid = descriptor["ancilliary_page_id"]
-        parts.insert( \
+        parts.append( \
             descriptor["language_code"] + \
             chr(stype[0]) + \
             chr((cpid >> 8) & 0xff) + \
@@ -288,7 +289,7 @@ def serialise_terrestrial_delivery_system_Descriptor(descriptor):
     return [ chr(((dparams["frequency"] / 10) >> 24) & 0xff) + \
              chr(((dparams["frequency"] / 10) >> 16) & 0xff) + \
              chr(((dparams["frequency"] / 10) >> 8 ) & 0xff) + \
-             chr(((dparams["frequency"] / 10) >>   ) & 0xff) + \
+             chr(((dparams["frequency"] / 10)      ) & 0xff) + \
              chr(_dvbt_bandwidths_rev[dparams["bandwidth"]] << 5) + \
              chr( (_dvbt_constellations_rev[dparams["constellation"]] << 6) + \
                   (_dvbt_hierarchy_rev[dparams["hierarchy_information"]] << 3) + \
@@ -331,25 +332,25 @@ def serialise_short_smoothing_buffer_Descriptor(descriptor):
 def serialise_frequency_list_Descriptor(descriptor):
     freqs = []
     if descriptor['coding_type'] == "terrestrial":
-        freqs.insert(chr(3))
+        freqs.append(chr(3))
         for freq in descriptor["frequencies"]:
-            freqs.insert( chr(((freq/10) >> 24) & 0xff) + \
+            freqs.append( chr(((freq/10) >> 24) & 0xff) + \
                           chr(((freq/10) >> 16) & 0xff) + \
                           chr(((freq/10) >> 8 ) & 0xff) + \
                           chr(((freq/10)      ) & 0xff) \
                         )
     
-    else if descriptor['coding_type'] == "cable":
-        freqs.insert(chr(2))
+    elif descriptor['coding_type'] == "cable":
+        freqs.append(chr(2))
         for freq in descriptor["frequencies"]:
-            freqs.insert(createBCD32(freq/100))
+            freqs.append(createBCD32(freq/100))
     
-    else if descriptor['coding_type'] == "satellite":
-        freqs.insert(chr(1))
+    elif descriptor['coding_type'] == "satellite":
+        freqs.append(chr(1))
         for freq in descriptor["frequencies"]:
-            freqs.insert(createBCD32(freq/10000))
+            freqs.append(createBCD32(freq/10000))
     
-    else
+    else:
         raise "unrecognised 'coding_type'"
     
     return freqs, 1 + 4*len(descriptor["frequencies"])
@@ -364,8 +365,8 @@ def serialise_CA_system_Descriptor(descriptor):
     raise "Not yet implemented"
 
 def serialise_data_broadcast_id_Descriptor(descriptor):
-    return [ chr(((descriptor["id") >> 8) & 0xff) + \
-             chr(((descriptor["id")     ) & 0xff) + \
+    return [ chr((descriptor["id"] >> 8) & 0xff) + \
+             chr((descriptor["id"]     ) & 0xff) + \
              descriptor["selectors"] \
            ], 2+len(descriptor["selectors"])
 
@@ -401,7 +402,7 @@ def serialise_announcement_support_Descriptor(descriptor):
 def serialise_logical_channel_Descriptor(descriptor):
     services = []
     for (service_id, logical_channel_number) in descriptor["mappings"].items():
-        services.insert( chr((service_id << 8) & 0xff) + \
+        services.append( chr((service_id << 8) & 0xff) + \
                          chr((service_id     ) & 0xff) + \
                          chr((logical_channel_number << 8) & 0x3f) + \
                          chr((logical_channel_number     ) & 0xff) \
@@ -431,16 +432,16 @@ def createMJDUTC(year,month,day,hour,minute,second):
         L = 0
     MJD = 14956 + day + int( (year - L) * 365.25) + int ( (month + 1 + L * 12) * 30.6001 )
     
-    return MJD, createBCDtime(hour,minute,second)
+    return MJD, createBCDtimeHMS(hour,minute,second)
 
-def createBCDtime(hour,minute,second):
+def createBCDtimeHMS(hour,minute,second):
     HHMMSS = 0
     for digit in "%02d%02d%02d" % (hour,minute,second):
         HHMMSS = (HHMMSS<<4) + ord(digit)-ord("0")
     return HHMMSS
 
 
-def createBCDtime(hour,minute):
+def createBCDtimeHM(hour,minute):
     HHMM = 0
     for digit in "%02d%02d" % (hour,minute):
         HHMM = (HHMM<<4) + ord(digit)-ord("0")
@@ -563,4 +564,4 @@ _dvbt_guard_interval_rev       = __invert(_dvbt_guard_interval)
 _dvbt_transmission_mode_rev    = __invert(_dvbt_transmission_mode)
 _private_data_specifiers_rev   = __invert(_private_data_specifiers)
 _content_types_level_1_rev     = __invert(_content_types_level_1)
-_content_types_level_2_rev = dict([((k>>4,v),k) for (k,v) in _content_types_level_2_rev.items()])
+_content_types_level_2_rev = dict([((k>>4,v),k) for (k,v) in _content_types_level_2.items()])
