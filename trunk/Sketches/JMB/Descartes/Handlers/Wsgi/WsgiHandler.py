@@ -2,11 +2,14 @@ import socket
 import pprint
 import string
 import sys
-import serverinfo
+import WsgiConfig
+import LogWritable
 import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
 import Axon
+import Kamaelia.Util.Log
+
 
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
 
@@ -59,7 +62,7 @@ def normalizeEnviron(environ):
     del environ['bad']
 
 
-class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
+class _WsgiHandler(Axon.ThreadedComponent.thre):
     """Choosing to run the WSGI app in a thread rather than the same
        context, this means we don't have to worry what they get up
        to really"""
@@ -70,8 +73,6 @@ class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
         self.request = request
         self.environ = request
         self.app = app
-
-
 
     def start_response(self, status, response_headers, exc_info=None):
         """
@@ -137,7 +138,9 @@ class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
         #==================================
         self.environ["wsgi.version"] = serverinfo.WSGI_VER
         self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
-        self.environ["wsgi.errors"] = sys.stderr  #TODO:  Convert to a log stream
+        self.environ["wsgi.errors"] = LogWritable.WsgiLogWritable(
+            WsgiConfig.WSGI_DIRECTORY + WsgiConfig.LOG_NAME)
+
         self.environ["wsgi.multithread"] = 0
         self.environ["wsgi.multiprocess"] = 0
         self.environ["wsgi.run_once"] = 0
@@ -165,10 +168,11 @@ class _WsgiHandler(Axon.ThreadedComponent.threadedcomponent):
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
                     (serverinfo.SERVER_SOFTWARE, self.server_name, self.server_port)
 
-        #needs fixing - doesn't work on all systems
-        self.environ["SERVER_ADDR"] = socket.gethostbyname(socket.gethostname())
-
     def unsupportedVars(self):
+        """
+        Probably won't be used.  This is just a list of environment variables that
+        aren't implemented as of yet.
+        """
         consider = " **CONSIDER ADDING THIS -- eg: "
         self.environ["HTTP_REFERER"] = consider + "-"
         self.environ["SERVER_SIGNATURE"] = consider + "...."
