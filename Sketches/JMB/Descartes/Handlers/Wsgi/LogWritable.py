@@ -3,6 +3,10 @@ from Kamaelia.Util.Backplane import PublishTo
 from Axon.Component import component
 import Axon.Ipc as Ipc
 
+def GetLogWritable(component, box_name, log_name):
+    write = WsgiLogWritable(log_name)
+    component.link((component, box_name), (write, 'control'))
+
 class WsgiLogWritable(component):
     """
     This component is meant to be passed to a WSGI application to be used as a
