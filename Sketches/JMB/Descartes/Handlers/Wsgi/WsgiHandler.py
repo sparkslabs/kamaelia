@@ -8,6 +8,7 @@ import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
 import Axon
+from Axon.ThreadedComponent import threadedadaptivecommscomponent
 import Kamaelia.Util.Log
 
 
@@ -62,7 +63,8 @@ def normalizeEnviron(environ):
     del environ['bad']
 
 
-class _WsgiHandler(Axon.ThreadedComponent.thre):
+class _WsgiHandler(threadedadaptivecommscomponent):
+    
     """Choosing to run the WSGI app in a thread rather than the same
        context, this means we don't have to worry what they get up
        to really"""
@@ -138,8 +140,11 @@ class _WsgiHandler(Axon.ThreadedComponent.thre):
         #==================================
         self.environ["wsgi.version"] = serverinfo.WSGI_VER
         self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
-        self.environ["wsgi.errors"] = LogWritable.WsgiLogWritable(
-            WsgiConfig.WSGI_DIRECTORY + WsgiConfig.LOG_NAME)
+        self.environ["wsgi.errors"] = LogWritable.GetLogWritable(
+            log_name=WsgiConfig.WSGI_DIRECTORY + WsgiConfig.APPS_SUBDIR,
+            component=self,
+            signal_box_name='signal',
+                                                                 )
 
         self.environ["wsgi.multithread"] = 0
         self.environ["wsgi.multiprocess"] = 0

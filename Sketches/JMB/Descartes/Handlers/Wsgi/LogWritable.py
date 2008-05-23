@@ -3,9 +3,19 @@ from Kamaelia.Util.Backplane import PublishTo
 from Axon.Component import component
 import Axon.Ipc as Ipc
 
-def GetLogWritable(component, box_name, log_name):
+def GetLogWritable(log_name, component, signal_box_name = 'signal'):
+    """
+    This method is used to get a WsgiLogWritable that is automatically linked to
+    the given signal outbox so that it can easily be shut down.
+    
+    - log_name - the name of the Kamaelia.Util.Log.Logger object to publish to
+    - component - the component to control the execution of the WsgiLogWritable
+    - signal_box_name - the name of the outbox of component to send shutdown
+      messages from
+    """
     write = WsgiLogWritable(log_name)
-    component.link((component, box_name), (write, 'control'))
+    component.link((component, signal_box_name), (write, 'control'))
+    return write
 
 class WsgiLogWritable(component):
     """
