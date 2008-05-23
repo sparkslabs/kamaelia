@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+#-*-*- encoding: utf-8 -*-*-
+
 import Axon
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+
 import time
 from htmltmpl import TemplateManager, TemplateProcessor
-
-from Axon.Ipc import producerFinished
 
 # Abstract class
 class KamTemplateProcessor(Axon.Component.component):
@@ -13,44 +16,57 @@ class KamTemplateProcessor(Axon.Component.component):
             'config-inbox'   : 'Not used', 
             'channels-inbox' : 'Not used', 
         }
+    Outboxes = {
+            'outbox'         : 'From component', 
+            'signal'         : 'From component', 
+            'create-output'  : 'From component', 
+        }
     def __init__(self, **argd):
         super(KamTemplateProcessor, self).__init__(**argd)
-        self.feeds     = []
-        self.channels  = []
-        self.config    = None
+        self.feeds            = []
+        self.channels         = []
+        self.providerFinished = None
+        self.mustStop         = None
+        self.config           = None
         
     def fillTemplate(self, templateProcessor):
         raise NotImplementedError("fillTemplate method not implemented!")
         
     def getTemplateFileName(self):
         raise NotImplementedError("getTemplateFileName method not implemented!")
+        
+    def getOutputFileName(self):
+        raise NotImplementedError("getOutputFileName method not implemented!")
 
+    def checkControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg,producerFinished):
+                self.providerFinished = msg
+            elif isinstance(msg,shutdownMicroprocess):
+                self.mustStop = msg
+        return self.mustStop, self.providerFinished
+        
     def main(self):
-        while True:
-            while self.dataReady("control"):
-                # TODO
-                data = self.recv("control")
-                for i in range(100):
-                    print "%s: %s" % (type(self), data)
-                self.send(data, "signal")
-                return
-
+        while True:                
             while self.dataReady("channels-inbox"):
                 data = self.recv("channels-inbox")
                 self.channels.append(data)
-                yield 1
-
+                
             while self.dataReady("feeds-inbox"):
                 data = self.recv("feeds-inbox")
                 self.feeds.append(data)
-                yield 1
-
+                
             while self.dataReady("config-inbox"):
                 data = self.recv("config-inbox")
                 self.config = data
-
-            if self.config is not None and len(self.feeds) == 10: #TODO: 10
             
+            mustStop, providerFinished = self.checkControl()
+            if mustStop:
+                self.send(mustStop,"signal")
+                return
+            
+            if providerFinished is not None and self.config is not None:
                 tproc = TemplateProcessor()
                 tmanager = TemplateManager()
                 template = tmanager.prepare(self.getTemplateFileName())
@@ -60,13 +76,17 @@ class KamTemplateProcessor(Axon.Component.component):
                 result = tproc.process(template)
                 yield 1
                 
-                print "File written" * 100#TODO
+                self.send(self.getOutputFileName(), 'create-output')
+                yield 1
+                
                 self.send(result, "outbox")
+                yield 1
+                
                 self.send(producerFinished(self), "signal")
+                print "File written %s" % self.getOutputFileName() # TODO
                 return
-
+                
             if not self.anyReady():
                 self.pause()
-
+                
             yield 1
-

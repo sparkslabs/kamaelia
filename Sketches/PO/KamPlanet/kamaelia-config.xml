@@ -5,48 +5,309 @@
 		<link>http://somewhere/</link>
 		<rssTemplateName>rss20.xml.tmpl</rssTemplateName>
 		<htmlTemplateName>index.html.tmpl</htmlTemplateName>
+		<rssFileName>output/rss20.xml</rssFileName>
+		<htmlFileName>output/index.html</htmlFileName>
+		<maxPostNumber>30</maxPostNumber>
 	</general>
 	<feeds>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
-		<feed url="http://localhost/wordpress/?feed=rss2">
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
+			<name>Sample blog</name>
+		</feed>
+		<feed url="http://localhost/testing/feed=rss2">
 			<name>Sample blog</name>
 		</feed>
 	</feeds>
