@@ -10,6 +10,9 @@ class Feed2xml(KamTemplateProcessor):
     def getTemplateFileName(self):
         return self.config.rssTemplateName
 
+    def getOutputFileName(self):
+        return self.config.rssFileName
+
     def fillTemplate(self,  templateProcessor):
         templateProcessor.set('name',  self.config.name)
         templateProcessor.set('link',  self.config.link)

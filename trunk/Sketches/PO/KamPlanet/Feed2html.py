@@ -10,6 +10,9 @@ class Feed2html(KamTemplateProcessor):
 
     def getTemplateFileName(self):
         return self.config.htmlTemplateName
+        
+    def getOutputFileName(self):
+        return self.config.htmlFileName
 
     def fillTemplate(self,  templateProcessor):
         templateProcessor.set('generator',            "KamPlanet 0.1")

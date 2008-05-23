@@ -1,25 +1,32 @@
 #!/usr/bin/env python
 #-*-*- encoding: utf-8 -*-*-
 
+import os
+
 import Axon
 from Axon.Ipc import producerFinished
 
-class GeneralConfig(object):
-    def __init__(self):
-        super(GeneralConfig, self).__init__()
-        self.name             = u''
-        self.link             = u''
-        self.rssTemplateName  = u''
-        self.htmlTemplateName = u''
-        
-class Feed(object):
-    def __init__(self):
-        super(Feed, self).__init__()
-        self.url         = u''
-        self.name        = u''
-        self.face        = u''
-        self.face_width  = u''
-        self.face_height = u''
+from GeneralObjectParser import Field, GeneralObjectParser
+
+def generateGeneralConfig():
+    return GeneralObjectParser(
+                name             = Field(str, 'Default name'), 
+                link             = Field(str, 'http://default.link/'), 
+                rssTemplateName  = Field(str, 'rss20.xml.tmpl'), 
+                htmlTemplateName = Field(str, 'index.xml.tmpl'), 
+                rssFileName      = Field(str, 'output%srss20.xml' % os.sep ), 
+                htmlFileName     = Field(str, 'output%sindex.html' % os.sep ), 
+                maxPostNumber    = Field(int, 10),
+            )
+
+def generateFeed():
+    return GeneralObjectParser(
+                url        = Field(str, 'http://default.url/'), 
+                name       = Field(str, 'default name'), 
+                face       = Field(str, 'image.jpg'), 
+                faceWidth  = Field(str, '64'), 
+                faceHeight = Field(str, '64'),
+            )
 
 class ConfigFileParser(Axon.Component.component):
     Outboxes = {
@@ -33,13 +40,9 @@ class ConfigFileParser(Axon.Component.component):
         self.feeds = []
         self.config       = None
         self.finished     = False
-        self.configFields = [ x for x in GeneralConfig().__dict__.keys() 
-                                if not x.startswith('_') ]
-        self.feedFields   = [ x for x in Feed().__dict__.keys() 
-                                if not x.startswith('_') ]
 
         # Temporal variables, for xml parsing
-        self.temp_config           = GeneralConfig()
+        self.temp_config           = generateGeneralConfig()
         self.temp_feed             = None
         self.parsing_general       = False
         self.parsing_feed          = False
@@ -55,7 +58,7 @@ class ConfigFileParser(Axon.Component.component):
             self.parsing_general = True
         elif data[0] == '/element' and data[1] == 'general':
             self.parsing_general = False
-            self.config = self.temp_config
+            self.config = self.temp_config.generateResultObject()
         elif data[0] == 'element' and data[1] == 'feeds':
             self.parsing_feeds = True
         elif data[0] == '/element' and data[1] == 'feeds':
@@ -63,39 +66,35 @@ class ConfigFileParser(Axon.Component.component):
         
         # Parsing general head
         if self.parsing_general:
-            if data[0] == 'element' and data[1] in self.configFields:
+            if data[0] == 'element' and data[1] in self.temp_config.getFieldNames():
                 self.parsing_general_field = data[1]
-            elif data[0] == '/element' and data[1] in self.configFields:
-                prev = getattr(self.temp_config,  self.parsing_general_field)
-                setattr(self.temp_config,  self.parsing_general_field,  str(prev))
+            elif data[0] == '/element' and data[1] in self.temp_config.getFieldNames():
                 self.parsing_general_field = None
             
             if data[0] == 'chars' and self.parsing_general_field is not None:
                 prev = getattr(self.temp_config,  self.parsing_general_field)
-                setattr(self.temp_config,  self.parsing_general_field,  prev + data[1])
+                prev.parsedValue = prev.parsedValue + data[1]
         
         # Parsing feeds
         if self.parsing_feeds:
             if data[0] == 'element' and data[1] == 'feed':
                 self.parsing_feed = True
+                self.temp_feed = generateFeed()                
                 url = data[2].get('url')
-                self.temp_feed = Feed()
-                self.temp_feed.url = str(url)
+                self.temp_feed.url.parsedValue = url
+                
             elif data[0] == '/element' and data[1] == 'feed':
                 self.parsing_feed = False
-                self.feeds.append(self.temp_feed)
+                self.feeds.append(self.temp_feed.generateResultObject())
             if self.parsing_feed:
-                if data[0] == 'element' and data[1] in self.feedFields:
+                if data[0] == 'element' and data[1] in self.temp_feed.getFieldNames():
                     self.parsing_feed_field = data[1]
-                elif data[0] == '/element' and data[1] in self.feedFields:
-                    prev = getattr(self.temp_feed,  self.parsing_feed_field)
-                    setattr(self.temp_feed,  self.parsing_feed_field,  str(prev))
+                elif data[0] == '/element' and data[1] in self.temp_feed.getFieldNames():
                     self.parsing_feed_field = None
                 
                 if data[0] == 'chars' and self.parsing_feed_field is not None:
                     prev = getattr(self.temp_feed,  self.parsing_feed_field)
-                    setattr(self.temp_feed,  self.parsing_feed_field,  prev + data[1])
-
+                    prev.parsedValue = prev.parsedValue + data[1]
         
     def main(self):
         while True:

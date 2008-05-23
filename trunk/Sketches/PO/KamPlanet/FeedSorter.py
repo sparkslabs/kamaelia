@@ -25,32 +25,32 @@ class FeedSorter(Axon.Component.component):
     Inboxes = {
         "inbox"         : "Information coming from the socket",
         "control"       : "From component...",
-        "counter-inbox" : "Will receive the number of feeds through this channel"
+        "config-inbox"  : "Configuration information"
     }
     def __init__(self, **argd):
         super(FeedSorter, self).__init__(**argd)
-        self.ordered_entries = []
-        self.max_posts       = 10 #TODO: configure me
-        self.pleaseSleep     = False
+        self.ordered_entries  = []
+        self.config           = None
+        self.pleaseSleep      = False
+        self.providerFinished = None
+        self.mustStop         = None
 
+    def checkControl(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg,producerFinished):
+                self.providerFinished = msg
+            elif isinstance(msg,shutdownMicroprocess):
+                self.mustStop = msg
+        return self.mustStop, self.providerFinished
+        
+    def checkConfig(self):
+        while self.dataReady("config-inbox"):
+            data = self.recv("config-inbox")
+            self.config = data
+        
     def main(self):
-        while True:
-            while self.dataReady("control"):
-                data = self.recv("control")
-                if isinstance(data, shutdownMicroprocess):
-                    self.send(data, "signal")
-                    return
-                elif isinstance(data,  producerFinished):
-                    for entry in self.ordered_entries:
-                        self.send(entry, 'outbox')
-                    yield 1
-                    # TODO 
-                    for _ in range(100):
-                        yield 1
-                    print "KILLING " * 100
-                    self.send(producerFinished(self), 'signal')
-                    return
-
+        while True:            
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 self.ordered_entries.extend([
@@ -61,9 +61,23 @@ class FeedSorter(Axon.Component.component):
                                         } for x in data.entries
                         ])
                 self.ordered_entries.sort(_cmp_entries)
-                self.ordered_entries = self.ordered_entries[:self.max_posts]
-                yield 1
-
+                
+                self.checkConfig()
+                if self.config is not None:
+                    self.ordered_entries = self.ordered_entries[:self.config.maxPostNumber]
+                
+            mustStop, providerFinished = self.checkControl()
+            if mustStop:
+                self.send(mustStop,"signal")
+                return
+                
+            if providerFinished is not None:
+                    for entry in self.ordered_entries:
+                        self.send(entry, 'outbox')
+                    yield 1
+                    self.send(producerFinished(self), 'signal')
+                    return
+                
             if not self.anyReady():
                 self.pause()
                 
