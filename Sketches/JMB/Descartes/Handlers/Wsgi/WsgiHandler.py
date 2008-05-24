@@ -2,14 +2,17 @@ import socket
 import pprint
 import string
 import sys
-import WsgiConfig
-import LogWritable
+import os
 import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
+import WsgiConfig
+import LogWritable
 import Axon
-from Axon.ThreadedComponent import threadedadaptivecommscomponent
-import Kamaelia.Util.Log
+from Axon.ThreadedComponent import threadedcomponent as component
+#from Axon.Component import component
+import Kamaelia.Util.Log as Log
+import Kamaelia.Experimental.GC as GC
 
 
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
@@ -21,11 +24,6 @@ Axon.Box.ShowAllTransits = False
 #
 # Simple WSGI Handler
 #
-
-def sanitizePath():
-    """Joins sys.path into a : separated string with no empty elements"""
-    path = [x for x in sys.path if x]
-    return string.join(path, ':')
 
 def HTML_WRAP(app):
     """
@@ -63,29 +61,71 @@ def normalizeEnviron(environ):
     del environ['bad']
 
 
-class _WsgiHandler(threadedadaptivecommscomponent):
-    
+class _WsgiHandler(component):
     """Choosing to run the WSGI app in a thread rather than the same
        context, this means we don't have to worry what they get up
        to really"""
+    Inboxes = {
+        'inbox' : 'NOT USED',
+        'control' : 'NOT USED',
+    }
+    Outboxes = {
+        'outbox' : 'used to send page fragments',
+        'signal' : 'send producerFinished messages',
+        '_signal-lw' : 'shut down the log writable',
+    }
 
-    def __init__(self, app_name, request, app):
+    def __init__(self, app_name, request, app, log_writable):
         super(_WsgiHandler, self).__init__()
         self.app_name = app_name
         self.request = request
         self.environ = request
         self.app = app
+        self.log_writable = log_writable
+
+    def main(self):
+
+
+        self.headers = self.environ["headers"]
+        self.server_name, self.server_port = getServerInfo(self.request["uri-server"])
+
+        self.initRequiredVars()
+        self.initOptVars()
+
+        self.munge_headers()
+
+        #stringify all variables for wsgi compliance
+        normalizeEnviron(self.environ)
+
+        #TODO:  PEP 333 specifies that we're not supposed to buffer output here
+        #so this will need to be adapted to send output immediately
+        [ self.sendFragment(x) for x in self.app(self.environ, self.start_response) ]
+
+        resource = {
+           "statuscode" : self.status,
+           "headers"    : self.response_headers,
+        }
+        self.send(resource, "outbox")
+        self.send(Axon.Ipc.producerFinished(self), "signal")
+        self.send(Axon.Ipc.shutdownMicroprocess(self), '_signal-lw')
 
     def start_response(self, status, response_headers, exc_info=None):
         """
         Method to be passed to WSGI application object
         """
         #TODO:  Add more exc_info support
+        #TODO:  return write() callable
         if exc_info:
             raise exc_info[0], exc_info[1], exc_info[2]
 
         self.status = status
         self.response_headers = response_headers
+
+    def sendFragment(self, fragment):
+        page = {
+            'data' : fragment,
+        }
+        self.send(page, 'outbox')
 
     def munge_headers(self):
         for header in self.environ["headers"]:
@@ -138,17 +178,13 @@ class _WsgiHandler(threadedadaptivecommscomponent):
         #==================================
         #WSGI variables
         #==================================
-        self.environ["wsgi.version"] = serverinfo.WSGI_VER
+        self.environ["wsgi.version"] = WsgiConfig.WSGI_VER
         self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
-        self.environ["wsgi.errors"] = LogWritable.GetLogWritable(
-            log_name=WsgiConfig.WSGI_DIRECTORY + WsgiConfig.APPS_SUBDIR,
-            component=self,
-            signal_box_name='signal',
-                                                                 )
+        self.environ["wsgi.errors"] = self.log_writable
 
-        self.environ["wsgi.multithread"] = 0
-        self.environ["wsgi.multiprocess"] = 0
-        self.environ["wsgi.run_once"] = 0
+        self.environ["wsgi.multithread"] = False
+        self.environ["wsgi.multiprocess"] = False
+        self.environ["wsgi.run_once"] = True
         self.environ["wsgi.input"] = self.generateRequestMemFile()
 
     def initOptVars(self):
@@ -166,12 +202,12 @@ class _WsgiHandler(threadedadaptivecommscomponent):
         # Contents of an HTTP_CONTENT_LENGTH field
         self.environ["CONTENT_LENGTH"] = self.headers.get("content-length","")
         #self.environ["DOCUMENT_ROOT"] = self.homedirectory
-        self.environ["PATH"] = sanitizePath()
+        self.environ["PATH"] = os.environ['PATH']
         self.environ["DATE"] = datetime.now().isoformat()
-        self.environ["SERVER_ADMIN"] = serverinfo.SERVER_ADMIN
-        self.environ["SERVER_SOFTWARE"] = serverinfo.SERVER_SOFTWARE
+        self.environ["SERVER_ADMIN"] = WsgiConfig.SERVER_ADMIN
+        self.environ["SERVER_SOFTWARE"] = WsgiConfig.SERVER_SOFTWARE
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
-                    (serverinfo.SERVER_SOFTWARE, self.server_name, self.server_port)
+                    (WsgiConfig.SERVER_SOFTWARE, self.server_name, self.server_port)
 
     def unsupportedVars(self):
         """
@@ -190,34 +226,9 @@ class _WsgiHandler(threadedadaptivecommscomponent):
         self.environ["REMOTE_PORT"] = consider + "56669"
         self.environ["GATEWAY_INTERFACE"] = consider + "CGI/1.1"
 
-    def main(self):
-        self.headers = self.environ["headers"]
-        self.server_name, self.server_port = getServerInfo(self.request["uri-server"])
-
-        self.initRequiredVars()
-        self.initOptVars()
-
-        self.munge_headers()
-
-        #stringify all variables for wsgi compliance
-        normalizeEnviron(self.environ)
-
-        R = [ x for x in self.app(self.environ, self.start_response) ]
-        resource = {
-           "statuscode" : self.status,
-           "headers"    : self.response_headers,
-        }
-        self.send(resource, "outbox")
-        for fragment in R:
-            page = {
-              "data" : fragment,
-            }
-            self.send(page, "outbox")
-        self.send(Axon.Ipc.producerFinished(self), "signal")
-
-def Handler(app_name,  app):
+def Handler(app_name,  app, log_writable):
     def R(request):
-        return _WsgiHandler(app_name, request,app)
+        return _WsgiHandler(app_name, request,app, log_writable)
     return R
 
 def HTTPProtocol():

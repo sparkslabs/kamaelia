@@ -7,7 +7,7 @@ def GetLogWritable(log_name, component, signal_box_name = 'signal'):
     """
     This method is used to get a WsgiLogWritable that is automatically linked to
     the given signal outbox so that it can easily be shut down.
-    
+
     - log_name - the name of the Kamaelia.Util.Log.Logger object to publish to
     - component - the component to control the execution of the WsgiLogWritable
     - signal_box_name - the name of the outbox of component to send shutdown
@@ -15,6 +15,7 @@ def GetLogWritable(log_name, component, signal_box_name = 'signal'):
     """
     write = WsgiLogWritable(log_name)
     component.link((component, signal_box_name), (write, 'control'))
+    write.activate()
     return write
 
 class WsgiLogWritable(component):
@@ -30,22 +31,24 @@ class WsgiLogWritable(component):
                 'signal' : 'send shutdown messages',}
     def __init__(self, log_name):
         super(WsgiLogWritable, self).__init__()
-        self.write_buffer = []
-
-        Log.connectToLogger(self, log_name)
+        self.write_buffer = ""
+        self.log_name = log_name
 
     def write(self, str):
-        lines = str.splitlines(True)  #keep newlines on end of each line
-        self.write_buffer.extend(lines)
+        #lines = str.splitlines(True)  #keep newlines on end of each line
+        #self.write_buffer.extend(lines)
+        self.write_buffer += str
 
     def writelines(self, seq):
-        self.write_buffer.extend(seq)
+        self.write_buffer += '\n'.join(seq)
 
     def flush(self):
-        for line in self.write_buffer:
-            self.send(self.write_buffer.pop(0), 'log')
+        self.send(self.write_buffer, 'log')
+        self.write_buffer = ''
 
     def main(self):
+        Log.connectToLogger(self, self.log_name)
+
         not_done = True
         while not_done:
             while self.dataReady('control'):
@@ -53,9 +56,16 @@ class WsgiLogWritable(component):
                 self.send(msg, 'signal')
                 if isinstance(msg, Ipc.shutdownMicroprocess):
                     not_done = False
-            yield 1
 
-            self.flush()
+            if self.write_buffer:
+                self.flush()
+
+            if not_done:
+                self.pause()
+                yield 1
+
+    def collectable(self, name):
+        return True
 
 
 
