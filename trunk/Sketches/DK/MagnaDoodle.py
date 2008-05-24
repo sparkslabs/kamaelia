@@ -33,7 +33,9 @@ right to erase your artwork.
 """
 import sys; sys.path.append("../MPS/pprocess/");
 from MultiPipeline import ProcessPipeline
+from Kamaelia.Chassis.Graphline import Graphline
 
+import pprocess
 import pygame
 import Axon
 import math
@@ -153,6 +155,7 @@ class MagnaDoodle(Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.send(event, "outbox")
                     if self.shape == "circle":
                         if event.button == 1:
                             self.oldpos = event.pos
@@ -172,6 +175,7 @@ class MagnaDoodle(Axon.Component.component):
                        self.shape = "circle"
                     if event.key == pygame.K_l:
                        self.shape = "line"
+
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.shape == "circle":
@@ -208,8 +212,17 @@ if __name__ == "__main__":
    
   # from Kamaelia.Chassis.ProcessPipeline import ProcessPipeline
   # Magna = MagnaDoodle().activate()
-  
-   ProcessPipeline(MagnaDoodle(), MagnaDoodle()).run()
+   Graphline(
+       WINDOW1 = MagnaDoodle(),
+       WINDOW2 = MagnaDoodle(),
+   linkages = { 
+          ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
+          }
+   )
+   ProcessPipeline(
+   WINDOW1,
+   WINDOW2,
+   ).run()
    
   # Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF
