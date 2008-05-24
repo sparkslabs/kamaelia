@@ -59,6 +59,11 @@ if __name__ == "__main__":
     from Kamaelia.Device.DVB.SoftDemux import DVB_SoftDemuxer
     from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITables
     from Kamaelia.Util.PureTransformer import PureTransformer
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Util.Comparator import Comparator
+    from Kamaelia.Util.Splitter import Plug, PlugSplitter
+    from Kamaelia.Util.PassThrough import PassThrough
+    from Kamaelia.File.Writing import SimpleFileWriter
     
     TS_FILE = "/home/matteh/dvb/2008-05-16 11.27.13 MUX1_EIT_TOT_TDT.ts"
     
@@ -68,8 +73,12 @@ if __name__ == "__main__":
 #            return x
 #        return PureTransformer(transf)
     
+    print "run a diff over the two output files to compare the results"
+    
+    splitter=PlugSplitter()
+    
     Pipeline(
-        RateControlledFileReader(TS_FILE, readmode="bytes", rate=250000, chunksize=188),
+        RateControlledFileReader(TS_FILE, readmode="bytes", rate=1000*1000, chunksize=188),
         DVB_SoftDemuxer( {0x12:["outbox"]} ),
         ReassemblePSITables(),
         ParseEventInformationTable_Subset( \
@@ -78,7 +87,15 @@ if __name__ == "__main__":
             actual_schedule = True,
             other_schedule = True,
             ),
-#        AddInVersion(),
+        splitter
+    ).activate()
+    
+    Plug(splitter, Pipeline(
+        PrettifyEventInformationTable(),
+        SimpleFileWriter("original_eit_parsed.text"),
+    )).activate()
+    
+    Plug(splitter, Pipeline(
         CreateEventInformationTable(),
         ParseEventInformationTable_Subset( \
             actual_presentFollowing = True,
@@ -87,6 +104,7 @@ if __name__ == "__main__":
             other_schedule = True,
             ),
         PrettifyEventInformationTable(),
-        ConsoleEchoer(),
-        ).run()
+        SimpleFileWriter("regenerated_eit_parsed.text"),
+    )).run()
+    
         

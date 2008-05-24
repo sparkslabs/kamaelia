@@ -99,8 +99,8 @@ class SerialiseEITSection(object):
             
             # now we know how long the descriptor loop is, we write the event's length
             events.insert(elen_index,
-                chr(flags + (descriptors_loop_length >> 8) & 0x0f) \
-              + chr(        (descriptors_loop_length     ) & 0xff) \
+                chr(flags + ((descriptors_loop_length >> 8) & 0x0f)) \
+              + chr(         (descriptors_loop_length     ) & 0xff) \
             )
 
         # add events onto the end of the packet we're building

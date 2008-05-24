@@ -458,11 +458,12 @@ def serialise_short_service_name_Descriptor(descriptor):
 # =============================================================================
 
 def createMJDUTC(year,month,day,hour,minute,second):
+    Y = year - 1900
     if month == 1 or month == 2:
         L = 1
     else:
         L = 0
-    MJD = 14956 + day + int( (year - L) * 365.25) + int ( (month + 1 + L * 12) * 30.6001 )
+    MJD = 14956 + day + int( (Y - L) * 365.25) + int ( (month + 1 + L * 12) * 30.6001 )
     
     return MJD, createBCDtimeHMS(hour,minute,second)
 
