@@ -1,0 +1,19 @@
+# a test programme entry
+
+#        Programme Title
+#        Programme short description
+#        instance CRID
+#        series CRID
+#        content type level 1    
+#        content type level 2
+#        duration
+#        transport stream source file
+
+[programme]
+title            = The quick brown fox
+description      = In this exciting show, we follow the exciting adventures of Mr Quick the brown fox.
+duration         = 00:30:00
+content_type     = 0x01 0x14
+instance_crid    = /ABCD
+series_crid      = /1234
+transport_stream = dummy.ts
