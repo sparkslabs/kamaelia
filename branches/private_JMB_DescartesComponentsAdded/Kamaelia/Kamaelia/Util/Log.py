@@ -1,5 +1,5 @@
 from Axon.Component import component
-from Kamaelia.Util.Backplane import Backplane,  SubscribeTo
+from Kamaelia.Util.Backplane import Backplane,  SubscribeTo, PublishTo
 from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
 import datetime
@@ -64,21 +64,31 @@ class Logger(component):
 
         not_done = True
         while not_done:
-            if self.dataReady('inbox'):
-                file = open(self.logname, 'a')
-                while self.dataReady('inbox'):
-                    msg = self.recv('inbox')
-                    file.write(self.wrapper(msg))
-                file.close()
-
             while self.dataReady('control'):
                 msg = self.recv('control')
                 if isinstance(msg, (shutdownMicroprocess)):
                     not_done = False
                     self.shutdown(msg)
+
+            if self.dataReady('inbox'):
+                file = open(self.logname, 'a')
+                while self.dataReady('inbox'):
+                    msg = self.recv('inbox')
+                   # print 'received %s!' % (msg)
+                    file.write(self.wrapper(msg))
+                file.close()
+
             if not_done:
                 self.pause()
                 yield 1
+
+        if self.dataReady('inbox'):
+            file = open(self.logname, 'a')
+            while self.dataReady('inbox'):
+                msg = self.recv('inbox')
+             #   print 'received %s!' % (msg)
+                file.write(self.wrapper(msg))
+            file.close()
 
     def shutdown(self, msg):
         """
@@ -88,9 +98,13 @@ class Logger(component):
         self.removeChild(self.bplane)
         self.removeChild(self.subscriber)
 
-def connectToLogger(component, logger_name):
+    def collectable(self, name):
+        return True
+
+def connectToLogger(component, logger_name, log_box='log'):
     """
-    This method is used to connect a method with a log outbox to a logger.
+    This method is used to connect a method with a log outbox to a logger via a
+    PublishTo component.
     """
     component.LoggerName = logger_name
 
@@ -98,11 +112,27 @@ def connectToLogger(component, logger_name):
     graph = Graphline( COMPONENT = component,
                        PUBLISHER = publisher,
                        linkages = {
-                            ('COMPONENT', 'log') : ('PUBLISHER', 'inbox'),
+                            ('COMPONENT', log_box) : ('PUBLISHER', 'inbox'),
                             ('COMPONENT', 'signal') : ('PUBLISHER', 'control'),
                         })
     graph.activate()
     component.addChildren(publisher, graph)
+
+def createLogger(logger_name, component, signal_box_name='signal', wrapper=wrapMessage):
+    """
+    This is a convenience method used to create a logger, activate it, add it as
+    a child to an existing component, and link its control box to the existing
+    component's signal box.
+
+    -logger_name - the name of the Logger to make
+    -component - the component to connect to
+    -signal_box_name - the name of component's signal box
+    -wrapper - a method object that wraps a log message.
+    """
+    log = Logger(logger_name, wrapper)
+    component.addChildren(log)
+    component.link((component, signal_box_name), (log, 'control'))
+    log.activate()
 
 if __name__ == '__main__':
     from Kamaelia.Util.Backplane import PublishTo
@@ -122,9 +152,12 @@ if __name__ == '__main__':
 
         def main(self):
             not_done = True
+            i = 0
             while not_done:
-                self.send(self.message, 'log')
-                print 'sent %s' % (self.message)
+                i += 1
+
+                self.send(str(i), 'log')
+                print 'sent %s' % (str(i))
                 while self.dataReady('control'):
                     msg = self.recv('control')
                     self.send(msg, 'signal')
