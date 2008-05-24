@@ -219,8 +219,8 @@ def serialise_content_Descriptor(descriptor):
     level2 = _content_types_level_2_rev.get((level1, descriptor["content_level_2"]), descriptor["content_level_2"])
     user1 = descriptor["user1"]
     user2 = descriptor["user2"]
-    return [ chr((level1 & 0xf) << 4 + (level2 & 0xf)),
-             chr((user1  & 0xf) << 4 + (user2  & 0xf))
+    return [ chr(((level1 & 0xf) << 4) + (level2 & 0xf)),
+             chr(((user1  & 0xf) << 4) + (user2  & 0xf))
            ], 2
 
 def serialise_parental_rating_Descriptor(descriptor):
