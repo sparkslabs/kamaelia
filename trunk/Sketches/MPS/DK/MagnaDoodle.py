@@ -224,26 +224,22 @@ if __name__ == "__main__":
    
   # Magna = MagnaDoodle().activate()
    
-   if 0:
+   if 1:
    
-       # OK, this bombs out
+       # OK, Now only fails due to errors in the MagnaDoodle code
        ProcessGraphline(
             WINDOW1 = MagnaDoodle(bgcolour=(100,100,172) ),
             TRACEONE = ConsoleEchoer(forwarder=True, use_repr=True, tag="ONE"),
             WINDOW2 = MagnaDoodle(bgcolour=(172,100,100) ),
-            TRACETWO = ConsoleEchoer(forwarder=True, use_repr=True, tag="ONE"),
             linkages = {
                 ("WINDOW1", "outbox") : ("TRACEONE", "inbox"),
                 ("TRACEONE", "outbox") : ("WINDOW2", "inbox"),
-
-                ("WINDOW2", "outbox") : ("TRACETWO", "inbox"),
-                ("TRACETWO", "outbox") : ("WINDOW1", "inbox"),
             }
        ).run()
 
-   if 1:
+   if 0:
    
-       # OK, sanity check:
+       # OK, Now only fails due to errors in the MagnaDoodle code
        Graphline(
             WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),
             TRACEONE = ConsoleEchoer(forwarder=True, use_repr=True, tag="ONE"),
@@ -260,7 +256,7 @@ if __name__ == "__main__":
 
    if 0:
        
-       # OK, this bombs out
+       # OK, Now only fails due to errors in the MagnaDoodle code
        ProcessPipeline(
             MagnaDoodle(),
             ConsoleEchoer(forwarder=True, use_repr=True),
