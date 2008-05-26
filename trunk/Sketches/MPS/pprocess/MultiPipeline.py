@@ -5,6 +5,7 @@ from Axon.Scheduler import scheduler
 import Axon.LikeFile
 import pprocess
 import time
+import pprint
 
 # --- Support code, this will go back into the library. ---------------------------------------------------------
 class ProcessWrapComponent(object):
@@ -104,8 +105,25 @@ def ProcessGraphline(**graphline_spec):
     while 1:
         for chan in exchange.ready(0):
             D = chan._receive()
-            dest = mappings[ ( chan, D[1] ) ]
-            dest[0]._send( (D[0], dest[1] ) )
+            try:
+                dest = mappings[ ( chan, D[1] ) ]
+                dest[0]._send( (D[0], dest[1] ) )
+            except KeyError:
+                # This error means that some component in the graphline spat out some data,
+                # but the outbox it was sent to isn't linked anyway. This may be an error,
+                # but generally speaking is not likely to be. 
+                #
+                # As a result, we suppress this error.
+                # This would be nicer to make conditional, but at present we don't have a
+                # naming mechanism in general to do this. Though __debug=1 as a parameter
+                # seems reasonable.
+                #
+                # If someone needs to debug this, they can enable this:
+                #
+                if 0:
+                    print "Data sent to outbox not linked to anywhere. Error?"
+                    print "chan, D[1]", chan, D[1]
+                    pprint.pprint( mappings )
         time.sleep(0.001)
 
 
@@ -150,6 +168,35 @@ class ProcessPipelineComponent(Axon.Component.component):
 if __name__ == "__main__":
     from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 
+    if 1:
+        from Kamaelia.Chassis.Pipeline import Pipeline
+        ProcessGraphline(
+                    component_one = Textbox(position=(20, 340),
+                                     text_height=36,
+                                     screen_width=900,
+                                     screen_height=200,
+                                     background_color=(130,0,70),
+                                     text_color=(255,255,255)),
+                    component_two = Pipeline(
+                                        TextDisplayer(position=(20, 90),
+                                            text_height=36,
+                                            screen_width=900,
+                                            screen_height=200,
+                                            background_color=(130,0,70),
+                                            text_color=(255,255,255)),
+                                        Textbox(position=(20, 340),
+                                             text_height=36,
+                                             screen_width=900,
+                                             screen_height=200,
+                                             background_color=(130,0,70),
+                                             text_color=(255,255,255)),
+                                    ),
+                    linkages = {
+                        ("component_one", "outbox") : ("component_two", "inbox"),
+                        ("component_one", "signal") : ("component_two", "control"),
+                    }
+        )
+
     if 0:
         ProcessGraphline(
                     component_one = Textbox(position=(20, 340),
@@ -185,7 +232,7 @@ if __name__ == "__main__":
                                             text_color=(255,255,255))
         ).run()
 
-    if 1:
+    if 0:
         from Kamaelia.Chassis.Pipeline import Pipeline
         Pipeline(
 #            ProcessPipelineComponent(
