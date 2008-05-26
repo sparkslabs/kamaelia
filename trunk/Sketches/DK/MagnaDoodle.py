@@ -218,12 +218,12 @@ if __name__ == "__main__":
    from pygame.locals import *
    
   # Magna = MagnaDoodle().activate()
-   ProcessGraphline(
+   Graphline(
         WINDOW1 = MagnaDoodle(),
         WINDOW2 = MagnaDoodle(),
         linkages = {
-            ("WINDOW2", "outbox") : ("WINDOW1", "drawn")
-        #    ("WINDOW1", "outbox") : ("WINDOW1", "drawn")
+         #   ("WINDOW2", "inbox") : ("WINDOW1", "inbox")
+            ("WINDOW1", "outbox") : ("WINDOW1", "drawn")
         }
    ).run()
    
