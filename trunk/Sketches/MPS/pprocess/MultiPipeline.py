@@ -85,10 +85,11 @@ def ProcessGraphline(**graphline_spec):
     count = 0
     component_to_chan = {}
     mappings = {}
+    debug = graphline_spec.get("__debug", False)
 
     exchange = pprocess.Exchange()
     for comp in graphline_spec:
-        if comp != "linkages":
+        if comp != "linkages" and comp[:2] != "__":
             A = ProcessWrapComponent( graphline_spec[comp] )
             chan = A.activate()
             chans.append( chan )
@@ -120,9 +121,9 @@ def ProcessGraphline(**graphline_spec):
                 #
                 # If someone needs to debug this, they can enable this:
                 #
-                if 0:
-                    print "Data sent to outbox not linked to anywhere. Error?"
-                    print "chan, D[1]", chan, D[1]
+                if debug:
+                    print "WARNING: Data sent to outbox not linked to anywhere. Error?"
+                    print "chan, D[1] D[0]", chan, D[1], repr(D[0])
                     pprint.pprint( mappings )
         time.sleep(0.001)
 
@@ -194,7 +195,8 @@ if __name__ == "__main__":
                     linkages = {
                         ("component_one", "outbox") : ("component_two", "inbox"),
                         ("component_one", "signal") : ("component_two", "control"),
-                    }
+                    },
+                    __debug = True,
         )
 
     if 0:
