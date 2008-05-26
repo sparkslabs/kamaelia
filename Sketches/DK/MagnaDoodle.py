@@ -33,6 +33,7 @@ right to erase your artwork.
 """
 import sys; sys.path.append("../MPS/pprocess/");
 from MultiPipeline import ProcessPipeline
+from MultiPipeline import ProcessGraphline
 from Kamaelia.Chassis.Graphline import Graphline
 
 import pprocess
@@ -63,9 +64,10 @@ class MagnaDoodle(Axon.Component.component):
    
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
-               "callback" : "Receive callbacks from PygameDisplay"
+               "callback" : "Receive callbacks from PygameDisplay",
+               "drawn"    : "Information on what was drawn on other MagnaDoodles"
              }
-   Outboxes = { "outbox" : "not used",
+   Outboxes = { "outbox" : "Used to talk to other MagnaDoodles",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
@@ -151,16 +153,23 @@ class MagnaDoodle(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-
+         while self.dataReady("drawn"):
+             print "drawn"
+             for this in self.recv("drawn"):
+                 if this == "clear":
+                     self.oldpos = None
+                     self.drawBG()
+                     self.blitToSurface()
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.send(event, "outbox")
+     #               self.send(event, "outbox")
                     if self.shape == "circle":
                         if event.button == 1:
                             self.oldpos = event.pos
-                            print event.pos
+                #            print event.pos
                             self.drawing = True
+                     #       self.send(event, "outbox")
                     if self.shape == "line":
                         if event.button == 1:
                             self.drawing = True
@@ -168,6 +177,8 @@ class MagnaDoodle(Axon.Component.component):
                         self.oldpos = None
                         self.drawBG()
                         self.blitToSurface()
+                        self.send("clear", "outbox")
+                        print "I'm here!"
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_ESCAPE:
                        done = True
@@ -180,10 +191,11 @@ class MagnaDoodle(Axon.Component.component):
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.shape == "circle":
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
-                        print event.pos
-                        print rad
+          #              print event.pos
+          #              print rad
                         pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
                         self.blitToSurface()
+                        self.send(event, "outbox")
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
@@ -210,18 +222,14 @@ if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    
-  # from Kamaelia.Chassis.ProcessPipeline import ProcessPipeline
   # Magna = MagnaDoodle().activate()
-   Graphline(
-       WINDOW1 = MagnaDoodle(),
-       WINDOW2 = MagnaDoodle(),
-   linkages = { 
-          ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
-          }
-   )
-   ProcessPipeline(
-   WINDOW1,
-   WINDOW2,
+   ProcessGraphline(
+        WINDOW1 = MagnaDoodle(),
+        WINDOW2 = MagnaDoodle(),
+        linkages = {
+            ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
+        #    ("WINDOW1", "outbox") : ("WINDOW1", "drawn")
+        }
    ).run()
    
   # Axon.Scheduler.scheduler.run.runThreads()  
