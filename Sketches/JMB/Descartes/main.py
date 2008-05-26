@@ -1,10 +1,11 @@
 import ServerConfig
 from Wsgi.WsgiHandler import HTML_WRAP,  Handler
+import Wsgi.LogWritable as LogWritable
+import Handlers.Minimal as Minimal
 from wsgiref.validate import validator
 from DescartesCore import ServerCore
 import socket
 import Kamaelia.Util.Log as Log
-import Handlers.Wsgi.LogWritable as LogWritable
 
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
@@ -43,7 +44,8 @@ log.activate()
 
 class DescartesServer(ServerCore):
     routing = [
-               ["/wsgi", Handler("/wsgi", validator(HTML_WRAP(simple_app)), log_writable, ServerConfig.WsgiConfig) ],
+               ["/", Handler(log_writable, ServerConfig.WsgiConfig) ],
+               ['/static', Minimal.Handler(index.html, ]
               ]
     protocol=HTTPProtocol()
     port=8082

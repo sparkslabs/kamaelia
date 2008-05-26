@@ -7,6 +7,7 @@ import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
 import LogWritable
+import urls
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
 #from Axon.Component import component
@@ -76,7 +77,7 @@ class _WsgiHandler(threadedcomponent):
         '_signal-lw' : 'shut down the log writable',
     }
 
-    def __init__(self, app_name, request, app, log_writable, WsgiConfig):
+    def __init__(self, app_name, app, request, log_writable, WsgiConfig):
         super(_WsgiHandler, self).__init__()
         self.app_name = app_name
         self.request = request
@@ -238,10 +239,13 @@ class _WsgiHandler(threadedcomponent):
         self.environ["REMOTE_PORT"] = consider + "56669"
         self.environ["GATEWAY_INTERFACE"] = consider + "CGI/1.1"
 
-def Handler(app_name,  app, log_writable, WsgiConfig):
-    def R(request):
-        return _WsgiHandler(app_name, request,app, log_writable, WsgiConfig)
-    return R
+def Handler(log_writable, WsgiConfig):
+    def _getWsgiHandler(request):
+        mod_name, app_attr, app_name = urls.UrlList[request['raw-uri']]
+        module = _importWsgiModule(mod_name)
+        app = getattr(module, app_attr)
+        return _WsgiHandler(app_name, app, request, log_writable, WsgiConfig)
+    return _getWsgiHandler
 
 def HTTPProtocol():
     def foo(self,**argd):
@@ -253,5 +257,13 @@ class WsgiError(Exception):
     def __init__(self):
         super(WsgiError, self).__init__()
 
-def FindWsgiModule(request):
-    pass
+def _importWsgiModule(name):
+    """
+    Just a copy/paste of the example my_import function from here:
+    http://docs.python.org/lib/built-in-funcs.html
+    """
+    mod = __import__(name)
+    components = name.split('.')
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
