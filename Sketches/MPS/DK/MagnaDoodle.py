@@ -31,7 +31,7 @@ Use your left mouse button to draw to the board and the
 right to erase your artwork.
 
 """
-import sys; sys.path.append("../MPS/pprocess/");
+import sys; sys.path.append("../pprocess/");
 from MultiPipeline import ProcessPipeline
 from MultiPipeline import ProcessGraphline
 from Kamaelia.Chassis.Graphline import Graphline
@@ -219,18 +219,32 @@ __kamaelia_components__  = ( MagnaDoodle, )
 
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from pygame.locals import *
    
   # Magna = MagnaDoodle().activate()
-   ProcessGraphline(
-        WINDOW1 = MagnaDoodle(),
-        WINDOW2 = MagnaDoodle(),
-        linkages = {
-            ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
-        #    ("WINDOW1", "outbox") : ("WINDOW1", "drawn")
-        }
-   ).run()
+   
+   if 0:
+   
+       # OK, this bombs out
+       ProcessGraphline(
+            WINDOW1 = MagnaDoodle(),
+            TRACE = ConsoleEchoer(forwarder=True, use_repr=True),
+            WINDOW2 = MagnaDoodle(),
+            linkages = {
+                ("WINDOW1", "outbox") : ("TRACE", "inbox"),
+                ("TRACE", "outbox") : ("WINDOW2", "inbox"),
+            }
+       ).run()
+
+   if 1:
+       
+       # OK, this bombs out
+       ProcessPipeline(
+            MagnaDoodle(),
+            ConsoleEchoer(forwarder=True, use_repr=True),
+            MagnaDoodle()
+       ).run()
    
   # Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF
