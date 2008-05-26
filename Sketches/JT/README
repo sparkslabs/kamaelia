@@ -1,9 +1,73 @@
 This directory contains (or at least will contain) a number of rough sketches for bits and pieces of audio editing and control stuff for use in Kamaelia.  Also it's home to the soon-to-be-awesome Kamaelia Jam.
 
-Current Sketches
-================
+Layout
+======
+Root
+----
+Contains the base Jam.py file and rough sketches which currently being tested
+
+Files:
+Jam.py - The Kamaelia Jam application
+TimingTest.py - A quick test of the timing code - quanitzes collision signals from an XY Pad to the next beat
+
+/Chuck
+------
+Contains .ck files for testing stuff using Chuck
+
+Files:
+UITest.ck - An sine oscillator which changes pitch and filter frequency on /UITest/position OSC messages.  Designed to work with TestGraveyard/UITest.py
+
+/Internet
+---------
+Contains components which will belong in Kamaelia's Internet section
+
+Files:
+UDP.py - A local version of UDP with receiving crippled.  To be replaced with a working version using a CSA.
+
+/MiniAxon
+---------
+Contains my MiniAxon!
+
+Files:
+MiniAxon.py
+
+/PD
+---
+Contains .pd files for testing stuff using Pure Data
+
+Files:
+TimingTest.pd - Four filtered noise generators which trigger on /UITest/(top, right, bottom, left) OSC Messages.  Designed to work with TimingTest.py
+
+/Protocol
+---------
+Contains components which will belong in Kamaelia's Protocol section
+
+Files:
+Osc.py - Contains a component for the creation of OSC messages
+
+/TestGraveyard
+--------------
+Contains old sketchy code which isn't currently being worked upon.  These need moving back to the root directory before they will work.
+
+Files:
 OSCTest.py - This sends simple OSC messages containing a random float between 0 and 1 to /OSCTest on port 2000.  It does this as quickly as possible.
 
 MidiTest.py - A (very) simple drum machine using a pygame gui.  It gives you three buttons, bass drum, snare and hi-hat. When the are clicked it output a midi note-on message to the first midi port available, using the GM drum mapping.
 
-UI/XYBounce.py - A first attempt at a pygame component.  It draws a square with a circle in it which you can move around.
+UITest.py - A test of using UI components to send OSC messages.  It creates an XY pad which sends OSC messages to /UITest
+
+/UI
+---
+Contains components which will belong in Kamaelia's UI section
+
+Files:
+XYPad.py - An XY pad component which can have a bouncing puck
+
+/Util
+-----
+Contains components which will belong in Kamaelia's Util section
+
+Files:
+MusicTiming.py - Contains components to subclass for making components which use musical timings (bars, beats, etc)
+
+SendQuantizer.py - A component which stores messages received until a certain number of beats have passed, then sends them on
