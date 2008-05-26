@@ -12,11 +12,13 @@ def simple_app(environ, start_response):
     """Simplest possible application object"""
     status = '200 OK'
     response_headers = [('Content-type','text/html'),('Pragma','no-cache')]
-    start_response(status, response_headers)
+    write = start_response(status, response_headers)
+    print 'start_response called!\n'
     writable = environ['wsgi.errors']
     writable.write('Writing to log!\n')
 
     yield '<P> My Own Hello World!\n'
+    write('<p>Hello from the write callable!</p>')
     for i in sorted(environ.keys()):
         yield "<li>%s: %s\n" % (i, environ[i])
     yield "<li> wsgi.input:<br/><br/><kbd>"
@@ -62,8 +64,8 @@ log.activate()
 
 
 class DescartesServer(ServerCore):
-    routing = [  #TODO:  Component-ize routing
-               ["/wsgi", Handler("/wsgi", simple_app, log_writable) ],
+    routing = [
+               ["/wsgi", Handler("/wsgi", validator(HTML_WRAP(simple_app)), log_writable) ],
               ]
     protocol=HTTPProtocol()
     port=8082

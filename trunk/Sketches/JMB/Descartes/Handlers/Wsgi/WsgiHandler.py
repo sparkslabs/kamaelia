@@ -9,7 +9,7 @@ from wsgiref.validate import validator
 import WsgiConfig
 import LogWritable
 import Axon
-from Axon.ThreadedComponent import threadedcomponent as component
+from Axon.ThreadedComponent import threadedcomponent
 #from Axon.Component import component
 import Kamaelia.Util.Log as Log
 import Kamaelia.Experimental.GC as GC
@@ -31,9 +31,12 @@ def HTML_WRAP(app):
     """
     def gen(environ, start_response):
         """The standard WSGI interface"""
+        iterator = app(environ, start_response)
+        first_yield = iterator.next()
         yield "<html>\n"
         yield "<body>\n"
-        for i in app(environ, start_response):
+        yield first_yield
+        for i in iterator:
             yield i
         yield "</body>\n"
         yield "</html>\n"
@@ -61,7 +64,7 @@ def normalizeEnviron(environ):
     del environ['bad']
 
 
-class _WsgiHandler(component):
+class _WsgiHandler(threadedcomponent):
     """Choosing to run the WSGI app in a thread rather than the same
        context, this means we don't have to worry what they get up
        to really"""
@@ -82,6 +85,7 @@ class _WsgiHandler(component):
         self.environ = request
         self.app = app
         self.log_writable = log_writable
+        self.status = self.response_headers = False
 
     def main(self):
 
@@ -97,33 +101,44 @@ class _WsgiHandler(component):
         #stringify all variables for wsgi compliance
         normalizeEnviron(self.environ)
 
-        #TODO:  PEP 333 specifies that we're not supposed to buffer output here
-        #so this will need to be adapted to send output immediately
-        [ self.sendFragment(x) for x in self.app(self.environ, self.start_response) ]
+        #PEP 333 specifies that we're not supposed to buffer output here,
+        #so pulling the iterator out of the app object
+        curr_app = self.app
+        app_iter = curr_app(self.environ, self.start_response)
 
-        resource = {
-           "statuscode" : self.status,
-           "headers"    : self.response_headers,
-        }
-        self.send(resource, "outbox")
+        first_response = app_iter.next()
+        print first_response + '\n'
+        if self.response_headers:
+            self.write(first_response)
+        else:
+            raise WsgiError()
+
+        for fragment in app_iter:
+            page = {
+                'data' : fragment,
+            }
+            self.send(page, 'outbox')
+
+        app_iter.close()
+
         self.send(Axon.Ipc.producerFinished(self), "signal")
-        self.send(Axon.Ipc.shutdownMicroprocess(self), '_signal-lw')
 
     def start_response(self, status, response_headers, exc_info=None):
         """
         Method to be passed to WSGI application object
         """
         #TODO:  Add more exc_info support
-        #TODO:  return write() callable
         if exc_info:
             raise exc_info[0], exc_info[1], exc_info[2]
 
         self.status = status
         self.response_headers = response_headers
 
-    def sendFragment(self, fragment):
+        return self.write
+
+    def write(self, data):
         page = {
-            'data' : fragment,
+            'data' : data,
         }
         self.send(page, 'outbox')
 
@@ -236,3 +251,7 @@ def HTTPProtocol():
         print self.routing
         return HTTPServer(requestHandlers(self.routing),**argd)
     return foo
+
+class WsgiError(Exception):
+    def __init__(self):
+        super(WsgiError, self).__init__()
