@@ -153,14 +153,9 @@ class MagnaDoodle(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-         while self.dataReady("drawn"):
-             print "drawn"
-             for this in self.recv("drawn"):
-                 if this == "clear":
-                     self.oldpos = None
-                     self.drawBG()
-                     self.blitToSurface()
          while self.dataReady("inbox"):
+            while self.dataReady("drawn"):
+                print "drawn"
             for event in self.recv("inbox"):
                 if event.type == pygame.MOUSEBUTTONDOWN:
      #               self.send(event, "outbox")
@@ -227,7 +222,7 @@ if __name__ == "__main__":
         WINDOW1 = MagnaDoodle(),
         WINDOW2 = MagnaDoodle(),
         linkages = {
-            ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
+            ("WINDOW2", "outbox") : ("WINDOW1", "drawn")
         #    ("WINDOW1", "outbox") : ("WINDOW1", "drawn")
         }
    ).run()
