@@ -69,9 +69,9 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
-def Handler(app_name, app):
+def Handler(indexfilename, homedirectory):
     def R(request):
-        return Minimal(app_name, request,app)
+        return Minimal(request, indexfilename, homedirectory)
     return R
 
 # old setup used functions - this needs to be converted to work with
