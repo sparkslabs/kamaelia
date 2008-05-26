@@ -1,7 +1,7 @@
 import ServerConfig
 from Wsgi.WsgiHandler import HTML_WRAP,  Handler
 import Wsgi.LogWritable as LogWritable
-import Handlers.Minimal as Minimal
+import Static.Minimal as Minimal
 from wsgiref.validate import validator
 from DescartesCore import ServerCore
 import socket
@@ -44,8 +44,8 @@ log.activate()
 
 class DescartesServer(ServerCore):
     routing = [
-               ["/", Handler(log_writable, ServerConfig.WsgiConfig) ],
-               ['/static', Minimal.Handler(index.html, ]
+               ["/wsgi", Handler(log_writable, ServerConfig.WsgiConfig) ],
+               ['/static', Minimal.Handler('index.html', './Static/www/', '/static')]
               ]
     protocol=HTTPProtocol()
     port=8082

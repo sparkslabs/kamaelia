@@ -52,12 +52,11 @@ def sanitizeFilename(filename):
         elif char == "-" or char == "_" or char == ".": output += char
     return output
 
-def sanitizePath(uri): #needs work
-    outputpath = []
-    while uri[0] == "/": #remove leading slashes
-        uri = uri[1:]
-        if len(uri) == 0: break
+def sanitizePath(uri, substituted_path): #needs work
+    uri = uri.lstrip(substituted_path)
+    uri = uri.strip('/')
 
+    outputpath = []
     splitpath = string.split(uri, "/")
     for directory in splitpath:
         if directory == ".":
@@ -69,9 +68,9 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
-def Handler(indexfilename, homedirectory):
+def Handler(indexfilename, homedirectory, substituted_path):
     def R(request):
-        return Minimal(request, indexfilename, homedirectory)
+        return Minimal(request, substituted_path, indexfilename, homedirectory)
     return R
 
 # old setup used functions - this needs to be converted to work with
@@ -116,15 +115,16 @@ class Minimal(component):
     }
 
 
-    def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
+    def __init__(self, request, substituted_path, indexfilename = "index.html", homedirectory = "htdocs/"):
         self.request = request
         self.indexfilename = indexfilename
         self.homedirectory = homedirectory
+        self.substituted_path = substituted_path
         super(Minimal, self).__init__()
 
     def main(self):
         """Produce the appropriate response then terminate."""
-        filename = sanitizePath(self.request["raw-uri"])
+        filename = sanitizePath(self.request["raw-uri"], self.substituted_path)
         filepath = self.homedirectory + filename
         #if os.path.isdir(homedirectory + filename):
         #    if filename[-1:] != "/": filename += "/"
@@ -138,7 +138,8 @@ class Minimal(component):
         try:
             if     os.path.exists(filepath):
                 if os.path.isdir(filepath):
-                    filepath += self.indexfilename
+                    filepath = filepath.rstrip('/')
+                    filepath = filepath + '/' + self.indexfilename
 
                 print filepath
                 filetype = MimeTypes.workoutMimeType(filepath)
