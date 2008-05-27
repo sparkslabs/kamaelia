@@ -52,8 +52,8 @@ def sanitizeFilename(filename):
         elif char == "-" or char == "_" or char == ".": output += char
     return output
 
-def sanitizePath(uri, substituted_path): #needs work
-    uri = uri.lstrip(substituted_path)
+def sanitizePath(uri, substituted_path):
+    uri = uri.replace(substituted_path, '', 1)
     uri = uri.strip('/')
 
     outputpath = []
@@ -65,7 +65,7 @@ def sanitizePath(uri, substituted_path): #needs work
             if len(outputpath) > 0: outputpath.pop()
         else:
             outputpath.append(directory)
-    outputpath = string.join(outputpath, "/")
+    outputpath = '/'.join(outputpath)
     return outputpath
 
 def Handler(indexfilename, homedirectory, substituted_path):
