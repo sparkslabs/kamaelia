@@ -33,6 +33,9 @@ from Kamaelia.Support.DVB.CRC import __dvbcrc as doDvbCRC
 from CreateDescriptors import serialiseDescriptors, createMJDUTC, createBCDtimeHMS
 
 
+# max size of an EIT section, minus the crc and the bit before the events list
+_EIT_EVENT_SIZE_THRESHOLD = 4096 - 18
+
 class SerialiseEITSection(object):
     """\
     EIT PSI section dictionary structure in ... binary PSI table section out
@@ -40,7 +43,7 @@ class SerialiseEITSection(object):
     def __init__(self):
         super(SerialiseEITSection,self).__init__()
       
-    def serialise(self, section):
+    def serialise(self, section, prebuiltEvents=None):
         data = []
         
         if section["current"]:
@@ -69,9 +72,48 @@ class SerialiseEITSection(object):
         except KeyError:
             data.append( chr((section["table_id"])) )
         
+        if prebuiltEvents:
+            events = prebuiltEvents
+        else:
+            (events,count) = self.consumeEvents(section["events"])
+            assert(len(eventItems) == count)
+        
+        # add events onto the end of the packet we're building
+        data.extend(events)
+        
+        # calculate total length of section
+        sectionLength = reduce(lambda total,nextStr: total+len(nextStr), data, 0)
+        sectionLength -= 1  # doesn't include bytes up to and including the section length field itself (which hasn't been inserted yet)
+        sectionLength += 4 # lets not forget the CRC
+        
+        data.insert(seclen_index, chr(0x80 + ((sectionLength >> 8) & 0x0f)) + chr(sectionLength & 0xff))
+        
+        # now we've assembled everything, calc the CRC, then write the CRC value at the end
+        data = "".join(data)
+        crcval = doDvbCRC(data)
+        crc = chr((crcval >> 24) & 0xff) \
+            + chr((crcval >> 16) & 0xff) \
+            + chr((crcval >> 8 ) & 0xff) \
+            + chr((crcval      ) & 0xff)
+        
+        return data + crc
+
+    def consumeEvents(self, eventItems):
+        
         # now do events
         events = []
-        for event in section["events"]:
+        count = 0
+        totalSize = 0
+        for event in eventItems:
+            descriptors = serialiseDescriptors(event["descriptors"])
+            # pre-compute size of this event
+            thisEventSize = len(descriptors) + 12 # event size = descriptors + beginning bit
+            if totalSize + thisEventSize > _EIT_EVENT_SIZE_THRESHOLD:
+                # abort as it isn't going to fit
+                break
+            else:
+                totalSize = totalSize + thisEventSize
+            
             mjd, utc = createMJDUTC(*event["starttime"])
             dur = createBCDtimeHMS(*event["duration"])
             flags = ((event["running_status"] & 0x7) << 5)
@@ -93,7 +135,6 @@ class SerialiseEITSection(object):
             elen_index = len(events)  # note where flags and descriptor_loop_length will be inserted
             
             # add descriptors
-            descriptors = serialiseDescriptors(event["descriptors"])
             events.append(descriptors)
             descriptors_loop_length = len(descriptors)
             
@@ -102,27 +143,10 @@ class SerialiseEITSection(object):
                 chr(flags + ((descriptors_loop_length >> 8) & 0x0f)) \
               + chr(         (descriptors_loop_length     ) & 0xff) \
             )
+            count = count + 1
 
-        # add events onto the end of the packet we're building
-        data.extend(events)
+        return events, count  #  the serialised events, plus a count of how many events we consumed
         
-        # calculate total length of section
-        sectionLength = reduce(lambda total,nextStr: total+len(nextStr), data, 0)
-        sectionLength -= 1  # doesn't include bytes up to and including the section length field itself (which hasn't been inserted yet)
-        sectionLength += 4 # lets not forget the CRC
-        
-        data.insert(seclen_index, chr(0x80 + ((sectionLength >> 8) & 0x0f)) + chr(sectionLength & 0xff))
-        
-        # now we've assembled everything, calc the CRC, then write the CRC value at the end
-        data = "".join(data)
-        crcval = doDvbCRC(data)
-        crc = chr((crcval >> 24) & 0xff) \
-            + chr((crcval >> 16) & 0xff) \
-            + chr((crcval >> 8 ) & 0xff) \
-            + chr((crcval      ) & 0xff)
-        
-        return data + crc
-
 
 
 

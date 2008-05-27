@@ -50,10 +50,21 @@ Programme ref's are the filename containing programme metadata. Must be of the f
 """
 
 import re
+import os
 import ConfigParser
+import copy
+from CreatePSI import SerialiseEITSection
 
 
 class ScheduleEvent(object):
+    def __init__(self):
+        super(ScheduleEvent,self).__init__()
+        self.service_id = 0
+        self.event_id = 0
+        self.starttime = (0,0,0,0,0,0)
+        self.duration = (0,0,0)
+        self.running_status = 1
+        self.programme_info_file = None
     
     def setStart(self, year, month, day, hour, minute, second):
         self.starttime = (year,month,day,hour,minute,second)
@@ -72,10 +83,17 @@ class ScheduleEvent(object):
         except KeyError:
             self.running_status = 1   # mark as not running
 
+    def buildDescriptors(self, services, programmes):
+        progD = copy.deepcopy(programmes[self.programme_info_file].descriptors)
+        servD = copy.deepcopy(services[self.service_id])
+        self.descriptors = []
+        self.descriptors.extend(progD)
+        self.descriptors.extend(servD)
+        
 
-class ParseSchedule(object):
+class Schedule(object):
     def __init__(self):
-        super(ParseSchedule,self).__init__()
+        super(Schedule,self).__init__()
         self.events = []
 
     def read(self, infile):
@@ -109,27 +127,108 @@ class ParseSchedule(object):
                     
                     self.events.append(e)
             
-            
-def default_components(service_id):
-    if serviceId == 1000 or True:
-        return [
-            ( 0x50, { "type"     : "component",
-                "component_tag"  : 1,
-                "stream_content" : 1,  # video
-                "component_type" : 3,  # 16:9 aspect ratio without pan vectors, 25 Hz
-                "language_code"  : 'und',
-                "text"           : ''
-                    } ),
-            ( 0x50, { "type"     : "component",
-                "component_tag"  : 2,
-                "stream_content" : 2,  # audio
-                "component_type" : 3,  # stereio (2 channel)
-                "language_code"  : 'eng',
-                "text"           : ''
-                    } ),
-        ]
+    def buildDescriptors(self, services, programmes):
+        for event in self.events:
+            event.buildDescriptors(services,programmes)
             
             
+    def subsetToPF(self):
+        """\
+        Reduces down the set of events to only those needed for Present-Following table data
+        """
+        raise "Not implemented"
+    
+    
+    def buildSections(self,tableIds,version,onid,tsid,services):
+        # first sort into separate services and internally within each, into chronological order
+        eventsByService = {}
+        for sid in services.keys():
+            eventsByService[sid] = []
+            
+        for event in self.events:
+            e = (event.starttime, event)
+            eventsByService[event.service_id].append(e)
+    
+        for sid in eventsByService.keys():
+            eventsByService[sid].sort()
+            eventsByService[sid] = [ e for (_,e) in eventsByService[sid] ]
+            
+        sections = []
+        for sid in eventsByService.keys():
+            sections.extend( self.buildServiceSections(tableIds,
+                version,
+                onid,
+                tsid,
+                sid,
+                eventsByService[sid],
+                ))
+                
+        return sections
+    
+    def buildServiceSections(self,tableIds,version,onid,tsid,serviceId,relevantEvents):
+        
+        serialiser = SerialiseEITSection()
+        eventGroups = []
+        
+        # first pass, go through compiling just event sections and getting them grouped
+        # then we'll know how many table sections there actually are, and we can then
+        # build the full tables
+        remainingEvents = [ \
+            { \
+                "event_id"       : e.event_id,
+                "starttime"      : e.starttime,
+                "duration"       : e.duration,
+                "running_status" : e.running_status,
+                "free_CA_mode"   : False,
+                "descriptors"    : e.descriptors,
+            } \
+            for e in relevantEvents ]
+        
+        while len(remainingEvents) > 0:
+            (serialisedEvents, count) = serialiser.consumeEvents(remainingEvents)
+            eventGroups.append(serialisedEvents)
+            for _ in range(count):
+                remainingEvents.pop(0)
+
+        # now we know how it is going to spread across sections and table ids, we can build
+        # the full sections
+        numTables = len(eventGroups) / 256
+        if  len(eventGroups) % 256 > 0:
+            numTables = numTables + 1
+            
+        section = {
+#            "table_id" : -1,
+            "current"  : True,
+            "service_id" : serviceId,
+            "version" : version % 32,
+#            "section" : -1,
+#            "last_section" : -1,
+            "last_table_id" : tableIds[numTables-1],
+            "original_network_id" : onid,
+            "transport_stream_id" : tsid,
+        }
+        
+        sections = []
+        tid = 0
+        sectionNum = 0
+        remainingSections = len(eventGroups)
+        for eg in eventGroups:
+            assert(remainingSections > 0)
+            section["table_id"] = tableIds[tid]
+            section["section"] = sectionNum
+            section["last_section"] = min(remainingSections-1, 255)
+            sectionNum += 1
+            remainingSections -= 1
+            if sectionNum > 255:
+                sectionNum = 0
+                tid += 1
+                
+            serialisedSection = serialiser.serialise(section, prebuiltEvents=eg)
+            sections.append(serialisedSection)
+            
+        assert(remainingSections == 0)
+
+        return sections
 
 def parseInt(string):
     HEX = re.compile("^\s*0x[0-9a-f]+\s*$", re.I)
@@ -142,15 +241,25 @@ def parseInt(string):
     else:
         return int(string)
 
+def parseList(string):
+    CAR_CDR = re.compile(r"^\s*(\S+)(\s+.*)?$")
+    tail = string.strip()
+    theList = []
+    
+    while tail:
+        match = re.match(CAR_CDR, tail)
+        theList.append(match.group(1))
+        tail = match.group(2)
+        
+    return theList
+
 class Programme(object):
     def __init__(self, programme_file):
         super(Programme,self).__init__()
         self.descriptors = []
-        self.load(programme_file)
         
-    def load(self,filename):
         parser = ConfigParser.ConfigParser()
-        parser.read(filename)
+        parser.read(programme_file)
         
         # mandatory bits
         duration         = parser.get("programme","duration").strip()
@@ -179,9 +288,7 @@ class Programme(object):
         if parser.has_option("programme","series_crid"):
             self.series_crid = parser.get("programme","series_crid").strip()
             self.addSeriesCridDescriptor()
-        
-        print self.descriptors
-        
+
     def addShortEventDescriptor(self):
         self.descriptors.append( (0x4d, { "type" : "short_event",
             "language_code" : 'eng',
@@ -191,7 +298,6 @@ class Programme(object):
             
 
     def addContentTypeDescriptor(self):
-        print self.content_type
         self.descriptors.append( (0x54, { "type" : "content",
             "content_level_1" : self.content_type[0],
             "content_level_2" : self.content_type[1],
@@ -210,8 +316,26 @@ class Programme(object):
             } ) )
 
 
+def loadService(sid, serviceDir):
+    f = open(serviceDir+os.sep+("%d" % sid),"r")
+    data = f.read()
+    return eval(data)   # yeah, dangerous, but I'll hopefully fix later
 
-if __name__ == "__main__":
+
+class GeneralConfig(object):
+    def __init__(self,configFile):
+        super(GeneralConfig,self).__init__()
+        parser = ConfigParser.ConfigParser()
+        parser.read(configFile)
+    
+        self.onid = parseInt(parser.get("mux", "onid"))
+        self.tsid = parseInt(parser.get("mux", "tsid"))
+        self.pf_tableIds = [parseInt(x) for x in parseList(parser.get("present-following","table-ids"))]
+        self.sch_tableIds = [parseInt(x) for x in parseList(parser.get("schedule","table-ids"))]
+
+
+def parseArgs():
+    import sys
     from optparse import OptionParser
     
     parser = OptionParser()
@@ -219,35 +343,100 @@ if __name__ == "__main__":
         action="store", type="string", default="-",
         help="read schedule from the specified file, or stdin if '-' or not specified",
         metavar="FILE")
+    
+    parser.add_option("-s", "--services-dir", dest="servicesdir",
+        action="store", type="string", default=None,
+        help=r'the directory containing %d.py files defining service default descriptors, where %d is a service ID in decimal',
+        metavar="FILE")
+        
+    parser.add_option("-g", "--generalconfig", dest="configfile",
+        action="store", type="string", default=None,
+        help="read service and general mux config from the specified file",
+        metavar="FILE")
+        
+    parser.add_option("-p", "--present-following", dest="pf_outfile",
+        action="store", type="string", default=None,
+        help="destination filename for present-following table sections",
+        metavar="FILE")
 
+    parser.add_option("-c", "--schedule", dest="sch_outfile",
+        action="store", type="string", default=None,
+        help="destination filename for schedule table sections",
+        metavar="FILE")
+
+    parser.add_option("-t", "--tableversion", dest="version",
+        action="store", type="int", default=None,
+        help="the version number to use for the table",
+        )
+        
     (options, args) = parser.parse_args()
+    
+    if options.servicesdir is None:
+        sys.stderr.write("You must specify the services dir (option '-s')\n")
+        sys.exit(1)
+        
+    if options.configfile is None:
+        sys.stderr.write("You must specify the global config file (option '-c')\n")
+        sys.exit(1)
 
+    return options
+
+if __name__ == "__main__":
     import sys
+    options = parseArgs()
+        
+
     if options.infile == "-":
         infile = sys.stdin
     else:
         infile = open(options.infile,"r")
         
     # stage 1 - parse the schedule
-    parser = ParseSchedule()
-    parser.read(infile)
-    #print parser.events
+    schedule = Schedule()
+    schedule.read(infile)
     
     # stage 2 - determine what programmes are in the schedule and read metadata for them
-    prog=Programme("test_programme")
-    from CreateDescriptors import serialiseDescriptors
-    print repr(serialiseDescriptors(prog.descriptors))
+    programmes = {}
+    for item in schedule.events:
+        progInfoFile = item.programme_info_file
+        if not programmes.has_key(progInfoFile):
+            programmes[progInfoFile] = Programme(progInfoFile)
     
     # stage 3 - determine what services are in the schedule and read configs for them
+    services = {}
+    for item in schedule.events:
+        serviceId = item.service_id
+        if not services.has_key(serviceId):
+            services[serviceId] = loadService(serviceId, options.servicesdir)
     
     # stage 4 - read global config - eg. ONID and TSID values
+    generalConfig = GeneralConfig(options.configfile)
     
     # stage 5 - construct full descriptors for all events
+    schedule.buildDescriptors(services, programmes)
     
-    # stage 6 - write out the 'schedule' table sections
+    if options.sch_outfile is not None:
+        # stage 6 - write out the 'schedule' table sections
+        sections = schedule.buildSections(generalConfig.sch_tableIds,
+            options.version,
+            generalConfig.onid,
+            generalConfig.tsid,
+            services)
+        f=open(options.sch_outfile, "wb")
+        f.write("".join(sections))
+        f.close()
+        
+    if options.pf_outfile is not None:
+        # stage 7 - determine what goes in the present-following table
+        schedule.subsetToPF()
     
-    # stage 7 - determine what goes in the present-following table
-    
-    # stage 8 - write out the 'present-following' table sections
-    
+        # stage 8 - write out the 'present-following' table sections
+        sections = schedule.buildSections(generalConfig.pf_tableIds,
+            options.version,
+            generalConfig.onid,
+            generalConfig.tsid,
+            services)
+        f=open(options.pf_outfile, "wb")
+        f.write("".join(sections))
+        f.close()
     
