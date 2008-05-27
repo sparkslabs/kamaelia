@@ -22,33 +22,48 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: PO
 
+import sys
+
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 def _check_l10n(x,y):
     for param in x,y:
         if param.updated_parsed is None:
-            raise Exception("feedparser could not parse date format: %s; l10n problems? \
+            return False
+            print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
                 Take a look at feedparser._parse_date_hungarian and feedparser.\
                 registerDateHandler" % param.updated
-            ) # TODO: Exception is just too generic
+    return True
 
 def _cmp_entries(x,y):
     """ Given two FeedParserDicts, compare them taking into account their updated_parsed fields """
-    _check_l10n(x['entry'],y['entry'])
-    for pos, val in enumerate(x['entry'].updated_parsed):
-        result = cmp(val, y['entry'].updated_parsed[pos])
-        if result != 0:
-            return result * -1
+    if _check_l10n(x['entry'],y['entry']):
+        for pos, val in enumerate(x['entry'].updated_parsed):
+            result = cmp(val, y['entry'].updated_parsed[pos])
+            if result != 0:
+                return result * -1
     return 0
 
 class PostSorter(Axon.Component.component):
+    """
+    PostSorter() -> PostSorter object
+    
+    Retrieves all the feeds, takes all their posts, it sorts them by date and 
+    finally sends only the last "maxPostNumber" ones.
+    
+    It takes all these already parsed feeds from the "inbox" inbox, and the 
+    configuration from the "config-inbox" inbox, and returns only the selected
+    feeds through the "outbox" outbox. The maxPostNumber number is retrieved from
+    the configuration object.
+    """
     Inboxes = {
-        "inbox"         : "Information coming from the socket",
+        "inbox"         : "Feeds in feedparser.FeedParserDict format",
         "control"       : "From component...",
-        "config-inbox"  : "Configuration information"
+        "config-inbox"  : "Configuration information in GeneralObjectParser format"
     }
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PostSorter, self).__init__(**argd)
         self.ordered_entries  = []
         self.config           = None
@@ -103,4 +118,3 @@ class PostSorter(Axon.Component.component):
                 self.pause()
                 
             yield 1
-

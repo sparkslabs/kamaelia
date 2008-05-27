@@ -33,7 +33,15 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 from ForwarderComponent import Forwarder
 
 class Feedparser(Axon.Component.component):
+    """
+    Feedparser(feedUrl) -> Feedparser object
+    
+    It receives the content of a feed and sends the parsed 
+    content. The parsed content is in a feedparser.FeedParserDict 
+    object. It sets the 'href' attribute to the feedUrl.
+    """
     def __init__(self, feedUrl):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Feedparser, self).__init__()
         self.feedUrl = feedUrl
         
@@ -55,6 +63,12 @@ class Feedparser(Axon.Component.component):
             yield 1
 
 def makeFeedParser(feedUrl):
+    """ 
+    makeFeedParser(feedUrl) -> Pipeline
+    
+    It returns a pipeline which does not expect any input except for signals and
+    sends the parsed data through the "outbox" outbox.
+    """
     return Pipeline(
             OneShot(feedUrl), 
             SimpleHTTPClient(), #TODO: SimpleHTTPClient doesn't seem to have proxy support
@@ -62,17 +76,29 @@ def makeFeedParser(feedUrl):
         )
 
 class FeedParserFactory(Axon.Component.component):
+    """
+    FeedParserFactory() -> FeedParserFactory object
+    
+    It receives different feed URLs throught the "inbox" inbox 
+    and returns each post parsed through the "outbox" outbox.
+    
+    This class can handles multiple concurrent petitions, retrieves
+    the content of the feed and parses it with the feedparser library.
+    The result is a feedparser.FeedParserDict per each feed URL 
+    provided.
+    """
     Inboxes = {
-        "inbox"          : "Information coming from the socket",
+        "inbox"          : "Strings representing different URLs of feeds",
         "control"        : "From component...",
-        "_parsed-feeds"  : "Feedparser drops here the feeds", 
+        "_parsed-feeds"  : "Parsed feeds retrieved from FeedParserFactory children", 
     }
     Outboxes = {
-        "outbox"         : "From component...", 
+        "outbox"         : "feedparser.FeedParserDict object representing a parsed feed", 
         "signal"         : "From component...", 
-        "_signal"        : "To the internal parsers", 
+        "_signal"        : "To the internal parsers",
     }
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(FeedParserFactory, self).__init__(**argd)
         self.mustStop         = None
         self.providerFinished = False
