@@ -1,0 +1,6 @@
+* Security issues: check that all the possible html values are really escaped
+* Caching information: if a server is down while the KamPlanet is running, the 
+  information previously published and gathered by KamPlanet is lost, and it 
+  shouldn't.
+* Error handling: (manually or automatically) test what happens if servers are 
+  down, and cross-component problems in general.

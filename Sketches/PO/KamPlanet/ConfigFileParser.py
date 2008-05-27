@@ -29,7 +29,26 @@ from Axon.Ipc import producerFinished
 
 from GeneralObjectParser import Field, GeneralObjectParser
 
-def generateGeneralConfig():
+def generateGeneralConfigObject():
+    """
+    generateGeneralConfigObject() -> GeneralObjectParser object
+    
+    Creates a new GeneralObjectParser with the fields found in the configuration
+    under the <general> tag.
+    
+    Fields:
+    - name: string with the name of the planet
+    - link: string with the full link to the planet
+    - rssTemplateName: string with the relative path of the RSS template. This path 
+       is relative to the current directory.
+    - htmlTemplateName: string with the relative path of the HTML template. This path
+       is relative to the current directory.
+    - rssFileName: string with the relative path of the generated HTML file. This path
+       is relative to the current directory.
+    - htmlFileName: string with the relative path of the generated HTML file. This path
+       is relative to the current directory.
+    - maxPostNumber: integer with the max number of posts listed in the planet
+    """
     return GeneralObjectParser(
                 name             = Field(str, 'Default name'), 
                 link             = Field(str, 'http://default.link/'), 
@@ -40,30 +59,63 @@ def generateGeneralConfig():
                 maxPostNumber    = Field(int, 10),
             )
 
+DEFAULT_URL         = 'http://default.url/'
+DEFAULT_NAME        = 'default name'
+DEFAULT_FACE        = 'image.jpg'
+DEFAULT_FACE_HEIGHT = '64'
+DEFAULT_FACE_WIDTH  = '64'
+
 def generateFeed():
+    """
+    generateGeneralConfigObject() -> GeneralObjectParser object
+    
+    Creates a new GeneralObjectParser with the fields found in the configuration
+    on each <feed> tag.
+    
+    Fields:
+    - url: string with the url
+    - name: string of the author of the blog
+    - face: string with the relative path to the image used for representing the 
+      user. This path is relative to the output directory.
+    - faceWidth:  horizontal size of the face image
+    - faceHeight: vertical size of the face image
+    """
     return GeneralObjectParser(
-                url        = Field(str, 'http://default.url/'), 
-                name       = Field(str, 'default name'), 
-                face       = Field(str, 'image.jpg'), 
-                faceWidth  = Field(str, '64'), 
-                faceHeight = Field(str, '64'),
+                url        = Field(str, DEFAULT_URL), 
+                name       = Field(str, DEFAULT_NAME), 
+                face       = Field(str, DEFAULT_FACE), 
+                faceWidth  = Field(str, DEFAULT_FACE_HEIGHT), 
+                faceHeight = Field(str, DEFAULT_FACE_WIDTH),
             )
 
 class ConfigFileParser(Axon.Component.component):
+    """
+    ConfigFileParser() -> ConfigFileParser object
+    
+    Parses the configuration gathered from a KamPlanet XML file.
+    
+    It receives the information from a SimpleXML SAX parser and parses it. It sends
+    every field parsed of the general configuration encapsulated in a single 
+    GeneralObjectParser through the config-outbox outbox. The fields of this object 
+    are listed in the generateGeneralConfigObject method. The feeds are sent one by 
+    one encapsulated in GeneralObjectParser objects through the feeds-outbox outbox. 
+    The fields of these objects are listed in the generateFeed method.
+    """
     Outboxes = {
         "outbox"           : "Not used",
         "signal"           : "From component...",
-        "feeds-outbox"     : "It will send one by one the parsed feeds. Instances of str by the moment",
-        "config-outbox"    : "It will send an instance of GeneralConfig when parsed",
+        "feeds-outbox"     : "It will send one by one the parsed feeds",
+        "config-outbox"    : "It will send a GeneralConfig object",
     }
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ConfigFileParser, self).__init__(**argd)
         self.feeds = []
         self.config       = None
         self.finished     = False
 
         # Temporal variables, for xml parsing
-        self.temp_config           = generateGeneralConfig()
+        self.temp_config           = generateGeneralConfigObject()
         self.temp_feed             = None
         self.parsing_general       = False
         self.parsing_feed          = False

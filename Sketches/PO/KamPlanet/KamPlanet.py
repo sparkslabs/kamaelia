@@ -30,27 +30,25 @@ from Kamaelia.File.Reading        import RateControlledFileReader
 from Kamaelia.File.Writing        import SimpleFileWriter
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
-from ConfigFileParser   import ConfigFileParser
-from FeedParserFactory  import FeedParserFactory
-from PostSorter         import PostSorter
-from Posts2html         import Posts2html
-from Posts2xml          import Posts2xml
-from ForwarderComponent import Forwarder
+from ConfigFileParser     import ConfigFileParser
+from FeedParserFactory    import FeedParserFactory
+from PostSorter           import PostSorter
+from KamTemplateProcessor import KamTemplateProcessor
+from ForwarderComponent   import Forwarder
 
 DEFAULT_KAMPLANET_CONFIG_FILENAME = "kamaelia-config.xml"
 
 class KamPlanet(object):
-    Posts2xml_class         = Posts2xml
-    Posts2html_class        = Posts2html
-    PostSorter_class        = PostSorter
-    ConfigFileParser_class  = ConfigFileParser
-    FeedParserFactory_class = FeedParserFactory
+    KamTemplateProcessor_class = KamTemplateProcessor
+    PostSorter_class           = PostSorter
+    ConfigFileParser_class     = ConfigFileParser
+    FeedParserFactory_class    = FeedParserFactory
     
     def __init__(self, fileName,  **argd):
         super(KamPlanet, self).__init__(self, **argd)
         self._fileName = fileName
     
-    def _create_xml_parser(self):
+    def create_xml_parser(self):
         return Pipeline(
                 RateControlledFileReader(self._fileName ),
                 SimpleXMLParser()
@@ -65,15 +63,16 @@ class KamPlanet(object):
         plug.link((plug, 'signal'), (outsideForwarder, 'secondary-control'))
         return outsideForwarder
     
-    def createPosts2fileManager(self, posts2file, 
-                    channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter
+    def createPosts2fileManager(self, 
+                    channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter, 
+                    templateField, outputFileField
                 ):
         return Graphline(
             CHANNELS_SUBSCRIBER = self.subscribeToPlugsplitter(channels_plugsplitter), 
             FEEDS_SUBSCRIBER    = self.subscribeToPlugsplitter(feeds_plugsplitter),
             POSTS_SUBSCRIBER    = self.subscribeToPlugsplitter(posts_plugsplitter),
             CONFIG_SUBSCRIBER   = self.subscribeToPlugsplitter(config_plugsplitter), 
-            POSTS2FILE          = posts2file(),
+            POSTS2FILE          = self.KamTemplateProcessor_class(templateField, outputFileField),
             FILE_WRITER         = Carousel(SimpleFileWriter),
             linkages = {
                 ('FEEDS_SUBSCRIBER',    'outbox')        : ('POSTS2FILE',  'feeds-inbox'), 
@@ -97,16 +96,16 @@ class KamPlanet(object):
         config_parser_finished_plugsplitter   = PlugSplitter()
         
         self.createPosts2fileManager(
-                self.Posts2xml_class,
-                channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter
+                channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter, 
+                'rssTemplateName', 'rssFileName'
         ).activate()
         self.createPosts2fileManager(
-                self.Posts2html_class, 
-                channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter
+                channels_plugsplitter, feeds_plugsplitter, posts_plugsplitter, config_plugsplitter,
+                'htmlTemplateName', 'htmlFileName'
         ).activate()
         
         graph = Graphline(
-                XML_PARSER                   = self._create_xml_parser(),
+                XML_PARSER                   = self.create_xml_parser(),
                 CONFIG_PARSER                = self.ConfigFileParser_class(),
                 FEED_PARSER_FACTORY          = self.FeedParserFactory_class(),
                 CHANNELS_SUBSCRIBER          = self.subscribeToPlugsplitter(channels_plugsplitter), 
@@ -153,8 +152,6 @@ class KamPlanet(object):
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    #import introspector
-    #introspector.activate()
     
     parser = OptionParser()
     parser.add_option("-c", "--config-file", 
@@ -163,7 +160,16 @@ if __name__ == '__main__':
                     metavar="FILE", 
                     default=DEFAULT_KAMPLANET_CONFIG_FILENAME
                 )
-
+    parser.add_option("-i", "--introspector", 
+                    action="store_true", 
+                    dest="introspector",
+                    help="activate introspector module: more information will be provided but the program will never finish", 
+                    default=False
+                )    
+                
     options, _ = parser.parse_args()
+    if options.introspector:
+        import introspector
+        introspector.activate()
     kamPlanet = KamPlanet(options.configFile)
     kamPlanet.run()
