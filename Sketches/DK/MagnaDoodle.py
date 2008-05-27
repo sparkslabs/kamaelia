@@ -162,6 +162,12 @@ class MagnaDoodle(Axon.Component.component):
                         self.blitToSurface()
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
+                if event == "c":
+                    print "YAY!"
+                    self.oldpos = None
+                    self.drawBG()
+                    self.blitToSurface()
+                    break
                 if event.type == pygame.MOUSEBUTTONDOWN:
      #               self.send(event, "outbox")
                     if self.shape == "circle":
@@ -180,11 +186,9 @@ class MagnaDoodle(Axon.Component.component):
                         self.send("clear", "outbox")
                         print "I'm here!"
                 elif event.type == (pygame.KEYDOWN):
-                    if event.key == pygame.K_ESCAPE:
-                       done = True
                     if event.key == pygame.K_c:
                        self.shape = "circle"
-                    if event.key == pygame.K_l:
+                    elif event.key == pygame.K_l:
                        self.shape = "line"
 
 
@@ -227,8 +231,8 @@ if __name__ == "__main__":
         WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),
         WINDOW2 = MagnaDoodle(bgcolour=(172,100,100),position=(200,0) ),
         linkages = {
-         #   ("WINDOW2", "inbox") : ("WINDOW1", "inbox")
-            ("WINDOW1", "outbox") : ("WINDOW2", "drawn")
+            ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
+         #   ("WINDOW1", "outbox") : ("WINDOW2", "drawn")
         },
         __debug = True,
    ).run()
