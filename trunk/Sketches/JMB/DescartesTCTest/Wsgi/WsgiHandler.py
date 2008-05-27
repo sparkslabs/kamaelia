@@ -90,7 +90,7 @@ class _WsgiHandler(threadedcomponent):
         self.wsgi_config = WsgiConfig
 
     def main(self):
-
+        self.log_writable.activate()
 
         self.headers = self.environ["headers"]
         self.server_name, self.server_port = getServerInfo(self.request["uri-server"])
