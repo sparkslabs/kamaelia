@@ -25,13 +25,11 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     protocol = None
     socketOptions=None
     TCPS=TCPServer
-    def __init__(self, Logger=Logger('Descartes.log'), **argd):
+    def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ServerCore, self).__init__(**argd)
         self.connectedSockets = []
         self.server = None
-
-        self.Logger = Logger
 
         if not self.protocol:
             print self.__class__, self.__class__.protocol, self.protocol, protocol

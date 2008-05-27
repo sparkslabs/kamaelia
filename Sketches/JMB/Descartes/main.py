@@ -44,8 +44,8 @@ log.activate()
 
 class DescartesServer(ServerCore):
     routing = [
-               ["/wsgi", Handler(log_writable, ServerConfig.WsgiConfig) ],
-               ['/static', Minimal.Handler('index.html', './Static/www/', '/static')]
+               ['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
+               ["/", Handler(log_writable, ServerConfig.WsgiConfig, '/') ],
               ]
     protocol=HTTPProtocol()
     port=8082

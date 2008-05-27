@@ -3,6 +3,7 @@ import pprint
 import string
 import sys
 import os
+import re
 import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
@@ -239,10 +240,17 @@ class _WsgiHandler(threadedcomponent):
         self.environ["REMOTE_PORT"] = consider + "56669"
         self.environ["GATEWAY_INTERFACE"] = consider + "CGI/1.1"
 
-def Handler(log_writable, WsgiConfig):
+def Handler(log_writable, WsgiConfig, substituted_path):
     def _getWsgiHandler(request):
-        mod_name, app_attr, app_name = urls.UrlList[request['raw-uri']]
-        module = _importWsgiModule(mod_name)
+        requested_uri = sanitizePath(request['raw-uri'], substituted_path)
+        print requested_uri
+        for url_item in urls.UrlList:
+            print 'trying ' + url_item[0]
+            if re.search(url_item[0], requested_uri):
+                print url_item[0] + 'succesful!'
+                u, mod, app_attr, app_name = url_item
+                break
+        module = _importWsgiModule(mod)
         app = getattr(module, app_attr)
         return _WsgiHandler(app_name, app, request, log_writable, WsgiConfig)
     return _getWsgiHandler
@@ -267,3 +275,19 @@ def _importWsgiModule(name):
     for comp in components[1:]:
         mod = getattr(mod, comp)
     return mod
+
+def sanitizePath(uri, substituted_path):
+    uri = uri.replace(substituted_path, '', 1)
+    uri = uri.strip('/')
+
+    outputpath = []
+    splitpath = string.split(uri, "/")
+    for directory in splitpath:
+        if directory == ".":
+            pass
+        elif directory == "..":
+            if len(outputpath) > 0: outputpath.pop()
+        else:
+            outputpath.append(directory)
+    outputpath = '/'.join(outputpath)
+    return outputpath
