@@ -104,7 +104,7 @@ class _WsgiHandler(threadedcomponent):
 
         #PEP 333 specifies that we're not supposed to buffer output here,
         #so pulling the iterator out of the app object
-        app_iter = self.app(self.environ, self.start_response)
+        app_iter = iter(self.app(self.environ, self.start_response))
 
         first_response = app_iter.next()
         if self.response_headers:
@@ -117,9 +117,12 @@ class _WsgiHandler(threadedcomponent):
                 'data' : fragment,
             }
             self.send(page, 'outbox')
-
-        app_iter.close()
-
+        
+        try:
+            app_iter.close()
+        except:
+            pass
+        
         self.send(Axon.Ipc.producerFinished(self), "signal")
 
     def start_response(self, status, response_headers, exc_info=None):
@@ -270,6 +273,7 @@ def _importWsgiModule(name):
     Just a copy/paste of the example my_import function from here:
     http://docs.python.org/lib/built-in-funcs.html
     """
+    print 'importing ' + name
     mod = __import__(name)
     components = name.split('.')
     for comp in components[1:]:
@@ -278,7 +282,6 @@ def _importWsgiModule(name):
 
 def sanitizePath(uri, substituted_path):
     uri = uri.replace(substituted_path, '', 1)
-    uri = uri.strip('/')
 
     outputpath = []
     splitpath = string.split(uri, "/")
