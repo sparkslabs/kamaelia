@@ -63,7 +63,6 @@ def parseISOdateTime(isoDateTime):
 class ScheduleEvent(object):
     def __init__(self):
         super(ScheduleEvent,self).__init__()
-        self.service_id = 0
         self.event_id = 0
 #        self.starttime = (0,0,0,0,0,0)
 #        self.duration = (0,0,0)
@@ -88,12 +87,12 @@ class ScheduleEvent(object):
         except KeyError:
             self.running_status = 1   # mark as not running
 
-    def buildDescriptors(self, services, programmes):
+    def buildDescriptors(self, serviceDescriptors, programmes):
+        servD = copy.deepcopy(serviceDescriptors)
         progD = copy.deepcopy(programmes[self.programme_info_file].descriptors)
-        servD = copy.deepcopy(services[self.service_id])
         self.descriptors = []
-        self.descriptors.extend(progD)
         self.descriptors.extend(servD)
+        self.descriptors.extend(progD)
         
 
 class Schedule(object):
@@ -104,7 +103,7 @@ class Schedule(object):
     def read(self, infile, timenow):
         COMMENT = re.compile(r"^\s*[#].*$")
         EMPTY = re.compile(r"^\s*$")
-        EVENT = re.compile(r"^\s*event\s+(\d+)\s+(\d+)\s+(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(.*)\s*$", re.I)
+        EVENT = re.compile(r"^\s*event\s+(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(\d+)\s+(.*)\s*$", re.I)
         for line in infile:
             if re.match(COMMENT, line):
                 pass
@@ -114,15 +113,13 @@ class Schedule(object):
                 match = re.match(EVENT, line)
                 if match:
                     e = ScheduleEvent()
-                    e.service_id = int(match.group(1))
-                    e.event_id   = int(match.group(2))
-                    e.setStartISO(match.group(3))
-                    e.setDuration(hour   = int(match.group(4)),
-                                  minute = int(match.group(5)),
-                                  second = int(match.group(6)),
+                    e.setStartISO(match.group(1))
+                    e.setDuration(hour   = int(match.group(2)),
+                                  minute = int(match.group(3)),
+                                  second = int(match.group(4)),
                               )
-                    #e.setRunningStatus(match.group(7))
-                    e.programme_info_file = match.group(7)
+                    e.event_id   = int(match.group(5))
+                    e.programme_info_file = match.group(6)
                     
                     # resolve running status
                     if timenow >= e.starttime and timenow < e.starttime + e.duration:
@@ -133,9 +130,9 @@ class Schedule(object):
                     self.events.append(e)
             
         
-    def buildDescriptors(self, services, programmes):
+    def buildDescriptors(self, serviceDescriptors, programmes):
         for event in self.events:
-            event.buildDescriptors(services,programmes)
+            event.buildDescriptors(serviceDescriptors,programmes)
             
             
     def subsetToPF(self):
@@ -145,35 +142,25 @@ class Schedule(object):
         raise "Not implemented"
     
     
-    def buildSections(self,tableIds,version,onid,tsid,services):
-        # first sort into separate services and internally within each, into chronological order
-        eventsByService = {}
-        for sid in services.keys():
-            eventsByService[sid] = []
-            
-        for event in self.events:
-            e = (event.starttime, event)
-            eventsByService[event.service_id].append(e)
-    
-        for sid in eventsByService.keys():
-            eventsByService[sid].sort()
-            eventsByService[sid] = [ e for (_,e) in eventsByService[sid] ]
-            
-        sections = []
-        for sid in eventsByService.keys():
-            sections.extend( self.buildServiceSections(tableIds,
+    def buildSections(self,tableIds,version,onid,tsid,serviceId,serviceDescriptors):
+        # first sort into chronological order
+        timeStampedEvents = [ (e.starttime, e) for e in self.events ]
+        timeStampedEvents.sort()
+        timeOrderedEvents = [ e for (_,e) in timeStampedEvents ]
+        
+        # now build the sections
+        self.serialiser = SerialiseEITSection()
+        sectionedEvents = self.groupEventsBySection(timeOrderedEvents)
+        return self.compileSections(tableIds,
                 version,
                 onid,
                 tsid,
-                sid,
-                eventsByService[sid],
-                ))
-                
-        return sections
-    
-    def buildServiceSections(self,tableIds,version,onid,tsid,serviceId,relevantEvents):
+                serviceId,
+                sectionedEvents,
+                )
         
-        serialiser = SerialiseEITSection()
+        
+    def groupEventsBySection(self, events):
         eventGroups = []
         
         # first pass, go through compiling just event sections and getting them grouped
@@ -188,14 +175,17 @@ class Schedule(object):
                 "free_CA_mode"   : False,
                 "descriptors"    : e.descriptors,
             } \
-            for e in relevantEvents ]
+            for e in events ]
         
         while len(remainingEvents) > 0:
-            (serialisedEvents, count) = serialiser.consumeEvents(remainingEvents)
+            (serialisedEvents, count) = self.serialiser.consumeEvents(remainingEvents)
             eventGroups.append(serialisedEvents)
             for _ in range(count):
                 remainingEvents.pop(0)
-
+    
+        return eventGroups
+    
+    def compileSections(self,tableIds,version,onid,tsid,serviceId,eventGroups):
         # now we know how it is going to spread across sections and table ids, we can build
         # the full sections
         numTables = len(eventGroups) / 256
@@ -229,7 +219,7 @@ class Schedule(object):
                 sectionNum = 0
                 tid += 1
                 
-            serialisedSection = serialiser.serialise(section, prebuiltEvents=eg)
+            serialisedSection = self.serialiser.serialise(section, prebuiltEvents=eg)
             sections.append(serialisedSection)
             
         assert(remainingSections == 0)
@@ -322,8 +312,8 @@ class Programme(object):
             } ) )
 
 
-def loadService(sid, serviceDir):
-    f = open(serviceDir+os.sep+("%d" % sid),"r")
+def loadService(servicefile):
+    f = open(servicefile,"r")
     data = f.read()
     return eval(data)   # yeah, dangerous, but I'll hopefully fix later
 
@@ -350,9 +340,9 @@ def parseArgs():
         help="read schedule from the specified file, or stdin if '-' or not specified",
         metavar="FILE")
     
-    parser.add_option("-s", "--services-dir", dest="servicesdir",
+    parser.add_option("-s", "--service", dest="servicefile",
         action="store", type="string", default=None,
-        help=r'the directory containing %d.py files defining service default descriptors, where %d is a service ID in decimal',
+        help=r'the service file defining service ID and default descriptors,',
         metavar="FILE")
         
     parser.add_option("-g", "--generalconfig", dest="configfile",
@@ -382,8 +372,8 @@ def parseArgs():
         
     (options, args) = parser.parse_args()
     
-    if options.servicesdir is None:
-        sys.stderr.write("You must specify the services dir (option '-s')\n")
+    if options.servicefile is None:
+        sys.stderr.write("You must specify the service description file (option '-s')\n")
         sys.exit(1)
         
     if options.configfile is None:
@@ -420,17 +410,13 @@ if __name__ == "__main__":
             programmes[progInfoFile] = Programme(progInfoFile)
     
     # stage 3 - determine what services are in the schedule and read configs for them
-    services = {}
-    for item in schedule.events:
-        serviceId = item.service_id
-        if not services.has_key(serviceId):
-            services[serviceId] = loadService(serviceId, options.servicesdir)
+    serviceId, serviceDescriptors = loadService(options.servicefile)
     
     # stage 4 - read global config - eg. ONID and TSID values
     generalConfig = GeneralConfig(options.configfile)
     
     # stage 5 - construct full descriptors for all events
-    schedule.buildDescriptors(services, programmes)
+    schedule.buildDescriptors(serviceDescriptors, programmes)
     
     if options.sch_outfile is not None:
         # stage 6 - write out the 'schedule' table sections
@@ -438,7 +424,9 @@ if __name__ == "__main__":
             options.version,
             generalConfig.onid,
             generalConfig.tsid,
-            services)
+            serviceId,
+            serviceDescriptors,
+            )
         f=open(options.sch_outfile, "wb")
         f.write("".join(sections))
         f.close()
@@ -452,7 +440,9 @@ if __name__ == "__main__":
             options.version,
             generalConfig.onid,
             generalConfig.tsid,
-            services)
+            serviceId,
+            serviceDescriptors,
+            )
         f=open(options.pf_outfile, "wb")
         f.write("".join(sections))
         f.close()

@@ -3,6 +3,7 @@
 # this is a fragment of python code, so make sure you
 # stick to sensible python syntax :-)
 
+( 1000,  # service id
 [
     ( 0x50, { "type"     : "component",
         "component_tag"  : 1,
@@ -19,3 +20,4 @@
         "text"           : ''
     } ),
 ]
+)
