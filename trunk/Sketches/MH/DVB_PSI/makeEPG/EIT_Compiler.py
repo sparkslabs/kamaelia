@@ -53,7 +53,7 @@ import re
 import os
 import ConfigParser
 import copy
-from CreatePSI import SerialiseEITSection
+from CreateSections import SerialiseEITSection
 import datetime
 import time
 
