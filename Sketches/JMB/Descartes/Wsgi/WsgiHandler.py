@@ -123,6 +123,7 @@ class _WsgiHandler(threadedcomponent):
         except:
             pass
         
+        self.environ['wsgi.input'].close()
         self.send(Axon.Ipc.producerFinished(self), "signal")
 
     def start_response(self, status, response_headers, exc_info=None):
@@ -150,7 +151,6 @@ class _WsgiHandler(threadedcomponent):
             self.environ[cgi_varname] = self.environ["headers"][header]
 
         pprint.pprint(self.environ)
-        pprint.pprint(self.environ["headers"])
 
     def generateRequestMemFile(self):
         """
