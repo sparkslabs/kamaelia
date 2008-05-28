@@ -11,7 +11,7 @@ is a beginning or trailing slash
 """
 
 UrlList = [
-    ('/?simple/', 'Wsgi.Apps.simple_app', 'simple_app', 'Simple WSGI Application'),
-    ('/?moin/', 'Wsgi.Apps.moin', 'application', 'MoinMoin'),
+    ('/?simple/', 'Wsgi.Apps.simple_app', 'simple_app', '/simple'),
+    ('/?moin/', 'Wsgi.Apps.moin', 'application', '/moin'),
     ('.*', 'Wsgi.Apps.error_handler', 'application', 'Error Handler')
 ]

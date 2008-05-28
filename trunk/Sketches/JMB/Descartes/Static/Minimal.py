@@ -42,6 +42,8 @@ from Axon.Component import component
 from Kamaelia.File.BetterReading import IntelligentFileReader
 import Kamaelia.Protocol.HTTP.MimeTypes as MimeTypes
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+import mimetypes
+mimetypes.init()
 
 def sanitizeFilename(filename):
     output = ""
@@ -50,6 +52,7 @@ def sanitizeFilename(filename):
         elif char >= "a" and char <= "z": output += char
         elif char >= "A" and char <= "Z": output += char
         elif char == "-" or char == "_" or char == ".": output += char
+        elif char == "?": break
     return output
 
 def sanitizePath(uri, substituted_path):
@@ -63,6 +66,9 @@ def sanitizePath(uri, substituted_path):
             pass
         elif directory == "..":
             if len(outputpath) > 0: outputpath.pop()
+        elif directory.find('?') != -1:
+            outputpath.append(directory.partition('?')[0])  #remove the query string from the URI
+            break
         else:
             outputpath.append(directory)
     outputpath = '/'.join(outputpath)
@@ -142,7 +148,7 @@ class Minimal(component):
                     filepath = filepath + '/' + self.indexfilename
 
                 print filepath
-                filetype = MimeTypes.workoutMimeType(filepath)
+                filetype = mimetypes.guess_type(filepath)
                 resource = {
                     "type"           : filetype,
                     "statuscode"     : "200",
