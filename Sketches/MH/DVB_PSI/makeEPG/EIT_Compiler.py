@@ -54,6 +54,8 @@ import os
 import ConfigParser
 import copy
 from CreateSections import SerialiseEITSection
+from CreateSections import PacketiseTableSections
+from CreateSections import MakeTransportStreamPackets
 import datetime
 import time
 
@@ -382,6 +384,11 @@ def parseArgs():
         help="Datetime in ISO format YYYY-MM-DDTHH:MM:SS (must be exactly this format)",
         )
         
+    parser.add_option("-m", "--mux", dest="mux",
+        action="store_true", default=False,
+        help="Optional. Set to output a transport stream containing sections in ts packets of pid 0x12",
+        )
+        
     (options, args) = parser.parse_args()
     
     if options.servicefile is None:
@@ -428,7 +435,7 @@ if __name__ == "__main__":
     
     # stage 5 - construct full descriptors for all events
     schedule.buildDescriptors(serviceDescriptors, programmes)
-    
+    print options.mux
     if options.sch_outfile is not None:
         # write out the 'schedule' table sections
         sections = schedule.buildScheduleSections(
@@ -439,9 +446,18 @@ if __name__ == "__main__":
             serviceId,
             serviceDescriptors,
             )
-        f=open(options.sch_outfile, "wb")
-        f.write("".join(sections))
-        f.close()
+        if not options.mux:
+            f=open(options.sch_outfile, "wb")
+            f.write("".join(sections))
+            f.close()
+        else:
+            ts = []
+            packetiser = PacketiseTableSections(MakeTransportStreamPackets(0x12))
+            for section in sections:
+                ts.extend(packetiser.packetise(section))
+            f=open(options.sch_outfile, "wb")
+            f.write("".join(ts))
+            f.close()
         
     if options.pf_outfile is not None:
         # write out the 'present-following' table sections
@@ -453,7 +469,16 @@ if __name__ == "__main__":
             serviceId,
             serviceDescriptors,
             )
-        f=open(options.pf_outfile, "wb")
-        f.write("".join(sections))
-        f.close()
+        if not options.mux:
+            f=open(options.pf_outfile, "wb")
+            f.write("".join(sections))
+            f.close()
+        else:
+            ts = []
+            packetiser = PacketiseTableSections(MakeTransportStreamPackets(0x12))
+            for section in sections:
+                ts.extend(packetiser.packetise(section))
+            f=open(options.pf_outfile, "wb")
+            f.write("".join(ts))
+            f.close()
     
