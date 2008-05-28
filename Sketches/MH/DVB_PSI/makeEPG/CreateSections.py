@@ -161,6 +161,7 @@ class PacketiseTableSections(object):
         self.leftOvers_Threshold = 0   # threshold for carrying over the end of one section into a packet that starts a new one
         
     def packetise(self, section):
+        tspackets = []
         
         payload = []
         startOffset = 0
@@ -175,8 +176,9 @@ class PacketiseTableSections(object):
         
         # first packet
         chunkLen = min(bytesLeft, 184-1-startOffset)  # -1 for the pointer_field
-        payload.insert(section[sStart:sStart+chunkLen])
-        print self.tsPacketiser.packetise(payload.join(""), True, chr(0xff))
+        payload.append(section[sStart:sStart+chunkLen])
+        tspackets.append( self.tsPacketiser.packetise("".join(payload), True, chr(0xff)) )
+        payload = []
         sStart+=chunkLen
         bytesLeft-=chunkLen
 
@@ -188,11 +190,13 @@ class PacketiseTableSections(object):
 
             # subsequent packets
             chunkLen = min(bytesLeft, 184)  # -1 for the pointer_field
-            payload.insert(section[sStart:sStart+chunkLen])
-            print self.tsPacketiser.packetise(payload.join(""), False, chr(0xff))
+            payload.append(section[sStart:sStart+chunkLen])
+            tspackets.append( self.tsPacketiser.packetise("".join(payload), False, chr(0xff)) )
+            payload = []
             sStart+=chunkLen
             bytesLeft-=chunkLen
 
+        return tspackets
 
 
 
@@ -223,18 +227,18 @@ class MakeTransportStreamPackets(object):
         
         self.continuityCounter = (self.continuityCounter + 1) % 16
     
-        packet.insert(chr(0x47))           # start byte
-        packet.insert(chr((pidAndFlags>>8) & 0xff))
-        packet.insert(chr((pidAndFlags   ) & 0xff))
-        packet.insert(chr(ctrlFlags))
+        packet.append(chr(0x47))           # start byte
+        packet.append(chr((pidAndFlags>>8) & 0xff))
+        packet.append(chr((pidAndFlags   ) & 0xff))
+        packet.append(chr(ctrlFlags))
     
         if (len(payload) > 184):
-            raise "Payload too long to fit in TS packet!"
+            raise "Payload too long to fit in TS packet! "+str(len(payload))
         
-        packet.insert(payload)
+        packet.append(payload)
         
         if (len(payload) < 184):
             numStuffingBytes = 184-len(payload)
-            packet.insert(stuffingByte * numStuffingBytes)
+            packet.append(stuffingByte * numStuffingBytes)
         
-        return packet.join("")
+        return "".join(packet)
