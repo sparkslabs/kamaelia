@@ -10,8 +10,8 @@
 #        transport stream source file
 
 [programme]
-title            = The quick brown fox
-description      = In this exciting show, we follow the exciting adventures of Mr Quick the brown fox.
+title            = The quick brown fox (episode 1, season 2)
+description      = In this exciting show, we follow the exciting adventures of Mr Quick the brown fox. Isn't this good, I'm just writing stuff to make this description longer! Lets hope it helps with the tests I'm doing.
 duration         = 00:30:00
 content_type     = 0x01 0x14
 instance_crid    = /ABCD
