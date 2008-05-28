@@ -435,7 +435,7 @@ if __name__ == "__main__":
     
     # stage 5 - construct full descriptors for all events
     schedule.buildDescriptors(serviceDescriptors, programmes)
-    print options.mux
+    
     if options.sch_outfile is not None:
         # write out the 'schedule' table sections
         sections = schedule.buildScheduleSections(
