@@ -57,8 +57,10 @@ from CreateSections import SerialiseEITSection
 import datetime
 import time
 
-def parseISOdateTime(isoDateTime):
-    return datetime.datetime(*time.strptime(isoDateTime,"%Y-%m-%dT%H:%M:%S")[0:6])
+from Parsing import parseInt
+from Parsing import parseISOdateTime
+from Parsing import parseList
+
 
 class ScheduleEvent(object):
     def __init__(self):
@@ -68,6 +70,14 @@ class ScheduleEvent(object):
 #        self.duration = (0,0,0)
         self.running_status = 1
         self.programme_info_file = None
+        
+    def __cmp__(self, other):
+        if self.starttime < other.starttime:
+            return -1
+        elif self.starttime > other.starttime:
+            return +1
+        else:
+            return 0
     
     def setStartISO(self, isoTimeString):
         self.starttime = parseISOdateTime(isoTimeString)
@@ -96,11 +106,11 @@ class ScheduleEvent(object):
         
 
 class Schedule(object):
-    def __init__(self):
+    def __init__(self, infile, timenow):
         super(Schedule,self).__init__()
         self.events = []
+        self.timenow = timenow
 
-    def read(self, infile, timenow):
         COMMENT = re.compile(r"^\s*[#].*$")
         EMPTY = re.compile(r"^\s*$")
         EVENT = re.compile(r"^\s*event\s+(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(\d+)\s+(.*)\s*$", re.I)
@@ -128,6 +138,9 @@ class Schedule(object):
                         e.setRunningStatus("no")
                     
                     self.events.append(e)
+                    
+        # sort into chronological order
+        self.events.sort()
             
         
     def buildDescriptors(self, serviceDescriptors, programmes):
@@ -135,22 +148,43 @@ class Schedule(object):
             event.buildDescriptors(serviceDescriptors,programmes)
             
             
-    def subsetToPF(self):
+    def findPresentFollowing(self):
         """\
         Reduces down the set of events to only those needed for Present-Following table data
         """
-        raise "Not implemented"
+        # find the one marked as running (the "present") then find the one after it (the "following")
+        presentEvent = None
+        for event in self.events:
+            if presentEvent is None:
+                if event.running_status == 4:
+                    presentEvent = event
+            else:
+                return [ presentEvent, event ]
     
+        # nothing is present, so lets do a more exhaustive search for following
+        # (find first event in the future, going through them in ascending order)
+        for event in self.events:
+            if event.starttime > self.timenow:
+                return [ event ]
+        
+        return [] # really can't find anything
+        
+    def buildScheduleSections(self,tableIds,version,onid,tsid,serviceId,serviceDescriptors):
+        return self.buildSections(tableIds,version,onid,tsid,serviceId,serviceDescriptors,True)
     
-    def buildSections(self,tableIds,version,onid,tsid,serviceId,serviceDescriptors):
-        # first sort into chronological order
-        timeStampedEvents = [ (e.starttime, e) for e in self.events ]
-        timeStampedEvents.sort()
-        timeOrderedEvents = [ e for (_,e) in timeStampedEvents ]
+    def buildPfSections(self,tableIds,version,onid,tsid,serviceId,serviceDescriptors):
+        return self.buildSections(tableIds,version,onid,tsid,serviceId,serviceDescriptors,False)
+    
+    def buildSections(self,tableIds,version,onid,tsid,serviceId,serviceDescriptors,schedule):
+        
+        if schedule:
+            events = self.events
+        else:
+            events = self.findPresentFollowing()
         
         # now build the sections
         self.serialiser = SerialiseEITSection()
-        sectionedEvents = self.groupEventsBySection(timeOrderedEvents)
+        sectionedEvents = self.groupEventsBySection(events)
         return self.compileSections(tableIds,
                 version,
                 onid,
@@ -226,28 +260,6 @@ class Schedule(object):
 
         return sections
 
-def parseInt(string):
-    HEX = re.compile("^\s*0x[0-9a-f]+\s*$", re.I)
-    DEC = re.compile("^\s*\d+\s*$", re.I)
-        
-    if re.match(DEC,string):
-        return int(string, 10)
-    elif re.match(HEX,string):
-        return int(string, 16)
-    else:
-        return int(string)
-
-def parseList(string):
-    CAR_CDR = re.compile(r"^\s*(\S+)(\s+.*)?$")
-    tail = string.strip()
-    theList = []
-    
-    while tail:
-        match = re.match(CAR_CDR, tail)
-        theList.append(match.group(1))
-        tail = match.group(2)
-        
-    return theList
 
 class Programme(object):
     def __init__(self, programme_file):
@@ -399,8 +411,7 @@ if __name__ == "__main__":
         infile = open(options.infile,"r")
         
     # stage 1 - parse the schedule
-    schedule = Schedule()
-    schedule.read(infile, options.timenow)
+    schedule = Schedule(infile, options.timenow)
     
     # stage 2 - determine what programmes are in the schedule and read metadata for them
     programmes = {}
@@ -419,8 +430,9 @@ if __name__ == "__main__":
     schedule.buildDescriptors(serviceDescriptors, programmes)
     
     if options.sch_outfile is not None:
-        # stage 6 - write out the 'schedule' table sections
-        sections = schedule.buildSections(generalConfig.sch_tableIds,
+        # write out the 'schedule' table sections
+        sections = schedule.buildScheduleSections(
+            generalConfig.sch_tableIds,
             options.version,
             generalConfig.onid,
             generalConfig.tsid,
@@ -432,11 +444,9 @@ if __name__ == "__main__":
         f.close()
         
     if options.pf_outfile is not None:
-        # stage 7 - determine what goes in the present-following table
-        schedule.subsetToPF()
-    
-        # stage 8 - write out the 'present-following' table sections
-        sections = schedule.buildSections(generalConfig.pf_tableIds,
+        # write out the 'present-following' table sections
+        sections = schedule.buildPfSections(
+            generalConfig.pf_tableIds,
             options.version,
             generalConfig.onid,
             generalConfig.tsid,
