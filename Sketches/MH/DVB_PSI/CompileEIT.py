@@ -31,8 +31,8 @@ be some configuration files defining the schedule and programmes.
 
 A schedule file consists of lines of the form::
     
-    #     service-id   event-id   starttime            duration  running                  programme-ref
-    EVENT nnnn         nnnn       yyyy-mm-dd hh:mm:ss  hh:mm:ss  NO|SOON|PAUSING|RUNNING  filename
+    #     service-id   event-id   starttime            duration  programme-ref
+    EVENT nnnn         nnnn       yyyy-mm-ddThh:mm:ss  hh:mm:ss  filename
 
 Programme ref's are the filename containing programme metadata. Must be of the form::
     
@@ -54,23 +54,28 @@ import os
 import ConfigParser
 import copy
 from CreatePSI import SerialiseEITSection
+import datetime
+import time
 
+def parseISOdateTime(isoDateTime):
+    return datetime.datetime(*time.strptime(isoDateTime,"%Y-%m-%dT%H:%M:%S")[0:6])
 
 class ScheduleEvent(object):
     def __init__(self):
         super(ScheduleEvent,self).__init__()
         self.service_id = 0
         self.event_id = 0
-        self.starttime = (0,0,0,0,0,0)
-        self.duration = (0,0,0)
+#        self.starttime = (0,0,0,0,0,0)
+#        self.duration = (0,0,0)
         self.running_status = 1
         self.programme_info_file = None
     
-    def setStart(self, year, month, day, hour, minute, second):
-        self.starttime = (year,month,day,hour,minute,second)
+    def setStartISO(self, isoTimeString):
+        self.starttime = parseISOdateTime(isoTimeString)
         
     def setDuration(self, hour,minute,second):
-        self.duration = (hour,minute,second)
+        self.duration = datetime.timedelta(hours=hour,minutes=minute,seconds=second)
+        self.duration_tuple = (hour,minute,second)
 
     def setRunningStatus(self, status):
         status = status.lower().strip()
@@ -96,10 +101,10 @@ class Schedule(object):
         super(Schedule,self).__init__()
         self.events = []
 
-    def read(self, infile):
+    def read(self, infile, timenow):
         COMMENT = re.compile(r"^\s*[#].*$")
         EMPTY = re.compile(r"^\s*$")
-        EVENT = re.compile(r"^\s*event\s+(\d+)\s+(\d+)\s+(\d\d\d\d)-(\d\d)-(\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(no|soon|pausing|running)\s+(.*)\s*$", re.I)
+        EVENT = re.compile(r"^\s*event\s+(\d+)\s+(\d+)\s+(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)\s+(\d\d):(\d\d):(\d\d)\s+(.*)\s*$", re.I)
         for line in infile:
             if re.match(COMMENT, line):
                 pass
@@ -111,22 +116,23 @@ class Schedule(object):
                     e = ScheduleEvent()
                     e.service_id = int(match.group(1))
                     e.event_id   = int(match.group(2))
-                    e.setStart(year   = int(match.group(3)),
-                               month  = int(match.group(4)),
-                               day    = int(match.group(5)),
-                               hour   = int(match.group(6)),
-                               minute = int(match.group(7)),
-                               second = int(match.group(8)),
+                    e.setStartISO(match.group(3))
+                    e.setDuration(hour   = int(match.group(4)),
+                                  minute = int(match.group(5)),
+                                  second = int(match.group(6)),
                               )
-                    e.setDuration(hour   = int(match.group(9)),
-                                  minute = int(match.group(10)),
-                                  second = int(match.group(11)),
-                              )
-                    e.setRunningStatus(match.group(12))
-                    e.programme_info_file = match.group(13)
+                    #e.setRunningStatus(match.group(7))
+                    e.programme_info_file = match.group(7)
+                    
+                    # resolve running status
+                    if timenow >= e.starttime and timenow < e.starttime + e.duration:
+                        e.setRunningStatus("running")
+                    else:
+                        e.setRunningStatus("no")
                     
                     self.events.append(e)
             
+        
     def buildDescriptors(self, services, programmes):
         for event in self.events:
             event.buildDescriptors(services,programmes)
@@ -176,8 +182,8 @@ class Schedule(object):
         remainingEvents = [ \
             { \
                 "event_id"       : e.event_id,
-                "starttime"      : e.starttime,
-                "duration"       : e.duration,
+                "starttime"      : e.starttime.timetuple()[0:6],
+                "duration"       : e.duration_tuple,
                 "running_status" : e.running_status,
                 "free_CA_mode"   : False,
                 "descriptors"    : e.descriptors,
@@ -369,6 +375,11 @@ def parseArgs():
         help="the version number to use for the table",
         )
         
+    parser.add_option("-n", "--timenow", dest="timenow",
+        action="store", type="string", default=None,
+        help="Datetime in ISO format YYYY-MM-DDTHH:MM:SS (must be exactly this format)",
+        )
+        
     (options, args) = parser.parse_args()
     
     if options.servicesdir is None:
@@ -378,6 +389,12 @@ def parseArgs():
     if options.configfile is None:
         sys.stderr.write("You must specify the global config file (option '-c')\n")
         sys.exit(1)
+        
+    if options.timenow is None:
+        sys.stderr.write("You must specify time for which schedule/pf is built (option '-n')\n")
+        sys.exit(1)
+        
+    options.timenow = parseISOdateTime(options.timenow)
 
     return options
 
@@ -393,7 +410,7 @@ if __name__ == "__main__":
         
     # stage 1 - parse the schedule
     schedule = Schedule()
-    schedule.read(infile)
+    schedule.read(infile, options.timenow)
     
     # stage 2 - determine what programmes are in the schedule and read metadata for them
     programmes = {}
