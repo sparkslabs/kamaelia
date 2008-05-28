@@ -1,10 +1,9 @@
-#
 # Test schedule
 #
 
 # EVENT SYNTAX:
-#       service-id  event-id    start                   duration    status      programme-ref
-# -------------------------------------------------------------------------------------------------
+#       service-id  event-id    start                   duration    programme-ref
+# ----------------------------------------------------------------------------------
 
-event   1000        2000        2008-05-24 15:00:00     00:30:00    running     test_programme
-event   1000        2001        2008-05-24 15:30:00     00:30:00    running     test_programme
+event   1000        2000        2008-05-24T15:00:00     00:30:00    test_programme
+event   1000        2001        2008-05-24T15:30:00     00:30:00    test_programme
