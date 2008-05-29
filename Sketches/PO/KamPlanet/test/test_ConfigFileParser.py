@@ -23,55 +23,14 @@
 # Licensed to the BBC under a Contributor Agreement: PO
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-
-from Kamaelia.Chassis.Graphline   import Graphline
-from Kamaelia.Util.OneShot        import OneShot
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
+
+from KamTestCase                  import KamTestCase
 
 import ConfigFileParser
 
-from MessageAdder                 import MessageAdder
-from MessageStorer                import MessageStorer
-
-import os
-import unittest
-import tempfile
-
 # First approach...
-class ConfigFileParserTestCase(unittest.TestCase):
-    def setUp(self):
-        self.xmlParser        = SimpleXMLParser()
-        self.configFileParser = ConfigFileParser.ConfigFileParser()
-        
-        self.xmlParser.link((self.xmlParser, 'outbox'), (self.configFileParser, 'inbox'))
-        self.xmlParser.link((self.xmlParser, 'signal'), (self.configFileParser, 'control'))
-        
-        self.graph = self.initializeSystem(self.xmlParser,  self.configFileParser)
-        
-    def initializeSystem(self, inputComponentUnderTest, outputComponentUnderTest):
-        self.messageAdder         = MessageAdder(
-                        inputComponentUnderTest.Inboxes
-                    )
-        
-        self.messageStorer        = MessageStorer(
-                        outputComponentUnderTest.Outboxes
-                    )
-        linkages = {}
-        
-        for inbox in inputComponentUnderTest.Inboxes:
-            linkages[('MESSAGE_ADDER', inbox)]                = ('INPUT_COMPONENT_UNDER_TEST', inbox)
-        
-        for outbox in outputComponentUnderTest.Outboxes:
-            linkages[('OUTPUT_COMPONENT_UNDER_TEST', outbox)] = ('MESSAGE_STORER', outbox)
-        
-        return Graphline(
-            MESSAGE_ADDER               = self.messageAdder,
-            INPUT_COMPONENT_UNDER_TEST  = inputComponentUnderTest,
-            OUTPUT_COMPONENT_UNDER_TEST = outputComponentUnderTest,
-            MESSAGE_STORER              = self.messageStorer, 
-            linkages                    = linkages, 
-        )
-    
+class ConfigFileParserTestCase(KamTestCase):
     SAMPLE_CONFIG1 = """<?xml version="1.0" encoding="UTF-8"?>
             <kamplanetconfig>
                 <general>
@@ -98,12 +57,19 @@ class ConfigFileParserTestCase(unittest.TestCase):
             </kamplanetconfig>
         """
     
+    def setUp(self):
+        self.xmlParser        = SimpleXMLParser()
+        self.configFileParser = ConfigFileParser.ConfigFileParser()
+        
+        self.xmlParser.link((self.xmlParser, 'outbox'), (self.configFileParser, 'inbox'))
+        self.xmlParser.link((self.xmlParser, 'signal'), (self.configFileParser, 'control'))
+        
+        self.initializeSystem(self.xmlParser,  self.configFileParser)
+    
     def runWithSampleConfig(self, sampleConfig):
         self.messageAdder.addMessage(sampleConfig, 'inbox')
         self.messageAdder.addMessage(producerFinished(), "control")
-        self.messageAdder.stopMessageAdder(1000)
-        self.messageStorer.stopMessageAdder(1000)
-        self.graph.run()
+        self.runMessageExchange()
     
     def testSignal(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
@@ -165,5 +131,6 @@ class ConfigFileParserTestCase(unittest.TestCase):
                 )
     
 if __name__ == '__main__':
+    import unittest
     unittest.main()
     
