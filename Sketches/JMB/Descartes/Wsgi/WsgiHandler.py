@@ -7,17 +7,13 @@ import re
 import cStringIO
 from datetime import datetime
 from wsgiref.validate import validator
+import copy
 import LogWritable
 import urls
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
-#from Axon.Component import component
+from Axon.Component import component
 import Kamaelia.Util.Log as Log
-
-
-from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
-
-from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
 Axon.Box.ShowAllTransits = False
 # ----------------------------------------------------------------------------------------------------
@@ -42,17 +38,17 @@ def HTML_WRAP(app):
         yield "</html>\n"
     return gen
 
-def getServerInfo(uri_server):
-    split_server = uri_server.split(":")
-    return (split_server[0], split_server[1])
-
 def normalizeEnviron(environ):
     """
     Converts environ variables to strings for wsgi compliance and deletes extraneous
-    fields.
+    fields.  Also puts the request headers into CGI variables.
     """
     header_list = []
     header_dict = environ['headers']
+    
+    for header in environ["headers"]:
+        cgi_varname = "HTTP_"+header.replace("-","_").upper()
+        environ[cgi_varname] = environ["headers"][header]
 
     for key in header_dict:
         line = "%s: %s\n" % (key, header_dict[key])
@@ -82,7 +78,12 @@ class _WsgiHandler(threadedcomponent):
         super(_WsgiHandler, self).__init__()
         self.app_name = app_name
         self.request = request
-        self.environ = request
+        self.environ = copy.deepcopy(request)
+        #Some part of the server holds a reference to the request.
+        #Since we have to format the data in some different ways than the
+        #HTTPParser expects, we need to give the environ object its own
+        #copy of the object.
+        
         self.app = app
         self.log_writable = log_writable
         self.status = self.response_headers = False
@@ -90,27 +91,27 @@ class _WsgiHandler(threadedcomponent):
 
     def main(self):
 
+        self.server_name, self.server_port = self.request['uri-server'].split(':')
+        #Get the server name and the port number from the server portion of the
+        #uri.  E.G. 127.0.0.1:8082/moin returns 127.0.0.1 and 8082
 
         self.headers = self.environ["headers"]
-        self.server_name, self.server_port = getServerInfo(self.request["uri-server"])
 
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
 
-        self.munge_headers()
-
         #stringify all variables for wsgi compliance
         normalizeEnviron(self.environ)
+        
+        pprint.pprint(self.environ)
 
         #PEP 333 specifies that we're not supposed to buffer output here,
         #so pulling the iterator out of the app object
         app_iter = iter(self.app(self.environ, self.start_response))
 
         first_response = app_iter.next()
-        if self.response_headers:
+        if self.response_headers and self.status:
             self.write(first_response)
-        else:
-            raise WsgiError()
 
         for fragment in app_iter:
             page = {
@@ -119,20 +120,23 @@ class _WsgiHandler(threadedcomponent):
             self.send(page, 'outbox')
         
         try:
-            app_iter.close()
+            app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
         except:
-            pass
+            pass  #it was a list, so we're good
         
         self.environ['wsgi.input'].close()
         self.send(Axon.Ipc.producerFinished(self), "signal")
 
     def start_response(self, status, response_headers, exc_info=None):
         """
-        Method to be passed to WSGI application object
+        Method to be passed to WSGI application object to start the response.
         """
         #TODO:  Add more exc_info support
         if exc_info:
-            raise exc_info[0], exc_info[1], exc_info[2]
+            try:    
+                raise exc_info[0], exc_info[1], exc_info[2]
+            finally:
+                exc_info = None
 
         self.status = status
         self.response_headers = response_headers
@@ -140,21 +144,23 @@ class _WsgiHandler(threadedcomponent):
         return self.write
 
     def write(self, body_data):
-        page = {
-            'data' : body_data,
-        }
-        self.send(page, 'outbox')
+        """
+        Write method to be passed to WSGI application object.  Used to write
+        unbuffered output to the page.  You probably don't want to use this
+        unless you have good reason to.
+        """
+        if self.response_headers and self.status:
+            page = {
+                'data' : body_data,
+            }
+            self.send(page, 'outbox')
 
-    def munge_headers(self):
-        for header in self.environ["headers"]:
-            cgi_varname = "HTTP_"+header.replace("-","_").upper()
-            self.environ[cgi_varname] = self.environ["headers"][header]
-
-        pprint.pprint(self.environ)
+        else:
+            raise WsgiError("write() called before start_response()!")
 
     def generateRequestMemFile(self):
         """
-        Creates a memfile to be stored in wsgi.input
+        Creates a memfile to be stored in wsgi.input.  Uses cStringIO which may be vulnerable to DOS attacks.
         """
         CRLF = '\r\n'
 
@@ -173,7 +179,7 @@ class _WsgiHandler(threadedcomponent):
     def initRequiredVars(self, wsgi_config):
         """
         This method initializes all variables that are required to be present
-        (including ones that could possibly be empty.
+        (including ones that could possibly be empty).
         """
         self.environ["REQUEST_METHOD"] = self.request["method"]
 
@@ -206,13 +212,7 @@ class _WsgiHandler(threadedcomponent):
 
     def initOptVars(self, wsgi_config):
         """This method initializes all variables that are optional"""
-        # Portion of request URL that follows the ? - may be empty or absent
-        if self.environ["uri-suffix"].find("?") != -1:
-            self.environ["QUERY_STRING"] = \
-                self.environ["uri-suffix"][self.environ["uri-suffix"].find("?")+1:]
-        else:
-            self.environ["QUERY_STRING"] = ""
-
+        
         # Contents of an HTTP_CONTENT_TYPE field
         self.environ["CONTENT_TYPE"] = self.headers.get("content-type","")
 
@@ -244,8 +244,13 @@ class _WsgiHandler(threadedcomponent):
         self.environ["GATEWAY_INTERFACE"] = consider + "CGI/1.1"
 
 def Handler(log_writable, WsgiConfig, substituted_path):
+    """
+    This method checks the URI against a series of regexes from urls.py to determine which
+    application object to route the request to, imports the file that contains the app object,
+    and then extracts it to be passed to the newly created WSGI Handler.
+    """
     def _getWsgiHandler(request):
-        requested_uri = sanitizePath(request['raw-uri'], substituted_path)
+        requested_uri = sanitizePath(request['raw-uri'], substituted_path, request)
         print requested_uri
         for url_item in urls.UrlList:
             print 'trying ' + url_item[0]
@@ -259,12 +264,20 @@ def Handler(log_writable, WsgiConfig, substituted_path):
     return _getWsgiHandler
 
 def HTTPProtocol():
+    """
+    Pretty standard method.  Returns a function object to implement the HTTP protocol.
+    """
     def foo(self,**argd):
         print self.routing
         return HTTPServer(requestHandlers(self.routing),**argd)
     return foo
 
 class WsgiError(Exception):
+    """
+    This is just a generic exception class.  As of right now, it is only thrown
+    when write is called before start_response, so it's primarily an exception
+    that is thrown when an application messes up, but that may change!
+    """
     def __init__(self):
         super(WsgiError, self).__init__()
 
@@ -280,17 +293,29 @@ def _importWsgiModule(name):
         mod = getattr(mod, comp)
     return mod
 
-def sanitizePath(uri, substituted_path):
+def sanitizePath(uri, substituted_path, request):
+    """
+    Almost a straight copy and paste from the minimal request handler.
+    """
     uri = uri.replace(substituted_path, '', 1)
 
-    outputpath = []
-    splitpath = string.split(uri, "/")
-    for directory in splitpath:
+    outputpath = []    
+    
+    for directory in uri.split("/"):
+        print directory
         if directory == ".":
             pass
         elif directory == "..":
             if len(outputpath) > 0: outputpath.pop()
+        elif directory.find('?') != -1:
+            query_split = directory.split('?')
+            query_part = query_split[-1]
+            directory_part = query_split[0]
+            request['QUERY_STRING'] = query_part
+            outputpath.append(directory_part)
+            #also just so happens to be a WSGI variable.
         else:
             outputpath.append(directory)
+    print outputpath
     outputpath = '/'.join(outputpath)
     return outputpath
