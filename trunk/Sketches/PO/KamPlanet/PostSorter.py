@@ -30,10 +30,10 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 def _check_l10n(x,y):
     for param in x,y:
         if param.updated_parsed is None:
-            return False
             print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
                 Take a look at feedparser._parse_date_hungarian and feedparser.\
                 registerDateHandler" % param.updated
+            return False
     return True
 
 def _cmp_entries(x,y):
