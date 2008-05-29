@@ -47,19 +47,19 @@ class ProcessWrapComponent(object):
             if self.exchange.ready(0):
                 chan = self.exchange.ready(0)[0]
                 D = chan._receive()
-                print "HERE"
+                print "pwc:- SEND", D, "TO", self.thecomponent.name, ".",".", 
                 self.ce.put(*D)
-                print "THERE"
+                print ".","SENT"
 
             D = self.ce.anyReady()
             if D:
                 for boxname in D:
-                    print "DUM, DUM DUM! 1 ",D
+#                    print "DUM, DUM DUM! 1 ",D
                     D = self.ce.get(boxname)
-                    print "DUM, DUM DUM! 2 ",D
+#                    print "DUM, DUM DUM! 2 ",D
                     self.channel._send((D, boxname))
-                    print "DUM, DUM DUM! 3 ",D
-                print "GAH!"
+#                    print "DUM, DUM DUM! 3 ",D
+#                print "GAH!"
             yield 1
 
 def ProcessPipeline(*components):
