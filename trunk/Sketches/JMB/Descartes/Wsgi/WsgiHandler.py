@@ -181,13 +181,13 @@ class _WsgiHandler(threadedcomponent):
         This method initializes all variables that are required to be present
         (including ones that could possibly be empty).
         """
-        self.environ["REQUEST_METHOD"] = self.request["method"]
+        self.environ["REQUEST_METHOD"] = self.environ["method"]
 
         # Portion of URL that relates to the application object.
         self.environ["SCRIPT_NAME"] = self.app_name
 
         # Remainder of request path after "SCRIPT_NAME"
-        self.environ["PATH_INFO"] = self.environ["uri-suffix"]
+        self.environ["PATH_INFO"] = self.environ["raw-uri"].replace(self.app_name, '')
 
         # Server name published to the outside world
         self.environ["SERVER_NAME"] = self.server_name
@@ -196,13 +196,13 @@ class _WsgiHandler(threadedcomponent):
         self.environ["SERVER_PORT"] =  self.server_port
 
         #Protocol to respond to
-        self.environ["SERVER_PROTOCOL"] = self.request["protocol"]
+        self.environ["SERVER_PROTOCOL"] = self.environ["protocol"]
 
         #==================================
         #WSGI variables
         #==================================
         self.environ["wsgi.version"] = wsgi_config['WSGI_VER']
-        self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
+        self.environ["wsgi.url_scheme"] = self.environ["protocol"].lower()
         self.environ["wsgi.errors"] = self.log_writable
 
         self.environ["wsgi.multithread"] = False
@@ -258,6 +258,10 @@ def Handler(log_writable, WsgiConfig, substituted_path):
                 print url_item[0] + 'succesful!'
                 u, mod, app_attr, app_name = url_item
                 break
+            
+        if not (mod and app_attr and app_name):
+            raise WsgiError('Page not found and no 404 pages enabled!')
+        
         module = _importWsgiModule(mod)
         app = getattr(module, app_attr)
         return _WsgiHandler(app_name, app, request, log_writable, WsgiConfig)
@@ -316,6 +320,7 @@ def sanitizePath(uri, substituted_path, request):
             #also just so happens to be a WSGI variable.
         else:
             outputpath.append(directory)
-    print outputpath
+            
     outputpath = '/'.join(outputpath)
+    outputpath = "%s%s%s" % ('/', outputpath, '/')
     return outputpath
