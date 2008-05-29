@@ -38,11 +38,11 @@ class Source(Axon.Component.component):
         self.start = time.time()
         tosend = self.ToSend[:]
         while len(tosend) > 0:
-            print "sending"
+            print "Source:- sending"
             self.send( tosend.pop(0), "outbox")
             yield 1
         self.send(producerFinished(), "signal")
-        print "sent"
+        print "Source:- sent"
         time.sleep(1)
         yield 1
 
@@ -52,22 +52,22 @@ class Expecter(Axon.Component.component):
     def main(self):
         self.start = time.time()
         got = []
-        print "recieving"
+        print "Expecter:- recieving"
         self.shuttingdown = False
         self.count = 0
         while not self.shutdown():
 #        while 1:
             while self.dataReady("inbox"):
                 D = self.recv("inbox")
-                print "RECIEVED", repr(D), self.count, len(self.Expect)
+                print "Expecter:- RECIEVED", repr(D), self.count, len(self.Expect)
                 got.append(D)
                 self.count += 1
             yield 1
 
         if self.Expect == got: # Only works for basic types (lists, tuples, strings, etc)
-            print "DATA RECIEVED INTACT", got
+            print "Expecter:- DATA RECIEVED INTACT", got
         else:
-            print "DATA MANGLED", got
+            print "Expecter:- DATA MANGLED", got
         self.send( self.control_message, "signal") # Pass on
 
     def shutdown(self):
