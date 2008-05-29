@@ -33,8 +33,9 @@ import time
 from Axon.Ipc import producerFinished, shutdownMicroprocess
    
 class Source(Axon.Component.component):
-    ToSend = ["hello\n"]
+    ToSend = ["hello\n","hello\n","hello\n","hello\n"]
     def main(self):
+        self.start = time.time()
         tosend = self.ToSend[:]
         while len(tosend) > 0:
             print "sending"
@@ -42,22 +43,25 @@ class Source(Axon.Component.component):
             yield 1
         self.send(producerFinished(), "signal")
         print "sent"
+        time.sleep(1)
         yield 1
 
 class Expecter(Axon.Component.component):
-    Expect = ["hello\n"]
+    Expect = ["hello\n","hello\n","hello\n","hello\n"]
     delay = 2
     def main(self):
         self.start = time.time()
         got = []
         print "recieving"
         self.shuttingdown = False
+        self.count = 0
         while not self.shutdown():
 #        while 1:
             while self.dataReady("inbox"):
                 D = self.recv("inbox")
-                print ".", D
+                print "RECIEVED", repr(D), self.count, len(self.Expect)
                 got.append(D)
+                self.count += 1
             yield 1
 
         if self.Expect == got: # Only works for basic types (lists, tuples, strings, etc)
@@ -68,6 +72,8 @@ class Expecter(Axon.Component.component):
 
     def shutdown(self):
         if time.time() - self.start < self.delay:
+            return False
+        if self.count != len(self.Expect):
             return False
         if not self.dataReady("control"):
             return False
@@ -120,10 +126,17 @@ if __name__ == "__main__":
             Expecter(Expect=testdata),
         ).run()
 
-    if 1: # Basic test of Source/Expecter
+    if 0: # Basic test of Source/Expecter
         ProcessPipeline( # Interestingly, fails, BUT the IPC message gets through!
             Source(),
             Expecter(),
+        ).run()
+
+    if 1: # Basic test of Source/Expecter
+        testdata = ["hello","hello","hello","hello"]
+        ProcessPipeline( # Interestingly, fails, BUT the IPC message gets through!
+            Source(ToSend=testdata),
+            Expecter(Expect=testdata),
         ).run()
 
     if 0:
