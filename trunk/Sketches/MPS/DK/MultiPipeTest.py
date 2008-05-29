@@ -29,10 +29,11 @@ import pprocess
 import pygame
 import Axon
 import math
+import time
 from Axon.Ipc import producerFinished, shutdownMicroprocess
    
 class Source(Axon.Component.component):
-    ToSend = ["hello"]
+    ToSend = ["hello\n"]
     def main(self):
         tosend = self.ToSend[:]
         while len(tosend) > 0:
@@ -44,13 +45,15 @@ class Source(Axon.Component.component):
         yield 1
 
 class Expecter(Axon.Component.component):
-    Expect = ["hello"]
+    Expect = ["hello\n"]
+    delay = 2
     def main(self):
+        self.start = time.time()
         got = []
         print "recieving"
-#        self.shuttingdown = False
-#        while not self.shutdown():
-        while 1:
+        self.shuttingdown = False
+        while not self.shutdown():
+#        while 1:
             while self.dataReady("inbox"):
                 D = self.recv("inbox")
                 print ".", D
@@ -64,6 +67,8 @@ class Expecter(Axon.Component.component):
         self.send( self.control_message, "signal") # Pass on
 
     def shutdown(self):
+        if time.time() - self.start < self.delay:
+            return False
         if not self.dataReady("control"):
             return False
         
@@ -115,13 +120,13 @@ if __name__ == "__main__":
             Expecter(Expect=testdata),
         ).run()
 
-    if 0: # Basic test of Source/Expecter
+    if 1: # Basic test of Source/Expecter
         ProcessPipeline( # Interestingly, fails, BUT the IPC message gets through!
             Source(),
             Expecter(),
         ).run()
 
-    if 1:
+    if 0:
         testdata = [ 1,2,3]
         ProcessPipeline( # Interestingly, fails, BUT the IPC message gets through!
             Source(ToSend=testdata),
