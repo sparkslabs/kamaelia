@@ -1,0 +1,3 @@
+recursive-include Kamaelia
+recursive-include Axon
+recursive-include App
