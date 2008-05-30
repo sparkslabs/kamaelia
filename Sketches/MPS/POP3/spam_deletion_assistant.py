@@ -234,7 +234,7 @@ class Pop3Client(Axon.Component.component):
         while lower > 1:
             deletions = []
             higher = lower
-            lower = max(1, lower-700)
+            lower = max(1, lower-200)
             l = 0
             for mailid in range(lower, higher+1):
                 l +=1
@@ -256,6 +256,8 @@ class Pop3Client(Axon.Component.component):
                     for phrase in self.phrases: # hideously inefficient, but works
                         if phrase in self.headers["subject"][0]:
                             delete = True
+                    if not delete:
+                        print self.headers["subject"][0]
 
                 if delete:
                     deletions.append( (mailid, self.headers["from"], self.headers) )
