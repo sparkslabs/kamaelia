@@ -314,7 +314,7 @@ else:
 
     if getFile:
         print "Getting blockfile!"
-        UnixProcess('curl -O http://thwackety.com/phrases.txt').run()
+        UnixProcess('lynx -dump -source >phrases.txt http://thwackety.com/phrases.txt').run()
         print "Got it!"
 
     f = open("phrases.txt")
