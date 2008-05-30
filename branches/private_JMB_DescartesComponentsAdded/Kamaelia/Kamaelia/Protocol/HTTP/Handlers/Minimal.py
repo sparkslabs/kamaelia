@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -42,6 +42,8 @@ from Axon.Component import component
 from Kamaelia.File.BetterReading import IntelligentFileReader
 import Kamaelia.Protocol.HTTP.MimeTypes as MimeTypes
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+import mimetypes
+mimetypes.init()
 
 def sanitizeFilename(filename):
     output = ""
@@ -50,24 +52,32 @@ def sanitizeFilename(filename):
         elif char >= "a" and char <= "z": output += char
         elif char >= "A" and char <= "Z": output += char
         elif char == "-" or char == "_" or char == ".": output += char
+        elif char == "?": break
     return output
 
-def sanitizePath(uri): #needs work
-    outputpath = []
-    while uri[0] == "/": #remove leading slashes
-        uri = uri[1:]
-        if len(uri) == 0: break
+def sanitizePath(uri, substituted_path):
+    uri = uri.replace(substituted_path, '', 1)
+    uri = uri.strip('/')
 
+    outputpath = []
     splitpath = string.split(uri, "/")
     for directory in splitpath:
         if directory == ".":
             pass
         elif directory == "..":
             if len(outputpath) > 0: outputpath.pop()
+        elif directory.find('?') != -1:
+            outputpath.append(directory.partition('?')[0])  #remove the query string from the URI
+            break
         else:
             outputpath.append(directory)
-    outputpath = string.join(outputpath, "/")
+    outputpath = '/'.join(outputpath)
     return outputpath
+
+def Handler(indexfilename, homedirectory, substituted_path):
+    def R(request):
+        return Minimal(request, substituted_path, indexfilename, homedirectory)
+    return R
 
 # old setup used functions - this needs to be converted to work with
 # the new component-based handler system
@@ -83,7 +93,7 @@ def sanitizePath(uri): #needs work
 #    return {
 #        "statuscode" : "200",
 #        "data"       : data,
-#        "content-type"       : "text/html"
+#        "type"       : "text/html"
 #    }
 
 # a one shot request handler
@@ -111,15 +121,17 @@ class Minimal(component):
     }
 
 
-    def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
+    def __init__(self, request, substituted_path, indexfilename = "index.html", homedirectory = "htdocs/"):
         self.request = request
         self.indexfilename = indexfilename
         self.homedirectory = homedirectory
+        self.substituted_path = substituted_path
         super(Minimal, self).__init__()
 
     def main(self):
         """Produce the appropriate response then terminate."""
-        filename = sanitizePath(self.request["raw-uri"])
+        filename = sanitizePath(self.request["raw-uri"], self.substituted_path)
+        filepath = self.homedirectory + filename
         #if os.path.isdir(homedirectory + filename):
         #    if filename[-1:] != "/": filename += "/"
         #    if os.path.isfile(self.homedirectory + filename + self.indexfilename):
@@ -128,23 +140,27 @@ class Minimal(component):
         #        yield websiteListFilesPage(filename)
         #        return
 
-        filetype = MimeTypes.workoutMimeType(filename)
-
         error = None
         try:
-            if     os.path.exists(self.homedirectory + filename) and \
-               not os.path.isdir(self.homedirectory + filename):
+            if     os.path.exists(filepath):
+                if os.path.isdir(filepath):
+                    filepath = filepath.rstrip('/')
+                    filepath = filepath + '/' + self.indexfilename
+
+                print filepath
+                filetype = mimetypes.guess_type(filepath)
                 resource = {
-                    "content-type"           : filetype,
+                    "type"           : filetype,
                     "statuscode"     : "200",
                     #"length" : os.path.getsize(homedirectory + filename)
-                }
+                    }
+                print resource
                 self.send(resource, "outbox")
             else:
-                print "Error 404, " + filename + " is not a file"
-                print "self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename)
-                print "os.path.exists(self.homedirectory + filename)", os.path.exists(self.homedirectory + filename)
-                print "not os.path.isdir(self.homedirectory + filename)", (not os.path.isdir(self.homedirectory + filename))
+                print "Error 404, " + filepath + " is not a file"
+                print "filepath: %s" % (filepath)
+                print "os.path.exists(filepath)", os.path.exists(filepath)
+                print "os.path.isdir(filepath)", (os.path.isdir(filepath))
                 error = 404
 
         except OSError, e:
@@ -157,7 +173,7 @@ class Minimal(component):
             self.send(producerFinished(self), "signal")
             return
 
-        self.filereader = IntelligentFileReader(self.homedirectory + filename, 50000, 10)
+        self.filereader = IntelligentFileReader(filepath, 50000, 10)
         self.link((self, "_fileprompt"), (self.filereader, "inbox"))
         self.link((self, "_filesignal"), (self.filereader, "control"))
         self.link((self.filereader, "outbox"), (self, "_fileread"))
