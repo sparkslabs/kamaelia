@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import time
 
-from MusicTiming import MusicTimingComponent
+from Kamaelia.Apps.Jam.MusicTiming import MusicTimingComponent
 
 class SendQuantizer(MusicTimingComponent):
     def __init__(self, beatQuantize=(0, 1, 0), *args, **kwargs):
