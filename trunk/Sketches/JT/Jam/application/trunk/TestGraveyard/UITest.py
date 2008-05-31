@@ -3,9 +3,9 @@ from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Console import ConsoleEchoer
 
-from UI.XYPad import XYPad
-from Protocol.Osc import Osc
-from Internet.UDP import SimplePeer
+from Kamaelia.Apps.Jam.UI.XYPad import XYPad
+from Kamaelia.Apps.Jam.Protocol.Osc import Osc
+from Kamaelia.Apps.Jam.Internet.UDP import SimplePeer
 
 if __name__ == "__main__":
     FPS = 60
