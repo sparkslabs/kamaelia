@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     Graphline(clock = Clock(float(1)/FPS),
               xyPad = XYPad(),
-              quantizer = SendQuantizer(beatQuantize=(0, 1, 0)),
+              quantizer = SendQuantizer(beatQuantize=1),
               # Filter does not pause - cpu munch-a-rama
               filter = Filter(filter = CollisionFilter()),
               osc = Osc("/UITest"),
