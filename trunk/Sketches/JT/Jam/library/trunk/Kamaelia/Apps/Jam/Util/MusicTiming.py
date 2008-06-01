@@ -25,27 +25,16 @@ class MusicTimingComponent(threadedcomponent):
     def updateTiming(self):
         t = time.time()
         if t >= self.lastBeatTime + self.beatLength:
+            # Debug - print the delay between updating the beat and the actual
+            # beat time.  ~3ms on eli (P4 3GHz) - would be nice if this was
+            # lower
+            # print t - (self.lastBeatTime + self.beatLength)
             if self.beat != self.beatsPerBar:
                 self.beat += 1
             else:
                 self.beat = 1
                 self.bar += 1
             self.lastBeatTime = self.lastBeatTime + self.beatLength
-        self.pause(timeout = 0.0005)
+        time.sleep(0.0005)
 
-    def beatPosition(self):
-        return time.time() - self.lastBeatTime
-
-    def bbfToTime(self, bars, beats, fractions):
-        t = bars * self.beatsPerBar * self.beatLength
-        t += beats * self.beatLength
-        t += fractions * self.beatLength
-        return t
-
-    def timeToBbf(self, time):
-        print "Warning: timeToBbf has not been tested yet!"
-        beats = float(time * self.bpm)/60
-        fractions = beats - floor(beats)
-        beats = floor(beats)
-        bars = floor(float(beats)/self.beatsPerBar)
 
