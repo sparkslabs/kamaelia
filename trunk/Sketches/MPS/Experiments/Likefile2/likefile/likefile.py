@@ -154,6 +154,7 @@ if __name__ == "__main__":
                   while True:
                       print "."
           bg = background().start()
+          time.sleep(1)
           p = likefile(SimpleHTTPClient())
           p.put("http://google.com")
           p.put("http://slashdot.org")

@@ -19,14 +19,19 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""
+
+Out of the original code for background, this seems the most likely to
+remain intact.
+
+"""
+
 
 from Axon.Scheduler import scheduler
 from Axon.Component import component
 import threading
 
 import Axon.CoordinatingAssistantTracker as cat
-
-from dummyComponent import dummyComponent
 
 class background(threading.Thread):
     """A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts."""
@@ -40,17 +45,11 @@ class background(threading.Thread):
         self.zap = zap
     def run(self):
         if self.zap:
-#            print "zapping", scheduler.run.threads
             X = scheduler()
             scheduler.run = X
-#            print "zapped", scheduler.run.threads
             cat.coordinatingassistanttracker.basecat.zap()
-#        print "Here? (run)"
-        dummyComponent().activate() # to keep the scheduler from exiting immediately.
-#        print "zoiped", scheduler.run.threads
-        # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
+        scheduler.run.waitForOne()
         scheduler.run.runThreads(slowmo = self.slowmo)
-#        print "There?"
         background.lock.release()
 
 if __name__ == "__main__":
