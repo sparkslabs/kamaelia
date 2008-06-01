@@ -293,7 +293,8 @@ _GOINGTOSLEEP = object()     # microprocess to be paused (should be removed from
 class scheduler(microprocess):
    """Scheduler - runs microthreads of control."""
    run = None
-   def __init__(self):
+   wait_for_one = False
+   def __init__(self, **argd):
       """Creates a scheduler object. If scheduler.run has not been set, sets it.
       Class initialisation ensures that this object/class attribute is initialised - client
       modules always have access to a standalone scheduler.
@@ -305,7 +306,7 @@ class scheduler(microprocess):
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
-      super(scheduler, self).__init__()
+      super(scheduler, self).__init__(**argd)
       if not scheduler.run:         # If no scheduler already allocated...
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 
@@ -316,6 +317,13 @@ class scheduler(microprocess):
       self.wakeRequests = Queue.Queue()
       self.pauseRequests = Queue.Queue()
       self.debuggingon = False
+      if self.wait_for_one:
+         self.extra = 1
+      else:
+         self.extra = 0
+
+   def waitForOne(self):
+      self.extra = 1
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -323,6 +331,7 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
+      self.extra = 0
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
@@ -507,7 +516,7 @@ class scheduler(microprocess):
 #               print "Do we get here? 2"
                break
 #           print "len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests
-           running = len(self.threads)
+           running = len(self.threads) + self.extra
 
        if not self.stopRequests.empty():
 #           print "WE GOT HERE! :-)"
