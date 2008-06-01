@@ -29,16 +29,10 @@ import Queue
 
 class LikeFile(Axon.ThreadedComponent.threadedcomponent):
    Inboxes = {
-       "inbox":"From the outside world",
-       "control":"From the outside world",
-
        "_inbox":"From the component to go to the outside world",
        "_control":"From the component to go to the outside world",
    }
    Outboxes = {
-       "outbox":"To the outside world",
-       "signal":"To the outside world",
-
        "_outbox":"From the outside world to go to the component",
        "_signal":"From the outside world to go to the component",
    }
@@ -80,14 +74,10 @@ class LikeFile(Axon.ThreadedComponent.threadedcomponent):
 
           if not(self.inboundData.empty()):
               data,box = self.inboundData.get_nowait()
-#              self.send(data, box)
               if box == "inbox":
                    self.send(data, "_outbox")
-                   
-          while self.dataReady("inbox"):
-              self.send(self.recv("inbox"), "_outbox")
-          while self.dataReady("control"):
-              self.send(self.recv("control"), "_signal")
+              if box == "control":
+                   self.send(data, "_signal")
 
           while self.dataReady("_inbox"):
               self.outboundData.put( (self.recv("_inbox"), "outbox") )
@@ -106,26 +96,5 @@ class LikeFile(Axon.ThreadedComponent.threadedcomponent):
        return 0==len(self.childComponents())
                   
 if __name__=="__main__":
-    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    import time
-    class Waiter(Axon.Component.component):
-        def main(self):
-            print "RUNNING"
-            t = time.time()
-            while time.time()-t >2:
-                yield 1
-            print "DONE"
-            
-    # All the following run as you would expect at this stage
-    if 0:
-        Waiter().run()
-
-    if 0:
-        LikeFile( Waiter() ).run()
-
-    if 1:
-        Pipeline(
-            LikeFile(ConsoleReader()),
-            ConsoleEchoer(),
-        ).run()
+    print "This is no longer like ThreadWrap - it is not supposed to be"
+    print "Usable in the usual manner for a component..."
