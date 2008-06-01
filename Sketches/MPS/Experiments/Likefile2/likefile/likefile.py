@@ -154,12 +154,14 @@ if __name__ == "__main__":
                   while True:
                       print "."
           bg = background().start()
-#          p = likefile(Foing())
           p = likefile(SimpleHTTPClient())
           p.put("http://google.com")
           p.put("http://slashdot.org")
+          print "X"
           google = p.get()
+          print "Y"
           slashdot = p.get()
+          print "Z"
           time.sleep(1)
           print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long."
           p.shutdown()

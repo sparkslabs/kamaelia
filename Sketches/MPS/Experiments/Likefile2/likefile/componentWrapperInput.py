@@ -25,6 +25,7 @@ from Axon.AxonExceptions import noSpaceInBox
 import Queue
 import threading
 import Axon.Ipc
+import time
 
 # queuelengths = 0
 
@@ -71,9 +72,13 @@ class componentWrapperInput(threadedadaptivecommscomponent):
         self.deathbox = self.addOutbox(str(id(self)))
 
     def main(self):
+        timeToDie = 0
         while True:
             whatInbox = self.whatInbox.get()
             if not self.pollQueue(whatInbox):
+                timeToDie = time.time() + 5
+
+            if timeToDie == time.time():
                 # a False return indicates that we should shut down.
                 self.isDead.set()
                 # tells the foreground object that we've successfully processed a shutdown message.
