@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 import time
 
-from Kamaelia.Apps.Jam.MusicTiming import MusicTimingComponent
+from Kamaelia.Apps.Jam.Util.MusicTiming import MusicTimingComponent
 
 class SendQuantizer(MusicTimingComponent):
-    def __init__(self, beatQuantize=(0, 1, 0), *args, **kwargs):
+    def __init__(self, beatQuantize=1, *args, **kwargs):
         super(SendQuantizer, self).__init__(*args, **kwargs)
         self.buffer = []
-        self.quantizeLength = self.bbfToTime(*beatQuantize)
+        self.quantizeLength = beatQuantize * self.beatLength
 
     def main(self):
         # Wait 'til we hit the start of a bar before we start quantizing
