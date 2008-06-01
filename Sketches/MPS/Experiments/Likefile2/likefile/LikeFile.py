@@ -67,7 +67,7 @@ class LikeFile(Axon.ThreadedComponent.threadedcomponent):
           raise Queue.Empty
        except IndexError:
           raise Queue.Empty
-       return X,boxname
+       return X
 
    def main(self):
       """Main loop."""

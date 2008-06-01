@@ -32,8 +32,8 @@ while 1:
     time.sleep(1)
     print "."
     try:
-       data,box = TB.get()
-       print data, box
+       data = TB.get("outbox")
+       print data
        message = data
     except Queue.Empty:
        pass
