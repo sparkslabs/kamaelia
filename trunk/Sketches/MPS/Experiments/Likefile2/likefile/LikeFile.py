@@ -27,7 +27,7 @@ import Axon
 import time
 import Queue
 
-class ThreadWrap(Axon.ThreadedComponent.threadedcomponent):
+class LikeFile(Axon.ThreadedComponent.threadedcomponent):
    Inboxes = {
        "inbox":"From the outside world",
        "control":"From the outside world",
@@ -44,13 +44,13 @@ class ThreadWrap(Axon.ThreadedComponent.threadedcomponent):
    }
    def __init__(self, someComponent):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(ThreadWrap,self).__init__()
+      super(LikeFile,self).__init__()
       self.comp = someComponent
       self.inboundData = Queue.Queue()
       self.outboundData = Queue.Queue()
 
    def put(self, *args):
-       self.inboundData.put(*args)
+       self.inboundData.put(args)
 
    def get(self):
        return self.outboundData.get_nowait()
@@ -78,6 +78,12 @@ class ThreadWrap(Axon.ThreadedComponent.threadedcomponent):
 
           time.sleep(0.01) # so that we're not totally spinning
 
+          if not(self.inboundData.empty()):
+              data,box = self.inboundData.get_nowait()
+#              self.send(data, box)
+              if box == "inbox":
+                   self.send(data, "_outbox")
+                   
           while self.dataReady("inbox"):
               self.send(self.recv("inbox"), "_outbox")
           while self.dataReady("control"):
@@ -86,7 +92,7 @@ class ThreadWrap(Axon.ThreadedComponent.threadedcomponent):
           while self.dataReady("_inbox"):
               self.outboundData.put( (self.recv("_inbox"), "outbox") )
           while self.dataReady("_control"):
-              self.send(self.recv("_control"), "signal")
+              self.outboundData.put( (self.recv("_control"), "signal") )
 
 
    def childrenDone(self):
@@ -116,10 +122,10 @@ if __name__=="__main__":
         Waiter().run()
 
     if 0:
-        ThreadWrap( Waiter() ).run()
+        LikeFile( Waiter() ).run()
 
     if 1:
         Pipeline(
-            ThreadWrap(ConsoleReader()),
+            LikeFile(ConsoleReader()),
             ConsoleEchoer(),
         ).run()
