@@ -116,16 +116,16 @@ A component which can parse entities and relations definition
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-    #from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer
     from RelationGenderVisualiser import RelationGenderVisualiser
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
         DataSource(['  person  mum   gender=Female ', '  ', """   
-                    """, '  person  son  gender=Male ', 'person daughter',
+                    """, '  person  son  photo="Files/dad.gif"', 'person daughter gender=Female',
                     ' childof  (  mum  , son  ) ', 'childof(mum, daughter)']),
         RelationGenderParser(),
         lines_to_tokenlists(),
-        #ConsoleEchoer(),
-        RelationGenderVisualiser(),
+        ConsoleEchoer(),
+        #RelationGenderVisualiser(),
     ).run()        

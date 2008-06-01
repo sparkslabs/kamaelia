@@ -14,7 +14,7 @@ Parse entities and relations definition received, one line one time.
 Example:
 --------
 person mum
-person son
+person son gender="male",photo="../Files/son.gif"
 4.) Relation definition
 Example: 
 --------
@@ -35,8 +35,20 @@ def parseEntity(entityLine):
     """ parse entity line """
     result = entityLine.split()
     entity_name = result[1]
+    particle = '-'
     if len(result) == 3:
         attributes = result[2]
+        #attributes = attributes.lower()
+        attributes = attributes.replace('gender','color')
+        attributes = attributes.replace('female','(255,128,128)')
+        attributes = attributes.replace('male','(128,128,255)')
+        attributes = attributes.replace('photo','pic')
+    else:
+        attributes = ""
+        
+        
+        
+        """
         attributes_list = attributes.split(',')
         if ('gender' in attributes) and ('photo' in attributes):
             particle = 'GenderPhoto'
@@ -50,8 +62,9 @@ def parseEntity(entityLine):
             photo = [x.split('=')[1] for x in attributes_list if 'photo' in x]
         else:
             particle = '-'
+        """
                 
-    return "ADD NODE %s %s auto %s" % (entity_name,entity_name,particle)
+    return "ADD NODE %s %s auto %s %s" % (entity_name,entity_name,particle,attributes)
 
 def parseRelation(relationLine):
     """ parse relation line """
@@ -69,10 +82,10 @@ import re
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class RelationParser(Axon.Component.component):
+class RelationAttributeParser(Axon.Component.component):
     """\
 =============================================================
-A component which can parse entities and relations definition
+A component to parse entities and relations definition
 =============================================================
 """
     def shutdown(self):
@@ -120,15 +133,16 @@ A component which can parse entities and relations definition
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-    #from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from GenericTopologyViewer import GenericTopologyViewer
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
-        DataSource(['  person  mum  ', '  ', """   
-                          """, '  person  son ', ' childof  (  mum  , son  ) ']),
-        RelationParser(),
+        DataSource(["  person  mum   gender='female' ", '  ', """   
+                    """, '  person  son   gender="male",photo="../Files/son.gif"', 'person daughter',
+                    ' childof  (  mum  , son  ) ', 'childof(mum, daughter)']),
+        RelationAttributeParser(),
         lines_to_tokenlists(),
-        #ConsoleEchoer(),
-        TopologyViewer(),
+        GenericTopologyViewer(),
+        ConsoleEchoer(),
     ).run()        
