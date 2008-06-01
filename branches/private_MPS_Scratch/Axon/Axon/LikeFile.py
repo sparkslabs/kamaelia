@@ -281,6 +281,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
                 except noSpaceInBox, e:
                     raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
                 if isinstance(msg, (Ipc.shutdownMicroprocess, Ipc.producerFinished)):
+                    print "Quietly dieing?"
                     return False
             else:
                 # if the component's inboxes are full, do something here. Preferably not succeed.
@@ -410,6 +411,7 @@ class likefile(object):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
         raises AttributeError if the likefile is not alive. Optional parameters blocking and timeout function
         the same way as in Queue objects, since that is what's used under the surface."""
+        print "self.get boxname ",boxname,"blocking =",blocking,"timeout=",timeout
         if self.alive:
             return self.outQueues[boxname].get(blocking, timeout)
             # TODO - remove this.
@@ -419,6 +421,7 @@ class likefile(object):
 
     def put(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
+        print "self.put msg", repr(msg), "boxname", boxname
         if self.alive:
             queue = self.inQueues[boxname]
             queue.put_nowait(msg)
