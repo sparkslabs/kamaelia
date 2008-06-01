@@ -42,12 +42,32 @@ class LikeFile(Axon.ThreadedComponent.threadedcomponent):
       self.comp = someComponent
       self.inboundData = Queue.Queue()
       self.outboundData = Queue.Queue()
+      self.temp = {}
 
    def put(self, *args):
        self.inboundData.put(args)
 
-   def get(self):
+   def _get(self):
        return self.outboundData.get_nowait()
+
+   def get(self, boxname="outbox"):
+       while 1:
+           try:
+               data,outbox = self._get()
+               try:
+                   self.temp[outbox].append(data)
+               except KeyError:
+                   self.temp[outbox] = [ data ]
+           except Queue.Empty:
+               break
+       try:
+           X = self.temp[boxname][0]
+           del self.temp[boxname][0]
+       except KeyError:
+          raise Queue.Empty
+       except IndexError:
+          raise Queue.Empty
+       return X,boxname
 
    def main(self):
       """Main loop."""
