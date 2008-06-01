@@ -27,11 +27,14 @@ TB = LikeFile(
                )
      ).activate()
 
+message = "hello\n"
 while 1:
     time.sleep(1)
     print "."
     try:
-       print TB.get()
+       data,box = TB.get()
+       print data, box
+       message = data
     except Queue.Empty:
        pass
-    TD.put("hello\n", "inbox")
+    TD.put(message, "inbox")
