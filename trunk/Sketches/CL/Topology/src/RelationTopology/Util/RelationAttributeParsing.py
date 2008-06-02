@@ -138,7 +138,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
-        DataSource(["  person  mum   gender='female' ", '  ', """   
+        DataSource(["  person  mum   gender='female',photo='../Files/mum.jpg' ", '  ', """   
                     """, '  person  son   gender="male",photo="../Files/son.gif"', 'person daughter',
                     ' childof  (  mum  , son  ) ', 'childof(mum, daughter)']),
         RelationAttributeParser(),

@@ -14,10 +14,13 @@ class GenericParticle(RenderingParticle):
         if argd.has_key('pic'):
             self.extraArgd.update({'pic':argd['pic']})
             argd.pop('pic')
+            self.picture = pygame.image.load(self.extraArgd['pic']).convert()     
         if argd.has_key('color'):
             self.extraArgd.update({'color':argd['color']})
-            argd.pop('color')           
+            argd.pop('color')
+                          
         super(GenericParticle, self).__init__(**argd)
+        
         
         
     def render(self, surface):
@@ -38,8 +41,8 @@ class GenericParticle(RenderingParticle):
         
         yield 2
         if self.extraArgd.has_key('pic'):
-            picture = pygame.image.load(self.extraArgd['pic']).convert()
-            picture_rect = surface.blit(picture, (x,y))
+            #picture = pygame.image.load(self.extraArgd['pic']).convert()
+            picture_rect = surface.blit(self.picture, (x- self.picture.get_width()/2, y - self.picture.get_height()/2))
 
         if self.extraArgd.has_key('color'):
             pygame.draw.circle(surface, eval(self.extraArgd['color']), (x,y), self.radius)
