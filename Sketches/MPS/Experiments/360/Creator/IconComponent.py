@@ -162,10 +162,12 @@ class IconComponent(BaseParticle):
         if self.selected:
             colour = (160,160,255)
         surface.blit(self.image, ( x+self.imagexo, y+self.imageyo ) )
+
         yield 3
         surface.blit(self.slabel, ( x+self.slabelxo, y-self.imageyo ) )
         if self.selected:
             yield 10
+            pygame.draw.rect(surface, colour, (x+self.imagexo, y+self.imageyo, self.image.get_width(), self.image.get_height()),2)
             surface.blit(self.desclabel, (72,16) )
                      
     def setOffset( self, (x,y) ):
