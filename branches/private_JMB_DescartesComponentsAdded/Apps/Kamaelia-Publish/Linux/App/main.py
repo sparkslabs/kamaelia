@@ -11,7 +11,7 @@ import Kamaelia.Util.Log as Log
 
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
-sys.path.append('/WsgiApps')
+sys.path.append(ServerConfig.WSGI_DIR)
 
 def HTTPProtocol():
     def foo(self,**argd):
@@ -38,9 +38,9 @@ def requestHandlers(URLHandlers, errorpages=None):
     return createRequestHandler
 
 
-log = Log.Logger('/users/jason/wsgi.log', wrapper=Log.nullWrapper)
+log = Log.Logger(ServerConfig.WSGI_APP_LOG, wrapper=Log.nullWrapper)
 
-log_writable = LogWritable.WsgiLogWritable('/users/jason/wsgi.log')
+log_writable = LogWritable.WsgiLogWritable(ServerConfig.WSGI_APP_LOG)
 log_writable.activate()
 
 log.activate()
@@ -48,7 +48,7 @@ log.activate()
 
 class DescartesServer(MoreComplexServer):
     routing = [
-               ['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
+               #['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
                ["/", Handler(log_writable, ServerConfig.WsgiConfig, '/') ],
               ]
     protocol=HTTPProtocol()
