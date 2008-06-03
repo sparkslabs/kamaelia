@@ -45,7 +45,9 @@ class GenericParticle(RenderingParticle):
             picture_rect = surface.blit(self.picture, (x- self.picture.get_width()/2, y - self.picture.get_height()/2))
 
         if self.extraArgd.has_key('color'):
-            pygame.draw.circle(surface, eval(self.extraArgd['color']), (x,y), self.radius)
+            colorMap = {'blue': (128,128,255), 'pink': (255,128,128)}
+            color = self.extraArgd['color']
+            pygame.draw.circle(surface, colorMap[color], (x,y), self.radius)
         else:
             pygame.draw.circle(surface, (255,128,128), (x,y), self.radius)
         

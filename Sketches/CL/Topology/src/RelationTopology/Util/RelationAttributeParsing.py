@@ -35,35 +35,17 @@ def parseEntity(entityLine):
     """ parse entity line """
     result = entityLine.split()
     entity_name = result[1]
-    particle = '-'
+    #particle = '-'
+    particle = 'GenericParticle'
     if len(result) == 3:
         attributes = result[2]
         #attributes = attributes.lower()
         attributes = attributes.replace('gender','color')
-        attributes = attributes.replace('female','(255,128,128)')
-        attributes = attributes.replace('male','(128,128,255)')
+        attributes = attributes.replace('female','pink')
+        attributes = attributes.replace('male','blue')
         attributes = attributes.replace('photo','pic')
     else:
-        attributes = ""
-        
-        
-        
-        """
-        attributes_list = attributes.split(',')
-        if ('gender' in attributes) and ('photo' in attributes):
-            particle = 'GenderPhoto'
-            gender = [x.split('=')[1] for x in attributes_list if 'gender' in x]
-            photo = [x.split('=')[1] for x in attributes_list if 'photo' in x]
-        elif 'gender' in attributes:
-            particle = 'Gender'
-            gender = [x.split('=')[1] for x in attributes_list if 'gender' in x]
-        elif 'photo' in attributes:
-            particle = 'Photo'
-            photo = [x.split('=')[1] for x in attributes_list if 'photo' in x]
-        else:
-            particle = '-'
-        """
-                
+        attributes = ""                
     return "ADD NODE %s %s auto %s %s" % (entity_name,entity_name,particle,attributes)
 
 def parseRelation(relationLine):
@@ -138,8 +120,8 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
-        DataSource(["  person  mum   gender='female',photo='../Files/mum.jpg' ", '  ', """   
-                    """, '  person  son   gender="male",photo="../Files/son.gif"', 'person daughter',
+        DataSource(["  person  mum   gender=female,photo=../Files/mum.jpg ", '  ', """   
+                    """, '  person  son   gender=male,photo=../Files/son.gif', 'person daughter',
                     ' childof  (  mum  , son  ) ', 'childof(mum, daughter)']),
         RelationAttributeParser(),
         lines_to_tokenlists(),
