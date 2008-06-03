@@ -23,8 +23,8 @@
 # Licensed to the BBC under a Contributor Agreement: PO
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from KamTestCase                  import KamTestCase
 
+import KamTestCase
 import PostSorter
 import ConfigFileParser
 
@@ -32,11 +32,11 @@ import feedparser
 import time
 
 # Still a lot needs to be tested, this is just a proof of concept
-class PostSorterTestCase(KamTestCase):
+class PostSorterTestCase(KamTestCase.KamTestCase):
     
     def setUp(self):
         self.postSorter = PostSorter.PostSorter()
-        self.initializeSystem(self.postSorter,  self.postSorter)
+        self.initializeSystem(self.postSorter)
 
     def createConfigObject(self,  maxNumber):
         class AnonymousClass(object):
@@ -88,7 +88,9 @@ class PostSorterTestCase(KamTestCase):
                     10, 
                     len(storedMessages)
                 )
-    
+
+def suite():
+    return KamTestCase.makeSuite(PostSorterTestCase)
+
 if __name__ == '__main__':
-    import unittest
-    unittest.main()
+    KamTestCase.main()

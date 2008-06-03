@@ -25,12 +25,11 @@
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
-from KamTestCase                  import KamTestCase
+import KamTestCase
 
 import ConfigFileParser
 
-# First approach...
-class ConfigFileParserTestCase(KamTestCase):
+class ConfigFileParserTestCase(KamTestCase.KamTestCase):
     SAMPLE_CONFIG1 = """<?xml version="1.0" encoding="UTF-8"?>
             <kamplanetconfig>
                 <general>
@@ -129,8 +128,10 @@ class ConfigFileParserTestCase(KamTestCase):
                     'imgs/blog2.png',
                     feedMessages[1].face
                 )
+                
+def suite():
+    return KamTestCase.makeSuite(ConfigFileParserTestCase)
     
 if __name__ == '__main__':
-    import unittest
-    unittest.main()
+    KamTestCase.main()
     

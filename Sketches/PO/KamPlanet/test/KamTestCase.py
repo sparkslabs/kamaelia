@@ -23,6 +23,7 @@
 # Licensed to the BBC under a Contributor Agreement: PO
 
 import unittest
+from unittest import TestSuite, makeSuite, main
 
 import Axon.Scheduler             as Scheduler
 from Kamaelia.Chassis.Graphline   import Graphline
@@ -35,21 +36,29 @@ class KamTestCase(unittest.TestCase):
         # Not an object
         unittest.TestCase.__init__(self, *argd, **kwargs)
         
-    def initializeSystem(self, inputComponentUnderTest, outputComponentUnderTest):
-        self.messageAdder         = MessageAdder(
-                        inputComponentUnderTest.Inboxes
-                    )
+    def initializeSystem(self, inputComponentUnderTest, outputComponentUnderTest = None):
+        if outputComponentUnderTest is None:
+            outputComponentUnderTest = inputComponentUnderTest
+            
+        publicInboxNames = [ inboxName 
+                      for inboxName in inputComponentUnderTest.Inboxes 
+                        if not inboxName.startswith('_')
+                ]
+        publicOutboxNames = [ outboxName 
+                       for outboxName in outputComponentUnderTest.Outboxes 
+                        if not outboxName.startswith('_')
+                ]
+            
+        self.messageAdder         = MessageAdder(publicInboxNames)
+        self.messageStorer        = MessageStorer(publicOutboxNames)
         
-        self.messageStorer        = MessageStorer(
-                        outputComponentUnderTest.Outboxes
-                    )
         linkages = {}
         
-        for inbox in inputComponentUnderTest.Inboxes:
-            linkages[('MESSAGE_ADDER', inbox)]                = ('INPUT_COMPONENT_UNDER_TEST', inbox)
+        for publicInbox in publicInboxNames:
+            linkages[('MESSAGE_ADDER', publicInbox)]                = ('INPUT_COMPONENT_UNDER_TEST', publicInbox)
         
-        for outbox in outputComponentUnderTest.Outboxes:
-            linkages[('OUTPUT_COMPONENT_UNDER_TEST', outbox)] = ('MESSAGE_STORER', outbox)
+        for publicOutbox in publicOutboxNames:
+            linkages[('OUTPUT_COMPONENT_UNDER_TEST', publicOutbox)] = ('MESSAGE_STORER', publicOutbox)
         
         self.graph = Graphline(
             MESSAGE_ADDER               = self.messageAdder,
@@ -59,15 +68,37 @@ class KamTestCase(unittest.TestCase):
             linkages                    = linkages, 
         )
     
-    def _listThreads(self, scheduler):
-        threads = scheduler.listAllThreads()
+    def _listThreads(self):
+        scheduler = self.graph.__class__.schedulerClass.run
+        threads   = scheduler.listAllThreads()
         scheduler.debuggingon = False
         return threads
+        
+    # TODO: this shouldn't be overriden; maybe I need to use delegation instead of inheritance
+    def tearDown(self):
+        scheduler = self.graph.__class__.schedulerClass.run
+        scheGenerator  = scheduler.main(0, canblock=False)
+        n = 0
+        try:
+            while n < 100:
+                scheGenerator.next()
+                n += 1
+        except StopIteration, si:
+            pass
+            
+        threads = self._listThreads()
+        
+        # Reboot the scheduler
+        self.graph.__class__.schedulerClass.run = None
+        self.graph.__class__.schedulerClass()
+        
+        if len(threads) > 0:
+            raise self.failureException("Processes still running: %s" % threads)
     
     # TODO: this number of steps depends too much on the situation :-S
-    def runMessageExchange(self, steps = 1000):
+    def runMessageExchange(self, msg = None, steps = 1000):
         """
-        runMessageExchange(steps) -> None
+        runMessageExchange(msg, steps) -> None
         
         It will run the scheduler several times, assuring that the 
         messageAdder and the messageStorer will be run "steps" times.
@@ -77,14 +108,15 @@ class KamTestCase(unittest.TestCase):
         provided * the number of threads being run at each step). It's
         not a real problem to let it run more times, but at some point
         it must finish. When it finishes, if there is any thread still
-        alive, it will raise an AssertionError.
+        alive, it will raise an AssertionError with the message "msg"
+        (if provided).
         """
         self.messageAdder.stopMessageAdder(steps)
-        self.messageStorer.stopMessageAdder(steps)
+        self.messageStorer.stopMessageStorer(steps)
         
         self.graph.activate()
         scheduler      = self.graph.__class__.schedulerClass.run
-        scheGenerator  = scheduler.main(0, canblock=True)
+        scheGenerator  = scheduler.main(0, canblock=False)
         
         # TODO: These numbers must change
         # Lower to this values doesn't work
@@ -103,19 +135,19 @@ class KamTestCase(unittest.TestCase):
         # Later the real iteration
         for _ in xrange(steps + MAGIC_NUMBER_TO_BE_ADDED_TO_STEPS): 
             try:
-                n = len(self._listThreads(scheduler))
+                n = len(self._listThreads())
                 iteration_counter = 0
                 while iteration_counter < n:
                     scheGenerator.next()
                     iteration_counter += 1
-                    n = len(self._listThreads(scheduler))
+                    n = len(self._listThreads())
             except StopIteration:
                 break
         
         # Check the number of threads
-        threads = self._listThreads(scheduler)
+        threads = self._listThreads()
         if len(threads) > 0:
             # first clean creating a new scheduler
             self.graph.__class__.schedulerClass.run = Scheduler.scheduler()
             # then raise the failureException
-            raise self.failureException("Processes still running: %s" % threads)
+            raise self.failureException(msg or "Processes still running: %s" % threads)

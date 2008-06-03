@@ -165,11 +165,26 @@ if __name__ == '__main__':
                     dest="introspector",
                     help="activate introspector module: more information will be provided but the program will never finish", 
                     default=False
-                )    
-                
+                )
+    parser.add_option("-p", "--rt-debugger-port",
+                    dest="debuggerPort",
+                    help="real-time debugger port (only launched if provided)", 
+                    metavar="PORT",
+                    default=None
+                )
+               
     options, _ = parser.parse_args()
     if options.introspector:
         import introspector
         introspector.activate()
+    if options.debuggerPort:
+        try:
+            port = int(options.debuggerPort)
+        except ValueError, ve:
+            print >> sys.stderr, "Invalid debugger port found: <%s>; skipping debugger" % options.debuggerPort
+        else:
+            import rt_debugger
+            rt_debugger.launch_debugger(port)
+            
     kamPlanet = KamPlanet(options.configFile)
     kamPlanet.run()
