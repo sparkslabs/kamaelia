@@ -3,8 +3,19 @@ import sys
 
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 
-from Particles import GenericParticle
+from Particles import GenericParticle   # To use dictionary map
+import Particles     # To search particle class within it
 
+def str2dict(string):
+    dictionary = {}
+    string_list = string.split(',')
+    for item in string_list:
+        result = item.split('=')
+        print result
+        dictionary.update({result[0]: result[1]})
+    return dictionary
+        
+        
 class GenericTopologyViewer(TopologyViewer):
     """
     =============================================================
@@ -36,10 +47,9 @@ class GenericTopologyViewer(TopologyViewer):
     
                 if cmd == ("ADD", "NODE") and (len(msg) == 6 or len(msg) == 7):
                     if self.particleTypes.has_key(msg[5]):
-                        ptype = self.particleTypes[msg[5]]
-                        
+                        ptype = self.particleTypes[msg[5]]                        
                     else:
-                        ptype = eval(msg[5])
+                        ptype = getattr(Particles, msg[5])
                     id    = msg[2]
                     name  = msg[3]
                     
@@ -50,7 +60,7 @@ class GenericTopologyViewer(TopologyViewer):
                         particle = ptype(position = pos, ID=id, name=name)
                     else:
                         attributes = msg[6]
-                        attributes_dict = eval('dict('+attributes+')')
+                        attributes_dict = str2dict(attributes)
                         particle = ptype(position = pos, ID=id, name=name, **attributes_dict)
                     particle.originaltype = msg[5]
                     self.addParticle(particle)
