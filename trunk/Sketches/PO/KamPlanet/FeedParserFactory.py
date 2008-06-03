@@ -56,24 +56,13 @@ class Feedparser(Axon.Component.component):
             while self.dataReady("control"):
                 data = self.recv("control")
                 self.send(data,"signal")
+                if not isinstance(data, producerFinished):
+                    print data
                 return
 
             if not self.anyReady():
                 self.pause()
             yield 1
-
-def makeFeedParser(feedUrl):
-    """ 
-    makeFeedParser(feedUrl) -> Pipeline
-    
-    It returns a pipeline which does not expect any input except for signals and
-    sends the parsed data through the "outbox" outbox.
-    """
-    return Pipeline(
-            OneShot(feedUrl), 
-            SimpleHTTPClient(), #TODO: SimpleHTTPClient doesn't seem to have proxy support
-            Feedparser(feedUrl)
-        )
 
 class FeedParserFactory(Axon.Component.component):
     """
@@ -103,6 +92,19 @@ class FeedParserFactory(Axon.Component.component):
         self.mustStop         = None
         self.providerFinished = False
 
+    def makeFeedParser(self, feedUrl):
+        """ 
+        makeFeedParser(feedUrl) -> Pipeline
+        
+        It returns a pipeline which does not expect any input except for signals and
+        sends the parsed data through the "outbox" outbox.
+        """
+        return Pipeline(
+                OneShot(feedUrl), 
+                SimpleHTTPClient(), # TODO: SimpleHTTPClient doesn't seem to have proxy support
+                Feedparser(feedUrl),
+            )
+            
     def checkControl(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -132,7 +134,7 @@ class FeedParserFactory(Axon.Component.component):
         child.link((outsideForwarder, 'signal'),  (child, 'control'))
         
     def createChild(self, feed):
-        child = makeFeedParser(feed.url)
+        child = self.makeFeedParser(feed.url)
         self.link( (child, 'outbox'), (self, '_parsed-feeds') )
         self.linkChildToInternalSplitter(child)
         return child

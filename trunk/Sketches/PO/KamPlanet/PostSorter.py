@@ -29,15 +29,18 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 def _check_l10n(x,y):
     for param in x,y:
-        if param.updated_parsed is None:
-            print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
-                Take a look at feedparser._parse_date_hungarian and feedparser.\
-                registerDateHandler" % param.updated
+        if not hasattr(param, 'updated_parsed') or param.updated_parsed is None:
+            updated_parsed_value = getattr(param,'updated_parsed',param)
+            #TODO
+            #print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
+            #    Take a look at feedparser._parse_date_hungarian and feedparser.\
+            #    registerDateHandler" % updated_parsed_value
             return False
     return True
 
 def _cmp_entries(x,y):
     """ Given two FeedParserDicts, compare them taking into account their updated_parsed fields """
+    # TODO: if date not known, put it last
     if _check_l10n(x['entry'],y['entry']):
         for pos, val in enumerate(x['entry'].updated_parsed):
             result = cmp(val, y['entry'].updated_parsed[pos])

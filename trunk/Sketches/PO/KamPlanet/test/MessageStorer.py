@@ -35,7 +35,7 @@ class MessageStorer(Axon.Component.component):
             self.messages[inboxName] = []
         self._stop_within_iterations = None
         
-    def stopMessageAdder(self, within_iterations = 0):
+    def stopMessageStorer(self, within_iterations = 0):
         self._stop_within_iterations = within_iterations
         
     def getMessages(self, inbox):

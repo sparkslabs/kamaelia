@@ -1,0 +1,91 @@
+-------------
+- KamPlanet -
+-------------
+
+Table of Contents
+~~~~~~~~~~~~~~~~~
+
+1. Required packages
+2. Using KamPlanet
+2.1 Configuring KamPlanet
+2.2 Running KamPlanet
+3. Running KamPlanet tests
+
+1. Required packages
+--------------------
+
+The following packages are required for running KamPlanet:
+
+ * Kamaelia :-)
+ * feedparser
+      - tested with version: 4.1
+      - home page: http://www.feedparser.org/
+ * htmltmpl
+      - tested with version: 1.22
+      - home page: http://htmltmpl.sourceforge.net/
+
+ * pmock (optional)
+      - Only needed for running the tests
+      - tested with version: 0.3
+      - home page: http://pmock.sourceforge.net/
+
+2. Running KamPlanet
+--------------------
+
+  2.1 Configuring KamPlanet
+  -------------------------
+
+  (TODO, for now take a look the kamaelia-config.xml file, it 
+  is commented and so on)
+
+  2.2 Running KamPlanet
+  ---------------------
+
+  In order to run the app, you only need to execute:
+
+  $ python KamPlanet.py
+
+  It will generate two files, one with the feed of the planet and the
+  other with the HTML result of the planet. The path of these files
+  is defined in the configuration file. If you want to use other 
+  configuration file than the default one (it uses the name 
+  "kamaelia-config.xml" by default), you can pass it as an argument:
+
+  $ python -c /path/to/another/xml
+
+  In order to retrieve debugging information about which microprocesses
+  are still running, you can also turn the introspector on:
+  
+  $ python -i
+
+  Finally, you can activate a real time "debugger" by passing a port as
+  follows:
+
+  $ python -p 12345
+
+  This will start in a daemon thread a socket server which will listen
+  on that port in localhost. If you connect to that port in localhost,
+  you get a Python shell. From this Python shell you can access to any
+  module in the running application, you can check the state of the
+  classes, you can modify it, you can create new classes / functions
+  and change them while the process is still running, etc. Only useful
+  if debugging becomes really difficult.
+
+3. Running KamPlanet tests
+--------------------------
+
+  $ python runTests.py 
+  .......
+  ----------------------------------------------------------------------
+  Ran 7 tests in 0.466s
+  
+  OK
+  $
+
+  Optionally, you can use the first argument to see a GUI version. It 
+  requires unittestgui installed:
+
+  $ python runTests.py gui
+  (a new Tkinter window pops up and you can run the tests)
+
+

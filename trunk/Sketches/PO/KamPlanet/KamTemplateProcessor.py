@@ -145,11 +145,19 @@ class KamTemplateProcessor(Axon.Component.component):
         else:
             content = ''
         item['content']            = content
-        item['date_822']           = entry.updated.encode(encoding)
-        item['date']               = entry.updated.encode(encoding)
+        if hasattr(entry, 'updated'):
+            item['date_822']           = entry.updated.encode(encoding)
+            item['date']               = entry.updated.encode(encoding)
+        else:
+            #TODO
+            pass
         item['author_email']       = False
-        item['author_name']        = entry.author.encode(encoding)
-        item['author']             = entry.author.encode(encoding)
+        if hasattr(entry, 'author'):
+            item['author_name']        = entry.author.encode(encoding)
+            item['author']             = entry.author.encode(encoding)
+        else:
+            #TODO
+            pass
         return item
         
     def getTemplateFileName(self):

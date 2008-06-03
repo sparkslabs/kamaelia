@@ -1,18 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kamplanetconfig>
+	<!-- General configuration -->
 	<general>
+
+		<!-- Name of the planet -->
 		<name>Kamaelia Planet</name>
+
+		<!-- Link of the planet -->
 		<link>http://somewhere/</link>
+
+		<!-- Where can I find the template for the RSS 2.0? -->
 		<rssTemplateName>rss20.xml.tmpl</rssTemplateName>
+
+		<!-- Where can I find the template for HTML output? -->
 		<htmlTemplateName>index.html.tmpl</htmlTemplateName>
+
+		<!-- Where do you want me to write the RSS 2.0 output? -->
 		<rssFileName>output/rss20.xml</rssFileName>
+
+		<!-- Where do you want me to write the HTML output? -->
 		<htmlFileName>output/index.html</htmlFileName>
+
+		<!-- How many posts do you want at max? -->
 		<maxPostNumber>30</maxPostNumber>
+
 	</general>
-	<feeds>
-		<feed url="http://localhost/testing/feed=rss">
-			<name>Broken blog</name>
+
+	<!-- 
+		Feeds for this planet 
+
+		Format per feed:
+		<feed url="http://the.url.of.the.feed/">
+			<name>Name of the blog</name>
+			<face>/path/to/face.jpg</face> (optional)
+			<faceWidth>64</faceWidth> (optional, in pixels)
+			<faceHeight>64</faceHeight> (optional, in pixels)
 		</feed>
+	-->
+	<feeds>
 		<feed url="http://localhost/testing/feed1">
 			<name>Blog 1</name>
 		</feed>
@@ -30,6 +55,14 @@
 		</feed>
 		<feed url="http://localhost/testing/feed6">
 			<name>Blog 6</name>
+		</feed>
+		<!-- Nothing listening in this port: KamPlanet still fails -->
+		<!-- <feed url="http://localhost:12345/testing/feed=rss">
+			<name>Broken blog</name>
+		</feed> -->
+		<!-- This does not exist -->
+		<feed url="http://localhost/testing/feed=rss">
+			<name>Broken blog</name>
 		</feed>
 	</feeds>
 </kamplanetconfig>
