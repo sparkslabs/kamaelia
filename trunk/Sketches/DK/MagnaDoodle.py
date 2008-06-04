@@ -166,10 +166,13 @@ class MagnaDoodle(Axon.Component.component):
                 if isinstance(event, tuple):
                     print "here"
                     if event[0] == 'circle':
-                        pygame.draw.circle(self.display, (0,0,0), (50,50), 50, 0)
+                        pygame.draw.circle(self.display, (0,0,0), event[1], event[2], 0)
+                        self.blitToSurface()
                     if event[0] == 'line':
                         pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
-      #          if event == "c":
+                        self.blitToSurface()
+                    break
+                if event == "clear":
                     print "YAY!"
                     self.oldpos = None
                     self.drawBG()
@@ -190,7 +193,7 @@ class MagnaDoodle(Axon.Component.component):
                         self.oldpos = None
                         self.drawBG()
                         self.blitToSurface()
-                        self.send("clear", "outbox")
+                        self.send(("clear",), "outbox")
                         print "I'm here!"
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
@@ -205,8 +208,8 @@ class MagnaDoodle(Axon.Component.component):
           #              print event.pos
           #              print rad
                         pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
-                        circle = ("circle",)
-                        self.send(circle, "outbox")
+                        circle = ("circle", self.oldpos, rad)
+                        self.send((circle,), "outbox")
                         self.blitToSurface()
                     self.drawing = False
                     self.oldpos = None
@@ -219,7 +222,7 @@ class MagnaDoodle(Axon.Component.component):
                               else:
                                  pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
                                  line = ("line", self.oldpos, event.pos)
-                                 self.send(line, "outbox")
+                                 self.send((line,), "outbox")
                                  self.oldpos = event.pos
                               self.blitToSurface()
          self.pause()
