@@ -46,7 +46,7 @@ setup(
                 'Kamaelia.UI.Pygame',
                 'Kamaelia.UI.OpenGL',
                 'Kamaelia.Util',
-               # 'Kamaelia.Uti.Tokenisation',
+                #'Kamaelia.Uti.Tokenisation',
                 'Kamaelia.Video',
                 'Kamaelia.Visualisation',
                 'Kamaelia.Visualisation.Axon',
@@ -54,7 +54,8 @@ setup(
                 'Kamaelia.XML',
                 'WsgiApps.Apps'
                 "",],
-    scripts = ['Linux/App/kamaelia-publish.py', 'Linux/App/ServerConfig.py',],
+    scripts = ['Linux/App/kamaelia-publish.py',
+               'Linux/App/ServerConfig.py',],
     long_description="""
     Kamaelia Publish lets you publish yourself on your own terms.
     """,

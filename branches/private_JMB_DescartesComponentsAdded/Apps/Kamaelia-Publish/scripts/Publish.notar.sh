@@ -7,9 +7,9 @@ echo "Currently building inside private_JMB_DescartesComponentsAdded branch"
 echo
 echo "----------------------------------------------------"
 echo "Copying current Axon"
-cp -R ../../Axon/Axon/ ./Axon
+cp -Rv --remove-destination ../../Axon/Axon/ Axon > axon.log
 echo "Copying current Kamaelia"
-cp -R ../../Kamaelia/Kamaelia/ ./Kamaelia
+cp -Rv --remove-destination ../../Kamaelia/Kamaelia/ Kamaelia > kamaelia.log
 
 echo "stripping .svn directories"
 (

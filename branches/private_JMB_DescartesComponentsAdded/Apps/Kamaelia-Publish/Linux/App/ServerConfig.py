@@ -1,3 +1,5 @@
+#!/usr/env/python
+
 #general server configuration
 PORT = 8082
 
