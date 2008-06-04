@@ -162,12 +162,14 @@ class MagnaDoodle(Axon.Component.component):
                         self.blitToSurface()
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
+  #              print event
                 if isinstance(event, tuple):
-                    if event[0] == "circle":
-                        pygame.draw.circle(self.display, (0,0,0), event[1], event[2], 0)
-                    if event[0] == "line":
+                    print "here"
+                    if event[0] == 'circle':
+                        pygame.draw.circle(self.display, (0,0,0), (50,50), 50, 0)
+                    if event[0] == 'line':
                         pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
-                if event == "c":
+      #          if event == "c":
                     print "YAY!"
                     self.oldpos = None
                     self.drawBG()
@@ -203,7 +205,7 @@ class MagnaDoodle(Axon.Component.component):
           #              print event.pos
           #              print rad
                         pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
-                        circle = ("circle", self.oldpos, rad)
+                        circle = ("circle",)
                         self.send(circle, "outbox")
                         self.blitToSurface()
                     self.drawing = False
@@ -237,7 +239,7 @@ if __name__ == "__main__":
   # Magna = MagnaDoodle().activate()
    ProcessGraphline(
         WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),
-        WINDOW2 = MagnaDoodle(bgcolour=(172,100,100),position=(200,0) ),
+        WINDOW2 = MagnaDoodle(bgcolour=(172,100,100),position=(0,0) ),
         linkages = {
             ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
          #   ("WINDOW1", "outbox") : ("WINDOW2", "drawn")
