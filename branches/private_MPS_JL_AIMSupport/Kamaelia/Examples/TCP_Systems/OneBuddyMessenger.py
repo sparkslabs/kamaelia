@@ -101,4 +101,5 @@ if __name__ == '__main__':
 
     args = parseArgs(sys.argv[1:])
     print sys.argv
+    print args
     SimpleAIMClient(*args).run()

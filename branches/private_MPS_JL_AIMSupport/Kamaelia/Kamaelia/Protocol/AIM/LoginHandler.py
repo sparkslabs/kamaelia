@@ -45,7 +45,7 @@ Login and wire the resulting OSCARClient up to a ChatManager::
             self.oscar = self.recv("internal inbox")
             queued = self.recv("internal inbox")
             self.unlink(self.oscar)
-            
+
             self.chatter = ChatManager().activate()
             self.link((self.chatter, "heard"), (self, "outbox"), passthrough=2)
             self.link((self, "inbox"), (self.chatter, "talk"), passthrough=1)
@@ -80,7 +80,7 @@ At this point the server recognizes us as a functioning AIM client. LoginHandler
 unlinks its internal OSCARClient and passes the OSCARClient out of the "signal"
 outbox. LoginHandler also collects any additional messages from OSCARClient and
 sends them out of its "signal" outbox. Now any component that connects to that
-OSCARClient will be able to send and receive AIM messages. 
+OSCARClient will be able to send and receive AIM messages.
 
 """
 
@@ -88,6 +88,7 @@ from Kamaelia.Support.OscarUtil import *
 from Kamaelia.Support.OscarUtil2 import *
 from Kamaelia.Protocol.AIM.OSCARClient import OSCARClient, SNACExchanger
 from Axon.Component import component
+import Kamaelia.Util.Clock as Clock
 import time
 import Axon
 
@@ -100,9 +101,14 @@ class LoginHandler(SNACExchanger):
     out of its "signal" outbox.
 
     Keyword arguments:
-   
-    - versionNumber  -- the version of OSCAR protocol we are using. Default 1. 
+
+    - versionNumber  -- the version of OSCAR protocol we are using. Default 1.
     """
+    Inboxes = {'inbox' : 'Receives messages from the server',
+               '_clock' : 'Receives timout messages',
+               'control' : 'NOT USED'}
+    Outboxes = {'outbox' : 'Send messages to the server',
+                'signal' : 'Also sends messages to the server'}
     def __init__(self,screenname, password, versionNumber=1):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(LoginHandler, self).__init__()
@@ -134,10 +140,10 @@ class LoginHandler(SNACExchanger):
         self.link((self, "outbox"), (self.oscar, "inbox"))
         self.link((self.oscar, "outbox"), (self, "inbox"))
 
-        debugSections = {"LoginHandler.main" : 0,
-                         "LoginHandler.connectAuth" : 0,
-                         "LoginHandler.reconnect" : 0,
-                         "LoginHandler.passTheReins" : 5,
+        debugSections = {"LoginHandler.main" : 10,
+                         "LoginHandler.connectAuth" : 10,
+                         "LoginHandler.reconnect" : 10,
+                         "LoginHandler.passTheReins" : 10,
                          }
         self.debugger.addDebug(**debugSections)
 
@@ -153,7 +159,7 @@ class LoginHandler(SNACExchanger):
         else:
             yield Axon.Ipc.WaitComplete(self.negotiateProtocol())
             yield Axon.Ipc.WaitComplete(self.passTheReins())
-        
+
     def getBOSandCookie(self):
         """Gets BOS and auth cookie."""
         yield Axon.Ipc.WaitComplete(self.connectAuth())
@@ -163,7 +169,7 @@ class LoginHandler(SNACExchanger):
             assert self.debugger.note("LoginHandler.main", 1, self.error)
         else:
             assert self.debugger.note("LoginHandler.main", 1, "Got cookie!")
-        
+
     def negotiateProtocol(self):
         """Negotiates protocol."""
         yield Axon.Ipc.WaitComplete(self.reconnect(self.server, self.port, self.cookie))
@@ -173,7 +179,7 @@ class LoginHandler(SNACExchanger):
         yield Axon.Ipc.WaitComplete(self.getRights())
         assert self.debugger.note("LoginHandler.main", 5, "rights gotten, activating connection")
         self.activateConnection()
-        
+
     def connectAuth(self):
         """
         Connects to the AIM authorization server, says hi, and waits for
@@ -182,10 +188,27 @@ class LoginHandler(SNACExchanger):
         assert self.debugger.note("LoginHandler.connectAuth", 7, "sending new connection...")
         data = struct.pack('!i', self.versionNumber)
         self.send((CHANNEL_NEWCONNECTION, data))
-        while not self.dataReady():
-            self.pause()
-            yield 1
-        reply = self.recv() #should be server ack of new connection
+        self.clock = Clock.CheapAndCheerfulClock(120)
+        self.link((self.clock, 'outbox'), (self, '_clock'))
+        self.clock.activate()
+
+        not_done = True
+        while not_done:
+            while not self.anyReady():
+                self.pause()
+                yield 1
+
+            while self.dataReady('inbox'):
+                reply = self.recv('inbox') #should be server ack of new connection
+                self.unlink(self.clock)
+                not_done = False
+                while self.dataReady('_clock'):
+                    self.recv('_clock')
+
+            while self.dataReady('_clock'):
+                if self.recv('_clock') and not_done:
+                    raise "Connection time out!"
+
         assert self.debugger.note("LoginHandler.connectAuth", 5, "received new connection ack")
 
     def getCookie(self):
@@ -230,7 +253,7 @@ class LoginHandler(SNACExchanger):
         assert parsed.has_key(0x05)
         BOS_server = parsed[0x05]
         BOS_server, port = BOS_server.split(':')
-        port = int(port)    
+        port = int(port)
         auth_cookie = parsed[0x06]
         self.server, self.port, self.cookie = BOS_server, port, auth_cookie
 
@@ -245,7 +268,7 @@ class LoginHandler(SNACExchanger):
         self.link((self.oscar, "outbox"), (self, "inbox"))
         yield 1
         assert self.debugger.note("LoginHandler.reconnect", 7, "linked, linked, and unlinked")
-        
+
         data = Quad(self.versionNumber)
         data += TLV(0x06, cookie)
         self.send((CHANNEL_NEWCONNECTION, data))
@@ -292,12 +315,12 @@ class LoginHandler(SNACExchanger):
         Request rate limits, wait for reply, and send acknowledgement to the
         server.
         """
-        
+
         #request rate limits
         self.sendSnac(0x01, 0x06, "")
         for reply in self.waitSnac(0x01, 0x07): yield 1
         assert self.debugger.note("LoginHandler.main", 7, "parsing rate info...")
-        
+
         #process rate limits
         numClasses, = struct.unpack('!H', reply[:2])
         ack = self.parseRateInfo(reply[2:], numClasses)
@@ -317,7 +340,7 @@ class LoginHandler(SNACExchanger):
         self.sendSnac(0x03, 0x02, "")
         self.sendSnac(0x04, 0x04, "")
         self.sendSnac(0x09, 0x02, "")
-        
+
     def getRights(self):
         """.
         Get the server's reply on rights and limitations
@@ -342,7 +365,7 @@ class LoginHandler(SNACExchanger):
             else:
                 done = True
         assert self.debugger.note("LoginHandler.main", 5, "last reply: " + str((header[0], header[1])))
-                                  
+
 
     def activateConnection(self):
         """
@@ -396,4 +419,3 @@ if __name__ == '__main__':
     password = 'abc123'
 
     LoginHandler(screenname, password).run()
-
