@@ -37,23 +37,25 @@ def requestHandlers(URLHandlers, errorpages=None):
 
     return createRequestHandler
 
+def main():
+    log = Log.Logger(ServerConfig.WsgiAppLog, wrapper=Log.nullWrapper)
 
-log = Log.Logger(ServerConfig.WsgiAppLog, wrapper=Log.nullWrapper)
+    log_writable = LogWritable.WsgiLogWritable(ServerConfig.WsgiAppLog)
+    log_writable.activate()
 
-log_writable = LogWritable.WsgiLogWritable(ServerConfig.WsgiAppLog)
-log_writable.activate()
+    class DescartesServer(MoreComplexServer):
+        routing = [
+                   #['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
+                   ["/", Handler(log_writable, ServerConfig.WsgiConfig, '/') ],
+                  ]
+        protocol=HTTPProtocol()
+        port=8082
+        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-log.activate()
+    log.activate()
 
+    des = DescartesServer()
+    print "Serving on port %s" % (ServerConfig.PORT)
+    des.run()
 
-class DescartesServer(MoreComplexServer):
-    routing = [
-               #['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
-               ["/", Handler(log_writable, ServerConfig.WsgiConfig, '/') ],
-              ]
-    protocol=HTTPProtocol()
-    port=8082
-    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-des = DescartesServer()
-des.run()
+main()

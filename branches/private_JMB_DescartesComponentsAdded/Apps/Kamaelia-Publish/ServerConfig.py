@@ -1,11 +1,11 @@
-#!/usr/env/python
+import os
 
-#general server configuration
+#Server configuration info
 PORT = 8082
 
-#File structuring
-WSGI_DIR = '/etc/WsgiApps'
-WSGI_APP_LOG = WSGI_DIR + 'wsgi.log'
+#File structuring info
+WsgiDir = '/WsgiApps'
+WsgiAppLog = os.environ['HOME'] + '/kamaelia-publish-wsgi.log'
 
 #This dictionary is used to configure various elements of the WsgiHandler
 WsgiConfig ={

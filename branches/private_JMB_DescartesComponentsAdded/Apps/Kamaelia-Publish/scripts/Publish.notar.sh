@@ -1,15 +1,21 @@
 #!/bin/sh
 #
 
-echo "Building the Kamaelia Publish distribution"
+echo "Assembling Axon/Kamaelia files"
 echo "Currently building inside private_JMB_DescartesComponentsAdded branch"
 
 echo
 echo "----------------------------------------------------"
-echo "Copying current Axon"
-cp -Rv --remove-destination ../../Axon/Axon/ Axon > axon.log
-echo "Copying current Kamaelia"
-cp -Rv --remove-destination ../../Kamaelia/Kamaelia/ Kamaelia > kamaelia.log
+echo "Removing old Axon"
+rm -rf Axon
+echo "Removing old Kamaelia"
+rm -rf Kamaelia
+echo "----------------------------------------------------"
+echo "Copying Axon from branch"
+cp -Rv ../../Axon/Axon/ Axon > axon.log
+echo "Copying Kamaelia from branch"
+cp -Rv ../../Kamaelia/Kamaelia/ Kamaelia > kamaelia.log
+echo "----------------------------------------------------"
 
 echo "stripping .svn directories"
 (
