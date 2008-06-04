@@ -1,0 +1,59 @@
+Most of the sketches in this directory need a couple of additional libraries for OSC and MIDI support.
+
+Linux
+=====
+OSC
+---
+OSC support depends on pyOSC, which can be obtained from:
+http://trac.v2.nl/wiki/pyOSC
+Installation instructions are included in the package
+
+MIDI
+----
+MIDI support depends on pyPortMidi, which can be obtained from:
+http://nosuch.com/tjt/nosuchsoft/
+Steps to install:
+1) Make sure you have pyrex installed - it is packaged for almost all major distibutions.  Run pyrexc --version to check whether it is already installed
+2) Grab the package which fits with your version of python (2.4 or 2.5)
+3) Unzip the archive
+4) Run python setup.py install as root from within the extracted archive
+
+OSX
+===
+OSC
+---
+OSC support depends on pyOSC, which can be obtained from:
+http://trac.v2.nl/wiki/pyOSC
+Installation instructions are included in the package
+
+MIDI
+----
+MIDI support depends on pyPortMidi, which can be obtained from:
+http://nosuch.com/tjt/nosuchsoft/
+Steps to install:
+1) Make sure you have pyrex installed - it is available from Darwinports as py-pyrex.  Run pyrexc --version to check whether it is already installed
+2) Grab the package which fits with your version of python (2.4 or 2.5)
+3) Unzip the archive
+4) Run python setup.py install as root from within the extracted archive
+
+Windows
+=======
+OSC
+---
+OSC support depends on pyOSC, which can be obtained from:
+http://trac.v2.nl/wiki/pyOSC
+Steps to install:
+1) Grap the latest zip of pyOSC
+2) Unzip the archive
+3) Make sure the python executable is in your system PATH
+4) Go Start=>Run=>cmd
+5) Change directory to the extracted archive, and run python setup.py install
+
+MIDI
+----
+MIDI support depends on pyPortMidi, which can be obtained from:
+http://nosuch.com/tjt/nosuchsoft/
+Steps to install:
+1) Grab the package which fits with your version of python (2.4 or 2.5)
+2) Unzip the archive
+3) Copy pypm.pyd to your python lib\site-package directory
