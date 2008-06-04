@@ -156,12 +156,17 @@ class MagnaDoodle(Axon.Component.component):
          while self.dataReady("drawn"):
                 print "drawn"
                 for x in self.recv("drawn"):
-                    if x == "clear":
+                    if x == "c":
                         self.oldpos = None
                         self.drawBG()
                         self.blitToSurface()
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
+                if isinstance(event, tuple):
+                    if event[0] == "circle":
+                        pygame.draw.circle(self.display, (0,0,0), event[1], event[2], 0)
+                    if event[0] == "line":
+                        pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
                 if event == "c":
                     print "YAY!"
                     self.oldpos = None
@@ -198,8 +203,9 @@ class MagnaDoodle(Axon.Component.component):
           #              print event.pos
           #              print rad
                         pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
+                        circle = ("circle", self.oldpos, rad)
+                        self.send(circle, "outbox")
                         self.blitToSurface()
-                        self.send(event, "outbox")
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
@@ -210,6 +216,8 @@ class MagnaDoodle(Axon.Component.component):
                                  self.oldpos = event.pos
                               else:
                                  pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+                                 line = ("line", self.oldpos, event.pos)
+                                 self.send(line, "outbox")
                                  self.oldpos = event.pos
                               self.blitToSurface()
          self.pause()
