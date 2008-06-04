@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 """
-setup.py - script for installing Descartes
-
-Usage:
-  python setup.py py2app
+setup.py - script for installing Kamaelia Publish
 """
 
 from distutils.core import setup
@@ -57,7 +54,7 @@ setup(
                 'Kamaelia.XML',
                 'WsgiApps.Apps'
                 "",],
-    scripts = ['Linux/App/main.py', 'Linux/App/ServerConfig.py',],
+    scripts = ['Linux/App/kamaelia-publish.py', 'Linux/App/ServerConfig.py',],
     long_description="""
     Kamaelia Publish lets you publish yourself on your own terms.
     """,
