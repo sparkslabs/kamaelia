@@ -26,42 +26,51 @@ import Axon
 import threading
 
 class MessageAdder(Axon.Component.component):
+    
+    YIELD_OBJECT = object()
+    
     def __init__(self, outboxes, **argd):
         self.Outboxes = outboxes
         super(MessageAdder, self).__init__(**argd)
         self.lock = threading.Lock()
-        self.messages = {}
-        for outboxName in outboxes:
-            self.messages[outboxName] = []
+        self.messages = []
         self._stop_within_iterations = None
         
     def addMessage(self, msg, outbox):
+        if not outbox in self.Outboxes:
+            raise KeyError("outbox %s not found in Outboxes <%s>" % (outbox, self.Outboxes))
         self.lock.acquire()
         try:
-            self.messages[outbox].append(msg)
+            self.messages.append((msg, outbox))
+        finally:
+            self.lock.release()
+            
+    def addYield(self, n = 1):
+        self.lock.acquire()
+        try:
+            for _ in xrange(n):
+                self.messages.append(self.YIELD_OBJECT)
         finally:
             self.lock.release()
     
     def stopMessageAdder(self, within_iterations = 0):
         self._stop_within_iterations = within_iterations
         
-    def _getOutboxLength(self, outbox):
-        self.lock.acquire()
-        try:
-            return len(self.messages[outbox])
-        finally:
-            self.lock.release()
-    
     def main(self):
         while self._stop_within_iterations is None or self._stop_within_iterations > 0:
-            for outbox in self.Outboxes:
-                self.lock.acquire()
-                try:
-                    while len(self.messages[outbox]) > 0:
-                        msg = self.messages[outbox].pop(0)
-                        self.send(msg, outbox)
-                finally:
-                    self.lock.release()
+            self.lock.acquire()
+            try:
+                while len(self.messages) > 0:
+                    data = self.messages.pop(0)
+                    if data == self.YIELD_OBJECT:
+                        break
+                    msg, outbox = data
+                    self.send(msg, outbox)
+            finally:
+                self.lock.release()
+            
             if self._stop_within_iterations is not None:
                 self._stop_within_iterations = self._stop_within_iterations - 1
+            
             yield 1
+            

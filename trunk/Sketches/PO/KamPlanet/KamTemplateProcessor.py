@@ -82,9 +82,9 @@ class KamTemplateProcessor(Axon.Component.component):
     def fillTemplate(self,  templateProcessor):
         templateProcessor.set('name',                 self.config.name)
         templateProcessor.set('link',                 self.config.link)
-        templateProcessor.set('generator',            "KamPlanet 0.1")
-        templateProcessor.set('feedtype',             "rss")
-        templateProcessor.set('feed',                 "rss20.xml")
+        templateProcessor.set('generator',            "KamPlanet 0.1") # TODO
+        templateProcessor.set('feedtype',             "rss") # TODO
+        templateProcessor.set('feed',                 "rss20.xml") # TODO
         templateProcessor.set('channel_title_plain',  self.config.name)
         templateProcessor.set('date',                 time.asctime())
         
@@ -188,7 +188,9 @@ class KamTemplateProcessor(Axon.Component.component):
         # 
         tmanager = TemplateManager()
         return tmanager.prepare(self.getTemplateFileName())
-        
+    
+    VERBOSE = True
+    
     def main(self):
         while True:                
             while self.dataReady("channels-inbox"):
@@ -228,7 +230,8 @@ class KamTemplateProcessor(Axon.Component.component):
                 yield 1
                 
                 self.send(producerFinished(self), "signal")
-                print "File written %s" % self.getOutputFileName() # TODO
+                if self.VERBOSE:
+                    print "File written %s" % self.getOutputFileName()
                 return
                 
             if not self.anyReady():

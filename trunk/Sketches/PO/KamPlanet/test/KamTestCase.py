@@ -32,9 +32,14 @@ from MessageAdder                 import MessageAdder
 from MessageStorer                import MessageStorer
 
 class KamTestCase(unittest.TestCase):
+    
+    # TODO: this number of steps depends too much on the situation :-S
+    DEFAULT_STEP_NUMBER = 1000
+    
     def __init__(self, *argd, **kwargs):
-        # Not an object
+        # Might not be an object
         unittest.TestCase.__init__(self, *argd, **kwargs)
+        self._kamtest_initialized = False
         
     def initializeSystem(self, inputComponentUnderTest, outputComponentUnderTest = None):
         if outputComponentUnderTest is None:
@@ -67,6 +72,8 @@ class KamTestCase(unittest.TestCase):
             MESSAGE_STORER              = self.messageStorer, 
             linkages                    = linkages, 
         )
+        
+        self._kamtest_initialized = True
     
     def _listThreads(self):
         scheduler = self.graph.__class__.schedulerClass.run
@@ -74,43 +81,34 @@ class KamTestCase(unittest.TestCase):
         scheduler.debuggingon = False
         return threads
         
-    # TODO: this shouldn't be overriden; maybe I need to use delegation instead of inheritance
-    def tearDown(self):
-        scheduler = self.graph.__class__.schedulerClass.run
-        scheGenerator  = scheduler.main(0, canblock=False)
-        n = 0
-        try:
-            while n < 100:
-                scheGenerator.next()
-                n += 1
-        except StopIteration, si:
-            pass
-            
-        threads = self._listThreads()
-        
+    def clearThreads(self):
         # Reboot the scheduler
         self.graph.__class__.schedulerClass.run = None
         self.graph.__class__.schedulerClass()
         
-        if len(threads) > 0:
-            raise self.failureException("Processes still running: %s" % threads)
+    # TODO: this shouldn't be overriden; maybe I need to use delegation instead of inheritance
+    def tearDown(self):
+        if self._kamtest_initialized:
+            scheduler = self.graph.__class__.schedulerClass.run
+            scheGenerator  = scheduler.main(0, canblock=False)
+            n = 0
+            try:
+                while n < 100:
+                    scheGenerator.next()
+                    n += 1
+            except StopIteration, si:
+                pass
+            
+            threads = self._listThreads()
+            
+            self.clearThreads()
+            
+            if len(threads) > 0:
+                raise self.failureException("Processes still running: %s" % threads)
     
-    # TODO: this number of steps depends too much on the situation :-S
-    def runMessageExchange(self, msg = None, steps = 1000):
-        """
-        runMessageExchange(msg, steps) -> None
-        
-        It will run the scheduler several times, assuring that the 
-        messageAdder and the messageStorer will be run "steps" times.
-        
-        The idea is to iterate the minimum number of times so we 
-        assure that the scheduler is run the number of $(steps 
-        provided * the number of threads being run at each step). It's
-        not a real problem to let it run more times, but at some point
-        it must finish. When it finishes, if there is any thread still
-        alive, it will raise an AssertionError with the message "msg"
-        (if provided).
-        """
+    def _runSteps(self, steps):
+        if steps is None:
+            steps = self.DEFAULT_STEP_NUMBER
         self.messageAdder.stopMessageAdder(steps)
         self.messageStorer.stopMessageStorer(steps)
         
@@ -136,14 +134,32 @@ class KamTestCase(unittest.TestCase):
         for _ in xrange(steps + MAGIC_NUMBER_TO_BE_ADDED_TO_STEPS): 
             try:
                 n = len(self._listThreads())
+                if n == 0:
+                    break
                 iteration_counter = 0
                 while iteration_counter < n:
                     scheGenerator.next()
                     iteration_counter += 1
                     n = len(self._listThreads())
             except StopIteration:
-                break
+                break        
+    
+    def assertStopping(self, msg = None, steps = None):
+        """
+        assertStopping(msg, steps) -> None
         
+        It will run the scheduler several times, assuring that the 
+        messageAdder and the messageStorer will be run "steps" times.
+        
+        The idea is to iterate the minimum number of times so we 
+        assure that the scheduler is run the number of $(steps 
+        provided * the number of threads being run at each step). It's
+        not a real problem to let it run more times, but at some point
+        it must finish. When it finishes, if there is any thread still
+        alive, it will raise an AssertionError with the message "msg"
+        (if provided).
+        """
+        self._runSteps(steps)
         # Check the number of threads
         threads = self._listThreads()
         if len(threads) > 0:
@@ -151,3 +167,71 @@ class KamTestCase(unittest.TestCase):
             self.graph.__class__.schedulerClass.run = Scheduler.scheduler()
             # then raise the failureException
             raise self.failureException(msg or "Processes still running: %s" % threads)
+
+    def assertNotStopping(self, msg = None, steps = None, clear = False):
+        """
+        runMessageExchange(msg, steps) -> None
+        
+        It will run the scheduler several times, assuring that the 
+        messageAdder and the messageStorer will be run "steps" times.
+        
+        The idea is to iterate the minimum number of times so we 
+        assure that the scheduler is run the number of $(steps 
+        provided * the number of threads being run at each step). It's
+        not a real problem to let it run more times, but at some point
+        it must finish. When it finishes, if there is any thread still
+        alive, it will raise an AssertionError with the message "msg"
+        (if provided).
+        """
+        self._runSteps(steps)
+        
+        # Check the number of threads
+        threads = self._listThreads()
+        if len(threads) == 0:
+            self.clearThreads()
+            # then raise the failureException
+            raise self.failureException(msg or "Processes still running: %s" % threads)
+        else:
+            if clear:
+                self.clearThreads()
+
+
+import pmock
+
+# pmock extension. 
+# TODO: it should be part of pmock instead of KamTestCase, just as it seems to be at jMock:
+# http://www.jmock.org/javadoc/2.4.0/org/jmock/Expectations.html#exactly(int)
+# 
+class ExactInvocationMatcher(pmock.InvokedRecorderMatcher):
+    def __init__(self, number, *args,  **kwargs):
+        super(ExactInvocationMatcher, self).__init__(*args, **kwargs)
+        self._number  = number
+        self._counter = 0
+        
+    def __str__(self):
+        def plural_times(times):
+            if times == 1:
+                return "time"
+            else:
+                return "times"
+                
+        return "expected %s %s and invoked %s %s" % (
+                                    self._number, 
+                                    plural_times(self._number), 
+                                    self._counter, 
+                                    plural_times(self._counter), 
+                            )
+        
+    def matches(self, invocation):
+        return self._counter < self._number
+        
+    def invoked(self, invocation):
+        super(ExactInvocationMatcher, self).invoked(invocation)
+        self._counter += 1
+        
+    def verify(self):
+        if self._counter < self._number:
+            raise AssertionError("More times expected")
+        
+def exactly(number):
+    return ExactInvocationMatcher(number)

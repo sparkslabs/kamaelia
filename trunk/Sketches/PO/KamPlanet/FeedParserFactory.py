@@ -156,7 +156,7 @@ class FeedParserFactory(Axon.Component.component):
                     yield 1
                 self.send(mustStop,"signal")
                 return
-            
+                
             self.handleChildTerminations()
             
             while self.dataReady("inbox"):
@@ -164,18 +164,21 @@ class FeedParserFactory(Axon.Component.component):
                 child = self.createChild(feed)
                 self.addChildren(child)
                 child.activate()
-            
+                
             while self.dataReady("_parsed-feeds"):
                 parseddata = self.recv("_parsed-feeds")
                 self.send(parseddata,"outbox")
-            
+                
             if providerFinished and len(self.childComponents()) == 1:
+                # TODO: CHECK IF THIS IS THE PROBLEM
                 # It's actually only waiting for the plugsplitter
                 for _ in self.waitForChildren(producerFinished(self)):
                     yield 1
-                self.send(producerFinished(self),"signal")
+                pfinished = producerFinished(self)
+                self.send(pfinished,"signal")
                 return
-            
+                
             if not self.anyReady():
                 self.pause()
             yield 1
+            
