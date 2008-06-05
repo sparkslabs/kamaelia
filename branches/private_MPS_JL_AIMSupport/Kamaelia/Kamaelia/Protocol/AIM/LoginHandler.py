@@ -189,6 +189,7 @@ class LoginHandler(SNACExchanger):
         data = struct.pack('!i', self.versionNumber)
         self.send((CHANNEL_NEWCONNECTION, data))
         self.clock = Clock.CheapAndCheerfulClock(120)
+        t = time.time()
         self.link((self.clock, 'outbox'), (self, '_clock'))
         self.clock.activate()
 
@@ -207,7 +208,10 @@ class LoginHandler(SNACExchanger):
 
             while self.dataReady('_clock'):
                 if self.recv('_clock') and not_done:
-                    raise "Connection time out!"
+                    if (time.time() - t) > 2:
+                        raise "Connection time out!"+ str( time.time() - t)
+                    else:
+                        print "odd"
 
         assert self.debugger.note("LoginHandler.connectAuth", 5, "received new connection ack")
 
