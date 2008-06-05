@@ -22,6 +22,8 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: PO
 
+import libraries
+
 from Kamaelia.Chassis.Pipeline    import Pipeline
 from Kamaelia.Chassis.Graphline   import Graphline
 from Kamaelia.Chassis.Carousel    import Carousel

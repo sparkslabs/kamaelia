@@ -25,7 +25,7 @@
 from Axon.Ipc                  import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Pipeline import pipeline
 
-import pmock
+import mocker
 
 import KamTestCase
 import KamMockObject
@@ -123,7 +123,8 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
     PARSEDOBJECT3 = 'parsedobject3'
         
     def setUp(self):
-        self.mockedFeedParserMaker = pmock.Mock()
+        self.mockedFeedParserMakerMocker = mocker.Mocker()
+        self.mockedFeedParserMaker       = self.mockedFeedParserMakerMocker.mock()
         self.feedParserFactory = WrappedFeedParserFactory(self.mockedFeedParserMaker)
         self.initializeSystem(self.feedParserFactory)
     
@@ -145,6 +146,11 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         feed = ConfigFileParser.generateFeed()
         feed.url.parsedValue += feedUrl
         return feed.generateResultObject()
+    
+    def configureMockedFeedParserMaker(self, mockFeedParser):
+        self.mockedFeedParserMaker.makeFeedParser(FEED_URL)
+        self.mockedFeedParserMakerMocker.result(mockFeedParser)
+        self.mockedFeedParserMakerMocker.replay()
         
     def testFeeds(self):
         mockFeedParser = KamMockObject.KamMockObject(pipeline)
@@ -158,13 +164,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         
         feedobj = self.generateFeedObj(FEED_URL)
         
-        self.mockedFeedParserMaker.expects(
-                    pmock.once()
-                ).makeFeedParser(
-                    pmock.eq(FEED_URL)
-                ).will(
-                    pmock.return_value(mockFeedParser)
-                )
+        self.configureMockedFeedParserMaker(mockFeedParser)
                 
         self.messageAdder.addMessage(feedobj, 'inbox')
         self.messageAdder.addYield(10) #TODO: constant
@@ -181,7 +181,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.assertEquals(1, len(messages))
         self.assertTrue(isinstance(messages[0], producerFinished))
         
-        self.mockedFeedParserMaker.verify()
+        self.mockedFeedParserMakerMocker.verify()
 
 
     def testFeedsAndShutdownsPriority(self):
@@ -207,13 +207,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         # I don't ask the mock feed to stop
         
         feedobj = self.generateFeedObj(FEED_URL)
-        self.mockedFeedParserMaker.expects(
-                    pmock.once()
-                ).makeFeedParser(
-                    pmock.eq(FEED_URL)
-                ).will(
-                    pmock.return_value(mockFeedParser)
-                )
+        self.configureMockedFeedParserMaker(mockFeedParser)
         
         self.messageAdder.addMessage(feedobj, 'inbox')
         self.messageAdder.addYield()
@@ -229,13 +223,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         # I don't ask the mock feed to stop
         
         feedobj = self.generateFeedObj(FEED_URL)
-        self.mockedFeedParserMaker.expects(
-                    pmock.once()
-                ).makeFeedParser(
-                    pmock.eq(FEED_URL)
-                ).will(
-                    pmock.return_value(mockFeedParser)
-                )
+        self.configureMockedFeedParserMaker(mockFeedParser)
         
         self.messageAdder.addMessage(feedobj, 'inbox')
         self.messageAdder.addYield()

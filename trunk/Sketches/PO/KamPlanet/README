@@ -18,16 +18,16 @@ The following packages are required for running KamPlanet:
 
  * Kamaelia :-)
  * feedparser
-      - tested with version: 4.1
+      - tested with version: 4.1 (included in "libs" dir)
       - home page: http://www.feedparser.org/
  * htmltmpl
-      - tested with version: 1.22
+      - tested with version: 1.22 (included in "libs" dir)
       - home page: http://htmltmpl.sourceforge.net/
 
- * pmock (optional)
+ * mocker (optional)
       - Only needed for running the tests
-      - tested with version: 0.3
-      - home page: http://pmock.sourceforge.net/
+      - tested with version: 0.10-1 (included in "libs" dir)
+      - home page: http://labix.org/mocker
 
 2. Running KamPlanet
 --------------------

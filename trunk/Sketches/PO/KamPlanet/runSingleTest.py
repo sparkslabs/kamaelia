@@ -22,50 +22,22 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: PO
 
-import libraries
+import libraries, sys, os, unittest
 
-import os
-import new
-import test
-import unittest
-import sys
-import glob
+if len(sys.argv) != 2:
+        print >> sys.stderr, "python %s <testfile>" % sys.argv[0]
+        sys.exit(1)
 
-def get_suites():
-	dir = os.path.dirname(os.path.abspath(sys.modules[__name__].__file__))
-	suites = []
-	for testFile in glob.glob(dir + os.sep + 'test/test_*.py'):
-		testModuleName = os.path.basename(testFile)[:-len('.py')]
-		testModule = __import__('test.' + testModuleName,globals(),locals(),[testModuleName])
-		if hasattr(testModule,'suite') and callable(testModule.suite):
-			suites.append(testModule.suite())
-	return suites
+testfile = sys.argv[1]
 
-def suite():
-	suites = get_suites()
-	suite = unittest.TestSuite(suites)
-	return suite
+if not testfile.endswith('.py'):
+        print >> sys.stderr, "python %s <testfile>" % sys.argv[0]
+        sys.exit(2)
 
-def runGui():
-	import unittestgui
-	unittestgui.main(__name__ + '.suite')
+module_name = testfile[:-3].replace(os.sep,'.')
 
-def runConsole():
-	sys.argv = [sys.argv[0]]
-	unittest.main(defaultTest = 'suite')
-
-#DEFAULT_UI = 'gui'
-DEFAULT_UI = 'console' 
-
-if __name__ == '__main__':
-	if len(sys.argv) == 1:
-		ui = DEFAULT_UI
-	else:
-		ui = sys.argv[1]
-
-	if ui == 'console':
-		runConsole()
-	elif ui == 'gui':
-		runGui()
-	else:
-		print >>sys.stderr, "Select ui [console|gui]"
+print "Running... %s" % module_name
+sys.argv = [sys.argv[0]]
+module =  __import__(module_name, globals(), locals(), [module_name])
+suite = module.suite
+unittest.main(defaultTest = 'suite')
