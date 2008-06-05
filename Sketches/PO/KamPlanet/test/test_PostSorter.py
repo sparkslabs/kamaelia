@@ -68,7 +68,7 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.messageAdder.addMessage(feed, 'inbox')
         self.messageAdder.addMessage(producerFinished(), "control")
-        self.runMessageExchange()
+        self.assertStopping()
         storedMessages = self.messageStorer.getMessages("outbox")
         self.assertEquals(
                     1, 
@@ -82,7 +82,7 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.messageAdder.addMessage(feed, 'inbox')
         self.messageAdder.addMessage(producerFinished(), "control")
-        self.runMessageExchange()
+        self.assertStopping()
         storedMessages = self.messageStorer.getMessages("outbox")
         self.assertEquals(
                     10, 

@@ -68,8 +68,13 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
     def runWithSampleConfig(self, sampleConfig):
         self.messageAdder.addMessage(sampleConfig, 'inbox')
         self.messageAdder.addMessage(producerFinished(), "control")
-        self.runMessageExchange()
-    
+        self.assertStopping()
+        
+    def testSampleConfigNotStopping(self):
+        self.messageAdder.addMessage(self.SAMPLE_CONFIG1, 'inbox')
+        # I actively say that I don't care which threads are still running
+        self.assertNotStopping(clear=True)
+        
     def testSignal(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
         
@@ -128,7 +133,7 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
                     'imgs/blog2.png',
                     feedMessages[1].face
                 )
-                
+        
 def suite():
     return KamTestCase.makeSuite(ConfigFileParserTestCase)
     

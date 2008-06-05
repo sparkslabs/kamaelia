@@ -27,6 +27,13 @@ import Axon
 import MessageAdder
 import MessageStorer
 
+# TODO: this shouldn't be part of the API. It should be created through a method at KamTestCase
+# This way, KamTestCase would know how many mocks there are, and it can stop as soon as there are
+# no alive component except for alive KamMockObject (and alive children of the KamMockObject)
+# It's just an optimization.
+# 
+# Furthermore, it would be useful since 
+
 class KamMockObject(Axon.Component.component):
     def __init__(self, inputComponentToMock, outputComponentToMock = None, **kwargs):
         self.publicInboxes,  self.publicOutboxes = self._setupInboxesOutboxes(
@@ -42,11 +49,6 @@ class KamMockObject(Axon.Component.component):
             self.link((self, '_child_' + inboxName), (self.messageStorer, inboxName))
         for outboxName in self.publicOutboxes:
             self.link((self.messageAdder, outboxName),  (self, '_child_' + outboxName))
-        
-        #self.messageStorer.activate()
-        #self.addChildren(self.messageStorer)
-        #self.messageAdder.activate()        
-        #self.addChildren(self.messageAdder)
         self._stop_within_iterations = None
     
     def _setupInboxesOutboxes(self, inputComponentToMock, outputComponentToMock):
@@ -81,14 +83,23 @@ class KamMockObject(Axon.Component.component):
     def addMessage(self, msg, outbox):
         self.messageAdder.addMessage(msg, outbox)
         
+    def addYield(self, n = 1):
+        self.messageAdder.addYield(n)
+        
     def getMessages(self, inbox):
         return self.messageStorer.getMessages(inbox)
     
     def main(self):
+        self.messageStorer.activate()
+        self.messageAdder.activate()
+        self.addChildren(self.messageStorer)
+        self.addChildren(self.messageAdder)
+        
         while self._stop_within_iterations is None or self._stop_within_iterations > 0:
             for inbox in self.publicInboxes:
                 while self.dataReady(inbox):
                     data = self.recv(inbox)
+                    print data, inbox
                     self.send(data, '_child_' + inbox)
                     
             for outbox in self.publicOutboxes:

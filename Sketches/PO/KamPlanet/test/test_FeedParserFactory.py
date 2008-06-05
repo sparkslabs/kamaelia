@@ -29,7 +29,9 @@ import pmock
 
 import KamTestCase
 import KamMockObject
+
 import FeedParserFactory
+import ConfigFileParser
 
 FEED_URL   = "http://sample.feed/"
 
@@ -87,7 +89,7 @@ class FeedParserTestCase(KamTestCase.KamTestCase):
     def testFeedparser(self):
         self.messageAdder.addMessage(SAMPLE_RSS, 'inbox')
         self.messageAdder.addMessage(producerFinished(), 'control')
-        self.runMessageExchange()
+        self.assertStopping()
         
         messages = self.messageStorer.getMessages("outbox")
         self.assertEquals(1, len(messages))
@@ -113,40 +115,141 @@ class WrappedFeedParserFactory(FeedParserFactory.FeedParserFactory):
         self.__mockedFeedParserMaker = mockedFeedParserMaker
         
     def makeFeedParser(self,  feedUrl):
-        self.__mockedFeedParserMaker.makeFeedParser(feedUrl)
+        return self.__mockedFeedParserMaker.makeFeedParser(feedUrl)
         
 class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
+    PARSEDOBJECT1 = 'parsedobject1'
+    PARSEDOBJECT2 = 'parsedobject2'
+    PARSEDOBJECT3 = 'parsedobject3'
+        
     def setUp(self):
-        self.mockedFeedParser = pmock.Mock()
-        self.feedParserFactory = WrappedFeedParserFactory(self.mockedFeedParser)
+        self.mockedFeedParserMaker = pmock.Mock()
+        self.feedParserFactory = WrappedFeedParserFactory(self.mockedFeedParserMaker)
         self.initializeSystem(self.feedParserFactory)
     
     def testNoFeedProducerFinished(self):
         self.messageAdder.addMessage(producerFinished(), 'control')
-        self.runMessageExchange()
+        self.assertStopping()
         messages = self.messageStorer.getMessages("signal")
         self.assertEquals(1, len(messages))
         self.assertTrue(isinstance(messages[0], producerFinished))
         
     def testNoFeedShutdown(self):
         self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
-        self.runMessageExchange()
+        self.assertStopping()
         messages = self.messageStorer.getMessages("signal")
         self.assertEquals(1, len(messages))
         self.assertTrue(isinstance(messages[0], shutdownMicroprocess))
+    
+    def generateFeedObj(self, feedUrl):
+        feed = ConfigFileParser.generateFeed()
+        feed.url.parsedValue += feedUrl
+        return feed.generateResultObject()
         
-    def test1Feed(self):
-        mockFeedParser = KamMockObject.KamMockObject(pipeline).activate()
-        mockFeedParser.stopMockObject(100) #TODO
-        #TODO : not added the feed
+    def testFeeds(self):
+        mockFeedParser = KamMockObject.KamMockObject(pipeline)
+        # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
+        # child will not die until this has finished
+        mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
+        
+        mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
+        mockFeedParser.addMessage(self.PARSEDOBJECT2,'outbox')
+        mockFeedParser.addMessage(self.PARSEDOBJECT3,'outbox')
+        
+        feedobj = self.generateFeedObj(FEED_URL)
+        
+        self.mockedFeedParserMaker.expects(
+                    pmock.once()
+                ).makeFeedParser(
+                    pmock.eq(FEED_URL)
+                ).will(
+                    pmock.return_value(mockFeedParser)
+                )
+                
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addYield(10) #TODO: constant
         self.messageAdder.addMessage(producerFinished(), 'control')
-        self.runMessageExchange()
+        self.assertStopping()
+
+        messages = self.messageStorer.getMessages('outbox')
+        self.assertEquals(3, len(messages))
+        self.assertEquals(self.PARSEDOBJECT1, messages[0])
+        self.assertEquals(self.PARSEDOBJECT2, messages[1])
+        self.assertEquals(self.PARSEDOBJECT3, messages[2])
+        
+        messages = self.messageStorer.getMessages('signal')
+        self.assertEquals(1, len(messages))
+        self.assertTrue(isinstance(messages[0], producerFinished))
+        
+        self.mockedFeedParserMaker.verify()
+
+
+    def testFeedsAndShutdownsPriority(self):
+        feedobj = self.generateFeedObj(FEED_URL)
+        
+        # It doesn't matter as long as there is a shutdownMicroprocess message
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        self.assertStopping()
+        
+        messages = self.messageStorer.getMessages('outbox')
+        self.assertEquals(0, len(messages))
+        
+        messages = self.messageStorer.getMessages('signal')
+        self.assertEquals(1, len(messages))
+        self.assertTrue(isinstance(messages[0], shutdownMicroprocess))
+
+    def testWaitingForChildrenWhenProducerFinished(self):
+        mockFeedParser = KamMockObject.KamMockObject(pipeline)
+        mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
+        # I don't ask the mock feed to stop
+        
+        feedobj = self.generateFeedObj(FEED_URL)
+        self.mockedFeedParserMaker.expects(
+                    pmock.once()
+                ).makeFeedParser(
+                    pmock.eq(FEED_URL)
+                ).will(
+                    pmock.return_value(mockFeedParser)
+                )
+        
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addYield()
+        self.messageAdder.addMessage(producerFinished(), 'control')
+        
+        # Even if I have sent a producerFinished, the process does not finish
+        # because there are pending children
+        self.assertNotStopping(clear=True)
+        
+    def testWaitingForChildrenWhenShutdownMicroprocess(self):
+        mockFeedParser = KamMockObject.KamMockObject(pipeline)
+        mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
+        # I don't ask the mock feed to stop
+        
+        feedobj = self.generateFeedObj(FEED_URL)
+        self.mockedFeedParserMaker.expects(
+                    pmock.once()
+                ).makeFeedParser(
+                    pmock.eq(FEED_URL)
+                ).will(
+                    pmock.return_value(mockFeedParser)
+                )
+        
+        self.messageAdder.addMessage(feedobj, 'inbox')
+        self.messageAdder.addYield()
+        self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        
+        # Even if I have sent a shutdownMicroprocess, the process does not finish
+        # because there are pending children
+        self.assertNotStopping(clear=True)
         
 def suite():
     return KamTestCase.TestSuite((
                 KamTestCase.makeSuite(FeedParserTestCase), 
                 KamTestCase.makeSuite(FeedParserFactoryTestCase), 
             ))
-
+            
 if __name__ == '__main__':
     KamTestCase.main()

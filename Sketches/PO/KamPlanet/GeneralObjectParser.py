@@ -48,6 +48,7 @@ class GeneralObjectParser(object):
     
     Creates a GeneralObjectParser with all the attributes given as arguments.
     """
+    _VERBOSE=True
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(GeneralObjectParser, self).__init__()
@@ -75,7 +76,8 @@ class GeneralObjectParser(object):
             try:
                 finalValue = field.dataType(field.parsedValue) or field.defaultValue
             except ValueError, ve:
-                print >> sys.stderr, "Error parsing field %s: <%s>; using %s" % (fieldName, ve, field.defaultValue)
+                if self._VERBOSE:
+                    print >> sys.stderr, "Error parsing field %s: <%s>; using %s" % (fieldName, ve, field.defaultValue)
                 finalValue = field.defaultValue
             setattr(resultingObj, fieldName, finalValue)
         return resultingObj
