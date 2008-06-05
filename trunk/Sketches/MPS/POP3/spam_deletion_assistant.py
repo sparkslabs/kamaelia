@@ -272,17 +272,21 @@ class Pop3Client(Axon.Component.component):
             X = raw_input()
             if X.lower() == "quit":
                break
-            for deletion in deletions:
-                ID, FROM, HEADERS = deletion
-                sys.stdout.write(".")
-                sys.stdout.flush()
-                yield self.deleteMessage(ID)
-                print self.result
-            print "RECOMMENDED DELETIONS COMPLETE"
-            print "To delete more, don't type 'quit'"
-            X = raw_input()
-            if X.lower() == "quit":
-               break
+            if X.lower() != "skip":
+                for deletion in deletions:
+                    ID, FROM, HEADERS = deletion
+                    sys.stdout.write(".")
+                    sys.stdout.flush()
+                    yield self.deleteMessage(ID)
+                    print self.result
+                print "RECOMMENDED DELETIONS COMPLETE"
+                print "To delete more, don't type 'quit'"
+                X = raw_input()
+                if X.lower() == "quit":
+                   break
+            else:
+                print "skipping, moving on"
+                deletions = []
         
         print "Done, call again"
         self.send(["QUIT"], "outbox")
