@@ -11,7 +11,6 @@ def str2dict(string):
     string_list = string.split(',')
     for item in string_list:
         result = item.split('=')
-        print result
         dictionary.update({result[0]: result[1]})
     return dictionary
         
