@@ -1,4 +1,5 @@
 import socket
+import errno
 import Axon
 
 from Kamaelia.Internet.Selector import Selector
@@ -22,20 +23,28 @@ class UDPReceiver(Axon.Component.component):
     def main(self):
         #TODO: Binding should handle errors gracefully
         self.sock.bind(self.local)
-        selectorServices = Selector.getSelectorServices()
-        self.link((self, "_selectorSignal"), selectorServices[0])
-        self.send(newReader((self, "ReadReady"), self.sock), "_selectorSignal")
+        self.sock.setblocking(0)
+        selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices()
+        if newSelector:
+            newSelector.activate()
+        yield 1
+
+        # Link to the selector's "notify" inbox
+        self.link((self, "_selectorSignal"), selectorService)
+        self.send(newReader(self, ((self, "ReadReady"), self.sock)),
+                   "_selectorSignal")
 
         # TODO: Make me shutdown nicely
         while 1:
             if self.dataReady("ReadReady"):
+                self.recv("ReadReady")
                 data = True
                 while data:
                     data = self.safeRecv(1024)
                     if data:
-                        print "data"
                         self.send(data, "outbox")
-            self.pause()
+            if not self.anyReady():
+                self.pause()
             yield 1
 
     def safeRecv(self, size):
@@ -46,8 +55,30 @@ class UDPReceiver(Axon.Component.component):
         except socket.error, socket.msg:
             (errorno, errmsg) = socket.msg.args
             if errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK:
-                self.send(newReader(self, "ReadReady"), self.sock)
+                self.send(newReader(self, ((self, "ReadReady"), self.sock)),
+                          "_selectorSignal")
         return None
+
+class UDPSender(Axon.Component.component):
+    def __init__(self, receiver_addr, receiver_port):
+        super(UDPSender, self).__init__(self)
+        self.receiver = (receiver_addr, receiver_port)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM,
+                                  socket.IPPROTO_UDP)
+
+    def main(self):
+        selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices()
+        if newSelector:
+            newSelector.activate()
+        self.link((self, "_selectorSignal"), selectorService)
+        self.send(newWriter(self, ((self, "WriteReady"), self.sock)),
+                  "_selectorSignal")
+        
+        # TODO: Make me shutdown nicely
+        while 1:
+            #TODO: Write me :D
+            pass
+            
 
                     
 if __name__ == "__main__":

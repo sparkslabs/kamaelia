@@ -82,6 +82,7 @@ class XYPad(Axon.Component.component):
     position     -- (x,y) position of top left corner in pixels
     bgcolour     -- (r,g,b) fill colour (default=(255,255,255))
     fgcolor      -- (r, g, b) colour of the puck and border
+    messagePrefix -- string to be prepended to all messages
     positionMsg  -- sent as the first element of a (positionMsg, 1) tuple when
                    the puck moves
     collisionMsg -- (t, r, b, l) sent as the first element of a
@@ -91,21 +92,24 @@ class XYPad(Axon.Component.component):
 
     """
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
+               "remoteChanges"  : "Receive messages to alter the state of the XY pad",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from Pygame Display",
                "newframe" : "Recieve messages indicating a new frame is to be drawn"
               }
               
     Outboxes = {"outbox" : "XY positions emitted here",
+                "localChanges" : "Messages indicating change in the state of the XY pad emitted here",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface"
                }
    
     def __init__(self, bouncingPuck=True, position=None,
                  bgcolour=(255, 255, 255), fgcolour=(0, 0, 0),
-                 positionMsg="position",
-                 collisionMsg = ("top", "right", "bottom", "left"),
-                 size=(100, 100)):
+                 messagePrefix = "",
+                 positionMsg="Position",
+                 collisionMsg = ("Top", "Right", "Bottom", "Left"),
+                 size=(100, 100), editable=True):
         super(XYPad, self).__init__()
 
         self.size = size
@@ -128,8 +132,11 @@ class XYPad(Axon.Component.component):
         self.bgcolour = bgcolour
         self.fgcolour = fgcolour
 
+        self.messagePrefix = messagePrefix
         self.positionMsg = positionMsg
         self.collisionMsg = collisionMsg
+
+        self.editable = editable
 
         self.dispRequest = {"DISPLAYREQUEST" : True,
                             "callback" : (self,"callback"),
@@ -164,18 +171,19 @@ class XYPad(Axon.Component.component):
 
         # Initial render so we don't see a blank screen
         self.render()
-      
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                   "surface" : self.display},
-                  "display_signal")
+        
+        if self.editable:
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
+                       "surface" : self.display},
+                      "display_signal")
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                   "surface" : self.display},
-                  "display_signal")
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                       "surface" : self.display},
+                      "display_signal")
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEMOTION,
-                   "surface" : self.display},
-                  "display_signal")
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEMOTION,
+                       "surface" : self.display},
+                      "display_signal")
 
         done = False
         while not done:
@@ -201,6 +209,14 @@ class XYPad(Axon.Component.component):
                             self.puckVel = [0, 0]
                             self.puckPos = list(event.pos)
                             self.lastMousePos = event.pos
+                            self.send((self.messagePrefix + self.positionMsg,
+                                       (float(self.puckPos[0])/self.size[0],
+                                        float(self.puckPos[1])/self.size[1])),
+                                      "localChanges")
+
+                            self.send((self.messagePrefix + "Velocity",
+                                       self.puckVel), "localChanges")
+                                    
 
                     if event.type == pygame.MOUSEBUTTONUP:
                         if self.mouseDown:
@@ -219,6 +235,8 @@ class XYPad(Axon.Component.component):
                                 # Just a click
                                 self.puckVel = [0, 0]
                                 self.render()
+                            self.send((self.messagePrefix + "Velocity",
+                                      self.puckVel), "localChanges")
                         self.mouseDown = False
                     
                     if event.type == pygame.MOUSEMOTION and self.mouseDown:
@@ -236,7 +254,26 @@ class XYPad(Axon.Component.component):
                             # where it is
                             self.puckPos = list(event.pos)
                             self.lastMousePos = event.pos
+                            self.send((self.messagePrefix + self.positionMsg,
+                                       (float(self.puckPos[0])/self.size[0],
+                                       float(self.puckPos[1])/self.size[1])),
+                                      "localChanges")
                             self.render()
+
+            if self.dataReady("remoteChanges"):
+                bundle = self.recv("remoteChanges")
+                # The action to take is given by the last section of the
+                # OSC address
+                action = bundle[0].split("/")[-1]
+                if action == "Velocity":
+                    if self.bouncingPuck:
+                        self.puckVel =  bundle[1]
+                        self.isBouncing = 1
+                elif action == "Position":
+                    for i in xrange(2):
+                        self.puckPos[i] = self.size[i] * bundle[1][i]
+                    
+                self.render()
 
             if self.dataReady("newframe"):
                 # Time to render a new frame
@@ -246,29 +283,31 @@ class XYPad(Axon.Component.component):
 
                 # Change the direction of the puck if it hits a wall
                 if self.isBouncing:
-                    if self.puckPos[0] <= 0:
-                        # Left wall
-                        self.puckVel[0] *= -1
-                        self.send((self.collisionMsg[3], 1), "outbox")
-                    if self.puckPos[0] >= self.size[0]:
-                        # Right wall
-                        self.puckVel[0]  *= -1
-                        self.send((self.collisionMsg[1], 1), "outbox")
-                    if self.puckPos[1] <= 0:
-                        # Top wall
-                        self.puckVel[1] *= -1
-                        self.send((self.collisionMsg[0], 1), "outbox")
-                    if self.puckPos[1] >= self.size[1]:
-                        # Bottom wall
-                        self.puckVel[1] *= -1
-                        self.send((self.collisionMsg[2], 1), "outbox")
+                    self.processCollisions()
 
                 if self.isBouncing:
                     # Update the position
                     for i in xrange(2):
                         self.puckPos[i] += self.puckVel[i]
                     self.render()
-            
+
+    def processCollisions(self):
+        if self.puckPos[0] <= 0:
+            # Left wall
+            self.puckVel[0] *= -1
+            self.send((self.messagePrefix + self.collisionMsg[3], 1), "outbox")
+        if self.puckPos[0] >= self.size[0]:
+            # Right wall
+            self.puckVel[0]  *= -1
+            self.send((self.messagePrefix + self.collisionMsg[1], 1), "outbox")
+        if self.puckPos[1] <= 0:
+            # Top wall
+            self.puckVel[1] *= -1
+            self.send((self.messagePrefix + self.collisionMsg[0], 1), "outbox")
+        if self.puckPos[1] >= self.size[1]:
+            # Bottom wall
+            self.puckVel[1] *= -1
+            self.send((self.messagePrefix + self.collisionMsg[2], 1), "outbox") 
       
     def render(self):
         """Draw the border and puck onto the surface"""
@@ -278,9 +317,9 @@ class XYPad(Axon.Component.component):
         pygame.draw.circle(self.display, self.fgcolour,
                            [int(x) for x in self.puckPos], self.puckRadius)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
-        self.send((self.positionMsg, (float(self.puckPos[0])/self.size[0],
-                                float(self.puckPos[1])/self.size[1])),
-                  "outbox")
+        self.send((self.messagePrefix + self.positionMsg,
+                  (float(self.puckPos[0])/self.size[0],
+                  float(self.puckPos[1])/self.size[1])), "outbox")
 
 if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
