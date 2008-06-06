@@ -34,6 +34,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
    
 class Source(Axon.Component.component):
     ToSend = ["hello\n","hello\n","hello\n","hello\n"]
+    AllowRace = True
     def main(self):
         self.start = time.time()
         tosend = self.ToSend[:]
@@ -41,14 +42,21 @@ class Source(Axon.Component.component):
             print "Source:- sending"
             self.send( tosend.pop(0), "outbox")
             yield 1
+        yield 1
         self.send(producerFinished(), "signal")
         print "Source:- sent"
-        time.sleep(1)
+        if not self.AllowRace:
+            time.sleep(1)
         yield 1
 
 class Expecter(Axon.Component.component):
     Expect = ["hello\n","hello\n","hello\n","hello\n"]
     delay = 2
+    tick = time.time()
+    def ticking(self, got):
+        if time.time()-self.tick > 1:
+            print self.name, "tick", got
+            self.tick = time.time()
     def main(self):
         self.start = time.time()
         got = []
@@ -57,6 +65,7 @@ class Expecter(Axon.Component.component):
         self.count = 0
         while not self.shutdown():
 #        while 1:
+            self.ticking(got)
             while self.dataReady("inbox"):
                 D = self.recv("inbox")
                 print "Expecter:- RECIEVED", repr(D), self.count, len(self.Expect)
@@ -82,6 +91,7 @@ class Expecter(Axon.Component.component):
         
         msg = self.control_message # alias to make next line clearer
         if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+            print "GOT SHUTDOWN"
             return True
 
         return False
@@ -133,7 +143,7 @@ if __name__ == "__main__":
         ).run()
 
     if 1: # Basic test of Source/Expecter
-        testdata = ["hello","hello","hello","hello"]
+        testdata = ["there","once","was","a"]
         ProcessPipeline( # Interestingly, fails, BUT the IPC message gets through!
             Source(ToSend=testdata),
             Expecter(Expect=testdata),

@@ -10,11 +10,18 @@ import pprint
 # --- Support code, this will go back into the library. ---------------------------------------------------------
 class ProcessWrapComponent(object):
     def __init__(self, somecomponent):
+        print "somecomponent.name",somecomponent.name
         self.exchange = pprocess.Exchange()
         self.channel = None
         self.inbound = []
         self.thecomponent = somecomponent
         self.ce = None
+        self.tick = time.time()
+
+    def ticking(self):
+        if time.time() - self.tick > 1:
+            print "TICK", self.thecomponent.name
+            self.tick = time.time()
 
     def run(self, channel):
         self.exchange.add(channel)
@@ -41,6 +48,7 @@ class ProcessWrapComponent(object):
 #        print "Running?"
         t = 0
         while 1:
+#            self.ticking()
             if time.time() - t > 0.2:
                 t = time.time()
 
@@ -61,12 +69,14 @@ class ProcessWrapComponent(object):
 #                    print "DUM, DUM DUM! 3 ",D
 #                print "GAH!"
             yield 1
+            if self.channel.closed:
+                print self.channel.closed
 
 def ProcessPipeline(*components):
     exchange = pprocess.Exchange()
     debug = False
     chans = []
-
+    print "TESTING ME"
     for comp in components:
         A = ProcessWrapComponent( comp )
         chan = A.activate()
@@ -84,6 +94,7 @@ def ProcessPipeline(*components):
             try:
                 dest = mappings[ ( chan, D[1] ) ]
                 dest[0]._send( (D[0], dest[1] ) )
+                print "FORWARDED", D
             except KeyError:
                 # This error means that some component in the graphline spat out some data,
                 # but the outbox it was sent to isn't linked anyway. This may be an error,
