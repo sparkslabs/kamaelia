@@ -9,7 +9,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 import dvb3
 
-#freq = 505.833330 # 529.833330   # 505.833330
+freq = 505.833330 # 529.833330   # 505.833330
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
     "constellation" : dvb3.frontend.QAM_16,
@@ -17,7 +17,7 @@ feparams = {
     "coderate_LP" : dvb3.frontend.FEC_3_4,
 }
 
-freq = 754.166670
+#freq = 754.166670
 #feparams = {
 #    "inversion" : dvb3.frontend.INVERSION_AUTO,
 #    "constellation" : dvb3.frontend.QAM_16,

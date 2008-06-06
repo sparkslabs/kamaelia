@@ -46,6 +46,10 @@ ADD LINK Sink#next Source#default
 """])
 
 class AssetManager(Axon.Component.component):
+    def out(self, message):
+        print message
+        self.send(message, "outbox")
+
     def main(self):
         baseid = "asset"
         count = 0
@@ -56,11 +60,11 @@ class AssetManager(Axon.Component.component):
                     count += 1
                     nid = baseid + str(count)
                     nlabel = nid + ".label"
-                    self.send("ADD NODE "+nid+" "+nlabel+" randompos component\n","outbox")
-                    self.send("ADD NODE "+nid+"#default default randompos inbox\n","outbox")
-                    self.send('ADD NODE '+nid+'#next Next randompos outbox\n',"outbox")
-                    self.send("ADD LINK "+nid+" "+nid+"#default\n","outbox")
-                    self.send("ADD LINK "+nid+" "+nid+"#next\n","outbox")
+                    self.out("ADD NODE "+nid+" "+nlabel+" randompos component\n")
+                    self.out("ADD NODE "+nid+"#default default randompos inbox\n")
+                    self.out('ADD NODE '+nid+'#next Next randompos outbox\n')
+                    self.out("ADD LINK "+nid+" "+nid+"#default\n")
+                    self.out("ADD LINK "+nid+" "+nid+"#next\n")
             yield 1
              
 

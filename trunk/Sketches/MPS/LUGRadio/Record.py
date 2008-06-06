@@ -32,7 +32,7 @@ print sys.argv
 if len(sys.argv)>1:
     channels = [ int(x) for x in sys.argv[1:] ]
 else:
-    channels = [610,611,18]
+    channels = [600,601,18]
 
 print "RECORDING CHANNELS", channels
 

@@ -224,7 +224,7 @@ if __name__ == "__main__":
    
   # Magna = MagnaDoodle().activate()
    
-   if 1:
+   if 0:
    
        # OK, Now only fails due to errors in the MagnaDoodle code
        ProcessGraphline(
@@ -237,10 +237,10 @@ if __name__ == "__main__":
             }
        ).run()
 
-   if 0:
+   if 1:
    
        # OK, Now only fails due to errors in the MagnaDoodle code
-       Graphline(
+       ProcessGraphline(
             WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),
             TRACEONE = ConsoleEchoer(forwarder=True, use_repr=True, tag="ONE"),
             WINDOW2 = MagnaDoodle(bgcolour=(172,100,100),position=(200,0) ),
