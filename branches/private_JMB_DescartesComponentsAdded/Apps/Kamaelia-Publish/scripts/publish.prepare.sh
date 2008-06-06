@@ -1,12 +1,14 @@
 #!/bin/sh
-#
-echo "Creating staging area for building"
-mkdir assembly
+#This shell script will check to see if an assemly directory already exits and create
+#one if not.  It will then copy all of the relevant files over to the assembly directory.
+if [ ! -d assembly ]
+then
+    echo "Creating staging area for building"
+    mkdir assembly
+fi
 echo "----------------------------------------------------"
 echo "Assembling Axon/Kamaelia files"
 echo "Currently building inside private_JMB_DescartesComponentsAdded branch"
-
-echo
 echo "----------------------------------------------------"
 
 echo "Copying Axon from branch"
@@ -16,42 +18,14 @@ cp -R ../../Kamaelia/Kamaelia/ assembly/Kamaelia
 echo "Copying WsgiApps into staging area"
 cp -R WsgiApps assembly/WsgiApps
 echo "Copying zipheader.unix into staging area"
-cp zipheader.unix assembly/WsgiApps
+cp zipheader.unix assembly/zipheader.unix
 echo "Copying main.py into staging area"
 cp main.py assembly/main.py
 echo "Copying ServerConfig.py into staging area"
 cp ServerConfig.py assembly/ServerConfig.py
-echo "----------------------------------------------------"
-echo "stripping .svn directories from Axon"
-(
-cd assembly/Axon
-find . -type d|grep .svn$ |while read dirname; do
-    echo "rm -rf $dirname"
-    rm -rf $dirname
-done
-)
+echo "Copying urls.py into staging area"
+cp urls.py assembly/urls.py
 
-echo "stripping .svn directories from Kamaelia"
-(
-cd assembly/Kamaelia
-find . -type d|grep .svn$ |while read dirname; do
-    echo "rm -rf $dirname"
-    rm -rf $dirname
-done
-)
-
-echo "stripping .svn directories from WsgiApps"
-(
-cd assembly/WsgiApps
-find . -type d|grep .svn$ |while read dirname; do
-    echo "rm -rf $dirname"
-    rm -rf $dirname
-done
-)
 echo "----------------------------------------------------"
 echo "Done preparing!"
 echo "----------------------------------------------------"
-# cp ../../../../../trunk/Sketches/MPS/greylisting.py ../App
-# cp ../../../../../trunk/Sketches/MPS/greylist.conf.dist ../Config
-
-#( cd ../..; tar zcvf Kamaelia-Publish.tar.gz Kamaelia-Publish )
