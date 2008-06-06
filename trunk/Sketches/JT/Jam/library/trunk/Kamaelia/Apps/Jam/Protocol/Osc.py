@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # TODO: - Document inboxes and outboxes
-#       - Make the component shutdown on the appropriate signals
+#       - Make the components shutdown on the appropriate signals
 #       - Test the test case
+#       - Document DeOsc component
 """
 ===========
 OSC Creator
@@ -61,21 +62,46 @@ class Osc(Axon.Component.component):
     def main(self):
         while 1:
             while self.dataReady("inbox"):
-                address, arguments = self.recv("inbox")
+                data = self.recv("inbox")
+                address = data[0]
+                arguments = data[1]
+                if len(data) > 2:
+                    timetag = data[3]
+                else:
+                    timetag = 0
                 # Prepend forward slash to address
                 if address[0] != "/":
                     address = "/" + address
                 if self.addressPrefix:
                     address = self.addressPrefix + address
-                message = OSC.OSCMessage(address)
-                message.append(arguments)
-                self.send(message.getBinary(), "outbox")
+                bundle = OSC.OSCBundle(address, timetag)
+                bundle.append(arguments)
+                self.send(bundle.getBinary(), "outbox")
             self.pause()
             yield 1
+
+class DeOsc(Axon.Component.component):
+    def __init__(self):
+        super(DeOsc, self).__init__()
+
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                data = OSC.decodeOSC(data)
+                # Send decoded data as (address, [arguments], timetag) tuple
+                self.send((data[2][0], data[2][2:], data[1]))
+            if not self.anyReady():
+                self.pause()
+                yield 1
+
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Internet.UDP import SimplePeer
     from Kamaelia.Util.OneShot import OneShot
+    from Kamaelia.Util.Console import ConsoleEchoer
     Pipeline(OneShot(("/TestMessage", (1, 2, 3))), Osc("/OscTest"),
              SimplePeer(receiver_addr="127.0.0.1", receiver_port=2000)).run()
+    Pipeline(OneShot(("/TestMessage", (1, 2, 3))), Osc("/OscTest"),
+             DeOsc(), ConsoleEchoer()).run()
