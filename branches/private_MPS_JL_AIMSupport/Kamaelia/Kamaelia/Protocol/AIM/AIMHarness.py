@@ -56,6 +56,10 @@ LoginHandler, waits for it to send out a logged-in OSCARClient, then wires up a
 ChatManager to the OSCARClient. It wires up its "inbox" to ChatManager's "talk",
 and ChatManager's "heard" to "outbox".
 
+Once everything is up and functioning, the AIMHarness will stay running to act as
+an intermediary to pass messages between the OSCARClient and the ChatManager, but
+the AIMHarness will not act upon any of the information other than to pass it.
+
 To send an instant message to another user, send the command
 ("message", recipient, text of the message) to its "inbox". 
 
