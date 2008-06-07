@@ -102,7 +102,8 @@ Simple client with a truly horrible interface::
             ).run()
 
 """
-
+#FIXME:  One or two import *s isn't necessarily a big deal, but this many makes it difficult
+#to tell which method/object comes from where.
 from Kamaelia.Protocol.AIM.OSCARClient import *
 from Kamaelia.Support.OscarUtil import *
 from Kamaelia.Support.OscarUtil2 import *

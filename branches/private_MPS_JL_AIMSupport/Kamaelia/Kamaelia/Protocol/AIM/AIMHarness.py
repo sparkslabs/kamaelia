@@ -135,7 +135,7 @@ class AIMHarness(component):
                 self.send(queued[0], "internal outbox")
                 del(queued[0])
             assert self.debugger.note("AIMHarness.main", 5, "Everything linked up and initialized, starting normal operation")
-            while True:
+            while True:  #FIXME:  Why do we keep running instead of dying?
                 self.pause()
                 yield 1
 

@@ -300,6 +300,10 @@ class SNACExchanger(component):
     def sendSnac(self, fam, sub, body):
         """\
         constructs a SNAC by calling self.makeSnac and sends it out the "outbox".
+
+        FIXME:  It would be extremely helpful to have a predefined set of SNAC constants
+        or perhaps even classes to pass to this method.  For example, self.sendSnac(04, 06, data)
+        is a lot less clear than something like self.sendSnac(MESSAGE_TO_USER, data).
         """
         snac = SNAC(fam, sub, body)
         self.send((CHANNEL_SNAC, snac))
