@@ -64,8 +64,13 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 
 from Kamaelia.Codec.YUV4MPEG import YUV4MPEGToFrame
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
-from Kamaelia.Audio.PyMedia.Output import Output
+try:
 
+    from Kamaelia.Audio.PyMedia.Output import Output
+except ImportError:
+    print "Sorry, this code requires Pymedia to work."
+    print "If you want to use this, you'll need to get that, install it and try again"
+ 
 from Kamaelia.File.UnixProcess2 import UnixProcess2
 from Kamaelia.Experimental.Chassis import Pipeline
 from Kamaelia.Experimental.Chassis import Graphline
