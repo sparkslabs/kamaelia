@@ -161,10 +161,16 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         except:
             pass
 
+    def stop(self):
+        if self.trackedby is not None:
+            self.trackedby.deRegisterService("selector")
+            self.trackedby.deRegisterService("selectorshutdown")
+        super(Selector, self).stop()
+
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
         """\
         Adds a file descriptor (selectable).
-        
+
         Creates a corresponding outbox, with name based on boxBase; links it to
         the component that wants to be notified; adds the file descriptor to the
         set of selectables; and records the box and linkage info in meta.
@@ -242,7 +248,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                       print "we are indeed tracked"
                        self.trackedby.deRegisterService("selector")
                        self.trackedby.deRegisterService("selectorshutdown")
-                       self.trackedby == None
+                       self.trackedby = None
             if shuttingDown:
 #               print "we're shutting down"
                if len(readers) + len(writers) + len(exceptionals) == 0:
@@ -288,25 +294,44 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # For the moment, we simply raise an exception.
                             # We could brute force our way through the list of descriptors
                             # to find the broken ones, and remove
+#                            print "We're failing here for some reason"
+#                            print "readers, writers, exceptionals", readers, writers, exceptionals
+                            raise e
+
+                except select.error, e:
+                    if e[0] == 9:
+                        numberOfFailedSelectsDueToBadFileDescriptor +=1
+                        if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
+                            # For the moment, we simply raise an exception.
+                            # We could brute force our way through the list of descriptors
+                            # to find the broken ones, and remove
+#                            print "We're failing here for some reason"
+#                            print "readers, writers, exceptionals", readers, writers, exceptionals
                             raise e
 
                 self.sync()
+
             elif not self.anyReady():
                 #  no readers, writers, or anything - wait a few moments just in case
                 timewithNone += 1
-                self.pause(0.5)        # pause - we're not selecting on anything, timeout because of shutdown timeout needs
+                self.pause(0.5)        # pause - we're not selecting on anything, timeout becuase of shutdown timeout needs
             else:
                 timewithNone += 1
-                print "HMM"
+#                print "HMM"
 
             if timewithNone > 6: # XXXX replace with STM code
-                break
+                break	
+
         if self.trackedby is not None:
                self.trackedby.deRegisterService("selector")
                self.trackedby.deRegisterService("selectorshutdown")
 
+        if self.trackedby is not None:
+            self.trackedby.deRegisterService("selector")
+            self.trackedby.deRegisterService("selectorshutdown")
+            self.trackedby = None
+#        print "SELECTOR HAS EXITTED"
 
-##        print "SELECTOR HAS EXITTED"
 
 
     def setSelectorServices(selector, tracker = None):

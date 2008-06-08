@@ -167,6 +167,7 @@ class ConnectedSocketAdapter(component):
       self.selectorService = selectorService
       self.howDied = False
       self.isSSL = False
+      self.couldnt_send = None
    
    def handleControl(self):
       """Check for producerFinished message and shutdown in response"""
@@ -189,6 +190,17 @@ class ConnectedSocketAdapter(component):
    def passOnShutdown(self):
         self.send(socketShutdown(self,[self.socket,self.howDied]), "CreatorFeedback")
         self.send(shutdownCSA(self, (self,self.socket)), "signal")
+
+   def stop(self):
+       # Some of these are going to crash initially when stop is called
+#       print "I AM CALLED"
+       self.socket.shutdown(2)
+       self.socket.close()
+       self.passOnShutdown()
+       if (self.socket is not None):
+           self.send(removeReader(self, self.socket), "_selectorSignal")
+           self.send(removeWriter(self, self.socket), "_selectorSignal")
+       super(ConnectedSocketAdapter, self).stop()
 
    def _safesend(self, sock, data):
        """Internal only function, used for sending data, and handling EAGAIN style
@@ -253,16 +265,24 @@ class ConnectedSocketAdapter(component):
    def handleReceive(self):
        successful = True
        while successful and self.connectionRECVLive: ### Fixme - probably want maximum iterations here
+         if self.couldnt_send is not None:
+             try:
+                 self.send(self.couldnt_send, "outbox")
+                 self.couldnt_send = None
+             except Axon.AxonExceptions.noSpaceInBox:
+                 return
+
          socketdata = self._saferecv(self.socket, 32768) ### Receiving may die horribly         
          if (socketdata):
-             self.send(socketdata, "outbox")
-             successful = True
+             try:
+                 self.send(socketdata, "outbox")
+             except Axon.AxonExceptions.noSpaceInBox:
+                 self.couldnt_send = socketdata
+                 successful = False
+             else:
+                 successful = True
          else:
              successful = False
-#       print "There!",successful
-#       if not self.connectionRECVLive:
-#           print len(self.outboxes["outbox"]), "FOO", socketdata
-#           print "self.howDied", self.howDied
 
    def checkSocketStatus(self):
        if self.dataReady("ReadReady"):
@@ -283,6 +303,7 @@ class ConnectedSocketAdapter(component):
        return False
 
    def main(self):
+#       print "self.selectorService", self, self.selectorService
        self.link((self, "_selectorSignal"), self.selectorService)
        # self.selectorService ...
        self.sending = True
