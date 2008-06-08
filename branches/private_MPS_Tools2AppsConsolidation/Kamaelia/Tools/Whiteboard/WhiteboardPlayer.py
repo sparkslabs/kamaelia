@@ -14,11 +14,11 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 
-from Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
+from Kamaelia.Apps.Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
 
 import sys
 
-from Whiteboard.Entuple import Entuple
+from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 
 class Timestamp(component):
     def shutdown(self):
@@ -113,7 +113,7 @@ if __name__=="__main__":
     from Kamaelia.Internet.TCPClient import TCPClient
     from Kamaelia.File.Reading import PromptedFileReader
     from Kamaelia.File.Writing import SimpleFileWriter
-    from Whiteboard.SingleShot import OneShot
+    from Kamaelia.Apps.Whiteboard.SingleShot import OneShot
 
     try:
         if "--help" in sys.argv:

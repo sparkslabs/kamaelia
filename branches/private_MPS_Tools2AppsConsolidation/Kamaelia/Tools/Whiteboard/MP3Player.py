@@ -38,14 +38,14 @@ from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tok
 # back into the repository.
 #
 
-from Whiteboard.TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
-from Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
+from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
+from Kamaelia.Apps.Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
 
-from Whiteboard.Canvas import Canvas
-from Whiteboard.Painter import Painter
-from Whiteboard.TwoWaySplitter import TwoWaySplitter
-from Whiteboard.SingleShot import OneShot
-from Whiteboard.CheckpointSequencer import CheckpointSequencer
+from Kamaelia.Apps.Whiteboard.Canvas import Canvas
+from Kamaelia.Apps.Whiteboard.Painter import Painter
+from Kamaelia.Apps.Whiteboard.TwoWaySplitter import TwoWaySplitter
+from Kamaelia.Apps.Whiteboard.SingleShot import OneShot
+from Kamaelia.Apps.Whiteboard.CheckpointSequencer import CheckpointSequencer
 
 
 # stuff for doing audio
@@ -60,7 +60,7 @@ def RawAudioMixer():
                            readInterval   = 0.1
                          ),
 
-from Whiteboard.Entuple import Entuple
+from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 if __name__=="__main__":
     
     from Kamaelia.Internet.TCPClient import TCPClient
