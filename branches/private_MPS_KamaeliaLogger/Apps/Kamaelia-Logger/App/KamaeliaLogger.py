@@ -93,6 +93,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Carousel import Carousel
 from Axon.Component import component
 import Kamaelia.Protocol.IRC.IRCClient
+import Kamaelia.Support.Protocol.IRC
 
 import Kamaelia.Apps.IRCLogger.Support
 import time, os
@@ -124,7 +125,7 @@ class BasicLogger(component):
 
     def __init__(self,
                  channel,
-                 formatter=Kamaelia.Protocol.IRC.IRCClient.outformat,
+                 formatter=Kamaelia.Support.Protocol.IRC.outformat,
                  name="jinnaslogbot",
                  logdir="",
                  password=None):
