@@ -1,3 +1,6 @@
+   * Kamaelia.UI.Pygame.Text Added - (similar to Ticker, but input as well
+     as output. Line oriented rather than word)
+
    * Added minor bugfix for Windows support for TCP clients
    * Fix to reliability of DVB support
    * Basic SSL support added - allow, for example, HTTPS components
