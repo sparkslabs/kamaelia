@@ -30,10 +30,6 @@ SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to
 each other and IRC_Client's "talk" and "heard" boxes to the prefab's "inbox"
 and "outbox" boxes, respectively. SimpleIRCClientPrefab does not terminate.
 
-SimpleUserClientPrefab formats incoming and outcoming messages, so a user
-can send plain text to its "inbox", or IRC commands preceded by a slash ("/"),
-and receive formatted output from its "outbox"
-
 The functions informat, outformat, channelInformat, and channelOutformat can be
 used to format incoming and outgoing messages.
 
@@ -58,12 +54,6 @@ To link IRC_Client to the web with console input and output::
              ConsoleEchoer(),
     ).run()
 
-or::
-
-    Pipeline(Textbox(),
-             SimpleUserClientPrefab(),
-             TextDisplayer(position=(0,340)
-    ).run()
     
 Note: 
 The user needs to enter::
@@ -71,8 +61,8 @@ The user needs to enter::
     /nick aNickName
     /user uname server host realname
 
-into the console before doing anything else. Be quick before the connection
-times out.
+into the console before doing anything else in the above example. Be quick
+before the connection times out.
 
 Then try IRC commands preceded by a slash. Messages to the channel need not
 be preceded by anything::
@@ -141,8 +131,7 @@ sender, receiver, rest). This method has worked well so far.
 
 Example output:
 
-|    ('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode
-     IRC Network jinnaslogbot')
+|    ('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode IRC Network jinnaslogbot')
 |    ('NOTICE', '', 'jinnaslogbot', '\*\*\*Checking ident')
 |    ('PRIVMSG', 'jlei', '#kamtest', 'stuff')
 |    ('PART', 'kambot', '#kamtest', 'see you later)
@@ -156,7 +145,7 @@ pings. IRC_Client will not do this automatically.
 
 Known Issues
 -------------
-The prefabs do not terminate.
+The prefab does not terminate. (?)
 Sometimes messages from the server are split up. IRC_Client does not recognize
 these messages and flags them as errors. 
 
@@ -166,7 +155,6 @@ import Axon as _Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.PureTransformer import PureTransformer
 import string
 
@@ -311,80 +299,6 @@ class IRC_Client(_Axon.Component.component):
        return self.done
 
 
-def informat(text,defaultChannel='#kamtest'):
-    """\
-    Puts a string input into tuple format for IRC_Client.
-    Understands irc commands preceded by a slash ("/")
-    """
-    if text[0] != '/' or text.split()[0] == '/': #in case we were passed "/ word words", or simply "/"
-        return ('PRIVMSG', defaultChannel, text)
-    words = text.split()
-    tag = words[0]
-    tag = tag.lstrip('/').upper()
-    if tag == 'MSG':
-        tag = 'PRIVMSG'
-    try:
-        if tag == 'QUIT' and len(words) >= 2:
-            return (tag, string.join(words[1:]))
-        elif tag in ('PRIVMSG', 'MSG', 'NOTICE', 'KILL', 'TOPIC', 'SQUERY') and len(words) >= 3:
-            return (tag, words[1], string.join(words[2:]))
-        elif tag == 'KICK' and len(words) >= 4:
-            return (tag, words[1], words[2], string.join(words[3:]))
-        elif tag == 'USER':
-            return (tag, words[1], words[2], words[3], string.join(words[4:]))
-        elif tag == 'ME' and len(words) >= 2:
-            return (tag, defaultChannel, string.join(words[1:]))
-        else: 
-            words[0] = tag
-            if tag: #only false if we were passed "/" as text
-                return words
-    except IndexError:
-        words[0] = tag
-        return words
-
-
-def outformat(data, defaultChannel='#kamtest'):
-    """\
-    Takes tuple output from IRC_Client and formats for easier reading.
-    If a plaintext is received, outformat treats it as a privmsg intended for
-    defaultChannel (default "#kamtest").
-    """
-    msgtype, sender, recipient, body = data
-    end = '\n'
-    if msgtype == 'PRIVMSG':
-        text = '<%s> %s' % (sender, body)
-    elif msgtype == 'JOIN' :
-        text = '*** %s has joined %s' % (sender, recipient)
-    elif msgtype == 'PART' :
-        text = '*** %s has parted %s' % (sender, recipient)
-    elif msgtype == 'NICK':
-        text = '*** %s is now known as %s' % (sender, body)
-    elif msgtype == 'ACTION':
-        text = '*** %s %s' % (sender, body)
-    elif msgtype == 'TOPIC':
-        text = '*** %s changed the topic to %s' % (sender, body)
-    elif msgtype == 'QUIT': #test this, channel to outbox, not system
-        text = '*** %s has quit IRC' % (sender)
-    elif msgtype == 'MODE' and recipient == defaultChannel:
-        text = '*** %s has set channel mode: %s' % (sender, body) 
-    elif msgtype > '000' and msgtype < '400':
-        text = 'Reply %s from %s to %s: %s' % data
-    elif msgtype >= '400' and msgtype < '600':
-        text = 'Error! %s %s %s %s' % data
-    elif msgtype >= '600' and msgtype < '1000':
-        text = 'Unknown numeric reply: %s %s %s %s' % data
-    else:
-        text = '%s from %s: %s' % (msgtype, sender, body)
-    return text + end
-
-def channelOutformat(channel):
-    """returns outformat with the specified channel as the default channel"""
-    return (lambda data: outformat(data, defaultChannel=channel))
-
-def channelInformat(channel):
-    """returns informat with the specified channel as the default channel"""
-    return (lambda text: informat(text, defaultChannel=channel))
-
 def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
     """\
     SimpleIRCClientPrefab(...) -> IRC_Client connected to tcp via a Graphline.
@@ -396,27 +310,34 @@ def SimpleIRCClientPrefab(host='irc.freenode.net', port=6667):
     - port -- the port to connect on. Default 6667.
     """
     client = Graphline(irc = IRC_Client(),
-                  tcp = TCPClient(host, port),
-                  linkages = {("self", "inbox") : ("irc" , "talk"),
-                              ("irc", "outbox") : ("tcp" , "inbox"),
-                              ("tcp", "outbox") : ("irc", "inbox"),
-                              ("irc", "heard") : ("self", "outbox"),
-                              }
-                  )
+                       tcp = TCPClient(host, port),
+                       linkages = {("self", "inbox") : ("irc" , "talk"),
+                                   ("irc", "outbox") : ("tcp" , "inbox"),
+                                   ("tcp", "outbox") : ("irc", "inbox"),
+                                   ("irc", "heard") : ("self", "outbox"),
+                                  }
+                      )
     return client
 
-def SimpleUserClientPrefab(**tcp_args):
-    """Pipelines PureTransformer(informat) to
-       SimpleIRCClientPrefab(**tcp_args) to
-       PureTransformer(outformat)"""
-    return Pipeline(PureTransformer(informat), SimpleIRCClientPrefab(**tcp_args), PureTransformer(outformat))
 
 __kamaelia_components_ = (IRC_Client, )
-__kamaelia_prefabs = (SimpleIRCClientPrefab, SimpleUserClientPrefab)
+__kamaelia_prefabs = (SimpleIRCClientPrefab, )
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    Pipeline(ConsoleReader(),
-             SimpleUserClientPrefab(),
-             ConsoleEchoer()).run()
-    #user needs to type "/nick yournickname" followed by "/user arg1 arg2 arg3 arg4" really fast here
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Support.Protocol.IRC import informat, outformat, channelOutformat, channelInformat
+
+    print "This is some test code/demo harness. There are better demo harnesses in /Examples"
+    print "/nick testingkbot"
+    print "/user testingkbot irc.freenode.net 127.0.0.1 username"
+    print "/join #kamtest"
+    print 
+
+    Pipeline(
+              ConsoleReader(),
+              PureTransformer(informat),
+              SimpleIRCClientPrefab(),
+              PureTransformer(outformat),
+              ConsoleEchoer()
+            ).run()
