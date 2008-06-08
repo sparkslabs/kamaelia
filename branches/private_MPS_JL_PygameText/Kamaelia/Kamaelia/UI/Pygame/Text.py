@@ -75,7 +75,7 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished, WaitComplete
 from pygame.locals import *
 
     
-class TextDisplayer(component):
+class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
     """\
     TextDisplayer(...) -> new TextDisplayer Pygame component.
 
@@ -101,16 +101,20 @@ class TextDisplayer(component):
                 "_pygame" : "for sending requests to PygameDisplay",
                 "signal" : "propagates out shutdown signals"}
     
-    def __init__(self, size=(500, 300), text_height=18, bgcolour=(255,255,200),
-                 fgcolour=(0,0,0), position=(0,0)):
+    size = (500, 300)
+    text_height=18
+    bgcolour=(255,255,200)
+    fgcolour=(0,0,0)
+    position=(0,0)
+    def __init__(self, **argd):
         """Initialises"""
-        super(TextDisplayer, self).__init__()
-        self.screen_width = size[0]
-        self.screen_height = size[1]
-        self.text_height = text_height
-        self.background_color = bgcolour
-        self.text_color = fgcolour
-        self.position = position
+        # FIXME: Change this to use the same names in self as in the args (note is for thoughout the file)
+        # FIXME: Change this to use **argd rather than positional params
+        super(TextDisplayer, self).__init__(**argd)
+        self.screen_width = self.size[0]
+        self.screen_height = self.size[1]
+        self.background_color = self.bgcolour
+        self.text_color = self.fgcolour
         self.done = False
         
     def initPygame(self, **argd):
@@ -140,8 +144,7 @@ class TextDisplayer(component):
     def main(self):
         """Main loop"""
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
-                                           size = (self.screen_width,
-                                                   self.screen_height),
+                                           size = (self.screen_width, self.screen_height),
                                            callback = (self, '_surface'),
                                            position = self.position))
         
@@ -150,8 +153,11 @@ class TextDisplayer(component):
             if self.dataReady('inbox'):
                 line = str(self.recv('inbox'))
                 self.update(line)
-            if not self.anyReady():
-                self.pause()
+            while not self.anyReady():  # changed to while - can be woken by messages leaving as well as arriving
+                self.pause()            # Looping here is safe, since we only update based on information on inboxes
+                yield 1
+#        print "DONE"
+         # FIXME: Pygame display needs to be told that we have finished with the surface, so it can be removed, and deallocated.
 
     def update(self, text):
         """Updates text to the bottom of the screen while scrolling old text
@@ -165,8 +171,7 @@ class TextDisplayer(component):
         self.updateLine(text)
             
     def updateLine(self, line):
-        """Updates one line of text to bottom of screen, scrolling old text
-           upwards."""
+        """Updates one line of text to bottom of screen, scrolling old text upwards."""
         line = line.replace('\r', ' ')
         line = line.replace('\n', ' ')
         lineSurf = self.font.render(line, True, self.text_color)    
@@ -178,7 +183,7 @@ class TextDisplayer(component):
         self.send({"REDRAW" : True,
                    "surface" : self.screen}, "_pygame")
 
-    def needShutdown(self):
+    def needShutdown(self): # FIXME: Inconsistent with other components. Original comment for this claimed standard name was confusing. Is it?
         """Checks for control messages"""
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -215,9 +220,7 @@ class Textbox(TextDisplayer):
                 "_pygame" : "for sending requests to PygameDisplay",
                 "signal" : "propagates out shutdown signals"}
 
-    def __init__(self, *args, **kwargs):
-        super(Textbox, self).__init__(*args, **kwargs)
-        self.string_buffer = ""
+    initial_string_buffer = ""
 
     def setText(self, text):
         """erases the screen and updates it with text"""
@@ -227,14 +230,12 @@ class Textbox(TextDisplayer):
 
     def main(self):
         """\
-        Requests a surface from PygameDisplay and registers to listen for
-        events.
+        Requests a surface from PygameDisplay and registers to listen for events
         Then enters the main loop, which checks for Pygame events and updates
         them to the screen.
         """
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
-                                           size = (self.screen_width,
-                                                   self.screen_height),
+                                           size = (self.screen_width, self.screen_height),
                                            callback = (self, '_surface'),
                                            position = self.position,
                                            events = (self, "_events")))
@@ -243,66 +244,79 @@ class Textbox(TextDisplayer):
                    'surface' : self.screen},
                   '_pygame')
         
-        while not self.needShutdown():
+        string_buffer = self.initial_string_buffer
+        while not self.needShutdown(): # FIXME: Inconsistent - see method definition
             yield 1
             while self.dataReady('_events'):
                 for event in self.recv('_events'):
                     char = event.unicode
                     if char == '\n' or char == '\r':
-                        self.send(self.string_buffer)
-                        self.string_buffer = ''
+                        self.send(string_buffer)
+                        string_buffer = ''
                     elif event.key == K_BACKSPACE:
-                        self.string_buffer = self.string_buffer[:-1]
+                        string_buffer = string_buffer[:-1]
                     elif event.key == K_ESCAPE:
                         self.done = True
                     else:
-                        self.string_buffer += char
+                        string_buffer += char
                     # Add a '|' character as a text cursor
-                    self.setText(self.string_buffer + '|')
-            if not self.anyReady():
-                self.pause()
+                    self.setText(string_buffer + '|')
+                    
+            while not self.anyReady():  # changed to while - can be woken by messages leaving as well as arriving
+                self.pause()            # Looping here is safe, since we only update based on information on inboxes
+                yield 1
 
 __kamaelia_components__ = (TextDisplayer, Textbox, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
-    
-    Pipeline(Textbox(size = (800, 300),
-                     position = (0,0)),
-             TextDisplayer(size = (800, 300),
-                           position = (0,340))
-             ).run()
 
-if 0: #old test just involving TextDisplayer
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.Console import ConsoleReader
-    import time
-    #the long lines are there on purpose, to see if the component wraps text correctly.
-    text =  """\
-To be, or not to be: that is the question:
-Whether 'tis nobler in the mind to suffer
-The slings and arrows of outrageous fortune,
-Or to take arms against a sea of troubles,
-And by opposing end them? To die: to sleep;
-No more; and by a sleep to say we end
-The heart-ache and the thousand natural shocks That flesh is heir to, 'tis a consummation Devoutly to be wish'd. To die, to sleep;
-To sleep: perchance to dream: ay, there's the rub;
-For in that sleep of death what dreams may come
-When we have shuffled off this mortal coil,
-Must give us pause: there's the respect
-That makes calamity of so long life;
-"""
+    if 0:
+        Pipeline(Textbox(size = (800, 300),
+                         position = (0,0)),
+                 TextDisplayer(size = (800, 300),
+                               position = (0,340))
+                 ).run()
 
-    class Chargen(component):
-        def main(self):
-            lines = text.split('\n')
-            for one_line in lines:
-                time.sleep(0.5)
-                self.send(one_line)
-                print one_line
-                yield 1
-##            self.send(producerFinished(), 'signal')
+    if 0: #old test just involving TextDisplayer
+        from Kamaelia.Chassis.Pipeline import Pipeline
+        from Kamaelia.Util.Console import ConsoleReader
+        Pipeline(ConsoleReader(), TextDisplayer()).run()
 
-    Pipeline(ConsoleReader('>>>'), TextDisplayer()).run()
-    
+    if 1: #old test just involving TextDisplayer
+        import Axon
+        import time
+        from Kamaelia.Chassis.Pipeline import Pipeline
+
+        #the long lines are there on purpose, to see if the component wraps text correctly.
+
+        class TimedLineSender(Axon.ThreadedComponent.threadedcomponent):
+            text =  """\
+                    To be, or not to be: that is the question:
+                    Whether 'tis nobler in the mind to suffer
+                    The slings and arrows of outrageous fortune,
+                    Or to take arms against a sea of troubles,
+                    And by opposing end them? To die: to sleep;
+                    No more; and by a sleep to say we end
+                    The heart-ache and the thousand natural shocks That flesh is heir to, 'tis a consummation Devoutly to be wish'd. To die, to sleep;
+                    To sleep: perchance to dream: ay, there's the rub;
+                    For in that sleep of death what dreams may come
+                    When we have shuffled off this mortal coil,
+                    Must give us pause: there's the respect
+                    That makes calamity of so long life;
+                    """
+            strip_leading = True
+            debug = True
+            delay = 0.5
+            def main(self):
+                lines = self.text.split('\n')
+                for line in lines:
+                    if self.strip_leading:
+                        line = line.lstrip()
+                    time.sleep(self.delay)
+                    self.send(line) # remove preding spaces 
+                self.send(producerFinished(), 'signal')
+
+        Pipeline(TimedLineSender(),
+                 TextDisplayer()).run()
