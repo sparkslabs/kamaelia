@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -23,7 +23,7 @@
 
 from Kamaelia.File.Writing import SimpleFileWriter
 import os
-import Kamaelia.Protocol.IRC.IRCClient
+import Kamaelia.Support.Protocol.IRC
 import time
 
 """
@@ -42,18 +42,14 @@ lastlog = time.time()
 
 def cannedResponse():
     return [
-   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question",
-   "or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.",
-   "Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news",
-   "Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode",
-   "Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783",
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel.",
+   "I've not really been configured yet, so I won't do much here yet :-)",
            ]
 
 def cannedYesTheyreAround():
     return [
-   "Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ . Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since",
-   "the person(s) you asked for reads the logs. Idle on the channel if you want and answer and don't get an immediate one. In the meantime this page is the sort of questions we'd ask you to improve your app are here:",
-   "http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783 . Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news",
+   "Hi, I'm a bot. I've been put here to answer faq's and log the channel.",
+   "I've not really been configured yet, so I won't do much here yet :-)",
            ]
 
 def respondToQueries(self, msg):
@@ -160,7 +156,7 @@ def TimedOutformat(data):
     if type(data) == type(""):
         formatted = data
     else:
-        formatted = Kamaelia.Protocol.IRC.IRCClient.outformat(data)
+        formatted = Kamaelia.Support.Protocol.IRC.outformat(data)
     curtime = time.gmtime()
     timestamp = time.strftime("[%H:%M] ", curtime)
     if formatted: return timestamp+formatted
