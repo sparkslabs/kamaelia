@@ -99,7 +99,12 @@ class linkage(AxonObject):
         if self.passthrough==1:
             return self.source.inboxes[self.sourcebox]
         else:
-            return self.source.outboxes[self.sourcebox]
+            try:
+                outbox = self.source.outboxes[self.sourcebox]
+                return outbox
+            except KeyError, e:
+                print "Box not found:", self, self.sourcebox
+                raise 
         
     def getSinkbox(self):
         """Returns the box object that this linkage goes to."""
