@@ -108,7 +108,9 @@ class Multiclick(Axon.Component.component):
                "callback" : "Receive callbacks from Pygame Display"
              }
    Outboxes = { "outbox" : "button click events emitted here",
-                "signal" : "Shutdown signalling: shutdownMicroprocess or producerFinished" }
+                "signal" : "Shutdown signalling: shutdownMicroprocess or producerFinished",
+                "display_signal" : "For sending signals to the Pygame Display",
+              }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), 
                 msg=None,
@@ -169,10 +171,10 @@ class Multiclick(Axon.Component.component):
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"signal"), displayservice)
+      self.link((self,"display_signal"), displayservice)
 
       self.send( self.disprequest,
-                  "signal")
+                  "display_signal")
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
@@ -180,7 +182,7 @@ class Multiclick(Axon.Component.component):
       
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
-                  "signal")
+                  "display_signal")
                   
 
       done = False
@@ -211,7 +213,7 @@ class Multiclick(Axon.Component.component):
    def blitToSurface(self):
        """Clears the background and renders the text label onto the button surface."""
        try:
-           self.send({"REDRAW":True, "surface":self.display}, "signal")
+           self.send({"REDRAW":True, "surface":self.display}, "display_signal")
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
        except:
