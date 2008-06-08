@@ -1,8 +1,0 @@
-These are files from the standard python distribution that are not included in
-the initial Nokia Series 60 python install but are required for the test suite.
-These examples are from Python 2.3.4.
-
-unittest.py is required for the unittests.
-getopt.py is required by unittest.py
-
-When you transfer these to the phone install them as Python libraries.
