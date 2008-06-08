@@ -1,4 +1,12 @@
-   * Added support for IRC
+   * Added support for client side IRC
+      * Kamaelia/Protocol/IRC/IRCClient.py provides core client side
+        protocol handling as well as a prefab for connecting to a particular
+        IRC server.
+      * Kamaelia/Support/Protocol/IRC.py contains support code for building
+        clients that use the IRCClient - specifically for sending messages
+        of the right type.
+      * Examples/TCP_Systems/IRC/BasicDemo.py - contains a basic example.
+
    * Added minor bugfix for Windows support for TCP clients
    * Fix to reliability of DVB support
    * Basic SSL support added - allow, for example, HTTPS components
