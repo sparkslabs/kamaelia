@@ -202,12 +202,12 @@ class Textbox(TextDisplayer):
     Textbox(...) -> New Pygame Textbox component
 
     Keyword Arguments:
+    
     - Textbox inherits its keyword arguments from TextDisplayer. Please see
       TextDisplayer docs.
 
     Reads keyboard input and updates it on the screen. Flushes string buffer and
     sends it to outbox when a newline is encountered.
-
     """
     
     Inboxes = {"inbox" : "for incoming lines of text",
