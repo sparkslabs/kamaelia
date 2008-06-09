@@ -2,6 +2,8 @@
 import sys
 
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
+#from Kamaelia.Visualisation.Axon.AxonLaws import AxonLaws
+from Kamaelia.Support.Particles import SimpleLaws
 
 from Particles import GenericParticle   # To use dictionary map
 import Particles     # To search particle class within it
@@ -26,7 +28,10 @@ class GenericTopologyViewer(TopologyViewer):
 
     def __init__(self, **argd):
         if not argd.has_key('particleTypes'):
-            argd.update({'particleTypes':{"-":GenericParticle}})            
+            argd.update({'particleTypes':{"-":GenericParticle}})
+        if not argd.has_key('laws'):
+            argd.update({'laws':SimpleLaws(bondLength=150)})
+                       
         super(GenericTopologyViewer, self).__init__(**argd)
     
     def doCommand(self, msg):
@@ -60,6 +65,7 @@ class GenericTopologyViewer(TopologyViewer):
                     else:
                         attributes = msg[6]
                         attributes_dict = str2dict(attributes)
+                        #print attributes_dict
                         particle = ptype(position = pos, ID=id, name=name, **attributes_dict)
                     particle.originaltype = msg[5]
                     self.addParticle(particle)

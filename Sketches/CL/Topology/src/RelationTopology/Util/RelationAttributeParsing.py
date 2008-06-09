@@ -34,7 +34,7 @@ if the relations definition uses the entity
 def parseEntity(entityLine):
     """ parse entity line """
     result = entityLine.split()
-    entity_ID = result[0]+'_'+result[1]
+    #entity_ID = result[0]+'_'+result[1]
     entity_name = result[1]
     #particle = '-'
     particle = 'GenericParticle'
@@ -47,12 +47,13 @@ def parseEntity(entityLine):
         attributes = attributes.replace('photo','pic')
         attributes = attributes + ',type=' + result[0]
     else:
-        attributes = ""                
+        attributes = 'type=' + result[0]               
     return "ADD NODE %s %s auto %s %s" % (entity_name,entity_name,particle,attributes)
 
 def parseRelation(relationLine):
     """ parse relation line """
     result = relationLine.split('(')
+    #relation = result[0].strip()
     entities_str = result[1].rstrip(')')
     entities_list = entities_str.split(',')
     src = entities_list[0].strip()
@@ -123,9 +124,9 @@ if __name__ == "__main__":
         
     Pipeline(
         DataSource(["  person  mum   gender=female,photo=../Files/mum.jpg,width=80,height=80 ", '  ', """   
-                    """, 'person dad gender=male,shape=rect', 
-                    '  person  son   gender=male,photo=../Files/son.gif',
-                     'person daughter', ' childof  (  mum  , son  ) ', 'childof(mum, daughter)',
+                    """, 'person dad gender=male,shape=rect,width=80,height=80', 
+                    '  person  son   gender=male,photo=../Files/son.gif,width=60,height=60',
+                     'person daughter radius=40', ' childof  (  mum  , son  ) ', 'childof(mum, daughter)',
                      'childof(dad, son)', 'childof(dad, daughter)']),
         RelationAttributeParser(),
         lines_to_tokenlists(),
