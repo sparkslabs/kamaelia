@@ -6,7 +6,7 @@ from Kamaelia.Support.Particles import Particle as BaseParticle
 class GenericParticle(BaseParticle):
     """\
     A generic particle type with picture, shape, color and size customable
-    Adapted from MPS.Experiments.360.CreatorIconComponent
+    Adapted from MPS.Experiments.360.Creator.IconComponent and .PPostbox
     """
    
     def __init__(self, position, ID = None, type='', name='', pic=None, shape='circle', 
@@ -17,15 +17,15 @@ class GenericParticle(BaseParticle):
         #self.name = name
         self.picture = pic
         self.shape = shape
-        self.color = color
+        #self.color = color        
         self.left = 0
         self.top = 0
-        self.selected = False
+        self.selected = False        
         if pic is not None:
             self.picture = pygame.image.load(pic).convert()
             if (width is not None) and (height is not None):
-                self.width = float(width)
-                self.height = float(height)
+                self.width = int(width)
+                self.height = int(height)
                 from pygame.transform import smoothscale           
                 self.picture = smoothscale(self.picture, (self.width,self.height))
             else:
@@ -34,15 +34,23 @@ class GenericParticle(BaseParticle):
             from math import sqrt
             self.radius = sqrt(self.width*self.width+self.height*self.height)/2
         else:
+            if color is not None:
+                if isinstance(color, str):
+                    colorMap = {'blue': (128,128,255), 'pink': (255,128,128)}
+                    self.color = colorMap[color]
+                else:
+                    self.color = color
+            else:
+                self.color = (255,128,128)
             if shape == 'circle':
                 if radius is not None:
-                    self.radius = float(radius)
+                    self.radius = int(radius)
                 else:
                     self.radius = 30
             else:
                 if (width is not None) and (height is not None):
-                    self.width = float(width)
-                    self.height = float(height)
+                    self.width = int(width)
+                    self.height = int(height)
                 else:
                     self.width = 60
                     self.height = 60
@@ -74,32 +82,53 @@ class GenericParticle(BaseParticle):
         
         yield 1
         for p in self.bondedTo:
-            pygame.draw.line(surface, (128,128,255), (x,y),  (int(p.pos[0] -self.left),int(p.pos[1] - self.top)) )
-        
+            px = int(p.pos[0] -self.left)
+            py = int(p.pos[1] - self.top)
+            pygame.draw.line(surface, (128,128,255), (x,y),  (px,py) )
+            # draw a pwetty arrow on the line, showing the direction
+            arrow_colour = (0,160,0)
+            #mid = ( (x+px*2)/3, (y+py*2)/3 )
+            
+            direction = ( (px-x), (py-y) )
+            length    = ( direction[0]**2 + direction[1]**2 )**0.5
+            
+            # Make the position of the arrow relative to the intersection
+            # between arc and the bond line rather than the centre of particle 
+            intersection_x = x - self.radius*(x-px)/length
+            intersection_y = y - self.radius*(y-py)/length
+            intersection_px = px - p.radius*(px-x)/length
+            intersection_py = py - p.radius*(py-y)/length
+            mid = ( (intersection_x+intersection_px*2)/3, (intersection_y+intersection_py*2)/3 )
+            
+            direction = [ 6*n / length for n in direction ]
+            
+            norm      = ( -direction[1], direction[0] )
+            
+            leftarrow  = ( mid[0] - direction[0] - norm[0], mid[1] - direction[1] - norm[1] )
+            rightarrow = ( mid[0] - direction[0] + norm[0], mid[1] - direction[1] + norm[1] )
+            
+            pygame.draw.line(surface, arrow_colour, mid, leftarrow  )
+            pygame.draw.line(surface, arrow_colour, mid, rightarrow )
         yield 2
         if self.picture is not None:
             picture_rect = surface.blit(self.picture, (x- self.width/2, y - self.height/2))
             surface.blit(self.slabel, (x - self.slabel.get_width()/2, y + self.height/2) )
             if self.selected:
                 pygame.draw.rect(surface, (0,0,0), picture_rect, 2)
+                surface.blit(self.desclabel, (72,16) )
         else:
             if self.shape == 'circle':
-                if self.color is not None:
-                    colorMap = {'blue': (128,128,255), 'pink': (255,128,128)}
-                    pygame.draw.circle(surface, colorMap[self.color], (x,y), self.radius)
-                else:
-                    pygame.draw.circle(surface, (255,128,128), (x,y), self.radius)
+                pygame.draw.circle(surface, self.color, (x,y), self.radius)
                 if self.selected:
                     pygame.draw.circle(surface, (0,0,0), (x,y), self.radius, 2)
+                    surface.blit(self.desclabel, (72,16) )
             else:
-                if self.color is not None:
-                    colorMap = {'blue': (128,128,255), 'pink': (255,128,128)}
-                    pygame.draw.rect(surface, colorMap[self.color], (x- self.width/2, y - self.height/2, self.width, self.height))
-                else:
-                    pygame.draw.rect(surface, (255,128,128), (x- self.width/2, y - self.height/2, self.width, self.height))
+                pygame.draw.rect(surface, self.color, (x- self.width/2, y - self.height/2, self.width, self.height))
                 if self.selected:
                     pygame.draw.rect(surface, (0,0,0), (x- self.width/2, y - self.height/2, self.width, self.height), 2)
-            surface.blit(self.slabel, (x - self.slabel.get_width()/2, y - self.slabel.get_height()/2) )                
+                    surface.blit(self.desclabel, (72,16) )
+            surface.blit(self.slabel, (x - self.slabel.get_width()/2, y - self.slabel.get_height()/2) )
+                            
     
     
     def setOffset( self, (x,y) ):
