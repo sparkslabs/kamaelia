@@ -1,0 +1,42 @@
+Branches get deleted from here after being merged. If you need to restore
+one for whatever reason, you can do this as long as you have the last
+revision number where it did exist.
+
+That's the reason for this file - so that you can find out that information.
+Not all the branches below will have been deleted. However they are the ones
+the system "knows" about.
+
+
+Michael, June 2008
+
+Branches in revision 4274:
+
+        bp_vorbis_simple_0_0_2/
+        Kamaelia_0_4_0_Deprecations/
+        Kamaelia-private_MPS_SelectorRewrite/
+        private_JMB_AddedIndexCapabilityToMimimal/
+        private_MH_20070423_kamaelia_bugfixes/
+        private_MH_20070424_kamaelia_deprecationfixes/
+        private_MH_20070425_spritebugfix/
+        private_MH_20070429_newcomponents/
+        private_MH_20070509_axonwarnings/
+        private_MH_20070522_threadedcomponent_bugfixes/
+        private_MH_20070618_docgen_improvements/
+        private_MH_20080518_DvbFixes/
+        private_MH_axon_flowcontrolinversion/
+        private_MH_axon_optimisations/
+        private_MH_axon_outboxwakeups/
+        private_MH_axon_syncboxesforthreadedcomponent/
+        private_MH_axon_threading/
+        private_MH_axon_threads/
+        private_MPS_AxonIdea/
+        private_MPS_ERModeller/
+        private_MPS_JL_AIMSupport/
+        private_MPS_JL_IRCSupport/
+        private_MPS_JL_PygameText/
+        private_MPS_SynchronousBoxes2/
+        private_MPS_UnbufferedCSASupport/
+        private_PT_SOC2007/
+        private_PT_WindowsTCPClientFix/
+        private_SH_SSLCSA/
+        private_MH_20070425_dirac0.6.0bindings/
