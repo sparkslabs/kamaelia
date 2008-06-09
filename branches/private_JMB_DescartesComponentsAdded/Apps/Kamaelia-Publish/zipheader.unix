@@ -24,4 +24,7 @@ del sys.argv[0:2]
 import main
 
 main.main()
+
+#NOTE: Future code may rely on this tag being here, so it's best to make sure this is at the
+#end of the script unchanged.
 END_OF_PYTHON_CODE
