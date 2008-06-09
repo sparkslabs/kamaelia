@@ -2,7 +2,7 @@
 # The majority of this code comes from:
 # Python Cookbook, 2nd ed., by Alex Martelli, Anna Martelli Ravenscroft, and David Asher
 # (O'Relly Media, 2005) 0-596-00797-3
-# <Section 16.12>
+# Section 16.12 credited to Jeorg Raedler
 #
 
 PYTHON=$(which python 2>/dev/null)
