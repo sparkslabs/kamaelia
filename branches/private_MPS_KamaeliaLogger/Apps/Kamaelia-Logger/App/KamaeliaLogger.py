@@ -156,6 +156,7 @@ class BasicLogger(component):
         yield 1
         
         while True:
+	    time.sleep(0.1) # better way to do this?
             if self.currentDateString() != self.lastdatestring:
                 self.changeDate()
                 
