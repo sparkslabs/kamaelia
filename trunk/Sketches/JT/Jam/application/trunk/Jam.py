@@ -41,7 +41,7 @@ from Kamaelia.Util.Detuple import SimpleDetupler
 
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
 from Kamaelia.Apps.Jam.Internet.UDP import SimplePeer
-from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver
+from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 
 FPS = 60
@@ -77,10 +77,14 @@ if __name__ == "__main__":
                              position=(120, 0)),
               localOsc = Osc("/Jam"),
               remoteOsc = Osc("/Jam"),
-              localSender = SimplePeer(receiver_addr=options.oscAddress,
-                                       receiver_port=options.oscPort),
-              remoteSender = SimplePeer(receiver_addr=options.remoteAddress,
-                                        receiver_port=options.remotePort),
+#              localSender = SimplePeer(receiver_addr=options.oscAddress,
+#                                       receiver_port=options.oscPort),
+#              remoteSender = SimplePeer(receiver_addr=options.remoteAddress,
+#                                        receiver_port=options.remotePort),
+              localSender = UDPSender(receiver_addr=options.oscAddress,
+                                      receiver_port=options.oscPort),
+              remoteSender = UDPSender(receiver_addr=options.remoteAddress,
+                                       receiver_port=options.remotePort),
               linkages={("receiver", "outbox"): ("detupler", "inbox"),
               ("detupler", "outbox"):("deOsc", "inbox"),
               ("deOsc", "outbox"):("xyPad2", "remoteChanges"),

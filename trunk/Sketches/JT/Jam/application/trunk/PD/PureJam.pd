@@ -30,7 +30,7 @@
 #X msg 406 343 1 \, 0 1000;
 #X msg 536 344 1 \, 0 1000;
 #X msg 665 343 1 \, 0 1000;
-#X obj 355 150 OSCroute /top /right /bottom /left;
+#X obj 355 150 OSCroute /Top /Right /Bottom /Left;
 #X obj 362 59 OSCroute /Jam;
 #X obj 362 90 OSCroute /XY;
 #X obj 361 119 OSCroute /1;
