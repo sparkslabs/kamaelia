@@ -319,10 +319,11 @@ class HTTPRequestHandler(component):
             header = ""        
         else:
             header = "HTTP/1.1 " + statustext + "\r\nServer: Kamaelia HTTP Server (RJL) 0.4\r\nDate: " + currentTimeHTTP() + "\r\n"
-            if resource.has_key("charset"):
-                header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
-            else:
-                header += "Content-Type: " + resource["type"] + "\r\n"
+            if not resource.has_key('Content-type'):
+               if resource.has_key("charset"):
+                  header += "Content-Type: " + resource["type"] + "; " + resource["charset"] + "\r\n"
+               else:
+                  header += "Content-Type: " + resource["type"] + "\r\n"
             
             if lengthMethod == "explicit":
                 header += "Content-Length: " + str(resource["length"]) + "\r\n"
