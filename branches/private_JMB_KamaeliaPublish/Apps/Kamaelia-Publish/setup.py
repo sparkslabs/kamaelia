@@ -56,7 +56,7 @@ setup(
                 'WsgiApps',
                 'WsgiApps.Apps',
                 'wsgiref',],
-    scripts = ['assembly/main.py', 'assembly/urls.py', 'assembly/ServerConfig.py'],
+    scripts = ['assembly/kpublish.py', 'assembly/urls.py', 'assembly/ServerConfig.py'],
     long_description="""
     Kamaelia Publish lets you publish yourself on your own terms.
     """,
