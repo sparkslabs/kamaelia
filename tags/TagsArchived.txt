@@ -1,0 +1,32 @@
+Subversion allows these tags to be archived - ie to be deleted from a
+revision, and to be restored by a later one. (as long as you know the last
+revision where the tag/branch existed).
+
+As a result, this file is intended to note the tags that exist now. 
+
+9 June 2008 - At revision 4299
+
+    BBCOPENDAYS_20050609/
+    bp_0_1_1/
+    bp_0_1_2/
+    bp_0_2_0/
+    bp_0_3_0/
+    bp_0_4_0/
+    bp_1_1_0/
+    bp_1_1_1/
+    bp_1_1_2/
+    bp_1_5_0/
+    bp_AXON_1_0/
+    bp_AXON_1_0_1/
+    bp_AXON_1_0_3/
+    FORMERGE/
+    Kamaelia-private_MPS_SelectorRewrite_bp/
+    private_MH_axon_flowcontrolinversion_bp/
+    private_MPS_rjlBasicTorrent_0606/
+    private_MPS_SynchronousBoxes2_bp/
+    private_MPS_THF_BasicButton/
+    SOC/
+    XTECH_2006/
+    Kamaelia-0.5.0/
+
+
