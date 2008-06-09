@@ -7,8 +7,11 @@
 #source files, byte compiled modules, and optimized modules as well as any other
 #files that were named in include-files at the command line.  After this, the script
 #will concatenate this zip file with zipheader.unix creating the executable (which
-#will be moved to the zip directory).  If clean was specified at the command line,
-#the script will remove the assembly directory once it is finished.
+#will be moved to the zip directory).  
+#
+#If clean was specified at the command line, the script will remove the assembly directory 
+#once it is finished.  It is recommended that you remove the assembly directory prior to
+#running this script again.
 
 scripts/publish.prepare.sh #assemble everything we need in the assembly directory
 #python byte-compile.py urls.py main.py ServerConfig.py

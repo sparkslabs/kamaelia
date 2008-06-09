@@ -1,9 +1,13 @@
 #!/bin/sh
 #This shell script will check to see if an assemly directory already exits and create
 #one if not.  It will then copy all of the relevant files over to the assembly directory.
+
+echo "Creating staging area for building"
 if [ ! -d assembly ]
 then
-    echo "Creating staging area for building"
+    mkdir assembly
+else
+    rm -rf assembly
     mkdir assembly
 fi
 echo "----------------------------------------------------"
@@ -17,6 +21,8 @@ echo "Copying Kamaelia from branch"
 cp -R ../../Kamaelia/Kamaelia/ assembly/Kamaelia
 echo "Copying WsgiApps into staging area"
 cp -R WsgiApps assembly/WsgiApps
+echo "Copying wsgiref into staging area"
+cp -R wsgiref assembly/wsgiref
 echo "Copying zipheader.unix into staging area"
 cp zipheader.unix assembly/zipheader.unix
 echo "Copying main.py into staging area"
