@@ -13,6 +13,7 @@ setup(
     author_email='jason.baker@ttu.edu',
     url='http://wsgi.coderspalace.com/kcwiki',
     license='Copyright(c) 2008 BBC & Kamaelia Contributors.  All Rights Reserved Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1',
+    package_dir = {'' : 'assembly'},
     packages= [ 'Axon',
                 'Kamaelia',
                 'Kamaelia.Automata',
@@ -52,10 +53,10 @@ setup(
                 'Kamaelia.Visualisation.Axon',
                 'Kamaelia.Visualisation.PhysicsGraph',
                 'Kamaelia.XML',
-                'WsgiApps.Apps'
-                "",],
-    scripts = ['Linux/App/kamaelia-publish.py',
-               'Linux/App/ServerConfig.py',],
+                'WsgiApps',
+                'WsgiApps.Apps',
+                'wsgiref',],
+    scripts = ['assembly/main.py', 'assembly/urls.py', 'assembly/ServerConfig.py'],
     long_description="""
     Kamaelia Publish lets you publish yourself on your own terms.
     """,
