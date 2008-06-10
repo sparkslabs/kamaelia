@@ -89,7 +89,7 @@ class MagnaDoodle(Axon.Component.component):
 
       if msg is None:
          msg = ("CLICK", self.id)
-      self.eventMsg = msg      
+      self.eventMsg = msg
       if transparent:
          transparency = bgcolour
       else:
@@ -101,7 +101,7 @@ class MagnaDoodle(Axon.Component.component):
                            "transparency" : transparency }
       
       if not position is None:
-        self.disprequest["position"] = position         
+        self.disprequest["position"] = position
 
        
    def waitBox(self,boxname):
@@ -166,7 +166,7 @@ class MagnaDoodle(Axon.Component.component):
                 if isinstance(event, tuple):
                     print "here"
                     if event[0] == 'circle':
-                        pygame.draw.circle(self.display, (0,0,0), event[1], event[2], 0)
+                        pygame.draw.circle(self.display, (255,0,0), event[1], event[2], 0)
                         self.blitToSurface()
                     if event[0] == 'line':
                         pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
