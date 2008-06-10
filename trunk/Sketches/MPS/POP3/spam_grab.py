@@ -219,6 +219,16 @@ class Pop3Client(Axon.Component.component):
         except:
             self.whitelist = []
         self.whitelist = [ x.lower() for x in self.whitelist]
+        self.whitelist = [ x for x in self.whitelist if x.strip() != '']
+
+        try:
+            F = open("blacklist_senders.txt")
+            self.blacklist = F.read().strip().split("\n")
+            F.close()
+        except:
+            self.blacklist = []
+        self.blacklist = [ x.lower() for x in self.blacklist]
+        self.blacklist = [ x for x in self.blacklist if x.strip() != '']
 
     def getMailStats(self):
         def local():
@@ -283,9 +293,15 @@ class Pop3Client(Axon.Component.component):
     def whitelisted_sender(self, address):
         for sender_frag in self.whitelist:
             if sender_frag in address:
-                print "    WHITELISTED", address
+#                print "    WHITELISTED", address
                 return True
-        print "NOT whitelisted?", address,
+#        print "NOT whitelisted?", address,
+
+    def blacklisted_sender(self, address):
+        for sender_frag in self.blacklist:
+            if sender_frag in address:
+#                print "    BLACKLISTED", address
+                return True
 
     def main(self):
 
@@ -302,6 +318,7 @@ class Pop3Client(Axon.Component.component):
         print self.whitelist        
         while lower > 1:
             deletions = []
+            greyzone = []
             higher = lower
             lower = max(1, lower-50)
 #            lower = max(1, lower-200)
@@ -320,6 +337,8 @@ class Pop3Client(Axon.Component.component):
                 for sender in self.headers["from"]:
                     if whitelisted:
                         continue
+                    if self.blacklisted_sender(sender):
+                        delete = True
                     if self.whitelisted_sender(sender):
                         delete = False
                         whitelisted = True
@@ -333,45 +352,87 @@ class Pop3Client(Axon.Component.component):
                     for phrase in self.phrases: # hideously inefficient, but works
                         if phrase in self.headers["subject"][0]:
                             delete = True
-                    if not delete:
-                        print self.headers["subject"][0]
+                    if not delete: # handled differently now
+                        pass 
+#                        print self.headers["subject"][0]
 
                 if delete:
                     deletions.append( (mailid, self.headers["from"], self.headers) )
+                if not delete and not whitelisted:
+#                    print "THIS /MAY/ BE SPAM", self.headers["subject"][0]
+                    greyzone.append( (mailid, self.headers["from"], self.headers) )
+            print
 
-            print 
-            print "============ CANDIDATES FOR DELETION ============"
-            pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in deletions ])
-            print "TOTAL Suggested", len(deletions)
-            
-            print "To delete these, don't type 'quit'"
+            if len(deletions) == 0:
+                print "NO CANDIDATES FOR DELETION, GREYLISTING REPORT INSTEAD"
+                print 
+                print "============ EMAILS WHICH ARE GREY ============"
+#                pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in greyzone ])
+                for (ID, FROM, HEADERS) in greyzone:
+                    senders = []
+                    for sender in FROM:
+                        if ("<" in sender) and (">" in sender):
+                            sender = sender[sender.find("<")+1:sender.rfind(">")]
+                        senders.append(sender)
+                    print " ".join(senders), ":", "".join( HEADERS["subject"]), ":", "".join(FROM)
 
-            X = raw_input()
-            if X.lower() == "quit":
-               break
-            if X.lower() != "skip":
-                for deletion in deletions:
-                    ID, FROM, HEADERS = deletion
-                    sys.stdout.write(".")
-                    sys.stdout.flush()
-                    yield self.grabStoreSpam(ID)
-#                    print "SPAM GRABBED"
-#                    print "INCREASING SPAMCOUNT"
-                    f = str(self.spamcount)
-                    self.spamcount +=1
-                    self.storeSpamStoreMeta(self.spamcount)
-                    print "DELETING SPAM FROM SERVER, you still have mail",ID,"here", "SPAMSTORE/"+f
-                    yield self.deleteMessage(ID)
+                
+                print "JUST SENDERS ---------------------------------------"
+                allsenders = []
+                for senders in [ FROM for (ID, FROM, HEADERS) in greyzone ]:
+                    for sender in senders:
+                        if ("<" in sender) and (">" in sender):
+                             sender = sender[sender.find("<")+1:sender.rfind(">")]
+                        if sender not in allsenders:
+                            allsenders.append(sender)
+                for sender in allsenders:
+                    print sender
 
-                    #print self.result
-                print "RECOMMENDED DELETIONS COMPLETE"
-                print "To delete more, don't type 'quit'"
+                print "JUST SUBJECTS --------------------------------------"
+                for subjects in [ HEADERS["subject"] for (ID, FROM, HEADERS) in greyzone ]:
+                    for subject in subjects:
+                        print subject
+                
+                print "=====End of report on currently grey mails====="
+                print "To keep doing, don't type quit"
+                X = raw_input()
+                if X.lower() == "quit":
+                    break
+            else:
+
+                print 
+                print "============ CANDIDATES FOR DELETION ============"
+                pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in deletions ])
+                print "TOTAL Suggested", len(deletions)
+                
+                print "To delete these, don't type 'quit'"
+
                 X = raw_input()
                 if X.lower() == "quit":
                    break
-            else:
-                print "skipping, moving on"
-                deletions = []
+                if X.lower() != "skip":
+                    for deletion in deletions:
+                        ID, FROM, HEADERS = deletion
+                        sys.stdout.write(".")
+                        sys.stdout.flush()
+                        yield self.grabStoreSpam(ID)
+    #                    print "SPAM GRABBED"
+    #                    print "INCREASING SPAMCOUNT"
+                        f = str(self.spamcount)
+                        self.spamcount +=1
+                        self.storeSpamStoreMeta(self.spamcount)
+                        print "DELETING SPAM FROM SERVER, you still have mail",ID,"here", "SPAMSTORE/"+f
+                        yield self.deleteMessage(ID)
+
+                        #print self.result
+                    print "RECOMMENDED DELETIONS COMPLETE"
+                    print "To delete more, don't type 'quit'"
+                    X = raw_input()
+                    if X.lower() == "quit":
+                       break
+                else:
+                    print "skipping, moving on"
+                    deletions = []
         
         print "Done, call again"
         self.send(["QUIT"], "outbox")
