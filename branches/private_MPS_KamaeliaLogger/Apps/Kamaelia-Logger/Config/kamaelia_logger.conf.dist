@@ -7,10 +7,13 @@
 #
 
 # Channel this bot joins.
-# channel = #kamaelia-test
+channel = #kamaelia-test
 
-# Name of this log bot - defaults to kamaeliabot<randomname>
-# name = kamaeliabot
+# Name of this log bot
+name = kamlogbot
+
+# Host, the hostname of the IRC server you're joining.
+host = irc.freenode.org
 
 # password - if needed for connection. (defaults to no)
 # pwd = p4ssw0rd
