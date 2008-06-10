@@ -211,6 +211,14 @@ class Pop3Client(Axon.Component.component):
         self.stat = ()
         self.stat_mails = 0
         self.stat_size = 0
+        self.whitelist = []
+        try:
+            F = open("whitelist_senders.txt")
+            self.whitelist = F.read().strip().split("\n")
+            F.close()
+        except:
+            self.whitelist = []
+        self.whitelist = [ x.lower() for x in self.whitelist]
 
     def getMailStats(self):
         def local():
@@ -272,6 +280,13 @@ class Pop3Client(Axon.Component.component):
             self.headers = self.recv("inbox")
         return WaitComplete(local())
 
+    def whitelisted_sender(self, address):
+        for sender_frag in self.whitelist:
+            if sender_frag in address:
+                print "    WHITELISTED", address
+                return True
+        print "NOT whitelisted?", address,
+
     def main(self):
 
         yield self.getMailStats()
@@ -283,7 +298,8 @@ class Pop3Client(Axon.Component.component):
         self.spamcount = self.getSpamStoreMeta()
     
         lower = self.stat_mails
-        
+
+        print self.whitelist        
         while lower > 1:
             deletions = []
             higher = lower
@@ -300,7 +316,14 @@ class Pop3Client(Axon.Component.component):
 
     #            print "-------- HEADERS RECEIVED --------"
                 delete = False
+                whitelisted = False
                 for sender in self.headers["from"]:
+                    if whitelisted:
+                        continue
+                    if self.whitelisted_sender(sender):
+                        delete = False
+                        whitelisted = True
+                        continue
                     if "mail delivery subsystem" in sender:
                         delete = True
                     if "system administrator" in sender:
