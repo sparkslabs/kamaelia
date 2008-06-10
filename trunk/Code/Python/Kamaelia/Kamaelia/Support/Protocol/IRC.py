@@ -24,15 +24,19 @@
 =========================
 Kamaelia IRC Support Code
 =========================
+
 This provides support for Kamaelia.Protocol.IRC.*
 
 Specifically it provides 2 core functions and 2 utility methods.
+
+
 
 Core functions
 --------------
 
 informat(text,defaultChannel='#kamtest')
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Summary - Puts a string input into tuple format for IRC_Client. Understands
 irc commands preceded by a slash ("/"). All other text is formatted such
 that sending it would send the message to the default channel.
@@ -40,6 +44,7 @@ that sending it would send the message to the default channel.
 Detail - If the text starts with a "/" it is treated as a command. Informat
 understands some specific commands which it helps you format for sending to
 the IRCClient. The commands it understands are::
+
        QUIT
        PRIVMSG
        MSG
@@ -59,14 +64,18 @@ then formatted appropriately for sending on to an IRC_Client component.
 
 For an example of usage, see Examples/TCP_Systems/IRC/BasicDemo.py
 
+
+
 outformat(data, defaultChannel='#kamtest')
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Takes tuple output from IRC_Client and formats for easier reading  If a
 plaintext is received, outformat treats it as a privmsg intended for
 defaultChannel (default "#kamtest").
 
 Specific commands it understands and will make a an attempt to format
 appropriately are::
+
         PRIVMSG
         JOIN
         PART
@@ -80,22 +89,29 @@ It will also identify certain types of errors.
 
 For an example of usage, see Examples/TCP_Systems/IRC/BasicDemo.py
 
+
+
 Utility functions
 -----------------
 
 channelOutformat(channel)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Creates a customised outformat function with defaultChannel predefined to
 channel. (ie Returns a lambda)
 
 
 channelInformat(channel)
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
 Creates a customised informat function with defaultChannel predefined to
 channel. (ie Returns a lambda)
 
+
+
 Open Issues
 -----------
+
 Should these really be components rather than helper functions?
 
 """
