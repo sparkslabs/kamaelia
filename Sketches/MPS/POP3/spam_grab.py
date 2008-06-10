@@ -287,7 +287,7 @@ class Pop3Client(Axon.Component.component):
         while lower > 1:
             deletions = []
             higher = lower
-            lower = max(1, lower-200)
+            lower = max(1, lower-50)
 #            lower = max(1, lower-200)
             l = 0
             for mailid in range(lower, higher+1):
