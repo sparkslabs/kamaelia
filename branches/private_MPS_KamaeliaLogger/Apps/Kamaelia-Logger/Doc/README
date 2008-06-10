@@ -35,5 +35,18 @@ So you're all configured up? Now just run one of the simple scripts we've attach
 	cd Apps/Kamaelia-Logger/App
 	python KamaeliaLogger.py
 
+When you run your bot it will echo some information for you out to the console, for example the defaults should give you this:
+
+	[]
+	['channel', '=', '#kamaelia-test']
+	[]
+	['name', '=', 'kamlogbot']
+	[]
+	['host', '=', 'irc.freenode.org']
+	[]
+	[]
+	Logging #kamaelia-test as kamlogbot
+
+This is just to let you know that the bot is working :)
 Remember, this is all open source so you can easily add cool new features to your bot. Let us know in #kamaelia on Freenode :-)
 Have fun with your bot!
