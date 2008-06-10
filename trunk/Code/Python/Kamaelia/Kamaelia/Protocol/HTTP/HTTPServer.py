@@ -421,7 +421,7 @@ class HTTPRequestHandler(component):
                 request = request.header
                 
                 # output what the requested URL (path) was to stdout - by all means comment this out
-                print "Request for " + request["raw-uri"]
+                #print "Request for " + request["raw-uri"]
                 
                 # add ["bad"] and ["error-msg"] keys to the request if it is invalid
                 self.checkRequestValidity(request)

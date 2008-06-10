@@ -230,7 +230,7 @@ class SingleShotHTTPClient(component):
 
         splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
 
-        print splituri["request"]
+        #print splituri["request"]
         
         if self.postbody not in [None, ""]:
             splituri["request"].append(self.postbody)
