@@ -31,17 +31,96 @@ from Kamaelia.Chassis.Graphline   import Graphline
 from MessageAdder                 import MessageAdder
 from MessageStorer                import MessageStorer
 
-class KamTestCase(unittest.TestCase):
+import KamMockObject
+
+import new
+
+class _AuxiliarTestCase(unittest.TestCase):
+    """ 
+    KamTestCase can't be a unittest.TestCase, since the test runners would not call
+    some methods to start and stop the required infrastructure, and the "setUp" and 
+    "tearDown" methods can be overriden by the user (and they commonly don't call 
+    the super method), so it must delegate everything to a real unittest.TestCase.
     
+    This class (_AuxiliarTestCase) will be used from KamTestCase to call the assert*
+    and fail* methods, and to be called by the test runners. Each KamTestCase 
+    instance will dynamically create a subclass of _AuxiliarTestCase and it will add
+    a method per test method, that will call the real test in the KamTestCase class.
+    """
+    _kamtestcase = None
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        self._kamtestcase._register(self)
+    def setUp(self):
+        self._kamtestcase._initialize()
+        self._kamtestcase.setUp()
+    def tearDown(self):
+        self._kamtestcase.tearDown()
+        self._kamtestcase._finish()
+
+class KamTestCase(object):
     # TODO: this number of steps depends too much on the situation :-S
     DEFAULT_STEP_NUMBER = 1000
     
-    def __init__(self, *argd, **kwargs):
-        # Might not be an object
-        unittest.TestCase.__init__(self, *argd, **kwargs)
+    def __init__(self, prefix = 'test', *argd, **kwargs):
+        super(KamTestCase, self).__init__()
         self._kamtest_initialized = False
+        self._createTestCase(prefix)
+        self._fillTestCaseMethods()
+        
+    def getTestCase(klazz):
+        return klazz().TestCaseClass
+    getTestCase = classmethod(getTestCase)
+        
+    def _createTestCase(self, prefix):
+        testMethodNames = [ x for x in dir(self) if x.startswith(prefix) and callable(getattr(self,x)) ]
+        testMethods = {}
+        for methodName in testMethodNames:
+            testMethods[methodName] = getattr(self, methodName)
+        testMethods['_kamtestcase'] = self
+        self.TestCaseClass = type(self.__class__.__name__ + 'TestCase', (_AuxiliarTestCase,), testMethods)
+            
+    def _register(self, testCase):
+        self._testCase = testCase
+        
+    def _fillTestCaseMethods(self):
+        """ fillTestCaseMethods() -> None
+        
+        Takes all the assert* and fail* methods in TestCase, and dynamically creates
+        methods in "self" that internally call those methods in the twin testCase.
+        """
+        methods = [ x
+                    for x in dir(unittest.TestCase)
+                    if x.startswith('assert') or x.startswith('fail')
+                ]
+                
+        def _method_caller(self,*args,**kwargs):
+            method = getattr(self._testCase, METHOD_NAME)
+            return method(*args, **kwargs)
+            
+        for methodName in methods:
+                method = new.function(_method_caller.func_code, {
+                        'METHOD_NAME' : methodName,
+                        'getattr'      : getattr,
+                        }, methodName)
+                setattr(self.__class__, methodName, method)
+    
+    def createMock(self, inputComponentToMock, outputComponentToMock = None):
+        if outputComponentToMock is None:
+            outputComponentToMock = inputComponentToMock
+        mock = KamMockObject._KamMockObject(inputComponentToMock, outputComponentToMock)
+        self._mocks.append(mock)
+        return mock
         
     def initializeSystem(self, inputComponentUnderTest, outputComponentUnderTest = None):
+        """ initializeSystem(inputComponentUnderTest, [outputComponentUnderTest])
+        
+        Initializes the kamaelia system, creating a MessageAdder and a MessageStorer which
+        interact with the inboxes of inputComponentUnderTest and the outboxes of 
+        outputComponentUnderTest.If no outputComponentUnderTest is provided, it falls to 
+        inputComponentUnderTest. This method should be called by the user (for example in
+        the overriden setUp method).
+        """
         if outputComponentUnderTest is None:
             outputComponentUnderTest = inputComponentUnderTest
             
@@ -65,7 +144,7 @@ class KamTestCase(unittest.TestCase):
         for publicOutbox in publicOutboxNames:
             linkages[('OUTPUT_COMPONENT_UNDER_TEST', publicOutbox)] = ('MESSAGE_STORER', publicOutbox)
         
-        self.graph = Graphline(
+        self._graph = Graphline(
             MESSAGE_ADDER               = self.messageAdder,
             INPUT_COMPONENT_UNDER_TEST  = inputComponentUnderTest,
             OUTPUT_COMPONENT_UNDER_TEST = outputComponentUnderTest,
@@ -76,20 +155,34 @@ class KamTestCase(unittest.TestCase):
         self._kamtest_initialized = True
     
     def _listThreads(self):
-        scheduler = self.graph.__class__.schedulerClass.run
+        scheduler = self._graph.__class__.schedulerClass.run
         threads   = scheduler.listAllThreads()
         scheduler.debuggingon = False
         return threads
         
     def clearThreads(self):
         # Reboot the scheduler
-        self.graph.__class__.schedulerClass.run = None
-        self.graph.__class__.schedulerClass()
+        self._graph.__class__.schedulerClass.run = None
+        self._graph.__class__.schedulerClass()
+    
+    def _initialize(self):
+        """ _initialize()
         
-    # TODO: this shouldn't be overriden; maybe I need to use delegation instead of inheritance
-    def tearDown(self):
+        Called before each test, initializes the kamaelia environment.
+        """
+        self._mocks = []
         if self._kamtest_initialized:
-            scheduler = self.graph.__class__.schedulerClass.run
+            self.clearThreads()
+            self._kamtest_initialized = False
+    
+    def _finish(self):
+        """ _finish()
+        
+        Called after each test, cleans the kamaelia environment.
+        """        
+        if self._kamtest_initialized:
+            self._kamtest_initialized = False
+            scheduler = self._graph.__class__.schedulerClass.run
             scheGenerator  = scheduler.main(0, canblock=False)
             n = 0
             try:
@@ -101,8 +194,6 @@ class KamTestCase(unittest.TestCase):
             
             threads = self._listThreads()
             
-            self.clearThreads()
-            
             if len(threads) > 0:
                 raise self.failureException("Processes still running: %s" % threads)
     
@@ -112,8 +203,8 @@ class KamTestCase(unittest.TestCase):
         self.messageAdder.stopMessageAdder(steps)
         self.messageStorer.stopMessageStorer(steps)
         
-        self.graph.activate()
-        scheduler      = self.graph.__class__.schedulerClass.run
+        self._graph.activate()
+        scheduler      = self._graph.__class__.schedulerClass.run
         scheGenerator  = scheduler.main(0, canblock=False)
         
         # TODO: These numbers must change
@@ -164,7 +255,7 @@ class KamTestCase(unittest.TestCase):
         threads = self._listThreads()
         if len(threads) > 0:
             # first clean creating a new scheduler
-            self.graph.__class__.schedulerClass.run = Scheduler.scheduler()
+            self._graph.__class__.schedulerClass.run = Scheduler.scheduler()
             # then raise the failureException
             raise self.failureException(msg or "Processes still running: %s" % threads)
 
@@ -194,3 +285,10 @@ class KamTestCase(unittest.TestCase):
         else:
             if clear:
                 self.clearThreads()
+                
+    def setUp(self):
+        pass # To be overriden by the user
+        
+    def tearDown(self):
+        pass # To be overriden by the user
+        

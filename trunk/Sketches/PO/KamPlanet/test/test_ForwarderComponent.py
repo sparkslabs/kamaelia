@@ -106,7 +106,7 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
         self.assertEquals(producerFinishedObj, messages[0])
 
 def suite():
-    return KamTestCase.makeSuite(ForwarderComponentTestCase)
+    return KamTestCase.makeSuite(ForwarderComponentTestCase.getTestCase())
     
 if __name__ == '__main__':
     KamTestCase.main()

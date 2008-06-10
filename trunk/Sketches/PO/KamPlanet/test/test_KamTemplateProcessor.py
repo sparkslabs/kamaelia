@@ -83,9 +83,18 @@ SAMPLE_RSS = """<?xml version="1.0" encoding="UTF-8"?>
         "POST_DESCRIPTION" : POST_DESCRIPTION,
     }
 
+class WrappedKamTemplateProcessor(KamTemplateProcessor.KamTemplateProcessor):
+    def __init__(self, fakeTime, *args, **kwargs):
+        self.__fakeTime = fakeTime
+        super(WrappedKamTemplateProcessor, self).__init__(*args, **kwargs)
+        
+    def asciiTime(self):
+        return self.__fakeTime
+
 class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
     def setUp(self):
-        self.kamTemplateProcessor = KamTemplateProcessor.KamTemplateProcessor(
+        self.kamTemplateProcessor = WrappedKamTemplateProcessor(
+                                    BLOG_DATE, 
                                     'htmlTemplateName',
                                     'htmlFileName'
                                 )
@@ -152,11 +161,10 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
         output = messages[0]
         outputlines = [line.strip() for line in output.split('\n') if line.strip() != '']
         
-        #print outputlines
         ptr = 0
         self.assertEquals(PLANET_NAME, outputlines[ptr])
         ptr += 1
-        self.assertTrue(outputlines[ptr].lower().startswith('kamplanet'))
+        self.assertEquals(configObj.generator, outputlines[ptr])
         ptr += 1
         self.assertEquals("rss20.xml", outputlines[ptr])
         ptr += 1
@@ -165,10 +173,33 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
         self.assertEquals("rss", outputlines[ptr])
         ptr += 1
         self.assertEquals(POST_LINK, outputlines[ptr])
-        #etc. (TODO)
+        ptr += 1
+        self.assertEquals(POST_LINK, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(BLOG_TITLE, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(POST_DESCRIPTION, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(POST_LINK, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(POST_CREATOR, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(POST_DATE, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(FEED_URL, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(BLOG_LINK, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(BLOG_TITLE, outputlines[ptr])
+        ptr += 1
+        self.assertEquals('default name', outputlines[ptr])
+        ptr += 1
+        self.assertEquals(BLOG_DATE, outputlines[ptr])
+        ptr += 1
+        self.assertEquals(ptr, len(outputlines))
 
 def suite():
-    return KamTestCase.makeSuite(KamTemplateProcessorTestCase)
+    return KamTestCase.makeSuite(KamTemplateProcessorTestCase.getTestCase())
     
 if __name__ == '__main__':
     KamTestCase.main()

@@ -28,12 +28,14 @@ from Kamaelia.Chassis.Pipeline import pipeline
 import mocker
 
 import KamTestCase
-import KamMockObject
 
 import FeedParserFactory
 import ConfigFileParser
 
-FEED_URL   = "http://sample.feed/"
+import feedparser
+import pickle
+
+FEED_URL         = "http://sample.feed/"
 
 BLOG_TITLE       = "Blog title"
 BLOG_LINK        = "http://blog.link/"
@@ -125,7 +127,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
     def setUp(self):
         self.mockedFeedParserMakerMocker = mocker.Mocker()
         self.mockedFeedParserMaker       = self.mockedFeedParserMakerMocker.mock()
-        self.feedParserFactory = WrappedFeedParserFactory(self.mockedFeedParserMaker)
+        self.feedParserFactory           = WrappedFeedParserFactory(self.mockedFeedParserMaker)
         self.initializeSystem(self.feedParserFactory)
     
     def testNoFeedProducerFinished(self):
@@ -152,30 +154,46 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.mockedFeedParserMakerMocker.result(mockFeedParser)
         self.mockedFeedParserMakerMocker.replay()
         
+    def configureMultipleMockedFeedParserMaker(self, mockFeedParsers):
+        for mockFeedParser in mockFeedParsers:
+            self.mockedFeedParserMaker.makeFeedParser(FEED_URL)
+            self.mockedFeedParserMakerMocker.result(mockFeedParser)
+        self.mockedFeedParserMakerMocker.replay()
+        
     def testFeeds(self):
-        mockFeedParser = KamMockObject.KamMockObject(pipeline)
-        # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
-        # child will not die until this has finished
-        mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
+        MESSAGE_NUMBER = 3
         
-        mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
-        mockFeedParser.addMessage(self.PARSEDOBJECT2,'outbox')
-        mockFeedParser.addMessage(self.PARSEDOBJECT3,'outbox')
+        mockFeedParsers = []
+        for i in xrange(MESSAGE_NUMBER):
+            mockFeedParser = self.createMock(pipeline)
+            # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
+            # child will not die until this has finished
+            mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
+            mockFeedParser.addMessage(SAMPLE_RSS,'outbox')
+            mockFeedParsers.append(mockFeedParser)
         
-        feedobj = self.generateFeedObj(FEED_URL)
+        feedobjs = []
+        for i in xrange(MESSAGE_NUMBER):
+            feedobjs.append(self.generateFeedObj(FEED_URL))
         
-        self.configureMockedFeedParserMaker(mockFeedParser)
-                
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addYield(10) #TODO: constant
+        self.configureMultipleMockedFeedParserMaker(mockFeedParsers)
+        
+        for feedobj in feedobjs:
+            self.messageAdder.addMessage(feedobj, 'inbox')
+            self.messageAdder.addYield(10) #TODO: constant
+            
         self.messageAdder.addMessage(producerFinished(), 'control')
         self.assertStopping()
 
         messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(3, len(messages))
-        self.assertEquals(self.PARSEDOBJECT1, messages[0])
-        self.assertEquals(self.PARSEDOBJECT2, messages[1])
-        self.assertEquals(self.PARSEDOBJECT3, messages[2])
+        self.assertEquals(MESSAGE_NUMBER, len(messages))
+        
+        for message in messages:
+            message.pop('href')
+            self.assertEquals(
+                              pickle.dumps(feedparser.parse(SAMPLE_RSS)), 
+                              pickle.dumps(message)
+                            )
         
         messages = self.messageStorer.getMessages('signal')
         self.assertEquals(1, len(messages))
@@ -183,7 +201,43 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         
         self.mockedFeedParserMakerMocker.verify()
 
-
+    def testWrongFeeds(self):
+        MESSAGE_NUMBER = 3
+        
+        WRONG_XML = """<html><p>This is not xml :-)</html>"""
+        
+        mockFeedParsers = []
+        for i in xrange(MESSAGE_NUMBER):
+            mockFeedParser = self.createMock(pipeline)
+            # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
+            # child will not die until this has finished
+            mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
+            mockFeedParser.addMessage(WRONG_XML,'outbox')
+            mockFeedParsers.append(mockFeedParser)
+        
+        feedobjs = []
+        for i in xrange(MESSAGE_NUMBER):
+            feedobjs.append(self.generateFeedObj(FEED_URL))
+        
+        self.configureMultipleMockedFeedParserMaker(mockFeedParsers)
+        
+        for feedobj in feedobjs:
+            self.messageAdder.addMessage(feedobj, 'inbox')
+            self.messageAdder.addYield(10) #TODO: constant
+            
+        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.assertStopping()
+        
+        messages = self.messageStorer.getMessages('outbox')
+        self.assertEquals(0, len(messages))
+        
+        messages = self.messageStorer.getMessages('signal')
+        self.assertEquals(1, len(messages))
+        self.assertTrue(isinstance(messages[0], producerFinished))
+        
+        self.mockedFeedParserMakerMocker.verify()
+        
+        
     def testFeedsAndShutdownsPriority(self):
         feedobj = self.generateFeedObj(FEED_URL)
         
@@ -202,7 +256,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.assertTrue(isinstance(messages[0], shutdownMicroprocess))
 
     def testWaitingForChildrenWhenProducerFinished(self):
-        mockFeedParser = KamMockObject.KamMockObject(pipeline)
+        mockFeedParser = self.createMock(pipeline)
         mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
         # I don't ask the mock feed to stop
         
@@ -218,7 +272,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.assertNotStopping(clear=True)
         
     def testWaitingForChildrenWhenShutdownMicroprocess(self):
-        mockFeedParser = KamMockObject.KamMockObject(pipeline)
+        mockFeedParser = self.createMock(pipeline)
         mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
         # I don't ask the mock feed to stop
         
@@ -235,8 +289,8 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         
 def suite():
     return KamTestCase.TestSuite((
-                KamTestCase.makeSuite(FeedParserTestCase), 
-                KamTestCase.makeSuite(FeedParserFactoryTestCase), 
+                KamTestCase.makeSuite(FeedParserTestCase.getTestCase()), 
+                KamTestCase.makeSuite(FeedParserFactoryTestCase.getTestCase()), 
             ))
             
 if __name__ == '__main__':

@@ -27,20 +27,13 @@ import Axon
 import MessageAdder
 import MessageStorer
 
-# TODO: this shouldn't be part of the API. It should be created through a method at KamTestCase
-# This way, KamTestCase would know how many mocks there are, and it can stop as soon as there are
-# no alive component except for alive KamMockObject (and alive children of the KamMockObject)
-# It's just an optimization.
-# 
-# Furthermore, it would be useful since 
-
-class KamMockObject(Axon.Component.component):
-    def __init__(self, inputComponentToMock, outputComponentToMock = None, **kwargs):
+class _KamMockObject(Axon.Component.component):
+    def __init__(self, inputComponentToMock, outputComponentToMock, **kwargs):
         self.publicInboxes,  self.publicOutboxes = self._setupInboxesOutboxes(
                                                             inputComponentToMock, 
                                                             outputComponentToMock
                                                     )
-        super(KamMockObject, self).__init__(**kwargs)
+        super(_KamMockObject, self).__init__(**kwargs)
         
         self.messageStorer = MessageStorer.MessageStorer(self.publicInboxes)
         self.messageAdder  = MessageAdder.MessageAdder(self.publicOutboxes)
@@ -52,8 +45,6 @@ class KamMockObject(Axon.Component.component):
         self._stop_within_iterations = None
     
     def _setupInboxesOutboxes(self, inputComponentToMock, outputComponentToMock):
-        if outputComponentToMock is None:
-            outputComponentToMock = inputComponentToMock
         publicInboxNames = [ inboxName 
                       for inboxName in inputComponentToMock.Inboxes 
                         if not inboxName.startswith('_')

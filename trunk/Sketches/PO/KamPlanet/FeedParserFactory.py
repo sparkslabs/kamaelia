@@ -51,8 +51,14 @@ class Feedparser(Axon.Component.component):
                 data = self.recv("inbox")
                 parseddata = feedparser.parse(data)
                 parseddata.href = self.feedUrl
-                self.send(parseddata, "outbox")
-
+                if parseddata.has_key('bozo_exception'):
+                    self.send(producerFinished(self),"signal")
+                    return
+                else:
+                    self.send(parseddata, "outbox")
+                    self.send(producerFinished(self),"signal")
+                    return
+            
             while self.dataReady("control"):
                 data = self.recv("control")
                 self.send(data,"signal")
@@ -102,7 +108,7 @@ class FeedParserFactory(Axon.Component.component):
         return Pipeline(
                 OneShot(feedUrl), 
                 SimpleHTTPClient(), # TODO: SimpleHTTPClient doesn't seem to have proxy support
-                Feedparser(feedUrl),
+                #Feedparser(feedUrl),
             )
             
     def checkControl(self):
@@ -135,6 +141,7 @@ class FeedParserFactory(Axon.Component.component):
         
     def createChild(self, feed):
         child = self.makeFeedParser(feed.url)
+        child = Pipeline(child, Feedparser(feed.url))
         self.link( (child, 'outbox'), (self, '_parsed-feeds') )
         self.linkChildToInternalSplitter(child)
         return child

@@ -27,26 +27,35 @@ import sys
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-def _check_l10n(x,y):
-    for param in x,y:
-        if not hasattr(param, 'updated_parsed') or param.updated_parsed is None:
-            updated_parsed_value = getattr(param,'updated_parsed',param)
-            #TODO
-            #print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
-            #    Take a look at feedparser._parse_date_hungarian and feedparser.\
-            #    registerDateHandler" % updated_parsed_value
-            return False
+def _check_l10n(param):
+    if not hasattr(param, 'updated_parsed') or param.updated_parsed is None:
+        # updated_parsed_value = getattr(param,'updated_parsed',param)
+        # print >> sys.stderr, "feedparser could not parse date format: %s; l10n problems? \
+        #    Take a look at feedparser._parse_date_hungarian and feedparser.\
+        #    registerDateHandler" % updated_parsed_value
+        return False
     return True
 
 def _cmp_entries(x,y):
     """ Given two FeedParserDicts, compare them taking into account their updated_parsed fields """
-    # TODO: if date not known, put it last
-    if _check_l10n(x['entry'],y['entry']):
+    # We know the dates:
+    if _check_l10n(x['entry']) and _check_l10n(y['entry']):
         for pos, val in enumerate(x['entry'].updated_parsed):
-            result = cmp(val, y['entry'].updated_parsed[pos])
+            result = cmp(y['entry'].updated_parsed[pos], val)
             if result != 0:
-                return result * -1
-    return 0
+                return result
+        return 0
+    
+    # We do not know the dates of any of the two entries:
+    if not _check_l10n(x['entry']) and not _check_l10n(x['entry']):
+        return 0
+    
+    # We know the dates of one and only one of the entries
+    if _check_l10n(x['entry']):
+        return -1
+    else:
+        return 1
+
 
 class PostSorter(Axon.Component.component):
     """

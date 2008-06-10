@@ -56,7 +56,7 @@ class GeneralObjectParserTestCase(KamTestCase.KamTestCase):
         self.assertEquals('mydefaultvalue', obj.field2)
     
 def suite():
-    return KamTestCase.makeSuite(GeneralObjectParserTestCase)
+    return KamTestCase.makeSuite(GeneralObjectParserTestCase.getTestCase())
     
 if __name__ == '__main__':
     KamTestCase.main()
