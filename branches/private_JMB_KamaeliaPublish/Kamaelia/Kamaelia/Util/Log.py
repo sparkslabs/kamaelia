@@ -1,3 +1,79 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: JMB
+"""
+A Logger is a component that you may use to send messages to a log file of some
+sort.  It uses the CAT so you don't have to worry about what component is where.
+
+How does it work?
+------------------
+The Logger creates a backplane that it receives messages from (via a SubcribeTo
+component).  Upon instantiation, the backplane is registered with the name LOG_ + logname,
+so that a log named 'foo.bar' would be registered under 'LOG_foo.bar'.
+
+When a message is received, the Logger will write the message's contents to a file
+(named by logname).
+
+How do I create a Logger?
+-------------------
+You may either create the logger directly using its initializer method or you may
+use the provided convenience method createLogger.  If you use the initializer method,
+you will be responsible for also activating it and linking its control box to a
+signal box.
+
+It is recommended that you use the function createLogger if at all possible.  This
+is primarily because it will automatically create the component, add it as a child
+to an existing component, and link its control box to a signal box on that same
+component.
+
+How do I link a component to the Logger so that it can write messages to the log?
+-------------------
+The easiest way to go about doing this is to use the provided convenience method
+connectToLogger.  This will link a log outbox on your component to a PublishTo
+component that will send messages to the logger, and it will also link a signal box
+on your component to the PublishTo's control box.  NOTE:  It is NOT safe to call
+connectToLogger from your component's __init__ method.
+
+What is a wrapper?
+-------------------
+A wrapper is simply a function that takes a string, formats it, and then returns
+the formatted string.  The log will call that function and pass it every message
+it receeives.  For example, the provided wrapMessage function will prepend the
+date and time (in ugly ISO format) to the message.
+
+EXAMPLE
+------------------
+To make a program that will write everything it receieves via stdin:
+
+ import Kamaelia.Util.Console as Console
+ import Kamaelia.Util.Log as Log
+
+ reader = Console.ConsoleReader()
+ log = Log.LogWriter('foo')
+ Log.connectToLogger(reader, 'foo', 'outbox')
+ reader.activate()
+ log.run()
+"""
+
 from Axon.Component import component
 from Kamaelia.Util.Backplane import Backplane,  SubscribeTo, PublishTo
 from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
@@ -21,23 +97,21 @@ def nullWrapper(message):
     return message
 
 
-class Logger(component):
+class LogWriter(component):
     """
     This component is used to write messages to file.  Upon instantiation, the
     a backplane is registered with the name LOG_ + logname, so that a log named
     'foo.bar' would be registered under 'LOG_foo.bar'.
 
     Please note that the Logger will not be shut down automatically.  It must be
-    sent a shutdown message via its control box.  Typically this component is to
-    be used by a Chassis or some other Parent component to provide a log for its
-    children.
+    sent a shutdown message via its control box.
     """
     Inboxes = { 'inbox' : 'Receive a tuple containing the filename and message to log',
                 'control' : 'Receive shutdown messages',}
     Outboxes = {'outbox' : 'NOT USED',
                 'signal' : 'Send shutdown messages',}
 
-    def __init__(self,  logname, wrapper = wrapMessage):
+    def __init__(self,  logname, wrapper = nullWrapper):
         """
         Initializes a new Logger.
 
@@ -45,7 +119,7 @@ class Logger(component):
         -wrapper - a method that takes a message as an argument and returns a
             formatted string to put in the log.
         """
-        super(Logger,  self).__init__()
+        super(LogWriter,  self).__init__()
         self.logname = logname
         self.bplane = Backplane('LOG_' + logname)
         self.subscriber = SubscribeTo('LOG_' + logname)
@@ -74,13 +148,14 @@ class Logger(component):
                 file = open(self.logname, 'a')
                 while self.dataReady('inbox'):
                     msg = self.recv('inbox')
-                   # print 'received %s!' % (msg)
+                    #print 'received %s!' % (msg)
                     file.write(self.wrapper(msg))
                 file.close()
 
             if not_done:
-                self.pause()
                 yield 1
+                if not self.anyReady():
+                    self.pause()
 
         if self.dataReady('inbox'):
             file = open(self.logname, 'a')
@@ -98,10 +173,7 @@ class Logger(component):
         self.removeChild(self.bplane)
         self.removeChild(self.subscriber)
 
-    def collectable(self, name):
-        return True
-
-def connectToLogger(component, logger_name, log_box='log'):
+def connectToLogger(component, logger_name, log_box='log', signal_box_name='signal'):
     """
     This method is used to connect a method with a log outbox to a logger via a
     PublishTo component.
@@ -113,7 +185,7 @@ def connectToLogger(component, logger_name, log_box='log'):
                        PUBLISHER = publisher,
                        linkages = {
                             ('COMPONENT', log_box) : ('PUBLISHER', 'inbox'),
-                            ('COMPONENT', 'signal') : ('PUBLISHER', 'control'),
+                            ('COMPONENT', signal_box_name) : ('PUBLISHER', 'control'),
                         })
     graph.activate()
     component.addChildren(publisher, graph)
@@ -132,7 +204,8 @@ def createLogger(logger_name, component, signal_box_name='signal', wrapper=wrapM
     log = Logger(logger_name, wrapper)
     component.addChildren(log)
     component.link((component, signal_box_name), (log, 'control'))
-    log.activate()
+
+    return log
 
 if __name__ == '__main__':
     from Kamaelia.Util.Backplane import PublishTo
@@ -181,7 +254,7 @@ if __name__ == '__main__':
         def __init__(self, Producer, logname):
             super(SomeChassis, self).__init__()
 
-            self.Logger = Logger(logname)
+            self.Logger = LogWriter(logname)
             self.logname = logname
             self.Producer = Producer
             self.link((self, 'signal-logger'), (self.Logger, 'control'))

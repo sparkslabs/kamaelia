@@ -35,12 +35,11 @@ class WsgiLogWritable(component):
         self.log_name = log_name
 
     def write(self, str):
-        #lines = str.splitlines(True)  #keep newlines on end of each line
-        #self.write_buffer.extend(lines)
         self.write_buffer += str
 
     def writelines(self, seq):
         self.write_buffer += '\n'.join(seq)
+        self.write_buffer += '\n'
 
     def flush(self):
         self.send(self.write_buffer, 'log')

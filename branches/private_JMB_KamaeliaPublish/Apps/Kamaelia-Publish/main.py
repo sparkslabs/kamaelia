@@ -38,7 +38,7 @@ def requestHandlers(URLHandlers, errorpages=None):
     return createRequestHandler
 
 def main():
-    log = Log.Logger(ServerConfig.WsgiAppLog, wrapper=Log.nullWrapper)
+    log = Log.LogWriter(ServerConfig.WsgiAppLog, wrapper=Log.nullWrapper)
 
     log_writable = LogWritable.WsgiLogWritable(ServerConfig.WsgiAppLog)
     log_writable.activate()
