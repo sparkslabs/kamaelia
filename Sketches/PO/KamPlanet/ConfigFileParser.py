@@ -43,11 +43,15 @@ def generateGeneralConfigObject():
        is relative to the current directory.
     - htmlTemplateName: string with the relative path of the HTML template. This path
        is relative to the current directory.
-    - rssFileName: string with the relative path of the generated HTML file. This path
+    - rssFileName: string with the relative path of the generated RSS file. This path
        is relative to the current directory.
     - htmlFileName: string with the relative path of the generated HTML file. This path
        is relative to the current directory.
     - maxPostNumber: integer with the max number of posts listed in the planet
+    - generator: string with the name of the generator
+    - feedType: string with the type of the feed (rss, for example)
+    - rssRelativePath: string with the relative path of the generated RSS file. This path
+       is relative to the HTML file
     """
     return GeneralObjectParser(
                 name             = Field(str, 'Default name'), 
@@ -57,6 +61,9 @@ def generateGeneralConfigObject():
                 rssFileName      = Field(str, 'output%srss20.xml' % os.sep ), 
                 htmlFileName     = Field(str, 'output%sindex.html' % os.sep ), 
                 maxPostNumber    = Field(int, 10),
+                generator        = Field(str, 'KamPlanet 0.2'),
+                feedType         = Field(str, 'rss'), 
+                rssRelativePath  = Field(str, 'rss20.xml'), 
             )
 
 DEFAULT_URL         = 'http://default.url/'

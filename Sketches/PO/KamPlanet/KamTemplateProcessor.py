@@ -79,14 +79,17 @@ class KamTemplateProcessor(Axon.Component.component):
         self.mustStop         = None
         self.config           = None
         
+    def asciiTime(self):
+        return time.asctime()
+        
     def fillTemplate(self,  templateProcessor):
         templateProcessor.set('name',                 self.config.name)
         templateProcessor.set('link',                 self.config.link)
-        templateProcessor.set('generator',            "KamPlanet 0.1") # TODO
-        templateProcessor.set('feedtype',             "rss") # TODO
-        templateProcessor.set('feed',                 "rss20.xml") # TODO
+        templateProcessor.set('generator',            self.config.generator)
+        templateProcessor.set('feedtype',             self.config.feedType)
+        templateProcessor.set('feed',                 self.config.rssRelativePath)
         templateProcessor.set('channel_title_plain',  self.config.name)
-        templateProcessor.set('date',                 time.asctime())
+        templateProcessor.set('date',                 self.asciiTime())
         
         items = []
         

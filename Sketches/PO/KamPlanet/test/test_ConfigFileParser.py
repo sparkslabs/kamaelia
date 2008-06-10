@@ -135,7 +135,7 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
                 )
         
 def suite():
-    return KamTestCase.makeSuite(ConfigFileParserTestCase)
+    return KamTestCase.makeSuite(ConfigFileParserTestCase.getTestCase())
     
 if __name__ == '__main__':
     KamTestCase.main()
