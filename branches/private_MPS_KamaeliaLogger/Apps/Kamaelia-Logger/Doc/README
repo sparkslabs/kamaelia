@@ -27,5 +27,13 @@ You then edit the freshly copied config file. The config options are documented 
 How does it work then?
 Alrighty, like most configuration files lines marked with # are commented out (not parsed). 
 Here you can set the channel, host (IRC Server), name, password (if you need one), and directory to store your logs.
-So fill in your respective fields for your requirments. The defaults will let you connect to #kamaelia-test on freenode.
+The default directory for storing logs is '.' (Current working directory) So you might want to put them in a more convenient location.
+So fill in your respective fields for your requirments. The defaults will let you connect to #kamaelia-test on freenode. 
 
+How do I run my bot?
+So you're all configured up? Now just run one of the simple scripts we've attached or alternately start your bot manually with
+	cd Apps/Kamaelia-Logger/App
+	python KamaeliaLogger.py
+
+Remember, this is all open source so you can easily add cool new features to your bot. Let us know in #kamaelia on Freenode :-)
+Have fun with your bot!
