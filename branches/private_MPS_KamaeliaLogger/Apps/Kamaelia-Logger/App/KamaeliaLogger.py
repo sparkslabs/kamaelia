@@ -308,7 +308,7 @@ if __name__ == '__main__':
     channel = "#kamaelia-test"
     Name = "kamaeliabot"
     pwd = None
-    logdir = ""
+    logdir = "."
 
     if len(sys.argv) > 1: channel = sys.argv[1]
     if len(sys.argv) > 2: Name = sys.argv[2]
@@ -321,6 +321,7 @@ if __name__ == '__main__':
     print "Logging %s as %s" % (C["channel"], C["name"],)
     Logger(C["channel"],
            name=C["name"],
+	   host=C["host"],
            password=C["pwd"],
            logdir=C["logdir"],
            formatter=(lambda data: Kamaelia.Apps.IRCLogger.Support.HTMLOutformat(data)),
