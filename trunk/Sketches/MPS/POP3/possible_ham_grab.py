@@ -207,7 +207,7 @@ class NewPop3Client(Axon.Component.component):
     possible_ham_store = "POSSIBLEHAMSTORE"
     possible_ham_store_meta = "POSSIBLEHAMSTORE/.meta"
     def __init__(self, *argv, **argd):
-        super(Pop3Client, self).__init__(*argv, **argd)
+        super(NewPop3Client, self).__init__(*argv, **argd)
         self.stat = ()
         self.stat_mails = 0
         self.stat_size = 0
@@ -286,9 +286,9 @@ class NewPop3Client(Axon.Component.component):
         lower = self.stat_mails
         
         while lower > 1:
-            deletions = []
+            possible_ham = []
             higher = lower
-            lower = max(1, lower-50)
+            lower = max(1, lower-300)
 #            lower = max(1, lower-200)
             l = 0
             for mailid in range(lower, higher+1):
@@ -321,8 +321,8 @@ class NewPop3Client(Axon.Component.component):
 
             print 
             print "============ CANDIDATES AS BEING HAM ============"
-            pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in deletions ])
-            print "TOTAL Suggested", len(deletions)
+            pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in possible_ham ])
+            print "TOTAL Suggested", len(possible_ham)
             
             print "To grab these as ham (left on server = ham == training data), don't type 'quit'"
 
@@ -330,7 +330,7 @@ class NewPop3Client(Axon.Component.component):
             if X.lower() == "quit":
                break
             if X.lower() != "skip":
-                for deletion in deletions:
+                for deletion in possible_ham:
                     ID, FROM, HEADERS = deletion
                     sys.stdout.write(".")
                     sys.stdout.flush()
@@ -347,67 +347,68 @@ class NewPop3Client(Axon.Component.component):
                    break
             else:
                 print "skipping, moving on"
-                deletions = []
+                possible_ham = []
         
         print "Done, call again"
         self.send(["QUIT"], "outbox")
 
 
-from Kamaelia.File.UnixProcess import UnixProcess
+if __name__ == "__main__":
+    from Kamaelia.File.UnixProcess import UnixProcess
 
-if len(sys.argv) < 5:
-    print "Need username, password, server & port number..."
-    print "Usage:"
-    print
-    print sys.argv[0], "username password server port"
-else:
-
-    getFile = False
-    if not os.path.exists("phrases.txt"):
-        getFile = True
+    if len(sys.argv) < 5:
+        print "Need username, password, server & port number..."
+        print "Usage:"
+        print
+        print sys.argv[0], "username password server port"
     else:
-        local_filetime = os.path.getmtime("phrases.txt")
-        import urllib
-        F = urllib.urlopen("http://thwackety.com/phrases.txt")
-        remote_time = time.mktime(time.strptime(F.headers["last-modified"],"%a, %d %b %Y %H:%M:%S %Z"))
-        F.close()
-        if remote_time > local_filetime:
+
+        getFile = False
+        if not os.path.exists("phrases.txt"):
             getFile = True
         else:
-           print "remote_time", time.asctime(time.localtime(remote_time))
-           print "local_filetime", time.asctime(time.localtime(local_filetime))
+            local_filetime = os.path.getmtime("phrases.txt")
+            import urllib
+            F = urllib.urlopen("http://thwackety.com/phrases.txt")
+            remote_time = time.mktime(time.strptime(F.headers["last-modified"],"%a, %d %b %Y %H:%M:%S %Z"))
+            F.close()
+            if remote_time > local_filetime:
+                getFile = True
+            else:
+               print "remote_time", time.asctime(time.localtime(remote_time))
+               print "local_filetime", time.asctime(time.localtime(local_filetime))
 
-    if getFile:
-        print "Getting blockfile!"
-        UnixProcess('lynx -dump -source >phrases.txt http://thwackety.com/phrases.txt').run()
-        print "Got it!"
+        if getFile:
+            print "Getting blockfile!"
+            UnixProcess('lynx -dump -source >phrases.txt http://thwackety.com/phrases.txt').run()
+            print "Got it!"
 
-    f = open("phrases.txt")
-    phrases = [ line.strip() for line in f]
-    f.close()
-    pprint.pprint(phrases)
-    username = sys.argv[1]
-    password = sys.argv[2]
-    server = sys.argv[3]
-    port = int(sys.argv[4])
-    print "username =", username
-    print "password =", password
-    print "server =", server
-    print "port =", repr(port)
+        f = open("phrases.txt")
+        phrases = [ line.strip() for line in f]
+        f.close()
+        pprint.pprint(phrases)
+        username = sys.argv[1]
+        password = sys.argv[2]
+        server = sys.argv[3]
+        port = int(sys.argv[4])
+        print "username =", username
+        print "password =", password
+        print "server =", server
+        print "port =", repr(port)
 
-    if 1:
-        Graphline(
-           RAWCLIENT = basicPop3Client(username=username, password=password),
-           CLIENT = NewPop3Client(phrases=phrases),
-           
-           SERVER = TCPClient(server, port),
-           linkages = {
-              ("CLIENT", "outbox") : ("RAWCLIENT", "client_inbox"),
-              ("RAWCLIENT", "client_outbox") : ("CLIENT", "inbox"),
+        if 1:
+            Graphline(
+               RAWCLIENT = basicPop3Client(username=username, password=password),
+               CLIENT = NewPop3Client(phrases=phrases),
+               
+               SERVER = TCPClient(server, port),
+               linkages = {
+                  ("CLIENT", "outbox") : ("RAWCLIENT", "client_inbox"),
+                  ("RAWCLIENT", "client_outbox") : ("CLIENT", "inbox"),
 
-              ("RAWCLIENT", "outbox") : ("SERVER", "inbox"),
-              ("SERVER", "outbox") : ("RAWCLIENT", "inbox"),
-              ("RAWCLIENT", "signal") : ("SERVER", "control"),
-              ("SERVER", "signal") : ("RAWCLIENT", "control"),
-           }
-        ).run()
+                  ("RAWCLIENT", "outbox") : ("SERVER", "inbox"),
+                  ("SERVER", "outbox") : ("RAWCLIENT", "inbox"),
+                  ("RAWCLIENT", "signal") : ("SERVER", "control"),
+                  ("SERVER", "signal") : ("RAWCLIENT", "control"),
+               }
+            ).run()
