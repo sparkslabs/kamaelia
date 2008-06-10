@@ -198,14 +198,14 @@ class basicPop3Client(Axon.Component.component):
 
 import pprint
 
-class Pop3Client(Axon.Component.component):
+class NewPop3Client(Axon.Component.component):
     phrases = [
           "list of strings that will be subject lines that are spam",
           "pass these over as a named parameter phrases=<some list>",
           "The phrases should not have carriage returns in",
     ]
-    spam_store = "SPAMSTORE"
-    spam_store_meta = "SPAMSTORE/.meta"
+    possible_ham_store = "POSSIBLEHAMSTORE"
+    possible_ham_store_meta = "POSSIBLEHAMSTORE/.meta"
     def __init__(self, *argv, **argd):
         super(Pop3Client, self).__init__(*argv, **argd)
         self.stat = ()
@@ -224,6 +224,8 @@ class Pop3Client(Axon.Component.component):
 
     def deleteMessage(self, messageid):
         def local():
+            print "WARNING, you missed this!"
+            return # just in case we accidentally missed something
             self.send(["DELE",messageid], "outbox")
             while not self.dataReady("inbox"):
                 self.pause()
@@ -231,33 +233,32 @@ class Pop3Client(Axon.Component.component):
             self.result = self.recv("inbox")
         return WaitComplete(local())
 
-    def grabStoreSpam(self, messageid):
-        # Would then delete the message, but not in here
+    def grabStoreHam(self, messageid):
         def local():
             self.send(["RETR",messageid], "outbox")
             while not self.dataReady("inbox"):
                 self.pause()
                 yield 1
             self.result = self.recv("inbox")
-            filename = str(self.spamcount)
-            full_filename = os.path.join(self.spam_store,filename)
+            filename = str(self.hamcount)
+            full_filename = os.path.join(self.possible_ham_store,filename)
             F = open(full_filename, "wb")
             F.write(self.result)
             F.close()
 #            print "STORED SPAM IN", full_filename
-            
+
         return WaitComplete(local())
 
-    def getSpamStoreMeta(self):
-            F = open(self.spam_store_meta, "r")
+    def getHamStoreMeta(self):
+            F = open(self.possible_ham_store_meta, "r")
             lines = F.read()
             F.close()
             G = eval("".join(lines))
 #            print "SPAMSTORE META", G
             return G
 
-    def storeSpamStoreMeta(self, meta):
-            F = open(self.spam_store_meta, "w")
+    def storeHamStoreMeta(self, meta):
+            F = open(self.possible_ham_store_meta, "w")
             F.write(str(meta))
             F.close()
 #            print "SPAMSTORE META", meta, "STORED"
@@ -280,7 +281,7 @@ class Pop3Client(Axon.Component.component):
         print "Number of emails waiting for us:", self.stat_mails
         print "Size of inbox", self.stat_size
         
-        self.spamcount = self.getSpamStoreMeta()
+        self.hamcount = self.getHamStoreMeta()
     
         lower = self.stat_mails
         
@@ -299,29 +300,31 @@ class Pop3Client(Axon.Component.component):
                 yield self.getMessageHeaders(mailid)
 
     #            print "-------- HEADERS RECEIVED --------"
-                delete = False
+                probable_spam = False
                 for sender in self.headers["from"]:
                     if "mail delivery subsystem" in sender:
-                        delete = True
+                        probable_spam = True
                     if "system administrator" in sender:
                         if "undeliverable" in self.headers["subject"][0]:
-                            delete = True
+                            probable_spam = True
 
                     for phrase in self.phrases: # hideously inefficient, but works
                         if phrase in self.headers["subject"][0]:
-                            delete = True
-                    if not delete:
+                            probable_spam = True
+                    if not probable_spam:
                         print self.headers["subject"][0]
 
-                if delete:
-                    deletions.append( (mailid, self.headers["from"], self.headers) )
+#                if delete:
+#                    deletions.append( (mailid, self.headers["from"], self.headers) )
+                if not probable_spam:
+                    possible_ham.append( (mailid, self.headers["from"], self.headers) )
 
             print 
-            print "============ CANDIDATES FOR DELETION ============"
+            print "============ CANDIDATES AS BEING HAM ============"
             pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in deletions ])
             print "TOTAL Suggested", len(deletions)
             
-            print "To delete these, don't type 'quit'"
+            print "To grab these as ham (left on server = ham == training data), don't type 'quit'"
 
             X = raw_input()
             if X.lower() == "quit":
@@ -331,18 +334,14 @@ class Pop3Client(Axon.Component.component):
                     ID, FROM, HEADERS = deletion
                     sys.stdout.write(".")
                     sys.stdout.flush()
-                    yield self.grabStoreSpam(ID)
-#                    print "SPAM GRABBED"
-#                    print "INCREASING SPAMCOUNT"
-                    f = str(self.spamcount)
-                    self.spamcount +=1
-                    self.storeSpamStoreMeta(self.spamcount)
-                    print "DELETING SPAM FROM SERVER, you still have mail",ID,"here", "SPAMSTORE/"+f
-                    yield self.deleteMessage(ID)
+                    yield self.grabStoreHam(ID)
+                    f = str(self.hamcount)
+                    self.hamcount +=1
+                    self.storeHamStoreMeta(self.hamcount)
+                    print "Grabbing COPY of (possible) ham. Mail",ID,"here", self.possible_ham_store+"/"+f
 
-                    #print self.result
-                print "RECOMMENDED DELETIONS COMPLETE"
-                print "To delete more, don't type 'quit'"
+                print "Grabbed possible ham"
+                print "To grab more, don't type 'quit'"
                 X = raw_input()
                 if X.lower() == "quit":
                    break
@@ -355,8 +354,6 @@ class Pop3Client(Axon.Component.component):
 
 
 from Kamaelia.File.UnixProcess import UnixProcess
-
-
 
 if len(sys.argv) < 5:
     print "Need username, password, server & port number..."
@@ -401,7 +398,7 @@ else:
     if 1:
         Graphline(
            RAWCLIENT = basicPop3Client(username=username, password=password),
-           CLIENT = Pop3Client(phrases=phrases),
+           CLIENT = NewPop3Client(phrases=phrases),
            
            SERVER = TCPClient(server, port),
            linkages = {
