@@ -363,42 +363,7 @@ class Pop3Client(Axon.Component.component):
                     greyzone.append( (mailid, self.headers["from"], self.headers) )
             print
 
-            if len(deletions) == 0:
-                print "NO CANDIDATES FOR DELETION, GREYLISTING REPORT INSTEAD"
-                print 
-                print "============ EMAILS WHICH ARE GREY ============"
-#                pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in greyzone ])
-                for (ID, FROM, HEADERS) in greyzone:
-                    senders = []
-                    for sender in FROM:
-                        if ("<" in sender) and (">" in sender):
-                            sender = sender[sender.find("<")+1:sender.rfind(">")]
-                        senders.append(sender)
-                    print " ".join(senders), ":", "".join( HEADERS["subject"]), ":", "".join(FROM)
-
-                
-                print "JUST SENDERS ---------------------------------------"
-                allsenders = []
-                for senders in [ FROM for (ID, FROM, HEADERS) in greyzone ]:
-                    for sender in senders:
-                        if ("<" in sender) and (">" in sender):
-                             sender = sender[sender.find("<")+1:sender.rfind(">")]
-                        if sender not in allsenders:
-                            allsenders.append(sender)
-                for sender in allsenders:
-                    print sender
-
-                print "JUST SUBJECTS --------------------------------------"
-                for subjects in [ HEADERS["subject"] for (ID, FROM, HEADERS) in greyzone ]:
-                    for subject in subjects:
-                        print subject
-                
-                print "=====End of report on currently grey mails====="
-                print "To keep doing, don't type quit"
-                X = raw_input()
-                if X.lower() == "quit":
-                    break
-            else:
+            if len(deletions) != 0:
 
                 print 
                 print "============ CANDIDATES FOR DELETION ============"
@@ -434,6 +399,39 @@ class Pop3Client(Axon.Component.component):
                     print "skipping, moving on"
                     deletions = []
         
+            if len(greyzone) != 0:
+                print "============ EMAILS WHICH ARE GREY ============"
+#                pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in greyzone ])
+                for (ID, FROM, HEADERS) in greyzone:
+                    senders = []
+                    for sender in FROM:
+                        if ("<" in sender) and (">" in sender):
+                            sender = sender[sender.find("<")+1:sender.rfind(">")]
+                        senders.append(sender)
+                    print " ".join(senders), ":", "".join( HEADERS["subject"]), ":", "".join(FROM)
+
+                
+                print "JUST SENDERS ---------------------------------------"
+                allsenders = []
+                for senders in [ FROM for (ID, FROM, HEADERS) in greyzone ]:
+                    for sender in senders:
+                        if ("<" in sender) and (">" in sender):
+                             sender = sender[sender.find("<")+1:sender.rfind(">")]
+                        if sender not in allsenders:
+                            allsenders.append(sender)
+                for sender in allsenders:
+                    print sender
+
+                print "JUST SUBJECTS --------------------------------------"
+                for subjects in [ HEADERS["subject"] for (ID, FROM, HEADERS) in greyzone ]:
+                    for subject in subjects:
+                        print subject
+                
+                print "=====End of report on currently grey mails====="
+                print "To keep doing, don't type quit"
+                X = raw_input()
+                if X.lower() == "quit":
+                    break
         print "Done, call again"
         self.send(["QUIT"], "outbox")
 
