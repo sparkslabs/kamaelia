@@ -48,6 +48,20 @@ In the non-bouncing mode the puck remains stationary after it has been dragged.
 Both modes send a (positionMsg, (x, y)) tuple to the "outbox" outbox if the
 puck moves.
 
+If the editable argument to the constructor is set to be false the pad will not
+respond to mouse presses.
+
+As well as being controlled by the mouse an XY pad can be controlled externally,
+for example by a second XY pad.  Position and velocity messages received on the
+"remoteChanges" inbox are used to change the motion of the puck.  Position
+messages are of the form ("Position", (xPos, yPos)), and velocity messages are
+of the form ("Velocity", (xVel, yVel)).
+
+In order to allow communication between two XY pads the component outputs
+position and velocity messages to the "localChanges" outbox.  By connecting the
+"localChanges" outbox of one XY pad to the "remoteChanges" inbox of another,
+the second pad can duplicate the motion of the first.
+
 The XY pad only redraws the surface and updates the puck position when it
 receives a message on its "newframe" inbox.  Note that although providing
 messages more frequently here will lead to more frequent updates, it will also
@@ -110,6 +124,10 @@ class XYPad(Axon.Component.component):
                  positionMsg="Position",
                  collisionMsg = ("Top", "Right", "Bottom", "Left"),
                  size=(100, 100), editable=True):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(XYPad, self).__init__()
 
         self.size = size
@@ -263,7 +281,8 @@ class XYPad(Axon.Component.component):
             if self.dataReady("remoteChanges"):
                 bundle = self.recv("remoteChanges")
                 # The action to take is given by the last section of the
-                # OSC address
+                # OSC address - this should maybe be done by a component and
+                # we just listen for ("Velocity", (xVel, yVel)) tuples
                 action = bundle[0].split("/")[-1]
                 if action == "Velocity":
                     if self.bouncingPuck:
@@ -272,7 +291,6 @@ class XYPad(Axon.Component.component):
                 elif action == "Position":
                     for i in xrange(2):
                         self.puckPos[i] = self.size[i] * bundle[1][i]
-                    
                 self.render()
 
             if self.dataReady("newframe"):
@@ -292,6 +310,11 @@ class XYPad(Axon.Component.component):
                     self.render()
 
     def processCollisions(self):
+        """
+        Detect whether the puck has collided with a wall, and change its
+        direction appropriately
+        """
+
         if self.puckPos[0] <= 0:
             # Left wall
             self.puckVel[0] *= -1
@@ -311,9 +334,12 @@ class XYPad(Axon.Component.component):
       
     def render(self):
         """Draw the border and puck onto the surface"""
+        # Background
         self.display.fill(self.bgcolour)
+        # Border
         pygame.draw.rect(self.display, self.fgcolour,
                          self.display.get_rect(), self.borderWidth)
+        # Puck
         pygame.draw.circle(self.display, self.fgcolour,
                            [int(x) for x in self.puckPos], self.puckRadius)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
