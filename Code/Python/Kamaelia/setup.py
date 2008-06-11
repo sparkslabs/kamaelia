@@ -30,6 +30,8 @@ setup(name = "Kamaelia",
       url = "http://kamaelia.sourceforge.net/",
       packages = [\
                   "Kamaelia", # START
+                  "Kamaelia.Apps",
+                  "Kamaelia.Apps.IRCLogger",
                   "Kamaelia.Automata",
                   "Kamaelia.Audio",
                   "Kamaelia.Audio.PyMedia",
