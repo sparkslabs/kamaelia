@@ -132,13 +132,6 @@ class Minimal(component):
         """Produce the appropriate response then terminate."""
         filename = sanitizePath(self.request["raw-uri"], self.substituted_path)
         filepath = self.homedirectory + filename
-        #if os.path.isdir(homedirectory + filename):
-        #    if filename[-1:] != "/": filename += "/"
-        #    if os.path.isfile(self.homedirectory + filename + self.indexfilename):
-        #        filename += indexfilename
-        #    else:
-        #        yield websiteListFilesPage(filename)
-        #        return
 
         error = None
         try:

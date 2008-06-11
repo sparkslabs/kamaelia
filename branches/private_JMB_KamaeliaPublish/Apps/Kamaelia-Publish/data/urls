@@ -1,0 +1,23 @@
+#This is the default url list.  The items here are generally in the form:
+#[section_name]
+#regex:  application regex pattern (will be split by '/')
+#import_path:  path to import object from
+#app_object:  Attribute name of the WSGI application object in the given module
+#
+#Please note that this file MUST contain a section error_404 and that section 
+#MUST NOT contain a regex.  It will be assigned a regex of '.*' automatically
+#by the UrlList parser.
+#
+#Also, please note that order IS important here.  You must put your applications
+#in the order you want them evaluated (error_404 will always be handled last no
+#matter what).
+
+
+[simple_app]
+regex: simple
+import_path: WsgiApps.Apps.simple_app
+app_object: simple_app
+
+[error_404]
+import_path: WsgiApps.Apps.error_handler
+app_object: application
