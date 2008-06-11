@@ -3,7 +3,6 @@ def simple_app(environ, start_response):
     status = '200 OK'
     response_headers = [('Content-type','text/html'),('Pragma','no-cache')]
     write = start_response(status, response_headers)
-    print 'start_response called!\n'
     writable = environ['wsgi.errors']
     writable.write('Writing to log!\n')
 

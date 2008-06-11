@@ -1,13 +1,14 @@
 #!/usr/bin/env
 
 import ServerConfig
-import sys
+import sys, socket
+from pprint import pprint
 from Kamaelia.Experimental.Wsgi.WsgiHandler import HTML_WRAP,  Handler
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
 import Kamaelia.Protocol.HTTP.Handlers.Minimal as Minimal
 from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
-import socket
 import Kamaelia.Util.Log as Log
+from Kamaelia.File.ConfigFile import DictFormatter, UrlListFormatter, ParseConfigFile
 
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
@@ -38,6 +39,10 @@ def requestHandlers(URLHandlers, errorpages=None):
     return createRequestHandler
 
 def main():
+    url_list = ParseConfigFile(ServerConfig.URL_LIST_LOCATION, [DictFormatter(), UrlListFormatter()])
+#    pprint(url_list)
+
+
     log = Log.LogWriter(ServerConfig.WsgiAppLog, wrapper=Log.nullWrapper)
 
     log_writable = LogWritable.WsgiLogWritable(ServerConfig.WsgiAppLog)
@@ -46,7 +51,7 @@ def main():
     class DescartesServer(MoreComplexServer):
         routing = [
                    #['/static', Minimal.Handler('index.html', './Static/www/', '/static')],
-                   ["/", Handler(log_writable, ServerConfig.WsgiConfig, '/') ],
+                   ["/", Handler(log_writable, ServerConfig.WsgiConfig, url_list)],
                   ]
         protocol=HTTPProtocol()
         port=8082

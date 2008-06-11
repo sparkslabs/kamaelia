@@ -6,6 +6,7 @@ PORT = 8082
 #File structuring info
 WsgiDir = '/WsgiApps'
 WsgiAppLog = os.environ['HOME'] + '/kamaelia-publish-wsgi.log'
+URL_LIST_LOCATION = '~/urls'
 
 #This dictionary is used to configure various elements of the WsgiHandler
 WsgiConfig ={
