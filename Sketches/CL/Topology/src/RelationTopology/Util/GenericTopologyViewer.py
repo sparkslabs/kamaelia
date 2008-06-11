@@ -30,7 +30,7 @@ class GenericTopologyViewer(TopologyViewer):
         if not argd.has_key('particleTypes'):
             argd.update({'particleTypes':{"-":GenericParticle}})
         if not argd.has_key('laws'):
-            argd.update({'laws':SimpleLaws(bondLength=150)})
+            argd.update({'laws':SimpleLaws(bondLength=200)})
                        
         super(GenericTopologyViewer, self).__init__(**argd)
     
@@ -63,22 +63,30 @@ class GenericTopologyViewer(TopologyViewer):
                     if len(msg) == 6:
                         particle = ptype(position = pos, ID=id, name=name)
                     else:
-                        attributes = msg[6]
-                        attributes_dict = str2dict(attributes)
-                        #print attributes_dict
-                        particle = ptype(position = pos, ID=id, name=name, **attributes_dict)
+                        attrs = msg[6]
+                        attrs_dict = str2dict(attrs)
+                        #print attrs_dict
+                        particle = ptype(position = pos, ID=id, name=name, **attrs_dict)
                     particle.originaltype = msg[5]
                     self.addParticle(particle)
+                    
+                elif cmd == ("UPDATE", "NODE") and len(msg) == 4:
+                    id    = msg[2]
+                    attrs = msg[3]
+                    attrs_dict = str2dict(attrs)
+                    self.updateParticle(id,**attrs_dict)
                 
                 elif cmd == ("DEL", "NODE") and len(msg) == 3:
                     id = msg[2]
                     self.removeParticle(id)
                         
-                elif cmd == ("ADD", "LINK") and len(msg) == 4:
+                elif cmd == ("ADD", "LINK") and len(msg) == 5:
                     src = msg[2]
                     dst = msg[3]
                     self.makeBond(src, dst)
-                    
+                    relation = msg[4]
+                    self.physics.particleDict[src].bondedRelations.update(
+                    {self.physics.particleDict[dst]:relation})
                 elif cmd == ("DEL", "LINK") and len(msg) == 4:
                     src = msg[2]
                     dst = msg[3]
@@ -113,3 +121,9 @@ class GenericTopologyViewer(TopologyViewer):
             import traceback
             errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
             self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
+            
+    def updateParticle(self,id,**attrs_dict):
+        #print 'done'
+        if self.physics.particleDict.has_key(id):
+            #print 'done'
+            self.physics.particleDict[id].updateAttrs(**attrs_dict)
