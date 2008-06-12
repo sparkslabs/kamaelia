@@ -13,7 +13,7 @@ WsgiConfig ={
 #-------------------
 #General server info
 #-------------------
-'SERVER_SOFTWARE' : "Descartes prototype",
+'SERVER_SOFTWARE' : "Kamaelia Publish v 0.0.1",
 'SERVER_ADMIN' : "jason.baker@ttu.edu",
 'WSGI_VER' : (1,0),
 'URI-FILE' : '~/.uris'

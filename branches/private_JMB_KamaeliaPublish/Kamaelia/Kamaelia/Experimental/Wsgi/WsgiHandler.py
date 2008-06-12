@@ -184,9 +184,6 @@ class _WsgiHandler(threadedcomponent):
         # Portion of URL that relates to the application object.
         self.environ["SCRIPT_NAME"] = self.app_name
 
-        # Remainder of request path after "SCRIPT_NAME"
-        self.environ["PATH_INFO"] = self.environ["raw-uri"].replace(self.app_name, '')
-
         # Server name published to the outside world
         self.environ["SERVER_NAME"] = self.server_name
 
@@ -195,6 +192,12 @@ class _WsgiHandler(threadedcomponent):
 
         #Protocol to respond to
         self.environ["SERVER_PROTOCOL"] = self.environ["protocol"]
+
+        path_info = self.environ['PATH_INFO']
+        qindex = path_info.find('?')
+        if qindex != -1:
+            self.environ['PATH_INFO'] = path_info[:qindex]
+            self.environ['QUERY_STRING'] = path_info[(qindex+1):]
 
         #==================================
         #WSGI variables
@@ -205,7 +208,7 @@ class _WsgiHandler(threadedcomponent):
 
         self.environ["wsgi.multithread"] = False
         self.environ["wsgi.multiprocess"] = False
-        self.environ["wsgi.run_once"] = True
+        self.environ["wsgi.run_once"] = False
         self.environ["wsgi.input"] = self.generateRequestMemFile()
 
     def initOptVars(self, wsgi_config):
@@ -217,8 +220,6 @@ class _WsgiHandler(threadedcomponent):
         # Contents of an HTTP_CONTENT_LENGTH field
         self.environ["CONTENT_LENGTH"] = self.headers.get("content-length","")
         #self.environ["DOCUMENT_ROOT"] = self.homedirectory
-        self.environ["PATH"] = os.environ['PATH']
-        self.environ["DATE"] = datetime.now().isoformat()
         self.environ["SERVER_ADMIN"] = wsgi_config['SERVER_ADMIN']
         self.environ["SERVER_SOFTWARE"] = wsgi_config['SERVER_SOFTWARE']
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
@@ -255,6 +256,7 @@ def Handler(log_writable, WsgiConfig, url_list):
 #            print 'trying ' + url_item[0]
             if re.search(url_item[0], split_uri[0]):
                 app_name = split_uri.pop(0)
+                request['PATH_INFO'] = '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
 #                print 'app_name= ' + app_name
 #                print url_item[0] + 'successful!'
                 u, mod, app_attr = url_item
@@ -296,31 +298,3 @@ def _importWsgiModule(name):
     for comp in components[1:]:
         mod = getattr(mod, comp)
     return mod
-
-def sanitizePath(uri, substituted_path, request):
-    """
-    Almost a straight copy and paste from the minimal request handler.
-    """
-    uri = uri.replace(substituted_path, '', 1)
-
-    outputpath = []
-
-    for directory in uri.split("/"):
-        print directory
-        if directory == ".":
-            pass
-        elif directory == "..":
-            if len(outputpath) > 0: outputpath.pop()
-        elif directory.find('?') != -1:
-            query_split = directory.split('?')
-            query_part = query_split[-1]
-            directory_part = query_split[0]
-            request['QUERY_STRING'] = query_part
-            outputpath.append(directory_part)
-            #also just so happens to be a WSGI variable.
-        else:
-            outputpath.append(directory)
-
-    outputpath = '/'.join(outputpath)
-    outputpath = "%s%s%s" % ('/', outputpath, '/')
-    return outputpath
