@@ -30,7 +30,7 @@ Draw a topology from relations.
 	1.) It can choose different shapes, colors, pictures, sizes, labels for entities.
 	2.) It has link label to show relations and has the link arrow to show the direction of relation. 
 	3.) The shapes, colors, pictures, sizes and labels of entities are updatable.
-	3.) It can receive inputs from python console or from a file or from both.
+	4.) It can receive inputs from python console or from a file or from both.
 		** Usage: RelationAttributeTopologyViewer.py or RelationAttributeTopologyViewer.py yourFile
 		or python RelationAttributeTopologyViewer.py or python RelationAttributeTopologyViewer.py yourFile
 		** Example file: Files/RelationAttribute.re

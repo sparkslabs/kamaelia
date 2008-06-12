@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 """\
-===================================================
-Parse entities and relations definition received
-===================================================
+===============================================================
+Parse entities, attributes and relations definition received
+===============================================================
 
 Parse entities and relations definition received, one line one time.
 
@@ -14,7 +14,9 @@ Parse entities and relations definition received, one line one time.
 Example:
 --------
 person mum
-person son gender="male",photo="../Files/son.gif"
+person dad gender=male,shape=rect,width=80,height=80
+person son gender="male",photo="../Files/son.gif,width=60,height=60"
+person daughter radius=100
 4.) Relation definition
 Example: 
 --------
@@ -28,7 +30,9 @@ Example:
      childof  (  mum  , son  )  
 2.) Parse one line one time and then send out
 3.) Entity definition needs to come before relation definition 
-if the relations definition uses the entity      
+if the relations definition uses the entity
+4.) When encountering repeated entity, it will update its attributes rather than
+create a new one.       
 """
 
 def parseEntity(entityLine):
@@ -66,7 +70,6 @@ def parseUpdatedEntity(entityLine):
         attributes = attributes.replace('photo','pic')
         attributes = attributes.replace('name','label')
     else:
-        #pass
         attributes = 'label=' + entity_name              
     return "UPDATE NODE %s %s" % (entity_name,attributes)
 
@@ -74,7 +77,6 @@ def parseRelation(relationLine):
     """ parse relation line """
     result = relationLine.split('(')
     relation = result[0].strip()
-    #print relation
     entities_str = result[1].rstrip(')')
     entities_list = entities_str.split(',')
     src = entities_list[0].strip()
@@ -90,9 +92,9 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class RelationAttributeParser(Axon.Component.component):
     """\
-=============================================================
-A component to parse entities and relations definition
-=============================================================
+======================================================================
+A component to parse entities, attributes and relations definition
+======================================================================
 """
     def shutdown(self):
         """ shutdown method: define when to shun down"""
@@ -104,14 +106,12 @@ A component to parse entities and relations definition
         return False
       
     def main(self):
-        #print 'aa'
         """ main method: do stuff """
         
         previousNodes = []  
         
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
-            #print previousNodes
             X = []
             links = []
             nodes = []
@@ -122,33 +122,28 @@ A component to parse entities and relations definition
     
             while self.dataReady("inbox"):
                 L = self.recv("inbox")
-                #print L
                 if L.strip() == "": continue # empty line
                 if L.lstrip()[0] == "#": continue # comment
                 X.append(L.strip())
-                #print X
             #yield 1
-            
+
             for item in X:            
                 if re.match('(.+)\((.+),(.+)\)',item): # relation
                     command = parseRelation(item)
                     links.append(command)
                 else:
                     isRepeated = False
-                    print previousNodes
                     for node in previousNodes:
-                        print item.split()[1],node.split()[2]
                         if item.split()[1] == node.split()[2]:
                             isRepeated = True
-                    if not isRepeated: # entity
+                    if not isRepeated: # new entity
                         command = parseEntity(item)
                         nodes.append(command)        
                         previousNodes.append(command)
-                    else:
-                        print 'repeated'
+                    else: # old entity
                         command = parseUpdatedEntity(item)
                         updatedNodes.append(command)
-            #print nodes
+            #yield 1
             for node in nodes:
                 self.send(node, "outbox")
             for updatedNode in updatedNodes:
@@ -156,10 +151,9 @@ A component to parse entities and relations definition
             for link in links:
                 self.send(link, "outbox")
             yield 1
-            yield 1
+            
         
-        #print self.shutdown_mess
-        #self.send(self.shutdown_mess,"signal")
+        self.send(self.shutdown_mess,"signal")
         
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
@@ -168,14 +162,14 @@ if __name__ == "__main__":
     from GenericTopologyViewer import GenericTopologyViewer
     from Kamaelia.Chassis.Graphline import Graphline
     
-    # Data can be from DataSource and console inputs
+    # Data can be from both DataSource and console inputs
     Graphline(
         CONSOLEREADER = ConsoleReader(),
         DATASOURCE = DataSource(["  person  mum   gender=female,photo=../Files/mum.jpg,width=80,height=80 ", '  ', """   
                     """, 'person dad gender=male,shape=rect,width=80,height=80', 
                     '  person  son   gender=male,photo=../Files/son.gif,width=60,height=60',
                     'person son photo=../Files/son1.gif',
-                     'person daughter radius=200', 'person daughter radius=100',
+                     'person daughter radius=20', 'person daughter radius=100',
                      ' childof  (  mum  , son  ) ', 'childof(mum, daughter)',
                      'childof(dad, son)', 'childof(dad, daughter)']),
         PARSER = RelationAttributeParser(),
