@@ -18,7 +18,13 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
+"""
+This module provides a set of components and convienience functions for making a
+CSA time out.  To use it, simply call the function InactivityChassis with a timeout
+period and the CSA to wrap.  This will send a producerFinished signal to the CSA
+if it does not send a message on its outbox or CreatorFeedback boxes before the
+timeout expires.
+"""
 import time
 import Axon
 import sys
@@ -28,7 +34,10 @@ from Kamaelia.Chassis.Graphline import Graphline
 
 class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
     """
-
+    This component represents a simple way of making a timed event occur.  By default,
+    it is set up to send a timeout message "NEXT" within 5 seconds.  If it receives
+    a message on its inbox, the timer will be reset.  This component will ignore
+    any input on its control inbox.
     """
     timeout=5
     message="NEXT"
@@ -50,6 +59,18 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
         # print "SHUTDOWN", self.name
 
 class ActivityMonitor(Axon.Component.component):
+    """
+    This is intended to wrap a component such that it may be monitored by another
+    component.  To use it, connect any of the three inboxes to outboxes on the
+    component to be monitored.  The messages that are sent to those inboxes will
+    be forwarded to their respective out box.  For example, suppose "HELLO" was
+    received on 'inbox2'.  self.message ("RESET" by default) will be sent on the
+    'observed' outbox and "HELLO" will be sent out on 'outbox2'.  An ActivityMonitor
+    will shut down upon receiving a producerFinished or shutdownCSA message on
+    its control inbox.
+
+    Please note that this can't wrap adaptive components properly as of yet.
+    """
     # XXXX FIXME: This should be an adaptive component, and only proxy inboxes and outboxs that
     # XXXX FIXME: are NOT preceded by an underscore. If it is wrapping an AdaptiveCommsComponent,
     # XXXX FIXME: we ought to warn we can't necessarily wrap those properly yet(!)
@@ -63,7 +84,7 @@ class ActivityMonitor(Axon.Component.component):
         "outbox": "Forwards any messages received on the inbox 'inbox'",
         "outbox2": "Forwards any messages received on the inbox 'inbox2'",
         "outbox3": "Forwards any messages received on the inbox 'inbox3'",
-        "signal": "Forwards any messages received on the inbox 'control' (also, shutsdown on usual messages",
+        "signal": "Forwards any messages received on the inbox 'control' (also, shutsdown on usual messages)",
         "observed" : "A message is emitted here whenever we see data on any inbox",
     }
     message="RESET"
@@ -93,11 +114,19 @@ class ActivityMonitor(Axon.Component.component):
                 self.send(p, "signal")
 
 class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
+    """
+    This component is basically just a Cheap and cheerful clock that
+    may be shut down.  You may specify the interval and message to be
+    sent.  The component will sleep for self.interval seconds and then
+    emit self.message before checking its control inbox for any shutdown
+    messages and then going back to sleep.
+    """
     interval = 300
+    message = 'tick'
     def main(self):
         while not self.shutdown():
             time.sleep(self.interval)
-            self.send("tick", "outbox")
+            self.send(self.message, "outbox")
     def shutdown(self):
         while self.dataReady("control"):
             data = self.recv("control")
@@ -107,6 +136,13 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
         return 0
 
 class WakeableIntrospector(Axon.Component.component):
+    """
+    This component serves to check if it is the only component in the scheduler
+    other than a graphline and PeriodicWakeup.  If it is, it will send out a
+    producerFinished signal on its signal outbox.  It will ignore any input on
+    its inbox or control box, however it is useful to send it a message to its
+    inbox to wake it up.
+    """
     def main(self):
         while 1:
             names = [ q.name for q in self.scheduler.listAllThreads() ]
@@ -131,17 +167,39 @@ class WakeableIntrospector(Axon.Component.component):
 
 
 def NoActivityTimeout(someclass, timeout=2, debug=False):
+    """
+    This is a factory function that will return a new function object that will
+    produce an InactivityChassis with the given timeout and debug values.  The
+    values specified in timeout, debug, and someclass will be used in all future
+    calls to the returned function object.
+
+    someclass - the class to wrap in an InactivityChassis
+    timeout - the amount of time to wait before sending the shutdown signal
+    debug - the debugger to use
+    """
     def maker(self, *args,**argd):
         X = InactivityChassis(someclass(*args,**argd), timeout=timeout, debug=debug)
         return X
     return maker
 
 def ExtendedInactivity(someclass):
+    """
+    A factory function that will return a new function object that will create an
+    InactivityChassis wrapped in someclass without storing the debug and timeout
+    arguments.
+    """
     def maker(timeout=2, debug=False, *args,**argd):
         return InactivityChassis(someclass(*args,**argd), timeout=timeout, debug=debug)
     return maker
 
 def InactivityChassis(somecomponent, timeout=2, debug=False):
+    """
+    This convenience function will link a component up to an ActivityMonitor and
+    a ResettableSender that will emit a producerFinished signal within timeout
+    seconds if the component does not send any messages on its outbox or
+    CreatorFeedback boxes.  To link the specified component to an external component
+    simply link it to the returned chassis's outbox or CreatorFeedback outboxes.
+    """
     linkages = {
         ("SHUTTERDOWNER","outbox"):("OBJ","control"),
 
