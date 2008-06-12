@@ -27,6 +27,8 @@ class Philosopher(Axon.ThreadedComponent.threadedcomponent):
                     time.sleep(random.random())
             except Axon.STM.ConcurrentUpdate:
                 time.sleep(random.random())
+            except Axon.STM.BusyRetry:
+                time.sleep(random.random())
         print "Got forks!", self.name, self.forks
         return X
 

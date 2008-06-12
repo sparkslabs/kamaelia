@@ -2,7 +2,7 @@
 
 import time
 from threading import Thread
-from Axon.STM import Store, ConcurrentUpdate
+from Axon.STM import Store, ConcurrentUpdate, BusyRetry
 import random
 
 def all(aList, value):
@@ -49,6 +49,8 @@ class Philosopher(Thread):
                 else:
                     time.sleep(random.random())
             except ConcurrentUpdate:
+                time.sleep(random.random())
+            except BusyRetry:
                 time.sleep(random.random())
         print "Got forks!", self.name, self.forks
         return X
