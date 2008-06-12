@@ -1,32 +1,35 @@
 #! /usr/bin/env python
-# TODO: - Document inboxes and outboxes
-#       - Make the components shutdown on the appropriate signals
-#       - Test the test case
-#       - Document DeOsc component
 """
-===========
-OSC Creator
-===========
+=======================
+OSC Creator and Decoder
+=======================
 
-This component is for creating Open Sound Control (OSC) messages.  Send data in
-the form of an (address, arguments) tuple to the "inbox" inbox to create a
-message.  Pick up data from the "outbox" outbox to receive the message as an
-OSC packet - a binary representation of the message.
+These components are for creating and decoding Open Sound Control (OSC)
+messages.  Send data in the form of an (address, arguments, [timetag]) tuple to
+the "inbox" inbox of the Osc component to create a message.  Pick up data from
+the "outbox" outbox to receive the message as an OSC packet - a binary
+representation of the message.
+
+Send an OSC packet to the "inbox" inbox of the DeOsc component to decode it.
+Pick up the decoded message in the form of an (address, arguments, timetag)
+from the component's "outbox" outbox.
 
 
 Example Usage
 -------------
 Creating an OSC message with the OSC arguments 1, 2, 3 and an OSC address
-pattern /OscTest/TestMessage ready for dispatch over a UDP socket.
+pattern /OscTest/TestMessage, then decode it into the original message and
+print it to the terminal.
 
-Pipeline(OneShot(("/TestMessage", (1, 2, 3))), Osc("/OscTest"))
+Pipeline(OneShot(("/TestMessage", (1, 2, 3))), Osc("/OscTest"), DeOsc(),
+         ConsoleEchoer())
 
 
-How does it work?
+How do they work?
 -----------------
-The component receives a tuple, (address, arguments) on its "inbox" inbox,
-where arguments can either be a tuple, list or a single argument.  It then
-proceeds to create the OSC address pattern.
+The Osc component receives a tuple, (address, arguments, [timetag]) on its
+"inbox" inbox, where arguments can either be a tuple, list or a single
+argument.  It then proceeds to create the OSC address pattern.
 
 If the address does not already have a leading forward slash, one is prepended.
 If an address prefix has been supplied when the component is initialised this
@@ -38,10 +41,18 @@ read /MyApp/MyButtons/AButton/Pressed.
 With the address pattern created, the component creates an OSCMessage object
 (which is defined as part of the pyOSC library).  It then appends the arguments
 using the object's append method, and sends an OSC packet (created using the
-toBinary() method) to the "outbox" outbox.  """
+toBinary() method) to the "outbox" outbox.
+
+The DeOsc component recieves an OSC packet on it's "inbox" inbox, and decodes
+it using the decodeOSC() method of the pyOSC library.  This is reordered to
+give a (address, arguments, timetag) tuple, which is then sent to the
+component's "outbox" outbox.
+"""
 
 import OSC
 import Axon
+
+from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class Osc(Axon.Component.component):
     """\
@@ -54,13 +65,32 @@ class Osc(Axon.Component.component):
     - addressPrefix -- A prefix to add to address pattern of each OSC Message.
                        The first character must be a forward slash.
     """
+    
+    Inboxes = { "inbox"   : "(address, arguments, [timetag]) tuple to convert into an OSC packet",
+                "control" : "Receive shutdown signals"
+              }
+    Outboxes = { "outbox" : "OSC packet ready to be sent over a socket",
+                 "signal" : "Signal shutdown"
+               }
 
     def __init__(self, addressPrefix = None):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(Osc, self).__init__()
         self.addressPrefix = addressPrefix
     
     def main(self):
+        """ Main loop """
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 address = data[0]
@@ -81,11 +111,36 @@ class Osc(Axon.Component.component):
             yield 1
 
 class DeOsc(Axon.Component.component):
+    """
+    DeOsc() -> new DeOsc component
+
+    Decodes binary OSC data received on the component's "inbox" inbox
+    """
+
+    Inboxes = { "inbox"   : "OSC packet to decode",
+                "control" : "Receive shutdown signals"
+              }
+    Outboxes = { "outbox" : "(address, arguments, timetag) tuple created from the decoded OSC packet",
+                 "signal" : "Signal shutdown"
+               }
+
+
     def __init__(self):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(DeOsc, self).__init__()
 
     def main(self):
+        """ Main loop """
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 data = OSC.decodeOSC(data)
