@@ -112,12 +112,14 @@ class TCPServer(Axon.Component.component):
                 "_selectorShutdownSignal" : "To deregister our interest with the selector",
               }
 
-   def __init__(self,listenport, socketOptions=None):
+   CSA = ConnectedSocketAdapter
+   def __init__(self,listenport, socketOptions=None,**argd):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(TCPServer, self).__init__()
+      super(TCPServer, self).__init__(**argd)
       self.listenport = listenport
       self.socketOptions = socketOptions
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
+      self.socket_handlers = {}
 
    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
       """\
@@ -157,7 +159,7 @@ class TCPServer(Axon.Component.component):
       gotsock = True
       newsock.setblocking(0)
 ###      
-      CSA = ConnectedSocketAdapter(newsock,self.selectorService)
+      CSA = (self.CSA)(newsock,self.selectorService)
       return newsock, CSA
 
    def closeSocket(self, shutdownMessage):
@@ -169,12 +171,15 @@ class TCPServer(Axon.Component.component):
       """
       theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
       ### FIXME: Pass on how died as well in TCPServer!
+      theComponent = self.socket_handlers[sock]
       sock.close()
       
       # tell the selector about it shutting down
       
-      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
-      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
+      self.send(removeReader(theComponent, sock), "_selectorSignal")            
+      self.send(removeWriter(theComponent, sock), "_selectorSignal")
+#      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
+#      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
 
       # tell protocol handlers
       self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
@@ -212,7 +217,9 @@ class TCPServer(Axon.Component.component):
          else:
              pass
 
-             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
+             self.socket_handlers[newsock] = CSA
+
+             self.send(_ki.newCSA(self, CSA, newsock), "protocolHandlerSignal")
              self.send(newReader(CSA, ((CSA, "ReadReady"), newsock)), "_selectorSignal")            
              self.send(newWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
              self.addChildren(CSA)
@@ -244,6 +251,15 @@ class TCPServer(Axon.Component.component):
        self.send(removeReader(self, self.listener), "_selectorSignal") 
 #       for i in xrange(100): yield 1
        self.send(shutdown(), "_selectorShutdownSignal")
+
+   def stop(self):
+       self.send(removeReader(self, self.listener), "_selectorSignal") 
+#       for i in xrange(100): yield 1
+       self.send(shutdown(), "_selectorShutdownSignal")
+       self.listener.close() # Ensure we close the server socket. Only really likely to
+                             # be called from the scheduler shutting down due to a stop.
+       super(TCPServer,self).stop()
+
 
 __kamaelia_components__  = ( TCPServer, )
 

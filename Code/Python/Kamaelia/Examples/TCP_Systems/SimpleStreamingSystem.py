@@ -28,9 +28,12 @@ from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 import Kamaelia.File.ReadFileAdaptor
+import random
 
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
-clientServerTestPort=1500
+file_to_stream = "../SupportingMediaFiles/KDE_Startup_2.ogg"
+clientServerTestPort=random.randint(1500,2000)
+
+print "Client Server demo running on port", clientServerTestPort
 
 def AdHocFileProtocolHandler(filename):
     class klass(Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor):
