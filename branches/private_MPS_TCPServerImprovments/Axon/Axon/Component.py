@@ -648,18 +648,6 @@ class component(microprocess):
       """Stub method. **This method is designed to be overridden.** """
       return 1
    
-   def finalize(self):
-       """Stub method.  Override this to put code in to clean up once done"""
-       pass
-   
-   def stop(self, clean=True):
-      """An override of microprocess's stop method that allows for cleanup before dying.
-      -clean -- Chances are, you don't want to change this to false.  Use to disable finalization
-      before stopping component."""
-      if clean:
-         self.finalize()
-      super(component, self).stop()
-   
    def _closeDownMicroprocess(self):
       """\
       Overrides original in microprocess class.

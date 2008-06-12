@@ -41,7 +41,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.IPC import newReader, removeReader
+from Kamaelia.IPC import newReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.Selector import Selector
@@ -153,17 +153,8 @@ class IntelligentFileReader(component):
             if not self.done:
                 self.pause()
           
-        
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")
-        os.close(self.fd)
-        self.send(removeReader((self, "_selectorready"), self.fd), "_selectorask") #FIXME - This could potentially be bad.
-                                                                                   #If the file descriptor is still being
-                                                                                   #tracked by the selector, it could be
-                                                                                   #because it hasn't notified us of the
-                                                                                   #file being ready.  Thus, it is possible
-                                                                                   #for data to be lost.
-                                                                                   
 
 __kamaelia_components__  = ( IntelligentFileReader, )
 

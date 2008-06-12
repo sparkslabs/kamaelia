@@ -191,7 +191,7 @@ class ConnectedSocketAdapter(component):
         self.send(socketShutdown(self,[self.socket,self.howDied]), "CreatorFeedback")
         self.send(shutdownCSA(self, (self,self.socket)), "signal")
 
-   def finalize(self):
+   def stop(self):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
        self.socket.shutdown(2)
@@ -200,6 +200,7 @@ class ConnectedSocketAdapter(component):
        if (self.socket is not None):
            self.send(removeReader(self, self.socket), "_selectorSignal")
            self.send(removeWriter(self, self.socket), "_selectorSignal")
+       super(ConnectedSocketAdapter, self).stop()
 
    def _safesend(self, sock, data):
        """Internal only function, used for sending data, and handling EAGAIN style

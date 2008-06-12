@@ -85,10 +85,11 @@ class SingleServer(_Axon.Component.component):
                yield 1
          yield 1
 
-   def finalize(self):
+   def stop(self):
        self.send(producerFinished(self), "signal")
        self.CSA._deliver(producerFinished(self),"control")
        self.myPLS._deliver(serverShutdown(self),"control")
+       super(SingleServer,self).stop()
 
    def handleNewCSA(self, data):
       newCSA = data.object

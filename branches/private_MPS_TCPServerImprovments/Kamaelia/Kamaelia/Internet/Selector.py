@@ -161,7 +161,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         except:
             pass
 
-    def finalize(self):
+    def stop(self):
         if self.trackedby is not None:
             self.trackedby.deRegisterService("selector")
             self.trackedby.deRegisterService("selectorshutdown")
