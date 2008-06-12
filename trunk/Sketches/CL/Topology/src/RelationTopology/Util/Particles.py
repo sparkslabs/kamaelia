@@ -7,6 +7,10 @@ from pygame.transform import smoothscale
 
 class GenericParticle(BaseParticle):
     """\
+    =========================
+    A generic particle class
+    =========================
+    
     A generic particle type with picture, shape, color and size customable and updatable
     Adapted from MPS.Experiments.360.Creator.IconComponent and .PPostbox
     """
@@ -36,7 +40,6 @@ class GenericParticle(BaseParticle):
 
         if pic is not None:
             self.set_pic(pic)
-            
         else:
             self.set_color(color)
             self.set_shape(shape)
@@ -45,10 +48,8 @@ class GenericParticle(BaseParticle):
     def updateAttrs(self, **attrs):
         for key,value in attrs.iteritems():
             methodName = 'set_' + key
-            #print methodName
             if hasattr(self,methodName):
                 method = getattr(self,methodName)
-                #print method
                 method(value)
     
     def set_width(self, width):
@@ -60,10 +61,8 @@ class GenericParticle(BaseParticle):
                 self.height = self.picture.get_height()
                 self.picture = smoothscale(self.picture, (self.width,self.height))
             self.radius = ((self.width*self.width+self.height*self.height)**0.5)/2
-            #print self.radius
         else:
             self.width = width
-
     
     def set_height(self, height):
         if height is not None:
@@ -74,11 +73,9 @@ class GenericParticle(BaseParticle):
                 self.width = self.picture.get_width()
                 self.picture = smoothscale(self.picture, (self.width,self.height))
             self.radius = ((self.width*self.width+self.height*self.height)**0.5)/2
-            #print self.radius
         else:
             self.height = height
-        
-                        
+                                
     def set_radius(self, radius):
         if radius is not None:
             self.radius = int(radius)
@@ -100,7 +97,6 @@ class GenericParticle(BaseParticle):
         
     def set_label(self, newname):
         self.name = newname
-        #pygame.font.init()
         font = pygame.font.Font(None, 20)        
         self.slabel   = font.render(self.name, True, (0,0,0))
         self.slabelxo = - self.slabel.get_width()/2
@@ -115,10 +111,8 @@ class GenericParticle(BaseParticle):
             
         else:
             self.width = self.picture.get_width()
-            self.height = self.picture.get_height()
-        #print self.width, self.height    
+            self.height = self.picture.get_height()  
         self.radius = ((self.width*self.width+self.height*self.height)**0.5)/2
-        #print self.radius
         self.shape = None
         self.color = None
         
@@ -140,8 +134,7 @@ class GenericParticle(BaseParticle):
                     self.height = 60
                 self.radius = ((self.width*self.width+self.height*self.height)**0.5)/2
             
-            
-        
+
     
     def render(self, surface):
         """\
@@ -158,16 +151,17 @@ class GenericParticle(BaseParticle):
         for p in self.bondedTo:
             px = int(p.pos[0] -self.left)
             py = int(p.pos[1] - self.top)
-            pygame.draw.line(surface, (128,128,255), (x,y),  (px,py) )
-            # draw a pwetty arrow on the line, showing the direction
+            # Draw a link
+            pygame.draw.line(surface, (128,128,255), (x,y),  (px,py))
+            
+            # Draw a pretty arrow on the line, showing the direction
             arrow_colour = (0,160,0)
             
             direction = ( (px-x), (py-y) )
             length    = ( direction[0]**2 + direction[1]**2 )**0.5
             
-            # Make the position of the arrow relative to the intersection
-            # between arc and the bond line rather than the centre of particle
-            #print self.radius 
+            """Make the position of the arrow relative to the intersection
+            between arc and the bond line rather than the centre of particle"""
             intersection_x = x - self.radius*(x-px)/length
             intersection_y = y - self.radius*(y-py)/length
             intersection_px = px - p.radius*(px-x)/length
@@ -185,16 +179,16 @@ class GenericParticle(BaseParticle):
             pygame.draw.line(surface, arrow_colour, arrowHead, leftarrow  )
             pygame.draw.line(surface, arrow_colour, arrowHead, rightarrow )
             
-            # Add text on the line to show the relation
+            # Add text on the link to show the relation
             if self.bondedRelations.has_key(p):
-                #print 'has'
                 font = pygame.font.Font(None, 15)
                 self.relationLabel = font.render(" "+self.bondedRelations[p]+" ", True, (0,0,0), )
                 relationLabel_pos = (intersection_relationLabel[0]-self.relationLabel.get_width()/2,  
                                      intersection_relationLabel[1]-self.relationLabel.get_height()/2)
-                #print relationLabel_pos,self.bondedRelations[p]
                 surface.blit(self.relationLabel, relationLabel_pos)  
         yield 2
+        
+        # Draw a particle
         if self.picture is not None:
             picture_rect = surface.blit(self.picture, (x- self.width/2, y - self.height/2))
             surface.blit(self.slabel, (x - self.slabel.get_width()/2, y + self.height/2) )
@@ -204,7 +198,6 @@ class GenericParticle(BaseParticle):
                 pygame.draw.rect(surface, (0,0,0), picture_rect, 2)
                 surface.blit(self.desclabel, (72,16) )
         else:
-            
             if self.shape == 'circle':
                 pygame.draw.circle(surface, self.color, (x,y), self.radius)
                 if self.selected:
@@ -213,7 +206,6 @@ class GenericParticle(BaseParticle):
             else:
                 pygame.draw.rect(surface, self.color, (x- self.width/2, y - self.height/2, self.width, self.height))
                 if self.selected:
-                    
                     pygame.draw.rect(surface, (0,0,0), (x- self.width/2, y - self.height/2, self.width, self.height), 2)
                     surface.blit(self.desclabel, (72,16) )
             surface.blit(self.slabel, (x - self.slabel.get_width()/2, y - self.slabel.get_height()/2) )

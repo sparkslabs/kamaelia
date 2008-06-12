@@ -2,13 +2,13 @@
 import sys
 
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
-#from Kamaelia.Visualisation.Axon.AxonLaws import AxonLaws
 from Kamaelia.Support.Particles import SimpleLaws
 
 from Particles import GenericParticle   # To use dictionary map
 import Particles     # To search particle class within it
 
 def str2dict(string):
+    """Transform a string to a dictionary"""
     dictionary = {}
     string_list = string.split(',')
     for item in string_list:
@@ -21,9 +21,7 @@ class GenericTopologyViewer(TopologyViewer):
     """
     =============================================================
     Extend TopologyViewer to accept more parameters
-    =============================================================
-    
-    TODO: be able to update the figure dynamically    
+    =============================================================  
     """
 
     def __init__(self, **argd):
@@ -37,7 +35,8 @@ class GenericTopologyViewer(TopologyViewer):
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
-            [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type> ] 
+            [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, [attributes] ]
+            [ "UPDATE", "NODE", <attributes> ]
             [ "DEL", "NODE", <id> ]
             [ "ADD", "LINK", <id from>, <id to> ]
             [ "DEL", "LINK", <id from>, <id to> ]
@@ -65,7 +64,6 @@ class GenericTopologyViewer(TopologyViewer):
                     else:
                         attrs = msg[6]
                         attrs_dict = str2dict(attrs)
-                        #print attrs_dict
                         particle = ptype(position = pos, ID=id, name=name, **attrs_dict)
                     particle.originaltype = msg[5]
                     self.addParticle(particle)
@@ -123,7 +121,6 @@ class GenericTopologyViewer(TopologyViewer):
             self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
             
     def updateParticle(self,id,**attrs_dict):
-        #print 'done'
+        """Update Particle attributes"""
         if self.physics.particleDict.has_key(id):
-            #print 'done'
             self.physics.particleDict[id].updateAttrs(**attrs_dict)
