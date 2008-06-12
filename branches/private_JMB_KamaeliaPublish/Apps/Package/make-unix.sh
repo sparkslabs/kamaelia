@@ -1,6 +1,6 @@
 #!/bin/sh
 #make-unix.sh
-#usage:  ./make-unix.sh [clean] [include-files]
+#usage:  ./make-unix.sh [clean]
 #This script will first run scripts/publish.prepare.sh to assemble all of the relevant
 #files into the assembly directory and strip the .svns from them.  It will then remove
 #every pyc from the assembly directory.  Once this is finished, it will zip all the
@@ -13,7 +13,7 @@
 #once it is finished.  It is recommended that you remove the assembly directory prior to
 #running this script again.
 
-scripts/publish.prepare.sh #assemble everything we need in the assembly directory
+prepare.sh #assemble everything we need in the assembly directory
 #python byte-compile.py urls.py main.py ServerConfig.py
 
 if [ "$1" = "clean" ]
