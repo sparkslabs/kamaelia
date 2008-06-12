@@ -54,8 +54,6 @@ def normalizeEnviron(environ):
         header_list.append(line)
 
     environ['headers'] = ''.join(header_list)
-    environ['peerport'] = str(environ['peerport'])
-    environ['localport'] = str(environ['localport'])
     del environ['bad']
 
 
@@ -85,7 +83,7 @@ class _WsgiHandler(threadedcomponent):
 
         self.app = app
         self.log_writable = log_writable
-        self.status = self.response_headers = False
+        self.status = self.response_dict = False
         self.wsgi_config = WsgiConfig
 
     def main(self):
@@ -108,8 +106,7 @@ class _WsgiHandler(threadedcomponent):
         app_iter = iter(self.app(self.environ, self.start_response))
 
         first_response = app_iter.next()
-        if self.response_headers and self.status:
-            self.write(first_response)
+        self.write(first_response)
 
         for fragment in app_iter:
             page = {
@@ -137,7 +134,7 @@ class _WsgiHandler(threadedcomponent):
                 exc_info = None
 
         self.status = status
-        self.response_headers = response_headers
+        self.response_dict = dict(response_headers)
 
         return self.write
 
@@ -147,11 +144,10 @@ class _WsgiHandler(threadedcomponent):
         unbuffered output to the page.  You probably don't want to use this
         unless you have good reason to.
         """
-        if self.response_headers and self.status:
-            page = {
-                'data' : body_data,
-            }
-            self.send(page, 'outbox')
+        if self.response_dict and self.status:
+            self.response_dict['data'] = body_data
+            self.response_dict['type'] = self.response_dict['Content-type']
+            self.send(self.response_dict, 'outbox')
 
         else:
             raise WsgiError("write() called before start_response()!")
