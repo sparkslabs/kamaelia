@@ -7,6 +7,10 @@ setup(name="Kamaelia Jam",
                   "Kamaelia.Apps.Jam.UI",
                   "Kamaelia.Apps.Jam.Util"],
       py_modules = ["Kamaelia.Apps.__init__",
-                    "Kamaelia.Apps.Jam.__init__"]
+                    "Kamaelia.Apps.Jam.__init__",
+                    "Kamaelia.Apps.Jam.Internet.__init__",
+                    "Kamaelia.Apps.Jam.Protocol.__init__",
+                    "Kamaelia.Apps.Jam.UI.__init__",
+                    "Kamaelia.Apps.Jam.Util.__init__"]
       )
 

@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
     Graphline(clock = Clock(float(1)/FPS),
               splitter = TwoWaySplitter(),
-              receiver = UDPReceiver(local_addr=options.listenAddress,
-                                     local_port=options.listenPort),
+              receiver = UDPReceiver(localaddr=options.listenAddress,
+                                     localport=options.listenPort),
               detupler = SimpleDetupler(0),
               deOsc = DeOsc(),
               xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
