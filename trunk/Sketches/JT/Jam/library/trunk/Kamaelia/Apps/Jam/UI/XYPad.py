@@ -79,7 +79,7 @@ import time
 import pygame
 import Axon
 
-from Axon.Ipc import producerFinished, WaitComplete
+from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class XYPad(Axon.Component.component):
