@@ -7,7 +7,7 @@ setup(name = "Kamaelia Jam Application",
                 ]
       data_files = [("share/kamaelia",
                      [\
-                      "PD/PureJam.pd",
+                      "PD/PureJam.pd", #STARTDATA LASTDATA
                      ]
                     )
                    ]
