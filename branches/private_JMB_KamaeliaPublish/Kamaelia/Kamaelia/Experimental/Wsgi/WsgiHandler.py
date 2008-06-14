@@ -1,5 +1,5 @@
 import socket
-import pprint
+from pprint import pprint, pformat
 import string
 import sys
 import os
@@ -11,7 +11,7 @@ import copy
 import LogWritable
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Component import component
+from Axon.Ipc import producerFinished
 import Kamaelia.Util.Log as Log
 
 Axon.Box.ShowAllTransits = False
@@ -62,7 +62,7 @@ class _WsgiHandler(threadedcomponent):
        context, this means we don't have to worry what they get up
        to really"""
     Inboxes = {
-        'inbox' : 'NOT USED',
+        'inbox' : 'Used to receive the body of requests from the HTTPParser',
         'control' : 'NOT USED',
     }
     Outboxes = {
@@ -83,8 +83,9 @@ class _WsgiHandler(threadedcomponent):
 
         self.app = app
         self.log_writable = log_writable
-        self.status = self.response_dict = False
+        self.response_dict = False
         self.wsgi_config = WsgiConfig
+        self.write_called = False
 
     def main(self):
 
@@ -97,9 +98,25 @@ class _WsgiHandler(threadedcomponent):
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
 
+
+        if self.request['method'] == 'POST':
+            buffer = []     #Wait on the body to be sent to us
+            not_done = True
+            while not_done:
+                while self.dataReady('control'):
+                    if isinstance(self.recv('control'), producerFinished):
+                        not_done = False
+
+                while self.dataReady('inbox'):
+                    buffer.append(self.recv('inbox').bodychunk)
+
+                if not_done and not self.anyReady():
+                    self.pause()
+            self.environ['body'] = ''.join(buffer)
+
         normalizeEnviron(self.environ)
 
-        self.log_writable.write(pprint.pformat(self.environ))
+        self.log_writable.write(pformat(self.environ))
 
         #PEP 333 specifies that we're not supposed to buffer output here,
         #so pulling the iterator out of the app object
@@ -108,11 +125,7 @@ class _WsgiHandler(threadedcomponent):
         first_response = app_iter.next()
         self.write(first_response)
 
-        for fragment in app_iter:
-            page = {
-                'data' : fragment,
-            }
-            self.send(page, 'outbox')
+        [self.sendFragment(x) for x in app_iter]
 
         try:
             app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
@@ -133,8 +146,8 @@ class _WsgiHandler(threadedcomponent):
             finally:
                 exc_info = None
 
-        self.status = status
         self.response_dict = dict(response_headers)
+        self.response_dict['statuscode'] = status
 
         return self.write
 
@@ -144,13 +157,32 @@ class _WsgiHandler(threadedcomponent):
         unbuffered output to the page.  You probably don't want to use this
         unless you have good reason to.
         """
-        if self.response_dict and self.status:
+        if self.response_dict and not self.write_called:
             self.response_dict['data'] = body_data
             self.response_dict['type'] = self.response_dict['Content-type']
             self.send(self.response_dict, 'outbox')
-
-        else:
+            self.write_called = True
+        elif self.write_called:
+            self.sendFragment(body_data)
+        elif not self.response_dict and not self.write_called:
             raise WsgiError("write() called before start_response()!")
+        else:
+            raise WsgiError('Unkown error in write.')
+
+    def waitForBody(self):
+        environ['body'] = ''
+        buffer = []
+        not_done = True
+        while not_done:
+            while self.dataReady('control'):
+                if isinstance(self.recv('control'), producerFinished):
+                    not_done = False
+
+            while self.dataReady('inbox'):
+                buffer += self.recv('inbox')
+
+            if not_done and not self.anyReady():
+                self.pause()
 
     def generateRequestMemFile(self):
         """
@@ -169,6 +201,12 @@ class _WsgiHandler(threadedcomponent):
 #        print "full_request: \n" + full_request
 
         return cStringIO.StringIO(full_request)
+
+    def sendFragment(self, fragment):
+        page = {
+            'data' : fragment,
+            }
+        self.send(page, 'outbox')
 
     def initRequiredVars(self, wsgi_config):
         """
