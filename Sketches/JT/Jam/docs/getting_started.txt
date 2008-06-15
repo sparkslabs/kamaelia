@@ -1,0 +1,38 @@
+====================================
+Getting started with Jam and PureJam
+====================================
+
+So, you've downloaded Jam, navigated the (slightly skimpy) install
+instructions.  You've started up it up, marvelled at the beautiful UI, clicked
+a few buttons.  But now you'd really quite like to hear some sound out of it.
+Well, you've come to the right place.  Or rather you haven't, because by itself
+Jam doesn't actually make any sound.  Instead it outputs OSC messages which are
+understood by a number of other programs which will make sound out of them.
+For a (incomplete) list of programs which support OSC messages see
+http://opensoundcontrol.org/implementations.  This brief guide will take you
+through making your first music using Jam and PureData.
+
+PureJam
+-------
+
+To assist you with getting started making music using Jam there is a patch for
+Pure Data (http://www.puredata.info), PureJam.pd, which is included in the
+standard distribution of Jam.  It is recommended that you use one of the
+PD-extended builds of Pure Data available from http://puredata.info/downloads,
+otherwise some or all of PureJam may not work.
+
+When you have Pure Data installed open up PureJam.pd, and you should see a
+number of boxes - these are the PD objects which will interpret the OSC
+messages and make the sound.  Towards the bottom of the screen you should see
+four sliders - these set the volume of certain elements of the patch.  Make
+sure you are not in edit mode (you can see this in the edit menu), and move the
+sliders up to about 1/4 of their height.  Then ensure audio is turned on (from
+the Media menu) and start up Jam.  If you set the first XY pad bouncing you
+should hear percussive noise when the ball hits the wall.  Congratulations!
+You are now up and running with Jam.
+
+There are (or at least will be soon) a number of comments in the PureJam patch
+describing how it works.  Using them, and the documentation at
+http://crca.ucsd.edu/~msp/Pd_documentation/ and with PD try altering the patch
+to change the sound it makes.  You will soon find that you can shape the sound
+made using Jam in a number of unexpected ways.  Have fun experimenting!
