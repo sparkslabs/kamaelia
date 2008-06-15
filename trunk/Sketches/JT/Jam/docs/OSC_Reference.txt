@@ -1,0 +1,32 @@
+=============
+OSC Reference
+=============
+
+For users
+=========
+
+By default Jam outputs the following OSC messages to use for music making.
+
+XY Pads
+-------
+Messages from XY pads are output with the address /Jam/XY/{N}/, where {N} is an integer representing which XY pad the message originates from.
+
+- /Jam/XY/{N}/Position [xPos, yPos] -- The position of the puck on an XY pad.  xPos and yPos are floats between 0 and 1, with [0, 0] being the top-left corner.
+- /Jam/XY/{N}/Top [1] -- The puck has bounced from the top wall of the pad.
+- /Jam/XY/{N}/Right [1] -- The puck has bounced from the right wall of the pad.
+- /Jam/XY/{N}/Bottom [1] -- The puck has bounced from the bottom wall of the pad.
+- /Jam/XY/{N}/Left [1] -- The puck has bounced from the right wall of the pad.
+
+
+For developers
+==============
+
+For internal communication between components and instances of Jam the following OSC messages are used.
+
+XY Pads
+-------
+Messages from XY pads are output with the address /Jam/XY/{N}/, where {N} is an integer representing which XY pad the message originates from.
+
+- /Jam/XY/{N}/Position [xPos, yPos] -- The position of the puck on an XY pad.  xPos and yPos are floats between 0 and 1, with [0, 0] being the top-left corner.
+- /Jam/XY/{N}/Velocity [xVel, yVel] -- The velocity of the puck on an XY pad.  xVel and yVel are floats working on a relatively arbitrary scale (something like px per frame I think).  For the moment however this doesn't seem to matter too much...
+
