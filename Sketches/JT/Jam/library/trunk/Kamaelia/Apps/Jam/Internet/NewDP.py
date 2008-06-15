@@ -127,6 +127,7 @@ import Axon
 
 from Kamaelia.Internet.Selector import Selector
 from Kamaelia.IPC import newReader, newWriter
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class BasicPeer(Axon.Component.component):
     """\
@@ -289,8 +290,14 @@ class UDPReceiver(BasicPeer):
         self.send(newReader(self, ((self, "readReady"), self.sock)),
                    "_selectorSignal")
 
-        # TODO: Make me shutdown nicely
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("readReady"):
                 self.recv("readReady")
                 self.receiving = True
@@ -330,8 +337,14 @@ class UDPSender(BasicPeer):
         self.send(newWriter(self, ((self, "writeReady"), self.sock)),
                   "_selectorSignal")
 
-        # TODO: Make me shutdown nicely
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("writeReady"):
                 self.recv("writeReady")
                 self.sending = True
@@ -382,8 +395,14 @@ class SimplePeer(BasicPeer):
         self.send(newReader(self, ((self, "readReady"), self.sock)),
                   "_selectorSignal")
 
-        # TODO: Make me shutdown nicely
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("writeReady"):
                 self.recv("writeReady")
                 self.sending = True
@@ -455,6 +474,13 @@ class TargettedPeer(BasicPeer):
                   "_selectorSignal")
 
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("target"):
                 self.remote = self.recv("target")
 
@@ -526,6 +552,13 @@ class PostboxPeer(BasicPeer):
 
         # TODO: Make me shutdown nicely
         while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                    isinstance(cmsg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("writeReady"):
                 self.recv("writeReady")
                 self.sending = True

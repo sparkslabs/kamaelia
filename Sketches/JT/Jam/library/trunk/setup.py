@@ -9,12 +9,12 @@ setup(name="Kamaelia Jam Library",
                   "Kamaelia.Apps.Jam.Util", #LASTPACKAGES
                  ],
       py_modules = [\
-                    "Kamaelia.Apps.__init__", #STARTPACKAGES
+                    "Kamaelia.Apps.__init__",
                     "Kamaelia.Apps.Jam.__init__",
                     "Kamaelia.Apps.Jam.Internet.__init__",
                     "Kamaelia.Apps.Jam.Protocol.__init__",
                     "Kamaelia.Apps.Jam.UI.__init__",
-                    "Kamaelia.Apps.Jam.Util.__init__", #ENDPACKAGES
+                    "Kamaelia.Apps.Jam.Util.__init__",
                    ]
       )
 
