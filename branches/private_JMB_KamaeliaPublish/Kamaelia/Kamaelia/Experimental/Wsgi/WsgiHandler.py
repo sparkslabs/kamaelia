@@ -1,6 +1,4 @@
-import socket
 from pprint import pprint, pformat
-import string
 import sys
 import os
 import re
@@ -101,7 +99,7 @@ class _WsgiHandler(threadedcomponent):
 
         if self.request['method'] == 'POST':
             self.waitForBody()
-            
+
         normalizeEnviron(self.environ)
 
         self.log_writable.write(pformat(self.environ))
@@ -110,14 +108,16 @@ class _WsgiHandler(threadedcomponent):
             #PEP 333 specifies that we're not supposed to buffer output here,
             #so pulling the iterator out of the app object
             app_iter = iter(self.app(self.environ, self.start_response))
+            raise WsgiError('test')
 
             first_response = app_iter.next()#  License:  LGPL
             self.write(first_response)
 
             [self.sendFragment(x) for x in app_iter]
         except:
-            message = traceback.format_exception(sys.exc_info)
-            self._error(503, message)
+            etype, evalue, etb = sys.exc_info()
+            message = traceback.format_exception(etype, evalue, etb)
+            self._error(503, ''.join(message))
         try:
             app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
         except:
@@ -136,6 +136,8 @@ class _WsgiHandler(threadedcomponent):
                 raise exc_info[0], exc_info[1], exc_info[2]
             finally:
                 exc_info = None
+        elif self.response_dict:
+            raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
         self.response_dict = dict(response_headers)
         self.response_dict['statuscode'] = status
@@ -160,7 +162,7 @@ class _WsgiHandler(threadedcomponent):
         else:
             raise WsgiError('Unkown error in write.')
 
-    def _error(self, status=503, body_data=''):
+    def _error(self, status=503, body_data=('', '', '')):
         if self.Debug:
             resource = {
                 'statuscode' : status,
@@ -171,7 +173,7 @@ class _WsgiHandler(threadedcomponent):
         else:
             self.send(ErrorPages.getErrorPage(status, 'An internal error has occurred.'), 'outbox')
 
-        self.log_writable.write(body_data)
+        self.log_writable.write(''.join(body_data))
 
 
     def waitForBody(self):
@@ -193,16 +195,16 @@ class _WsgiHandler(threadedcomponent):
         """
         Creates a memfile to be stored in wsgi.input.  Uses cStringIO which may be vulnerable to DOS attacks.
         """
-        CRLF = '\r\n'
+        request_line = "%s %s %s/%s" % \
+            (self.environ['method'], self.environ['raw-uri'], self.environ['protocol'], self.environ['version'])
 
-        full_request = "%s %s %s/%s%s" % \
-            (self.environ['method'], self.environ['raw-uri'], self.environ['protocol'], self.environ['version'], CRLF)
-
-        header_list = []
+        request_list = [request_line]
         for key in self.environ['headers']:
-            header_list.append("%s: %s%s" % (key, self.environ['headers'][key], CRLF))
+            request_list.append("%s: %s" % (key, self.environ['headers'][key]))
 
-        full_request = full_request + string.join(header_list) + '\n' + self.environ['body']
+        request_list.extend(['', self.environ['body']])
+
+        full_request = '\r\n'.join(request_list)
 #        print "full_request: \n" + full_request
 
         return cStringIO.StringIO(full_request)
@@ -298,12 +300,12 @@ def Handler(log_writable, WsgiConfig, url_list):
                 u, mod, app_attr = url_item
                 break
 
-        if not (mod and app_attr and app_name):
+        if not (mod and app_attr):
             raise WsgiError('Page not found and no 404 pages enabled!')
 
         module = _importWsgiModule(mod)
         app = getattr(module, app_attr)
-        return _WsgiHandler(app, request, log_writable, WsgiConfig)
+        return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler
 
 def HTTPProtocol():
