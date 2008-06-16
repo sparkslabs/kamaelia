@@ -33,9 +33,12 @@ from Kamaelia.Chassis.Graphline   import Graphline
 from MessageAdder                 import MessageAdder
 from MessageStorer                import MessageStorer
 
+import KamExpectMatcher
 import KamMockObject
 
 import new
+import time
+import Queue
 
 class _AuxiliarTestCase(unittest.TestCase):
     """ 
@@ -169,7 +172,14 @@ class KamTestCase(object):
         self._messageStorer.activate()
         inputComponentUnderTest.activate()
         outputComponentUnderTest.activate()
-        self._lf = LikeFile.likefile(self._messageStorer)
+        extraOutboxes = tuple([ x 
+                         for x in self._messageStorer.Inboxes 
+                         if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
+                    ])
+        self._lf = LikeFile.likefile(
+                    self._messageStorer, 
+                    extraOutboxes = extraOutboxes, 
+            )
         
         self._kamtest_initialized = True
 
@@ -182,7 +192,27 @@ class KamTestCase(object):
     def get(self, outbox, timeout = 1):
         return self._lf.get(outbox, timeout=timeout)
         
-    def assertOutboxEmpty(self, outbox, msg = None, timeout=1):
+    def expect(self, matcher, outbox, timeout=5):
+        self.assertTrue(isinstance(matcher, KamExpectMatcher.Matcher))
+        max_time = time.time() + timeout
+        messages = []
+        while True:
+            remaining = max_time - time.time()
+            if remaining <= 0.0:
+                raise self.failureException("Expected message: %s not arrived. Arrived messages: %s" %
+                                    (matcher, messages)
+                            )
+            try:
+                data = self._lf.get(outbox, timeout=remaining)
+            except Queue.Empty:
+                raise self.failureException("Expected message: %s not arrived. Arrived messages: %s" %
+                                    (matcher, messages)
+                            )
+            messages.append(data)
+            if matcher.matches(data):
+                break
+                
+    def assertOutboxEmpty(self, outbox, msg = None, timeout=0):
         try:
             self._lf.get(outbox, timeout=timeout)
         except:
@@ -222,9 +252,6 @@ class KamTestCase(object):
             self._lf.shutdown()
             print self._listThreads()
             self._kamtest_initialized = False
-    
-    def _runSteps(self, steps):
-        pass
     
     def assertStopping(self, msg = None, steps = None):
         pass #TODO: this method makes no sense when using LikeFile
