@@ -293,8 +293,7 @@ class UDPReceiver(BasicPeer):
         while 1:
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if (isinstance(msg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                if isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
                     break
 
@@ -341,7 +340,7 @@ class UDPSender(BasicPeer):
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if (isinstance(msg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                    isinstance(msg, shutdownMicroprocess)):
                     self.send(msg, "signal")
                     break
 
@@ -398,8 +397,7 @@ class SimplePeer(BasicPeer):
         while 1:
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if (isinstance(msg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                if isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
                     break
 
@@ -476,8 +474,7 @@ class TargettedPeer(BasicPeer):
         while 1:
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if (isinstance(msg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                if isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
                     break
 
@@ -550,12 +547,10 @@ class PostboxPeer(BasicPeer):
         self.send(newReader(self, ((self, "readReady"), self.sock)),
                   "_selectorSignal")
 
-        # TODO: Make me shutdown nicely
         while 1:
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if (isinstance(msg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                if isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
                     break
 
