@@ -24,7 +24,7 @@
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import KamTestCase
+import kamtest.KamTestCase as KamTestCase
 
 import KamTemplateProcessor
 import ConfigFileParser
@@ -103,11 +103,10 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
     
     def testShutdown(self):
         shutdownMicroprocessObj = shutdownMicroprocess()
-        self.messageAdder.addMessage(shutdownMicroprocessObj, 'control')
+        self.put(shutdownMicroprocessObj, 'control')
         self.assertStopping()
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertEquals(shutdownMicroprocessObj, messages[0])
+        self.assertEquals(shutdownMicroprocessObj, self.get('signal'))
+        self.assertOutboxEmpty('signal')
     
     def generateConfigObj(self):
         conf = ConfigFileParser.generateGeneralConfigObject()
@@ -126,39 +125,36 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
     def testSimpleUse(self):
         feedparsed = feedparser.parse(SAMPLE_RSS)
         feedparsed.href = FEED_URL
-        self.messageAdder.addMessage(feedparsed, 'feeds-inbox')
+        self.put(feedparsed, 'feeds-inbox')
         
         entry = { 
                  'feed'     : feedparsed.feed, 
                  'entry'    : feedparsed.entries[0], 
                  'encoding' : feedparsed.encoding, 
             }
-        self.messageAdder.addMessage(entry, 'posts-inbox')
+        self.put(entry, 'posts-inbox')
         
         channel = self.generateFeedObj(FEED_URL)
-        self.messageAdder.addMessage(channel, 'channels-inbox')
+        self.put(channel, 'channels-inbox')
         
-        self.messageAdder.addYield(50)
+        self.putYield(50)
         
         configObj = self.generateConfigObj()
-        self.messageAdder.addMessage(configObj, 'config-inbox')
+        self.put(configObj, 'config-inbox')
         
-        self.messageAdder.addYield(50)
+        self.putYield(50)
         
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(producerFinished(), 'control')
         self.assertStopping()
         
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], producerFinished))
+        self.assertTrue(isinstance(self.get('signal'), producerFinished))
+        self.assertOutboxEmpty('signal')
         
-        messages = self.messageStorer.getMessages('create-output')
-        self.assertEquals(1, len(messages))
-        self.assertEquals(configObj.htmlFileName, messages[0])
+        self.assertEquals(configObj.htmlFileName, self.get('create-output'))
+        self.assertOutboxEmpty('create-output')
         
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(1, len(messages))
-        output = messages[0]
+        output = self.get('outbox')
+        self.assertOutboxEmpty('outbox')
         outputlines = [line.strip() for line in output.split('\n') if line.strip() != '']
         
         ptr = 0

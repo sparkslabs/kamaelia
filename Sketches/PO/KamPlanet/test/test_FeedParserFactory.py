@@ -27,7 +27,7 @@ from Kamaelia.Chassis.Pipeline import pipeline
 
 import mocker
 
-import KamTestCase
+import kamtest.KamTestCase as KamTestCase
 
 import FeedParserFactory
 import ConfigFileParser
@@ -89,13 +89,11 @@ class FeedParserTestCase(KamTestCase.KamTestCase):
         self.initializeSystem(self.feedParser)
         
     def testFeedparser(self):
-        self.messageAdder.addMessage(SAMPLE_RSS, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(SAMPLE_RSS, 'inbox')
+        self.put(producerFinished(), 'control')
         self.assertStopping()
         
-        messages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(1, len(messages))
-        msg = messages[0]
+        msg = self.get('outbox')
         
         # Just check that the feedparser object works as expected
         self.assertEquals(BLOG_TITLE,        msg.feed.title)
@@ -110,6 +108,8 @@ class FeedParserTestCase(KamTestCase.KamTestCase):
         self.assertEquals(POST_CREATOR,      msg.entries[0].author)
         self.assertEquals(POST_GID,          msg.entries[0].id)
         self.assertEquals(POST_DESCRIPTION,  msg.entries[0].description)
+        
+        self.assertOutboxEmpty('outbox')
         
 class WrappedFeedParserFactory(FeedParserFactory.FeedParserFactory):
     def __init__(self, mockedFeedParserMaker, *argv,  **kwargv):
@@ -131,18 +131,16 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.initializeSystem(self.feedParserFactory)
     
     def testNoFeedProducerFinished(self):
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(producerFinished(), 'control')
         self.assertStopping()
-        messages = self.messageStorer.getMessages("signal")
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], producerFinished))
+        self.assertTrue(isinstance(self.get('signal'), producerFinished))
+        self.assertOutboxEmpty('signal')
         
     def testNoFeedShutdown(self):
-        self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        self.put(shutdownMicroprocess(), 'control')
         self.assertStopping()
-        messages = self.messageStorer.getMessages("signal")
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], shutdownMicroprocess))
+        self.assertTrue(isinstance(self.get('signal'), shutdownMicroprocess))
+        self.assertOutboxEmpty('signal')
     
     def generateFeedObj(self, feedUrl):
         feed = ConfigFileParser.generateFeed()
@@ -164,7 +162,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         MESSAGE_NUMBER = 3
         
         mockFeedParsers = []
-        for i in xrange(MESSAGE_NUMBER):
+        for _ in xrange(MESSAGE_NUMBER):
             mockFeedParser = self.createMock(pipeline)
             # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
             # child will not die until this has finished
@@ -173,31 +171,29 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
             mockFeedParsers.append(mockFeedParser)
         
         feedobjs = []
-        for i in xrange(MESSAGE_NUMBER):
+        for _ in xrange(MESSAGE_NUMBER):
             feedobjs.append(self.generateFeedObj(FEED_URL))
         
         self.configureMultipleMockedFeedParserMaker(mockFeedParsers)
         
         for feedobj in feedobjs:
-            self.messageAdder.addMessage(feedobj, 'inbox')
-            self.messageAdder.addYield(10) #TODO: constant
+            self.put(feedobj, 'inbox')
+            self.putYield(10) #TODO: constant
             
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(producerFinished(), 'control')
         self.assertStopping()
 
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(MESSAGE_NUMBER, len(messages))
-        
-        for message in messages:
+        for _ in xrange(MESSAGE_NUMBER):
+            message = self.get('outbox')
             message.pop('href')
             self.assertEquals(
                               pickle.dumps(feedparser.parse(SAMPLE_RSS)), 
                               pickle.dumps(message)
                             )
+        self.assertOutboxEmpty('outbox')
         
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], producerFinished))
+        self.assertTrue(isinstance(self.get('signal'), producerFinished))
+        self.assertOutboxEmpty('signal')
         
         self.mockedFeedParserMakerMocker.verify()
 
@@ -222,38 +218,31 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.configureMultipleMockedFeedParserMaker(mockFeedParsers)
         
         for feedobj in feedobjs:
-            self.messageAdder.addMessage(feedobj, 'inbox')
-            self.messageAdder.addYield(10) #TODO: constant
+            self.put(feedobj, 'inbox')
+            self.putYield(10) #TODO: constant
             
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(producerFinished(), 'control')
         self.assertStopping()
         
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(0, len(messages))
-        
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], producerFinished))
+        self.assertOutboxEmpty('outbox')
+        self.assertTrue(isinstance(self.get('signal'), producerFinished))
+        self.assertOutboxEmpty('signal')
         
         self.mockedFeedParserMakerMocker.verify()
-        
         
     def testFeedsAndShutdownsPriority(self):
         feedobj = self.generateFeedObj(FEED_URL)
         
         # It doesn't matter as long as there is a shutdownMicroprocess message
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        self.put(feedobj, 'inbox')
+        self.put(feedobj, 'inbox')
+        self.put(feedobj, 'inbox')
+        self.put(shutdownMicroprocess(), 'control')
         self.assertStopping()
         
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(0, len(messages))
-        
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertTrue(isinstance(messages[0], shutdownMicroprocess))
+        self.assertOutboxEmpty('outbox')
+        self.assertTrue(isinstance(self.get('signal'), shutdownMicroprocess))
+        self.assertOutboxEmpty('signal')
 
     def testWaitingForChildrenWhenProducerFinished(self):
         mockFeedParser = self.createMock(pipeline)
@@ -263,9 +252,9 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         feedobj = self.generateFeedObj(FEED_URL)
         self.configureMockedFeedParserMaker(mockFeedParser)
         
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addYield()
-        self.messageAdder.addMessage(producerFinished(), 'control')
+        self.put(feedobj, 'inbox')
+        self.putYield()
+        self.put(producerFinished(), 'control')
         
         # Even if I have sent a producerFinished, the process does not finish
         # because there are pending children
@@ -279,9 +268,9 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         feedobj = self.generateFeedObj(FEED_URL)
         self.configureMockedFeedParserMaker(mockFeedParser)
         
-        self.messageAdder.addMessage(feedobj, 'inbox')
-        self.messageAdder.addYield()
-        self.messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        self.put(feedobj, 'inbox')
+        self.putYield()
+        self.put(shutdownMicroprocess(), 'control')
         
         # Even if I have sent a shutdownMicroprocess, the process does not finish
         # because there are pending children
