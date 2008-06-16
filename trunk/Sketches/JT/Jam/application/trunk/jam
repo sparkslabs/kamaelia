@@ -25,6 +25,7 @@ Flow diagram
    {Music App}      {Other Jam Instances}
 
 """
+
 try:
     import pypm
 except ImportError:
@@ -37,14 +38,33 @@ from optparse import OptionParser
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
-from Kamaelia.Util.Detuple import SimpleDetupler
 
+from Kamaelia.Apps.Jam.Util.TransformerSplitter import TransformerSplitter
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
-from Kamaelia.Apps.Jam.Internet.UDP import SimplePeer
 from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender
+from Kamaelia.Apps.Jam.Internet.UDPDistributor import UDPDistributor
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 
 FPS = 60
+
+def addPeer(data):
+    # Data is of the form ((oscAddr, oscArgs, timeTag), (address, port))
+    # oscArgs is either [port], or [address, port]
+    # The last element of the OSC message
+    if data[0][0].split("/")[-1] == "Connect":
+        oscArgs = data[0][1]
+        if len(oscArgs) == 1:
+            # oscArgs == [port]
+            address = data[1][0]
+            port = oscArgs[0]
+        else:
+            # oscArgs == [address, port]
+            address = oscArgs[0]
+            port = oscArgs[1]
+        return ((address, port), True)
+    else:
+        return (data, False)
+
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -67,35 +87,29 @@ if __name__ == "__main__":
     options, args = parser.parse_args()
 
     Graphline(clock = Clock(float(1)/FPS),
-              splitter = TwoWaySplitter(),
+              clockSplitter = TwoWaySplitter(),
               receiver = UDPReceiver(localaddr=options.listenAddress,
                                      localport=options.listenPort),
-              detupler = SimpleDetupler(0),
-              deOsc = DeOsc(),
+              deOsc = DeOsc(index=0),
+              messageSplitter = TransformerSplitter(((addPeer, "addPeer"),)),
               xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
               xyPad2 = XYPad(messagePrefix = "/XY/2/", editable=False,
                              position=(120, 0)),
               localOsc = Osc("/Jam"),
               remoteOsc = Osc("/Jam"),
-#              localSender = SimplePeer(receiver_addr=options.oscAddress,
-#                                       receiver_port=options.oscPort),
-#              remoteSender = SimplePeer(receiver_addr=options.remoteAddress,
-#                                        receiver_port=options.remotePort),
               localSender = UDPSender(receiver_addr=options.oscAddress,
                                       receiver_port=options.oscPort),
-              remoteSender = UDPSender(receiver_addr=options.remoteAddress,
-                                       receiver_port=options.remotePort),
-              linkages={("receiver", "outbox"): ("detupler", "inbox"),
-              ("detupler", "outbox"):("deOsc", "inbox"),
-              ("deOsc", "outbox"):("xyPad2", "remoteChanges"),
-              ("clock", "outbox"):("splitter", "inbox"),
-              ("splitter", "outbox"):("xyPad", "newframe"),
-              ("splitter", "outbox2"):("xyPad2", "newframe"),
+              remoteSender = UDPDistributor(),
+              linkages={("receiver", "outbox"):("deOsc", "inbox"),
+              ("deOsc", "outbox"):("messageSplitter", "inbox"),
+              ("messageSplitter", "addPeer"):("remoteSender", "addPeer"),
+              ("messageSplitter", "rejects"):("xyPad2", "remoteChanges"),
+              ("clock", "outbox"):("clockSplitter", "inbox"),
+              ("clockSplitter", "outbox"):("xyPad", "newframe"),
+              ("clockSplitter", "outbox2"):("xyPad2", "newframe"),
               ("xyPad", "outbox"):("localOsc", "inbox"),
               ("xyPad", "localChanges"):("remoteOsc", "inbox"),
               ("xyPad2", "outbox"):("localOsc", "inbox"),
               ("localOsc", "outbox"):("localSender", "inbox"),
               ("remoteOsc", "outbox"):("remoteSender", "inbox")
               }).run()
-
-
