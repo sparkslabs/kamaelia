@@ -5,6 +5,7 @@ import sys
 import os
 import re
 import cStringIO
+import traceback
 from datetime import datetime
 from wsgiref.validate import validator
 import copy
@@ -13,6 +14,7 @@ import Axon
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished
 import Kamaelia.Util.Log as Log
+import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 
 Axon.Box.ShowAllTransits = False
 # ----------------------------------------------------------------------------------------------------
@@ -70,10 +72,9 @@ class _WsgiHandler(threadedcomponent):
         'signal' : 'send producerFinished messages',
         '_signal-lw' : 'shut down the log writable',
     }
-
-    def __init__(self, app_name, app, request, log_writable, WsgiConfig):
-        super(_WsgiHandler, self).__init__()
-        self.app_name = app_name
+    Debug = False
+    def __init__(self, app, request, log_writable, WsgiConfig, **argd):
+        super(_WsgiHandler, self).__init__(**argd)
         self.request = request
         self.environ = copy.deepcopy(request)
         #Some part of the server holds a reference to the request.
@@ -88,7 +89,6 @@ class _WsgiHandler(threadedcomponent):
         self.write_called = False
 
     def main(self):
-
         self.server_name, self.server_port = self.request['uri-server'].split(':')
         #Get the server name and the port number from the server portion of the
         #uri.  E.G. 127.0.0.1:8082/moin returns 127.0.0.1 and 8082
@@ -100,33 +100,24 @@ class _WsgiHandler(threadedcomponent):
 
 
         if self.request['method'] == 'POST':
-            buffer = []     #Wait on the body to be sent to us
-            not_done = True
-            while not_done:
-                while self.dataReady('control'):
-                    if isinstance(self.recv('control'), producerFinished):
-                        not_done = False
-
-                while self.dataReady('inbox'):
-                    buffer.append(self.recv('inbox').bodychunk)
-
-                if not_done and not self.anyReady():
-                    self.pause()
-            self.environ['body'] = ''.join(buffer)
-
+            self.waitForBody()
+            
         normalizeEnviron(self.environ)
 
         self.log_writable.write(pformat(self.environ))
 
-        #PEP 333 specifies that we're not supposed to buffer output here,
-        #so pulling the iterator out of the app object
-        app_iter = iter(self.app(self.environ, self.start_response))
+        try:
+            #PEP 333 specifies that we're not supposed to buffer output here,
+            #so pulling the iterator out of the app object
+            app_iter = iter(self.app(self.environ, self.start_response))
 
-        first_response = app_iter.next()
-        self.write(first_response)
+            first_response = app_iter.next()#  License:  LGPL
+            self.write(first_response)
 
-        [self.sendFragment(x) for x in app_iter]
-
+            [self.sendFragment(x) for x in app_iter]
+        except:
+            message = traceback.format_exception(sys.exc_info)
+            self._error(503, message)
         try:
             app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
         except:
@@ -169,9 +160,22 @@ class _WsgiHandler(threadedcomponent):
         else:
             raise WsgiError('Unkown error in write.')
 
+    def _error(self, status=503, body_data=''):
+        if self.Debug:
+            resource = {
+                'statuscode' : status,
+                'type' : 'text/html',
+                'data' : body_data,
+            }
+            self.send(resource, 'outbox')
+        else:
+            self.send(ErrorPages.getErrorPage(status, 'An internal error has occurred.'), 'outbox')
+
+        self.log_writable.write(body_data)
+
+
     def waitForBody(self):
-        environ['body'] = ''
-        buffer = []
+        buffer = []     #Wait on the body to be sent to us
         not_done = True
         while not_done:
             while self.dataReady('control'):
@@ -179,10 +183,11 @@ class _WsgiHandler(threadedcomponent):
                     not_done = False
 
             while self.dataReady('inbox'):
-                buffer += self.recv('inbox')
+                buffer.append(self.recv('inbox').bodychunk)
 
             if not_done and not self.anyReady():
                 self.pause()
+        self.environ['body'] = ''.join(buffer)
 
     def generateRequestMemFile(self):
         """
@@ -214,9 +219,6 @@ class _WsgiHandler(threadedcomponent):
         (including ones that could possibly be empty).
         """
         self.environ["REQUEST_METHOD"] = self.environ["method"]
-
-        # Portion of URL that relates to the application object.
-        self.environ["SCRIPT_NAME"] = self.app_name
 
         # Server name published to the outside world
         self.environ["SERVER_NAME"] = self.server_name
@@ -289,7 +291,7 @@ def Handler(log_writable, WsgiConfig, url_list):
         for url_item in url_list:
 #            print 'trying ' + url_item[0]
             if re.search(url_item[0], split_uri[0]):
-                app_name = split_uri.pop(0)
+                request['SCRIPT_NAME'] = split_uri.pop(0)
                 request['PATH_INFO'] = '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
 #                print 'app_name= ' + app_name
 #                print url_item[0] + 'successful!'
@@ -301,7 +303,7 @@ def Handler(log_writable, WsgiConfig, url_list):
 
         module = _importWsgiModule(mod)
         app = getattr(module, app_attr)
-        return _WsgiHandler(app_name, app, request, log_writable, WsgiConfig)
+        return _WsgiHandler(app, request, log_writable, WsgiConfig)
     return _getWsgiHandler
 
 def HTTPProtocol():
@@ -318,6 +320,12 @@ class WsgiError(Exception):
     This is just a generic exception class.  As of right now, it is only thrown
     when write is called before start_response, so it's primarily an exception
     that is thrown when an application messes up, but that may change!
+    """
+    pass
+
+class WsgiAppError(Exception):
+    """
+    This is an exception that is used if a Wsgi application does something it shouldnt.
     """
     pass
 
