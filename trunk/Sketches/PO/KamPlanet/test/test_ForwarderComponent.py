@@ -24,7 +24,7 @@
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import KamTestCase
+import kamtest.KamTestCase as KamTestCase
 
 import ForwarderComponent
 
@@ -34,76 +34,71 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
         self.initializeSystem(self.forwarderComponent)
         
     def testSimpleUse(self):
-        self.messageAdder.addMessage("message1", 'inbox')
-        self.messageAdder.addMessage("message2", 'inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message3", 'inbox')
-        self.messageAdder.addMessage("message4", 'inbox')
+        self.put("message1", 'inbox')
+        self.put("message2", 'inbox')
+        self.putYield(50) # let it breathe
+        self.put("message3", 'inbox')
+        self.put("message4", 'inbox')
         producerFinishedObj = producerFinished()
-        self.messageAdder.addMessage(producerFinishedObj, "control")
-        self.messageAdder.addYield(50) # let it breathe
+        self.put(producerFinishedObj, "control")
+        self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
-        self.messageAdder.addMessage(producerFinishedObj, "control")
+        self.put(producerFinishedObj, "control")
         self.assertStopping()
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(4, len(messages))
         for i in xrange(4):
             expected = "message%s" % (i + 1)
-            actual   = messages[i]
+            actual   = self.get('outbox')
             self.assertEquals(expected, actual, "Failed on i = %s: <%s> != <%s>" % (i, expected, actual))
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages)) # and only one, the second one did not arrive
-        self.assertEquals(producerFinishedObj, messages[0])
+        self.assertOutboxEmpty('outbox')
+            
+        self.assertEquals(producerFinishedObj, self.get('signal'))
+        self.assertOutboxEmpty('signal')
 
     def testSimpleSecondaryUse(self):
-        self.messageAdder.addMessage("message1", 'secondary-inbox')
-        self.messageAdder.addMessage("message2", 'secondary-inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message3", 'secondary-inbox')
-        self.messageAdder.addMessage("message4", 'secondary-inbox')
+        self.put("message1", 'secondary-inbox')
+        self.put("message2", 'secondary-inbox')
+        self.putYield(50) # let it breathe
+        self.put("message3", 'secondary-inbox')
+        self.put("message4", 'secondary-inbox')
         producerFinishedObj = producerFinished()
-        self.messageAdder.addMessage(producerFinishedObj, "secondary-control")
-        self.messageAdder.addYield(50) # let it breathe
+        self.put(producerFinishedObj, "secondary-control")
+        self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
-        self.messageAdder.addMessage(producerFinishedObj, "secondary-control")
+        self.put(producerFinishedObj, "secondary-control")
         self.assertStopping()
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(4, len(messages))
         for i in xrange(4):
             expected = "message%s" % (i + 1)
-            actual   = messages[i]
+            actual   = self.get('outbox')
             self.assertEquals(expected, actual, "Failed on i = %s: <%s> != <%s>" % (i, expected, actual))
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages)) # and only one, the second one did not arrive
-        self.assertEquals(producerFinishedObj, messages[0])
+        self.assertOutboxEmpty('outbox')
+        self.assertEquals(producerFinishedObj, self.get('signal'))
+        self.assertOutboxEmpty('signal')
     
     def testSimpleMixedUse(self):
         # Take into account that the yields are necessary, since the
         # Forwarder component can't ensure the order among messages received in
         # two different inboxes
-        self.messageAdder.addMessage("message1", 'inbox')
-        self.messageAdder.addMessage("message2", 'inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message3", 'secondary-inbox')
-        self.messageAdder.addMessage("message4", 'secondary-inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message5", 'inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message6", 'secondary-inbox')
-        self.messageAdder.addYield(50) # let it breathe
-        self.messageAdder.addMessage("message7", 'inbox')
+        self.put("message1", 'inbox')
+        self.put("message2", 'inbox')
+        self.putYield(50) # let it breathe
+        self.put("message3", 'secondary-inbox')
+        self.put("message4", 'secondary-inbox')
+        self.putYield(50) # let it breathe
+        self.put("message5", 'inbox')
+        self.putYield(50) # let it breathe
+        self.put("message6", 'secondary-inbox')
+        self.putYield(50) # let it breathe
+        self.put("message7", 'inbox')
         producerFinishedObj = producerFinished()
-        self.messageAdder.addMessage(producerFinishedObj, "control")
+        self.put(producerFinishedObj, "control")
         self.assertStopping()
-        messages = self.messageStorer.getMessages('outbox')
-        self.assertEquals(7, len(messages))
         for i in xrange(7):
             expected = "message%s" % (i + 1)
-            actual   = messages[i]
+            actual   = self.get('outbox')
             self.assertEquals(expected, actual, "Failed on i = %s: <%s> != <%s>" % (i, expected, actual))
-        messages = self.messageStorer.getMessages('signal')
-        self.assertEquals(1, len(messages))
-        self.assertEquals(producerFinishedObj, messages[0])
+        self.assertOutboxEmpty('outbox')
+        self.assertEquals(producerFinishedObj, self.get('signal'))
+        self.assertOutboxEmpty('signal')
 
 def suite():
     return KamTestCase.makeSuite(ForwarderComponentTestCase.getTestCase())

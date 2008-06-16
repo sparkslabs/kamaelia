@@ -27,17 +27,23 @@ import threading
 
 class MessageStorer(Axon.Component.component):
     def __init__(self, inboxes,  **argd):
-        self.Inboxes = inboxes
+        for inbox in inboxes:
+            self.Inboxes[inbox] = ''
+        for outbox in self.Inboxes:
+            self.Outboxes[outbox] = ''
         super(MessageStorer, self).__init__(**argd)
         self.lock = threading.Lock()
         self.messages = {}
-        for inboxName in inboxes:
+        for inboxName in self.Inboxes:
             self.messages[inboxName] = []
         self._stop_within_iterations = None
         
     def stopMessageStorer(self, within_iterations = 0):
         self._stop_within_iterations = within_iterations
-        
+    
+    def getMessage(self, inbox):
+        return self.messages[inbox].pop(0)
+    
     def getMessages(self, inbox):
         return self.messages[inbox][:]
     
@@ -49,9 +55,11 @@ class MessageStorer(Axon.Component.component):
                     while self.dataReady(inbox):
                         data = self.recv(inbox)
                         self.messages[inbox].append(data)
+                        self.send(data, inbox)
                 finally:
                     self.lock.release()
             if self._stop_within_iterations is not None:
                 self._stop_within_iterations = self._stop_within_iterations - 1
                 
             yield 1
+            

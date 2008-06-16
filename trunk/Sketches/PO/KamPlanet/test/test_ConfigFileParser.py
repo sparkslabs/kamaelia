@@ -25,7 +25,7 @@
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
-import KamTestCase
+import kamtest.KamTestCase as KamTestCase
 
 import ConfigFileParser
 
@@ -66,21 +66,19 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
         self.initializeSystem(self.xmlParser,  self.configFileParser)
     
     def runWithSampleConfig(self, sampleConfig):
-        self.messageAdder.addMessage(sampleConfig, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+        self.put(sampleConfig, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
         
     def testSampleConfigNotStopping(self):
-        self.messageAdder.addMessage(self.SAMPLE_CONFIG1, 'inbox')
+        self.put(self.SAMPLE_CONFIG1, 'inbox')
         # I actively say that I don't care which threads are still running
         self.assertNotStopping(clear=True)
         
     def testSignal(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
         
-        signalMessages = self.messageStorer.getMessages("signal")
-        self.assertEquals( 1, len(signalMessages) )
-        signalMsg      = signalMessages[0]
+        signalMsg      = self.get('signal')
         self.assertTrue(
             isinstance(
                        signalMsg, 
@@ -91,48 +89,48 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
             self.configFileParser, 
             signalMsg.caller
         )
+        self.assertOutboxEmpty('signal')
     
     def testGeneralConfig(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
-        configMessages = self.messageStorer.getMessages("config-outbox")
-        self.assertEquals(1,  len(configMessages))
-        configMsg = configMessages[0]
+        configMsg = self.get('config-outbox')
         self.assertEquals('Kamaelia Planet', configMsg.name)
+        self.assertOutboxEmpty('config-outbox')
         
     def testFeedsOutbox(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
-        feedMessages = self.messageStorer.getMessages("feeds-outbox")
-        self.assertEquals(2, len(feedMessages))
-        
-        self.assertEquals("http://localhost/blog1", feedMessages[0].url )
-        self.assertEquals("blog1",                  feedMessages[0].name )
+        firstFeedMessage = self.get('feeds-outbox')
+        self.assertEquals("http://localhost/blog1", firstFeedMessage.url )
+        self.assertEquals("blog1",                  firstFeedMessage.name )
         self.assertEquals(
                     ConfigFileParser.DEFAULT_FACE_HEIGHT,
-                    feedMessages[0].faceHeight
+                    firstFeedMessage.faceHeight
                 )
         self.assertEquals(
                     ConfigFileParser.DEFAULT_FACE_WIDTH,
-                    feedMessages[0].faceWidth 
+                    firstFeedMessage.faceWidth 
                 )
         self.assertEquals(
                     ConfigFileParser.DEFAULT_FACE,
-                    feedMessages[0].face
+                    firstFeedMessage.face
                 )
         
-        self.assertEquals("http://localhost/blog2", feedMessages[1].url )
-        self.assertEquals("blog2",                  feedMessages[1].name )
+        secondFeedMessage = self.get('feeds-outbox')
+        self.assertEquals("http://localhost/blog2", secondFeedMessage.url )
+        self.assertEquals("blog2",                  secondFeedMessage.name )
         self.assertEquals(
                     '12345',
-                    feedMessages[1].faceHeight
+                    secondFeedMessage.faceHeight
                 )
         self.assertEquals(
                     '54321',
-                    feedMessages[1].faceWidth 
+                    secondFeedMessage.faceWidth 
                 )
         self.assertEquals(
                     'imgs/blog2.png',
-                    feedMessages[1].face
+                    secondFeedMessage.face
                 )
+        self.assertOutboxEmpty('feeds-outbox')
         
 def suite():
     return KamTestCase.makeSuite(ConfigFileParserTestCase.getTestCase())

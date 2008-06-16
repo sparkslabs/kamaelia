@@ -26,6 +26,8 @@ import unittest
 from unittest import TestSuite, makeSuite, main
 
 import Axon.Scheduler             as Scheduler
+import Axon.LikeFile              as LikeFile
+from Axon.Ipc                     import shutdownMicroprocess
 from Kamaelia.Chassis.Graphline   import Graphline
 
 from MessageAdder                 import MessageAdder
@@ -57,6 +59,10 @@ class _AuxiliarTestCase(unittest.TestCase):
     def tearDown(self):
         self._kamtestcase.tearDown()
         self._kamtestcase._finish()
+
+# TODO: this might break something if another component says
+# background().start() ... why is background a singleton?
+LikeFile.background().start()
 
 class KamTestCase(object):
     # TODO: this number of steps depends too much on the situation :-S
@@ -133,8 +139,8 @@ class KamTestCase(object):
                         if not outboxName.startswith('_')
                 ]
             
-        self.messageAdder         = MessageAdder(publicInboxNames)
-        self.messageStorer        = MessageStorer(publicOutboxNames)
+        self._messageAdder         = MessageAdder(publicInboxNames)
+        self._messageStorer        = MessageStorer(publicOutboxNames)
         
         linkages = {}
         
@@ -145,15 +151,49 @@ class KamTestCase(object):
             linkages[('OUTPUT_COMPONENT_UNDER_TEST', publicOutbox)] = ('MESSAGE_STORER', publicOutbox)
         
         self._graph = Graphline(
-            MESSAGE_ADDER               = self.messageAdder,
+            MESSAGE_ADDER               = self._messageAdder,
             INPUT_COMPONENT_UNDER_TEST  = inputComponentUnderTest,
             OUTPUT_COMPONENT_UNDER_TEST = outputComponentUnderTest,
-            MESSAGE_STORER              = self.messageStorer, 
+            MESSAGE_STORER              = self._messageStorer, 
             linkages                    = linkages, 
         )
         
+        if hasattr(self, '_lf'):
+            try:
+                self._lf.shutdown()
+            except:
+                pass
+            
+        self._graph.activate()
+        self._messageAdder.activate()
+        self._messageStorer.activate()
+        inputComponentUnderTest.activate()
+        outputComponentUnderTest.activate()
+        self._lf = LikeFile.likefile(self._messageStorer)
+        
         self._kamtest_initialized = True
-    
+
+    def put(self, msg, inbox):
+        self._messageAdder.addMessage(msg, inbox)
+        
+    def putYield(self, number = 1):
+        pass
+        
+    def get(self, outbox, timeout = 1):
+        return self._lf.get(outbox, timeout=timeout)
+        
+    def assertOutboxEmpty(self, outbox, msg = None, timeout=1):
+        try:
+            self._lf.get(outbox, timeout=timeout)
+        except:
+            pass # Expected
+        else:
+            raise self.failureException(
+                            msg or "Outbox %s not empty: %s" % (
+                            outbox, 
+                            self._messageStorer.getMessages(outbox))
+                )
+
     def _listThreads(self):
         scheduler = self._graph.__class__.schedulerClass.run
         threads   = scheduler.listAllThreads()
@@ -161,9 +201,8 @@ class KamTestCase(object):
         return threads
         
     def clearThreads(self):
-        # Reboot the scheduler
-        self._graph.__class__.schedulerClass.run = None
-        self._graph.__class__.schedulerClass()
+        self._messageAdder.stopMessageAdder(0)
+        self._messageStorer.stopMessageStorer(0)
     
     def _initialize(self):
         """ _initialize()
@@ -171,9 +210,7 @@ class KamTestCase(object):
         Called before each test, initializes the kamaelia environment.
         """
         self._mocks = []
-        if self._kamtest_initialized:
-            self.clearThreads()
-            self._kamtest_initialized = False
+        self._kamtest_initialized = False
     
     def _finish(self):
         """ _finish()
@@ -181,111 +218,20 @@ class KamTestCase(object):
         Called after each test, cleans the kamaelia environment.
         """        
         if self._kamtest_initialized:
+            self.clearThreads()
+            self._lf.shutdown()
+            print self._listThreads()
             self._kamtest_initialized = False
-            scheduler = self._graph.__class__.schedulerClass.run
-            scheGenerator  = scheduler.main(0, canblock=False)
-            n = 0
-            try:
-                while n < 100:
-                    scheGenerator.next()
-                    n += 1
-            except StopIteration, si:
-                pass
-            
-            threads = self._listThreads()
-            
-            if len(threads) > 0:
-                raise self.failureException("Processes still running: %s" % threads)
     
     def _runSteps(self, steps):
-        if steps is None:
-            steps = self.DEFAULT_STEP_NUMBER
-        self.messageAdder.stopMessageAdder(steps)
-        self.messageStorer.stopMessageStorer(steps)
-        
-        self._graph.activate()
-        scheduler      = self._graph.__class__.schedulerClass.run
-        scheGenerator  = scheduler.main(0, canblock=False)
-        
-        # TODO: These numbers must change
-        # Lower to this values doesn't work
-        # Higher will work in KamPlanet ConfigFileParser, but 
-        # it's not sure that it will work when testing other 
-        # classes. 
-        # I wouldn't mind setting them to 100 or whatever
-        # but take a closer look
-        MAGIC_NUMBER_BEFORE_SETTING_LIST_THREADS = 6
-        MAGIC_NUMBER_TO_BE_ADDED_TO_STEPS        = 5
-        
-        # In the beginning, calling _listThreads will return []
-        for _ in xrange(MAGIC_NUMBER_BEFORE_SETTING_LIST_THREADS):
-            scheGenerator.next()
-        
-        # Later the real iteration
-        for _ in xrange(steps + MAGIC_NUMBER_TO_BE_ADDED_TO_STEPS): 
-            try:
-                n = len(self._listThreads())
-                if n == 0:
-                    break
-                iteration_counter = 0
-                while iteration_counter < n:
-                    scheGenerator.next()
-                    iteration_counter += 1
-                    n = len(self._listThreads())
-            except StopIteration:
-                break        
+        pass
     
     def assertStopping(self, msg = None, steps = None):
-        """
-        assertStopping(msg, steps) -> None
-        
-        It will run the scheduler several times, assuring that the 
-        messageAdder and the messageStorer will be run "steps" times.
-        
-        The idea is to iterate the minimum number of times so we 
-        assure that the scheduler is run the number of $(steps 
-        provided * the number of threads being run at each step). It's
-        not a real problem to let it run more times, but at some point
-        it must finish. When it finishes, if there is any thread still
-        alive, it will raise an AssertionError with the message "msg"
-        (if provided).
-        """
-        self._runSteps(steps)
-        # Check the number of threads
-        threads = self._listThreads()
-        if len(threads) > 0:
-            # first clean creating a new scheduler
-            self._graph.__class__.schedulerClass.run = Scheduler.scheduler()
-            # then raise the failureException
-            raise self.failureException(msg or "Processes still running: %s" % threads)
+        pass #TODO: this method makes no sense when using LikeFile
 
     def assertNotStopping(self, msg = None, steps = None, clear = False):
-        """
-        runMessageExchange(msg, steps) -> None
-        
-        It will run the scheduler several times, assuring that the 
-        messageAdder and the messageStorer will be run "steps" times.
-        
-        The idea is to iterate the minimum number of times so we 
-        assure that the scheduler is run the number of $(steps 
-        provided * the number of threads being run at each step). It's
-        not a real problem to let it run more times, but at some point
-        it must finish. When it finishes, if there is any thread still
-        alive, it will raise an AssertionError with the message "msg"
-        (if provided).
-        """
-        self._runSteps(steps)
-        
-        # Check the number of threads
-        threads = self._listThreads()
-        if len(threads) == 0:
-            self.clearThreads()
-            # then raise the failureException
-            raise self.failureException(msg or "Processes still running: %s" % threads)
-        else:
-            if clear:
-                self.clearThreads()
-                
+        pass #TODO: this method makes no sense when using LikeFile
+
     def setUp(self):
         pass # To be overriden by the user
         

@@ -24,7 +24,7 @@
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import KamTestCase
+import kamtest.KamTestCase as KamTestCase
 import PostSorter
 import ConfigFileParser
 
@@ -78,50 +78,43 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         # Max: 1 feed
         # Provided: 100 feeds
         configObject = self.createConfigObject(1)
-        self.messageAdder.addMessage(configObject, 'config-inbox')
+        self.put(configObject, 'config-inbox')
         feeds = self.generate100feeds()
         for feed in feeds:
-            self.messageAdder.addMessage(feed, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+            self.put(feed, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
-        storedMessages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(
-                    1, 
-                    len(storedMessages)
-                )
+        _ = self.get('outbox')
+        self.assertOutboxEmpty('outbox')
     
     def testTooFewFeeds(self):
         # Max: 200 feeds
         # Provided: 100 feeds
         configObject = self.createConfigObject(200)
-        self.messageAdder.addMessage(configObject, 'config-inbox')
+        self.put(configObject, 'config-inbox')
         feeds = self.generate100feeds()
         for feed in feeds:
-            self.messageAdder.addMessage(feed, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+            self.put(feed, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
-        storedMessages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(
-                    100,  
-                    len(storedMessages)
-                )
+        for _ in xrange(100):
+            self.get('outbox')
+        self.assertOutboxEmpty('outbox')
                 
     def testMax10feeds(self):
         # Max: 10 feeds
         # Provided: 100 feeds
         configObject = self.createConfigObject(10)
-        self.messageAdder.addMessage(configObject, 'config-inbox')
+        self.put(configObject, 'config-inbox')
         feeds = self.generate100feeds()
         for feed in feeds:
-            self.messageAdder.addMessage(feed, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+            self.put(feed, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
-        storedMessages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(
-                    10, 
-                    len(storedMessages)
-                )
-                
+        for _ in xrange(10):
+            self.get('outbox')
+        self.assertOutboxEmpty('outbox')
+        
     def testOrder(self):
         feeds = []
         the_date        = time.gmtime()
@@ -138,25 +131,25 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         feeds.extend(self.generateFeeds(2, self.NO_DATE,    'notime'))
         
         configObject = self.createConfigObject(10)
-        self.messageAdder.addMessage(configObject, 'config-inbox')
+        self.put(configObject, 'config-inbox')
         
         for feed in feeds:
-            self.messageAdder.addMessage(feed, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+            self.put(feed, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
-        storedMessages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(
-                    10, 
-                    len(storedMessages)
-                )
-        for msg in storedMessages[0:2]:
+        for _ in range(2):
+            msg = self.get('outbox')
             self.assertEquals(cur_year + 1, msg['entry']['updated_parsed'][0])
-        for msg in storedMessages[2:4]:
+        for _ in range(2):
+            msg = self.get('outbox')
             self.assertEquals(cur_year    , msg['entry']['updated_parsed'][0])
-        for msg in storedMessages[4:6]:
+        for _ in range(2):
+            msg = self.get('outbox')
             self.assertEquals(cur_year - 1, msg['entry']['updated_parsed'][0])
-        for msg in storedMessages[6:10]:
+        for _ in range(4):
+            msg = self.get('outbox')
             self.assertFalse(msg['entry'].has_key('updated_parsed'))
+        self.assertOutboxEmpty('outbox')
 
     def testFilterOrder(self):
         feeds = []
@@ -174,23 +167,22 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         feeds.extend(self.generateFeeds(2, self.NO_DATE,    'notime'))
         
         configObject = self.createConfigObject(5)
-        self.messageAdder.addMessage(configObject, 'config-inbox')
+        self.put(configObject, 'config-inbox')
         
         for feed in feeds:
-            self.messageAdder.addMessage(feed, 'inbox')
-        self.messageAdder.addMessage(producerFinished(), "control")
+            self.put(feed, 'inbox')
+        self.put(producerFinished(), "control")
         self.assertStopping()
-        storedMessages = self.messageStorer.getMessages("outbox")
-        self.assertEquals(
-                    5, 
-                    len(storedMessages)
-                )
-        for msg in storedMessages[0:2]:
+        for _ in range(2):
+            msg = self.get('outbox')
             self.assertEquals(cur_year + 1, msg['entry']['updated_parsed'][0])
-        for msg in storedMessages[2:4]:
+        for _ in range(2):
+            msg = self.get('outbox')
             self.assertEquals(cur_year    , msg['entry']['updated_parsed'][0])
-        for msg in storedMessages[4:5]:
+        for _ in range(1):
+            msg = self.get('outbox')
             self.assertEquals(cur_year - 1, msg['entry']['updated_parsed'][0])
+        self.assertOutboxEmpty('outbox')
 
 def suite():
     return KamTestCase.makeSuite(PostSorterTestCase.getTestCase())
