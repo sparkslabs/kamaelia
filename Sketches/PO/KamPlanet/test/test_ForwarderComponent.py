@@ -80,24 +80,42 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
         # two different inboxes
         self.put("message1", 'inbox')
         self.put("message2", 'inbox')
-        self.putYield(50) # let it breathe
+        
+        actual   = self.get('outbox')
+        self.assertEquals("message1", actual)
+        actual   = self.get('outbox')
+        self.assertEquals("message2", actual)
+        
         self.put("message3", 'secondary-inbox')
         self.put("message4", 'secondary-inbox')
-        self.putYield(50) # let it breathe
+        
+        actual   = self.get('outbox')
+        self.assertEquals("message3", actual)
+        actual   = self.get('outbox')
+        self.assertEquals("message4", actual)
+        
         self.put("message5", 'inbox')
-        self.putYield(50) # let it breathe
+        
+        actual   = self.get('outbox')
+        self.assertEquals("message5", actual)
+        
         self.put("message6", 'secondary-inbox')
-        self.putYield(50) # let it breathe
+        
+        actual   = self.get('outbox')
+        self.assertEquals("message6", actual)
+        
         self.put("message7", 'inbox')
+        
+        actual   = self.get('outbox')
+        self.assertEquals("message7", actual)
+        
         producerFinishedObj = producerFinished()
         self.put(producerFinishedObj, "control")
-        self.assertStopping()
-        for i in xrange(7):
-            expected = "message%s" % (i + 1)
-            actual   = self.get('outbox')
-            self.assertEquals(expected, actual, "Failed on i = %s: <%s> != <%s>" % (i, expected, actual))
+        
+        actual   = self.get('signal')
+        self.assertEquals(producerFinishedObj, actual)
+        
         self.assertOutboxEmpty('outbox')
-        self.assertEquals(producerFinishedObj, self.get('signal'))
         self.assertOutboxEmpty('signal')
 
 def suite():
