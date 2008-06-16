@@ -28,7 +28,7 @@ import KamExpectMatcher
 
 class KamExpectMatcherTestCase(unittest.TestCase):
     def testMatcherString(self):
-        matcher = KamExpectmatcher.matcheser("hello")
+        matcher = KamExpectMatcher.Matcher("hello")
         self.assertTrue(  matcher.matches("hello"))
         self.assertFalse( matcher.matches("hellosomething"))
         self.assertFalse( matcher.matches("somethinghello"))
@@ -37,7 +37,7 @@ class KamExpectMatcherTestCase(unittest.TestCase):
         self.assertFalse( matcher.matches(5))
         
     def testMatcherInt(self):
-        matcher = KamExpectmatcher.matcheser(5)
+        matcher = KamExpectMatcher.Matcher(5)
         self.assertTrue(  matcher.matches(5))
         self.assertTrue(  matcher.matches(5.0))
         self.assertFalse( matcher.matches(4))
