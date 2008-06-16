@@ -112,9 +112,15 @@ class Osc(Axon.Component.component):
 
 class DeOsc(Axon.Component.component):
     """
-    DeOsc() -> new DeOsc component
+    DeOsc([index]) -> new DeOsc component
 
     Decodes binary OSC data received on the component's "inbox" inbox
+
+    Arguments:
+
+    - index -- Only decode data[index] from a tuple, and send the rest through.
+               This is useful, as we get (binaryMsg, (address, port)) tuples
+               from the the UDP receiver component.
     """
 
     Inboxes = { "inbox"   : "OSC packet to decode",
@@ -125,12 +131,13 @@ class DeOsc(Axon.Component.component):
                }
 
 
-    def __init__(self):
+    def __init__(self, index=None):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
         super(DeOsc, self).__init__()
+        self.index = index
 
     def main(self):
         """ Main loop """
@@ -143,9 +150,18 @@ class DeOsc(Axon.Component.component):
                     break
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
-                data = OSC.decodeOSC(data)
-                # Send decoded data as (address, [arguments], timetag) tuple
-                self.send((data[2][0], data[2][2:], data[1]))
+                if self.index is None:
+                    decoded = OSC.decodeOSC(data)
+                    # Send decoded data as (address, [arguments], timetag) tuple
+                    self.send((decoded[2][0], decoded[2][2:], decoded[1]),
+                              "outbox")
+                else:
+                    decoded = OSC.decodeOSC(data[self.index])
+                    data = list(data)
+                    data[self.index] = (decoded[2][0], decoded[2][2:],
+                                           decoded[1])
+                    self.send(data, "outbox") 
+                    
             if not self.anyReady():
                 self.pause()
                 yield 1
