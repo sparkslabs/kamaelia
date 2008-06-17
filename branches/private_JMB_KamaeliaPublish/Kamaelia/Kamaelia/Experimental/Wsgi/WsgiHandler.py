@@ -3,13 +3,14 @@ import sys
 import os
 import re
 import cStringIO
-import traceback
+import cgitb
 from datetime import datetime
-from wsgiref.validate import validator
+from wsgiref.util import is_hop_by_hop
 import copy
 import LogWritable
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
+from Axon.Component import component
 from Axon.Ipc import producerFinished
 import Kamaelia.Util.Log as Log
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
@@ -108,15 +109,13 @@ class _WsgiHandler(threadedcomponent):
             #PEP 333 specifies that we're not supposed to buffer output here,
             #so pulling the iterator out of the app object
             app_iter = iter(self.app(self.environ, self.start_response))
-            raise WsgiError('test')
 
             first_response = app_iter.next()#  License:  LGPL
             self.write(first_response)
 
             [self.sendFragment(x) for x in app_iter]
         except:
-            etype, evalue, etb = sys.exc_info()
-            message = traceback.format_exception(etype, evalue, etb)
+            message = cgitb.html(sys.exc_info())
             self._error(503, ''.join(message))
         try:
             app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
@@ -141,6 +140,10 @@ class _WsgiHandler(threadedcomponent):
 
         self.response_dict = dict(response_headers)
         self.response_dict['statuscode'] = status
+
+        for key in self.response_dict:
+            if is_hop_by_hop(key):
+                raise WsgiAppError('Hop by hop header specified')
 
         return self.write
 
@@ -288,23 +291,25 @@ def Handler(log_writable, WsgiConfig, url_list):
     """
     def _getWsgiHandler(request):
 #        print request['raw-uri']
+        matched_dict = False
         split_uri = request['raw-uri'].split('/')
         split_uri = [x for x in split_uri if x]  #remove any empty strings
         for url_item in url_list:
 #            print 'trying ' + url_item[0]
-            if re.search(url_item[0], split_uri[0]):
+            if re.search(url_item['kp.regex'], split_uri[0]):
                 request['SCRIPT_NAME'] = split_uri.pop(0)
                 request['PATH_INFO'] = '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
 #                print 'app_name= ' + app_name
 #                print url_item[0] + 'successful!'
-                u, mod, app_attr = url_item
+                matched_dict = url_item
                 break
 
-        if not (mod and app_attr):
+        if not matched_dict:
             raise WsgiError('Page not found and no 404 pages enabled!')
 
-        module = _importWsgiModule(mod)
-        app = getattr(module, app_attr)
+        module = _importWsgiModule(matched_dict['kp.import_path'])
+        app = getattr(module, matched_dict['kp.app_object'])
+        request.update(matched_dict)
         return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler
 
