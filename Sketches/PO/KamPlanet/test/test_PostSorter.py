@@ -83,7 +83,6 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.put(feed, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         _ = self.get('outbox')
         self.assertOutboxEmpty('outbox')
     
@@ -96,7 +95,6 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.put(feed, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         for _ in xrange(100):
             self.get('outbox')
         self.assertOutboxEmpty('outbox')
@@ -110,7 +108,6 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.put(feed, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         for _ in xrange(10):
             self.get('outbox')
         self.assertOutboxEmpty('outbox')
@@ -136,7 +133,6 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.put(feed, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         for _ in range(2):
             msg = self.get('outbox')
             self.assertEquals(cur_year + 1, msg['entry']['updated_parsed'][0])
@@ -172,7 +168,6 @@ class PostSorterTestCase(KamTestCase.KamTestCase):
         for feed in feeds:
             self.put(feed, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         for _ in range(2):
             msg = self.get('outbox')
             self.assertEquals(cur_year + 1, msg['entry']['updated_parsed'][0])

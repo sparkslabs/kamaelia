@@ -49,15 +49,15 @@ class MessageStorer(Axon.Component.component):
     
     def main(self):
         while self._stop_within_iterations is None or self._stop_within_iterations > 0:
-            for inbox in self.Inboxes:
-                self.lock.acquire()
-                try:
-                    while self.dataReady(inbox):
-                        data = self.recv(inbox)
-                        self.messages[inbox].append(data)
-                        self.send(data, inbox)
-                finally:
-                    self.lock.release()
+            self.lock.acquire()
+            try:
+                for inbox in self.Inboxes:
+                        while self.dataReady(inbox):
+                            data = self.recv(inbox)
+                            self.messages[inbox].append(data)
+                            self.send(data, inbox)
+            finally:
+                self.lock.release()
             if self._stop_within_iterations is not None:
                 self._stop_within_iterations = self._stop_within_iterations - 1
                 

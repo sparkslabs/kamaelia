@@ -68,12 +68,11 @@ class ConfigFileParserTestCase(KamTestCase.KamTestCase):
     def runWithSampleConfig(self, sampleConfig):
         self.put(sampleConfig, 'inbox')
         self.put(producerFinished(), "control")
-        self.assertStopping()
         
     def testSampleConfigNotStopping(self):
         self.put(self.SAMPLE_CONFIG1, 'inbox')
         # I actively say that I don't care which threads are still running
-        self.assertNotStopping(clear=True)
+        self.assertNotFinished()
         
     def testSignal(self):
         self.runWithSampleConfig(self.SAMPLE_CONFIG1)
