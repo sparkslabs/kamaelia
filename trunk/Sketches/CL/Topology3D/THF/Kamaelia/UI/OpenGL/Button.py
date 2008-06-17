@@ -249,6 +249,7 @@ class Button(OpenGLComponent):
 
         # read pixel data
         textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
+        print textureData
 
         self.texID = glGenTextures(1)
         # create texture
