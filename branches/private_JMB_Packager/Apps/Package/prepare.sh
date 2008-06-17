@@ -10,9 +10,8 @@ else
     rm -rf assembly
     mkdir assembly
 fi
-echo "----------------------------------------------------"
+
 echo "Assembling Axon/Kamaelia files"
-echo "Currently building inside private_JMB_DescartesComponentsAdded branch"
 echo "----------------------------------------------------"
 
 echo "Copying Axon from branch to assembly directory"
@@ -23,11 +22,8 @@ echo "Copying zipheader.unix to assembly directory"
 cp zipheader.unix assembly/zipheader.unix
 echo "Copying scripts into the assembly directory"
 cp -R scripts/* assembly
-echo "Copying plugins to the assembly directory"
-cp -R plugins assembly/plugins
-echo "Copying packages to the assembly directory"
-cp -R packages assembly/packages
-
+echo "Copying data into the assembly directory"
+cp -R data assembly/data
 echo "----------------------------------------------------"
 echo "Done preparing!"
 echo "----------------------------------------------------"
