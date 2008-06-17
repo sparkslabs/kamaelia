@@ -31,10 +31,7 @@ Use your left mouse button to draw to the board and the
 right to erase your artwork.
 
 """
-import sys; sys.path.append("../MPS/pprocess/");
-from MultiPipeline import ProcessPipeline
-from MultiPipeline import ProcessGraphline
-from Kamaelia.Chassis.Graphline import Graphline
+
 
 import pprocess
 import pygame
@@ -42,7 +39,6 @@ import Axon
 import math
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.PygameDisplay import PygameDisplay
-
 class Paint(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
@@ -65,26 +61,25 @@ class Paint(Axon.Component.component):
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay",
-               "drawn"    : "Information on what was drawn on other MagnaDoodles"
+               "drawn"    : "Information on what was drawn on other Paint canvas"
              }
-   Outboxes = { "outbox" : "Used to talk to other MagnaDoodles",
+   Outboxes = { "outbox" : "Used to talk to other Paint canvas",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
-                transparent = False, size=(200,200)):
+                transparent = False, size=(200,200), selectedColour=(0,0,0)):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Paint,self).__init__()
-      
+
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.margin = margin
       self.oldpos = None
       self.drawing = False
       self.shape = "line"
-###      print "KEY",key
-      
       self.size = size
+      self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
 
       if msg is None:
@@ -99,23 +94,21 @@ class Paint(Axon.Component.component):
                            "events" : (self, "inbox"),
                            "size": self.size,
                            "transparency" : transparency }
-      
+
       if not position is None:
         self.disprequest["position"] = position
 
-       
    def waitBox(self,boxname):
       """Generator. yields 1 until data ready on the named inbox."""
       waiting = True
       while waiting:
         if self.dataReady(boxname): return
         else: yield 1
-   
+
    def drawBG(self):
       self.display.fill( (255,0,0) )
       self.display.fill( self.backgroundColour, self.innerRect )
-     
-   
+
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -123,12 +116,12 @@ class Paint(Axon.Component.component):
 
       self.send( self.disprequest,
                   "display_signal")
-             
+
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
       self.drawBG()
       self.blitToSurface()
-      
+
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
@@ -140,7 +133,7 @@ class Paint(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
                   "surface" : self.display},
                   "display_signal")
-		  
+
       self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
 		  "surface" : self.display},
 		  "display_signal")
@@ -162,7 +155,6 @@ class Paint(Axon.Component.component):
                         self.blitToSurface()
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
-  #              print event
                 if isinstance(event, tuple):
                     print "here"
                     if event[0] == 'circle':
@@ -171,6 +163,8 @@ class Paint(Axon.Component.component):
                     if event[0] == 'line':
                         pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
                         self.blitToSurface()
+                    if event[0] == 'colour':
+                        self.selectedColour = event[1]
                     break
                 if event == "clear":
                     print "YAY!"
@@ -179,13 +173,10 @@ class Paint(Axon.Component.component):
                     self.blitToSurface()
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
-     #               self.send(event, "outbox")
                     if self.shape == "circle":
                         if event.button == 1:
                             self.oldpos = event.pos
-                #            print event.pos
                             self.drawing = True
-                     #       self.send(event, "outbox")
                     if self.shape == "line":
                         if event.button == 1:
                             self.drawing = True
@@ -194,7 +185,6 @@ class Paint(Axon.Component.component):
                         self.drawBG()
                         self.blitToSurface()
                         self.send(("clear",), "outbox")
-                        print "I'm here!"
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
                        self.shape = "circle"
@@ -205,50 +195,58 @@ class Paint(Axon.Component.component):
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.shape == "circle":
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
-          #              print event.pos
-          #              print rad
-                        pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)
+                        pygame.draw.circle(self.display, self.selectedColour, self.oldpos, rad, 0)
                         circle = ("circle", self.oldpos, rad)
                         self.send((circle,), "outbox")
                         self.blitToSurface()
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
-#                   print "BUTTON", event.button
                     if self.shape == "line":
                         if self.drawing and self.innerRect.collidepoint(*event.pos):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
                               else:
-                                 pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
+                                 pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, 3)
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
                               self.blitToSurface()
          self.pause()
          yield 1
-            
-      
+
    def blitToSurface(self):
        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
-__kamaelia_components__  = ( MagnaDoodle, )
+__kamaelia_components__  = ( Paint, )
 
                   
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
+   from XYPad import XYPad
+   from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
    
-  # Magna = MagnaDoodle().activate()
+   import sys; sys.path.append("../../../MPS/pprocess/");
+   from MultiPipeline import ProcessGraphline
+
+
+
+
+
+
+
+  # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
    ProcessGraphline(
+        COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
+                   bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
+                   positionMsg="p2"),
         WINDOW1 = Paint(bgcolour=(100,100,172),position=(0,0) ),
         WINDOW2 = Paint(bgcolour=(172,100,100),position=(0,0) ),
         linkages = {
-            ("WINDOW1", "outbox") : ("WINDOW2", "inbox")
-         #   ("WINDOW1", "outbox") : ("WINDOW2", "drawn")
+            ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
+            ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         },
         __debug = True,
    ).run()
-   
-  # Axon.Scheduler.scheduler.run.runThreads()  
 # Licensed to the BBC under a Contributor Agreement: THF/DK
