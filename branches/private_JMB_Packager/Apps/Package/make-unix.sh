@@ -13,7 +13,7 @@
 #once it is finished.  It is recommended that you remove the assembly directory prior to
 #running this script again.
 
-publish.prepare.sh #assemble everything we need in the assembly directory
+prepare.sh #assemble everything we need in the assembly directory
 
 if [ "$1" = "clean" ]
 then
