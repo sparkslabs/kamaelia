@@ -13,8 +13,7 @@
 #once it is finished.  It is recommended that you remove the assembly directory prior to
 #running this script again.
 
-scripts/publish.prepare.sh #assemble everything we need in the assembly directory
-#python byte-compile.py urls.py main.py ServerConfig.py
+publish.prepare.sh #assemble everything we need in the assembly directory
 
 if [ "$1" = "clean" ]
 then
@@ -32,8 +31,6 @@ echo ">Removing any previously compiled modules"
 rm -rfv assembly/*.pyc
 echo ">Creating executable"
 find . -name "*.py"|zip -@ kpublish.zip
-#find . -name "*.pyc"|zip -@g kpublish.zip
-#find . -name "*.pyo"|zip -@g kpublish.zip
 cat zipheader.unix kpublish.zip > kpublish
 
 if [ ! -d ../dist ]

@@ -20,6 +20,7 @@ cp -R ../../Axon/Axon/ assembly/Axon
 echo "Copying Kamaelia from branch to assembly directory"
 cp -R ../../Kamaelia/Kamaelia/ assembly/Kamaelia
 echo "Copying zipheader.unix to assembly directory"
+cp zipheader.unix assembly/zipheader.unix
 echo "Copying scripts into the assembly directory"
 cp -R scripts/* assembly
 echo "Copying plugins to the assembly directory"
