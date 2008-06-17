@@ -28,10 +28,11 @@ def init():
     
     # Create a quadratic object for sphere rendering
     quadratic = gluNewQuadric()
-    #gluQuadricDrawStyle( quadratic, GLU_FILL );
-    #gluQuadricNormals(quadratic, GLU_SMOOTH)
-    #gluQuadricTexture(quadratic, GL_TRUE)
-    #glEnable(GL_TEXTURE_2D)    
+    #gluQuadricDrawStyle( quadratic, GLU_LINE )
+    #gluQuadricDrawStyle( quadratic, GLU_SILHOUETTE )
+    gluQuadricNormals(quadratic, GLU_SMOOTH)
+    gluQuadricTexture(quadratic, GL_TRUE)
+    glEnable(GL_TEXTURE_2D)    
     
     glShadeModel(GL_SMOOTH)
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -56,19 +57,58 @@ def init():
     glEnable(GL_LIGHT0)
     glEnable(GL_DEPTH_TEST)
 
+
+def buildLabel(text):
+    """Pre-render the text to go on the label."""    
+    global texID
+
+    # Text texture
+    pygame.font.init()
+    font = pygame.font.Font(None, 20)
+    image = font.render(text,True, (0,0,255), (255,255,255) )
+    textureSurface = pygame.Surface((16, 16)) # The size has to be power of 2
+    textureSurface.blit(image, (0,0))
+    textureSurface = textureSurface.convert_alpha()
+    
+#    # Picture texture
+#    texturefile = os.path.join('data','nehe.bmp')
+#    textureSurface = pygame.image.load('nehe.bmp')
+    
+    textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
+    #print textureData
+    
+    texID = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, texID)
+    
+    
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+                  GL_RGBA, GL_UNSIGNED_BYTE, textureData )
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+    #glDisable(GL_TEXTURE_2D)
+
+
 def draw():
-    global xrot, yrot, zrot, quadratic
+    global xrot, yrot, zrot, quadratic, texID
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    
-    glLoadIdentity();                    
+    
+    glLoadIdentity();                        
     glTranslatef(0.0,0.0,-5.0)
-
+    glColor3f(1.0,0.0,0.0)    
     glRotatef(xrot,1.0,0.0,0.0)            # Rotate The Cube On It's X Axis
     glRotatef(yrot,0.0,1.0,0.0)            # Rotate The Cube On It's Y Axis
-    glRotatef(zrot,0.0,0.0,1.0)            # Rotate The Cube On It's Z Axis           
+    glRotatef(zrot,0.0,0.0,1.0)            # Rotate The Cube On It's Z Axis
+    
+    #glEnable(GL_TEXTURE_2D)
+    #glBindTexture(GL_TEXTURE_2D, texID)
+    #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+               
     gluSphere(quadratic,1.3,32,32)
     
-           
+    #glDisable(GL_TEXTURE_2D)
+    
     xrot  = xrot + 0.2                # X rotation
     yrot = yrot + 0.2                 # Y rotation
     zrot = zrot + 0.2                 # Z rotation      
@@ -83,7 +123,8 @@ def main():
 
     resize((640,480))
     init()
-    
+    buildLabel('Particle')
+    #print pygame.display.get_surface()
     
     frames = 0
     ticks = pygame.time.get_ticks()
