@@ -62,5 +62,3 @@ def main():
     des = KPServer()
     print "Serving on port %s" % (ServerConfig.PORT)
     des.run()
-
-main()
