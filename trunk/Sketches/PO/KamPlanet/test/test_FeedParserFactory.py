@@ -91,7 +91,6 @@ class FeedParserTestCase(KamTestCase.KamTestCase):
     def testFeedparser(self):
         self.put(SAMPLE_RSS, 'inbox')
         self.put(producerFinished(), 'control')
-        self.assertStopping()
         
         msg = self.get('outbox')
         
@@ -132,13 +131,11 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
     
     def testNoFeedProducerFinished(self):
         self.put(producerFinished(), 'control')
-        self.assertStopping()
         self.assertTrue(isinstance(self.get('signal'), producerFinished))
         self.assertOutboxEmpty('signal')
         
     def testNoFeedShutdown(self):
         self.put(shutdownMicroprocess(), 'control')
-        self.assertStopping()
         self.assertTrue(isinstance(self.get('signal'), shutdownMicroprocess))
         self.assertOutboxEmpty('signal')
     
@@ -181,7 +178,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
             self.putYield(10) #TODO: constant
             
         self.put(producerFinished(), 'control')
-        self.assertStopping()
 
         for _ in xrange(MESSAGE_NUMBER):
             message = self.get('outbox')
@@ -222,7 +218,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
             self.putYield(10) #TODO: constant
             
         self.put(producerFinished(), 'control')
-        self.assertStopping()
         
         self.assertOutboxEmpty('outbox')
         self.assertTrue(isinstance(self.get('signal'), producerFinished))
@@ -238,7 +233,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.put(feedobj, 'inbox')
         self.put(feedobj, 'inbox')
         self.put(shutdownMicroprocess(), 'control')
-        self.assertStopping()
         
         self.assertOutboxEmpty('outbox')
         self.assertTrue(isinstance(self.get('signal'), shutdownMicroprocess))

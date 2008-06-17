@@ -181,6 +181,10 @@ class KamTestCase(object):
                     extraOutboxes = extraOutboxes, 
             )
         
+        # TODO: not thread-safe...
+        while len(self._graph.children) == 0:
+            time.sleep(0.1)
+        
         self._kamtest_initialized = True
 
     def put(self, msg, inbox):
@@ -231,7 +235,8 @@ class KamTestCase(object):
         return threads
         
     def clearThreads(self):
-        self._messageAdder.stopMessageAdder(0)
+        self._messageAdder.addMessage(shutdownMicroprocess(), 'control')
+        self._messageAdder.stopMessageAdder(5)
         self._messageStorer.stopMessageStorer(0)
     
     def _initialize(self):
@@ -241,21 +246,50 @@ class KamTestCase(object):
         """
         self._mocks = []
         self._kamtest_initialized = False
+        self._graph = None
+    
+    def _childrenDone(self):
+        realChildren = [ child for child in self._graph.childComponents()
+            if child != self._messageAdder and child != self._messageStorer ]
+        return len([ child for child in realChildren if not child._isStopped() ]) == 0
+    
+    def _hasFinished(self, timeout):
+        maxTime = time.time() + timeout
+        while not self._childrenDone():
+            curTime = time.time()
+            time.sleep(0.1)
+            if maxTime <= curTime:
+                return False
+        return True
+        
+    def assertFinished(self, timeout = 0.5,  msg = None):
+        if not self._hasFinished(timeout):
+            raise self.failureException(
+                    msg or "Graph has not finished yet"
+                )
+                
+    def assertNotFinished(self, timeout = 0.5,  msg = None):
+        """ assertNotFinished([timeout] [,msg])
+        
+        Raises a self.failureException if the process has finished before "timeout" 
+        seconds have passed. IMPORTANT: if this assert succeeds, "timeout" will have
+        passed, so providing high values will produce slow tests!
+        """
+        if self._hasFinished(timeout):
+            raise self.failureException(
+                    msg or "Graph has already finished"
+                )
     
     def _finish(self):
         """ _finish()
         
         Called after each test, cleans the kamaelia environment.
-        """        
+        """
         if self._kamtest_initialized:
             self.clearThreads()
             self._lf.shutdown()
-            print self._listThreads()
-            self._kamtest_initialized = False
-    
-    def assertStopping(self, msg = None, steps = None):
-        pass #TODO: this method makes no sense when using LikeFile
-
+            self.assertFinished()
+            
     def assertNotStopping(self, msg = None, steps = None, clear = False):
         pass #TODO: this method makes no sense when using LikeFile
 

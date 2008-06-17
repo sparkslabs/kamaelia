@@ -104,7 +104,6 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
     def testShutdown(self):
         shutdownMicroprocessObj = shutdownMicroprocess()
         self.put(shutdownMicroprocessObj, 'control')
-        self.assertStopping()
         self.assertEquals(shutdownMicroprocessObj, self.get('signal'))
         self.assertOutboxEmpty('signal')
     
@@ -145,7 +144,6 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
         self.putYield(50)
         
         self.put(producerFinished(), 'control')
-        self.assertStopping()
         
         self.assertTrue(isinstance(self.get('signal'), producerFinished))
         self.assertOutboxEmpty('signal')

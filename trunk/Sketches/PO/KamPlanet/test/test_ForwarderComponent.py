@@ -44,7 +44,6 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
         self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
         self.put(producerFinishedObj, "control")
-        self.assertStopping()
         for i in xrange(4):
             expected = "message%s" % (i + 1)
             actual   = self.get('outbox')
@@ -65,7 +64,6 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
         self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
         self.put(producerFinishedObj, "secondary-control")
-        self.assertStopping()
         for i in xrange(4):
             expected = "message%s" % (i + 1)
             actual   = self.get('outbox')

@@ -13,7 +13,6 @@ class SimpleSampleTestCase(KamTestCase.KamTestCase):
         self.put(6, 'numbers')
         self.putYield(10)
         self.put(producerFinished(), 'control')
-        self.assertStopping()
         self.assertEquals('5', self.get('outbox'))
         self.assertEquals('6', self.get('outbox'))
         self.assertOutboxEmpty('outbox')

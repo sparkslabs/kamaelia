@@ -63,13 +63,11 @@ def getSimpleComponentTestCaseSucceeding():
             self.put(6, 'numbers')
             self.putYield(10)
             self.put(producerFinished(), 'control')
-            self.assertStopping()
             self.assertEquals('5', self.get('outbox'))
             self.assertEquals('6', self.get('outbox'))
             self.assertOutboxEmpty('outbox')
             self.assertTrue(isinstance(self.get('signal'), producerFinished))
             self.assertOutboxEmpty('signal')
-            
     return SimpleSampleTestCase
 
 def getSimpleComponentTestCaseStoppingWhenStopping():
@@ -78,7 +76,7 @@ def getSimpleComponentTestCaseStoppingWhenStopping():
             simpleSample = SimpleComponent()
             self.initializeSystem(simpleSample)
             self.put(producerFinished(), 'control')
-            self.assertStopping()
+            self.assertFinished()
     return SimpleSampleTestCase
 
 def getSimpleComponentTestCaseStoppingWhenNotStopping():
@@ -86,7 +84,7 @@ def getSimpleComponentTestCaseStoppingWhenNotStopping():
         def testExample(self):
             simpleSample = SimpleComponent()
             self.initializeSystem(simpleSample)
-            self.assertStopping()
+            self.assertFinished()
     return SimpleSampleTestCase
     
 def getSimpleComponentTestCaseNotStoppingWhenNotStopping():
@@ -94,7 +92,7 @@ def getSimpleComponentTestCaseNotStoppingWhenNotStopping():
         def testExample(self):
             simpleSample = SimpleComponent()
             self.initializeSystem(simpleSample)
-            self.assertNotStopping(clear=True)
+            self.assertNotFinished()
     return SimpleSampleTestCase
     
 def getSimpleComponentTestCaseNotStoppingWhenStopping():
@@ -103,7 +101,7 @@ def getSimpleComponentTestCaseNotStoppingWhenStopping():
             simpleSample = SimpleComponent()
             self.initializeSystem(simpleSample)
             self.put(producerFinished(), 'control')
-            self.assertNotStopping()
+            self.assertNotFinished()
     return SimpleSampleTestCase
     
 def getVerySimpleTestCase(storer = None, withSetUp = True, withTearDown = True):

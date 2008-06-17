@@ -198,6 +198,11 @@ class ConfigFileParser(Axon.Component.component):
                 self.send(producerFinished(self), "signal")
                 return
                 
+            if self.dataReady("control"):
+                data = self.recv("control")
+                self.send(data, "signal")
+                return
+                
             if not self.anyReady():
                 self.pause()
                 
