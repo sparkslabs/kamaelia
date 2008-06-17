@@ -61,7 +61,6 @@ def getSimpleComponentTestCaseSucceeding():
         def testForwardsNumbers(self):
             self.put(5, 'numbers')
             self.put(6, 'numbers')
-            self.putYield(10)
             self.put(producerFinished(), 'control')
             self.assertEquals('5', self.get('outbox'))
             self.assertEquals('6', self.get('outbox'))

@@ -136,12 +136,8 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
         channel = self.generateFeedObj(FEED_URL)
         self.put(channel, 'channels-inbox')
         
-        self.putYield(50)
-        
         configObj = self.generateConfigObj()
         self.put(configObj, 'config-inbox')
-        
-        self.putYield(50)
         
         self.put(producerFinished(), 'control')
         

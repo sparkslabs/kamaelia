@@ -11,7 +11,6 @@ class SimpleSampleTestCase(KamTestCase.KamTestCase):
     def testForwardsNumbers(self):
         self.put(5, 'numbers')
         self.put(6, 'numbers')
-        self.putYield(10)
         self.put(producerFinished(), 'control')
         self.assertEquals('5', self.get('outbox'))
         self.assertEquals('6', self.get('outbox'))
@@ -19,7 +18,7 @@ class SimpleSampleTestCase(KamTestCase.KamTestCase):
         self.assertTrue(isinstance(self.get('signal'), producerFinished))
         self.assertOutboxEmpty('signal')
         
-    def testForwardsNumbers(self):
+    def testForwardsNumbersWithExpect(self):
         self.put(5, 'numbers')
         self.put(6, 'numbers')
         self.put(7, 'numbers')

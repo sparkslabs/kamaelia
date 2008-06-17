@@ -163,7 +163,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
             mockFeedParser = self.createMock(pipeline)
             # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
             # child will not die until this has finished
-            mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
+            mockFeedParser.stopMockObject(1000)
             mockFeedParser.addMessage(SAMPLE_RSS,'outbox')
             mockFeedParsers.append(mockFeedParser)
         
@@ -175,7 +175,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         
         for feedobj in feedobjs:
             self.put(feedobj, 'inbox')
-            self.putYield(10) #TODO: constant
             
         self.put(producerFinished(), 'control')
 
@@ -192,7 +191,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.assertOutboxEmpty('signal')
         
         self.mockedFeedParserMakerMocker.verify()
-
+        
     def testWrongFeeds(self):
         MESSAGE_NUMBER = 3
         
@@ -201,27 +200,29 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         mockFeedParsers = []
         for i in xrange(MESSAGE_NUMBER):
             mockFeedParser = self.createMock(pipeline)
-            # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
-            # child will not die until this has finished
-            mockFeedParser.stopMockObject(self.DEFAULT_STEP_NUMBER / 2)
             mockFeedParser.addMessage(WRONG_XML,'outbox')
             mockFeedParsers.append(mockFeedParser)
-        
+            
         feedobjs = []
         for i in xrange(MESSAGE_NUMBER):
             feedobjs.append(self.generateFeedObj(FEED_URL))
-        
+            
         self.configureMultipleMockedFeedParserMaker(mockFeedParsers)
         
         for feedobj in feedobjs:
             self.put(feedobj, 'inbox')
-            self.putYield(10) #TODO: constant
             
+        self.assertOutboxEmpty('outbox', timeout=1)
+        
         self.put(producerFinished(), 'control')
         
-        self.assertOutboxEmpty('outbox')
-        self.assertTrue(isinstance(self.get('signal'), producerFinished))
+        for mockFeedParser in mockFeedParsers:
+            mockFeedParser.stopMockObject()
+            
+        signalMessage = self.get('signal', timeout = 5)
+        self.assertTrue(isinstance(signalMessage, producerFinished))
         self.assertOutboxEmpty('signal')
+        self.assertOutboxEmpty('outbox')
         
         self.mockedFeedParserMakerMocker.verify()
         
@@ -247,7 +248,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.configureMockedFeedParserMaker(mockFeedParser)
         
         self.put(feedobj, 'inbox')
-        self.putYield()
         self.put(producerFinished(), 'control')
         
         # Even if I have sent a producerFinished, the process does not finish
@@ -263,7 +263,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         self.configureMockedFeedParserMaker(mockFeedParser)
         
         self.put(feedobj, 'inbox')
-        self.putYield()
         self.put(shutdownMicroprocess(), 'control')
         
         # Even if I have sent a shutdownMicroprocess, the process does not finish

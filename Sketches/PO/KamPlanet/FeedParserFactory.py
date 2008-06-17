@@ -108,7 +108,6 @@ class FeedParserFactory(Axon.Component.component):
         return Pipeline(
                 OneShot(feedUrl), 
                 SimpleHTTPClient(), # TODO: SimpleHTTPClient doesn't seem to have proxy support
-                #Feedparser(feedUrl),
             )
             
     def checkControl(self):
@@ -119,7 +118,7 @@ class FeedParserFactory(Axon.Component.component):
             elif isinstance(msg,shutdownMicroprocess):
                 self.mustStop = msg
         return self.mustStop, self.providerFinished
-
+        
     def handleChildTerminations(self): #taken from Carousel.py
         for child in self.childComponents():
             if child._isStopped():
