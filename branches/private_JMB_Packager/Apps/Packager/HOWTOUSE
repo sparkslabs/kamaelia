@@ -19,7 +19,7 @@ if your application is named Kamaelia Application, you would use the following
 command (assuming you're in the directory this how-to resides in):
 
     cd ..
-    svn cp Package Kamaelia-Application
+    svn cp Packager Kamaelia-Application
 
 2.  You must move all source code and data into their respective directories.
 You should put all top level scripts into the scripts directory (including your
