@@ -74,7 +74,7 @@ def intval(mystring):
     except ValueError:
         retval = None
     except TypeError:
-        retval = None    
+        retval = None
     return retval
 
 class IceIPCHeader(IPC):
@@ -98,7 +98,7 @@ class IcecastDemux(component):
 
     def dictizeMetadata(self, metadata):    
         "Convert metadata that was embedded in the stream into a dictionary."
-        
+
         #format of metadata:
         #"StreamUrl='www.example.com';\nStreamTitle='singer, title';"
         lines = metadata.split(";")
@@ -131,16 +131,16 @@ class IcecastDemux(component):
                         metadatainterval = 0
                     bytesUntilMetadata = metadatainterval
                     self.send(IceIPCHeader(contenttype=msg.header["headers"].get("content-type")), "outbox")
-                    
+
                     print "Metadata interval is " + str(metadatainterval)
-                    
+
                 elif isinstance(msg, ParsedHTTPBodyChunk):
                     readbuffer += msg.bodychunk # NOTE: this is inefficient, consider using a character queue instead
-                    
+
                 elif isinstance(msg, ParsedHTTPEnd):
                     self.send(IceIPCDisconnected(), "outbox")
-                
-            while len(readbuffer) > 0:       
+
+            while len(readbuffer) > 0:
                 if metadatainterval == 0: # if the stream does not include metadata
                     # send all the data we have on
                     self.send(IceIPCDataChunk(data=readbuffer), "outbox")
@@ -149,7 +149,7 @@ class IcecastDemux(component):
                     chunkdata = readbuffer[0:bytesUntilMetadata]
                     if len(chunkdata) > 0:
                         self.send(IceIPCDataChunk(data=chunkdata), "outbox")
-                                                
+
                     readbuffer = readbuffer[bytesUntilMetadata:]
                     bytesUntilMetadata -= len(chunkdata)
                     if len(readbuffer) > 0: #we must have some metadata (perhaps only partially complete) at the start
@@ -157,7 +157,7 @@ class IcecastDemux(component):
                         if len(readbuffer) >= metadatalength + 1: # +1 for the length byte we just read. if we have all the metadata chunk
                             metadictionary = self.dictizeMetadata(readbuffer[1:metadatalength + 1])
                             self.send(IceIPCMetadata(metadata=metadictionary), "outbox")
-                                                            
+
                             bytesUntilMetadata = metadatainterval
                             readbuffer = readbuffer[metadatalength + 1:]
                         else:
@@ -168,7 +168,7 @@ class IcecastDemux(component):
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
                     self.send(producerFinished(self), "signal")
                     return
-                                                
+
             self.pause()
 
 class IcecastClient(SingleShotHTTPClient):
@@ -178,20 +178,20 @@ class IcecastClient(SingleShotHTTPClient):
     Arguments:
     - starturl    -- the URL of the stream
     """
-    
+
     def formRequest(self, url): 
         """Overrides the standard HTTP request with an Icecast/SHOUTcast variant
         which includes the icy-metadata header required to get metadata with the
         stream"""
-        
+
         self.send("IcecastClient.formRequest()", "debug")
-        
+
         splituri = splitUri(url)
-        
+
         host = splituri["uri-server"]
         if splituri.has_key("uri-port"):
             host += ":" + splituri["uri-port"]
-        
+
         splituri["request"] =  "GET " + splituri["raw-uri"] + " HTTP/1.1\r\n"
         splituri["request"] += "Host: " + host + "\r\n"
         splituri["request"] += "User-agent: Kamaelia Icecast Client 0.3 (RJL)\r\n"
@@ -199,7 +199,7 @@ class IcecastClient(SingleShotHTTPClient):
         splituri["request"] += "icy-metadata: 1\r\n"
         splituri["request"] += "\r\n"
         return splituri
-    
+
     def main(self):
         while 1: # keep reconnecting
             self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
@@ -244,7 +244,7 @@ __kamaelia_prefabs__  = ( IcecastStreamRemoveMetadata, )
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import pipeline
-    
+
     # Save a SHOUTcast/Icecast stream to disk
     # (you can then use an MP3 player program to listen to it while it downloads).
     streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
