@@ -81,6 +81,8 @@ import Axon
 
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Button import Button
+from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 
 class XYPad(Axon.Component.component):
     """\
@@ -169,7 +171,15 @@ class XYPad(Axon.Component.component):
 
         if position:
             self.dispRequest["position"] = position
-
+        rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
+        rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
+        gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
+        self.link( (rgbutton,"outbox"), (self,"buttons") )
+        self.link( (rbbutton,"outbox"), (self,"buttons") )
+        self.link( (gbbutton,"outbox"), (self,"buttons") )
+        FPS = 60
+        clock = Clock(float(1)/FPS).activate()
+        self.link((clock, "outbox"), (self, "newframe"))
     def waitBox(self, boxName):
         """Wait for a message on boxName inbox"""
         while 1:
@@ -215,13 +225,14 @@ class XYPad(Axon.Component.component):
             yield 1
             while self.dataReady("buttons"):
                 bmsg = self.recv("buttons")
-                if (bmsg[1] == 9):
+                print bmsg
+                if (bmsg[1] == 10):
                     self.colours = "RG"
                     self.drawBG()
-                elif (bmsg[1] == 10):
+                elif (bmsg[1] == 11):
                     self.colours = "RB"
                     self.drawBG()
-                elif (bmsg[1] == 11):
+                elif (bmsg[1] == 12):
                     self.colours = "GB"
                     self.drawBG()
 
@@ -381,9 +392,7 @@ class XYPad(Axon.Component.component):
    #     pygame.draw.circle(self.display, self.fgcolour,
     #                       [int(x) for x in self.puckPos], self.puckRadius)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
-        self.send((self.messagePrefix + self.positionMsg,
-                  (float(self.puckPos[0])/self.size[0],
-                  float(self.puckPos[1])/self.size[1])), "outbox")
+        self.send((("colour",self.selectedColour),), "outbox")
 
 if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
@@ -391,24 +400,16 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.UI.Pygame.Button import Button
     
-    FPS = 60
+
     
-    clock = Clock(float(1)/FPS).activate()
-    clock2 = Clock(float(1)/FPS).activate()
-    
-    rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
-    rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
-    gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
   #  xyPad = XYPad().activate()
     xyPad2 = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
                    bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
                    positionMsg="p2").activate()
     ce = ConsoleEchoer().activate()
-    rgbutton.link( (rgbutton,"outbox"), (xyPad2,"buttons") )
-    rbbutton.link( (rbbutton,"outbox"), (xyPad2,"buttons") )
-    gbbutton.link( (gbbutton,"outbox"), (xyPad2,"buttons") )
    # clock.link((clock, "outbox"), (xyPad, "newframe"))
-    clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
    # xyPad.link((xyPad, "outbox"), (ce,"inbox"))
     xyPad2.link((xyPad2, "outbox"), (ce,"inbox"))
     Axon.Scheduler.scheduler.run.runThreads()  
+    
+# Licensed to the BBC under a Contributor Agreement: JT/DK
