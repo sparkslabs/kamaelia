@@ -36,12 +36,10 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
     def testSimpleUse(self):
         self.put("message1", 'inbox')
         self.put("message2", 'inbox')
-        self.putYield(50) # let it breathe
         self.put("message3", 'inbox')
         self.put("message4", 'inbox')
         producerFinishedObj = producerFinished()
         self.put(producerFinishedObj, "control")
-        self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
         self.put(producerFinishedObj, "control")
         for i in xrange(4):
@@ -56,12 +54,10 @@ class ForwarderComponentTestCase(KamTestCase.KamTestCase):
     def testSimpleSecondaryUse(self):
         self.put("message1", 'secondary-inbox')
         self.put("message2", 'secondary-inbox')
-        self.putYield(50) # let it breathe
         self.put("message3", 'secondary-inbox')
         self.put("message4", 'secondary-inbox')
         producerFinishedObj = producerFinished()
         self.put(producerFinishedObj, "secondary-control")
-        self.putYield(50) # let it breathe
         # The following message will not be considered since the component has already finished
         self.put(producerFinishedObj, "secondary-control")
         for i in xrange(4):

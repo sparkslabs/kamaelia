@@ -90,7 +90,6 @@ class _KamMockObject(Axon.Component.component):
             for inbox in self.publicInboxes:
                 while self.dataReady(inbox):
                     data = self.recv(inbox)
-                    print data, inbox
                     self.send(data, '_child_' + inbox)
                     
             for outbox in self.publicOutboxes:

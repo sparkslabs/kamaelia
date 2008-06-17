@@ -45,6 +45,17 @@ class KamExpectMatcherTestCase(unittest.TestCase):
         self.assertFalse( matcher.matches("something"))
         self.assertFalse( matcher.matches(None))
         
+    def testMatcherObject(self):
+        class Whatever(object): pass
+        w1 = Whatever()
+        w2 = Whatever()
+        matcher = KamExpectMatcher.Matcher(w1)
+        self.assertTrue(  matcher.matches(w1))
+        self.assertFalse( matcher.matches(w2))
+        self.assertFalse( matcher.matches(5))
+        self.assertFalse( matcher.matches("something"))
+        self.assertFalse( matcher.matches(None))
+        
     def testMatcherRegexpBasic(self):
         matcher = KamExpectMatcher.RegexpMatcher("hello")
         self.assertTrue(  matcher.matches("hello"))

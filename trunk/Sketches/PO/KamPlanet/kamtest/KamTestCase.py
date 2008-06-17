@@ -68,9 +68,6 @@ class _AuxiliarTestCase(unittest.TestCase):
 LikeFile.background().start()
 
 class KamTestCase(object):
-    # TODO: this number of steps depends too much on the situation :-S
-    DEFAULT_STEP_NUMBER = 1000
-    
     def __init__(self, prefix = 'test', *argd, **kwargs):
         super(KamTestCase, self).__init__()
         self._kamtest_initialized = False
@@ -182,16 +179,19 @@ class KamTestCase(object):
             )
         
         # TODO: not thread-safe...
+        TIMEOUT = 5
+        max_time = time.time() + TIMEOUT
         while len(self._graph.children) == 0:
+            cur_time = time.time()
+            if cur_time >= max_time:
+                break
             time.sleep(0.1)
+            
         
         self._kamtest_initialized = True
 
     def put(self, msg, inbox):
         self._messageAdder.addMessage(msg, inbox)
-        
-    def putYield(self, number = 1):
-        pass
         
     def get(self, outbox, timeout = 1):
         return self._lf.get(outbox, timeout=timeout)
