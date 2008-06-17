@@ -98,17 +98,10 @@ class UrlListFormatter(FormatterBase):
                 if section == 'error_404':
                     if data.has_key('regex'):
                         raise ParseException('error_404 cannot contain a regex')
-                    self.error_404 = (
-                                        '.*',
-                                        data['import_path'],
-                                        data['app_object']
-                                    )
+                    data['regex'] = '.*'
+                    self.error_404 = self.normalizeDict(data)
                 else:
-                    self.results.append(
-                        (data['regex'],
-                         data['import_path'],
-                         data['app_object'])
-                        )
+                    self.results.append(self.normalizeDict(data))
             if not self.anyReady() and not_done:
                 self.pause()
 
@@ -117,6 +110,12 @@ class UrlListFormatter(FormatterBase):
             raise ParseException('Urls list must contain an error_404 item!')
         self.results.reverse()
         self.results.append(self.error_404)
+
+    def normalizeDict(self, dic):
+        ret_val = {}
+        for key, value in dic.iteritems():
+            ret_val['kp.' + key] = value
+        return ret_val
 
 ##################################
 #Support functions
@@ -182,6 +181,6 @@ if __name__ == '__main__':
     try:
         filename = sys.argv[1]
     except:
-        filename = '/home/jason/urls'
+        filename = '~/urls'
 
     pprint(ParseConfigFile(filename, [DictFormatter(), UrlListFormatter()]))
