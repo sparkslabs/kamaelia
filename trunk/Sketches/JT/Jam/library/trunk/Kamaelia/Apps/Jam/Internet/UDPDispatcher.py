@@ -7,7 +7,7 @@ from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc
 from Kamaelia.Apps.Jam.Internet.NewDP import UDPSender
 
-class UDPDistributor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class UDPDispatcher(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {"inbox" : "",
                "control" : "",
                "addPeer" : "",
@@ -17,7 +17,7 @@ class UDPDistributor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 "signal" : "",
                }
     def __init__(self):
-        super(UDPDistributor, self).__init__()
+        super(UDPDispatcher, self).__init__()
         self.peers = sets.Set()
         self.connectedPeers = sets.Set()
         self.senders = {}
