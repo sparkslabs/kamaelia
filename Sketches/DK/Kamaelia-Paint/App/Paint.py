@@ -108,7 +108,16 @@ class Paint(Axon.Component.component):
    def drawBG(self):
       self.display.fill( (255,0,0) )
       self.display.fill( self.backgroundColour, self.innerRect )
-
+      
+   def floodFill(self, x, y, newColour, oldColour):
+       colour = self.display.get_at((x,y))
+       if (self.display.get_at((x,y)) == oldColour and self.display.get_at((x,y)) != newColour):
+           self.display.set_at((x,y),newColour)
+           self.floodFill(x + 1, y,     newColour, oldColour)
+           self.floodFill(x - 1, y,     newColour, oldColour)
+           self.floodFill(x,     y + 1, newColour, oldColour)
+           self.floodFill(x,     y - 1, newColour, oldColour)
+           
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -141,6 +150,10 @@ class Paint(Axon.Component.component):
 
       done = False
       while not done:
+         if not self.anyReady():
+             print "in this box"
+             self.pause()
+         yield 1
          while self.dataReady("control"):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
@@ -187,7 +200,7 @@ class Paint(Axon.Component.component):
                         self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       self.shape = "circle"
+                       self.floodFill(100,100,(240,224,143,0),self.display.get_at((100,100)))
                     elif event.key == pygame.K_l:
                        self.shape = "line"
 
