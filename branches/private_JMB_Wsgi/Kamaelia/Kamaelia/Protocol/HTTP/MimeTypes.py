@@ -22,50 +22,11 @@
 # Licensed to the BBC under a Contributor Agreement: RJL
 
 """\
-Mapping of common file extensions to their associated MIME types.
+Mapping of common file extensions to their associated MIME types.  This module
+is deprecated.  Use the python built in mimetypes module instead.
 """
-
-import string
-
-extensionToMimeType = {
-    "png"  : "image/png",
-    "gif"  : "image/gif",
-    "jpg"  : "image/jpeg",
-    "jpeg" : "image/jpeg",
-    "bmp"  : "image/bmp",
-    "tif"  : "image/tiff",
-    "tiff" : "image/tiff",
-    "ico"  : "image/x-icon",
-
-    "c"    : "text/plain",
-    "py"   : "text/plain",
-    "cpp"  : "text/plain",
-    "cc"   : "text/plain",
-    "h"    : "text/plain",
-    "hpp"  : "text/plain",
-
-
-    "txt"  : "text/plain",
-    "htm"  : "text/html",
-    "html" : "text/html",
-    "css"  : "text/css",
-
-    "zip"  : "application/zip",
-    "gz"   : "application/x-gzip",
-    "tar"  : "application/x-tar",
-
-    "mid"  : "audio/mid",
-    "mp3"  : "audio/mpeg",
-    "wav"  : "audio/x-wav",
-
-
-    "cool" : "text/cool" # our own made up MIME type
-}
-
+from mimetypes import guess_type
+print 'Use of deprecated module:  Kamaelia.Protocol.HTTP.MimeTypes.  Use mimetypes instead.'
 def workoutMimeType(filename):
-    "Determine the MIME type of a file from its file extension"
-    fileextension = string.rsplit(filename, ".", 1)[-1]
-    if extensionToMimeType.has_key(fileextension):
-        return extensionToMimeType[fileextension]
-    else:
-        return "application/octet-stream"
+    """Deprecated.  Use the Python built in mimetypes module instead."""
+    return guess_type(filename)[0] or "application/octet-stream"

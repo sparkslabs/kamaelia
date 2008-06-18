@@ -19,6 +19,32 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""
-This is a doc string, will it be of use?
-"""
+
+import types
+from itertools import izip
+from HTTPServer import HTTPServer, MapStatusCodeToText
+
+def requestHandlers(URLHandlers, errorpages=None):
+    if errorpages is None:
+        import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+        errorpages = ErrorPages
+    def createRequestHandler(request):
+        if request.get("bad"):
+            return errorpages.getErrorPage(400, request.get("errormsg",""))
+        else:
+            for (prefix, handler) in URLHandlers:
+                if request["raw-uri"][:len(prefix)] == prefix:
+                    request["uri-prefix-trigger"] = prefix
+                    request["uri-suffix"] = request["raw-uri"][len(prefix):]
+                    return handler(request)
+
+        return errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL")
+
+    return createRequestHandler
+
+def HTTPProtocol(routing):
+    def foo(**argd):
+        return HTTPServer(requestHandlers(routing),**argd)
+    return foo
+
+MapTextToStatusCode = dict(izip(MapStatusCodeToText.itervalues(), MapStatusCodeToText.iterkeys()))

@@ -38,7 +38,7 @@ Example Usage
 
     SimpleServer(protocol=createhttpserver, port=80).run()
 
-This defines a function which creates a HTTPServer instance with 
+This defines a function which creates a HTTPServer instance with
 HTTPResourceGlue.createRequestHandler as the request handler component
 creator function. This function is then called by SimpleServer for every
 new TCP connection.
@@ -46,14 +46,14 @@ new TCP connection.
 How does it work?
 -----------------
 HTTPServer creates and links to a HTTPParser and HTTPRequestHandler component.
-Data received over TCP is forwarded to the HTTPParser and the output of 
+Data received over TCP is forwarded to the HTTPParser and the output of
 HTTPRequestHandler forwarded to the TCP component's inbox for sending.
 
 See HTTPParser (in HTTPParser.py) and HTTPRequestHandler (below) for details
 of how these components work.
 
 HTTPServer accepts a single parameter - a request handler function which is
-passed onto and used by HTTPRequestHandler to generate request handler 
+passed onto and used by HTTPRequestHandler to generate request handler
 components. This allows different HTTP server setups to run on different
 ports serving completely different content.
 
@@ -71,7 +71,7 @@ handle the processing of requests and the creation of responses respectively.
 Both requests and responses are handled in a stepwise manner (as opposed to processing a
 whole request or response in one go) to reduce latency and cope well with bottlenecks.
 
-One request handler (self.handler) component is used per request - the particular 
+One request handler (self.handler) component is used per request - the particular
 component instance (including parameters, component state) is picked by a function
 called createRequestHandler - a function specified by the user. A suitable definition
 of this function is available in HTTPResourceGlue.py.
@@ -202,19 +202,16 @@ class HTTPShutdownLogicHandling(component):
                 temp = self.recv("control")
                 if isinstance(temp, producerFinished): # Socket has stopped sending us data (can still send data to it)
                     self.send(temp, "Psignal")         # pass on to the HTTP Parser. (eg could be a POST request)
-                    print "PRODUCER SHUTDOWN"
 
                 elif isinstance(temp, shutdown):       # Socket is telling us connection is dead
                     self.send(shutdown(), "Psignal")
                     self.send(shutdown(), "Hsignal")
                     keepconnectionopen = False
-                    print "SOCKET DEAD"
 
             while self.dataReady("Pcontrol"):          # Control messages from the HTTP Parser
                 temp = self.recv("Pcontrol")
                 if isinstance(temp, producerFinished): # HTTP Parser is telling us they're done parsing
                     pass                               # XXXX Handling of shutdown messages from parser ???
-                    print "PARSER FINISHED"
                     self.send(temp, "Hsignal") # Pass on to the HTTP Handler
 
             while self.dataReady("Hcontrol"):          # Control messages from the HTTP Handler
@@ -224,7 +221,6 @@ class HTTPShutdownLogicHandling(component):
                     self.send(sig, "Psignal")          # Make sure HTTP Parser is shutting down - (should send a "shutdown" message)
                     self.send(sig, "signal")
                     keepconnectionopen = False
-                    print "HTTP HANDLER DEAD"
 
         self.send(producerFinished(), "signal")        # We're done, close the connection.
         yield 1                                        # And quit
@@ -268,7 +264,7 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
     # this works out what the correct response to a request is
-    from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
+    from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler
 
     def createhttpserver():
         return HTTPServer(createRequestHandler)
