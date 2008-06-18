@@ -125,6 +125,7 @@ inbox. When this happens, the shutdown message will be forwarded on to all
 subscribers - causing SubscribeTo components to also shut down.
 
 """
+import traceback
 import Axon
 from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
 from Kamaelia.Util.Splitter import PlugSplitter as Splitter
