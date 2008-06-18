@@ -23,7 +23,125 @@
 Parsing of Linux-DVB channels.conf
 ==================================
 
-Parses lines from a linux-dvb channels.conf file.
+ParseChannelsConf parses lines from a channels.conf file and returns python
+outputs a python dictionary for each line - containing the parsed tuning
+information.
+
+
+
+Example Usage
+-------------
+
+Extract from a channels.conf file the tuning parameters needed for a specific
+channel and display them::
+
+    channelName      = "BBC ONE"
+    channelsConfFile = "path/to/my/channels.conf"
+
+    def chooseChannelName(tuningInfo):
+        name, params, ids = tuningInfo
+        if name == channelName:
+            return (name,params,ids)
+        else:
+            return None
+
+    Pipeline(
+        RateControlledFileReader(channelsConfFile, readmode="lines", rate=1000, chunksize=1),
+        ParseChannelsConf(),
+        PureTransformer(chooseChannelName),
+        ConsoleEchoer(),
+    ).run()
+    
+A slightly more complex example that actually records the specified channel to disk::
+
+    channelName      = "BBC ONE"
+    channelsConfFile = "path/to/my/channels.conf"
+    outFileName      = "my_recording_of_BBC_ONE.ts"
+
+    def chooseChannelName(tuningInfo):
+        name, params, ids = tuningInfo
+        if name == channelName:
+            return (name,params,ids)
+        else:
+            return None
+            
+    def makeAddPidsMessage(tuningInfo):
+        name, params, pids = tuningInfo
+        return ("ADD", [ pids["audio_pid"], pids["video_pid"] ])
+        
+    def createTuner(tuningInfo):
+        name, (freq, frontend_params), pids = tuningInfo
+        return Tuner(freq, frontend_params)
+
+    Pipeline(
+        RateControlledFileReader(channelsConfFile, readmode="lines", rate=1000, chunksize=1),
+        ParseChannelsConf(),
+        PureTransformer(chooseChannelName),
+        Graphline(
+            SPLIT   = TwoWaySplitter(),
+            TUNER   = Carousel(createTuner),
+            PID_REQ = PureTransformer(makeAddPidsMessage),
+            linkages = {
+                ("",        "inbox")   : ("SPLIT",   "inbox"),
+
+                ("SPLIT",   "outbox")  : ("TUNER",   "next"),    # trigger creation of tuner
+
+                ("SPLIT",   "outbox2") : ("PID_REQ", "inbox"),
+                ("PID_REQ", "outbox" ) : ("TUNER",   "inbox"),   # ask tuner to output right packets
+
+                ("TUNER",   "outbox")  : ("",        "outbox"),
+            }
+        ),
+        SimpleFileWriter(outFileName),
+    ).run()
+
+In the above example, when we get the tuning info for the channel we are interested in, it is sent
+to two places using a TwoWaySplitter: to a Carousel that creates a Tuner tuned to the correct
+frequency; and also to be transformed into a message to request the Tuner outputs packets with the
+packet IDs (PIDs) for the particular channel we're interested in.
+
+
+
+More detail
+-----------
+
+Send strings containing lines from a channels.conf file to the "inbox" inbox of ParseChannelsConf.
+Each string must contain a single line.
+
+For each line received, a tuple containing a parsed version of the information in that line will
+be sent out of the "outbox" outbox. This tuple is of the form::
+
+    ( "Channel name", (frequency_MHz, tuning_parameters), packet/service_ids )
+    
+Tuning parameters are a dict of the form::
+
+    {
+        "inversion"             : dvb3.frontend.INVERSION_????
+        "bandwidth"             : dvb3.frontend.BANDWIDTH_????
+        "code_rate_HP"          : dvb3.frontend.FEC_???
+        "code_rate_LP"          : dvb3.frontend.FEC_???
+        "constellation"         : dvb3.frontend.Q???
+        "transmission_mode"     : dvb3.frontend.TRANSMISSION_MODE_???
+        "guard_interval"        : dvb3.frontend.GUARD_INTERVAL_???
+        "hierarchy_information" : dvb3.frontend.HIERARCHY_???
+    }
+
+In practice you do not need to worry about the actual values. You can pass this dict directly to
+most Kamaelia DVB tuning/receiving components as the 'feparams' (front-end tuning parameters)
+
+Packet/Service IDs are a dict of the form::
+
+    {   "video_pid" : packet_id_number,
+        "audio_pid" : packet_id_number,
+        "service_id" : service_id_number,
+    }
+
+The video and audio PIDs are the packet ids of packets carrying video and audio for this service.
+The service id is the id number associated with this service/channel.
+
+If a producerFinished or shutdownMicroprocess message is sent to ParseChannelConf's "control" inbox,
+then the message will be sent on out of the "signal" outbox and this component will immediately terminate.
+Any pending strings in its "inbox" inbox will be processed and sent out before termination.
 
 """
 
