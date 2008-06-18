@@ -56,7 +56,7 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class Osc(Axon.Component.component):
     """\
-    Osc([addressPrefix]) -> new Osc component.
+    Osc([addressPrefix, index]) -> new Osc component.
 
     Creates OSC packets from data received on the "inbox" inbox.
 
@@ -64,6 +64,9 @@ class Osc(Axon.Component.component):
 
     - addressPrefix -- A prefix to add to address pattern of each OSC Message.
                        The first character must be a forward slash.
+    - index         -- Only encode data[index] of a tuple.  This is useful for
+                       using the component with a PostboxPeer
+              
     """
     
     Inboxes = { "inbox"   : "(address, arguments, [timetag]) tuple to convert into an OSC packet",
@@ -73,13 +76,14 @@ class Osc(Axon.Component.component):
                  "signal" : "Signal shutdown"
                }
 
-    def __init__(self, addressPrefix = None):
+    def __init__(self, addressPrefix = None, index=None):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
         super(Osc, self).__init__()
         self.addressPrefix = addressPrefix
+        self.index = index
     
     def main(self):
         """ Main loop """
@@ -93,10 +97,14 @@ class Osc(Axon.Component.component):
 
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                address = data[0]
-                arguments = data[1]
-                if len(data) > 2:
-                    timetag = data[3]
+                if self.index:
+                    msgTuple = data[self.index]
+                else:
+                    msgTuple = data
+                address = msgTuple[0]
+                arguments = msgTuple[1]
+                if len(msgTuple) > 2:
+                    timetag = msgTuple[3]
                 else:
                     timetag = 0
                 # Prepend forward slash to address
@@ -106,7 +114,12 @@ class Osc(Axon.Component.component):
                     address = self.addressPrefix + address
                 bundle = OSC.OSCBundle(address, timetag)
                 bundle.append(arguments)
-                self.send(bundle.getBinary(), "outbox")
+                if self.index:
+                    data = list(data)
+                    data[self.index] = bundle.getBinary()
+                    self.send(data, "outbox")
+                else:
+                    self.send(bundle.getBinary(), "outbox")
             self.pause()
             yield 1
 
