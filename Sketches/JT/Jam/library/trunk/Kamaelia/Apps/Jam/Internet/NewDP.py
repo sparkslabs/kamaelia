@@ -336,12 +336,22 @@ class UDPSender(BasicPeer):
         self.send(newWriter(self, ((self, "writeReady"), self.sock)),
                   "_selectorSignal")
 
+        shutdownOnEmptyBuffer = False
         while 1:
             if self.dataReady("control"):
                 msg = self.recv("control")
-                if (isinstance(msg, producerFinished) or
-                    isinstance(msg, shutdownMicroprocess)):
+                if isinstance(msg, producerFinished):
+                    shutdownOnEmptyBuffer = True
+                if isinstance(msg, shutdownMicroprocess):
                     self.send(msg, "signal")
+                    break
+
+            # Make sure everything which could get sent does so before we
+            # exit
+            if shutdownOnEmptyBuffer:
+                if (not self.dataReady("inbox") and
+                    len(self.sendBuffer[0]) == 0):
+                    self.send(producerFinished(), "signal")
                     break
 
             if self.dataReady("writeReady"):
@@ -351,9 +361,12 @@ class UDPSender(BasicPeer):
             if self.sending:
                 self.sendLoop(self.remote)
 
-            if (not self.anyReady() or
-                not (self.sending and len(self.sendBuffer) != 0)):
-                self.pause()
+            # This line is sketchy.  I have a feeling it'll lead to never
+            # pausing in certain circumstances.  So far it's not happened...
+            if not shutdownOnEmptyBuffer:
+                if (not self.anyReady() or
+                    not (self.sending and len(self.sendBuffer[0]) != 0)):
+                    self.pause()
             yield 1
 
 class SimplePeer(BasicPeer):
@@ -414,7 +427,7 @@ class SimplePeer(BasicPeer):
                 self.recvLoop()
 
             if (not self.anyReady() or
-                not (self.sending and len(self.sendBuffer) != 0)):
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
                 self.pause()
             yield 1
 
@@ -494,7 +507,7 @@ class TargettedPeer(BasicPeer):
                 self.recvLoop()
 
             if (not self.anyReady() or
-                not (self.sending and len(self.sendBuffer) != 0)):
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
                 self.pause()
             yield 1
 
@@ -567,7 +580,7 @@ class PostboxPeer(BasicPeer):
                 self.recvLoop()
 
             if (not self.anyReady() or
-                not (self.sending and len(self.sendBuffer) != 0)):
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
                 self.pause()
             yield 1
 
