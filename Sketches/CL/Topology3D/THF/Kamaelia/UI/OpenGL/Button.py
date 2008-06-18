@@ -141,6 +141,7 @@ class Button(OpenGLComponent):
     def draw(self):
         """ Draw button cuboid."""
         hs = self.size/2.0
+        print hs
         # draw faces
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
@@ -182,13 +183,17 @@ class Button(OpenGLComponent):
         glVertex3f(hs.x,-hs.y,-hs.z)
         # front plane
         glTexCoord2f(0.0, 1.0-self.tex_h)
-        glVertex3f(-hs.x,-hs.y,hs.z)
+        #glVertex3f(-hs.x,-hs.y,hs.z)
+        glVertex3f(-2.0, -1.0,  1.0)
         glTexCoord2f(self.tex_w, 1.0-self.tex_h)
-        glVertex3f(hs.x,-hs.y,hs.z)
+        #glVertex3f(hs.x,-hs.y,hs.z)
+        glVertex3f( 2.0, -1.0,  1.0)
         glTexCoord2f(self.tex_w, 1.0)
-        glVertex3f(hs.x,hs.y,hs.z)
+        #glVertex3f(hs.x,hs.y,hs.z)
+        glVertex3f( 2.0,  5.0,  1.0) 
         glTexCoord2f(0.0, 1.0)
-        glVertex3f(-hs.x,hs.y,hs.z)
+        #glVertex3f(-hs.x,hs.y,hs.z)
+        glVertex3f(-2.0,  5.0,  1.0)
         glEnd()
         
         glDisable(GL_TEXTURE_2D)
@@ -249,7 +254,9 @@ class Button(OpenGLComponent):
 
         # read pixel data
         textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
-        print textureData
+        print self.image.get_width(), self.image.get_height()
+        print textureSurface.get_width(), textureSurface.get_height()
+        #print textureData
 
         self.texID = glGenTextures(1)
         # create texture
@@ -283,15 +290,15 @@ if __name__=='__main__':
 
     Graphline(
         BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
-        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
-        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
-        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
+#        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
+#        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
+#        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
             ("BUTTON1", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
-            ("BUTTON4", "outbox") : ("ECHO", "inbox"),            
+#            ("BUTTON2", "outbox") : ("ECHO", "inbox"),
+#            ("BUTTON3", "outbox") : ("ECHO", "inbox"),
+#            ("BUTTON4", "outbox") : ("ECHO", "inbox"),            
         }
     ).run()
 # Licensed to the BBC under a Contributor Agreement: THF

@@ -1,6 +1,6 @@
 """\
 Rendering an OpenGL sphere to serve as particles of Topology 
-TODO: add texture
+
 References: pygame + PyOpenGL version of Nehe's OpenGL (Paul Furber) and PyOpenGL demos
 """
 
@@ -28,6 +28,7 @@ def init():
     
     # Create a quadratic object for sphere rendering
     quadratic = gluNewQuadric()
+    #gluQuadricDrawStyle( quadratic, GLU_FILL )
     #gluQuadricDrawStyle( quadratic, GLU_LINE )
     #gluQuadricDrawStyle( quadratic, GLU_SILHOUETTE )
     gluQuadricNormals(quadratic, GLU_SMOOTH)
@@ -60,6 +61,7 @@ def init():
 
 def buildLabel(text):
     """Pre-render the text to go on the label."""    
+    
     global texID
 
     # Text texture
@@ -75,7 +77,6 @@ def buildLabel(text):
 #    textureSurface = pygame.image.load('nehe.bmp')
     
     textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
-    #print textureData
     
     texID = glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, texID)
@@ -107,7 +108,7 @@ def draw():
                
     gluSphere(quadratic,1.3,32,32)
     
-    #glDisable(GL_TEXTURE_2D)
+    #glDisable(GL_TEXTURE_2D) # a pair or needs removing to show the texture
     
     xrot  = xrot + 0.2                # X rotation
     yrot = yrot + 0.2                 # Y rotation
@@ -124,7 +125,6 @@ def main():
     resize((640,480))
     init()
     buildLabel('Particle')
-    #print pygame.display.get_surface()
     
     frames = 0
     ticks = pygame.time.get_ticks()
