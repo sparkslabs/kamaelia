@@ -45,7 +45,7 @@ from Kamaelia.Util.Console import ConsoleEchoer
 
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
 from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender, PostboxPeer
-from Kamaelia.Apps.Jam.Internet.UDPDistributor import UDPDistributor
+from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
               fanout = Fanout(["addPeer", "peerList"]),
               addPeerFilter = AddPeerFilter(),
               osc = Osc("/Jam"),
-              dispatcher = UDPDistributor(),
+              dispatcher = UDPDispatcher(),
               linkages = {("remoteSub", "outbox"):("osc", "inbox"),
                           ("osc", "outbox"):("dispatcher", "inbox"),
                           ("dataSub", "outbox"):("fanout", "inbox"),
