@@ -39,11 +39,15 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Util.Fanout import Fanout
+from Kamaelia.Util.OneShot import OneShot
+from Kamaelia.Util.Console import ConsoleEchoer
 
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
-from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender
+from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender, PostboxPeer
 from Kamaelia.Apps.Jam.Internet.UDPDistributor import UDPDistributor
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
+from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
 
 FPS = 60
 
@@ -51,11 +55,9 @@ FPS = 60
 #TODO: Filters should exit
 
 import Axon
+import sets
 
 class AddPeerFilter(Axon.Component.component):
-    def __init__(self):
-        super(AddPeerFilter, self).__init__()
-
     def main(self):
         while 1:
             if self.dataReady("inbox"):
@@ -92,6 +94,24 @@ class XYFilter(Axon.Component.component):
             if not self.anyReady():
                 self.pause()
             yield 1
+
+class PeerListFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if data[0][0].split("/")[-1] == "PeerList":
+                    # OSC message flattens the peer list, so we need to group
+                    # them into (address, port) tuples again
+                    peerList = sets.Set()
+                    for i in enumerate(data[0][1]):
+                        # FIXME: Boy is this ugly...
+                        if not i[0] % 2:
+                            peerList.add((i[1], data[0][1][i[0]+1]))
+                    self.send(peerList, "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
             
 
         
@@ -109,12 +129,12 @@ if __name__ == "__main__":
     parser.add_option("--listen-port", dest="listenPort", type="int",
                       help="The UDP port number to listen for other connecting Jam clients on (default=2001)")
     parser.add_option("--remote-address", dest="remoteAddress",
-                      help="The IP address of another Jam client to connect to (default=127.0.0.1)")
+                      help="The IP address of another Jam client to connect to (default=None)")
     parser.add_option("--remote-port", dest="remotePort", type="int",
-                      help="The UDP port number of another Jam client to connect to (default=2002)")
+                      help="The UDP port number of another Jam client to connect to (default=None)")
     parser.set_defaults(oscAddress="127.0.0.1", oscPort=2000,
                         listenAddress="127.0.0.1", listenPort=2001,
-                        remoteAddress="127.0.0.1", remotePort=2002)
+                        remoteAddress=None, remotePort=None)
 
     options, args = parser.parse_args()
 
@@ -126,16 +146,31 @@ if __name__ == "__main__":
     Pipeline(Clock(float(1)/FPS),
              PublishTo("frameRateClock")).activate()
 
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              fanout = Fanout(["addPeer", "peerList"]),
+              addPeerFilter = AddPeerFilter(),
+              peerListFilter = PeerListFilter(),
+              osc = Osc("/Jam", 2),
+              peerSelector = PeerSelector(options.listenPort),
+              sender = PostboxPeer(),
+              linkages = {("dataSub", "outbox"):("fanout", "inbox"),
+                          ("fanout", "addPeer"):("addPeerFilter", "inbox"),
+                          ("addPeerFilter","outbox"):("peerSelector", "addPeer"),
+                          ("fanout", "peerList"):("peerListFilter", "inbox"),
+                          ("peerListFilter", "outbox"):("peerSelector", "peerSet"),
+                          ("peerSelector", "outbox"):("osc", "inbox"),
+                          ("osc", "outbox"):("sender", "inbox")
+                          }
+              ).activate()
+
     Graphline(clockSub = SubscribeTo("frameRateClock"),
-              xyPad = XYPad(messagePrefix = "/XY/1", position = (0, 0)),
+              xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
               localPub = PublishTo("localDataOut"),
               remotePub = PublishTo("remoteDataOut"),
               linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
                           ("xyPad", "outbox"):("localPub", "inbox"),
                           ("xyPad", "localChanges"):("remotePub", "inbox")}
               ).activate()
-
-    
 
     Graphline(dataSub = SubscribeTo("dataIn"),
               clockSub = SubscribeTo("frameRateClock"),
@@ -155,18 +190,32 @@ if __name__ == "__main__":
 
     Graphline(remoteSub = SubscribeTo("remoteDataOut"),
               dataSub = SubscribeTo("dataIn"),
-              ce = ConsoleEchoer(),
+              fanout = Fanout(["addPeer", "peerList"]),
               addPeerFilter = AddPeerFilter(),
               osc = Osc("/Jam"),
               dispatcher = UDPDistributor(),
               linkages = {("remoteSub", "outbox"):("osc", "inbox"),
                           ("osc", "outbox"):("dispatcher", "inbox"),
-                          ("dataSub", "outbox"):("addPeerFilter", "inbox"),
-                          ("addPeerFilter","outbox"):("dispatcher", "addPeer")}
+                          ("dataSub", "outbox"):("fanout", "inbox"),
+                          ("fanout", "addPeer"):("addPeerFilter", "inbox"),
+                          ("addPeerFilter","outbox"):("dispatcher", "addPeer"),
+                          ("fanout", "peerList"):("peerListFilter", "inbox"),
+                          ("peerListFilter", "outbox"):("dispatcher", "peerSet")
+                          }
               ).activate()
 
     Backplane("dataIn").activate()
     Backplane("frameRateClock").activate()
     Backplane("localDataOut").activate()
-    Backplane("remoteDataOut").run()
+    Backplane("remoteDataOut").activate()
+
+    if options.remoteAddress and options.remotePort:
+        Pipeline(OneShot(("/Jam/Connect", (options.listenPort))), Osc(),
+                 UDPSender(receiver_addr=options.remoteAddress,
+                           receiver_port=options.remotePort)
+                ).activate()
+
+    Axon.Scheduler.scheduler.run.runThreads()
+
+    
              
