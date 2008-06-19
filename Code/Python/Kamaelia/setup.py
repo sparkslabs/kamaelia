@@ -31,7 +31,11 @@ setup(name = "Kamaelia",
       packages = [\
                   "Kamaelia", # START
                   "Kamaelia.Apps",
-                  "Kamaelia.Apps.IRCLogger",
+                  "Kamaelia.Apps.Compose",
+                  "Kamaelia.Apps.Compose.GUI",
+		  "Kamaelia.Apps.IRCLogger",
+                  "Kamaelia.Apps.Show",
+                  "Kamaelia.Apps.Whiteboard",
                   "Kamaelia.Automata",
                   "Kamaelia.Audio",
                   "Kamaelia.Audio.PyMedia",
