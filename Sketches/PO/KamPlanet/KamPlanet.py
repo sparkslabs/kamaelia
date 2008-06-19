@@ -41,11 +41,6 @@ from ForwarderComponent   import Forwarder
 DEFAULT_KAMPLANET_CONFIG_FILENAME = "kamaelia-config.xml"
 
 class KamPlanet(object):
-    KamTemplateProcessor_class = KamTemplateProcessor
-    PostSorter_class           = PostSorter
-    ConfigFileParser_class     = ConfigFileParser
-    FeedParserFactory_class    = FeedParserFactory
-    
     def __init__(self, fileName,  **argd):
         super(KamPlanet, self).__init__(self, **argd)
         self._fileName = fileName
@@ -74,7 +69,7 @@ class KamPlanet(object):
             FEEDS_SUBSCRIBER    = self.subscribeToPlugsplitter(feeds_plugsplitter),
             POSTS_SUBSCRIBER    = self.subscribeToPlugsplitter(posts_plugsplitter),
             CONFIG_SUBSCRIBER   = self.subscribeToPlugsplitter(config_plugsplitter), 
-            POSTS2FILE          = self.KamTemplateProcessor_class(templateField, outputFileField),
+            POSTS2FILE          = KamTemplateProcessor(templateField, outputFileField),
             FILE_WRITER         = Carousel(SimpleFileWriter),
             linkages = {
                 ('FEEDS_SUBSCRIBER',    'outbox')        : ('POSTS2FILE',  'feeds-inbox'), 
@@ -90,7 +85,7 @@ class KamPlanet(object):
             }
         )
         
-    def run(self):
+    def start(self):
         channels_plugsplitter                 = PlugSplitter()
         feeds_plugsplitter                    = PlugSplitter()
         posts_plugsplitter                    = PlugSplitter()
@@ -106,13 +101,13 @@ class KamPlanet(object):
                 'htmlTemplateName', 'htmlFileName'
         ).activate()
         
-        graph = Graphline(
+        self.component = Graphline(
                 XML_PARSER                   = self.create_xml_parser(),
-                CONFIG_PARSER                = self.ConfigFileParser_class(),
-                FEED_PARSER_FACTORY          = self.FeedParserFactory_class(),
+                CONFIG_PARSER                = ConfigFileParser(),
+                FEED_PARSER_FACTORY          = FeedParserFactory(),
                 CHANNELS_SUBSCRIBER          = self.subscribeToPlugsplitter(channels_plugsplitter), 
                 CHANNELS_SPLITTER            = channels_plugsplitter, 
-                POST_SORTER                  = self.PostSorter_class(),
+                POST_SORTER                  = PostSorter(),
                 POSTS_SUBSCRIBER             = self.subscribeToPlugsplitter(posts_plugsplitter), 
                 POSTS_SPLITTER               = posts_plugsplitter,
                 FEEDS_SUBSCRIBER             = self.subscribeToPlugsplitter(feeds_plugsplitter), 
@@ -150,7 +145,6 @@ class KamPlanet(object):
                     ('POSTS_SUBSCRIBER',             'signal')        : ('FEEDS_SPLITTER',         'control'), 
                 }
         )
-        graph.run()
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -189,4 +183,5 @@ if __name__ == '__main__':
             rt_debugger.launch_debugger(port)
             
     kamPlanet = KamPlanet(options.configFile)
-    kamPlanet.run()
+    kamPlanet.start()
+    kamPlanet.component.run()

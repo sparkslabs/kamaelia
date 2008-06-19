@@ -161,9 +161,6 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         mockFeedParsers = []
         for _ in xrange(MESSAGE_NUMBER):
             mockFeedParser = self.createMock(pipeline)
-            # TODO: the problem is that we use DEFAULT_STEP_NUMBER here, the
-            # child will not die until this has finished
-            mockFeedParser.stopMockObject(1000)
             mockFeedParser.addMessage(SAMPLE_RSS,'outbox')
             mockFeedParsers.append(mockFeedParser)
         
@@ -177,7 +174,7 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
             self.put(feedobj, 'inbox')
             
         self.put(producerFinished(), 'control')
-
+        
         for _ in xrange(MESSAGE_NUMBER):
             message = self.get('outbox')
             message.pop('href')
@@ -186,6 +183,9 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
                               pickle.dumps(message)
                             )
         self.assertOutboxEmpty('outbox')
+        
+        for mockFeedParser in mockFeedParsers:
+            mockFeedParser.stopMockObject()
         
         self.assertTrue(isinstance(self.get('signal'), producerFinished))
         self.assertOutboxEmpty('signal')
@@ -252,22 +252,8 @@ class FeedParserFactoryTestCase(KamTestCase.KamTestCase):
         
         # Even if I have sent a producerFinished, the process does not finish
         # because there are pending children
-        self.assertNotStopping(clear=True)
-        
-    def testWaitingForChildrenWhenShutdownMicroprocess(self):
-        mockFeedParser = self.createMock(pipeline)
-        mockFeedParser.addMessage(self.PARSEDOBJECT1,'outbox')
-        # I don't ask the mock feed to stop
-        
-        feedobj = self.generateFeedObj(FEED_URL)
-        self.configureMockedFeedParserMaker(mockFeedParser)
-        
-        self.put(feedobj, 'inbox')
-        self.put(shutdownMicroprocess(), 'control')
-        
-        # Even if I have sent a shutdownMicroprocess, the process does not finish
-        # because there are pending children
-        self.assertNotStopping(clear=True)
+        self.assertNotFinished()
+
         
 def suite():
     return KamTestCase.TestSuite((
