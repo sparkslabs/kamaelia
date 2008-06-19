@@ -15,7 +15,7 @@ from Kamaelia.Protocol.SimpleReliableMulticast import SRM_Sender, SRM_Receiver
 from Kamaelia.Protocol.Packetise import MaxSizePacketiser
 from Kamaelia.Util.Detuple import SimpleDetupler
 
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+file_to_stream = "../../SupportingMediaFiles/KDE_Startup_2.ogg"
 
 #
 # Server with simple added reliabilty protocol
