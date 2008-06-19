@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed version="0.3" xmlns="http://purl.org/atom/ns#">
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog_code"/>
+
+<title>pfh's blog: code section</title>
+<modified>2008-05-18T09:24:29Z</modified>
+<tagline>Code, largely Pythonic</tagline>
+<author><name>Paul Harrison</name><email>pfh@logarithmic.net</email></author>
+<entry>
+<title>Dividing a beat, a la Arbeau</title>
+<issued>2008-05-18T09:24:29Z</issued>
+<modified>2008-05-18T09:24:29Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01211102669</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01211102669"/>
+<content type="text/html" mode="escaped">
+
+&lt;a href=&quot;http://books.google.com.au/books?id=5AnczG_6MZEC&amp;amp;printsec=frontcover&amp;amp;dq=Thoinot+Arbeau&amp;amp;psp=1&amp;amp;source=gbs_summary_r&amp;amp;cad=0#PPA20,M1&quot;&gt;Thoinot Arbeau, in his 16th century dance manual, first introduces rhythm as it relates to military marching.&lt;/a&gt;
+That is to say, the beat corresponds to the footfalls of the soldiers.
+To spice things up a bit, the period before each bit may be divided into
+lesser periods, each ending with lesser drum beats. Similarly, dance steps may be elaborated by introducing extra footfalls before the main footfall.
+
+&lt;p&gt;So rhythm, from the standpoint of dancing, has as its fundamental unit a delay followed by a beat. During the delay we step, hop, leap, or somesuch, and on the beat one or other foot hits the floor.
+
+&lt;p&gt;Note that this is opposite to how we notate music, in which the fundamental unit is an
+attack followed by a period of sustain.
+
+&lt;p&gt;Take a single unit:
+
+&lt;p&gt;&lt;pre&gt;
+     |
+     |
+------
+&lt;/pre&gt;
+
+&lt;p&gt;We may divide it into two:
+
+&lt;p&gt;&lt;pre&gt;
+     |
+  |  |
+------
+&lt;/pre&gt;
+
+&lt;p&gt;or three:
+
+&lt;p&gt;&lt;pre&gt;
+     |
+ | | |
+------
+&lt;/pre&gt;
+
+&lt;p&gt;The resulting units may then be further subdivided to produce complex rhythms.
+Dividing a unit by larger numbers doesn't produce as pleasing results as
+dividing by two or three.
+
+&lt;p&gt;Here is an example demonstrating progressively deeper divisions:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01211102669/drum.mp3&quot;&gt;drum.mp3&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;Here is the code I used to generate it:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01211102669/division.py&quot;&gt;division.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;You will need &lt;span class=&quot;mono&quot;&gt;python&lt;/span&gt;, &lt;span class=&quot;mono&quot;&gt;abc2midi&lt;/span&gt; and &lt;span class=&quot;mono&quot;&gt;timidity&lt;/span&gt; (or whichever MIDI player you prefer).
+(Yes this is an ungainly way to generate MIDI,
+I'd love to find a less painful way.) 
+
+
+&lt;p&gt;&lt;br&gt;&lt;b&gt;Update:&lt;/b&gt; One still needs to think about what comes after a beat, lest the beat interfere with following beats. Here's an example that does this (and with some further refinements):
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01211102669/drum2.mp3&quot;&gt;drum2.mp3&lt;/a&gt; &lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01211102669/division2.py&quot;&gt;division2.py&lt;/a&gt; &lt;/li&gt;&lt;/ul&gt;</content>
+</entry>
+<entry>
+<title>Robust topological sorting and Tarjan's algorithm in Python</title>
+<issued>2008-04-13T10:39:28Z</issued>
+<modified>2008-04-13T10:39:28Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01208083168</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01208083168"/>
+<content type="text/html" mode="escaped">
+
+The &lt;a href=&quot;http://en.wikipedia.org/wiki/Strongly_connected_component&quot;&gt;Strongly Connected Components&lt;/a&gt; of a directed graph are subsets of nodes such that each node within a subset can be reached from each other node. Tarjan's algorithm can identify these components efficiently (thanks &lt;a href=&quot;http://njhurst.com&quot;&gt;njh&lt;/a&gt; for finding this algorithm). 
+
+&lt;p&gt;By identifying strongly connected components ahead of time we can create a topological sorting algorithm that does the best it can in the presence of cycles.
+
+&lt;p&gt;Here is an implementation in Python:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01208083168/sort.py&quot;&gt;sort.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;Here are some things you might use this for:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;Install packages with circular dependencies in the best order you can.&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;Work out in which order a set of equations must be solved, and which must be solved simultaneously.&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;In a revision control system align as well as possible many versions of a file. (This is basically what I am using this for, but with DNA.)&lt;/li&gt;&lt;/ul&gt;
+</content>
+</entry>
+<entry>
+<title>AMOS message reader/writer module for Python</title>
+<issued>2008-04-07T06:27:34Z</issued>
+<modified>2008-04-07T06:27:34Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01207549654</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01207549654"/>
+<content type="text/html" mode="escaped">
+
+(of interest to bioinformaticians, and few others)
+
+
+&lt;p&gt;&lt;br&gt;&lt;a href=&quot;http://amos.sourceforge.net/&quot;&gt;AMOS (A Modular Open-Source Assembler)&lt;/a&gt; defines a standard message format for describing DNA sequence assemblies. It has a Perl module for reading these assemblies, but no Python module.
+
+&lt;p&gt;Shock! This must be rectified, forthwith!
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01207549654/amos.py&quot;&gt;amos.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+
+&lt;p&gt;&lt;br&gt;I am currently using this module to import Newbler assemblies of 454 data into AMOS. The quality data is thoroughly b0rked. If anyone has any experience with this, please contact me.</content>
+</entry>
+<entry>
+<title>Introducing Myrialign - align short reads to a reference genome</title>
+<issued>2008-02-23T10:51:08Z</issued>
+<modified>2008-02-23T10:51:08Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01203763868</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01203763868"/>
+<content type="text/html" mode="escaped">
+
+Monash has just bought a &lt;a href=&quot;http://www.illumina.com/pages.ilmn?ID=203&quot;&gt;short read genome sequencer&lt;/a&gt; which is about to start throwing great gobs of data in my general direction. To deal with this looming deluge, I've started writing some bits and pieces of (mostly) Python code. These are going into a Savannah project called &lt;a href=&quot;http://savannah.nongnu.org/projects/myrialign&quot;&gt;Myrialign&lt;/a&gt;.
+
+&lt;p&gt;The major component at this stage is a utility to align short reads to a reference genome, a common first step when analysing short read data. An alignment can contain any number of SNPs, insertions and deletions, up to a user specified cutoff.
+
+
+&lt;p&gt;&lt;br&gt;One cute thing I'm doing with this is some extreme bit-parallelism. A single alignment can be writen as a logical expression. Either two things align, or they don't (if they do you go back and work out how, but this is infrequent and is therefore allowed to be slow). We could perform each of the operations required to evaluate this logical expression for each pair of sequences we want to align, but it is possible to do much better. Instead, we can pack 32 (or 64 or 128, depending on architecture) independent alignments into a machine word, and perform the operations on this. Bingo, 32x parallelism!
+
+&lt;p&gt;We may be able to do better still with vector operations. Even with bit-parallelism, we can still get pipeline stalls waiting for operations to complete. It may actually be better to work with many words worth of alignements at once. Performing a vector logical operation isn't going to stall the pipeline. When performing vector operations, the CPU will be able to easily predict what data it will need to load ahead of time. Any housekeeping gets amortized across more alignments. It will at the least be no worse to do this.
+
+&lt;p&gt;This assumes we are able to pump data in and out of memory as fast as we can operate on it. From what I have read on the memory hierachy (someone please correct me if I am wrong), while latency gets progressively worse the further down the cache hierachy one goes, throughput only starts to suffer once you hit main memory. And with vector operations, it's throughput we're interested in here. When your vectors are large enough, latency doesn't matter.
+
+&lt;p&gt;Suddenly, Python and Numpy become a competitive option.
+
+
+&lt;p&gt;&lt;br&gt;The other cute thing: It really screams on a PlayStation 3. I'm trying to convince my department that it needs a cluster of them.</content>
+</entry>
+<entry>
+<title>lol.py</title>
+<issued>2007-12-04T09:51:43Z</issued>
+<modified>2007-12-04T09:51:43Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01196761903</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01196761903"/>
+<content type="text/html" mode="escaped">
+ 
+&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01196761903/lol.py&quot;&gt;lol.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;Small python script to translate English into LOL spelling. You will need to install the &lt;a href=&quot;http://espeak.sourceforge.net/&quot;&gt;eSpeak&lt;/a&gt; speech synthesizer (for phoneticization).
+
+&lt;p&gt;&lt;pre&gt;
+LOL&amp;gt; I have a bucket.
+
+ai hav a bukit
+
+LOL&amp;gt; No, they are stealing my bucket!
+
+no 
+dei ar stilen mai bukit
+
+LOL&amp;gt; In the beginning God created the heaven and the earth. And the earth was 
+without form, and void; and darkness was upon the face of the deep. And the 
+Spirit of God moved upon the face of the waters. And God said, Let there be 
+light: and there was light. And God saw the light, that it was good: and God 
+divided the light from the darkness. And God called the light Day, and the 
+darkness he called Night.
+
+enteh beginen g0d kri8ed teh hevan and deh eth 
+and deh eth w0z widaut fOam 
+and vOid 
+and darknas w0z ap0n teh feis 0v teh dip 
+and teh spirit 0v g0d muvd ap0n teh feis 0v teh wOtez 
+and g0d sed 
+let deh bi lait 
+and deh w0z lait 
+and g0d sO teh lait 
+datit w0z gud 
+and g0d devaidid teh lait fr0m teh darknas 
+and g0d kOld teh lait dei 
+and teh darknas hi kOld nait
+&lt;/pre&gt;</content>
+</entry>
+<entry>
+<title>Lazy lists in Python</title>
+<issued>2007-10-24T23:32:22Z</issued>
+<modified>2007-10-24T23:32:22Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01193268742</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01193268742"/>
+<content type="text/html" mode="escaped">
+
+Convert an iterator in Python into a lazily evaluated list. Surprisingly useful.
+
+&lt;p&gt;&lt;pre&gt;
+class Lazy_list:
+    def __init__(self, iterator):
+        self.data = [ ]
+        self.iterator = iterator
+    
+    def __getitem__(self, index):
+        while len(self.data) &amp;lt;= index:
+            self.data.append( self.iterator.next() )
+        return self.data[index]
+&lt;/pre&gt;</content>
+</entry>
+<entry>
+<title>Search a large sorted text file in Python</title>
+<issued>2007-08-09T00:46:55Z</issued>
+<modified>2007-08-09T00:46:55Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01186620415</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01186620415"/>
+<content type="text/html" mode="escaped">
+
+This is a very simple way to deal with a large static database:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;Generate your data in any order, one element per line. Suggested format:
+&lt;br&gt;&amp;lt;table identifier&amp;gt;&amp;lt;key&amp;gt;&amp;lt;delimiter&amp;gt;&amp;lt;value&amp;gt;
+&lt;br&gt;By sticking in a table identifier you can put multiple tables in the one file (or multiple indexes of the one table).&lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;Sort your data. If it's too large to fit in memory, use this &lt;a href=&quot;http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/466302&quot;&gt;script by Nicholas Lehuen.&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;Look up data using the class below.&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;&lt;pre&gt;
+class Searcher:
+    def __init__(self, filename):
+        self.f = open(filename, 'rb')
+        self.f.seek(0,2)
+        self.length = self.f.tell()
+        
+    def find(self, string):
+        low = 0
+        high = self.length
+        while low &amp;lt; high:
+            mid = (low+high)//2
+            p = mid
+            while p &amp;gt; 0:
+                self.f.seek(p)
+                if self.f.read(1) == '\n': break
+                p -= 1
+            line = self.f.readline()
+            if line &amp;lt; string:
+                low = mid+1
+            else:
+                high = mid
+        
+        p = low
+        while p &amp;gt; 0:
+            self.f.seek(p)
+            if self.f.read(1) == '\n': break
+            p -= 1
+        
+        result = [ ]    
+        while True:
+            line = self.f.readline()
+            if not line or not line.startswith(string): break
+            if line[-1:] == '\n': line = line[:-1]
+            result.append(line[len(string):])
+        return result
+&lt;/pre&gt;
+
+&lt;p&gt;This class can be used to quckly find all lines in a sorted file that start with a given string. Pass &lt;span class=&quot;mono&quot;&gt;find&lt;/span&gt; a string containing &amp;lt;table identifier&amp;gt;&amp;lt;key&amp;gt;&amp;lt;delimiter&amp;gt; and it will return all associated values.
+</content>
+</entry>
+<entry>
+<title>Euclidean Distance Transform in Python</title>
+<issued>2007-07-31T11:19:12Z</issued>
+<modified>2007-07-31T11:19:12Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01185880752</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01185880752"/>
+<content type="text/html" mode="escaped">
+
+This may be useful to someone.
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01185880752/euclidean_dt.py&quot;&gt;euclidean_dt.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;Algorithmic complexity doesn't seem bad, but no guarantees. To use, pass &lt;span class=&quot;mono&quot;&gt;distance_transform&lt;/span&gt; a 2D boolean numpy array. Psyco helps. So would rewriting it in C.
+
+&lt;p&gt;&lt;pre&gt;
+def _upscan(f):
+    for i, fi in enumerate(f):
+        if fi == numpy.inf: continue
+        for j in xrange(1,i+1):
+            x = fi+j*j
+            if f[i-j] &lt; x: break
+            f[i-j] = x
+
+def distance_transform(bitmap):
+    f = numpy.where(bitmap, 0.0, numpy.inf)
+    for i in xrange(f.shape[0]):
+        _upscan(f[i,:])
+        _upscan(f[i,::-1])
+    for i in xrange(f.shape[1]):
+        _upscan(f[:,i])
+        _upscan(f[::-1,i])
+    numpy.sqrt(f,f)
+    return f
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://www.logarithmic.net/pfh-files/blog/01185880752/screenshot.png&quot;&gt;</content>
+</entry>
+<entry>
+<title>Prototype-based programming in Python</title>
+<issued>2007-04-23T12:03:07Z</issued>
+<modified>2007-04-23T12:03:07Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01177329787</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01177329787"/>
+<content type="text/html" mode="escaped">
+
+In prototype-based programming there is inheritance but no instantiation. I find myself using a prototype-based style in web applications sometimes. For example I might define a &amp;quot;Field&amp;quot; object that contains the logic for displaying and editing a field in a row of a database table. I might then specialize it in derived objects to perform various kinds of validation.
+
+&lt;p&gt;In Python this can be achieved by neutering a class:
+
+&lt;p&gt;&lt;pre&gt;
+import types
+
+class Prototype:
+    class __metaclass__(type):
+        def __new__(self, name, bases, dict):
+            for member, value in dict.items():
+                if type(value) == types.FunctionType:
+                    dict[member] = classmethod(value)
+            return type.__new__(self, name, bases, dict)
+
+    __new__ = NotImplemented
+&lt;/pre&gt;
+
+&lt;p&gt;All methods are converted into classmethods, and the class can not be instantiated. Use of classmethod rather than staticmethod is crucial: When classmethod is used, the method is passed the class as the first argument (much like an instance is passed &amp;quot;self&amp;quot;). This means a method defined in a superclass can call other methods which have possibly been customized in sub-classes.
+
+&lt;p&gt;One trick here: When invoking a super-class's overridden method from a sub-class, one must call Superclass.function.&lt;b&gt;im_func&lt;/b&gt;(self, other arguments).
+</content>
+</entry>
+<entry>
+<title>Python VP-tree implementation</title>
+<issued>2006-11-29T08:46:48Z</issued>
+<modified>2006-11-29T08:46:48Z</modified>
+<id>http://www.logarithmic.net/pfh/blog/01164790008</id>
+<link rel="alternate" type="text/html" href="http://www.logarithmic.net/pfh/blog/01164790008"/>
+<content type="text/html" mode="escaped">
+
+&lt;a href=&quot;http://www.pnylab.com/pny/papers/vptree/vptree/&quot;&gt;VP-trees&lt;/a&gt; are a data structure for performing fast nearest-neighbour queries in metric spaces.
+
+&lt;p&gt;Here's a fairly naive implementation in Python:
+
+&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://www.logarithmic.net/pfh-files/blog/01164790008/VP_tree.py&quot;&gt;VP_tree.py&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;A Levenshtein-distance based spelling corrector is included in this program as a test.
+
+&lt;p&gt;&lt;pre&gt;
+$ python VP_tree.py /usr/share/dict/words
+Load dictionary
+98568 words
+
+Construct tree
+727925 comparisons
+
+Ready to answer queries
+
+query&amp;gt; mispelt
+    76 comparisons later...     1 misspelt
+  2348 comparisons later...     2 dispels
+     0 comparisons later...     2 misspell
+     0 comparisons later...     2 misspent
+     0 comparisons later...     2 respelt
+
+query&amp;gt; correct
+     8 comparisons later...     0 correct
+  1591 comparisons later...     1 corrects
+  1623 comparisons later...     2 Forrest
+     0 comparisons later...     2 collect
+     0 comparisons later...     2 connect
+
+query&amp;gt; fandabulous
+ 18600 comparisons later...     3 fabulous
+  7333 comparisons later...     4 nebulous
+     0 comparisons later...     4 scandalous
+ 14885 comparisons later...     4 pendulous
+  2314 comparisons later...     5 Daedalus
+&lt;/pre&gt;</content>
+</entry>
+</feed>

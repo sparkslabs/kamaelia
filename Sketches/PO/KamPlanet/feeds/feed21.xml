@@ -1,0 +1,2194 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<rss version="2.0" 
+   xmlns:creativeCommons="http://backend.userland.com/creativeCommonsRssModule" 
+   xmlns:html="http://www.w3.org/1999/html" 
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+   xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
+<channel>
+   <title>Daniel Nouri's Blog</title>
+   <link>http://danielnouri.org/blog</link>
+   <description>Observing the unobserved</description>
+   <language>en</language>
+   <copyright>Copyright 2006 Daniel Nouri</copyright>
+   <ttl>60</ttl>
+   <pubDate>Sat, 24 May 2008 15:58 GMT</pubDate>
+   <managingEditor>daniel.nouri@gmail.com</managingEditor>
+   <generator>PyBlosxom http://pyblosxom.sourceforge.net/ 1.3.2 2/13/2006</generator>
+<item>
+   <title>Arduino: Square wave synthesizer with LFO and variable frequency</title>
+   <guid isPermaLink="false">devel/hardware/arduino-synth-with-variable-frequency</guid>
+   <link>http://danielnouri.org/blog/devel/hardware/arduino-synth-with-variable-frequency.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>After going through part two of this <a class="reference" href="http://www.uchobby.com/index.php/2007/11/11/arduino-sound-part-1/">Arduino sound tutorial</a>, I made
+this little synthesizer.</p>
+<embed src="http://blip.tv/play/AbmoBwA" type="application/x-shockwave-flash" width="320" height="270" allowscriptaccess="always" allowfullscreen="true"></embed>   <p>Click <a class="reference" href="http://danielnouri.org/blog/devel/hardware/arduino-synth-with-variable-frequency.html">here</a> if you can't see the video.</p>
+<p>You can see that it starts out with a constant frequency that can be
+varied with the potentiometer.</p>
+<p>An LFO is added to the frequency once I push the button.  Successive
+button pushes will change the amplitude of the LFO.</p>
+<p>While the aforementioned tutorial explains how to connect Arduino with
+your PC sound card to get sound, I simply plugged in a Piezo buzzer.
+The advantage being that this synth is totally self-contained and
+portable, so I could use it in the train (<strong>I won't!</strong>).  The downside
+is that the audio quality is bad, and it's even worse in the video.</p>
+<p>Everything I needed to build this came with the <a class="reference" href="http://pcb-europe.net/catalog/product_info.php?cPath=29&amp;products_id=51">Arduino workshop
+kit</a> (50 EUR).  This includes the Arduino Diecimila itself,
+potentiometer, buzzer, breadboard, and button.</p>
+<p>The button press detection in the <a class="reference" href="http://wiring.org.co/">Wiring</a> code doesn't work
+properly.  A good implementation would probably need to use interrupt
+handlers.  I ignored this issue for now:</p>
+<pre class="literal-block">
+int buttonPin = 7;
+int buzzerPin = 8;
+int potPin = 2;
+
+void setup() {
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(buttonPin, INPUT);
+}
+
+void inner_loop(int j) {
+  digitalWrite(buzzerPin, HIGH);
+  delayMicroseconds(j*16 + analogRead(potPin));
+  digitalWrite(buzzerPin, LOW);
+  delayMicroseconds(j*16 + analogRead(potPin));
+}
+
+void loop() {
+  int val = digitalRead(buttonPin);
+  int factor = 0;
+
+  for (int i = 100; i &gt; 0; i--) {
+    inner_loop(i * factor);
+  }
+
+  // XXX: This doesn't work very well
+  if (digitalRead(buttonPin) != val &amp;&amp; val == HIGH) {
+    factor++;
+    if (factor &gt; 3)
+      factor = 0;
+  }
+
+  for (int i = 0; i &lt; 100; i++) {
+    inner_loop(i * factor);
+  }
+}
+</pre>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/hardware</category>
+   <pubDate>Sat, 24 May 2008 15:58 GMT</pubDate>
+</item>
+<item>
+   <title>Building an alarm clock</title>
+   <guid isPermaLink="false">devel/hardware/snorrrhea</guid>
+   <link>http://danielnouri.org/blog/devel/hardware/snorrrhea.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p><a class="reference" href="http://nessming.org">Vanessa</a> and I did some <a class="reference" href="http://nessming.org/blog/arduino-and-snorrrhea">fun experiments</a> lately with <a class="reference" href="http://arduino.cc">Arduino</a> and
+<a class="reference" href="http://supercollider.sourceforge.net">SuperCollider</a>.  We're building an alarm clock that wakes you up with
+quite an unusual sound...</p>
+<p><a class="reference" href="http://nessming.org/blog/arduino-and-snorrrhea">Read the story here</a>.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/hardware</category>
+   <pubDate>Sun, 18 May 2008 22:53 GMT</pubDate>
+</item>
+<item>
+   <title>plone.z3cform and why you want to use it (seriously)</title>
+   <guid isPermaLink="false">devel/zope/plone.z3cform-explained</guid>
+   <link>http://danielnouri.org/blog/devel/zope/plone.z3cform-explained.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I just uploaded a new tutorial to plone.org that explains <a class="reference" href="http://plone.org/documentation/how-to/easy-forms-with-plone3">how to use
+z3c.form with Plone</a>.  <a class="reference" href="http://docs.carduner.net/z3c.form/">z3c.form</a> is the next generation Zope form
+library and excels through ease of use and very good documentation.</p>
+<p>Your feedback is welcome.  See also the <a class="reference" href="http://pypi.python.org/pypi/plone.z3cform">project's homepage</a> and the
+<a class="reference" href="http://www.nabble.com/-Product-Developers--How-to-use-z3c.form-with-Plone-td17135916s6741.html">discussion on the Plone Product Developers list</a>.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Thu, 08 May 2008 20:28 GMT</pubDate>
+</item>
+<item>
+   <title>First release of Singing & Dancing</title>
+   <guid isPermaLink="false">devel/zope/sd-first-release</guid>
+   <link>http://danielnouri.org/blog/devel/zope/sd-first-release.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>We've been <a class="reference" href="http://groups.google.com/group/singing-dancing/browse_thread/thread/13ba4eea16ac9ca7">working</a> <a class="reference" href="http://www.flickr.com/photos/wimbou/2381516356/sizes/o/">hard</a> recently.  And today I'm pleased to announce
+the first official release of <a class="reference" href="http://plone.org/products/dancing/">Singing &amp; Dancing</a>, the
+next-generation newsletter and notification solution for Plone.</p>
+<div class="image"><img alt="Singing &amp; Dancing Logo by Giuseppe Zizza" src="http://danielnouri.org/media/singing-dancing.jpg" /></div>
+<p>Thanks to Thomas Clement Mogensen and all <a class="reference" href="http://dev.plone.org/collective/browser/collective.dancing/trunk/docs/THANKS.txt">contributors</a>, and kudos to
+<a class="reference" href="http://headnet.dk">Headnet</a> for their support.  And Giuseppe Zizza for making the very
+cool logo!</p>
+<p><em>Ship it!!</em></p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 16 Apr 2008 16:41 GMT</pubDate>
+</item>
+<item>
+   <title>Singing and Dancing in Sorrento 2008!</title>
+   <guid isPermaLink="false">devel/zope/singing-and-dancing-in-sorrento-2008</guid>
+   <link>http://danielnouri.org/blog/devel/zope/singing-and-dancing-in-sorrento-2008.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>If you're still looking for something cool to do at next week's
+<a class="reference" href="http://www.openplans.org/projects/sorrento-sprint-2008">Sorrento sprint</a> <em>besides</em> lying in the sun and sipping on that
+Limoncello: Why not join us with <a class="reference" href="http://plone.org/products/dancing">Singing &amp; Dancing</a>?</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 19 Mar 2008 11:25 GMT</pubDate>
+</item>
+<item>
+   <title>fakezope2eggs</title>
+   <guid isPermaLink="false">devel/zope/fakezope2eggs</guid>
+   <link>http://danielnouri.org/blog/devel/zope/fakezope2eggs.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Thanks to <a class="reference" href="http://pypi.python.org/pypi/affinitic.recipe.fakezope2eggs">fakezope2eggs</a>, I can now in my Zope 2 buildout depend on
+packages like <a class="reference" href="http://pypi.python.org/pypi/z3c.form">z3c.form</a> and <a class="reference" href="http://pypi.python.org/pypi/zc.queue">zc.queue</a>.  These would otherwise pull
+in incompatible versions of packages already in the Zope 2
+<tt class="docutils literal"><span class="pre">lib/python</span></tt> directory.</p>
+<p>Kudos to <a class="reference" href="http://www.jfroche.be/blogging">Jean-Francois</a>!</p>
+<p><strong>Edit</strong>: It turns out that the order of the parts in your buildout is
+<em>very</em> important.  Make sure that the <tt class="docutils literal"><span class="pre">fakezope2eggs</span></tt> part comes
+<em>right after</em> the <tt class="docutils literal"><span class="pre">zope2</span></tt> part, and <em>before</em> your Zope 2
+<tt class="docutils literal"><span class="pre">instance</span></tt> part!</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Tue, 19 Feb 2008 20:28 GMT</pubDate>
+</item>
+<item>
+   <title>Don't do this!</title>
+   <guid isPermaLink="false">devel/zope/dont-do-this</guid>
+   <link>http://danielnouri.org/blog/devel/zope/dont-do-this.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>This project is frustrating the hell out of me.</p>
+<p>If you want to customize your Plone site, <strong>don't do this</strong>:</p>
+<blockquote>
+<ul class="simple">
+<li>Go around wildly in your <em>Products</em> folder in customization frenzy
+and patch files like there's no tomorrow; and not even write down
+what you changed where.  Monkey patches are a hundred times better
+than this!</li>
+<li>Make customizations in the ZODB that your filesystem code depends
+on, so that you can't use the filesystem code anymore without that
+exact same database.  Have fun reproducing your environment!</li>
+</ul>
+</blockquote>
+<p>Please, these things are totally disastrous.  You might just as well throw your
+Plone site out the window!</p>
+<p>Gaah!!</p>
+<p>(Thanks to Florian Schulze for being an inspiration to the title for
+this blog post.)</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Mon, 26 Nov 2007 17:21 GMT</pubDate>
+</item>
+<item>
+   <title>Timed caching decorator with plone.memoize</title>
+   <guid isPermaLink="false">devel/plone-memoize-timeout</guid>
+   <link>http://danielnouri.org/blog/devel/plone-memoize-timeout.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Will McGugan recently blogged about his <a class="reference" href="http://www.willmcgugan.com/2007/10/14/timed-caching-decorator/">timed caching decorator</a>.
+And today I found out about <a class="reference" href="http://pypi.python.org/pypi/gocept.cache">gocept.cache</a>, which allows you to
+<a class="reference" href="http://en.wikipedia.org/wiki/Memoization">memoize</a> a function for a given amount of seconds.</p>
+<p>This is how you would cache a function's value for an hour using
+<a class="reference" href="http://pypi.python.org/pypi/plone.memoize">plone.memoize</a>:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; from time import time
+&gt;&gt;&gt; from plone.memoize import ram
+&gt;&gt;&gt; &#64;ram.cache(lambda *args: time() // (60 * 60))
+... def fun():
+...     return &quot;Something that takes awfully long&quot;
+</pre>
+</blockquote>
+<p>In the same way we're making the cache depend on time here, we could
+have it depend on anything else, like certain arguments provided to
+the function.  So, really, we can do more than just memoization with
+<tt class="docutils literal"><span class="pre">plone.memoize</span></tt>; an example is this time-out application.</p>
+<p>See the <a class="reference" href="http://dev.plone.org/plone/browser/plone.memoize/trunk/plone/memoize/README.txt">plone.memoize docs</a> for more examples.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Thu, 18 Oct 2007 12:35 GMT</pubDate>
+</item>
+<item>
+   <title>infrae.subversion: a recipe against disaster</title>
+   <guid isPermaLink="false">devel/zope/infrae-subversion</guid>
+   <link>http://danielnouri.org/blog/devel/zope/infrae-subversion.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>After finding out about <a class="reference" href="http://pypi.python.org/pypi/plone.recipe.bundlecheckout">plone.recipe.bundlecheckout</a> yesterday, I
+thought I'd mention <a class="reference" href="http://pypi.python.org/pypi/infrae.subversion">infrae.subversion</a>, a similar recipe for
+<a class="reference" href="http://pypi.python.org/pypi/zc.buildout">zc.buildout</a>.  These are the key differences:</p>
+<ul>
+<li><p class="first"><em>p.r.bundlecheckout</em> allows you to specify one URL per part,
+whereas with <em>infrae.subversion</em> you can specify a list of URLs.
+Why does this matter?  Because it helps you keep the exact URLs
+and therefore versions of the components that you use in your
+buildout configuration, which is better than keeping them in a
+<em>svn:externals</em> property.</p>
+</li>
+<li><p class="first"><em>infrae.subversion</em> takes care not to wipe any changes that you
+might have done in the checkout.  That is, you can safely use its
+checkouts for development.</p>
+<p>Why not instead make a separate <em>products</em> directory and use
+<em>svn:externals</em> for development?  Because again, we want to keep
+all dependencies in the buildout configuration.  And it's good to
+keep the development buildout as close as possible to the
+deployment one, to minimize the chance of error. With
+<em>infrae.subversion</em>, you also have the advantage of being able to
+run <em>bin/buildout</em> and have all dependencies updated, instead of
+having to run <em>svn up</em> in some directory manually, which is a
+source of confusion.</p>
+</li>
+<li><p class="first"><em>p.r.bundlecheckout</em> works with both SVN and CVS, while
+<em>infrae.subversion</em> only works with SVN.</p>
+</li>
+</ul>
+<p>The <a class="reference" href="https://svn.infrae.com/buildout/silva/trunk">Silva buildout</a> is an example of a buildout that uses
+<em>infrae.subversion</em>.</p>
+<div class="section" id="plone-recipe-command">
+<h4><a name="plone-recipe-command">plone.recipe.command</a></h4>
+<p>This is another buildout recipe that I should quickly mention.  It can
+be used to run arbitrary shell commands at <em>install</em> or <em>update</em> time.
+Here is an example that uses the beforementioned <em>infrae.subversion</em>
+recipe to install the latest <a class="reference" href="http://plone.org/products/fckeditor">Plone's FCKeditor Product</a> from SVN.
+The reason for using <em>plone.recipe.command</em> here is that we need to
+call the <tt class="docutils literal"><span class="pre">base2zope.py</span></tt> script to bootstrap the Product after doing
+a checkout:</p>
+<pre class="literal-block">
+[my-products]
+recipe = infrae.subversion
+urls = 
+  https://svn.plone.org/svn/collective/FCKeditor/trunk FCKeditor
+  ...
+
+[prep-fckeditor]
+recipe = plone.recipe.command
+command =
+    ${buildout:executable} ${buildout:directory}/parts/my-products/FCKeditor/utils/base2zope.py
+update-command = ${prep-fckeditor:command}
+</pre>
+<p>You can find <a class="reference" href="http://pypi.python.org/pypi?:action=browse&amp;show=all&amp;c=512">more buildout recipes in PyPI</a>.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sun, 30 Sep 2007 13:58 GMT</pubDate>
+</item>
+<item>
+   <title>Need for speed?  Go plone.memoize</title>
+   <guid isPermaLink="false">devel/need-for-speed</guid>
+   <link>http://danielnouri.org/blog/devel/need-for-speed.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>If you need to speed up your Python application, you should take a
+look at <a class="reference" href="http://svn.plone.org/svn/plone/plone.memoize/trunk/plone/memoize/README.txt">plone.memoize</a>, in particular its new cache decorator that's
+really easy to use:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from plone.memoize.ram import cache
+&gt;&gt;&gt; def cache_key(fun, first, second):
+...     return (first, second)
+&gt;&gt;&gt; &#64;cache(cache_key)
+... def pow(first, second):
+...     print 'Someone or something called me'
+...     return first ** second
+
+&gt;&gt;&gt; pow(3, 2)
+Someone or something called me
+9
+&gt;&gt;&gt; pow(3, 2)
+9
+&gt;&gt;&gt; pow(3, 3)
+Somone or something called me
+27
+</pre>
+<p>You can see that the <em>cache key</em> function determines which input
+values result in the same output and thus can be cached.  Cache key
+functions receive exactly the same arguments as the functions that
+they cache, plus the function itself.  Thus, key functions for methods
+can also use <tt class="docutils literal"><span class="pre">self</span></tt> for determining a cache key.  A cache key
+function may raise the <tt class="docutils literal"><span class="pre">DontCache</span></tt> exception to signal that no caching
+should take place.</p>
+<p>The cache storage backend can be freely chosen using the second
+argument to the cache decorator:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; &#64;cache(cache_key, cache_storage)
+</pre>
+<p>where <tt class="docutils literal"><span class="pre">cache_storage</span></tt> is a function that again takes all arguments
+of the original function and returns a dict-like object for use as a
+cache storage.  plone.memoize has built-in support for <a class="reference" href="http://www.danga.com/memcached">memcached</a> and
+<a class="reference" href="http://cheeseshop.python.org/pypi/zope.app.cache">zope.app.cache</a> as storages.</p>
+<p>See the doctests for <a class="reference" href="http://svn.plone.org/svn/plone/plone.memoize/trunk/plone/memoize/volatile.py">volatile.py</a> for more examples.</p>
+<p>For now, you'll need to use the <a class="reference" href="http://svn.plone.org/svn/plone/plone.memoize/trunk/">SVN version</a>.  A release containing
+the cache decorator will follow soon.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Sat, 09 Jun 2007 20:10 GMT</pubDate>
+</item>
+<item>
+   <title>PIKtipi sprint</title>
+   <guid isPermaLink="false">devel/zope/piktipi-sprint</guid>
+   <link>http://danielnouri.org/blog/devel/zope/piktipi-sprint.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p><a class="reference" href="http://tomster.org/about">Tom</a> thought it'd be a good idea to write down what we were up to at
+the <a class="reference" href="http://plone.org/events/sprints/potsdam-sprint-2007">PIKtipi</a> sprint (2nd to 7th of June), so here's my wrap-up:</p>
+<p>PIKtipi was my third Plone sprint so far in 2007.  I had an excellent,
+and productive time, thanks to all organizers.  Here's what I did:</p>
+<blockquote>
+<ul class="simple">
+<li>Develop further <cite>plone.memoize</cite> and make use of it in the portlets
+implementation of <a class="reference" href="http://plone.org/products/plone/releases/3.0">Plone 3</a>.  Together with <a class="reference" href="http://hannosch.blogspot.com">Hanno</a>, we were able
+to <a class="reference" href="http://danielnouri.org/blog/devel/need-for-speed.html">speed up</a> Plone for anonymous users by about 50%, and for
+logged in users by about a third.  <a class="reference" href="http://seletz.blogspot.com">Stefan</a> helped me implement the
+<a class="reference" href="http://www.danga.com/memcached">memcached</a> support.</li>
+<li>Fix some <a class="reference" href="http://dev.plone.org/plone/query?status=new&amp;status=assigned&amp;status=reopened&amp;milestone=3.0">bugs for the 3.0 release</a> of Plone.  By the way, if
+you're one of the <a class="reference" href="http://plone.net/providers">145 Plone providers</a> earning money with Plone,
+you should consider helping out.  Plone 3 will have <a class="reference" href="http://plone.org/products/plone/roadmap">loads of new
+features</a>, but that also means that the bugtracker needs
+increased attention to get all these features stable.</li>
+<li>Have a fun time with fellow Plone developers, and attend the <a class="reference" href="http://dzug.org">DZUG</a>
+conference that was running in parallel.</li>
+<li>In Berlin, run into a 3 hour DJ set by <a class="reference" href="http://ellenallien.de">Ellen Allien</a> by
+accident.  Thanks to <a class="reference" href="http://oceanicsky.com">Siebo</a> and Saskia for their great
+company. :-)</li>
+</ul>
+</blockquote>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 09 Jun 2007 12:48 GMT</pubDate>
+</item>
+<item>
+   <title>Patterns, simplicity and simple patterns</title>
+   <guid isPermaLink="false">devel/patterns-and-simplicity</guid>
+   <link>http://danielnouri.org/blog/devel/patterns-and-simplicity.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p><a class="reference" href="http://www.aleax.it/5ep.html">Five Easy Pieces - Simple Python Non-Patterns</a> from Alex Martelli
+was something that I had tagged <em>toread</em> for quite a while now, and it
+turned out to be a very interesting read.</p>
+<p>The most important point that Martelli makes in this paper is that in
+Python, some of the traditional <a class="reference" href="http://en.wikipedia.org/wiki/Software_design_pattern">software design patterns</a> don't
+apply, because the Python programmer has facilities that other OO
+languages lack, the lack of which makes certain patterns necessary in
+other languages that seem superfluous in Python.</p>
+<p>It's nice how Martelli puts context into this topic, by explaining
+some of the background of patterns.  Most notably, he references a
+book called <em>A Pattern Language - Towns, Buildings, Construction</em> by
+<a class="reference" href="http://en.wikipedia.org/wiki/Christopher_Alexander">Christopher Alexander</a> and a paper called <a class="reference" href="http://www.math.utsa.edu/ftp/salingar.old/StructurePattern.html">The Structure of Pattern
+Languages</a> by <a class="reference" href="http://en.wikipedia.org/wiki/Nikos_Salingaros">Nikos Salingaros</a>, which is available online.</p>
+<p>There's quite a nice analogy between software patterns and
+architectural design patterns.  The dictionary of design patterns of
+Christopher Alexander lists examples for patterns found in
+architecture like SMALL PARKING LOTS, for which the summarizing
+statement is <em>Vast parking lots wreck the land for people</em>.</p>
+<p>Interestingly, both Alexander and Salingaros are harsh critics of
+modern architecture.  Salingaros writes:</p>
+<blockquote>
+Architecture has changed in this century from being a trade serving
+humanity with comfortable and useful structures, to an art that
+serves primarily as a vehicle for self-expression for the
+architect. In the current architectural paradigm, the emotional and
+physical comfort of the user are of only minor importance.</blockquote>
+<p>Well, this reminds me of <em>software architects</em> who care more about
+their design than users.  The <a class="reference" href="http://xp.c2.com/BigDesignUpFront.html">Big Design Up Front</a> page in the <a class="reference" href="http://c2.com/ppr">PPR</a>
+has some nice quotes and statements that go with this.</p>
+<p>It makes sense to me when Martelli explains how some patterns are
+unnecessary in Python and others that tend to be involved in other
+languages are very easy in Python. Need a Singleton?  Just create an
+instance of a class and have clients access that instance by its name.
+Need a registry?  Make a module global instance of a <tt class="docutils literal"><span class="pre">list</span></tt> or
+<tt class="docutils literal"><span class="pre">dict</span></tt>, and have <tt class="docutils literal"><span class="pre">append</span></tt> and <tt class="docutils literal"><span class="pre">remove</span></tt> be your <tt class="docutils literal"><span class="pre">register</span></tt> and
+<tt class="docutils literal"><span class="pre">unregister</span></tt> functions.  In Eby's article <a class="reference" href="http://dirtsimple.org/2004/12/python-is-not-java.html">Python is not Java</a>, one
+reads about a software project:</p>
+<blockquote>
+So, the sad thing is that these poor folks [a team of former Java
+developers who were new to Python] worked much, much harder than
+they needed to, in order to produce much more code than they needed
+to write, that then performs much more slowly than the equivalent
+idiomatic Python would.</blockquote>
+<p>Simplicity is the key to quality, and simple definitely beats complex.
+<a class="reference" href="http://c2.com/cgi/wiki?TestDrivenDevelopment">Test-first</a> is probably a good way to create simple designs.  The
+<a class="reference" href="http://c2.com/cgi/wiki?KeepItSimple">KISS</a> principle represents:</p>
+<blockquote>
+If you have a choice between a simple solution and a complex one,
+then opting for complexity would be stupid.</blockquote>
+<p>And:</p>
+<blockquote>
+All design should be as simple as possible, but no simpler. [...]
+the more elegant designs are usually the more simple ones.  Simple
+also does not mean <em>quick and dirty.</em>  In fact, it often takes a lot
+of thought and work over multiple iterations to simplify.</blockquote>
+<p>Python code is by nature simpler than code in many other languages,
+because it lets you focus on your actual problem -- making simplicity
+a built-in feature, and apparent that <a class="reference" href="http://c2.com/cgi/wiki?TheSourceCodeIsTheDesign">the source code is the
+design</a>.  Finally, a nice quote from Kent Beck found in the PPR:</p>
+<blockquote>
+As a consultant, 80% of the time my job involves taking out
+premature abstraction so we can get the damned thing out the door.</blockquote>
+<p>For me, the PPR is an enormous repository of insightful ideas about
+software development.  I've already emptied my cup and I'm surfing for
+my next zen slap! :-)</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Sun, 27 May 2007 12:37 GMT</pubDate>
+</item>
+<item>
+   <title>eXtremeManagement tool is getting there</title>
+   <guid isPermaLink="false">devel/make-xm-suck-less</guid>
+   <link>http://danielnouri.org/blog/devel/make-xm-suck-less.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>If you've tried the <a class="reference" href="http://plone.org/products/extreme-management-tool">eXtremeManagement tool</a> (or: XM) before, you may
+have noticed that it's not exactly an interaction design masterpiece.
+Doing a simple thing like booking your hours for the last week easily
+took you a few dozen clicks, and that with a web application that
+takes its time to respond.  Getting an overview over your <em>iteration</em>
+(XM's loosely based on <a class="reference" href="http://c2.com/cgi/wiki?ExtremeManagement">Extreme Programming ideas</a>) used to be hard
+too.  Because of the hierarchical way XM lays out iterations, getting
+from an project overview to a task that you were interested in would
+easily involve three clicks.  And that's for getting an <em>overview</em>.
+What if you <em>forgot</em> the details about the task when you were back on
+the overview page?  Considering that a project easily spans half a
+dozen <em>stories</em> per iteration, this was an overview nightmare.</p>
+<p>At <a class="reference" href="http://jazkarta.com">Jazkarta</a>, we've been thinking a lot about what the right project
+management tool would be for us.  We were fed up with XM and its
+sluggishness -- one project tried out <a class="reference" href="http://trac.edgewall.org">Trac</a> combined with some booking
+plug-in, but it turned out that Trac lacked the project management
+view of things, or that we were unable to produce the right reports,
+something that the eXtremeManagement tool is considered to do well out
+of the box.  We looked at other projects and services on the web, but
+it looked like XM, despite being sluggish, was still the best thing
+there was.  (If I had my way, we'd try to strip XP to the bones first,
+not thinking about existing tools, and try to <em>understand the process</em>
+more before we try to modify it.)</p>
+<p>So, we looked at improving the tool.  <a class="reference" href="http://svn.plone.org/svn/collective/eXtremeManagement/trunk">XM's trunk</a> now features a
+simple expand button in the iteration view that lets you drill down to
+tasks.  That is, when you're looking at the listing of stories, you
+can click an arrow to see the list of associated tasks <em>inline</em>,
+without any loading time.  <a class="reference" href="http://www.zeitmaschine.dk/">Malthe</a>, a fellow from Jazkarta, thinks it's
+cool:</p>
+<pre class="literal-block">
+&lt;malthe&gt;  Oh my god! What happened to XM?
+&lt;malthe&gt;  It's a UI revolution!
+</pre>
+<div class="image"><img alt="Toggle story before" src="/media/xm-toggle-story-1.png" /></div>
+<div class="image"><img alt="Toggle story after" src="/media/xm-toggle-story-2.png" /></div>
+<p>Another <em>missing link</em> in XM used to be the tracker integration.  When
+your task was about fixing a bug in the tracker, your XM task would
+have no notion of the <a class="reference" href="http://plone.org/products/poi">Poi</a> issue that you were fixing (-- Poi is the
+bugtracker that we use).  Consequently, you had to manually take care
+of linking the one with the other in the respective text fields, and
+that, of course, is more than dull, and it breaks easily (think moving
+around tasks in the system) and not doing it meant no good overview of
+things.</p>
+<p>Now, the way I like to work with XM and Poi is that almost everything
+everything that I do goes into an issue.  Because Poi has much better
+facilities for maintaining a dialogue with the customer, and Poi
+issues can have a longer lifetime than tasks -- they can be relevant
+for more than one iteration.  (With stories and tasks that are bound
+to an iteration in XM's model, that's a bit hairy.)</p>
+<p>With the new <em>Poi Task</em> on trunk, connecting tasks with issues finally
+makes sense.  A Poi Task can be connected to one or more issues.  The
+view of the Poi Task will show you all the issues that are associated
+with it, together with their status (unconfirmed, open, closed, etc.).
+On the other side, an issue will show you the tasks it's associated
+with.  Plus, you now have a one-click way of adding a task for our
+issue to any open story in your project.</p>
+<div class="image"><img alt="Poi integration for XM" src="/media/xm-poi-link.png" /></div>
+<p>Also, Poi trunk now has auto-linking to other issues and Trac.  Like
+in Trac itself, you can now simply write <em>#123</em> in your report and get
+a link to that issue.  The same goes for <em>r123</em> and revisions in Trac.</p>
+<p>The next thing my TODO for the XM tool is <a class="reference" href="http://mg.pov.lt/gtimelog/">gtimelog</a> integration.  I
+want to be able to retrieve a task list from a XM project, and book my
+hours directly from gtimelog.  This is by the way how the folks at
+<a class="reference" href="http://infrae.com">Infrae</a> have been booking their hours for a while now into their
+in-house timesheet app.  This integration will mean that I'll no
+longer need to write down my hours into three different places by
+hand.</p>
+<div class="image image-reference"><a class="reference" href="http://mg.pov.lt/gtimelog"><img alt="gtimelog" src="http://mg.pov.lt/gtimelog/thumb-gtimelog.png" /></a></div>
+<p>So... If you're looking for a project management tool that's flexible
+and XP, or if you've looked at XM before and you thought it's dull or
+doesn't give you enough overview, try it (again).  I think it's grown
+to quite a usable solution for project management.  By the way, thanks
+to <a class="reference" href="http://zestsoftware.nl">Zest</a> and Jazkarta for supporting this work.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Sat, 26 May 2007 12:50 GMT</pubDate>
+</item>
+<item>
+   <title>*Isolated* doctests for Plone</title>
+   <guid isPermaLink="false">devel/zope/plone-doctest-in-isolation</guid>
+   <link>http://danielnouri.org/blog/devel/zope/plone-doctest-in-isolation.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>For those of you who say they don't like doctests because they don't
+give you isolation between tests.  Here's an example of an integration
+doctest for Plone that gives you exactly that:</p>
+<pre class="literal-block">
+from Testing import ZopeTestCase as ztc
+from Products.PloneTestCase import PloneTestCase as ptc
+from Products.PloneTestCase.layer import PloneSite
+
+ZOPE_DEPS = ['MyZopeProductDependecy']
+PLONE_DEPS = ['MyPloneProduct',
+              'MyPloneDependency']
+
+for x in ZOPE_DEPS + PLONE_DEPS:
+    ztc.installProduct(x)
+ptc.setupPloneSite(products=PLONE_DEPS)
+
+class MyTest:
+    def test_one():
+        r&quot;&quot;&quot;
+        Check if one and one is two:
+
+          &gt;&gt;&gt; 1 + 1
+          2
+        &quot;&quot;&quot;
+
+    def test_two():
+        r&quot;&quot;&quot;
+        Check if one minus one is zero:
+
+          &gt;&gt;&gt; 1 - 1
+          0
+        &quot;&quot;&quot;
+
+def test_suite():
+    suite = ztc.ZopeDocTestSuite(test_class=ptc.PloneTestCase)
+    suite.layer = PloneSite
+    return suite
+</pre>
+<p>Look at <cite>G. Writing Tests</cite> in the (somewhat out of date) <a class="reference" href="http://wiki.zope.org/zope3/Zope3Book">The Zope 3
+Developer's Book</a> for more inspiration.</p>
+<p>Don't do <a class="reference" href="http://wiki.zope.org/zope3/unittests.html">traditional-style</a> unit tests, they're ugly.  Is this a
+matter of test, err taste?  I don't think so.</p>
+<p>Of course, if you want <em>real</em> isolation, you go for unit tests
+(i.e. no <a class="reference" href="http://www.zope.org/Members/shh/ZopeTestCase">ZopeTestCase</a> involved).  People are usually scared and say,
+<em>but then I need to set so much up by hand</em>, or, <em>don't make me write
+a mock object for everything</em>, but those arguments aren't really valid
+most of the time.  This is how easy a <em>pure unit test using doctest</em>
+for a Plone Product (or any Python program) can look like:</p>
+<pre class="literal-block">
+import unittest
+from zope.testing import doctest
+
+class Add:
+    r&quot;&quot;&quot;
+    &gt;&gt;&gt; 1 + 1
+    2
+    &quot;&quot;&quot;
+
+class Subtract:
+    r&quot;&quot;&quot;
+    &gt;&gt;&gt; 1 - 1
+    0
+    &quot;&quot;&quot;
+
+def test_suite():
+    return unittest.TestSuite((doctest.DocTestSuite()))
+</pre>
+<p>If you have a hard time creating mock objects to test against, try
+<a class="reference" href="http://cheeseshop.python.org/pypi/Mocky">Mocky</a>.  This is an example of mocking a CMF site that gives you
+<em>getPhysicalPath</em>, has a <em>portal_catalog</em> and some special
+<em>site_properties</em> for use with your content type:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from mocky import Mocky
+&gt;&gt;&gt; import Acquisition
+&gt;&gt;&gt; class MockySite(Mocky, Acquisition.Explicit):
+...     def getPhysicalPath(self):
+...         return tuple(self.name.split('.'))
+...     def portal_catalog(self, **kwargs):
+...         return []
+&gt;&gt;&gt; site = MockySite('site')
+&gt;&gt;&gt; props = site.portal_properties.site_properties
+&gt;&gt;&gt; props.getProperty = lambda x: 'utf-8' # doctest: +ELLIPSIS
+Set site.portal_properties.site_properties.getProperty to &lt;function ...&gt;
+
+&gt;&gt;&gt; from Products.MyProduct.content import MyContentType
+&gt;&gt;&gt; content = MyContentType('someid').__of__(site)
+&gt;&gt;&gt; content.something_that_involves_using_portalcatalog_and_siteproperties()
+'your result here'
+</pre>
+<p><em>Update</em>: The <em>python-in-testing</em> list has an <a class="reference" href="http://lists.idyll.org/pipermail/testing-in-python/2007-March/thread.html#50">interesting discussion</a>
+about doctest vs. unittest.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Fri, 23 Mar 2007 15:06 GMT</pubDate>
+</item>
+<item>
+   <title>Invaluable Zope 2 development tools</title>
+   <guid isPermaLink="false">devel/zope/invaluable-zope2-dev-tools</guid>
+   <link>http://danielnouri.org/blog/devel/zope/invaluable-zope2-dev-tools.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I never leave home without these, at least not when I leave home to do
+development:</p>
+<blockquote>
+<ul>
+<li><p class="first"><a class="reference" href="http://www.gnu.org/software/emacs/">Emacs</a></p>
+<blockquote>
+<p>Emacs of course isn't specific to Zope or Python.  Nevertheless,
+Emacs is <em>the</em> editor for doing Zope development.  Check out
+<a class="reference" href="http://philikon.de/files/pdbtrack.mov">Philipp von Weitershausen demo pdbtrack</a>.  You need nothing
+more than the usual <a class="reference" href="http://sourceforge.net/projects/python-mode/">python-mode</a> for this.  (If you don't know
+what pdb is, read this <a class="reference" href="http://www.ferg.org/papers/debugging_in_python.html">gentle intro to debugging in Python</a>.)</p>
+<p>I hear that <a class="reference" href="http://www.vim.org">other</a> <a class="reference" href="http://macromates.com">editors</a> can do this too, but it can't possibly
+work as well. :-P</p>
+<p>Start with <a class="reference" href="http://xahlee.org/emacs/emacs_basics.html">Emacs basics</a> right now!</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference" href="http://www.getfirebug.com/">Firebug</a></p>
+<blockquote>
+<p>You've certainly been living under a rock if you haven't heard of
+Firebug before.  Never was trying out and debugging JavaScript so
+joyful.  Firebug has an interactive JavaScript shell that since
+version 1.0 also has access to the variables in the scope of any
+breakpoint that you might have set.</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference" href="http://wiki.zope.org/zope2/PDBDebugMode">PDBDebugMode</a></p>
+<blockquote>
+<p>What it does: It loads the Python Debugger (pdb) whenever Zope
+encounters an exception that was not filtered in the <em>error_log</em>.
+In combination with pdbtrack this means: Don't read tracebacks to
+find out where the exception has occurred and where you might
+want to hook in to debug.  And don't restart after you figured
+out where to put that <em>pdb.set_trace()</em>.  Instead: Have your pdb
+point to the failing line of code and do your debugging right
+away.  Works similar to <em>--debug-inplace</em> of the Zope testrunner.</p>
+<p>This might be not as useful for development of new applications
+(think tests) as for situations where you have to debug something
+quickly, possibly on a live deployment.</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference" href="http://www.zope.org/Members/regebro/ScriptDebugging">ScriptDebugging</a></p>
+<blockquote>
+<p>Before, I totally hated debugging code in <em>Script (Python)</em>
+objects.  That was until I found Lennart Regebro's
+ScriptDebugging, which helps pdbtrack find out where in the
+script you are, which means that you can debug scripts just like
+any other Python code.</p>
+</blockquote>
+</li>
+<li><p class="first"><a class="reference" href="http://www.zope.org/Members/nuxeo/Products/DeadlockDebugger">DeadlockDebugger</a></p>
+<blockquote>
+<p>Stuck with a Zope that's stuck?  If your Zope stops responding,
+use DeadlockDebugger to find out where exactly Zope's threads are
+<em>deadlocked</em>.  From the author:</p>
+<blockquote>
+<p>This product adds a hook so that a deadlocked Zope process can
+be debugged, by dumping a traceback of all running python
+processes. The dump is sent to the event log (at the DEBUG
+level) and returned to the browser (even though the Zope is
+deadlocked and doesn't answer any other requests!).</p>
+<p>DeadlockDebugger can of course also be used to debug Zope in
+non-deadlock situations, when a Zope process is taking a long
+time and you wish to know what code is being executed.</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>What's the Zope 2 tool that you'd take with you on an island?</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 10 Mar 2007 18:34 GMT</pubDate>
+</item>
+<item>
+   <title>FOSDEM 2007</title>
+   <guid isPermaLink="false">devel/fosdem-2007</guid>
+   <link>http://danielnouri.org/blog/devel/fosdem-2007.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Last weekend, I went to my first <a class="reference" href="http://www.fosdem.org">FOSDEM</a> (<a class="reference" href="http://www.fosdem.org/2007/media/video">video recordings</a>).  I
+took my girlfriend with me, which I believe helped her understand my
+nerdy side better. ;-)</p>
+<p><a class="reference" href="http://radio.weblogs.com/0116506">Paul Everitt</a> did a nice <a class="reference" href="http://www.fosdem.org/2007/schedule/events/plone_3">presentation on Plone 3</a>, where he showed
+how you set up a Plone 3 instance using <a class="reference" href="http://cheeseshop.python.org/pypi/ploneenv">ploneenv</a>, and then an easy
+example of using <a class="reference" href="http://kssproject.org">KSS</a>, and some other Plone 3 niceties.  The <a class="reference" href="http://zeapartners.org/svn/projects/scl/branches/scl2/fosdem/movies/ploneenv/ploneenv.html">ploneenv
+screencast</a> is available now, and so is the <a class="reference" href="http://zeapartners.org/scl/index.html">rest of the
+screencasts</a> that Paul demos at the presentation.</p>
+<p>Paul was followed by Dries Buytaert's <a class="reference" href="http://drupal.org">Drupal</a> presentation, which was
+also really good.  It was more a demo of what Drupal is and what it
+can do for the end user, as opposed to how you can develop for the
+platform and some legal background, which Paul concentrated on.</p>
+<p>Unfortunately, I missed the <a class="reference" href="http://www.laptop.org">OLPC</a> talk, but nevertheless I was able to
+get my hands on one of those laptops, and they really do look cool.</p>
+<p><a class="reference" href="http://elixir.ematia.de">Elixir</a>, a library built on top of <a class="reference" href="http://www.sqlalchemy.org/">SQLAlchemy</a> that's recently gone
+into beta, looks like a very convenient way to talk to relational
+databases.</p>
+<p>Amazing how a conference with so <a class="reference" href="http://www.fosdem.org/2007/schedule/days">many good talks</a> can be totally
+free.  Next FOSDEM?  I'll be there...</p>
+<p><em>Update</em>: Added a link to the ploneenv screencast.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Wed, 28 Feb 2007 20:34 GMT</pubDate>
+</item>
+<item>
+   <title>Baarn Sprint 2007</title>
+   <guid isPermaLink="false">devel/zope/baarn-sprint-2007</guid>
+   <link>http://danielnouri.org/blog/devel/zope/baarn-sprint-2007.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<div class="image"><img alt="/media/baarn-2007.jpg" src="/media/baarn-2007.jpg" /></div>
+<p>This year's <a class="reference" href="http://en.wikipedia.org/wiki/Baarn">Baarn</a> <a class="reference" href="http://plone.org/events/sprints/baarn-ui-sprint-2007">sprint</a> was way cool!  And we got a lot of stuff
+done.</p>
+<p>I really like the multi-cultural aspect to Plone sprints.  Where else
+do you get to meet and work face to face with people from Norway, the
+Netherlands, Scotland, Great Britain, Germany, United States, Hungary,
+Belgium, Finland and Austria in the course of a couple of days?</p>
+<p>Seeing some people that I've never met in real life before was very
+nice, too.  That'll help with communicating with those people through
+IRC and mailing lists.</p>
+<p>Thanks everyone for a fantastic time!  I'm totally looking forward to
+the <a class="reference" href="http://plone.org/events/sprints/sorrento-sprint-2007">Sorrento sprint</a>, where <a class="reference" href="http://plone.org/events/sprints/sorrento-sprint-2007/sprint-participants">over 60 people</a> are expected!</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Mon, 26 Feb 2007 20:50 GMT</pubDate>
+</item>
+<item>
+   <title>ploneenv recipes</title>
+   <guid isPermaLink="false">devel/zope/ploneenv-recipes</guid>
+   <link>http://danielnouri.org/blog/devel/zope/ploneenv-recipes.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I've updated the <a class="reference" href="http://cheeseshop.python.org/pypi/Plone">experimental Plone 3.0 setuptools distribution</a> and
+<a class="reference" href="http://cheeseshop.python.org/pypi/ploneenv">ploneenv</a> today a bit and fixed some bugs along the way.</p>
+<p>Here are some small recipes that show you how ploneenv works, and how
+you can make use of it.</p>
+<p>A requirement for all of these recipes is that you have ploneenv
+installed, which you can install like this:</p>
+<pre class="literal-block">
+sudo easy_install ploneenv
+</pre>
+<p>The recipes will also assume that you have two shell variables set.
+One is <tt class="docutils literal"><span class="pre">MKZO</span></tt>, the path to the <cite>mkzopeinstance.py</cite> script of your
+<a class="reference" href="http://www.zope.org/Products/Zope/2.10.2">Zope 2.10 installation</a>.  The other is <tt class="docutils literal"><span class="pre">INSTANCE_HOME</span></tt>, the folder
+where you want your Zope instance to go into.  This is an example of
+setting those variables:</p>
+<pre class="literal-block">
+MKZO=~/lib/Zope-2.10/bin/mkzopeinstance.py
+INSTANCE_HOME=~/myplone3.0
+</pre>
+<div class="section" id="create-a-pristine-zope-instance">
+<h4><a name="create-a-pristine-zope-instance">Create a pristine Zope instance</a></h4>
+<div class="section" id="goal">
+<h5><a name="goal">Goal</a></h5>
+<p>You want to create a pure Zope instance, in which you can use tools
+like <a class="reference" href="http://peak.telecommunity.com/DevCenter/EasyInstall">easy_install</a> and <a class="reference" href="http://tools.assembla.com/yolk/">yolk</a> to manage Python packages and install
+<a class="reference" href="http://wiki.zope.org/zope2/ZopeProduct">Products</a> the usual way.</p>
+</div>
+<div class="section" id="recipe">
+<h5><a name="recipe">Recipe</a></h5>
+<p>Use this command:</p>
+<pre class="literal-block">
+ploneenv $INSTANCE_HOME -m $MKZO --no-requirements
+</pre>
+</div>
+<div class="section" id="what-this-does">
+<h5><a name="what-this-does">What this does</a></h5>
+<p>Calling <cite>ploneenv</cite> with <tt class="docutils literal"><span class="pre">--no-requirements</span></tt> will create a blank Zope
+instance that's also a <a class="reference" href="http://cheeseshop.python.org/pypi/workingenv.py">workingenv</a>.  This method of installation is
+perfectly compatible with Plone 2.5 or other Products!</p>
+<p>To install packages from the <a class="reference" href="http://cheeseshop.python.org/pypi">Cheese Shop</a>, you must first activate
+the environment and then use <cite>easy_install</cite>, like this:</p>
+<pre class="literal-block">
+source $INSTANCE_HOME/bin/activate
+easy_install yolk
+</pre>
+<p>This will install yolk, a tool that provides a lot of useful functions
+for querying the metadata of installed setuptools packages and
+querying the Cheese Shop.  For example, if you want a list of all
+packages that are installed in your Zope instance, run:</p>
+<pre class="literal-block">
+yolk -l
+</pre>
+</div>
+</div>
+<div class="section" id="create-an-instance-with-plone-3-from-subversion-in-it">
+<h4><a name="create-an-instance-with-plone-3-from-subversion-in-it">Create an instance with Plone 3 from Subversion in it</a></h4>
+<div class="section" id="id1">
+<h5><a name="id1">Goal</a></h5>
+<p>You want to try out Plone's latest development version straight from
+Subversion.</p>
+</div>
+<div class="section" id="id2">
+<h5><a name="id2">Recipe</a></h5>
+<p>Follow the steps from <a class="reference" href="#create-a-pristine-zope-instance">Create a pristine Zope instance</a> and then,
+after having activated the instance's environment via <tt class="docutils literal"><span class="pre">source</span>
+<span class="pre">$INSTANCE_HOME/bin/activate</span></tt>, do:</p>
+<pre class="literal-block">
+easy_install Plone==dev
+</pre>
+</div>
+<div class="section" id="id3">
+<h5><a name="id3">What this does</a></h5>
+<p>This will download and install Plone's current development version.
+This way you can experience the latest and greatest (and potentially
+most unstable) Plone.</p>
+</div>
+</div>
+<div class="section" id="create-an-instance-with-a-plone-3-release-in-it">
+<h4><a name="create-an-instance-with-a-plone-3-release-in-it">Create an instance with a Plone 3 release in it</a></h4>
+<div class="section" id="id4">
+<h5><a name="id4">Goal</a></h5>
+<p>You want to create a Zope instance with the latest Plone 3 release in
+it.</p>
+</div>
+<div class="section" id="id5">
+<h5><a name="id5">Recipe</a></h5>
+<p>Use this command:</p>
+<pre class="literal-block">
+ploneenv $INSTANCE_HOME -m $MKZO
+</pre>
+</div>
+<div class="section" id="id6">
+<h5><a name="id6">What this does</a></h5>
+<p>This will install the latest Plone version from the Cheese Shop.
+Right now this is <a class="reference" href="http://cheeseshop.python.org/pypi/Plone/3.0-r12165">3.0-r12165</a>, an <strong>experimental and arbitrary</strong>
+snapshot of Plone 3 dating back to the 4th of February.  Note that
+it's not related to the <a class="reference" href="http://plone.org/products/plone/releases/3.0">real Plone 3.0a2</a> release, which is the
+latest official release of Plone 3 and what you normally want to use.</p>
+</div>
+</div>
+<div class="section" id="develop-packages-for-plone-3">
+<h4><a name="develop-packages-for-plone-3">Develop packages for Plone 3</a></h4>
+<div class="section" id="id7">
+<h5><a name="id7">Goal</a></h5>
+<p>You want to develop a package for Plone 3.0.  We'll call this package
+<cite>mypackage</cite>.</p>
+</div>
+<div class="section" id="id8">
+<h5><a name="id8">Recipe</a></h5>
+<p>Follow the steps in <a class="reference" href="#create-an-instance-with-plone-3-from-subversion-in-it">Create an instance with Plone 3 from Subversion
+in it</a>.</p>
+<p>Install <a class="reference" href="http://cheeseshop.python.org/pypi/ZopeSkel">ZopeSkel</a> and create your package if you haven't one already:</p>
+<pre class="literal-block">
+easy_install ZopeSkel
+paster create -t plone mypackage
+</pre>
+<p>Activate your instance's environment if you haven't yet and install
+your package in development mode:</p>
+<pre class="literal-block">
+source $INSTANCE_HOME/bin/activate
+cd mypackage
+python setup.py develop
+</pre>
+</div>
+<div class="section" id="id9">
+<h5><a name="id9">What this does</a></h5>
+<p>You are encouraged to create your new Plone 3 modules outside of the
+Products directory/package.  ZopeSkel helps you with quickly setting
+up a distribution.</p>
+<p>Invoking <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">develop</span></tt> inside of your newly created
+project will install your package in <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools#development-mode">development mode</a>.</p>
+<p>There are good reasons to still use Products.  When you develop a
+Product, just link it into your instance's <cite>Products</cite> directory as
+usual.</p>
+<p>Note that you can override Products or packages that come with Plone
+this way, which enables you to develop parts of Plone itself.</p>
+</div>
+</div>
+<div class="section" id="status-quo">
+<h4><a name="status-quo">Status quo</a></h4>
+<p>Plone 3.0, ploneenv and the Plone egg distribution are under heavy
+development still.  Therefore you might encounter errors while trying
+out these recipes.  Please <a class="reference" href="https://lists.sourceforge.net/lists/listinfo/plone-developers">report</a>
+<a class="reference" href="http://plone.org/development/issue-tracker">those</a>!</p>
+<p>There is one known problem with ploneenv, where <cite>easy_install</cite>
+attempts to compile <a class="reference" href="http://www.zopemag.com/Issue004/Section_Articles/article_PythonScripts.html">Script (Python)</a> files and spews a lot of error
+messages.  However, those error messages are not critical, and the
+installation succeeds nevertheless.</p>
+<p>If you're <em>developing</em> Plone 3 itself, you might want to go for
+<a class="reference" href="http://dev.plone.org/plone/browser/ploneout/trunk/README.txt">ploneout</a>, which is the mechanism used by most Plone developers who
+actively develop Plone.</p>
+<p>My <a class="reference" href="http://danielnouri.org/blog/devel/zope/ploneenv-intro.html">previous blog on ploneenv</a> has some more pointers and info.</p>
+<p><em>Update</em>: Thanks to <a class="reference" href="http://radio.weblogs.com/0116506/">Paul Everitt</a>, there is now a <a class="reference" href="http://zeapartners.org/svn/projects/scl/branches/scl2/fosdem/movies/ploneenv/ploneenv.html">ploneenv
+screencast</a>.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Fri, 16 Feb 2007 18:35 GMT</pubDate>
+</item>
+<item>
+   <title>ploneenv, or YAWTSUYP (yet another way to set up your Plone)</title>
+   <guid isPermaLink="false">devel/zope/ploneenv-intro</guid>
+   <link>http://danielnouri.org/blog/devel/zope/ploneenv-intro.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<div class="section" id="what-is-ploneenv">
+<h4><a name="what-is-ploneenv">What is ploneenv?</a></h4>
+<p>ploneenv builds a Zope instance that is also a <a class="reference" href="http://cheeseshop.python.org/pypi/workingenv.py">workingenv</a> and
+installs (by default) Plone 3.0 in it.</p>
+<p>There are other packages out there that can do the same:</p>
+<blockquote>
+<ul class="simple">
+<li><a class="reference" href="http://dev.plone.org/plone/browser/ploneout/trunk/README.txt">ploneout</a></li>
+<li><a class="reference" href="http://plone.org/products/instance-manager">instancemanager</a></li>
+<li>zopebuilder (anyone have a link?)</li>
+<li><a class="reference" href="http://plone.org/products/skeletor">skeletor</a></li>
+</ul>
+</blockquote>
+<p>The most prominent of these packages is ploneout, a <a class="reference" href="http://www.zope.org/DevHome/Buildout">Zope Buildout</a>
+configuration (including add-ons) that allows you to install Zope
+<em>and</em> Plone 3.0 in one step.  While this is a very appealing solution
+in most situations, sometimes it is more comfortable for a developer
+to work <a class="reference" href="http://www.nabble.com/-Zope-dev--Re%3A-ploneout---Or-how-using-zc.buildout-for-a-common-Zope2-project-might-look-like-p8696269.html">more interactively</a>, in an environment where packages can be
+installed and tested out, removed, replaced and queried using the
+standard <a class="reference" href="http://peak.telecommunity.com/DevCenter/EasyInstall">easy_install</a> and tools like <a class="reference" href="http://tools.assembla.com/yolk">Yolk</a>.</p>
+<p>So what is <a class="reference" href="http://cheeseshop.python.org/pypi/ploneenv">ploneenv</a>?  ploneenv is a one module Python script that
+builds heavily on <a class="reference" href="http://cheeseshop.python.org/pypi/workingenv.py">workingenv</a> and <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>.  What it does:</p>
+<blockquote>
+<ul>
+<li><p class="first">It creates a Zope instance for you.  You always provide the
+<tt class="docutils literal"><span class="pre">mkzopeinstance.py</span></tt> script that you want to use as an argument.
+E.g.:</p>
+<pre class="literal-block">
+ploneenv ~/myzopeinstance --mkzo=~/lib/Zope-2.10/bin/mkzopeinstance.py
+</pre>
+</li>
+<li><p class="first">It creates a workingenv in the Zope instance for you.</p>
+</li>
+<li><p class="first">It installs the <em>Plone egg</em> by default.  However, you could just
+as well install something else in your new Zope instance using the
+<tt class="docutils literal"><span class="pre">--requirements</span></tt> argument.  ploneenv is not Plone specific.</p>
+</li>
+</ul>
+</blockquote>
+<p>These steps are quite similiar to what you do manually when you <a class="reference" href="http://plone.org/documentation/how-to/how-to-hack-your-zope-2-instance-so-that-you-can-install-python-packages-using-easy_install">make
+your Zope instance a workingenv</a>.</p>
+</div>
+<div class="section" id="give-me-some-examples">
+<h4><a name="give-me-some-examples">Give me some examples</a></h4>
+<p>This is how you use <a class="reference" href="http://cheeseshop.python.org/pypi/ploneenv">ploneenv</a> to install Plone:</p>
+<pre class="literal-block">
+easy_install ploneenv
+
+MKZO=~/lib/Zope-2.10/bin/mkzopeinstance.py
+INSTANCE_HOME=$HOME/myplone30
+
+ploneenv $INSTANCE_HOME -m $MKZO
+</pre>
+<p>At this point, you can install any extra packages.  This would install
+<a class="reference" href="http://cheeseshop.python.org/pypi/simplegeneric">simplegeneric</a>:</p>
+<pre class="literal-block">
+source $INSTANCE_HOME/bin/activate
+easy_install simplegeneric
+</pre>
+<p><em>Old-style Products</em> that aren't wrapped in eggs are installed as
+usual:</p>
+<pre class="literal-block">
+cd $INSTANCE_HOME/Products
+wget http://plone.org/products/ploneformgen/releases/1.0.3/ploneformgen_1-0-3.tgz
+tar xzfv ploneformgen_1-0-3.tgz
+</pre>
+<p>You can also override Products that come with Plone.  For example, you
+could set a symlink from your local <a class="reference" href="https://svn.plone.org/svn/plone/CMFPlone/trunk">CMFPlone</a> checkout into the
+<tt class="docutils literal"><span class="pre">$INSTANCE_HOME/Products</span></tt> directory and hack away.</p>
+<p>To use a local <a class="reference" href="http://subversion.tigris.org/">SVN</a> checkout to develop an existing or new <em>new-style</em>
+Plone package, you would simply do:</p>
+<pre class="literal-block">
+cd ~/myproject
+python setup.py develop
+</pre>
+<p>Note that except for the activation of the environment, this is
+exactly how you would <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools#development-mode">install a package for development in Python</a>
+(=setuptools).  That is, this is not ploneenv nor workingenv specific.</p>
+</div>
+<div class="section" id="try-it-out">
+<h4><a name="try-it-out">Try it out!</a></h4>
+<p>Please try it out and give me feedback.  As mentioned before, this is
+all you need to type:</p>
+<pre class="literal-block">
+easy_install ploneenv
+
+MKZO=~/lib/Zope-2.10/bin/mkzopeinstance.py
+INSTANCE_HOME=$HOME/myplone30
+
+ploneenv $INSTANCE_HOME -m $MKZO
+</pre>
+<p>That's it!  Just make sure that you set the <tt class="docutils literal"><span class="pre">MKZO</span></tt> and
+<tt class="docutils literal"><span class="pre">INSTANCE_HOME</span></tt> according to where your <tt class="docutils literal"><span class="pre">mkzopeinstance.py</span></tt> script
+is and where you want to create your instance respectively.</p>
+<p>Now you can start Zope using <tt class="docutils literal"><span class="pre">$INSTANCE_HOME/bin/zopectl</span> <span class="pre">fg</span></tt>.</p>
+</div>
+<div class="section" id="what-s-inside-the-plone-egg-and-why">
+<h4><a name="what-s-inside-the-plone-egg-and-why">What's inside the Plone egg and why</a></h4>
+<p>The <a class="reference" href="http://cheeseshop.python.org/pypi/Plone">Plone egg</a> goes back to some <a class="reference" href="http://danielnouri.org/blog/devel/zope/plone-in-an-egg.html">early experiments</a> I did to
+package Plone.  Plone is a meta-package that has a <a class="reference" href="http://wiki.zope.org/zope2/EggifyingZopesExtensionMechanismQuotProductsQuot">Products
+namespace</a> and currently all <em>old-style</em> Products that Plone requires
+contained in it.  On top of that, it defines a number of
+<a class="reference" href="http://svn.plone.org/svn/plone/dist/Plone/trunk/requirements.txt">requirements</a>, like <a class="reference" href="http://effbot.org/zone/element-index.htm">elementtree</a> and <a class="reference" href="http://www.openidenabled.com/software/plone">plone.openid</a>.</p>
+<p>By not mixing installation code with the package itself, the Plone egg
+makes sure that it can be installed in any context, for example in a
+ploneout.</p>
+<p>If the <a class="reference" href="http://www.zope.org/Products/CMF">CMF</a> were to became available as an egg, Plone would remove it
+from its own contents and just define another requirement.</p>
+<p>The tagged and released Plone egg (or bundle, if you like) should
+arguably not have <a class="reference" href="http://svnbook.red-bean.com/en/1.1/ch07s04.html">svn externals</a> that point to other Products' <em>SVN
+trunks</em>.  Instead it should either use svn externals to SVN tags of
+Products where possible or include the Product itself if it's not
+maintained in subversion.  This might seem a bit hacky, and <a class="reference" href="http://serverzen.net/">Rocky</a>
+says I'm cheating, but it effectively brings the Plone package more
+inline with other Python packages out there, with all the benefits
+that this brings.  IMO, this should be the way to release Plone 3.0.</p>
+<p><a class="reference" href="http://article.gmane.org/gmane.comp.web.zope.plone.devel/14254">Discussion</a> happens on the <a class="reference" href="https://lists.sourceforge.net/lists/listinfo/plone-developers">Plone development list</a>.</p>
+<p><em>Update</em>: I've updated this entry to reflect the fact that ploneenv
+and Plone are now in the Cheeseshop, so the installation becomes a
+lot easier.</p>
+<p><em>Update</em>: I've <em>retired</em> ploneenv in favour of <a class="reference" href="http://repoze.org">repoze</a> (especially
+<a class="reference" href="http://plone.tv/media/2125422708">repoze.plone</a>).  repoze is what ploneenv wanted to be, and more.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 03 Feb 2007 20:45 GMT</pubDate>
+</item>
+<item>
+   <title>New Zope 3 and GenericSetup intro tutorial on plone.org</title>
+   <guid isPermaLink="false">devel/zope/new-zope3-and-genericsetup-tutorial</guid>
+   <link>http://danielnouri.org/blog/devel/zope/new-zope3-and-genericsetup-tutorial.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Check out <a class="reference" href="http://plone.org/documentation/tutorial/benefit-now-from-using-genericsetup-and-zope-3-technologies">this new tutorial</a> that helps you get started quickly with
+<a class="reference" href="http://wiki.zope.org/zope2/ZopeProduct">Product</a> development in Plone 2.5 and higher.  Why another tutorial?
+Because I myself needed a simple resource where I could copy and paste
+the most important snippets from.  And because Plone needs more easy
+and practical <em>get-started</em> tutorials.</p>
+<p>Thanks to <a class="reference" href="http://infrae.com">Infrae</a> and Wim who helped me write it!</p>
+<p>Ideas I have to extend this tutorial:</p>
+<blockquote>
+<ul class="simple">
+<li>How to convert the Product into a <a class="reference" href="http://danielnouri.org/blog/devel/zope/zopeskel-plonecore.html">ZopeSkel</a> template</li>
+<li>How to use a <a class="reference" href="http://plone.org/documentation/tutorial/using-zope-formlib-with-plone">formlib</a> form for the search page</li>
+</ul>
+</blockquote>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Tue, 30 Jan 2007 18:07 GMT</pubDate>
+</item>
+<item>
+   <title>LovelySync in Collective</title>
+   <guid isPermaLink="false">devel/zope/lovelysync-in-collective</guid>
+   <link>http://danielnouri.org/blog/devel/zope/lovelysync-in-collective.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p><a class="reference" href="http://dev.plone.org/collective/browser/LovelySync/trunk/">LovelySync</a> is a small and quite flexible <a class="reference" href="http://en.wikipedia.org/wiki/Software_library">library</a> for importing data
+into the <a class="reference" href="http://en.wikipedia.org/wiki/Zope_Object_Database_%28ZODB%29">ZODB</a>, the object database that Plone uses.  In theory it can
+be used as a library for anything that needs to be imported into any
+database (<em>yeah, sure</em> I hear you say).  But I've only ever used it
+with the ZODB as the target database.</p>
+<p>One of <a class="reference" href="http://www.lovelysystems.com">Lovely's</a> customers needed to synchronize a <a class="reference" href="http://en.wikipedia.org/wiki/Filemaker">Filemaker</a>
+database regularly with their Plone site.  The database was quite
+complex; it had different languages (which we mapped into LinguaPlone
+content), images, and all kinds of references between the objects.  At
+the time I began working for the project, we didn't know exactly how
+the export format would look like, so we had to develop something that
+was easily adjustable: The input format is easily customized using
+<a class="reference" href="http://dev.plone.org/collective/browser/LovelySync/trunk/lovely/sync/tests/input/schemadefs.xml">schema files</a>.  All the actual writing is delegated to small
+specialized components called <em>WriteHandlers</em>.  Reading is done by the
+<em>Reader</em>, which supplies the <em>Writer</em> (which is the object delegating
+to WriteHandlers) with <em>Records</em>.  You might want to check out the
+<a class="reference" href="http://dev.plone.org/collective/browser/LovelySync/trunk/lovely/sync/interfaces.py">interfaces file</a> for the technical details.</p>
+<p>LovelySync, originally written more than a year ago, but refactored a
+lot lately, was the first project where I used the <a class="reference" href="http://wiki.zope.org/zope3/ComponentArchitectureOverview">Component
+Architecture</a> of Zope 3 extensively, and quite successfully (and
+without ZCML ;).  Using LovelySync, I've been doing imports for
+hundreds of members from a <a class="reference" href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> file into Plone, screen scraping
+contents into Plone sites for migration, and even an import of <a class="reference" href="http://en.wikipedia.org/wiki/Network_News_Transfer_Protocol">usenet</a>
+(NNTP) groups into <a class="reference" href="http://plone.org/products/listen">Listen</a> through <em>nntp2listen</em>, which will be in a
+public SVN shortly.</p>
+<p>So if <a class="reference" href="http://plone.org/products/archecsv">ArcheCSV</a> doesn't exactly do what you want, and <a class="reference" href="http://plone.org/products/plone/roadmap/112">PLIP 112</a> is
+too far away for you, you might want to try LovelySync.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 27 Jan 2007 16:17 GMT</pubDate>
+</item>
+<item>
+   <title>PDBDebugMode Product</title>
+   <guid isPermaLink="false">devel/zope/pdbdebugmode-zope-product</guid>
+   <link>http://danielnouri.org/blog/devel/zope/pdbdebugmode-zope-product.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>What a nice Zope Product I found today.  Ross Patterson's
+<a class="reference" href="http://plone.org/products/pdbdebugmode">PDBDebugMode</a> allows you to:</p>
+<blockquote>
+<ul class="simple">
+<li>post-mortem debug any Zope exceptions while Zope is running in
+foreground,</li>
+<li>debug traversal when you provide the special query parameter
+<cite>pdb_runcall</cite> in the URL and</li>
+<li>import pdb in restricted code.</li>
+</ul>
+</blockquote>
+<p>The <a class="reference" href="http://svn.plone.org/svn/collective/PDBDebugMode/trunk/README.txt">README</a> has more details.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 24 Jan 2007 11:02 GMT</pubDate>
+</item>
+<item>
+   <title>Generic functions kick ass</title>
+   <guid isPermaLink="false">devel/adaptation-and-generic-functions</guid>
+   <link>http://danielnouri.org/blog/devel/adaptation-and-generic-functions.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Yesterday, I watched <a class="reference" href="http://video.google.com/videoplay?docid=-6459339159268485356">Guido van Rossum's talk about Python 3000</a>
+along with some Monty Python sketches that turned up in my search
+results page.  It was quite interesting to see what Python 3.0 will be
+and what it will not be.</p>
+<p>One thing that occured to me some months ago after I watched the
+<a class="reference" href="http://www.turbogears.org/ultimate.html">TurboGears Ultimate DVD</a> was that those <em>generic functions</em> (in the
+form of <a class="reference" href="http://dirtsimple.org/2005/12/ruledispatch-on-move.html">RuleDispatch</a>) are an <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-April/000342.html">alternative to adaptation</a>, as it
+exists in Zope.  That is, you could do everything that you wanted to
+do with adaptation also with generic functions, and that in an
+arguably less verbose way.  Also, Guido explains in his Google talk
+that <em>adapters are only a special case of generic functions</em>.</p>
+<p>I tried it out.  In <a class="reference" href="http://dev.plone.org/collective/browser/plone.checksum/trunk">plone.checksum</a> (which is not that interesting
+by itself), I'm using a generic function instead of adaptation.  I
+have a class called <tt class="docutils literal"><span class="pre">Checksum</span></tt> that returns an md5 checksum in its
+<tt class="docutils literal"><span class="pre">do_checksum</span></tt> method:</p>
+<pre class="literal-block">
+import dispatch
+
+class Checksum:
+    &#64;dispatch.generic()
+    def do_checksum(self, value):
+        &quot;&quot;&quot;Return md5 object that has the calculated checksum.
+        &quot;&quot;&quot;
+</pre>
+<p>You can see that the generic function doesn't actually have an
+implementation.  It's meant to be overloaded like this:</p>
+<pre class="literal-block">
+import md5
+
+&#64;Checksum.do_checksum.when('isinstance(value, object)')
+def do_checksum(self, value):
+    checksum = md5.new()
+    checksum.update(str(value))
+    return checksum
+</pre>
+<p>This is the most general implementation that I could come up with.
+It'll be called when the argument value is an instance of <tt class="docutils literal"><span class="pre">object</span></tt>,
+that is, always, unless there's a more specialized generic function.
+I needed a different implementation of <tt class="docutils literal"><span class="pre">do_checksum</span></tt> for
+<tt class="docutils literal"><span class="pre">OFS.Image.File</span></tt>, which was easy to hook in:</p>
+<pre class="literal-block">
+import OFS.Image.File
+
+&#64;Checksum.do_checksum.when('isinstance(value, OFS.Image.File)')
+def do_checksum(self, value):
+    checksum = md5.new()
+    value = value.data
+    if isinstance(value, str):
+        checksum.update(value)
+    else:
+        while value is not None:
+            checksum.update(value.data)
+            value = value.next
+    return checksum
+</pre>
+<p>Interfaces are a generally a good thing, but not in this case where we
+would have to mark the <tt class="docutils literal"><span class="pre">File</span></tt> class just to serve our adaptation.</p>
+<p><a class="reference" href="http://www.artima.com/weblogs/viewpost.jsp?thread=155123">Guido blogged about adaptation versus generic functions</a> half a year
+ago.  There are also some nice additional links in there.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Mon, 15 Jan 2007 15:25 GMT</pubDate>
+</item>
+<item>
+   <title>How I Learned to Stop Worrying and Love the Bug</title>
+   <guid isPermaLink="false">devel/stop-worrying</guid>
+   <link>http://danielnouri.org/blog/devel/stop-worrying.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>The <a class="reference" href="http://www.infrae.com/products/documentlibrary">Document Library</a> document management system has seen lots of
+improvements lately.  There'll be a new release shortly.  We've been
+busy adding:</p>
+<blockquote>
+<ul class="simple">
+<li>easy installation, using <a class="reference" href="http://www.zope.org/DevHome/Buildout">Zope Buildout</a>,</li>
+<li>LDAP support, based on <a class="reference" href="http://svn.zope.org/ldappas/trunk">ldappas</a> and <a class="reference" href="http://svn.zope.org/ldapadapter/trunk">ldapadapter</a>,</li>
+<li>filesystem storage support, based on <a class="reference" href="http://www.infrae.com/products/tramline">Tramline</a> and <a class="reference" href="http://cheeseshop.python.org/pypi/hurry.file">hurry.file</a> and</li>
+<li>a more reliable conversion between file formats, provided by the
+<a class="reference" href="http://oooconv.free.fr/oooconv/oooconv_en.html">OooConv</a> conversion server, which now has an easy way to install
+it, too.</li>
+</ul>
+</blockquote>
+<p>Quite a number of different components are involved.  And that's only
+the list of recently added dependencies.  Code reuse is good.  The
+working together of these components, however, needs extra care,
+because components will change over time and we need a way to make
+sure that the Document Library doesn't break, or that its breakage is
+apparent when we update its dependencies to newer versions.  Testing
+the Document Library's APIs in isolation isn't enough here.  Neither
+is leaving the testing to the user.</p>
+<p>The optional filesystem storage support requires Apache in front of
+Zope.  The conversion mechanism requires a running OooConv process
+(which in turn controls a number of Open Office worker processes).
+And then we allow mass uploading of documents using ZIP files, the
+contents of which may want filesystem storage and conversion, too.
+This leaves us with quite a number of variables, and lots of ways to
+screw up.</p>
+<p>Manual testing of all of these combinations is tedious.  Let's say a
+human tester prepares a testing session by writing down all the
+possible combinations he can think of (which is what we did, too).  He
+tests document adding, editing, validation errors and uploading with
+Tramline and without and conversion with Tramline and without and with
+ZIP files.</p>
+<p>Lots of functionality is cool, but it's also worrying.  Will feature A
+combined with B under circumstance C still work when I change this
+line of code?  Doing all the human testing after we do a change isn't
+an option.  But not doing it feels bad.</p>
+<p>The answer to this is to write automated functional tests.  For that,
+we decided to use the <a class="reference" href="http://cheeseshop.python.org/pypi/ZopeTestbrowser">Zope Testbrowser</a> (with <a class="reference" href="http://www.python.org/doc/lib/module-doctest.html">doctest</a>), which has
+already proven itself a very useful tool in the past.</p>
+<p>Now you might already know that <a class="reference" href="http://tomster.org/blog/archive/2006/10/23/remote-browser-tests-with-zopetestcase">Testbrowser has a mode for testing
+against any HTTP server</a>.  In our case, this mode is the only way to
+test conversion and filesystem storage, because both of these features
+require help from external processes.</p>
+<p>Before running these Testbrowser tests now, the tester start up Apache
+and the conversion server and points Testbrowser to Apache.  The tests
+work very similarly to human testing: A Document Library is created
+through the web browser, documents are added, edited, files are
+uploaded, mistakes are made to trigger validation error etc.  And all
+that in a well-defined manner which leaves little place for human
+testers to make errors or forget about a certain test.  (They can
+still forget to run the tests, though. ;)</p>
+<p>At this point, I stopped worrying about breakage.  And I learned that
+these <a class="reference" href="https://infrae.com/svn/documentlibrary/trunk/src/documentlibrary/core/ftests/basic_document_tests.txt">functional</a> <a class="reference" href="https://infrae.com/svn/documentlibrary/trunk/src/documentlibrary/core/ftests/conversion_document_tests.txt">tests</a> are the bomb.</p>
+<p>One thing worth noticing is that in these <em>remote</em> functional tests,
+we can't use the Zope Testrunner's <tt class="docutils literal"><span class="pre">-D</span></tt> option.  This would normally
+put us (= the debugger) right at the relevant point of the application
+code where the test failure occurs.  However, we can still run Zope in
+foreground and put breakpoints into the application code, or into the
+test code.  Which means that at any time into the tests we can
+introspect the state of the application by either looking at variables
+in the debugger, or by simply browsing the Document Library instance
+that's being tested in Firefox.</p>
+<p>If you want to read more about automated tests, check out this <a class="reference" href="http://vallista.idyll.org/~grig/articles/">big
+list of interesting articles and links</a> from <a class="reference" href="http://agiletesting.blogspot.com">Grig Gheorghiu</a>.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Sun, 19 Nov 2006 16:00 GMT</pubDate>
+</item>
+<item>
+   <title>Framework shootout</title>
+   <guid isPermaLink="false">devel/zope/framework-shootout</guid>
+   <link>http://danielnouri.org/blog/devel/zope/framework-shootout.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<div class="section" id="of-cardinals-and-ambassadors">
+<h4><a name="of-cardinals-and-ambassadors">Of cardinals and ambassadors</a></h4>
+<p>It's now almost one month that I work for <a class="reference" href="http://www.infrae.com">Infrae</a>, and I enjoy it a
+lot.  I have a nice working environment with friendly colleagues and
+interesting projects.  And I get to share my workplace with <a class="reference" href="http://faassen.n--tree.net/blog">Martijn
+Faassen</a>, which rocks, because I can learn so much from this guy!</p>
+<p>The other day I went to the <a class="reference" href="http://comlounge.tv/blog">COM.lounge TV</a> page to check out
+Martijn's keynote at this month's <a class="reference" href="http://www.dzug.org">DZUG</a> conference.  It was fun to
+watch.  And then I discovered four other very interesting videos from
+this year's <a class="reference" href="http://www.europython.org/">Europython</a> conference in Geneva.  I wasn't there, so I
+was eager to see the recording of the <em>Web framework shootout</em> which
+took place there.  I was particularly impressed about <a class="reference" href="http://www.blueskyonmars.com/">Kevin
+Dangoor's</a> presentation of <a class="reference" href="http://www.turbogears.org/">TurboGears</a>.  If this is not the
+incarnation of agile development, then I don't know what!  Kevin
+upstaged the other two contestants <a class="reference" href="http://simon.incutio.com/">Simon Willison</a> (representing
+<a class="reference" href="http://www.djangoproject.com/">Django</a>) and <a class="reference" href="http://worldcookery.com/">Philipp von Weitershausen</a> (of <a class="reference" href="http://www.zope.org/DevHome/Wikis/DevSite/Projects/ComponentArchitecture/FrontPage">Zope 3</a>).</p>
+<p>Drawing the bow back to Martijn's presentation, I totally agree with
+him that Zope 3 needs another face on the web.  Finally, he and some
+others are doing something about this.  They're still looking for
+<a class="reference" href="http://mail.zope.org/mailman/listinfo/zope-web">help</a> from you!</p>
+<p>Also, the <a class="reference" href="http://download.zope.org/distribution/">eggification of Zope 3 packages</a>, which <a class="reference" href="http://cheeseshop.python.org/pypi?:action=browse&amp;c=515">is landing
+slowly</a>, will help in making Zope 3 popular in the wider Python
+community.</p>
+</div>
+<div class="section" id="zope-3-ninja-power">
+<h4><a name="zope-3-ninja-power">Zope 3 = Ninja Power?</a></h4>
+<p>But Zope 3 has also another problem IMO: It's hard to grasp.  Even if
+it's less confusing than the huge inheritance trees in Zope 2, Zope 3
+has still to go a long way to be as newbie-friendly as, say,
+TurboGears.  Again, Martijn comes to the resuce: In October he'll be
+sprinting with the people from <a class="reference" href="http://www.gocept.com/">Gocept</a> with the goal to flatten Zope
+3's learning curve.  The project is called <em>Grok</em>, and it sounds
+really promising.</p>
+<p>Honestly, I think that if I hadn't known the concepts of Zope 3
+before, I wouldn't have understood much of what Philipp explained at
+the shootout.  I don't buy the <em>it's complex because it solves complex
+problems</em> argument.  Python is a good example of a very approachable
+technology that can scale sky high.</p>
+<p>When following the mailing lists of TurboGears, I noticed that their
+team considers lack of documentation, especially in the form of
+approachable tutorials, a bug.  Now, Zope 3 comes with lots of
+<a class="reference" href="http://docs.python.org/lib/module-doctest.html">doctests</a>, which I find great.  But they're not exactly approachable
+for newbies.  Not because of their style of writing, but because they
+are in places where newbies don't look, i.e. in the source tree.</p>
+<p><a class="reference" href="http://www.benjiyork.com">Benji York</a> created the very nice <a class="reference" href="http://www.benjiyork.com/quick_start/">Zope 3 Quick Start Guide</a>, which
+I personally recommend to anyone who starts with Zope 3.  Also,
+<a class="reference" href="http://zeapartners.org">zeapartners.org</a> has two nice little <a class="reference" href="http://zeapartners.org/scl/index.html">screencasts</a>.  We definitely
+need more tutorials like this!  And fewer Zope 3 packages with the
+hidden ninja wisdom feel to them.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Fri, 29 Sep 2006 09:32 GMT</pubDate>
+</item>
+<item>
+   <title>Uploading a setuptools package to PyPI a.k.a. the CheeseShop</title>
+   <guid isPermaLink="false">devel/upload-to-pypi</guid>
+   <link>http://danielnouri.org/blog/devel/upload-to-pypi.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I'm writing this down because it's annoying me to death: Everytime I
+do this, I need to learn how to again.</p>
+<p>So, Daniel, after you created a tag, get rid of the <tt class="docutils literal"><span class="pre">setup.cfg</span></tt> file
+that's there and commit.  Then register the metadata for this package
+by running <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">register</span></tt>.  After that, upload the
+package: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">bdist_egg</span> <span class="pre">upload</span> <span class="pre">-s</span></tt> (-s stands for
+sign).  Upload other <a class="reference" href="http://docs.python.org/dist/built-dist.html">distribution</a> <a class="reference" href="http://docs.python.org/dist/source-dist.html">formats</a> the same way.</p>
+<p>If you get this incredibly unhelpful error message, get yourself a
+<a class="reference" href="http://docs.python.org/dev/dist/pypirc.html">pypirc file</a>:</p>
+<pre class="literal-block">
+Submitting dist/your.egg to http://www.python.org/pypi
+Upload failed (401): Authorization Required
+</pre>
+<p>The <a class="reference" href="http://wiki.python.org/moin/CheeseShopTutorial">CheeseShop tutorial</a> has useful pointers.</p>
+<p>And next, be annoyed with doing this work again for getting your
+package into <a class="reference" href="http://plone.org/products">Plone.org's Products</a>.  (Sadly, the <a class="reference" href="http://plone.org/products/plonesoftwarecenter">PloneSoftwareCenter</a>
+developers <a class="reference" href="http://comments.gmane.org/gmane.comp.web.zope.plone.devel/10443?set_lines=100000">decided not to support</a> the PyPI API.)</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Thu, 10 Aug 2006 16:03 GMT</pubDate>
+</item>
+<item>
+   <title>Mocky: A mocking test class</title>
+   <guid isPermaLink="false">devel/mocky-tests</guid>
+   <link>http://danielnouri.org/blog/devel/mocky-tests.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Yesterday, I got tired with building mock objects for tests.  Then I
+had this idea of creating a universal mock object that would help me
+with lots of my mocking needs: <a class="reference" href="http://www.mockyrecordings.com/">Mocky</a> was born.</p>
+<p>I haven't looked into other mock object libraries, but please feel
+free and spoil the party by sending me a link to some library where
+this has been implemented ages ago.</p>
+<p>OK, enough words, time for you to take a look at the source (don't be
+scared, most of it is documentation):</p>
+<pre class="literal-block">
+class Mocky(object):
+    &quot;&quot;&quot;Mocky is a class that wants to help you with setting up mock
+    objects for your tests.  It helps you observe which functions get
+    called (with which parameters) and which attributes are set.
+
+    Unless given a name, a Mocky's name is 'root':
+
+      &gt;&gt;&gt; Mocky().name
+      'root'
+
+    Let's start with a simple example that sets some variables so we
+    get a feeling of how Mocky works.  Note that attribute accesss
+    will never result in AttributeError.  Instead, an attribute access
+    to a nonexistent member variable will yield another Mocky
+    instance:
+
+      &gt;&gt;&gt; f = Mocky('f')
+      &gt;&gt;&gt; f
+      f
+      &gt;&gt;&gt; unusual = f.unusual
+      &gt;&gt;&gt; unusual
+      f.unusual
+      &gt;&gt;&gt; type(unusual) is Mocky
+      True
+      &gt;&gt;&gt; unusual is f.unusual
+      True
+      &gt;&gt;&gt; f.a.c.r = 'Fidelio'
+      Set f.a.c.r to 'Fidelio'
+      &gt;&gt;&gt; f.a.c.r
+      'Fidelio'
+
+    Note that when we set 'f.a.c.r' to 'Fidelio', Mocky printed out
+    that the attribute was set.  Suppose we have a function 'fun' that
+    sets some fancy variable on a given object:
+
+      &gt;&gt;&gt; def fun(obj):
+      ...     if obj.please_process_me:
+      ...         obj.there_you = 'go'
+      &gt;&gt;&gt; myobj = Mocky('myobj')
+      &gt;&gt;&gt; fun(myobj)
+      Set myobj.there_you to 'go'
+      &gt;&gt;&gt; myobj.please_process_me = False
+      Set myobj.please_process_me to False
+      &gt;&gt;&gt; fun(myobj)
+
+    Mocky also supports calling.  Another function that does a bit
+    more with our test object:
+
+      &gt;&gt;&gt; def starve(character):
+      ...     character.getStatus().hitpoints -= 1
+      &gt;&gt;&gt; starve(Mocky('Hugo')) # doctest: +ELLIPSIS
+      Traceback (most recent call last):
+      ...
+      TypeError: unsupported operand type(s) for -=: 'Mocky' and 'int'
+      &gt;&gt;&gt; ezequiel = Mocky('ezequiel')
+      &gt;&gt;&gt; ezequiel.getStatus().hitpoints = 0
+      Called ezequiel.getStatus()
+      Set ezequiel.getStatus().hitpoints to 0
+      &gt;&gt;&gt; starve(ezequiel)
+      Called ezequiel.getStatus()
+      Set ezequiel.getStatus().hitpoints to -1
+
+    For calls, Mocky will return the same value if the signature is
+    the same:
+
+      &gt;&gt;&gt; secret = f.unusual(password='secret')
+      Called f.unusual(password='secret')
+      &gt;&gt;&gt; secret is f.unusual(password='secret')
+      Called f.unusual(password='secret')
+      True
+      &gt;&gt;&gt; secret is f.unusual(password='unsafe')
+      Called f.unusual(password='unsafe')
+      False
+    &quot;&quot;&quot;
+    def __init__(self, name='root'):
+        self.__dict__['name'] = name
+        self.__dict__['_calls'] = {}
+
+    def __call__(self, *args, **kwargs):
+        argsstr = ', '.join([repr(arg) for arg in args])
+        keys = sorted(kwargs.keys())
+        kwargsstr = ', '.join(['%s=%r' % (key, kwargs[key]) for key in keys])
+        if argsstr and kwargsstr:
+            allargs = ', '.join([argsstr, kwargsstr])
+        else:
+            allargs = argsstr or kwargsstr
+
+        print &quot;Called %s(%s)&quot; % (self.name, allargs)
+        if allargs not in self._calls:
+            self._calls[allargs] = Mocky('%s(%s)' % (self.name, allargs))
+        return self._calls[allargs]
+
+    def __repr__(self):
+        return self.name
+
+    def __getattr__(self, name):
+        if name not in self.__dict__:
+            self.__dict__[name] = Mocky('%s.%s' % (self.name, name))
+        return self.__dict__[name]
+
+    def __setattr__(self, name, value):
+        print &quot;Set %s.%s to %r&quot; % (self.name, name, value)
+        self.__dict__[name] = value
+</pre>
+<p>I'm thinking about extending this so it also does dictionary-like
+access and a quiet mode for when it's <em>obvious</em> that you're setting
+this and calling that attribute.</p>
+<p>I should be getting source code colouring for my blog like <a class="reference" href="http://mg.pov.lt/blog/">Marius</a>.
+I have to find out how he does it.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog"></category>
+   <pubDate>Tue, 01 Aug 2006 20:38 GMT</pubDate>
+</item>
+<item>
+   <title>pluggablecatalog</title>
+   <guid isPermaLink="false">devel/zope/pluggablecatalog</guid>
+   <link>http://danielnouri.org/blog/devel/zope/pluggablecatalog.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I added a new project called <tt class="docutils literal"><span class="pre">pluggablecatalog</span></tt> to the <a class="reference" href="https://svn.plone.org/svn/collective/pluggablecatalog/trunk">collective</a>.</p>
+<p>pluggablecatalog is a replacement (or rather: a wrapper) for Plone's
+portal catalog.  It adds the ability to plug in default search
+restrictions without the need to subclass or monkey- patch the
+catalog.</p>
+<p>From the docstring of <tt class="docutils literal"><span class="pre">pluggablecatalog/tool.py</span></tt>:</p>
+<pre class="literal-block">
+Wraps CMFPlone's CatalogTool to add default parameters
+collected from IQueryDefaults utilities.
+
+  &gt;&gt;&gt; from Products.pluggablecatalog.tool import CatalogTool
+  &gt;&gt;&gt; catalog = self.portal.portal_catalog
+  &gt;&gt;&gt; isinstance(catalog, CatalogTool)
+  True
+
+We create two documents and make sure they're indexed:
+
+  &gt;&gt;&gt; len(catalog())
+  0
+  &gt;&gt;&gt; self.folder.invokeFactory('Document', 'doc1')
+  'doc1'
+  &gt;&gt;&gt; self.folder.invokeFactory('Document', 'doc2')
+  'doc2'
+  &gt;&gt;&gt; doc1, doc2 = self.folder.doc1, self.folder.doc2
+  &gt;&gt;&gt; doc1.setTitle('First Document')
+  &gt;&gt;&gt; doc2.setTitle('Second Document')
+  &gt;&gt;&gt; doc1.reindexObject(); doc2.reindexObject()
+  &gt;&gt;&gt; len(catalog())
+  2
+
+Let's now add a rather stupid IQueryDefaults utility that
+restricts searches by default to objects with the Title 'First
+Document':
+
+  &gt;&gt;&gt; from zope import component
+  &gt;&gt;&gt; from zope import interface
+  &gt;&gt;&gt; from Products.pluggablecatalog.interfaces import IQueryDefaults
+  &gt;&gt;&gt; def myDefaults(context, request):
+  ...     return {'Title': 'First Document'}
+  &gt;&gt;&gt; interface.directlyProvides(myDefaults, IQueryDefaults)
+  &gt;&gt;&gt; component.getService('Utilities').provideUtility(
+  ...     IQueryDefaults, myDefaults)
+
+With this utility in place, we should only retrieve doc1 now,
+unless we explicitly provide a 'Title' query parameter:
+
+  &gt;&gt;&gt; len(catalog())
+  1
+  &gt;&gt;&gt; catalog()[0].getObject().aq_base is doc1.aq_base
+  True
+
+  &gt;&gt;&gt; len(catalog(Title='Second Document'))
+  1
+  &gt;&gt;&gt; (catalog(Title='Second Document')[0].getObject().aq_base is
+  ...  doc2.aq_base)
+  True
+</pre>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Fri, 16 Jun 2006 11:07 GMT</pubDate>
+</item>
+<item>
+   <title>Record and test Plone with zope.testrecorder and zope.testbrowser</title>
+   <guid isPermaLink="false">devel/zope/record-and-test-plone</guid>
+   <link>http://danielnouri.org/blog/devel/zope/record-and-test-plone.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>I've just updated the <a class="reference" href="http://plone.org/documentation/tutorial/testing/functional-tests">HOWTO for using Testbrowser and Testrecorder
+with Plone</a>.  The Testbrowser/Testrecorder combination is so easy;
+also for non-programmers.  We need more structured and well-documented
+functional tests like this, because they make our lives easier <a class="footnote-reference" href="#id2" id="id1" name="id1">[*]</a>.
+Maybe you can help out?</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1" name="id2">[*]</a></td><td>... and our tests slower? ;-)</td></tr>
+</tbody>
+</table>
+<div class="section" id="and-now-for-something-completely-different">
+<h4><a name="and-now-for-something-completely-different">And Now for Something Completely Different</a></h4>
+<p>While I played around with Testrecorder, I wrote a <a class="reference" href="http://danielnouri.org/svn/scripts/plonerec_adjust.py">small script</a> for
+text match and replace using regular expressions.  This is arguably
+one of the most unreadable pieces of code I've written in a while.
+But to the rescue come the doctests, which I've used to develop this
+<em>test-first</em>.</p>
+<p>I don't know anything about <a class="reference" href="http://c2.com/cgi/wiki?RonJeffries">Ron Jeffries</a> but this is how he describes it
+and how it felt:</p>
+<pre class="literal-block">
+When you get this right, development turns into a very pleasant
+cycle of testing, seeing a simple thing to fix, fixing it, testing,
+getting positive feedback all the way.
+
+Guaranteed flow. And you go so fast! Try it, you'll like it.
+</pre>
+<p><em>Update</em>: Martin incorporated the Testbrowser and Testrecorder HOWTO
+in his tutorial.  I updated the link to point to that.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 10 Jun 2006 23:10 GMT</pubDate>
+</item>
+<item>
+   <title>Skeleton for Plone Core packages in ZopeSkel</title>
+   <guid isPermaLink="false">devel/zope/zopeskel-plonecore</guid>
+   <link>http://danielnouri.org/blog/devel/zope/zopeskel-plonecore.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>Thanks to <a class="reference" href="http://hannosch.blogspot.com/">Hanno</a>, <a class="reference" href="http://svn.plone.org/svn/collective/ZopeSkel/trunk/">ZopeSkel</a> now has a template for starting Plone Core
+packages.  Hanno is using ZopeSkel for the new <a class="reference" href="http://svn.plone.org/svn/plone/plone.i18n/trunk/">plone.i18n</a> package.</p>
+<div class="section" id="get-zopeskel">
+<h4><a name="get-zopeskel">Get ZopeSkel</a></h4>
+<p>ZopeSkel has moved to the <a class="reference" href="http://plone.org/documentation/glossary/collective">Collective</a>.  Get the latest and greatest of
+ZopeSkel via this command:</p>
+<pre class="literal-block">
+easy_install http://svn.plone.org/svn/collective/ZopeSkel/trunk#egg=ZopeSkel-dev
+</pre>
+</div>
+<div class="section" id="create-a-package">
+<h4><a name="create-a-package">Create a package</a></h4>
+<p>Remember from <a class="reference" href="http://danielnouri.org/blog/devel/zope/quickstart-with-pastescript.html">last time</a> that Paste Script is useful for creating a
+consistent directory structure and files for you so that you can get
+to the actual work quickly.  Plus, your projects will be ready for
+distribution without any additional work.</p>
+<p>Now let's say we want to start a <tt class="docutils literal"><span class="pre">plone.form</span></tt> package.  What we need
+to do is invoke <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">create</span></tt>, telling it that we want to use the
+<tt class="docutils literal"><span class="pre">plone_core</span></tt> template.  This is done using the <tt class="docutils literal"><span class="pre">-t</span></tt> command-line
+option.  After invoking the command, we're asked for some variables:</p>
+<pre class="literal-block">
+$ paster create -t plone_core
+Selected and implied templates:
+  ZopeSkel#plone_core  A Plone Core project
+
+Enter project name: plone.form
+Variables:
+  package:  ploneform
+  project:  plone.form
+Creating template plone_core
+Enter namespace_package (Namespace package) ['plone']:
+Enter package (The package contained namespace package (like i18n)) ['']: form
+Enter version (Version) ['0.1']:
+Enter description (One-line description of the package) ['']: Plone compatibility layer for zope.app.schema and zope.formlib
+Enter long_description (Multi-line description (in reST)) ['']:
+Enter author (Author name) ['Plone Foundation']:
+Enter author_email (Author email) ['plone-developers&#64;NOSPAMlists.sourceforge.net']:
+Enter keywords (Space-separated keywords/tags) ['']:
+Enter url (URL of homepage) ['']:
+Enter license_name (License name) ['GPL']:
+Enter zip_safe (True/False: if the package can be distributed as a .zip file) [False]:
+Creating directory ./plone.form
+  Recursing into +namespace_package+
+    Creating ./plone.form/plone/
+    Recursing into +package+
+      Creating ./plone.form/plone/form/
+      Copying HISTORY.txt_tmpl to ./plone.form/plone/form/HISTORY.txt
+      Copying LICENSE.GPL to ./plone.form/plone/form/LICENSE.GPL
+      Copying LICENSE.txt_tmpl to ./plone.form/plone/form/LICENSE.txt
+      Copying README.txt_tmpl to ./plone.form/plone/form/README.txt
+      Copying __init__.py to ./plone.form/plone/form/__init__.py
+      Copying configure.zcml to ./plone.form/plone/form/configure.zcml
+      Copying version.txt_tmpl to ./plone.form/plone/form/version.txt
+    Copying __init__.py to ./plone.form/plone/__init__.py
+  Copying setup.cfg to ./plone.form/setup.cfg
+  Copying setup.py_tmpl to ./plone.form/setup.py
+Running /usr/bin/python setup.py egg_info
+</pre>
+<p>Note that we typed in values for the <tt class="docutils literal"><span class="pre">project</span></tt>, <tt class="docutils literal"><span class="pre">package</span></tt> and
+<tt class="docutils literal"><span class="pre">descriptions</span></tt> variables only.  For the rest we decided that the
+default was good enough.  We're ready to start working on
+<tt class="docutils literal"><span class="pre">plone.form</span></tt> now.</p>
+</div>
+<div class="section" id="non-plone-core-packages">
+<h4><a name="non-plone-core-packages">Non- Plone Core packages</a></h4>
+<p>There's no reason why we wouldn't use the <tt class="docutils literal"><span class="pre">plone_core</span></tt> template for
+our own packages.  After all, the name of the namespace package and
+that of the contained package are variables, and the directory
+structure might well be useful for your own project.</p>
+</div>
+<div class="section" id="updating-a-zopeskel-package">
+<h4><a name="updating-a-zopeskel-package">Updating a ZopeSkel package</a></h4>
+<p>Whenever the <tt class="docutils literal"><span class="pre">plone_core</span></tt> template changes, we can simply rerun the
+<tt class="docutils literal"><span class="pre">paster</span> <span class="pre">create</span></tt> command to update our project:</p>
+<pre class="literal-block">
+$ paster create -t plone_core
+Selected and implied templates:
+  ZopeSkel#plone_core  A Plone Core project
+
+Enter project name: plone.form
+Variables:
+  package:  ploneform
+  project:  plone.form
+Creating template plone_core
+Enter namespace_package (Namespace package) ['plone']:
+Enter package (The package contained namespace package (like i18n)) ['']: form
+
+[...]
+
+  Recursing into +namespace_package+
+    Recursing into +package+
+      ./plone.form/plone/form/HISTORY.txt already exists (same content)
+      ./plone.form/plone/form/LICENSE.GPL already exists (same content)
+      ./plone.form/plone/form/LICENSE.txt already exists (same content)
+      ./plone.form/plone/form/README.txt already exists (same content)
+      ./plone.form/plone/form/__init__.py already exists (same content)
+      ./plone.form/plone/form/configure.zcml already exists (same content)
+      ./plone.form/plone/form/version.txt already exists (same content)
+    ./plone.form/plone/__init__.py already exists (same content)
+  ./plone.form/setup.cfg already exists (same content)
+  ./plone.form/setup.py already exists (same content)
+Running /usr/bin/python setup.py egg_info
+</pre>
+<p>If something had changed, we would have been presented a diff of our
+version of the file and the new version inside the template.</p>
+<p>An inconvenience here is that when running <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">create</span></tt>, we're
+asked for all variables again.  Fortunately, there's the
+<tt class="docutils literal"><span class="pre">--config=CONFIG</span></tt> option that'll store all our variables in a file.
+Both for initial creation and for updating, our command becomes:</p>
+<pre class="literal-block">
+$ paster create -t plone_core --config=plone.form/template_vars.cfg
+</pre>
+</div>
+<div class="section" id="extending-zopeskel">
+<h4><a name="extending-zopeskel">Extending ZopeSkel</a></h4>
+<p>Extending the <tt class="docutils literal"><span class="pre">plone_core</span></tt> package to fit our own needs is really
+easy.  Let's say we want to create a new template called
+<tt class="docutils literal"><span class="pre">my_package</span></tt> that's based on <tt class="docutils literal"><span class="pre">plone_core</span></tt>.  We want our new
+template to use what's already there in <tt class="docutils literal"><span class="pre">plone_core</span></tt> and add a
+<tt class="docutils literal"><span class="pre">browser</span></tt> package in there with <tt class="docutils literal"><span class="pre">__init__.py</span></tt> and
+<tt class="docutils literal"><span class="pre">configure.zcml</span></tt> files.</p>
+<p>Inside our <em>SVN checkout</em> of ZopeSkel, we create this directory:</p>
+<pre class="literal-block">
+$ mkdir -p zopeskel/templates/my_package/+namespace_package+/+package+/browser
+</pre>
+<p>Then we add our two files:</p>
+<pre class="literal-block">
+$ edit zopeskel/templates/my_package/+namespace_package+/+package+/browser/__init__.py_tmpl
+$ edit zopeskel/templates/my_package/+namespace_package+/+package+/browser/configure.zcml
+</pre>
+<p>Note that we create an <tt class="docutils literal"><span class="pre">__init__.py_tmpl</span></tt> file, with the <tt class="docutils literal"><span class="pre">_tmpl</span></tt>
+suffix because setuptools would currently not include our .py file in
+the distribution if the file ended with <tt class="docutils literal"><span class="pre">.py</span></tt>.  So although our
+<tt class="docutils literal"><span class="pre">__init__.py_tmpl</span></tt> file isn't necessarily a template (nothing is
+substituted), we make it a <a class="reference" href="http://pythonpaste.org/script/developer.html#templates">Paste Script template</a> so that it gets
+picked up by setuptools.</p>
+<p>The next thing we do is wire up the <tt class="docutils literal"><span class="pre">my_package</span></tt> template so that
+it's available from the command-line.  Inside <tt class="docutils literal"><span class="pre">zopeskel/__init__.py</span></tt>
+we add this:</p>
+<pre class="literal-block">
+class MyPackage(PloneCore):
+    _template_dir = 'templates/my_package'
+    summary = 'A Plone package that has a browser subpackage'
+    required_templates = ['plone_core']
+</pre>
+<p>Finally, we define an <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools#entry-points">entry point</a> for our template in <tt class="docutils literal"><span class="pre">setup.py</span></tt>:</p>
+<pre class="literal-block">
+[...]
+
+entry_points=&quot;&quot;&quot;
+[paste.paster_create_template]
+basic_zope = zopeskel:BasicZope
+plone_core = zopeskel:PloneCore
+my_package = zopeskel:MyPackage
+&quot;&quot;&quot;,
+
+[...]
+</pre>
+<p>Note that we only added the <tt class="docutils literal"><span class="pre">my_package</span></tt> entry point here.</p>
+<p>After calling <tt class="docutils literal"><span class="pre">setup.py</span> <span class="pre">develop</span></tt> we're ready to create a new project
+with our own template:</p>
+<pre class="literal-block">
+$ python setup.py develop
+[...]
+$ paster create --list-templates
+Available templates:
+  basic_package:  A basic setuptools-enabled package
+  basic_zope:     A Zope project
+  my_package:     A Plone package that has a browser subpackage
+  paste_deploy:   A web application deployed through paste.deploy
+  plone_core:     A Plone Core project
+</pre>
+<p>Easy as pie!</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Sat, 03 Jun 2006 13:30 GMT</pubDate>
+</item>
+<item>
+   <title>Debug Script (Python) with pdb</title>
+   <guid isPermaLink="false">devel/zope/enablesettrace</guid>
+   <link>http://danielnouri.org/blog/devel/zope/enablesettrace.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>There's a handy two-line Zope2 Product that allows <tt class="docutils literal"><span class="pre">pdb.set_trace()</span></tt>
+inside <tt class="docutils literal"><span class="pre">Script</span> <span class="pre">(Python)</span></tt> objects.  Check it out here:</p>
+<pre class="literal-block">
+svn co svn://svn.zope.org/repos/main/Products.enablesettrace/trunk enablesettrace
+</pre>
+<p>And then put it into your Products directory.  This is only for
+development, of course.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 24 May 2006 10:14 GMT</pubDate>
+</item>
+<item>
+   <title>Better Plone development quality through...</title>
+   <guid isPermaLink="false">devel/zope/better-plonedev-presentation</guid>
+   <link>http://danielnouri.org/blog/devel/zope/better-plonedev-presentation.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<blockquote>
+<ul class="simple">
+<li>tests</li>
+<li>fewer skin customizations and monkeypatches</li>
+<li>more generic code</li>
+<li>motivation</li>
+<li>how to get there</li>
+</ul>
+</blockquote>
+<p>A <a class="reference" href="http://danielnouri.org/docs/better-plonedev-presentation">presentation</a> on how to improve the quality of your Plone
+development that I gave recently at <a class="reference" href="http://zestsoftware.nl">Zest Software</a>.</p>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 24 May 2006 09:34 GMT</pubDate>
+</item>
+<item>
+   <title>Quickstart your next Python project with Paste Script!</title>
+   <guid isPermaLink="false">devel/zope/quickstart-with-pastescript</guid>
+   <link>http://danielnouri.org/blog/devel/zope/quickstart-with-pastescript.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>For your next Python project, consider using <a class="reference" href="http://pythonpaste.org/script/">Paste Script</a>.  Paste
+Script helps you set up your project structure quickly so that it's
+ready for <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools">distribution</a>.</p>
+<div class="section" id="getting-paste-script">
+<h4><a name="getting-paste-script">Getting Paste Script</a></h4>
+<p>Just <a class="reference" href="http://peak.telecommunity.com/DevCenter/EasyInstall">easy_install</a> Paste Script like so:</p>
+<pre class="literal-block">
+easy_install PasteScript
+</pre>
+<p>This will download the latest Paste Script and all its dependencies
+from the <a class="reference" href="http://cheeseshop.python.org/pypi">Cheese Shop</a>.</p>
+<p>If you don't want easy_install to put the downloaded packages into
+your standard site-packages directory, consider using <a class="reference" href="http://blog.ianbicking.org/workingenv-revisited.html">workingenv</a> or
+look at <a class="reference" href="http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations">Custom Installation Locations</a>.</p>
+</div>
+<div class="section" id="using-paste-script">
+<h4><a name="using-paste-script">Using Paste Script</a></h4>
+<p>This is where it gets interesting.  When we invoke the <tt class="docutils literal"><span class="pre">paster</span>
+<span class="pre">create</span></tt> command, we'll be asked a couple of questions, most of which
+we can answer by hitting enter and thereby using the default value:</p>
+<pre class="literal-block">
+$ paster create
+Selected and implied templates:
+  PasteScript#basic_package  A basic setuptools-enabled package
+
+Enter project name: MyFancyNewProject
+Variables:
+  package:  myfancynewproject
+  project:  MyFancyNewProject
+Creating template basic_package
+Enter version (Version (like 0.1)) ['']: 
+Enter description (One-line description of the package) ['']: This is a fancy project
+
+...
+</pre>
+<p>After answering the questions, Paste Script will set up the files for
+our project:</p>
+<pre class="literal-block">
+Creating directory ./MyFancyNewProject
+  Recursing into +package+
+    Creating ./MyFancyNewProject/myfancynewproject/
+    Copying __init__.py to ./MyFancyNewProject/myfancynewproject/__init__.py
+  Recursing into +project+.egg-info
+    Creating ./MyFancyNewProject/MyFancyNewProject.egg-info/
+  Recursing into docs
+    Creating ./MyFancyNewProject/docs/
+  Copying setup.cfg to ./MyFancyNewProject/setup.cfg
+  Copying setup.py_tmpl to ./MyFancyNewProject/setup.py
+Running /usr/bin/python setup.py egg_info
+</pre>
+<p>Your newly started project is now ready for distribution!</p>
+</div>
+<div class="section" id="paste-script-and-subversion">
+<h4><a name="paste-script-and-subversion">Paste Script and Subversion</a></h4>
+<p>By the way, there's also a handy <tt class="docutils literal"><span class="pre">--svn-repository=REPOS</span></tt> argument
+to the <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">create</span></tt> command which will create a basic <a class="reference" href="http://subversion.tigris.org/">Subversion</a>
+layout for your project.  Pass the Subversion directory that you want
+to be used as the parent of your project's directory like so:</p>
+<pre class="literal-block">
+$ paster create --svn-repository=http://mysubversionserver/myprojects/
+</pre>
+<p>This will create a <tt class="docutils literal"><span class="pre">MyFancyNewProject</span></tt> directory under
+<tt class="docutils literal"><span class="pre">myprojects/</span></tt> and it'll create <tt class="docutils literal"><span class="pre">trunk</span></tt>, <tt class="docutils literal"><span class="pre">branches</span></tt> and <tt class="docutils literal"><span class="pre">tags</span></tt>
+subdirectories therein.</p>
+</div>
+<div class="section" id="pluggability">
+<h4><a name="pluggability">Pluggability</a></h4>
+<p>Adding your own set of templates to Paste Script is fairly simple.
+The <a class="reference" href="http://pythonpaste.org/script/developer.html#templates">Paste Script developer documentation</a> explains how to do that.</p>
+<p>Based on that, I've had the idea of creating a simple set of templates
+for quickstarting a Zope project.  There's already the <a class="reference" href="http://svn.plone.org/svn/collective/skeletor/trunk/docs/">skeletor</a>
+project which aims to do something similar for Zope 2.  When I looked
+at skeletor though, I decided that it does a bit much and it's fairly
+complex.  I also ran into a few tracebacks while trying to use the
+tool.  Which led me to trying out Paste Script.</p>
+</div>
+<div class="section" id="zopeskel-project">
+<h4><a name="zopeskel-project">ZopeSkel project</a></h4>
+<p>I've started a small project which I call <a class="reference" href="https://svn.plone.org/svn/collective/ZopeSkel/trunk/">ZopeSkel</a>.  The only
+purpose of ZopeSkel is to add a couple of templates to the existing
+ones of Paste Script.  Right now, ZopeSkel contains only one template
+called <tt class="docutils literal"><span class="pre">basic_zope</span></tt>, which is very bare bones.  Take a look at the
+project's <a class="reference" href="https://svn.plone.org/svn/collective/ZopeSkel/trunk/zopeskel/templates/basic_zope/">templates directory</a>.</p>
+<p>You can think of ZopeSkel as a minimal example of creating your own
+templates package for use with Paste Script.  I want to look and see
+if I can create a good set of templates.  Please tell me what kinds of
+templates would be helpful for you!</p>
+<p>To install the latest ZopeSkel from Subversion do <tt class="docutils literal"><span class="pre">easy_install</span>
+<span class="pre">http://svn.plone.org/svn/collective/ZopeSkel/trunk#egg=ZopeSkel-dev</span></tt>.
+After installing, you can see that the list of templates available to
+paster create has been extended:</p>
+<pre class="literal-block">
+$ paster create --list-templates
+Available templates:
+  basic_package:  A basic setuptools-enabled package
+  basic_zope:     A Zope project
+  paste_deploy:   A web application deployed through paste.deploy
+</pre>
+<p>Try <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">create</span> <span class="pre">--help</span></tt> to find out more about the <tt class="docutils literal"><span class="pre">create</span></tt>
+command.</p>
+</div>
+<div class="section" id="setuptools-development-mode">
+<h4><a name="setuptools-development-mode">setuptools Development Mode</a></h4>
+<p>When developing <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a> enabled projects, setuptool's <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools#development-mode">Development
+Mode</a> is essential.  In Development Mode, you can edit code inside
+the checkout directory and immediatley see the effects of your changes
+when running the program.  (If you make any changes to the project's
+setup script or C extensions, you need to run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span>
+<span class="pre">develop</span></tt>).</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Tue, 23 May 2006 19:17 GMT</pubDate>
+</item>
+<item>
+   <title>Plone in an egg</title>
+   <guid isPermaLink="false">devel/zope/plone-in-an-egg</guid>
+   <link>http://danielnouri.org/blog/devel/zope/plone-in-an-egg.html</link>
+   <description><![CDATA[
+
+<div class="document">
+<p>My stab at packaging <a class="reference" href="/files/Plone-in-an-egg.tar.gz">Plone as an egg</a> (this links to the tarball).</p>
+<div class="section" id="building-the-egg">
+<h4><a name="building-the-egg">Building the egg</a></h4>
+<ol class="arabic simple">
+<li>Checkout a bundle of Plone that contains all the necessary products in
+the <tt class="docutils literal"><span class="pre">Products/</span></tt> subdirectory</li>
+<li>Run <tt class="docutils literal"><span class="pre">setup.py</span> <span class="pre">bdist_egg</span></tt>.  This requires you to have <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>
+installed.</li>
+</ol>
+<p>The egg should be now in <tt class="docutils literal"><span class="pre">dist/Plone*egg</span></tt>, ready for installation.
+You can distribute your egg at this point.</p>
+<p>Note: Currently there is a problem that prevents ATContentTypes'
+<tt class="docutils literal"><span class="pre">thirdparty</span></tt> package from being included.  This should probably be
+fixed in ATContentTypes.  For now, you need to put an empty
+<tt class="docutils literal"><span class="pre">__init__.py</span></tt> file into the <tt class="docutils literal"><span class="pre">Products/ATContentTypes/thirdparty</span></tt>
+directory.</p>
+</div>
+<div class="section" id="installing-the-egg">
+<h4><a name="installing-the-egg">Installing the egg</a></h4>
+<p>You can install the egg site-wide.  With the effect that the Products
+will be available for import <em>implicitly</em> for every Zope 2 instance in
+the site.  Doing this is very simple:</p>
+<pre class="literal-block">
+easy_install dist/Plone*egg
+</pre>
+<p>Because Zope 2 will automatically scan all packages inside
+<tt class="docutils literal"><span class="pre">Products</span></tt>, there is no way to control exclusion of a Product in
+your instance.  This is less than ideal.  If our Product were not to
+use Zope2's Products namespace (which is well doable using Rocky
+Burt's <a class="reference" href="http://plone.org/products/pythonproducts">pythonproducts</a>), we could have more control of what is
+included, using Five's new <tt class="docutils literal"><span class="pre">registerPackage</span></tt> directive.  (Note that
+pythonproducts was merged into Five.)</p>
+<p>Now that all packages in Plone use the Products namespace, we'll have
+to think about a way to deal with this.  Fortunately, easy_install
+comes with the <a class="reference" href="http://peak.telecommunity.com/DevCenter/EasyInstall#command-line-options">--multi-version</a>
+command line option, which allows you to have more control over which
+packages are available at runtime.</p>
+<p>Using --multi-version, we can install our egg into the instance's
+<tt class="docutils literal"><span class="pre">lib/python</span></tt> directory to effectively make our egg only available in
+that instance:</p>
+<pre class="literal-block">
+easy_install --multi-version \
+             --install-dir=$INSTANCE_HOME/lib/python/ \
+             --site-dirs=$INSTANCE_HOME/lib/python/ \
+             dist/Plone*egg
+</pre>
+<p>When you install something <tt class="docutils literal"><span class="pre">--multi-version</span></tt>, client code that uses
+your package has to be aware of that and do an explicit <tt class="docutils literal"><span class="pre">import</span>
+<span class="pre">pkg_resources;</span> <span class="pre">pkg_resources.require(name)</span></tt>.  In our example, we need
+to <tt class="docutils literal"><span class="pre">require('Plone')</span></tt> somewhen in our Zope process.  I had the idea
+of requiring packages in zcml, similiar to how pythonproducts
+registers ordinary Python packages as Products.  There's a pending
+patch for pythonproducts that enables this, although pythonproducts is
+maybe the wrong place to implement this:</p>
+<pre class="literal-block">
+Index: src/pythonproducts/fivedirectives.py
+===================================================================
+--- src/pythonproducts/fivedirectives.py      (revision 26757)
++++ src/pythonproducts/fivedirectives.py      (working copy)
+&#64;&#64; -16,6 +16,7 &#64;&#64;
+ &quot;&quot;&quot;
+
+ from zope.interface import Interface
++from zope.schema import BytesLine
+ from zope.configuration.fields import GlobalObject
+
+
+&#64;&#64; -35,4 +36,11 &#64;&#64;
+                     u'with a ProductContext instance',
+         required=False
+         )
+-    
+\ No newline at end of file
++
++class IRequireDistributionDirective(Interface):
++    &quot;&quot;&quot;pkg_resources.require() a distribution.&quot;&quot;&quot;
++
++    name = BytesLine(
++        title=u'Target distribution',
++        required=True,
++        )
+Index: src/pythonproducts/meta.zcml
+===================================================================
+--- src/pythonproducts/meta.zcml      (revision 26757)
++++ src/pythonproducts/meta.zcml      (working copy)
+&#64;&#64; -12,6 +12,12 &#64;&#64;
+        handler=&quot;Products.pythonproducts.pythonproducts.registerPackage&quot;
+        /&gt;
+
++    &lt;meta:directive
++       name=&quot;requireDistribution&quot;
++       schema=&quot;Products.pythonproducts.fivedirectives.IRequireDistributionDirective&quot;
++       handler=&quot;Products.pythonproducts.pythonproducts.requireDistribution&quot;
++       /&gt;
++       
+   &lt;/meta:directives&gt;
+
+ &lt;/configure&gt;
+Index: src/pythonproducts/pythonproducts.py
+===================================================================
+--- src/pythonproducts/pythonproducts.py      (revision 26757)
++++ src/pythonproducts/pythonproducts.py      (working copy)
+&#64;&#64; -37,6 +37,13 &#64;&#64;
+         args = (package,initialize)
+         )
+
++def requireDistribution(_context, name):
++    &quot;&quot;&quot;ZCML directive function for requiring a distribution using
++    pkg_resources.
++    &quot;&quot;&quot;
++    
++    import pkg_resources
++    pkg_resources.require(name)
+
+ def _registerPackage(module_, initFunc=None):
+     &quot;&quot;&quot;Registers the given python package as a Zope 2 style product
+</pre>
+<p>After applying this patch to your pythonproducts installation, you can
+go ahead and include Plone in your instance using zcml.  Create a
+<tt class="docutils literal"><span class="pre">$INSTANCE_HOME/etc/package-includes/plone-configure.zcml</span></tt> file and
+put the following in it:</p>
+<pre class="literal-block">
+&lt;configure xmlns=&quot;http://namespaces.zope.org/zope&quot;
+           xmlns:five=&quot;http://namespaces.zope.org/five&quot;&gt;
+    &lt;five:requireDistribution name=&quot;Plone&quot; /&gt;
+&lt;/configure&gt;
+</pre>
+<p>Please refer to the pythonproducts README for details on where to add
+zcml and why.</p>
+<p>Now start up your Zope and hopefully see Plone getting loaded.</p>
+<p>Note that for packages which are not in the Products namespace
+package, i.e. for Product-less Python packages you would need to use
+pythonproducts' <tt class="docutils literal"><span class="pre">registerPackage</span></tt> directive as well.  (Which is a
+good thing.)  For these packages, the whole process becomes a lot
+easier, because you can just <tt class="docutils literal"><span class="pre">easy_install</span></tt> away and be done, <strong>or</strong>
+if you need instance- specific versions/packages, use --multi-version
+and the <tt class="docutils literal"><span class="pre">requireDistribution</span></tt> directive.</p>
+</div>
+</div>
+
+]]></description>
+   <category domain="http://danielnouri.org/blog">/zope</category>
+   <pubDate>Wed, 10 May 2006 12:42 GMT</pubDate>
+</item>
+</channel>
+</rss>

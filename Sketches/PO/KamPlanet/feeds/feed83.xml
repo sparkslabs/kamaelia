@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	>
+
+<channel>
+	<title>PyAMF blog</title>
+	<atom:link href="http://blog.pyamf.org/feed" rel="self" type="application/rss+xml" />
+	<link>http://blog.pyamf.org</link>
+	<description>AMF for Python</description>
+	<pubDate>Thu, 15 May 2008 19:14:41 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.5.1</generator>
+	<language>en</language>
+			<item>
+		<title>Flash Player 10 Beta Released</title>
+		<link>http://blog.pyamf.org/archives/flash-player-10-beta-released</link>
+		<comments>http://blog.pyamf.org/archives/flash-player-10-beta-released#comments</comments>
+		<pubDate>Thu, 15 May 2008 18:52:54 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Flash]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=37</guid>
+		<description><![CDATA[
+Today Adobe released the first beta version (10.0.1.218) of the upcoming Flash Player 10, code named &#8220;Astro&#8221;. You can download the new player for Mac OS X, Linux and Windows from Adobe Labs (make sure you uninstall older players first). There are quite a few enhancements but unfortunately the documentation of the new APIs isn&#8217;t [...]]]></description>
+			<content:encoded><![CDATA[<p><img src='http://wwwimages.adobe.com/labs.adobe.com/cdn/wiki/images/a/a6/AstroLogo.png' alt='Flash Player 10' class='alignnone' /></p>
+<p>Today Adobe released the first beta version (10.0.1.218) of the upcoming Flash Player 10, code named &#8220;Astro&#8221;. You can <a href="http://labs.adobe.com/downloads/flashplayer10.html">download</a> the new player for Mac OS X, Linux and Windows from <a href="http://labs.adobe.com">Adobe Labs</a> (make sure you <a href="http://labs.adobe.com/technologies/flashplayer10/releasenotes.html#install">uninstall</a> older players first). There are quite a few <a href="http://labs.adobe.com/technologies/flashplayer10/releasenotes.html">enhancements</a> but unfortunately the documentation of the new APIs isn&#8217;t available yet (will be released at a later date through Adobe&#8217;s Livedocs system) so I haven&#8217;t been able to play with them in Actionscript yet.</p>
+<p>Content created with the <a href="http://opensource.adobe.com/wiki/display/flexsdk/Legal+Stuff">open source</a> <a href="http://opensource.adobe.com/wiki/display/flexsdk/">Flex 3 SDK</a> is designed to work with Flash Player 9 (9.0.115.0 and higher) and will continue to function as expected with Flash Player 10. To build Flex content that takes advantage of the new features, you need a <a href="http://opensource.adobe.com/wiki/display/flexsdk/Targeting+Flash+Player+10+Beta+with+Flex+SDK+3.0.x">Flex SDK 3.0.x nightly build</a> which can target the Flash Player 10 Beta.</p>
+<p>Some of the highlights in the new Player:</p>
+<h3>Speex Audio Codec</h3>
+<p><img src='http://speex.org/images/logos/parrot_speex_org-3.png' alt='Speex' class='alignleft' /><br />
+The <a href="http://www.xiph.org/licenses/bsd/speex/">open source</a> <a href="http://www.speex.org/">Speex</a> voice codec offers an alternative to the older, proprietary <a href="http://en.wikipedia.org/wiki/Nellymoser_Asao_Codec_in_Flash">Nellymoser</a> for audio that delivers the lowest-latency audio experience possible. Flash developers have requested an open source voice codec since the day Macromedia added Nellymoser to Flash Player 6, and it&#8217;s great to finally see it happen at Adobe. Nellymoser audio can be decoded by <a href="http://ffmpeg.mplayerhq.hu/">FFmpeg</a> but unfortunately it looks like Speex is one of the <a href="http://wiki.multimedia.cx/index.php?title=Category:Formats_missing_in_FFmpeg" title="Missing formats page on FFmpeg wiki">missing formats</a> in the FFmpeg audio codecs <a href="http://ffmpeg.mplayerhq.hu/general.html#TOC7">list</a> at the time of this writing. For Python there are the <a href="http://www.freenet.org.nz/python/pySpeex/" title="PySpeex homepage">PySpeex</a> bindings that allow you to create an audio stream object and encode and decode speech audio data. Other software that uses Speex are <a href="http://www.asteriskpbx.org">Asterisk</a>, the open source PBX, the headsets in Microsoft&#8217;s <a href="http://en.wikipedia.org/wiki/Xbox_Live" title="Xbox Live on Wikipedia">Xbox Live</a> and the in-game VOIP function of <a href="http://en.wikipedia.org/wiki/Half-Life_1">Half-Life 1</a>. Java developers might want to take a look at <a href="http://jspeex.sourceforge.net/">JSpeex</a>, a port of Speex for the Java platform.</p>
+<h3>Real Time Media Flow Protocol (RTMFP)</h3>
+<p>RTMFP provides a UDP-based secure network transport alternative to RTMP-over-TCP. UDP (User Datagram Protocol) is an efficient and standardized Internet protocol for delivering media assets because of its support for lossy delivery, improving performance of real time communication. RTMFP is always encrypted which helps protect media delivery. With Speex it will be possible to take advantage of the new RTMFP partial-reliability feature to reduce network latency and it also works over the Flash Player&#8217;s Real Time Messaging Protocol (<a href="http://rtmpy.org/wiki/RTMP" title="RTMP on the RTMPy wiki">RTMP</a>). <a href="http://pyamf.org">PyAMF</a> was created for the <a href="http://en.wikipedia.org/wiki/Action_Message_Format" title="Action Message Format">AMF</a> support in the RTMP protocol, which we&#8217;re trying to build for Python with <a href="http://twistedmatrix.com" title="Twisted homepage">Twisted</a> in the <a href="http://rtmpy.org" title="RTMPy homepage">RTMPy</a> project. Adobe basically baked P2P into the Flash Player and creating applications like <a href="http://www.limewire.com/">LimeWire</a> or <a href="http://en.wikipedia.org/wiki/VoIP" title="Voice over Internet Protocol on Wikipedia">VOIP</a> applications like Skype should be trivial.</p>
+<h3>Dynamic Sound Generation</h3>
+<p><img src="http://blog.pyamf.org/wp-content/uploads/2008/05/soundgen.jpg" alt="Dynamic Sound Generation" /></p>
+<p>In Flash Player 10 you will be able to dynamically create audio. The API is designed to provide a low level abstraction of the native sound driver, providing the most flexible platform to build your music applications on. <a href="http://www.kaourantin.net">Tinic Uro</a>, one of the Flash Player engineers at Adobe, <a href="http://www.kaourantin.net/2008/05/adobe-is-making-some-noise-part-2.html">writes</a> that &#8220;the API has one big compromise which I can&#8217;t address without large infrastructural changes and that is latency. Latency is horrible to the point where some applications will simply not be possible. To improve latency will require profound changes in the Flash Player which I will tackle for the next major revision. But for now this simple API will likely change the way you think about sound in the Flash Player&#8221;. He also mentions that extracting audio data from a microphone and extracting audio from a <a href="http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/net/NetStream.html">NetStream</a> object is not possible for this release, but they&#8217;re aware that it&#8217;s a highly desirable feature. <a href="http://www.bit-101.com">Keith Peters</a> created a <a href="http://www.bit-101.com/astro/sound01.html">sample application</a> that demonstrates the new API.</p>
+<h3>File Reference runtime access</h3>
+<p>Macromedia added the <a href="http://livedocs.adobe.com/flex/3/langref/flash/net/FileReference.html">FileReference</a> class in Flash Player 8 to give developers the ability to upload and download files using a native Flash Player API. With Flash Player 10 it&#8217;s will be possible to save those files back to the local hard disk as well. Files can be accessed as a <a href="http://livedocs.adobe.com/flex/3/langref/flash/utils/ByteArray.html">ByteArray</a> or text using a API in ActionScript without round-tripping to the server. You no longer need to know a server language or have access to a server to load or save files at runtime.</p>
+<p>Check out the <a href="http://labs.adobe.com/technologies/flashplayer10/releasenotes.html#features">Adobe Labs wiki</a> for the complete feature list and release notes. </p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/flash-player-10-beta-released/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>Introducing cPyAMF</title>
+		<link>http://blog.pyamf.org/archives/introducing-cpyamf</link>
+		<comments>http://blog.pyamf.org/archives/introducing-cpyamf#comments</comments>
+		<pubDate>Sun, 04 May 2008 21:16:38 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[AMF]]></category>
+
+		<category><![CDATA[Cython]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=26</guid>
+		<description><![CDATA[
+There are two parts to PyAMF: the core AMF encoder and decoder, and the gateway/remoting for transporting data between a server and a client.
+Currently both parts are written in pure Python but the idea is to create a C version of the AMF encoder/decoder that can be used as a dropin which will increase performance [...]]]></description>
+			<content:encoded><![CDATA[<p><img src="http://blog.pyamf.org/wp-content/uploads/2008/05/untitled-1-300x72.png" alt="Logo for cPyAMF" title="cPyAMF" width="300" height="72" class="alignnone size-medium wp-image-36" /></p>
+<p>There are two parts to PyAMF: the core AMF <a href="http://api.pyamf.org/pyamf.BaseEncoder-class.html">encoder</a> and <a href="http://api.pyamf.org/pyamf.BaseDecoder-class.html">decoder</a>, and the <a href="http://api.pyamf.org/toc-pyamf.remoting.gateway-module.html">gateway</a>/<a href="http://api.pyamf.org/toc-pyamf.remoting-module.html">remoting</a> for transporting data between a server and a client.</p>
+<p>Currently both parts are written in pure Python but the idea is to create a C version of the AMF encoder/decoder that can be used as a dropin which will increase performance significantly.</p>
+<p><img src="http://cython.org/cython-logo-small.png" alt="Cython" /></p>
+<p>This will become a subproject called <strong>cpyamf</strong> that will be written with <a href="http://pyamf.org/wiki/Cython">Cython</a>, a language for writing Python extension modules that translates files from .cy, .cyp, .cyh to .c, .cpp, .h files.</p>
+<p>For more information check the <a href="http://pyamf.org/ticket/225">ticket</a> or <a href="http://pyamf.org/browser/cpyamf/trunk">browse</a> the sub-project in the <a href="http://svn.pyamf.org/cpyamf/trunk">repository</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/introducing-cpyamf/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyAMF 0.3.1 Released</title>
+		<link>http://blog.pyamf.org/archives/pyamf-031-released</link>
+		<comments>http://blog.pyamf.org/archives/pyamf-031-released#comments</comments>
+		<pubDate>Sun, 04 May 2008 19:14:24 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Google App Engine]]></category>
+
+		<category><![CDATA[Releases]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=32</guid>
+		<description><![CDATA[We&#8217;re pleased to announce a new release of PyAMF, a lightweight library that allows Flash and Python applications to communicate via Adobe’s ActionScript Message Format.
+This release improves support for Google App Engine and introduces a new AMF gateway for GAE web applications. Aral Balkan announced he&#8217;s using PyAMF in his GAESWF project, which will be [...]]]></description>
+			<content:encoded><![CDATA[<p>We&#8217;re pleased to announce a new release of PyAMF, a lightweight library that allows Flash and Python applications to communicate via Adobe’s <a href="http://en.wikipedia.org/wiki/Action_Message_Format">ActionScript Message Format</a>.</p>
+<p>This release improves support for <a href="http://code.google.com/appengine">Google App Engine</a> and introduces a new AMF <a href="http://api.pyamf.org/pyamf.remoting.gateway.google-module.html">gateway</a> for GAE web applications. <a href="http://aralbalkan.com">Aral Balkan</a> <a href="http://aralbalkan.com/1318">announced</a> he&#8217;s using PyAMF in his <a href="http://gaeswf.appspot.com">GAESWF</a> project, which will be used to power the website of the online <a href="http://singularity08.com/">Singularity</a> conference later this year.</p>
+<p>You can try some of the PyAMF examples for GAE on our <a href="http://pyamf.appspot.com">appspot</a> like the <a href="http://pyamf.appspot.com/shell">Interactive Python shell example</a> and the <a href="http://pyamf.appspot.com/punit">PUnit</a> tool to run the PyAMF unit tests on GAE using a web interface. We also added an <a href="http://blog.pyamf.org/archives/ohloh-api-and-python">Ohloh API example</a>.</p>
+<p>The dependency on the <a href="http://pypi.python.org/pypi/fpconst">fpconst</a> module was <a href="http://pyamf.org/ticket/243">removed</a> for Python >= 2.5 to make it easier to deploy PyAMF applications on GAE and devices like smart phones. Unfortunately we had to <a href="http://pyamf.org/ticket/275">keep it around</a> for the Windows platform due to a float issue with that version of Python 2.5.</p>
+<p>Check out the <a href="http://pyamf.org/wiki/Download" title="PyAMF Download Instructions">download</a> page, <a href="http://pyamf.org/wiki/Install" title="PyAMF Installation Instructions">installation</a> instructions or the <a href="http://api.pyamf.org" title="PyAMF API Documentation">API documentation</a>. Questions? First stop is the <a href="http://pyamf.org/wiki/MailingList" title="PyAMF Mailing List">mailing list</a> but we also hang out on <a href="irc://irc.collab.eu/pyamf" title="PyAMF IRC Channel">IRC</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/pyamf-031-released/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>Interactive Python shell with Flex</title>
+		<link>http://blog.pyamf.org/archives/interactive-python-shell-with-flex</link>
+		<comments>http://blog.pyamf.org/archives/interactive-python-shell-with-flex#comments</comments>
+		<pubDate>Sat, 03 May 2008 07:24:29 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Flex]]></category>
+
+		<category><![CDATA[Google App Engine]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Tutorial]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=31</guid>
+		<description><![CDATA[Google did the Ajax version of the Python shell, running on Google App Engine, we present you with the Flex version (click image to view the sample):
+
+You can browse or download the source from the Subversion repository. You can find instructions on how to run the example yourself on the wiki page.
+]]></description>
+			<content:encoded><![CDATA[<p>Google did the <a href="http://shell.appspot.com/">Ajax</a> version of the Python shell, running on <a href="http://code.google.com/appengine">Google App Engine</a>, we present you with the Flex version (click image to view the <a href="http://pyamf.appspot.com/shell">sample</a>):</p>
+<p><a href='http://pyamf.appspot.com/shell'><img src="http://blog.pyamf.org/wp-content/uploads/2008/05/shellexample-300x218.png" alt="" title="Interactive Python shell example" width="300" height="218" class="alignnone size-medium wp-image-33" /></a></p>
+<p>You can <a href="http://pyamf.org/browser/examples/trunk/shell">browse</a> or <a href="http://svn.pyamf.org/examples/trunk/shell" target="_blank">download</a> the source from the Subversion repository. You can find instructions on how to run the example yourself on the <a href="http://pyamf.org/wiki/ShellExample">wiki page</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/interactive-python-shell-with-flex/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyAMF test suite running on Google App Engine</title>
+		<link>http://blog.pyamf.org/archives/pyamf-test-suite-running-on-google-app-engine</link>
+		<comments>http://blog.pyamf.org/archives/pyamf-test-suite-running-on-google-app-engine#comments</comments>
+		<pubDate>Thu, 01 May 2008 10:38:03 +0000</pubDate>
+		<dc:creator>Nick Joyce</dc:creator>
+		
+		<category><![CDATA[Django]]></category>
+
+		<category><![CDATA[Google App Engine]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=30</guid>
+		<description><![CDATA[The 0.3 release tree has been mostly about building up compatibility with Google&#8217;s App Engine.
+Because the environment that Google exposes to the developer is quite restricted (for obvious reasons!) we thought it best if we get the entire PyAMF test suite (up to 430 individual tests and counting &#8230;!) running.
+We have built a simple web [...]]]></description>
+			<content:encoded><![CDATA[<p>The 0.3 release tree has been mostly about building up compatibility with <a href="http://appengine.google.com/">Google&#8217;s App Engine</a>.</p>
+<p>Because the environment that Google exposes to the developer is quite restricted (for obvious reasons!) we thought it best if we get the entire PyAMF test suite (up to 430 individual tests and counting &#8230;!) running.</p>
+<p>We have built a simple web app that runs the PyAMF test suite from within the Google App Engine. Its a work in progress and isn&#8217;t planning on winning any beauty contests, but works nicely.</p>
+<p><a href="http://pyamf.appspot.com/punit/">Check it out</a>!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/pyamf-test-suite-running-on-google-app-engine/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>Ohloh API and Python</title>
+		<link>http://blog.pyamf.org/archives/ohloh-api-and-python</link>
+		<comments>http://blog.pyamf.org/archives/ohloh-api-and-python#comments</comments>
+		<pubDate>Sat, 26 Apr 2008 22:48:29 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Flex]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Remoting]]></category>
+
+		<category><![CDATA[Tutorial]]></category>
+
+		<category><![CDATA[ohloh]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=29</guid>
+		<description><![CDATA[Ohloh is a website which provides a web services suite and online community platform that aims to map the landscape of open source software development. The Ohloh API is a free, REST-based programming interface to the Ohloh open source directory. You can use the Ohloh API to create your own applications and web services based [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://www.ohloh.net" target="_blank">Ohloh</a> is a website which provides a web services suite and online community platform that aims to map the landscape of open source software development. The <a href="http://www.ohloh.net/api/getting_started">Ohloh API</a> is a free, REST-based programming interface to the Ohloh open source directory. You can use the Ohloh API to create your own applications and web services based on Ohloh data. There&#8217;s a Python <a href="http://www.ohloh.net/sample_code/account_sample.py" title="Python source file for Ohloh API">example client</a> and additional <a href="http://www.ohloh.net/api/examples" title="All Ohloh API examples">examples</a> are available for Java, Ruby, Bash, Perl, PHP and C++.</p>
+<p>I decided to create a simple AMF gateway using <a href="http://pyamf.org" title="AMF support for Python">PyAMF</a> that pulls the account data from Ohloh and then passes it to a Flex application. The reason I use a AMF gateway is because I don&#8217;t want to hardcode and expose my <a href="http://www.ohloh.net/api_keys/new">API key</a> in the Flex client application, which could be decompiled easily, allowing others to abuse my key.</p>
+<p>You can test their API by entering the emailaddress of a registered Ohloh user in the input text-field below, click Submit, and it will display the user&#8217;s general account info and load the user&#8217;s avatar.<br/><br/><span id="more-29"></span></p>
+
+<object	type="application/x-shockwave-flash"
+			data="http://pyamf.org/export/1257/www/trunk/demo/OhlohApi.swf"
+			width="550"
+			height="350">
+	<param name="movie" value="http://pyamf.org/export/1257/www/trunk/demo/OhlohApi.swf" />
+</object>
+<p>You can <a href="http://pyamf.org/browser/examples/trunk/ohloh">browse</a> or <a href="http://svn.pyamf.org/examples/trunk/ohloh" target="_blank">download</a> the source from the Subversion repository. You can find instructions on how to run the example yourself on the <a href="http://pyamf.org/wiki/OhlohApiExample">wiki page</a>.</p>
+<p>Thanks to Robin Luckey for putting up a <a href="http://www.ohloh.net/crossdomain.xml">crossdomain</a> policy file on the site which makes it possible to use the Ohloh API from Flash and Flex applications.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/ohloh-api-and-python/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyAMF 0.3 Released</title>
+		<link>http://blog.pyamf.org/archives/pyamf-03-released</link>
+		<comments>http://blog.pyamf.org/archives/pyamf-03-released#comments</comments>
+		<pubDate>Tue, 15 Apr 2008 08:00:54 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Google App Engine]]></category>
+
+		<category><![CDATA[Releases]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=28</guid>
+		<description><![CDATA[PyAMF is a lightweight library that allows Flash and Python applications to communicate via Adobe&#8217;s ActionScript Message Format.
+AMF3 and RemoteObject are supported in all the implemented Remoting gateways, currently compatible with Django, Twisted, TurboGears 2, Web2Py and other WSGI supported web frameworks. 
+
+ This release provides compatibility with Google App Engine and comes with the [...]]]></description>
+			<content:encoded><![CDATA[<p>PyAMF is a lightweight library that allows Flash and Python applications to communicate via Adobe&#8217;s <a title="Action Message Format on Wikipedia" href="http://en.wikipedia.org/wiki/Action_Message_Format" target="_blank">ActionScript Message Format</a>.</p>
+<p>AMF3 and RemoteObject are supported in all the implemented Remoting gateways, currently compatible with <a title="Django" href="http://djangoproject.com" target="_blank">Django</a>, <a title="Twisted" href="http://twistedmatrix.com" target="_blank">Twisted</a>, <a href="http://turbogears.org/">TurboGears 2</a>, <a href="http://mdp.cti.depaul.edu/" target="_blank">Web2Py</a> and other <a href="http://wsgi.org" target="_blank">WSGI</a> supported web frameworks. <br/><br/><span id="more-28"></span></p>
+<p><a title="PyAMF 0.3 Released" href="http://www.flickr.com/photos/paydayloans/103446477/" target="_blank"><img src="http://farm1.static.flickr.com/25/103446477_65a9620fd5_d.jpg"/></a></p>
+<p> This release provides compatibility with <a href='http://code.google.com/appengine/' title='Google App Engine homepage'>Google App Engine</a> and comes with the following changes and fixes:</p>
+<ul>
+<li>Make util.BufferedByteStream endian aware (<a href="http://pyamf.org/ticket/231" target="_blank">Ticket:231</a>)</li>
+<li>Issue with Twisted threads (<a href="http://pyamf.org/ticket/233" target="_blank">Ticket:233</a>)</li>
+<li>Fix interpretation of integers in AMF3 (<a href="http://pyamf.org/ticket/241" target="_blank">Ticket:241</a>)</li>
+<li>Support for Google App Engine deployment (<a href="http://pyamf.org/ticket/237" target="_blank">Ticket:237</a>)</li>
+<li>Classic class decoding throws an error (<a href="http://pyamf.org/ticket/248" target="_blank">Ticket:248</a>)</li>
+<li>Make adapter framework load sub-modules (<a href="http://pyamf.org/ticket/246" target="_blank">Ticket:246</a>)</li>
+<li>Added an adapter module for <code>google.appengine.ext.db</code> so that Model classes can be serialised easily (<a href="http://pyamf.org/ticket/247" target="_blank">Ticket:247</a>)</li>
+<li>Problems with Importing and reloading files (<a href="http://pyamf.org/ticket/250" target="_blank">Ticket:250</a>)</li>
+</ul>
+<p>Check out the <a href="http://pyamf.org/wiki/Download" title="PyAMF Download Instructions">download</a> page, <a href="http://pyamf.org/wiki/Install" title="PyAMF Installation Instructions">installation</a> instructions or the <a href="http://api.pyamf.org" title="PyAMF API Documentation">API documentation</a>.</p>
+<p>Got questions? First stop is the <a href="http://pyamf.org/wiki/MailingList" title="PyAMF Mailing List">mailing list</a> but we also hang out on <a href="irc://irc.collab.eu/pyamf" title="PyAMF IRC Channel">IRC</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/pyamf-03-released/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>Twisted Guestbook Example</title>
+		<link>http://blog.pyamf.org/archives/twisted-guestbook</link>
+		<comments>http://blog.pyamf.org/archives/twisted-guestbook#comments</comments>
+		<pubDate>Sat, 12 Apr 2008 16:31:53 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[AMF3]]></category>
+
+		<category><![CDATA[Flex]]></category>
+
+		<category><![CDATA[Remoting]]></category>
+
+		<category><![CDATA[Tutorial]]></category>
+
+		<category><![CDATA[Twisted]]></category>
+
+		<category><![CDATA[example]]></category>
+
+		<category><![CDATA[guestbook]]></category>
+
+		<category><![CDATA[mysql]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=20</guid>
+		<description><![CDATA[We created a Guestbook Example to demonstrate a full featured application using Flex, Twisted, and PyAMF of course. Check it out after the jump!
+
+
+<object	type="application/x-shockwave-flash"
+			data="http://svn.pyamf.org/www/trunk/demo/guestbook.swf"
+			width="570"
+			height="600">
+	<param name="movie" value="http://svn.pyamf.org/www/trunk/demo/guestbook.swf" />
+</object>You can browse or download the source from the Subversion repository. You can find instructions on how to run the example yourself on the wiki page.
+]]></description>
+			<content:encoded><![CDATA[<p>We created a Guestbook Example to demonstrate a full featured application using Flex, <a href='http://twistedmatrix.com'>Twisted</a>, and PyAMF of course. Check it out after the jump!</p>
+<p><span id="more-20"></span></p>
+
+<object	type="application/x-shockwave-flash"
+			data="http://svn.pyamf.org/www/trunk/demo/guestbook.swf"
+			width="570"
+			height="600">
+	<param name="movie" value="http://svn.pyamf.org/www/trunk/demo/guestbook.swf" />
+</object>You can <a href="http://pyamf.org/browser/examples/trunk/guestbook">browse</a> or <a href="http://svn.pyamf.org/examples/trunk/guestbook" target="_blank">download</a> the source from the Subversion repository. You can find instructions on how to run the example yourself on the <a href="http://pyamf.org/wiki/GuestbookExample" target="_blank">wiki page</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/twisted-guestbook/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyAMF and Google App Engine</title>
+		<link>http://blog.pyamf.org/archives/pyamf-and-google-app-engine</link>
+		<comments>http://blog.pyamf.org/archives/pyamf-and-google-app-engine#comments</comments>
+		<pubDate>Thu, 10 Apr 2008 04:46:59 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Google App Engine]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/?p=27</guid>
+		<description><![CDATA[
+After Google&#8217;s announcement on Monday we received a lot of questions about running PyAMF on the Google App Engine so we decided to start working on a tutorial. This is a work in progress and might require some updates to the library. We&#8217;re also planning on setting up a demo site on our appspot but [...]]]></description>
+			<content:encoded><![CDATA[<p><img src="http://code.google.com/appengine/images/appengine_lowres.jpg" /><br/><br />
+After <a href="http://google.com" title="Google">Google</a>&#8217;s <a href="http://www.google.com/intl/en/press/annc/20080407_app_engine.html" title="Press announcement for Google App Engine">announcement</a> on Monday we received a lot of questions about running PyAMF on the <a href="http://code.google.com/appengine" title="Homepage of Google App Engine">Google App Engine</a> so we decided to start working on a <a href="http://pyamf.org/wiki/GoogleAppEngine" title="PyAMF wiki page for Google App Engine">tutorial</a>. This is a <a href="http://pyamf.org/ticket/237" title="Ticket for Google App Engine support in PyAMF">work in progress</a> and might require some updates to the library. We&#8217;re also planning on setting up a demo site on our <a href="http://pyamf.appspot.com" title="PyAMF appspot site">appspot</a> but more on that later.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/pyamf-and-google-app-engine/feed</wfw:commentRss>
+		</item>
+		<item>
+		<title>We have a logo!</title>
+		<link>http://blog.pyamf.org/archives/logo</link>
+		<comments>http://blog.pyamf.org/archives/logo#comments</comments>
+		<pubDate>Wed, 12 Mar 2008 18:51:25 +0000</pubDate>
+		<dc:creator>Thijs Triemstra</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://blog.pyamf.org/archives/logo</guid>
+		<description><![CDATA[
+Thanks to Louisa Cheung!
+]]></description>
+			<content:encoded><![CDATA[<p><br/><a href="http://pyamf.org/wiki/Logo"><img src="http://svn.pyamf.org/www/trunk/logo/pyamf-logo-master-v1.png" alt="PyAMF Logo (v1)" /></a></p>
+<p>Thanks to Louisa Cheung!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.pyamf.org/archives/logo/feed</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

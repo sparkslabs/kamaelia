@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	>
+
+<channel>
+	<title>Musings of an Anonymous Geek &#187; Python</title>
+	<atom:link href="http://protocolostomy.com/category/technology/python/feed" rel="self" type="application/rss+xml" />
+	<link>http://www.protocolostomy.com</link>
+	<description>Made with only the finest 1's and 0's</description>
+	<pubDate>Tue, 10 Jun 2008 00:22:58 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.5</generator>
+	<language>en</language>
+			<item>
+		<title>I just want to say&#8230;</title>
+		<link>http://www.protocolostomy.com/2008/06/09/i-just-want-to-say/</link>
+		<comments>http://www.protocolostomy.com/2008/06/09/i-just-want-to-say/#comments</comments>
+		<pubDate>Tue, 10 Jun 2008 00:22:58 +0000</pubDate>
+		<dc:creator>m0j0</dc:creator>
+		
+		<category><![CDATA[PHP]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Sysadmin]]></category>
+
+		<category><![CDATA[Technology]]></category>
+
+		<guid isPermaLink="false">http://www.protocolostomy.com/?p=315</guid>
+		<description><![CDATA[That my wife, while on the phone with her mom, completely *not* coached by me, used the term &#8220;memory leak&#8221;, correctly, to describe the cause of a technical issue. I knew she was a keeper, but this is above and beyond.
+
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F09%2Fi-just-want-to-say%2F';
+  addthis_title  = 'I+just+want+to+say%26%238230%3B';
+  addthis_pub [...]]]></description>
+			<content:encoded><![CDATA[<p>That my wife, while on the phone with her mom, completely *not* coached by me, used the term &#8220;memory leak&#8221;, correctly, to describe the cause of a technical issue. I knew she was a keeper, but this is above and beyond.</p>
+<script type="text/javascript">
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F09%2Fi-just-want-to-say%2F';
+  addthis_title  = 'I+just+want+to+say%26%238230%3B';
+  addthis_pub    = 'jonesy';
+</script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+]]></content:encoded>
+			<wfw:commentRss>http://www.protocolostomy.com/2008/06/09/i-just-want-to-say/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>O&#8217;Reilly OSCON&#8230; and Brew Fest!</title>
+		<link>http://www.protocolostomy.com/2008/06/03/oreilly-oscon-and-brew-fest/</link>
+		<comments>http://www.protocolostomy.com/2008/06/03/oreilly-oscon-and-brew-fest/#comments</comments>
+		<pubDate>Wed, 04 Jun 2008 02:20:16 +0000</pubDate>
+		<dc:creator>m0j0</dc:creator>
+		
+		<category><![CDATA[Big Ideas]]></category>
+
+		<category><![CDATA[Me stuff]]></category>
+
+		<category><![CDATA[Other Cool Blogs]]></category>
+
+		<category><![CDATA[PHP]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Ruby]]></category>
+
+		<category><![CDATA[Sysadmin]]></category>
+
+		<category><![CDATA[Technology]]></category>
+
+		<guid isPermaLink="false">http://www.protocolostomy.com/?p=311</guid>
+		<description><![CDATA[I&#8217;m going to the O&#8217;Reilly Open Source Convention (OSCON) again this year. I went in 2006 as well, and had a blast, in addition to learning quite a bit, and meeting tons of people whom I&#8217;ve been acquainted with online for a long time. That was 2 years ago. Since then I&#8217;ve been acquainted with [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m going to the O&#8217;Reilly Open Source Convention (<a href="http://en.oreilly.com/oscon2008/public/content/home">OSCON</a>) again this year. I went in 2006 as well, and had a blast, in addition to learning quite a bit, and meeting tons of people whom I&#8217;ve been acquainted with online for a long time. That was 2 years ago. Since then I&#8217;ve been acquainted with lots *more* people online, and I&#8217;m hoping I&#8217;ll meet at least some of them this year.</p>
+<p>If you&#8217;re not going to OSCON, you&#8217;re not only missing out on a great technical conference that will leave you physically tired from all of the activity and at the same time unable to sleep from the ideas sparked by the day&#8217;s events, you&#8217;re also missing the <a href="http://www.oregonbrewfest.com/">Oregon Brewers Festival</a>, which takes place just as OSCON is wrapping up.</p>
+<p>I have a medium-sized home brewery that a buddy and I built from scratch. Over the years we&#8217;ve brewed and tasted all kinds of beer. But you can&#8217;t get all beers everywhere, so traveling is a good opportunity to taste wild and exotic beers, or just local beers you can&#8217;t get at home. It&#8217;s odd, but while you can get easy access to beers from Germany, Belgium, Poland, England, Scotland, and Ireland, you would be hard pressed to find a good number of great beers from the West Coast of the US on the East Coast of the US. And the West Coast has a lot happening, beer-wise.</p>
+<p>Beer festivals are also where some brewers pull out all the stops. In &#8216;06 I went with a <a href="http://www.a440.org/steve/blog/">buddy</a> and actually had not one, but TWO different watermelon beers - a variety I had not even heard of until I showed up at the counter. One was pretty good, the other tasted like Watermelon Bubblicious, but the experience was fantastic. Every have rock candy made from hops? Pretty good I tell you!</p>
+<p>Anyway, I was thinking of getting a larger group together to attend this years Brew Fest, so if any geeks out there have an interest in beer, let me know. And if you DON&#8217;T have an interest in beer, you should DEFINITELY let me know. I&#8217;ve converted numerous friends and family who say they don&#8217;t like beer to becoming more familiar with styles they actually will go out and buy, unprovoked, voluntarily! Saying you don&#8217;t like beer is like saying you don&#8217;t like food. There&#8217;s just too many kinds of beer to say you don&#8217;t like beer. Maybe you don&#8217;t like hops, in which case you might like hefeweizen, but have probably never heard of it. Maybe you don&#8217;t like really fizzy beer, in which case you might like various Belgian ales, a Barleywine, a porter, or any beer with a less fizzy, more creamy, or less prevalent head on it.</p>
+<p>Anyway, I&#8217;m going, and it&#8217;s fun. If you have an interest, do join in, whether you go with a group I put together or not!</p>
+<script type="text/javascript">
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F03%2Foreilly-oscon-and-brew-fest%2F';
+  addthis_title  = 'O%26%238217%3BReilly+OSCON%26%238230%3B+and+Brew+Fest%21';
+  addthis_pub    = 'jonesy';
+</script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+]]></content:encoded>
+			<wfw:commentRss>http://www.protocolostomy.com/2008/06/03/oreilly-oscon-and-brew-fest/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Notes on Book Shopping from a Tech Bibliophile</title>
+		<link>http://www.protocolostomy.com/2008/06/03/notes-on-book-shopping-from-a-tech-bibliophile/</link>
+		<comments>http://www.protocolostomy.com/2008/06/03/notes-on-book-shopping-from-a-tech-bibliophile/#comments</comments>
+		<pubDate>Wed, 04 Jun 2008 02:00:45 +0000</pubDate>
+		<dc:creator>m0j0</dc:creator>
+		
+		<category><![CDATA[Database]]></category>
+
+		<category><![CDATA[Linux]]></category>
+
+		<category><![CDATA[PHP]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Sysadmin]]></category>
+
+		<category><![CDATA[Technology]]></category>
+
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://www.protocolostomy.com/?p=307</guid>
+		<description><![CDATA[Hi. My name is Brian, and I&#8217;m a tech bibliophile.
+I have owned more books covering more technologies than I care to admit. Some of my more technical friends have stood in awe of the number of tech books I own. I am also constantly rotating old books that almost *can&#8217;t* be useful anymore out of [...]]]></description>
+			<content:encoded><![CDATA[<p>Hi. My name is Brian, and I&#8217;m a tech bibliophile.</p>
+<p>I have owned more books covering more technologies than I care to admit. Some of my more technical friends have stood in awe of the number of tech books I own. I am also constantly rotating old books that almost *can&#8217;t* be useful anymore out of my collection because there&#8217;s just no room to keep them all, and it would be an almost embarrassingly large collection if not for the fact that I have no shame or guilt associated with my need for dead trees.</p>
+<p>If you need further proof:</p>
+<ul>
+<li>I have, on more than one occasion, suggested to my wife that we take a walk around our local mall so I could browse the computer section of the book store, not to buy, but just to keep up with the new titles and stuff.</li>
+<li>Ok, I usually buy.</li>
+<li>I also go into book stores whenever I&#8217;m out of town to get a comparison of what seems to be popular in different areas of the state/country/world.</li>
+<li>I just got a head rush because I just remembered that, since I&#8217;m attending OSCON in Portland, OR this year, I&#8217;ll get to go back to Powell&#8217;s, which, mind you, has a huge, city-block-sized store, which is very nice, but *also* has an entire store dedicated to geekery that rivals anything like it that I&#8217;ve ever seen, and contains a computer museum! (You can see some shots of it in <a href="http://www.flickr.com/photos/bkjones/sets/72157594217965415/">my flickr set from OSCON &#8216;06</a>)</li>
+<li>I once owned a book about VBScript.</li>
+</ul>
+<p>I have also co-authored a book for O&#8217;Reilly, and in addition to my day job (I&#8217;m the director of IT for AddThis.com), I also work for a publisher, MTA, the publisher of Python Magazine, php|architect, as well as a line of books. Oh yeah. I&#8217;m into it. It&#8217;s bad.</p>
+<p>I&#8217;ve learned quite a bit about buying books, and some of that learning came from unexpected places. There&#8217;s even more that I don&#8217;t know, but at least now I know that I don&#8217;t know it, and can try to figure out more stuff <img src='http://www.protocolostomy.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>So here are a few things to keep in mind when you need to buy a technical book, or one just tugs at your impulse buy strings.</p>
+<h2>Give Any New Version 6 Months Before Buying a Book About It.</h2>
+<p>The first books about PHP 5 were dreadful. I never, ever return books to a book store, even if I don&#8217;t particularly care for them, but I returned a book about PHP 5 because the level of inadequacy was just insulting to me as a consumer. This was quite some time ago (when PHP 5 books first hit the shelves), and thinking about it now I&#8217;m still amazed at how terrible that book was. Of course, PHP 5 is just one example. Way, way back in the day (1998-9 or so?) when the first books about Java 2 hit the shelves (some might remember that booksellers actually put stickers over the part of the title that said &#8220;1.2&#8243; when it was renamed &#8220;2&#8243;), I had the same experience.</p>
+<p>It&#8217;s not exclusive to languages either. When the first MySQL books came out that said &#8220;covers mysql 5&#8243;, they just barely covered MySQL 5. In fact, there&#8217;s a new edition of High Performance MySQL coming out that is *going* to say &#8220;covers MySQL 5.1&#8243; on it, and it&#8217;s not really going to cover much about 5.1, so says one of the books authors (whose honesty I greatly appreciate, by the way - I&#8217;d love to see that from the various book publishers).</p>
+<p>At the OS level, I&#8217;m mostly a Linux guy, and at this point I wouldn&#8217;t take a book about a specific version of a specific distribution of Linux if you paid me to take it. Those books are mostly rehashes of the <em>last</em> version of the book put together as marketing objects. I know, because when the &#8220;&lt;distro&gt;&lt;version&gt; Bible&#8221; series first came out, I read them (I think RedHat was the only distro covered initially), and I followed up with later versions of the books, and was always disappointed. Nowadays, I don&#8217;t know how you can think that a book about something as fast moving as Fedora Core is going to be useful. Maybe if you&#8217;re learning it for the first time something like this can work out, but if you&#8217;re looking to exploit new features, you&#8217;re really better off just reading the release notes and changelog.</p>
+<p>Lesson learned. Books take time to write, to edit, to format, to print, to distribute, and to get on the shelves. Keep that in mind when you see a book about Python 3000 on the shelves within days of a GA release of Python 3000. It&#8217;s likely that that book was completely written and in an editor&#8217;s hands 3 months ago, and writing for that project began probably 9 months ago&#8230; 9 months before Python 3000 was a reality in this example. Some changes can be accounted for during the writing process, but a book that is released 6 months after the release of a new technology is likely to be built on more solid ground (of course, this is only part of assessing the quality of the book - but I suspect it&#8217;s often overlooked).</p>
+<p>I&#8217;d also like to note that this probably wasn&#8217;t the case quite so much in the days when, for each language or technology or application or whatever, there were far fewer titles in print on the topic, and an authoritative title was more easily identified. Nowadays, the number of books about Ruby is dizzying to witness on the shelves of your local retailer. I just don&#8217;t think there was a market to support that kind of sensationalistic publishing model back when, say, C++ hit the scene. Maybe I&#8217;m mistaken there and some more&#8230; distinguished folks can enlighten all of us.</p>
+<h2>Take reviews with several grains of salt</h2>
+<p>Book reviews are lame, unless you know the source. When I say &#8220;know&#8221;, I don&#8217;t mean &#8220;have heard of&#8221;. I mean &#8220;know&#8221; in the sense that you have some idea what this reviewer is working with on a day-to-day basis, you know what their leanings are within the technological landscape, and you recognize that person as an authority on some topic at least loosely related to the book being reviewed.</p>
+<p>I wouldn&#8217;t put much faith in the reviews on Amazon unless it is an established title that&#8217;s in its second edition. First edition books that all of a sudden have 20 reviews on Amazon within the first week of the release are probably reviews done by other authors who work for the same publisher, or who have some other motivation for writing the review.</p>
+<p>You can learn to identify lame reviews or astroturfing on sight (now that you&#8217;re aware of it, it&#8217;s not all that hard to recognize), so be on the lookout. If you can, google the reviewer by name. Some of those folks work for the same publisher, and should likely just be discarded. I hate astroturfing, but I guess the publishers feel like they have to do it to compete with everyone else who is doing it and creating buzz around their titles. Sad.</p>
+<p>By the way, astroturfing in this context means sending everyone you know (and/or works for you, or wants to) to do reviews, talk up the book, link to the book&#8217;s web site, or the author&#8217;s blog (where his book is probably displayed prominently) or run ads on their blog, or mention the book on irc, digg, del.icio.us, slashdot, etc. If you get enough people to do this, it gives the impression that there&#8217;s a lot of buzz and &#8220;grass roots&#8221; enthusiasm around the book. Except the &#8220;grass&#8221; is fake. Hence &#8220;astroturfing&#8221;. This is the kind of thing that Digg fights against all the time. Mostly unsuccessfully. It goes like this:</p>
+<ol>
+<li>Big Media Inc publishes article on big web site.</li>
+<li>Big Media emails all editors, writers, bloggers, designers, etc., to go blog, talk, post, link, submit the article everywhere they can.</li>
+<li>Some of these people have multiple accounts on each service you can possibly submit links to, some have multiple blogs, they link to other peoples&#8217; blogs who are also talking up the article&#8230; you get the idea.</li>
+<li>Big Media&#8217;s article is read by thousands, for no really good reason other than they happen to be good astroturfers.</li>
+</ol>
+<p>&#8230;But I digress. Just take reviews with a grain of salt. Same goes for big numbers on Digg and other like services.</p>
+<h2>Look for &#8220;Timeless Tomes&#8221;</h2>
+<p>The K&amp;R book on C is a timeless tome. The GoF book on Design Patterns is a timeless tome. Stevens on TCP/IP is a timeless tome. C.J. Date&#8217;s early Intro to Database Systems is a timeless tome. These books came out a shockingly long time ago considering how often they are referenced and recommended and handed down through generations of technologists. If you need a solid foundation in some technology like this, you should look for books on the topic that have stood the test of time.</p>
+<p>However, time isn&#8217;t always your friend, and some of these tomes are enormous. That&#8217;s why there are books like &#8220;Learn Java in 24 Hours&#8221;. If you go after this type of book, fine. I have tons of books like this. Just know that going through it does NOT mean you &#8220;know&#8221; Java. See <a href="http://norvig.com/21-days.html">here</a> for details.</p>
+<p>Timeless tomes seem harder to find now that there are stores with 150,000 titles in stock. They get lost in the noise. They&#8217;re out there, though. I have a built-in Amazon storefront on <a href="http://linuxlaboratory.org">LinuxLaboratory.org</a> that I try to keep updated with books I have read and found genuinely useful. I&#8217;m a little behind on that, but the books there are a mix of huge tomes (Understanding and Deploying LDAP is enormous), and useful reference or &#8220;contextual&#8221; books that explain how to use a technology in a particular context (Perl for System Administration, for example, is a good book). The next book I need to add there is &#8220;The Art of SQL&#8221;, which completely rocks and I highly recommend if you *already know* SQL.</p>
+<h2>Look at the Copyright Date</h2>
+<p>Technology moves at break neck speed. Some books that are still on the shelves that say &#8220;PHP and MySQL&#8221; cover versions that aren&#8217;t even supported anymore. Oracle 8i books are still around. Some books about Apache only make passing references to Apache 2. It would take some time to sit around flipping through pages to figure out if the version you need information about is covered. If you have some familiarity with the subject, checking the copyright date is a quick reference that can let you know if this book is the one you need. It can also help you avoid the dreaded &#8220;written before the technology was GA&#8221; problem mentioned above. If you know that FooLang 24 came out in February of 2008, the book in your hands that says &#8220;FooLang 24&#8243; on the cover should not have a 2007 copyright, ideally.</p>
+<h2>Be Wary of Growth in Second Editions</h2>
+<p>First: there are &#8220;Volumes&#8221; and there are &#8220;Editions&#8221;. A second volume is a completely different book from the first volume. A second *edition* is an updating of the first edition. It&#8217;s the same basic material. Or&#8230; that&#8217;s how it used to be. Nowadays, marketing sometimes dictates that new editions should include whole new sections about new and exciting buzzwords of the day and stuff like that. Have you seen the most recent edition of &#8220;Programming Python&#8221;? It&#8217;s probably the thickest technology book I own, even beating out Understanding and Deploying LDAP Directories. I have no idea if anything in there was put upon the author by O&#8217;Reilly - and I&#8217;m not making accusations (I&#8217;ve worked for O&#8217;Reilly and have no reason to believe they&#8217;re guilty of this practice) - I&#8217;m just saying that the first edition was probably around half the size of the second.</p>
+<p>For what it&#8217;s worth, I own the latest edition of Programming Python, and am not sorry I bought it. In my editing work for <a href="http://www.pythonmagazine.com">Python Magazine</a>, I came across code that used seemingly every conceivable Python module, and I had to be able to quickly reference and read up on stuff that was in unfamiliar territory. Of course, we have tech editors (who rock, by the way), but I still needed to make sure the text was explaining things in a way that made sense and didn&#8217;t contradict the code (or vice versa). That book covers a ton of stuff, and I was glad to have it.</p>
+<p>I&#8217;ve worked with a good number of publishers, and I have definitely been encouraged to make mention of different things I had no interest in writing about, because it was good for Google rankings, or blog buzz, or tag clouds, or whatever. I have friends in tech publishing circles (and tech authors) who have confirmed that this *does* happen.</p>
+<p>Understanding that publishers, no matter how granola they look, run businesses, and businesses need to grow and make money, which is an enormously large feat to pull off in publishing. Eventually, they hire marketing people, and priorities can conflict, and bad things can happen. This is not a diatribe against the publishers. It&#8217;s a guide for the reader and technical bibliophiles.</p>
+<p>My $.02.</p>
+<p>As usual, the more information the better, so share your thoughts!!</p>
+<script type="text/javascript">
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F03%2Fnotes-on-book-shopping-from-a-tech-bibliophile%2F';
+  addthis_title  = 'Notes+on+Book+Shopping+from+a+Tech+Bibliophile';
+  addthis_pub    = 'jonesy';
+</script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+]]></content:encoded>
+			<wfw:commentRss>http://www.protocolostomy.com/2008/06/03/notes-on-book-shopping-from-a-tech-bibliophile/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Simple S3 Log Archival</title>
+		<link>http://www.protocolostomy.com/2008/06/03/simple-s3-log-archival/</link>
+		<comments>http://www.protocolostomy.com/2008/06/03/simple-s3-log-archival/#comments</comments>
+		<pubDate>Tue, 03 Jun 2008 21:04:55 +0000</pubDate>
+		<dc:creator>m0j0</dc:creator>
+		
+		<category><![CDATA[Database]]></category>
+
+		<category><![CDATA[Linux]]></category>
+
+		<category><![CDATA[PHP]]></category>
+
+		<category><![CDATA[Productivity]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Scripting]]></category>
+
+		<category><![CDATA[Uncategorized]]></category>
+
+		<category><![CDATA[Web Services]]></category>
+
+		<category><![CDATA[Woodworking]]></category>
+
+		<guid isPermaLink="false">http://www.protocolostomy.com/?p=310</guid>
+		<description><![CDATA[UPDATE: if anyone knows of a non-broken syntax highlighting plugin for wordpress that supports bash or some other shell syntax, let me know :-/
+Apache logs, database backups, etc., on busy web sites, can get large. If you rotate logs or perform backups regularly, they can get large and numerous, and as we all know, large [...]]]></description>
+			<content:encoded><![CDATA[<p>UPDATE: if anyone knows of a non-broken syntax highlighting plugin for wordpress that supports bash or some other shell syntax, let me know :-/</p>
+<p>Apache logs, database backups, etc., on busy web sites, can get large. If you rotate logs or perform backups regularly, they can get large and numerous, and as we all know, large * numerous = expensive, or rapidly filling disk partitions, or both.</p>
+<p>Amazon&#8217;s S3 service, along with a simple downloadable suite of tools, and a shell script or two can ease your life considerably. Here&#8217;s one way to do it:</p>
+<ol>
+<li>Get an Amazon Web Services account by going to the <a href="http://aws.amazon.com">AWS website</a>.</li>
+<li>Download the &#8216;aws&#8217; command line tool from <a href="http://timkay.com/aws/">here</a> and install it.</li>
+<li>Write a couple of shell scripts, and schedule them using cron.</li>
+</ol>
+<p>Once you have your Amazon account, you&#8217;ll be able to get an access key and secret key. You can copy these to a file and aws will use them to authenticate operations against S3. The aws utility&#8217;s web site (in #2 above) has good documentation on how to get set up in a flash.</p>
+<p>With items 1 and 2 out of the way, you&#8217;re just left with writing a shell script (or two) and scheduling them via cron. Here are some simple example scripts I used to get started (you can add more complex/site-specific stuff once you know it&#8217;s working).</p>
+<p>The first one is just a simple log compression script that gzips the log files and moves them out of the directory where the active log files are. It has nothing to do with Amazon web services. You can use it on its own if you want:</p>
+<pre name="code" class="php">
+
+#!/bin/bash
+
+LOGDIR=&#039;/mnt/fs/logs/httplogs&#039;
+ARCHIVE=&#039;/mnt/fs/logs/httplogs/archive&#039;
+cd $LOGDIR
+if [ $? -eq 0 ]; then
+for i in `find . -maxdepth 1 -name &quot;*_log.*&quot; -mtime +1`; do
+gzip $i
+done
+
+mv $LOGDIR/*.gz $ARCHIVE/.
+else
+echo &quot;Failed to cd to log directory&quot;
+fi
+</pre>
+<p>Before launching this in any kind of production environment, you might want to add some more features, like checking to make sure the archive partition has enough space before trying to copy things to it and stuff like that, but this is a decent start.</p>
+<p>The second one is a wrapper around the aws &#8217;s3put&#8217; command, and it moves stuff from the archive location to S3. It checks a return code, and then if things went ok, it deletes the local gzip files.</p>
+<pre name="code" class="php">
+
+#!/bin/bash
+
+cd /mnt/fs/logs/httplogs/archive
+for i in `ls *.gz`; do
+s3put addthis-logs/ $i
+if [ $? -eq 0 ]; then
+echo &quot;Moved $i to s3&quot;
+rm -f $i
+continue
+else
+echo &quot;Failed to move $i to s3... Continuing&quot;
+fi
+done
+</pre>
+<p>I wish there was a way in aws to check for the existence of an object in a bucket without it trying to cat the file to stdout, but I don&#8217;t think there is. This would be a more reliable check than just checking the return code. I&#8217;ll work on that at some point.</p>
+<p>Scheduling all of this in cron is an exercise for the user. I purposely created two scripts to do this work, so I could run the compression script every day, but the archival script once every week or something. You could also write a third script that checks your disk space in your log partition and runs either or both of these other scripts if it gets too high.</p>
+<p>I used &#8216;aws&#8217; because it was the first tool I found, by the way. I have only recently found &#8216;<a href="http://code.google.com/p/boto/">boto</a>&#8216;, a Python-based utility that looks like it&#8217;s probably the equivalent of the Perl-based &#8216;aws&#8217;. I&#8217;m happy to have found that and look forward to giving it a shot!</p>
+<script type="text/javascript">
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F03%2Fsimple-s3-log-archival%2F';
+  addthis_title  = 'Simple+S3+Log+Archival';
+  addthis_pub    = 'jonesy';
+</script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+]]></content:encoded>
+			<wfw:commentRss>http://www.protocolostomy.com/2008/06/03/simple-s3-log-archival/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Funny what you learn about yourself when you buy an iPhone</title>
+		<link>http://www.protocolostomy.com/2008/06/03/funny-what-you-learn-about-yourself-when-you-buy-an-iphone/</link>
+		<comments>http://www.protocolostomy.com/2008/06/03/funny-what-you-learn-about-yourself-when-you-buy-an-iphone/#comments</comments>
+		<pubDate>Tue, 03 Jun 2008 13:23:14 +0000</pubDate>
+		<dc:creator>m0j0</dc:creator>
+		
+		<category><![CDATA[Apple]]></category>
+
+		<category><![CDATA[Me stuff]]></category>
+
+		<category><![CDATA[PHP]]></category>
+
+		<category><![CDATA[Productivity]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Sysadmin]]></category>
+
+		<category><![CDATA[Technology]]></category>
+
+		<guid isPermaLink="false">http://www.protocolostomy.com/?p=308</guid>
+		<description><![CDATA[
+This is *not* a ripoff of xkcd (though I read that regularly, and so should you) - this is seriously the best graphic I can come up with, and it does the job. Yesterday I looked at doing all kinds of stuff to my iPhone. I wanted to see if I could get Python and [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://www.protocolostomy.com/wp-content/uploads/2008/06/jailbreak.png"><img class="alignnone size-full wp-image-309" title="jailbreak" src="http://www.protocolostomy.com/wp-content/uploads/2008/06/jailbreak.png" alt="Not ripping off xkcd - this is seriously the best graphic I\'ve ever generated." width="500" height="375" /></a></p>
+<p>This is *not* a ripoff of xkcd (though I read that regularly, and so should you) - this is seriously the best graphic I can come up with, and it does the job. Yesterday I looked at doing all kinds of stuff to my iPhone. I wanted to see if I could get Python and a full-fledged Django installation on my iPhone and create the first web 2.0 application created completely from the bathroom. Just kidding, but I wanted to do some pretty evil stuff. Turns out that, as of now, there isn&#8217;t a clean simple way to get a lot of stuff to work without hacking the iPhone in <a href="http://gizmodo.com/gadgets/guide/short-and-sweet-ssh-guide-for-the-iphone-300323.php">some way</a>, or resorting to things that are <a href="http://churchturing.org/w/iphone-ssh/">completely ridiculous</a>. I&#8217;m sorry, but there has to be an easier way to get SSH and a terminal on there. It&#8217;s just not that critical right now, and this thing was damned expensive.</p>
+<p>I decided to wait it out and see what comes our way over the summer.</p>
+<script type="text/javascript">
+  addthis_url    = 'http%3A%2F%2Fwww.protocolostomy.com%2F2008%2F06%2F03%2Ffunny-what-you-learn-about-yourself-when-you-buy-an-iphone%2F';
+  addthis_title  = 'Funny+what+you+learn+about+yourself+when+you+buy+an+iPhone';
+  addthis_pub    = 'jonesy';
+</script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+]]></content:encoded>
+			<wfw:commentRss>http://www.protocolostomy.com/2008/06/03/funny-what-you-learn-about-yourself-when-you-buy-an-iphone/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="UTF-8"?><feed
+  xmlns="http://www.w3.org/2005/Atom"
+  xmlns:thr="http://purl.org/syndication/thread/1.0"
+  xml:lang="en"
+  xml:base="http://muharem.wordpress.com/wp-atom.php"
+   >
+	<title type="text">Muharem Hrnjadovic</title>
+	<subtitle type="text">Cool ideas revolving around computers and programming</subtitle>
+
+	<updated>2008-06-06T08:42:17Z</updated>
+	<generator uri="http://wordpress.org/" version="MU">WordPress</generator>
+
+	<link rel="alternate" type="text/html" href="http://muharem.wordpress.com" />
+	<id>http://muharem.wordpress.com/feed/atom/</id>
+	<link rel="self" type="application/atom+xml" href="http://muharem.wordpress.com/atom/" />
+
+			<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Haskell byte strings to the rescue!]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2008/06/06/haskell-byte-strings-to-the-rescue/" />
+		<id>http://muharem.wordpress.com/?p=44</id>
+		<updated>2008-06-06T08:42:17Z</updated>
+		<published>2008-06-06T08:17:49Z</published>
+		<category scheme="http://muharem.wordpress.com" term="functional programming" /><category scheme="http://muharem.wordpress.com" term="haskell" /><category scheme="http://muharem.wordpress.com" term="mergesort" />		<summary type="html"><![CDATA[After my (naive) mergesort implementation from yesterday used around 730 MB of RAM to sort a (26 MB) file containing approx. 400,000 strings I consulted the good folks on the #haskell IRC channel.
+Their advice was to use byte strings as opposed to normal strings since the former perform much better.
+I tried that and observed that [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2008/06/06/haskell-byte-strings-to-the-rescue/"><![CDATA[<div class='snap_preview'><br /><p>After my (naive) mergesort <a href="http://muharem.wordpress.com/2008/06/05/finger-exercises-in-haskell/">implementation from yesterday</a> used around 730 MB of RAM to sort a (26 MB) file containing approx. 400,000 strings I consulted the good folks on the <code>#haskell</code> IRC channel.</p>
+<p>Their advice was to use <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring/Data-ByteString.html">byte strings</a> as opposed to normal strings since the former perform much better.</p>
+<p>I tried that and observed that the RAM utilisation and run-time went down by approximately 85% !</p>
+<p>The reduced RAM utilisation was attributed to the more efficient byte strings and the improved run-time performance to the reduced garbage collection overhead respectively.</p>
+<p>The <a href="http://hrnjad.net/src/s/bytestring.diff.html">difference</a> between the source files (<a href="http://hrnjad.net/src/s/byte-mergesort.hs.html">mergesort.hs</a>, <a href="http://hrnjad.net/src/s/byte-Scaffolding.hs.html">Scaffolding.hs</a>) is minimal and switching over to byte strings was facilitated by the fact that they expose the same interface as normal strings.</p>
+<p>Nice!</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/44/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/44/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/44/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/44/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/44/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/44/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/44/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/44/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/44/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/44/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/44/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/44/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=44&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2008/06/06/haskell-byte-strings-to-the-rescue/#comments" thr:count="0"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2008/06/06/haskell-byte-strings-to-the-rescue/feed/atom/" thr:count="0"/>
+		<thr:total>0</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Finger exercises in haskell]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2008/06/05/finger-exercises-in-haskell/" />
+		<id>http://muharem.wordpress.com/?p=43</id>
+		<updated>2008-06-05T20:24:17Z</updated>
+		<published>2008-06-05T07:49:30Z</published>
+		<category scheme="http://muharem.wordpress.com" term="Uncategorized" /><category scheme="http://muharem.wordpress.com" term="functional programming" /><category scheme="http://muharem.wordpress.com" term="haskell" /><category scheme="http://muharem.wordpress.com" term="mergesort" />		<summary type="html"><![CDATA[I have been reading about haskell for a while now and felt that it&#8217;s time to &#8220;get my hands dirty&#8221; by (re-)implementing some of the well known algorithms in computer science. For my first exercise I chose merge sort.
+The resulting code (sans command line parameter handling, auxiliary I/O functions etc.) is quite neat and was [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2008/06/05/finger-exercises-in-haskell/"><![CDATA[<div class='snap_preview'><br /><p>I have been reading about <a href="http://www.haskell.org/">haskell</a> for a while now and felt that it&#8217;s time to &#8220;get my hands dirty&#8221; by (re-)implementing some of the well known algorithms in computer science. For my first exercise I chose <a href="http://en.wikipedia.org/wiki/Merge_sort">merge sort</a>.</p>
+<p>The <a href="http://hrnjad.net/src/s/mergesort.hs.html">resulting code</a> (sans command line parameter handling, <a href="http://hrnjad.net/src/s/Scaffolding.hs.html">auxiliary I/O functions</a> etc.) is quite neat and was written in little time. Haskell is very expressive and its attractiveness immediately obvious when formulating pseudo-mathematical problem solutions.</p>
+<pre> <span style="color:#7f7f7f;"> 1 </span><span>module</span> Main(main) <span>where</span>
+ <span style="color:#7f7f7f;"> 2 </span>
+ <span style="color:#7f7f7f;"> 3 </span><span style="color:#cd00cd;">import</span> <span style="color:#cd00cd;">qualified</span> IO
+ <span style="color:#7f7f7f;"> 4 </span><span style="color:#cd00cd;">import</span> System(getArgs)
+ <span style="color:#7f7f7f;"> 5 </span><span style="color:#cd00cd;">import</span> Monad(mapM_)
+ <span style="color:#7f7f7f;"> 6 </span><span style="color:#cd00cd;">import</span> <span style="color:#cd00cd;">qualified</span> Scaffolding
+ <span style="color:#7f7f7f;"> 7 </span>
+ <span style="color:#7f7f7f;"> 8 </span>mergesort l <span style="font-weight:bold;color:#00008b;">=</span>
+ <span style="color:#7f7f7f;"> 9 </span>    <span style="font-weight:bold;color:#00008b;">if</span> (length l) <span style="font-weight:bold;color:#00008b;">&lt;=</span> <span style="color:#008b00;">1</span> <span style="font-weight:bold;color:#00008b;">then</span> l <span style="color:#7f7f7f;">&#8211; The list is already sorted.</span>
+ <span style="color:#7f7f7f;">10 </span>    <span style="font-weight:bold;color:#00008b;">else</span> <span style="color:#7f7f7f;">&#8211; Split the list into two halves and sort these.</span>
+ <span style="color:#7f7f7f;">11 </span>        merge (mergesort lpart) (mergesort rpart) []
+ <span style="color:#7f7f7f;">12 </span>        <span>where</span> llen_half <span style="font-weight:bold;color:#00008b;">=</span> (length l) <span style="font-weight:bold;color:#00008b;">`div`</span> <span style="color:#008b00;">2</span>
+ <span style="color:#7f7f7f;">13 </span>              (lpart, rpart) <span style="font-weight:bold;color:#00008b;">=</span> splitAt llen_half l
+ <span style="color:#7f7f7f;">14 </span>
+ <span style="color:#7f7f7f;">15 </span><span style="color:#7f7f7f;">&#8211; Case #1: the right list is empty; just append the left list to the</span>
+ <span style="color:#7f7f7f;">16 </span><span style="color:#7f7f7f;">&#8211; accumulator. The latter is reversed because we were prepending</span>
+ <span style="color:#7f7f7f;">17 </span><span style="color:#7f7f7f;">&#8211; to it in case #3.</span>
+ <span style="color:#7f7f7f;">18 </span>merge lpart [] acc <span style="font-weight:bold;color:#00008b;">=</span> (reverse acc) <span style="font-weight:bold;color:#00008b;">++</span> lpart
+ <span style="color:#7f7f7f;">19 </span>
+ <span style="color:#7f7f7f;">20 </span><span style="color:#7f7f7f;">&#8211; Case #2: the left list is empty; just append the right list to the</span>
+ <span style="color:#7f7f7f;">21 </span><span style="color:#7f7f7f;">&#8211; (reversed) accumulator list.</span>
+ <span style="color:#7f7f7f;">22 </span>merge [] rpart acc <span style="font-weight:bold;color:#00008b;">=</span> (reverse acc) <span style="font-weight:bold;color:#00008b;">++</span> rpart
+ <span style="color:#7f7f7f;">23 </span>
+ <span style="color:#7f7f7f;">24 </span><span style="color:#7f7f7f;">&#8211; Case #3: neither of the left/right lists to be merged is empty;</span>
+ <span style="color:#7f7f7f;">25 </span><span style="color:#7f7f7f;">&#8211; prepend the lesser head element to the accumulator list.</span>
+ <span style="color:#7f7f7f;">26 </span>merge (l<span style="font-weight:bold;color:#00008b;">:</span>ls) (r<span style="font-weight:bold;color:#00008b;">:</span>rs) acc <span style="font-weight:bold;color:#00008b;">=</span>
+ <span style="color:#7f7f7f;">27 </span>    <span style="font-weight:bold;color:#00008b;">if</span> l <span style="font-weight:bold;color:#00008b;">&lt;=</span> r <span style="font-weight:bold;color:#00008b;">then</span> merge ls (r<span style="font-weight:bold;color:#00008b;">:</span>rs) (l<span style="font-weight:bold;color:#00008b;">:</span>acc)
+ <span style="color:#7f7f7f;">28 </span>    <span style="font-weight:bold;color:#00008b;">else</span> merge (l<span style="font-weight:bold;color:#00008b;">:</span>ls) rs (r<span style="font-weight:bold;color:#00008b;">:</span>acc)
+ <span style="color:#7f7f7f;">29 </span>
+ <span style="color:#7f7f7f;">30 </span><span style="color:#7f7f7f;">&#8211; The main method, handles command line arguments, input and output.</span>
+ <span style="color:#7f7f7f;">31 </span>main <span style="font-weight:bold;color:#00008b;">=</span> <span style="font-weight:bold;color:#00008b;">do</span>
+ <span style="color:#7f7f7f;">32 </span>    args <span style="font-weight:bold;color:#00008b;">&lt;-</span> getArgs
+ <span style="color:#7f7f7f;">33 </span>    fileh <span style="font-weight:bold;color:#00008b;">&lt;-</span> <span style="font-weight:bold;color:#00008b;">case</span> head args <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">34 </span>                <span style="color:#7f7f7f;">&#8211; The text to be sorted is to be read from stdin.</span>
+ <span style="color:#7f7f7f;">35 </span>                <span style="color:#008b00;">&#8220;-&#8221;</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">do</span> return (Just IO.stdin)
+ <span style="color:#7f7f7f;">36 </span>                <span style="color:#7f7f7f;">&#8211; The text to be sorted is to be read from the file</span>
+ <span style="color:#7f7f7f;">37 </span>                <span style="color:#7f7f7f;">&#8211; specified.</span>
+ <span style="color:#7f7f7f;">38 </span>                <span style="color:#008b00;">&#8220;-f&#8221;</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">do</span> Scaffolding.openFile (head (tail args))
+ <span style="color:#7f7f7f;">39 </span>                <span style="color:#7f7f7f;">&#8211; Just sort the command line parameters.</span>
+ <span style="color:#7f7f7f;">40 </span>                _ <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">do</span> <span style="font-weight:bold;color:#00008b;">let</span> sorted_args <span style="font-weight:bold;color:#00008b;">=</span> mergesort args
+ <span style="color:#7f7f7f;">41 </span>                        IO.putStrLn (<span style="color:#008b00;">&#8220;mergesort(&#8221;</span> <span style="font-weight:bold;color:#00008b;">++</span> show args <span style="font-weight:bold;color:#00008b;">++</span>
+ <span style="color:#7f7f7f;">42 </span>                                     <span style="color:#008b00;">&#8220;) = &#8220;</span> <span style="font-weight:bold;color:#00008b;">++</span> show sorted_args)
+ <span style="color:#7f7f7f;">43 </span>                        return Nothing
+ <span style="color:#7f7f7f;">44 </span>    <span style="font-weight:bold;color:#00008b;">case</span> fileh <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">45 </span>        <span style="color:#7f7f7f;">&#8211; Read text from file handle, sort it and print to stdout.</span>
+ <span style="color:#7f7f7f;">46 </span>        Just fileh <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">do</span> text_to_sort <span style="font-weight:bold;color:#00008b;">&lt;-</span> Scaffolding.readLines fileh []
+ <span style="color:#7f7f7f;">47 </span>                         mapM_ IO.putStrLn (mergesort text_to_sort)
+ <span style="color:#7f7f7f;">48 </span>        <span style="color:#7f7f7f;">&#8211; We failed to open the file specified (if any).</span>
+ <span style="color:#7f7f7f;">49 </span>        Nothing <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">do</span> return ()</pre>
+<p>I also liked the fact that the <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/">haskell standard library</a> is rich and nicely documented.</p>
+<p>Just to get an idea of how my naive <code>mergesort</code> implementation performs I created a file listing all the files on my Dell D630 laptop running <a href="http://www.ubuntu.com">Hardy Heron</a> (please ignore the recursive nature of this problem <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> ).</p>
+<pre> <span style="color:#7f7f7f;">1 </span>u804: haskell $ <span style="font-weight:bold;">ghc &#8211;version</span>
+ <span style="color:#7f7f7f;">2 </span>The Glorious Glasgow Haskell Compilation System, version 6.8.2
+ <span style="color:#7f7f7f;">3 </span>u804: haskell $ <span style="font-weight:bold;">ls -l all-files.txt</span>
+ <span style="color:#7f7f7f;">4 </span>-rw-r&#8211;r&#8211; 1 mhr mhr 26245382 2008-05-31 17:18 all-files.txt
+ <span style="color:#7f7f7f;">5 </span>u804: haskell $ <span style="font-weight:bold;">wc -l all-files.txt</span>
+ <span style="color:#7f7f7f;">6 </span>399754 all-files.txt
+ <span style="color:#7f7f7f;">7 </span>u804: haskell $ <span style="font-weight:bold;">uname -a</span>
+ <span style="color:#7f7f7f;">8 </span>Linux u804 2.6.24-18-generic #1 SMP Wed May 28 20:27:26 UTC 2008 i686 GNU/Linux</pre>
+<p>I then let loose the compiled haskell binary on that file (<code>all-files.txt</code>) and compared how it performed against <code>/usr/bin/sort</code>.</p>
+<pre> <span style="color:#7f7f7f;"> 1 </span>u804: haskell $ <span style="font-weight:bold;">time ./mergesort -f all-files.txt &gt;/dev/null</span>
+ <span style="color:#7f7f7f;"> 2 </span>
+ <span style="color:#7f7f7f;"> 3 </span>real    0m12.994s
+ <span style="color:#7f7f7f;"> 4 </span>user    0m12.349s
+ <span style="color:#7f7f7f;"> 5 </span>sys 0m0.632s
+ <span style="color:#7f7f7f;"> 6 </span>u804: haskell $ <span style="font-weight:bold;">time sort all-files.txt &gt;/dev/null</span>
+ <span style="color:#7f7f7f;"> 7 </span>
+ <span style="color:#7f7f7f;"> 8 </span>real    0m10.675s
+ <span style="color:#7f7f7f;"> 9 </span>user    0m10.613s
+ <span style="color:#7f7f7f;">10 </span>sys 0m0.052s
+ <span style="color:#7f7f7f;">11 </span>u804: haskell $ <span style="font-weight:bold;">time sort all-files.txt &gt;/dev/null</span></pre>
+<p>The difference in performance was moderate (22%) given that I did not tune the haskell implementation in any way.</p>
+<p>However, I gasped when I observed the RAM utilisation while the haskell program  was running: it used 726 MB of RAM!</p>
+<p>Compare this to 34 MB that were used by the standard <code>sort</code> program.</p>
+<p>I guess it&#8217;s time to get acquainted with <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/profiling.html"><code>ghc -prof</code></a> and friends <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>Last but not least I&#8217;d like to point to a great haskell resource, the <a href="http://book.realworldhaskell.org/beta/index.html">Real World Haskell</a> beta book.</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/43/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/43/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/43/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/43/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/43/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/43/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/43/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/43/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/43/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/43/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/43/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/43/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=43&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2008/06/05/finger-exercises-in-haskell/#comments" thr:count="4"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2008/06/05/finger-exercises-in-haskell/feed/atom/" thr:count="4"/>
+		<thr:total>4</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Text filtering with erlang]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2008/04/30/text-filtering-with-erlang/" />
+		<id>http://muharem.wordpress.com/?p=42</id>
+		<updated>2008-05-01T20:27:08Z</updated>
+		<published>2008-04-30T16:34:40Z</published>
+		<category scheme="http://muharem.wordpress.com" term="Python" /><category scheme="http://muharem.wordpress.com" term="erlang" /><category scheme="http://muharem.wordpress.com" term="search/replace" /><category scheme="http://muharem.wordpress.com" term="functional programming" />		<summary type="html"><![CDATA[Introduction
+After a long break I picked up the Erlang book again and my appetite for writing some erlang code was soon kindled.
+A small Python component I produced at work seemed like a good candidate for my (sequential) erlang exercises. It is a fairly simple component that removes user/password data embedded in URLs.
+Just so you know [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2008/04/30/text-filtering-with-erlang/"><![CDATA[<div class='snap_preview'><br /><h3>Introduction</h3>
+<p>After a long break I picked up the <a href="http://www.pragprog.com/titles/jaerlang/programming-erlang">Erlang book</a> again and my appetite for writing some erlang code was soon kindled.</p>
+<p>A small Python <a href="http://hrnjad.net/src/p/filter_url.py.html">component</a> I produced <a href="https://launchpad.net/~al-maisan">at work</a> seemed like a good candidate for my (sequential) erlang exercises. It is a fairly simple component that removes user/password data embedded in URLs.</p>
+<p>Just so you know where I am coming from:</p>
+<ul>
+<li>my main/favourite programming language is Python</li>
+<li>my exercises are mainly about <em>sequential</em>, <em>non-distributed</em> and <em>non-telecoms-related</em> problems whereas erlang&#8217;s main strength and appeal lies in the area of parallel/distributed telecoms/networking systems</li>
+<li>I have played with erlang a little bit before (<a href="http://muharem.wordpress.com/2007/07/31/erlang-vs-stackless-python-a-first-benchmark/">ring benchmark</a>, <a href="http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/">XML parsing</a>) and liked it in general although IMHO it lacks severely when it comes to the availability and quality of standard library components.</li>
+</ul>
+<p>Now that my particular set of preconceptions is clear and in the open, let&#8217;s look at the stuff below <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<h3>File processing with erlang&#8217;s regexp module</h3>
+<p>The <a href="http://hrnjad.net/src/p/regex.erl.html">initial implementation</a> of the URL filter in erlang used its <a href="http://www.erlang.org/doc/man/regexp.html">regexp library</a>.</p>
+<pre> <span style="color:#7f7f7f;"> 1 </span><span>-module</span>(regex)<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 2 </span><span>-export</span>([main<span style="font-weight:bold;color:#00008b;">/</span><span style="color:#008b00;">1</span>])<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 3 </span>
+ <span style="color:#7f7f7f;"> 4 </span>isalphanum(C) <span style="font-weight:bold;color:#00008b;">when</span> C <span style="font-weight:bold;color:#00008b;">&gt;</span> 47, C <span style="font-weight:bold;color:#00008b;">&lt;</span> 58; C <span style="font-weight:bold;color:#00008b;">&gt;</span> 64, C <span style="font-weight:bold;color:#00008b;">&lt;</span> 91; C <span style="font-weight:bold;color:#00008b;">&gt;</span> 96, C <span style="font-weight:bold;color:#00008b;">&lt;</span> 123 <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">true</span>;
+ <span style="color:#7f7f7f;"> 5 </span>isalphanum(<span style="color:#ff1493;">_</span>) <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">false</span><span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 6 </span>
+ <span style="color:#7f7f7f;"> 7 </span><span style="color:#7f7f7f;">%% Generate a temporary file name of length N</span>
+ <span style="color:#7f7f7f;"> 8 </span>genname(<span style="color:#008b00;">0</span>, L) <span style="font-weight:bold;color:#00008b;">-&gt;</span> L;
+ <span style="color:#7f7f7f;"> 9 </span>genname(N, L) <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">10 </span>    R <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">random</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">uniform</span>(123),
+ <span style="color:#7f7f7f;">11 </span>    <span style="font-weight:bold;color:#00008b;">case</span> isalphanum(R) <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">12 </span>        <span style="font-weight:bold;color:#00008b;">true</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> genname(N-1, [R|L]);
+ <span style="color:#7f7f7f;">13 </span>        <span style="font-weight:bold;color:#00008b;">false</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> genname(N, L)
+ <span style="color:#7f7f7f;">14 </span>    <span style="font-weight:bold;color:#00008b;">end</span><span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;">15 </span>
+ <span style="color:#7f7f7f;">16 </span><span style="color:#7f7f7f;">%% Returns a randomly generated temporary file path where the basename is</span>
+ <span style="color:#7f7f7f;">17 </span><span style="color:#7f7f7f;">%% of length N</span>
+ <span style="color:#7f7f7f;">18 </span>mktemppath(Prefix, N) <span style="font-weight:bold;color:#00008b;">-&gt;</span> Prefix <span style="font-weight:bold;color:#00008b;">++</span> <span style="color:#008b00;">&#8220;/&#8221;</span> <span style="font-weight:bold;color:#00008b;">++</span> genname(N, [])<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;">19 </span>
+</pre>
+<p>Please note how I had to implement functionality absent from the standard library above.</p>
+<pre> <span style="color:#7f7f7f;">20 </span><span style="color:#7f7f7f;">%% Removes passwords embedded in URLs from a log file.</span>
+ <span style="color:#7f7f7f;">21 </span>scrub_file(Tmpdir, F) <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">22 </span>    <span style="color:#7f7f7f;">%% make a temporary directory if it does not exist yet.</span>
+ <span style="color:#7f7f7f;">23 </span>    <span style="font-weight:bold;color:#00008b;">case</span> <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">make</span><span style="color:#ff1493;">_</span><span style="color:#008b8b;">dir</span>(Tmpdir) <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">24 </span>        ok <span style="font-weight:bold;color:#00008b;">-&gt;</span> ok;
+ <span style="color:#7f7f7f;">25 </span>        {error,eexist} <span style="font-weight:bold;color:#00008b;">-&gt;</span> ok;
+ <span style="color:#7f7f7f;">26 </span>        <span style="color:#ff1493;">_</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">exit</span>({error, failed_to_make_tmpdir})
+ <span style="color:#7f7f7f;">27 </span>    <span style="font-weight:bold;color:#00008b;">end</span>,
+ <span style="color:#7f7f7f;">28 </span>
+ <span style="color:#7f7f7f;">29 </span>    <span style="color:#7f7f7f;">%% Move the original file out of the way.</span>
+ <span style="color:#7f7f7f;">30 </span>    T <span style="font-weight:bold;color:#00008b;">=</span> mktemppath(Tmpdir, 16),
+ <span style="color:#7f7f7f;">31 </span>    <span style="font-weight:bold;color:#00008b;">case</span> <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">rename</span>(F, T) <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">32 </span>        ok <span style="font-weight:bold;color:#00008b;">-&gt;</span> ok;
+ <span style="color:#7f7f7f;">33 </span>        <span style="color:#ff1493;">_</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="font-weight:bold;color:#00008b;">exit</span>({error, failed_to_move_file})
+ <span style="color:#7f7f7f;">34 </span>    <span style="font-weight:bold;color:#00008b;">end</span>,
+ <span style="color:#7f7f7f;">35 </span>
+ <span style="color:#7f7f7f;">36 </span>    <span style="color:#7f7f7f;">%% Now open it for reading.</span>
+ <span style="color:#7f7f7f;">37 </span>    {<span style="color:#ff1493;">_</span>, In} <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">open</span>([T], read),
+ <span style="color:#7f7f7f;">38 </span>    <span style="color:#7f7f7f;">%% Open the original path for writing.</span>
+ <span style="color:#7f7f7f;">39 </span>    {<span style="color:#ff1493;">_</span>, Out} <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">open</span>([F], write),
+ <span style="color:#7f7f7f;">40 </span>
+ <span style="color:#7f7f7f;">41 </span>    <span style="color:#7f7f7f;">%% Call the function that will scrub the lines.</span>
+ <span style="color:#7f7f7f;">42 </span>    scrub_lines(In, Out),
+ <span style="color:#7f7f7f;">43 </span>
+ <span style="color:#7f7f7f;">44 </span>    <span style="color:#7f7f7f;">%% Close the file handles and return the path to the original file.</span>
+ <span style="color:#7f7f7f;">45 </span>    <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">close</span>(Out),
+ <span style="color:#7f7f7f;">46 </span>    <span style="color:#008b8b;">file</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">close</span>(In),
+ <span style="color:#7f7f7f;">47 </span>    T<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;">48 </span>
+</pre>
+<p>The code that scrubs the URLs is below, the <code>scrub_lines()</code> function is tail recursive.</p>
+<pre> <span style="color:#7f7f7f;">49 </span><span style="color:#7f7f7f;">%% This is where the log file is actually read linewise and where</span>
+ <span style="color:#7f7f7f;">50 </span><span style="color:#7f7f7f;">%% the scrubbing function is invoked for lines that contain URLs.</span>
+ <span style="color:#7f7f7f;">51 </span>scrub_lines(In, Out) <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">52 </span>    L <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">get</span><span style="color:#ff1493;">_</span><span style="color:#008b8b;">line</span>(In, <span>&#8221;</span>),
+ <span style="color:#7f7f7f;">53 </span>    <span style="font-weight:bold;color:#00008b;">case</span> L <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">54 </span>        eof <span style="font-weight:bold;color:#00008b;">-&gt;</span> ok;
+ <span style="color:#7f7f7f;">55 </span>        <span style="color:#ff1493;">_</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">56 </span>            <span style="color:#7f7f7f;">%% Does the line contain URLs?</span>
+ <span style="color:#7f7f7f;">57 </span>            <span style="font-weight:bold;color:#00008b;">case</span> <span style="color:#008b8b;">string</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">str</span>(L, <span style="color:#008b00;">&#8220;://&#8221;</span>) <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">58 </span>                <span style="color:#008b00;">0</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">format</span>(Out, <span style="color:#008b00;">&#8220;</span><span style="color:#ff1493;">~s</span><span style="color:#008b00;">&#8220;</span>, [L]);
+ <span style="color:#7f7f7f;">59 </span>                <span style="color:#ff1493;">_</span> <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">60 </span>                    <span style="font-weight:bold;color:#00008b;">case</span> <span style="color:#008b8b;">regexp</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">gsub</span>(L, <span style="color:#008b00;">&#8220;://[^:]+:[^@]+@&#8221;</span>, <span style="color:#008b00;">&#8220;://&#8221;</span>) <span style="font-weight:bold;color:#00008b;">of</span>
+ <span style="color:#7f7f7f;">61 </span>                        {ok, S, <span style="color:#ff1493;">_</span>} <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">format</span>(Out, <span style="color:#008b00;">&#8220;</span><span style="color:#ff1493;">~s</span><span style="color:#008b00;">&#8220;</span>, [S]);
+ <span style="color:#7f7f7f;">62 </span>                        {R, S, <span style="color:#ff1493;">_</span>} <span style="font-weight:bold;color:#00008b;">-&gt;</span> <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">format</span>(<span style="color:#008b00;">&#8220;Failed: {</span><span style="color:#ff1493;">~p</span><span style="color:#008b00;">,</span><span style="color:#ff1493;">~p</span><span style="color:#008b00;">}&#8221;</span>, [R,S])
+ <span style="color:#7f7f7f;">63 </span>                    <span style="font-weight:bold;color:#00008b;">end</span>
+ <span style="color:#7f7f7f;">64 </span>            <span style="font-weight:bold;color:#00008b;">end</span>,
+ <span style="color:#7f7f7f;">65 </span>            <span style="color:#7f7f7f;">%% Continue with next line.</span>
+ <span style="color:#7f7f7f;">66 </span>            scrub_lines(In, Out)
+ <span style="color:#7f7f7f;">67 </span>    <span style="font-weight:bold;color:#00008b;">end</span><span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;">68 </span>
+ <span style="color:#7f7f7f;">69 </span><span style="color:#7f7f7f;">%% Main function.</span>
+ <span style="color:#7f7f7f;">70 </span>main([A]) <span style="font-weight:bold;color:#00008b;">-&gt;</span>
+ <span style="color:#7f7f7f;">71 </span>    {A1,A2,A3} <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">now</span>(),
+ <span style="color:#7f7f7f;">72 </span>    <span style="color:#008b8b;">random</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">seed</span>(A1, A2, A3),
+ <span style="color:#7f7f7f;">73 </span>
+ <span style="color:#7f7f7f;">74 </span>    <span style="color:#7f7f7f;">%% A single argument (the name of the file to be scrubbed) is expected.</span>
+ <span style="color:#7f7f7f;">75 </span>    F <span style="font-weight:bold;color:#00008b;">=</span> <span style="color:#008b8b;">atom_to_list</span>(A),
+ <span style="color:#7f7f7f;">76 </span>    T <span style="font-weight:bold;color:#00008b;">=</span> scrub_file(<span style="color:#008b00;">&#8220;tmp&#8221;</span>, F),
+ <span style="color:#7f7f7f;">77 </span>
+ <span style="color:#7f7f7f;">78 </span>    <span style="color:#7f7f7f;">%% The scrubbed file content will be written to a new file that&#8217;s</span>
+ <span style="color:#7f7f7f;">79 </span>    <span style="color:#7f7f7f;">%% in the place of the original file. Where was the latter moved to?</span>
+ <span style="color:#7f7f7f;">80 </span>    <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">format</span>(<span style="color:#008b00;">&#8220;</span><span style="color:#ff1493;">~s~n</span><span style="color:#008b00;">&#8220;</span>, [T]),
+ <span style="color:#7f7f7f;">81 </span>
+ <span style="color:#7f7f7f;">82 </span>    <span style="color:#008b8b;">init</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">stop</span>()<span style="color:#ff1493;">.</span>
+</pre>
+<p>The cursory benchmarks performed (on log files of varying size) using the <a href="http://hrnjad.net/src/p/filter_url.py.html">python</a> and the <a href="http://hrnjad.net/src/p/regex.erl.html">erlang</a> code confirmed <a href="http://www.tbray.org/ongoing/When/200x/2007/09/21/Erlang">other people&#8217;s experiences with erlang&#8217;s regex performance</a> (but see also this <a href="http://www.findinglisp.com/blog/2007/10/stupid-programming-language-tricks.html">interesting &#8220;rebuttal&#8221;</a>).</p>
+<table border="0" cellspacing="8">
+<tbody>
+<tr>
+<th>Log file size</th>
+<th>Python times</th>
+<th>Erlang times</th>
+</tr>
+<tr>
+<td align="right">1 MB</td>
+<td align="right">0m0.230s</td>
+<td align="right">0m1.896s</td>
+</tr>
+<tr>
+<td align="right">10 MB</td>
+<td align="right">0m1.510s</td>
+<td align="right">0m8.766s</td>
+</tr>
+<tr>
+<td align="right">100 MB</td>
+<td align="right">0m14.793s</td>
+<td align="right">1m17.662s</td>
+</tr>
+<tr>
+<td align="right">1 GB</td>
+<td align="right">2m55.012s</td>
+<td align="right">13m54.588s</td>
+</tr>
+</tbody>
+</table>
+<h3>The do-it-yourself construction</h3>
+<p>Curious to learn whether the performance can be improved by abstaining from regular expressions I came up with an <a href="http://hrnjad.net/src/p/noregex.erl.html">alternative implementation</a> that does not use <code>regexp</code>.</p>
+<p>As you can see below the do-it-yourself construction is indeed performing slightly better at the expense of being very specialized and requiring 60% more code.</p>
+<table border="0" cellspacing="8">
+<tbody>
+<tr>
+<th>Log file size</th>
+<th>Python times</th>
+<th>Erlang regexp</th>
+<th>Erlang do-it-yourself</th>
+</tr>
+<tr>
+<td align="right">1 MB</td>
+<td align="right">0m0.230s</td>
+<td align="right">0m1.896s</td>
+<td align="right">0m1.969s</td>
+</tr>
+<tr>
+<td align="right">10 MB</td>
+<td align="right">0m1.510s</td>
+<td align="right">0m8.766s</td>
+<td align="right">0m8.459s</td>
+</tr>
+<tr>
+<td align="right">100 MB</td>
+<td align="right">0m14.793s</td>
+<td align="right">1m17.662s</td>
+<td align="right">1m12.448s</td>
+</tr>
+<tr>
+<td align="right">1 GB</td>
+<td align="right">2m55.012s</td>
+<td align="right">13m54.588s</td>
+<td align="right">13m3.360s</td>
+</tr>
+</tbody>
+</table>
+<h3>In conclusion</h3>
+<p>Every couple of months or so I develop a euphoria towards erlang which is consistently dampened by using the language to tackle problems for which the language admittedly was not designed in first place.</p>
+<p>I guess most people start using a language for simple programming exercises first as opposed to building something like a <a href="http://www.ejabberd.im/">Jabber/XMPP instant messaging server</a> straightaway.</p>
+<p>I hate to repeat myself but improving the standard library (by adding common functionality and making sure it performs decently) would do a lot to attract fresh talent to the erlang community and I hear that a certain rate of influx of &#8220;fresh blood&#8221; is a necessary prerequisite for success.</p>
+<p>Ah, and no, you were not supposed to grok the sentence above unless you read it three times <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /></p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/42/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/42/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/42/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/42/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/42/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/42/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/42/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/42/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/42/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/42/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/42/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/42/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=42&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2008/04/30/text-filtering-with-erlang/#comments" thr:count="5"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2008/04/30/text-filtering-with-erlang/feed/atom/" thr:count="5"/>
+		<thr:total>5</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[My new &#8220;baby laptop&#8221;]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2008/01/26/my-new-baby-laptop/" />
+		<id>http://muharem.wordpress.com/?p=40</id>
+		<updated>2008-01-26T20:52:36Z</updated>
+		<published>2008-01-26T20:52:36Z</published>
+		<category scheme="http://muharem.wordpress.com" term="BSD" /><category scheme="http://muharem.wordpress.com" term="akoya" /><category scheme="http://muharem.wordpress.com" term="hard disk encryption" /><category scheme="http://muharem.wordpress.com" term="linux" /><category scheme="http://muharem.wordpress.com" term="medion" /><category scheme="http://muharem.wordpress.com" term="subnotebook" /><category scheme="http://muharem.wordpress.com" term="ubuntu" /><category scheme="http://muharem.wordpress.com" term="vista" />		<summary type="html"><![CDATA[I am using a MacBook Pro for roughly 10 months now and I am generally very happy with it. Nevertheless, I like experimenting and playing with other operating systems, primarily with various linux distributions and with members of the *BSD family.
+Running Ubuntu or FreeBSD in a virtual machine (using VMWare&#8217;s fusion or Parallels desktop) is [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2008/01/26/my-new-baby-laptop/"><![CDATA[<div class='snap_preview'><br /><p>I am using a MacBook Pro for roughly 10 months now and I am generally very happy with it. Nevertheless, I like experimenting and playing with other operating systems, primarily with various linux distributions and with members of the *BSD family.</p>
+<p>Running <a href="http://www.ubuntu.com">Ubuntu</a> or <a href="http://www.freebsd.org">FreeBSD</a> in a virtual machine (using <a href="http://www.VMware.com/Mac">VMWare&#8217;s fusion</a> or <a href="http://www.parallels.com/en/products/desktop/">Parallels desktop</a>) is a good way to get a first impression of such a system but at some point you <i>will</i> want real hardware. I reached that point with Ubuntu when I took an interest in hard disk encryption (<a href="http://events.ccc.de/congress/2005/fahrplan/attachments/586-paper_Complete_Hard_Disk_Encryption.pdf">why you should encrypt your hard disk</a>).</p>
+<p>It just so happened that around that time Aldi (a German retailer) had a <a href="http://www.medion.de/md96360/sued/flash.html">nice 12 inch subnotebook on offer</a>. Aldi was targeting the female clientele (the notebook was even adorned with <a href="http://en.wikipedia.org/wiki/Rhinestone">rhinestones</a> etc.) which resulted in a 100 Euro price markup. The system was still a very good value for the money, however, and I even managed to get my hands on the black model <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>I booted the system up (it had Windows Vista Home Premium pre-installed)  in order to take a backup of the system in case I had to restore the original state (prior to sending in it for service for example).</p>
+<p>Vista was atrocious, totally crippling the poor thing. I mean, it was horrible, even the simplest interactions or commands took a ridiculous amount of time to complete.<br />
+Anyway, I managed to take a snapshot of the hard disk, wiped it clean and installed Ubuntu-7.10.</p>
+<p>After running Vista on the box for a few hours, Ubuntu was a relief <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> it felt very snappy and was generally performing very well. I could do all my development work on the notebook without any problems.</p>
+<p>I thought that was very cool <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> I finally had a second box, a &#8220;baby laptop&#8221;, I could use for my experiments. Having two laptops may sound a little bit excessive unless you tamper frequently with all sorts of operating systems. You can keep one machine in a &#8220;stable&#8221; condition and do all the proper (money generating) work on it while totally rebuilding the other.</p>
+<p>I am a slightly paranoid person <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> and like to have as much security on my machines as I can get. I hence wanted to install Ubuntu with full hard disk encryption but more on that topic in a forthcoming article..</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/40/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/40/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/40/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/40/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/40/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/40/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/40/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=40&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2008/01/26/my-new-baby-laptop/#comments" thr:count="1"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2008/01/26/my-new-baby-laptop/feed/atom/" thr:count="1"/>
+		<thr:total>1</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[MacFUSE]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2008/01/03/macfuse/" />
+		<id>http://muharem.wordpress.com/2008/01/03/macfuse/</id>
+		<updated>2008-01-03T11:05:37Z</updated>
+		<published>2008-01-03T11:05:37Z</published>
+		<category scheme="http://muharem.wordpress.com" term="FUSE" /><category scheme="http://muharem.wordpress.com" term="Mac" /><category scheme="http://muharem.wordpress.com" term="file system" />		<summary type="html"><![CDATA[Hello there,
+for anybody owning a Mac and having an interest in file systems I just wanted to point to MacFUSE (a FUSE-Compliant File System Implementation Mechanism for Mac OS X) which is another brilliant piece of work done by Amit Singh (of &#8220;Mac OS X Internals&#8221; fame).
+There is also a technical presentation given by Amit [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2008/01/03/macfuse/"><![CDATA[<div class='snap_preview'><br /><p>Hello there,</p>
+<p>for anybody owning a Mac and having an interest in file systems I just wanted to point to <a href="http://code.google.com/p/macfuse/">MacFUSE</a> (a <a href="http://fuse.sourceforge.net/">FUSE</a>-Compliant File System Implementation Mechanism for Mac OS X) which is another brilliant piece of work done by <a href="http://www.kernelthread.com/">Amit Singh</a> (of <a href="http://www.amazon.com/gp/product/0321278542/">&#8220;Mac OS X Internals&#8221;</a> fame).</p>
+<p>There is also a <a href="http://www.youtube.com/watch?v=Yjdp70474LE">technical presentation</a> given by Amit on the MacFUSE project (YouTube video).</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/39/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/39/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/39/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/39/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/39/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/39/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/39/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/39/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/39/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/39/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/39/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/39/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=39&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2008/01/03/macfuse/#comments" thr:count="0"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2008/01/03/macfuse/feed/atom/" thr:count="0"/>
+		<thr:total>0</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Fun with PostgreSQL, Psycopg2 and Bytea arrays]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2007/10/27/fun-with-postgresql-psycopg2-and-bytea-arrays/" />
+		<id>http://muharem.wordpress.com/2007/10/27/fun-with-postgresql-psycopg2-and-bytea-arrays/</id>
+		<updated>2007-10-27T19:56:27Z</updated>
+		<published>2007-10-27T19:56:27Z</published>
+		<category scheme="http://muharem.wordpress.com" term="PostgreSQL" /><category scheme="http://muharem.wordpress.com" term="Psycopg2" /><category scheme="http://muharem.wordpress.com" term="Python" /><category scheme="http://muharem.wordpress.com" term="SQL" /><category scheme="http://muharem.wordpress.com" term="database" />		<summary type="html"><![CDATA[Introduction
+Despite being a great DBMS, PostgreSQL has a few wrinkles that can cause quite a bit of pain  
+One such wrinkle is the insertion of database rows with Bytea arrays.
+If you&#8217;re not dealing with PostgreSQL or don&#8217;t need to wrangle with Bytea arrays feel free to skip this article. If you are, however, this [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2007/10/27/fun-with-postgresql-psycopg2-and-bytea-arrays/"><![CDATA[<div class='snap_preview'><br /><h3>Introduction</h3>
+<p>Despite being a great DBMS, <a href="http://www.postgresql.org/">PostgreSQL</a> has a few wrinkles that can cause quite a bit of pain <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>One such wrinkle is the insertion of database rows with <a href="http://www.postgresql.org/docs/8.2/static/datatype-binary.html"><code>Bytea</code></a> <a href="http://www.postgresql.org/docs/8.2/static/arrays.html">arrays</a>.</p>
+<p>If you&#8217;re not dealing with PostgreSQL or don&#8217;t need to wrangle with <code>Bytea</code> arrays feel free to skip this article. If you <em>are</em>, however, this article may save you a lot of time and frustration.</p>
+<h3>The code</h3>
+<p>Since the correct number of backslashes in the code below is important but unlikely to be displayed properly in your web browser please view it <a href="http://hrnjad.net/src/o/pgtools.py.html">syntax highlighted here</a> or <a href="http://hrnjad.net/src/o/pgtools.py">in plain format here</a>.</p>
+<p>The code below consists of roughly two sections:</p>
+<ul>
+<li>the actual code of interest dealing with the backslash plague and the quoting orgy (<code>prepareByteaString()</code>, lines 49-82)</li>
+<li>a test harness (lines 84-11 <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_cool.gif' alt='8)' class='wp-smiley' /> merely facilitating the testing of the function of interest</li>
+</ul>
+<p>The problem on hand is that the <code>PostgreSQL</code> <a href="http://www.postgresql.org/docs/8.2/static/arrays.html#AEN5759">Array Value Input syntax</a> requires that the <code>Bytea</code> array literal be enclosed in single quotes. <code><a href="http://www.initd.org/tracker/psycopg/wiki/PsycopgTwo">Psycopg2</a></code> however quotes individual byte strings using single quotes as well.</p>
+<p>Please note: a byte string or array corresponds to one <code>Bytea</code> variable. A <code>Bytea</code> array is hence an array of byte arrays or strings.</p>
+<p>The resulting <code>Bytea</code> array literals are a mess and cause syntax errors when used in <code>INSERT</code> statements etc. The approach chosen is to &#8220;re-quote&#8221; the <code>Bytea</code> literals returned by the <code>Psycopg2</code> <code>Binary()</code> function from single to double quotes, For more detail please see the comments on lines 68-80.</p>
+<pre>
+ <span style="color:#7f7f7f;"> 36 </span><span style="color:#7f7f7f;"># created: Thu Oct 25 21:35:50 2007</span>
+ <span style="color:#7f7f7f;"> 37 </span>__version__ = &#8220;<span style="color:#008b00;">$Id:$</span>&#8221;
+ <span style="color:#7f7f7f;"> 38 </span><span style="color:#7f7f7f;"># $HeadURL $</span>
+ <span style="color:#7f7f7f;"> 39 </span>
+ <span style="color:#7f7f7f;"> 40 </span><span style="color:#cd00cd;">import</span> psycopg2 <span style="color:#cd00cd;">as</span> ps2
+ <span style="color:#7f7f7f;"> 41 </span>
+ <span style="color:#7f7f7f;"> 42 </span><span style="color:#00008b;font-weight:bold;">class</span> <span style="color:#008b8b;">PGT</span>(object):
+ <span style="color:#7f7f7f;"> 43 </span>    &#8220;&#8221;"<span style="color:#008b00;">Utility functions for using a PostgreSQL database with python</span>&#8220;&#8221;"
+ <span style="color:#7f7f7f;"> 44 </span>
+ <span style="color:#7f7f7f;"> 45 </span>    <span style="color:#00008b;font-weight:bold;">def</span> <span style="color:#008b8b;">__init__</span>(self):
+ <span style="color:#7f7f7f;"> 46 </span>        &#8220;&#8221;"<span style="color:#008b00;">initialiser</span>&#8220;&#8221;"
+ <span style="color:#7f7f7f;"> 47 </span>        <span style="color:#7f7f7f;"># super(NEW_CLASS, self).__init__()</span>
+ <span style="color:#7f7f7f;"> 48 </span>
+ <span style="color:#7f7f7f;"> 49 </span>    <span style="color:#cd00cd;">@</span><span style="color:#008b8b;">staticmethod</span>
+ <span style="color:#7f7f7f;"> 50 </span>    <span style="color:#00008b;font-weight:bold;">def</span> <span style="color:#008b8b;">prepareByteaString</span>(byteaSeq):
+ <span style="color:#7f7f7f;"> 51 </span>        &#8220;&#8221;"
+ <span style="color:#7f7f7f;"> 52 </span><span style="color:#008b00;">        Given a sequence of byte arrays this function prepares a properly</span>
+ <span style="color:#7f7f7f;"> 53 </span><span style="color:#008b00;">        quoted string to be used for inserting database rows with Bytea</span>
+ <span style="color:#7f7f7f;"> 54 </span><span style="color:#008b00;">        arrays.</span>
+ <span style="color:#7f7f7f;"> 55 </span>
+ <span style="color:#7f7f7f;"> 56 </span><span style="color:#008b00;">        Given e.g. a table like the following</span>
+ <span style="color:#7f7f7f;"> 57 </span><span style="color:#008b00;">            Create table baex(byteaa Bytea ARRAY[16]);</span>
+ <span style="color:#7f7f7f;"> 58 </span><span style="color:#008b00;">        the resulting string (&#8217;bas&#8217;) can be used as follows:</span>
+ <span style="color:#7f7f7f;"> 59 </span><span style="color:#008b00;">            cursor.execute(&#8221;INSERT INTO baex(byteaa) values(&#8217;{%s}&#8217;)&#8221; % bas))</span>
+ <span style="color:#7f7f7f;"> 60 </span>
+ <span style="color:#7f7f7f;"> 61 </span><span style="color:#008b00;">        Parameters:</span>
+ <span style="color:#7f7f7f;"> 62 </span><span style="color:#008b00;">        - byteaSeq: a sequence of byte arrays each corresponding to a Bytea</span>
+ <span style="color:#7f7f7f;"> 63 </span><span style="color:#008b00;">                    value in the database</span>
+ <span style="color:#7f7f7f;"> 64 </span><span style="color:#008b00;">        Returns:</span>
+ <span style="color:#7f7f7f;"> 65 </span><span style="color:#008b00;">        string: containing all the byte arrays from the &#8216;byteaSeq&#8217; properly</span>
+ <span style="color:#7f7f7f;"> 66 </span><span style="color:#008b00;">                quoted for utilisation in an INSERT statement</span>
+ <span style="color:#7f7f7f;"> 67 </span><span style="color:#008b00;">        </span>&#8220;&#8221;"
+ <span style="color:#7f7f7f;"> 68 </span>        <span style="color:#7f7f7f;"># in a first step</span>
+ <span style="color:#7f7f7f;"> 69 </span>        <span style="color:#7f7f7f;">#   1. quote all the byte arrays (using the psycopg2 Binary()</span>
+ <span style="color:#7f7f7f;"> 70 </span>        <span style="color:#7f7f7f;">#      function)</span>
+ <span style="color:#7f7f7f;"> 71 </span>        <span style="color:#7f7f7f;">#   2. strip away the single quotes on the left and right side</span>
+ <span style="color:#7f7f7f;"> 72 </span>        <span style="color:#7f7f7f;">#   3. escape any double quote characters with a backslash</span>
+ <span style="color:#7f7f7f;"> 73 </span>        <span style="color:#7f7f7f;"># The last step is necessary because we will use the double quote as</span>
+ <span style="color:#7f7f7f;"> 74 </span>        <span style="color:#7f7f7f;"># the quote/delimiter for the byte arrays</span>
+ <span style="color:#7f7f7f;"> 75 </span>        baSeq = [str(ps2.Binary(ba))[1:-1].replace(r&#8217;<span style="color:#008b00;">&#8220;</span>&#8216;, r&#8217;<span style="color:#008b00;">\&#8221;</span>&#8216;) <span style="color:#00008b;font-weight:bold;">for</span> ba <span style="color:#00008b;font-weight:bold;">in</span> byteaSeq]
+ <span style="color:#7f7f7f;"> 76 </span>        <span style="color:#7f7f7f;"># join the prep&#8217;ed byte arrays into a single string</span>
+ <span style="color:#7f7f7f;"> 77 </span>        bas = &#8220;<span style="color:#ff1493;">\&#8221;</span><span style="color:#008b00;">%s</span><span style="color:#ff1493;">\&#8221;</span>&#8221; % &#8216;<span style="color:#008b00;">&#8220;,&#8221;</span>&#8216;.join(baSeq)
+ <span style="color:#7f7f7f;"> 78 </span>        <span style="color:#7f7f7f;"># double the number of backslashes (needed because we&#8217;re inserting a</span>
+ <span style="color:#7f7f7f;"> 79 </span>        <span style="color:#7f7f7f;"># Bytea array as opposed to a single Bytea)</span>
+ <span style="color:#7f7f7f;"> 80 </span>        bas = bas.replace(&#8217;<span style="color:#ff1493;">\\</span>&#8216;, &#8216;<span style="color:#ff1493;">\\\\</span>&#8216;)
+ <span style="color:#7f7f7f;"> 81 </span>        <span style="color:#7f7f7f;"># done!</span>
+ <span style="color:#7f7f7f;"> 82 </span>        <span style="color:#00008b;font-weight:bold;">return</span>(bas)</pre>
+<p>The code below is only executed when you invoke the <code>Python</code> file directly but will not run if you import it.</p>
+<pre>
+ <span style="color:#7f7f7f;"> 84 </span><span style="color:#00008b;font-weight:bold;">if</span> __name__ == &#8216;<span style="color:#008b00;">__main__</span>&#8216;:
+ <span style="color:#7f7f7f;"> 85 </span>    <span style="color:#7f7f7f;">### TEST code ********************************************************</span>
+ <span style="color:#7f7f7f;"> 86 </span>    <span style="color:#cd00cd;">import</span> os, sys
+ <span style="color:#7f7f7f;"> 87 </span>    <span style="color:#cd00cd;">from</span> random <span style="color:#cd00cd;">import</span> random <span style="color:#cd00cd;">as</span> rand
+ <span style="color:#7f7f7f;"> 88 </span>
+ <span style="color:#7f7f7f;"> 89 </span>    <span style="color:#7f7f7f;"># connect to test database</span>
+ <span style="color:#7f7f7f;"> 90 </span>    db = ps2.connect(&#8221;<span style="color:#008b00;">dbname=&#8217;test&#8217; user=&#8217;postgres&#8217;</span>&#8220;)
+ <span style="color:#7f7f7f;"> 91 </span>    cursor = db.cursor()
+ <span style="color:#7f7f7f;"> 92 </span>    <span style="color:#7f7f7f;"># create test table</span>
+ <span style="color:#7f7f7f;"> 93 </span>    cursor.execute(&#8217;<span style="color:#008b00;">Create Table public.baex(id Serial, byteaa Bytea ARRAY[16])</span>&#8216;)</pre>
+<p>For test purposes I am connecting to my test database (line 90) and creating a test table (<code>baex</code>, line 93).</p>
+<pre>
+ <span style="color:#7f7f7f;"> 95 </span>    sys.stdout.flush()
+ <span style="color:#7f7f7f;"> 96 </span>    <span style="color:#00008b;font-weight:bold;">print</span> &#8220;<span style="color:#ff1493;">\n</span><span style="color:#008b00;">******************** Bytea data generated: ********************</span>&#8220;</pre>
+<p>Then I generate <code>Bytea</code> data for three database rows and insert it into the database (loop on lines 98-109).</p>
+<pre>
+ <span style="color:#7f7f7f;"> 97 </span>    <span style="color:#7f7f7f;"># generate 3 byte array sequences</span>
+ <span style="color:#7f7f7f;"> 98 </span>    <span style="color:#00008b;font-weight:bold;">for</span> rowId <span style="color:#00008b;font-weight:bold;">in</span> range(1, 4):
+ <span style="color:#7f7f7f;"> 99 </span>        byteaSeq = []</pre>
+<p>Each row is populated with a <code>Bytea</code> array holding of up to seven elements. I am using the <code><a href="http://docs.python.org/lib/module-random.html">random()</a></code> function to generate the bytes.</p>
+<pre>
+ <span style="color:#7f7f7f;">100 </span>        <span style="color:#7f7f7f;"># generate 1-7 random byte arrays</span>
+ <span style="color:#7f7f7f;">101 </span>        <span style="color:#00008b;font-weight:bold;">for</span> numOfSstrings <span style="color:#00008b;font-weight:bold;">in</span> range(1, int(rand()*8)):
+ <span style="color:#7f7f7f;">102 </span>            bytea = &#8221;.join([chr(int(rand()*256)) <span style="color:#00008b;font-weight:bold;">for</span> x <span style="color:#00008b;font-weight:bold;">in</span> range(int(rand()*5))])
+ <span style="color:#7f7f7f;">103 </span>            byteaSeq.append(bytea)
+ <span style="color:#7f7f7f;">104 </span>        <span style="color:#00008b;font-weight:bold;">print</span> byteaSeq
+ <span style="color:#7f7f7f;">105 </span>        <span style="color:#7f7f7f;"># get the INSERT string for the byte array sequence generated</span>
+ <span style="color:#7f7f7f;">106 </span>        bas = PGT.prepareByteaString(byteaSeq)
+ <span style="color:#7f7f7f;">107 </span>        <span style="color:#7f7f7f;"># insert the row into the table</span>
+ <span style="color:#7f7f7f;">108 </span>        cursor.execute(&#8221;<span style="color:#008b00;">INSERT INTO public.baex(id, byteaa) VALUES(%s, &#8216;{%s}&#8217;)</span>&#8221; <span style="color:#ff1493;">\</span>
+ <span style="color:#7f7f7f;">109 </span>                       % (rowId, bas))
+ <span style="color:#7f7f7f;">110 </span>    db.commit()
+ <span style="color:#7f7f7f;">111 </span>    sys.stdout.flush()</pre>
+<p>Once the data is inserted into the database I run <code><a href="http://www.postgresql.org/docs/8.2/static/app-psql.html">psql</a></code> to check whether everything worked properly..</p>
+<pre>
+ <span style="color:#7f7f7f;">113 </span>    <span style="color:#00008b;font-weight:bold;">print</span> &#8220;<span style="color:#ff1493;">\n</span><span style="color:#008b00;">******************** Bytea data inserted: ********************</span>&#8221;
+ <span style="color:#7f7f7f;">114 </span>    sys.stdout.flush()
+ <span style="color:#7f7f7f;">115 </span>    <span style="color:#7f7f7f;"># show the data inserted</span>
+ <span style="color:#7f7f7f;">116 </span>    os.system(&#8221;<span style="color:#008b00;">psql -d test -U postgres -c &#8216;SELECT * FROM public.baex&#8217;</span>&#8220;)</pre>
+<p>.. and finally drop the test table.</p>
+<pre>
+ <span style="color:#7f7f7f;">117 </span>    cursor.execute(&#8217;<span style="color:#008b00;">DROP TABLE public.baex</span>&#8216;)
+ <span style="color:#7f7f7f;">118 </span>    db.commit()</pre>
+<h3>A few test runs</h3>
+<p>I have selected the two test runs below because they show some interesting (edge) cases.</p>
+<p>The first one shows that single quotes are dealt with properly (last byte in last byte string of first row and first byte string of the third row)</p>
+<pre>
+******************** Bytea data generated: ********************
+['R\xb7', '\xd7\xcd\xbb', 'u', "\xa3[\x97'"]
+['\xfbT\x84g', '\xfa', '']
+["'", '\x8d', '', '\xc5\n5', 'A', '\xa4P*']
+
+******************** Bytea data inserted: ********************
+ id |                    byteaa
+&#8212;-+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+  1 | {&#8221;R\\267&#8243;,&#8221;\\327\\315\\273&#8243;,u,&#8221;\\243[\\227'"}
+  2 | {"\\373T\\204g","\\372",""}
+  3 | {',"\\215","","\\305\125",A,"\\244P*"}
+(3 rows)</pre>
+<p>The second test run demonstrates that double quotes are handled correctly (fist byte of first byte string in first row)</p>
+<pre>
+******************** Bytea data generated: ********************
+['"\xa5\x13', '\x9a`', '', '\xf4\x98']
+[]
+['u', '?7', '1\xff', '.\x16\xcf', '\xcbe}', '']
+
+******************** Bytea data inserted: ********************
+ id |                   byteaa
+&#8212;-+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+  1 | {&#8221;\&#8221;\\245\23&#8243;,&#8221;\\232`&#8221;,&#8221;",&#8221;\\364\\230&#8243;}
+  2 | {&#8221;"}
+  3 | {u,?7,&#8221;1\\377&#8243;,&#8221;.\26\\317&#8243;,&#8221;\\313e}&#8221;,&#8221;"}
+(3 rows)</pre>
+<h3>Conclusion</h3>
+<p>Once you bite the bullet and invest the time to think about the problem, code the function and test it, it&#8217;s simple <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /></p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/38/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/38/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/38/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/38/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/38/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/38/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/38/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/38/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/38/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/38/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/38/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/38/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=38&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2007/10/27/fun-with-postgresql-psycopg2-and-bytea-arrays/#comments" thr:count="3"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2007/10/27/fun-with-postgresql-psycopg2-and-bytea-arrays/feed/atom/" thr:count="3"/>
+		<thr:total>3</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Scrape the web with ruby]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2007/09/04/scrape-the-web-with-ruby/" />
+		<id>http://muharem.wordpress.com/2007/09/04/scrape-the-web-with-ruby/</id>
+		<updated>2007-09-04T14:21:29Z</updated>
+		<published>2007-09-04T14:20:25Z</published>
+		<category scheme="http://muharem.wordpress.com" term="html" /><category scheme="http://muharem.wordpress.com" term="parsing" /><category scheme="http://muharem.wordpress.com" term="ruby" /><category scheme="http://muharem.wordpress.com" term="web scraping" />		<summary type="html"><![CDATA[Introduction
+In the last few months I have taken some time to play with a number of dynamic languages. My experiments were mostly in the &#8220;web hacks&#8221; category e.g. fetching files from the web and extracting data of interest from these. For my most recent hack (get wordpress weblog statistics) I used Ruby.
+The task at hand
+The [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2007/09/04/scrape-the-web-with-ruby/"><![CDATA[<div class='snap_preview'><br /><h3>Introduction</h3>
+<p>In the last few months I have taken some time to play with a number of dynamic languages. My experiments were mostly in the &#8220;web hacks&#8221; category e.g. fetching files from the web and extracting data of interest from these. For my most recent hack (get wordpress weblog statistics) I used <a href="http://www.ruby-lang.org/en/">Ruby</a>.</p>
+<h3>The task at hand</h3>
+<p>The task at hand consists of fetching the weblog statistics for my <a href="http://muharem.wordpress.com/">wordpress weblog</a> and displaying them in the terminal window.<br />
+This includes the handling of possible redirections to the <a href="http://wordpress.com/">wordpress.com</a> login page, the parsing of the HTML file to be obtained and the extraction of the various weblog statistics.</p>
+<h3>The tools used</h3>
+<p>After briefly surveying the tools and libraries available in Ruby-land I settled for <a href="http://rubyforge.org/projects/mechanize/">WWW::Mechanize</a> a <code>Ruby</code> implementation of <code>Perl</code>&#8217;s venerable <a href="http://search.cpan.org/dist/WWW-Mechanize/">WWW-Mechanize</a> <code>CPAN</code> module.</p>
+<p>Under the hood <code>WWW::Mechanize</code> uses the <a href="http://code.whytheluckystiff.net/hpricot/">Hpricot</a> HTML parser.</p>
+<h3>The approach</h3>
+<p>The <code>worpress.com</code> weblog statistics pages have a URL with the following structure:</p>
+<pre>
+    http://#{user}.wordpress.com/wp-admin/index.php?page=stats
+</pre>
+<p>They contain the following statistics for today and yesterday respectively:</p>
+<ul>
+<li>
+Referrers: people clicked links from these pages to get to your weblog
+</li>
+<li>
+Top posts: these posts on your weblog got the most traffic
+</li>
+<li>
+Search engine terms: these are terms people used to find your weblog
+</li>
+<li>
+Clicks: your visitors clicked these links on your weblog
+</li>
+</ul>
+<p>Each of the above are structured as follows:</p>
+<blockquote>
+<pre>
+&lt;div class="statsdiv"&gt;
+&lt;h3&gt;&lt;a href="7-day page URL"&gt;statistics type&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;..explanatory text..&lt;/p&gt;
+&lt;h4&gt;Today&lt;/h4&gt;
+  &lt;table class="statsDay"&gt;
+    &lt;tr&gt;&lt;th&gt;..&lt;/th&gt;&lt;th class="views"&gt;..&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td class="label"&gt;URL or term&lt;/td&gt;
+      &lt;td class="views"&gt;number of views&lt;/td&gt;
+    &lt;/tr&gt;
+    ...
+  &lt;/table&gt;
+&lt;h4&gt;Yesterday&lt;/h4&gt;
+  &lt;table class="statsDay"&gt;
+    &lt;tr&gt;&lt;th&gt;..&lt;/th&gt;&lt;th class="views"&gt;..&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td class="label"&gt;URL or term&lt;/td&gt;
+      &lt;td class="views"&gt;number of views&lt;/td&gt;
+    &lt;/tr&gt;
+    ...
+  &lt;/table&gt;
+&lt;/div&gt;
+</pre>
+</blockquote>
+<p>The <a href="http://hrnjad.net/src/e/wls.rb.html"><code>Ruby</code> code</a> below first finds the <code>&lt;div class="statsdiv"&gt;</code> sub-trees and then extracts today&#8217;s data from them.</p>
+<h3><a href="http://hrnjad.net/src/e/wls.rb.html">The code</a></h3>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span><span style="color:#cd00cd;">#!/usr/bin/env ruby</span>
+ <span style="color:#7f7f7f;"> 2 </span>
+ <span style="color:#7f7f7f;"> 3 </span><span style="color:#cd00cd;">require</span> <span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">rubygems</span><span style="color:#ff1493;">&#39;</span>
+ <span style="color:#7f7f7f;"> 4 </span><span style="color:#cd00cd;">require</span> <span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">mechanize</span><span style="color:#ff1493;">&#39;</span>
+ <span style="color:#7f7f7f;"> 5 </span>
+ <span style="color:#7f7f7f;"> 6 </span><span class="&quot;Type&quot;">HELP_STRING</span> =&lt;&lt;<span style="color:#ff1493;">EOS</span>
+ <span style="color:#7f7f7f;"> 7 </span>
+ <span style="color:#7f7f7f;"> 8 </span><span style="color:#008b00;">Tool for fetching wordpress.com weblog statistics. Usage:</span>
+ <span style="color:#7f7f7f;"> 9 </span>
+ <span style="color:#7f7f7f;">10 </span><span style="color:#008b00;">    wls.rb [username] [pwd]</span>
+ <span style="color:#7f7f7f;">11 </span>
+ <span style="color:#7f7f7f;">12 </span><span style="color:#008b00;">where &#39;user&#39; is your wordpress user name and &#39;pwd&#39; is your</span>
+ <span style="color:#7f7f7f;">13 </span><span style="color:#008b00;">password respectively.</span>
+ <span style="color:#7f7f7f;">14 </span>
+ <span style="color:#7f7f7f;">15 </span><span style="color:#ff1493;">EOS</span>
+ <span style="color:#7f7f7f;">16 </span>
+ <span style="color:#7f7f7f;">17 </span><span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#00008b;font-weight:bold;">not</span> <span style="color:#008b8b;">ARGV</span>.grep(<span style="color:#ff1493;">/</span><span style="color:#008b00;">-h|&#8211;help</span><span style="color:#ff1493;">/</span>).empty?
+ <span style="color:#7f7f7f;">18 </span>    puts <span class="&quot;Type&quot;">HELP_STRING</span>
+ <span style="color:#7f7f7f;">19 </span>    <span style="color:#00008b;font-weight:bold;">exit</span>(<span style="color:#008b00;">0</span>)
+ <span style="color:#7f7f7f;">20 </span><span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">21 </span>
+ <span style="color:#7f7f7f;">22 </span><span style="color:#7f7f7f;"># try to access the weblog statistics page</span>
+ <span style="color:#7f7f7f;">23 </span>user = <span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">muharem</span><span style="color:#ff1493;">&#39;</span>
+ <span style="color:#7f7f7f;">24 </span>password = <span style="color:#008b00;">nil</span>  <span style="color:#7f7f7f;"># set your password here if you dislike being prompted for it</span>
+ <span style="color:#7f7f7f;">25 </span>
+ <span style="color:#7f7f7f;">26 </span><span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#008b8b;">ARGV</span>[<span style="color:#008b00;">0</span>]
+ <span style="color:#7f7f7f;">27 </span>    user = <span style="color:#008b8b;">ARGV</span>[<span style="color:#008b00;">0</span>]
+ <span style="color:#7f7f7f;">28 </span><span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">29 </span><span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#008b8b;">ARGV</span>[<span style="color:#008b00;">1</span>]
+ <span style="color:#7f7f7f;">30 </span>    password = <span style="color:#008b8b;">ARGV</span>[<span style="color:#008b00;">1</span>]
+ <span style="color:#7f7f7f;">31 </span><span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">32 </span>
+ <span style="color:#7f7f7f;">33 </span>stats_url = <span style="color:#ff1493;">&quot;</span><span style="color:#008b00;"><a href="//&quot;">http://</a></span><span style="color:#ff1493;">#{</span>user<span style="color:#ff1493;">}</span><span style="color:#008b00;">.wordpress.com/wp-admin/index.php?page=stats</span><span style="color:#ff1493;">&quot;</span>
+ <span style="color:#7f7f7f;">34 </span>
+ <span style="color:#7f7f7f;">35 </span><span style="color:#7f7f7f;"># instantiate/initialise web agent ..</span>
+ <span style="color:#7f7f7f;">36 </span>agent = <span class="&quot;Type&quot;">WWW</span>::<span class="&quot;Type&quot;">Mechanize</span>.new
+ <span style="color:#7f7f7f;">37 </span>agent.user_agent_alias = <span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">Mac Safari</span><span style="color:#ff1493;">&#39;</span>
+ <span style="color:#7f7f7f;">38 </span><span style="color:#7f7f7f;"># .. and get the weblog statistics page</span>
+ <span style="color:#7f7f7f;">39 </span>page = agent.get(stats_url)
+ <span style="color:#7f7f7f;">40 </span>
+ <span style="color:#7f7f7f;">41 </span><span style="color:#7f7f7f;"># did we get back the login form?</span>
+ <span style="color:#7f7f7f;">42 </span><span style="color:#00008b;font-weight:bold;">if</span> (page.title.strip.split[-<span style="color:#008b00;">1</span>] == <span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">Login</span><span style="color:#ff1493;">&#39;</span>)
+ <span style="color:#7f7f7f;">43 </span>    <span style="color:#7f7f7f;"># yes, fill it in and submit it</span>
+ <span style="color:#7f7f7f;">44 </span>    loginf = page.form(<span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">loginform</span><span style="color:#ff1493;">&#39;</span>)
+ <span style="color:#7f7f7f;">45 </span>    loginf.log = user
+ <span style="color:#7f7f7f;">46 </span>    <span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#00008b;font-weight:bold;">not</span> password
+ <span style="color:#7f7f7f;">47 </span>        print <span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">Enter your wordpress.com password: </span><span style="color:#ff1493;">&quot;</span>
+ <span style="color:#7f7f7f;">48 </span>        password = <span style="color:#008b8b;">$stdin</span>.gets.chomp
+ <span style="color:#7f7f7f;">49 </span>    <span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">50 </span>    loginf.pwd = password
+ <span style="color:#7f7f7f;">51 </span>    agent.submit(loginf, loginf.buttons.first)
+ <span style="color:#7f7f7f;">52 </span><span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">53 </span>
+ <span style="color:#7f7f7f;">54 </span><span style="color:#7f7f7f;"># now get the actual weblog statistics page</span>
+ <span style="color:#7f7f7f;">55 </span>page = agent.get_file(stats_url)
+ <span style="color:#7f7f7f;">56 </span><span style="color:#7f7f7f;"># parse it!</span>
+ <span style="color:#7f7f7f;">57 </span>doc = Hpricot(page)
+ <span style="color:#7f7f7f;">58 </span>
+ <span style="color:#7f7f7f;">59 </span><span style="color:#7f7f7f;"># search for the div elements that contain the statistics data</span>
+ <span style="color:#7f7f7f;">60 </span>stats_divs = doc.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">//div[@class=&#39;statsdiv&#39;]</span><span style="color:#ff1493;">&quot;</span>)
+ <span style="color:#7f7f7f;">61 </span>stats_divs.each <span style="color:#00008b;font-weight:bold;">do</span> |<span style="color:#008b8b;">div</span>|
+ <span style="color:#7f7f7f;">62 </span>    heading = div.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">h3/a/text()</span><span style="color:#ff1493;">&quot;</span>)
+ <span style="color:#7f7f7f;">63 </span>    <span style="color:#7f7f7f;"># we are only interested in the statistics for today</span>
+ <span style="color:#7f7f7f;">64 </span>    day = div.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">h4/text()</span><span style="color:#ff1493;">&quot;</span>).first
+ <span style="color:#7f7f7f;">65 </span>    <span style="color:#00008b;font-weight:bold;">if</span> (heading <span style="color:#00008b;font-weight:bold;">and</span> day)
+ <span style="color:#7f7f7f;">66 </span>        heading = <span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">==== </span><span style="color:#ff1493;">#{</span>heading<span style="color:#ff1493;">}</span><span style="color:#008b00;"> (</span><span style="color:#ff1493;">#{</span>day.inner_text.downcase<span style="color:#ff1493;">}</span><span style="color:#008b00;">) ====</span><span style="color:#ff1493;">&quot;</span>.center(<span style="color:#008b00;">50</span>)
+ <span style="color:#7f7f7f;">67 </span>        puts <span style="color:#ff1493;">&quot;</span><span style="color:#ff1493;">\\n</span><span style="color:#ff1493;">#{</span>heading<span style="color:#ff1493;">}</span><span style="color:#ff1493;">\\n</span><span style="color:#ff1493;">&quot;</span>
+ <span style="color:#7f7f7f;">68 </span>        <span style="color:#7f7f7f;"># find the table with today&#39;s statistics data</span>
+ <span style="color:#7f7f7f;">69 </span>        tab = div.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">table</span><span style="color:#ff1493;">&quot;</span>).first
+ <span style="color:#7f7f7f;">70 </span>        <span style="color:#00008b;font-weight:bold;">if</span> tab
+ <span style="color:#7f7f7f;">71 </span>            <span style="color:#7f7f7f;"># extract the statistics data from the &lt;tr&gt; elements</span>
+ <span style="color:#7f7f7f;">72 </span>            tab.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">tr</span><span style="color:#ff1493;">&quot;</span>).each <span style="color:#00008b;font-weight:bold;">do</span> |<span style="color:#008b8b;">tr</span>|
+ <span style="color:#7f7f7f;">73 </span>                what = tr.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">td[@class=&#39;label&#39;]</span><span style="color:#ff1493;">&quot;</span>)
+ <span style="color:#7f7f7f;">74 </span>                views = tr.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">td[@class=&#39;views&#39;]</span><span style="color:#ff1493;">&quot;</span>)
+ <span style="color:#7f7f7f;">75 </span>                whats = what.inner_text.strip()
+ <span style="color:#7f7f7f;">76 </span>                <span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#00008b;font-weight:bold;">not</span> whats.empty?
+ <span style="color:#7f7f7f;">77 </span>                    views = views.inner_text.strip()
+ <span style="color:#7f7f7f;">78 </span>                    printf(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">%s &#8212; %5s</span><span style="color:#ff1493;">\\n</span><span style="color:#ff1493;">&quot;</span>, whats.center(<span style="color:#008b00;">45</span>), views)
+ <span style="color:#7f7f7f;">79 </span>                <span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">80 </span>            <span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">81 </span>        <span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">82 </span>    <span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">83 </span><span style="color:#00008b;font-weight:bold;">end</span>
+ <span style="color:#7f7f7f;">84 </span><span style="color:#7f7f7f;"># grab the div with the general (weblog level) statistics data</span>
+ <span style="color:#7f7f7f;">85 </span>gbdiv = doc.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">//div[@id=&#39;generalblog&#39;]</span><span style="color:#ff1493;">&quot;</span>)
+ <span style="color:#7f7f7f;">86 </span><span style="color:#7f7f7f;"># find the &lt;p&gt; element with the number of views today</span>
+ <span style="color:#7f7f7f;">87 </span>vtoday =  gbdiv.search(<span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">p</span><span style="color:#ff1493;">&quot;</span>).find { |<span style="color:#008b8b;">p</span>| p.inner_text.index(<span style="color:#ff1493;">&#39;</span><span style="color:#008b00;">Views today</span><span style="color:#ff1493;">&#39;</span>) }
+ <span style="color:#7f7f7f;">88 </span><span style="color:#00008b;font-weight:bold;">if</span> vtoday
+ <span style="color:#7f7f7f;">89 </span>    printf(<span style="color:#ff1493;">&quot;</span><span style="color:#ff1493;">\\n</span><span style="color:#008b00;">%s</span><span style="color:#ff1493;">\\n\\n</span><span style="color:#ff1493;">&quot;</span>, <span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">=&gt; </span><span style="color:#ff1493;">#{</span>vtoday.inner_text.strip<span style="color:#ff1493;">}</span><span style="color:#008b00;"> &lt;=</span><span style="color:#ff1493;">&quot;</span>.center(<span style="color:#008b00;">45</span>))
+ <span style="color:#7f7f7f;">90 </span><span style="color:#00008b;font-weight:bold;">else</span>
+ <span style="color:#7f7f7f;">91 </span>    puts <span style="color:#ff1493;">&quot;</span><span style="color:#ff1493;">\\n\\n</span><span style="color:#008b00;">!! No weblog statistics data found.</span><span style="color:#ff1493;">&quot;</span>
+ <span style="color:#7f7f7f;">92 </span>    puts <span style="color:#ff1493;">&quot;</span><span style="color:#008b00;">   Did you enter a wrong user name and/or password?</span><span style="color:#ff1493;">&quot;</span>
+ <span style="color:#7f7f7f;">93 </span><span style="color:#00008b;font-weight:bold;">end</span>
+</pre>
+<h3>Example output</h3>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span>           ==== Referrers (today) ====
+ <span style="color:#7f7f7f;"> 2 </span>   stumbleupon.com/refer.php?url=http%3A?     &#8212;    16
+ <span style="color:#7f7f7f;"> 3 </span>   stumbleupon.com/refer.php?url=http%3A?     &#8212;     3
+ <span style="color:#7f7f7f;"> 4 </span>   planeterlang.org/story.php?title=Erla?     &#8212;     2
+ <span style="color:#7f7f7f;"> 5 </span>   linuxquestions.org/questions/showthre?     &#8212;     2
+ <span style="color:#7f7f7f;"> 6 </span>       del.icio.us/jdkimball/stackless        &#8212;     1
+ <span style="color:#7f7f7f;"> 7 </span>   rodenas.org/blog/2007/08/27/erlang-ri?     &#8212;     1
+ <span style="color:#7f7f7f;"> 8 </span>   intertwingly.net/blog/2007/08/14/Long?     &#8212;     1
+ <span style="color:#7f7f7f;"> 9 </span>             ozone.wordpress.com              &#8212;     1
+ <span style="color:#7f7f7f;">10 </span>   programming.reddit.com/search?q=erlan?     &#8212;     1
+ <span style="color:#7f7f7f;">11 </span>
+ <span style="color:#7f7f7f;">12 </span>           ==== Top Posts (today) ====
+ <span style="color:#7f7f7f;">13 </span>          Processing XML in Erlang            &#8212;    22
+ <span style="color:#7f7f7f;">14 </span>  Erlang vs. Stackless python: a first ben    &#8212;    18
+ <span style="color:#7f7f7f;">15 </span>  Python: file find, grep and in-line repl    &#8212;     4
+ <span style="color:#7f7f7f;">16 </span>  Python decorator mini-study (part 1 of 3    &#8212;     2
+ <span style="color:#7f7f7f;">17 </span>  Code refactoring with python&#39;s functoo      &#8212;     2
+ <span style="color:#7f7f7f;">18 </span>  Python: find files using Unix shell-styl    &#8212;     2
+ <span style="color:#7f7f7f;">19 </span>  Determine order of execution by (re-)seq    &#8212;     2
+ <span style="color:#7f7f7f;">20 </span>           A first look at Groovy             &#8212;     1
+ <span style="color:#7f7f7f;">21 </span>  Python decorator mini-study (part 2 of 3    &#8212;     1
+ <span style="color:#7f7f7f;">22 </span>   Turn on line numbers while searching in    &#8212;     1
+ <span style="color:#7f7f7f;">23 </span>
+ <span style="color:#7f7f7f;">24 </span>      ==== Search Engine Terms (today) ====
+ <span style="color:#7f7f7f;">25 </span>              erlang benchmark                &#8212;     3
+ <span style="color:#7f7f7f;">26 </span>             stackless vs erlang              &#8212;     2
+ <span style="color:#7f7f7f;">27 </span>         python decorators argument           &#8212;     2
+ <span style="color:#7f7f7f;">28 </span>      source code of an execution path        &#8212;     2
+ <span style="color:#7f7f7f;">29 </span>          python functools partial            &#8212;     2
+ <span style="color:#7f7f7f;">30 </span>                 python grep                  &#8212;     2
+ <span style="color:#7f7f7f;">31 </span>         python string replace 2.4.4          &#8212;     1
+ <span style="color:#7f7f7f;">32 </span>              erlang vs C speed               &#8212;     1
+ <span style="color:#7f7f7f;">33 </span>    erlang command line arguments getopt      &#8212;     1
+ <span style="color:#7f7f7f;">34 </span>   Python + parsing command line arguments    &#8212;     1
+ <span style="color:#7f7f7f;">35 </span>
+ <span style="color:#7f7f7f;">36 </span>             ==== Clicks (today) ====
+ <span style="color:#7f7f7f;">37 </span>        hpcwire.com/hpc/1295541.html          &#8212;     2
+ <span style="color:#7f7f7f;">38 </span>   pragmaticprogrammer.com/titles/jaerla?     &#8212;     1
+ <span style="color:#7f7f7f;">39 </span>   hrnjad.net/src/6/scriptutil.py.html#f?     &#8212;     1
+ <span style="color:#7f7f7f;">40 </span>
+ <span style="color:#7f7f7f;">41 </span>            =&gt; Views today: 68 &lt;=
+</pre>
+<h3>Conclusion</h3>
+<p>I am a total <code>Ruby</code> beginner but have a lot of experience with <code>Python</code> and <a href="http://www.perl.org/"><code>Perl</code></a>. It took approximately 2 hours (and frequent look-ups in the <a href="http://www.pragmaticprogrammer.com/titles/ruby/index.html">pickaxe book</a>) to write <a href="http://hrnjad.net/src/e/wls.rb">the tool</a> above and I enjoyed it <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>Being the kind of person that stays away from all things over-hyped I ignored <code>Ruby</code> for the last two years or so but I have to say it&#8217;s a cool language after all.</p>
+<p><a href="http://hrnjad.net/src/e/wls.rb">Click here</a> to download the code.</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/37/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/37/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/37/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/37/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/37/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/37/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/37/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/37/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/37/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/37/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/37/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/37/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=37&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2007/09/04/scrape-the-web-with-ruby/#comments" thr:count="4"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2007/09/04/scrape-the-web-with-ruby/feed/atom/" thr:count="4"/>
+		<thr:total>4</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Processing XML in Erlang]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/" />
+		<id>http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/</id>
+		<updated>2007-08-21T18:21:42Z</updated>
+		<published>2007-08-21T18:21:42Z</published>
+		<category scheme="http://muharem.wordpress.com" term="XML" /><category scheme="http://muharem.wordpress.com" term="erlang" /><category scheme="http://muharem.wordpress.com" term="parsing" />		<summary type="html"><![CDATA[Introduction
+This is my second stab at Erlang (see the ring benchmark article for my first take on it). This time around I wanted to get a sense of how well Erlang and its libraries support more mundane tasks like e.g. XML parsing.
+I am not a big fan of XML but it is the lingua franca [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/"><![CDATA[<div class='snap_preview'><br /><h3>Introduction</h3>
+<p>This is my second stab at Erlang (see the <a href="http://muharem.wordpress.com/2007/07/31/erlang-vs-stackless-python-a-first-benchmark/">ring benchmark article</a> for my first take on it). This time around I wanted to get a sense of how well Erlang and its libraries support more mundane tasks like e.g. XML parsing.</p>
+<p>I am not a big fan of XML but it <em>is</em> the <em>lingua franca</em> of the web and any language that aspires to become &#8220;mainstream&#8221; has to support it in an efficient manner.</p>
+<p>In order to get a feeling for how well Erlang is doing in this respect I am going to repeat my <a href="http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/">recent XML processing experiments with Groovy</a> but this time using Erlang.</p>
+<h3>Example</h3>
+<p>I&#8217;ll be doing some basic processing of RSS files. For a full example of what these look like see e.g. the <a href="http://leoville.tv/podcasts/mbw.xml">MacBreak&#8217;s weekly RSS file</a>. Here&#8217;s an excerpt (abridged for the sake of clarity):</p>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span><span style="color:#7f7f7f;">&lt;?</span><span>xml</span><span> </span><span>version</span>=<span style="color:#008b00;">&#8220;1.0&#8243;</span><span> </span><span>encoding</span>=<span style="color:#008b00;">&#8220;utf-8&#8243;</span><span style="color:#7f7f7f;">?&gt;</span>
+ <span style="color:#7f7f7f;"> 2 </span><span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">rss</span><span style="color:#008b8b;"> </span><span>version</span>=<span style="color:#008b00;">&#8220;2.0&#8243;</span><span style="color:#008b8b;">&gt;</span>
+ <span style="color:#7f7f7f;"> 3 </span>  <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">channel</span><span style="color:#008b8b;">&gt;</span>
+ <span style="color:#7f7f7f;"> 4 </span>    <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">title</span><span style="color:#008b8b;">&gt;</span>MacBreak Weekly<span style="color:#008b8b;">&lt;/title&gt;</span>
+ <span style="color:#7f7f7f;"> 5 </span>    <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">item</span><span style="color:#008b8b;">&gt;</span>
+ <span style="color:#7f7f7f;"> 6 </span>      <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">title</span><span style="color:#008b8b;">&gt;</span>MacBreak Weekly 53: Bill In A Box<span style="color:#008b8b;">&lt;/title&gt;</span>
+ <span style="color:#7f7f7f;"> 7 </span>      <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">link</span><span style="color:#008b8b;">&gt;</span><a href="//www.podtrac.com/twit.cachefly.net/MBW-053.mp3">http://www.podtrac.com/twit.cachefly.net/MBW-053.mp3</a><span style="color:#008b8b;">&lt;/link&gt;</span>
+ <span style="color:#7f7f7f;"> 8 </span>      <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">pubDate</span><span style="color:#008b8b;">&gt;</span>Wed, 15 Aug 2007 12:58:11 -0700<span style="color:#008b8b;">&lt;/pubDate&gt;</span>
+ <span style="color:#7f7f7f;"> 9 </span>      <span style="color:#008b8b;">&lt;</span><span style="color:#008b8b;">enclosure</span><span style="color:#008b8b;"> </span><span>url</span>=<span style="color:#008b00;">&#8220;<a href="//www.podtrac.com/twit.cachefly.net/MBW-053.mp3">http://www.podtrac.com/twit.cachefly.net/MBW-053.mp3</a>&#8220;</span><span style="color:#008b8b;"> /&gt;</span>
+ <span style="color:#7f7f7f;">10 </span>    <span style="color:#008b8b;">&lt;/item&gt;</span>
+ <span style="color:#7f7f7f;">11 </span>  <span style="color:#008b8b;">&lt;/channel&gt;</span>
+ <span style="color:#7f7f7f;">12 </span><span style="color:#008b8b;">&lt;/rss&gt;</span></pre>
+<p>Each of the potentially many <code>&lt;item&gt;</code> tags keeps the data pertaining to a single audiocast episode. What we want to extract is:</p>
+<ul>
+<li>the audiocast episode title (<code>&lt;title&gt;</code> tag)</li>
+<li>the publication date (<code>&lt;pubDate&gt;</code> tag)</li>
+<li>the URL pointing to the MP3 file (<code>&lt;link&gt;</code> tag)</li>
+</ul>
+<p>Depending on the publisher the format of the RSS file may vary slightly. The publication date is e.g. sometimes buried in a <code>&lt;dc:date&gt;</code> tag.<br />
+Likewise, the MP3 URL is sometimes not contained in a <code>&lt;link&gt;</code> tag but in the <code>url</code> attribute of the <code>&lt;enclosure&gt;</code> tag.</p>
+<p>The RSS files I will be using for testing are as follows:</p>
+<pre>
+ <span style="color:#7f7f7f;">1 </span>bbox33:audiocasts $ <span style="font-weight:bold;">pwd</span>
+ <span style="color:#7f7f7f;">2 </span>/Users/mhr/dl/audio/audiocasts
+ <span style="color:#7f7f7f;">3 </span>bbox33:audiocasts $ <span style="font-weight:bold;">find . -type f -name \*.rss</span>
+ <span style="color:#7f7f7f;">4 </span>./metadata/Cc_zwei.rss
+ <span style="color:#7f7f7f;">5 </span>./metadata/Elrep.rss
+ <span style="color:#7f7f7f;">6 </span>./metadata/Security_now_.rss
+ <span style="color:#7f7f7f;">7 </span>./metadata/Technometria.rss
+ <span style="color:#7f7f7f;">8 </span>./metadata/This_week_in_tech.rss
+ <span style="color:#7f7f7f;">9 </span>./metadata/Windows_weekly.rss</pre>
+<h3>Opening remarks</h3>
+<p>Unfortunately, the <a href="http://www.erlang.org/doc/apps/xmerl/index.html">documentation of Erlang&#8217;s XML parsing library</a> is pretty scant and &#8212; apart from the <a href="http://www.erlang.org/doc/apps/xmerl/part_frame.html">xmerl User&#8217;s Guide</a> &#8212; I could not find any tutorials on <code>xmerl</code> on the web.</p>
+<p>Again, a language aspiring to widespread adoption should have more material covering these kinds of basics.</p>
+<p>There were a few choices as to how to go about the parsing business:</p>
+<ul>
+<li> using <code>xmerl_scan</code> with or without <a href="http://www.erlang.org/doc/apps/xmerl/xmerl_examples.html">customization functions</a>.</li>
+<li> using <code>xmerl_scan</code> together with <a href="http://www.erlang.org/doc/man/xmerl_xpath.html"><code>xmerl_xpath</code></a> (an <a href="http://www.w3.org/TR/xpath">XPath</a> 1.0 implementation).</li>
+</ul>
+<p>I chose the first approach because it was better documented. Only after finishing the first cut of the parsing code did I find <code>xmerl_xpath</code> usage examples on a <a href="http://www.nabble.com/xmerl_xpath-difficulties-t4219144.html">mailing list</a> and <a href="http://hrnjad.net/src/d/xml3.erl.html">played with it</a>.</p>
+<h3><a href="http://hrnjad.net/src/d/xml2.erl.html">The code</a></h3>
+<p>The <a href="http://hrnjad.net/src/d/xml2.erl.html">Erlang code</a> that finds the RSS files listed above and parses them is as follows:</p>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span><span>-module</span>(xml2)<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 2 </span><span>-export</span>([main<span style="color:#00008b;font-weight:bold;">/</span><span style="color:#008b00;">1</span>])<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 3 </span><span>-include</span><span style="color:#ff1493;">_</span>lib(<span style="color:#008b00;">&#8220;xmerl/include/xmerl.hrl&#8221;</span>)<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 4 </span>
+ <span style="color:#7f7f7f;"> 5 </span>parseAll(D) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;"> 6 </span>    <span style="color:#7f7f7f;">% find all RSS files underneath D</span>
+ <span style="color:#7f7f7f;"> 7 </span>    FL <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">filelib</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">fold</span><span style="color:#ff1493;">_</span><span style="color:#008b8b;">files</span>(D, <span style="color:#008b00;">&#8220;.+.rss$&#8221;</span>, <span style="color:#00008b;font-weight:bold;">true</span>, <span style="color:#00008b;font-weight:bold;">fun</span>(F, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span> [F|L] <span style="color:#00008b;font-weight:bold;">end</span>, []),
+ <span style="color:#7f7f7f;"> 8 </span>    [ parse(F) || F <span style="color:#00008b;font-weight:bold;">&lt;-</span> FL ]<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;"> 9 </span>
+ <span style="color:#7f7f7f;">10 </span>parse(FName) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">11 </span>    <span style="color:#7f7f7f;">% parses a single RSS file</span>
+ <span style="color:#7f7f7f;">12 </span>    {R,<span style="color:#ff1493;">_</span>} <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">xmerl</span><span style="color:#ff1493;">_</span><span style="color:#008b8b;">scan</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">file</span>(FName),
+ <span style="color:#7f7f7f;">13 </span>    <span style="color:#7f7f7f;">% extract episode titles, publication dates and MP3 URLs</span>
+ <span style="color:#7f7f7f;">14 </span>    L <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">reverse</span>(extract(R, [])),
+ <span style="color:#7f7f7f;">15 </span>    <span style="color:#7f7f7f;">% print channel title and data for first two episodes</span>
+ <span style="color:#7f7f7f;">16 </span>    <span style="color:#008b8b;">io</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">format</span>(<span style="color:#008b00;">&#8220;</span><span style="color:#ff1493;">~n</span><span style="color:#008b00;">&gt;&gt; </span><span style="color:#ff1493;">~p~n</span><span style="color:#008b00;">&#8220;</span>, [<span style="color:#008b8b;">element</span>(<span style="color:#008b00;">1</span>,<span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">split</span>(<span style="color:#008b00;">3</span>,L))]),
+ <span style="color:#7f7f7f;">17 </span>    L<span style="color:#ff1493;">.</span>
+ <span style="color:#7f7f7f;">18 </span>
+ <span style="color:#7f7f7f;">19 </span><span style="color:#7f7f7f;">% handle &#8216;xmlElement&#8217; tags</span>
+ <span style="color:#7f7f7f;">20 </span>extract(R, L) <span style="color:#00008b;font-weight:bold;">when</span> is_record(R, xmlElement) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">21 </span>    <span style="color:#00008b;font-weight:bold;">case</span> R#xmlElement<span style="color:#ff1493;">.</span><span style="color:#ff1493;">name</span> <span style="color:#00008b;font-weight:bold;">of</span>
+ <span style="color:#7f7f7f;">22 </span>        enclosure <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">23 </span>            <span style="color:#00008b;font-weight:bold;">if</span> <span style="color:#008b8b;">element</span>(<span style="color:#008b00;">1</span>, <span style="color:#008b8b;">hd</span>(R#xmlElement<span style="color:#ff1493;">.</span>parents)) <span style="color:#00008b;font-weight:bold;">==</span> item <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">24 </span>                    FFunc <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#00008b;font-weight:bold;">fun</span>(X) <span style="color:#00008b;font-weight:bold;">-&gt;</span> X#xmlAttribute<span style="color:#ff1493;">.</span><span style="color:#ff1493;">name</span> <span style="color:#00008b;font-weight:bold;">==</span> url <span style="color:#00008b;font-weight:bold;">end</span>,
+ <span style="color:#7f7f7f;">25 </span>                    U <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">hd</span>(<span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">filter</span>(FFunc, R#xmlElement<span style="color:#ff1493;">.</span>attributes)),
+ <span style="color:#7f7f7f;">26 </span>                    [ {url, U#xmlAttribute<span style="color:#ff1493;">.</span>value} | L ];
+ <span style="color:#7f7f7f;">27 </span>                <span style="color:#00008b;font-weight:bold;">true</span> <span style="color:#00008b;font-weight:bold;">-&gt;</span> L
+ <span style="color:#7f7f7f;">28 </span>            <span style="color:#00008b;font-weight:bold;">end</span>;
+ <span style="color:#7f7f7f;">29 </span>        channel <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">30 </span>            <span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">foldl</span>(<span style="color:#00008b;font-weight:bold;">fun</span> extract<span style="color:#00008b;font-weight:bold;">/</span><span style="color:#008b00;">2</span>, L, R#xmlElement<span style="color:#ff1493;">.</span>content);
+ <span style="color:#7f7f7f;">31 </span>        item <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">32 </span>            ItemData <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">foldl</span>(<span style="color:#00008b;font-weight:bold;">fun</span> extract<span style="color:#00008b;font-weight:bold;">/</span><span style="color:#008b00;">2</span>, [], R#xmlElement<span style="color:#ff1493;">.</span>content),
+ <span style="color:#7f7f7f;">33 </span>            [ ItemData | L ];
+ <span style="color:#7f7f7f;">34 </span>        <span style="color:#ff1493;">_</span> <span style="color:#00008b;font-weight:bold;">-&gt;</span> <span style="color:#7f7f7f;">% for any other XML elements, simply iterate over children</span>
+ <span style="color:#7f7f7f;">35 </span>            <span style="color:#008b8b;">lists</span><span style="color:#ff1493;">:</span><span style="color:#008b8b;">foldl</span>(<span style="color:#00008b;font-weight:bold;">fun</span> extract<span style="color:#00008b;font-weight:bold;">/</span><span style="color:#008b00;">2</span>, L, R#xmlElement<span style="color:#ff1493;">.</span>content)
+ <span style="color:#7f7f7f;">36 </span>    <span style="color:#00008b;font-weight:bold;">end</span>;
+ <span style="color:#7f7f7f;">37 </span>
+ <span style="color:#7f7f7f;">38 </span>extract(#xmlText{parents<span style="color:#00008b;font-weight:bold;">=</span>[{title,<span style="color:#ff1493;">_</span>},{channel,<span style="color:#008b00;">2</span>},<span style="color:#ff1493;">_</span>], value<span style="color:#00008b;font-weight:bold;">=</span>V}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">39 </span>    [{channel, V}|L]; <span style="color:#7f7f7f;">% extract channel/audiocast title</span>
+ <span style="color:#7f7f7f;">40 </span>
+ <span style="color:#7f7f7f;">41 </span>extract(#xmlText{parents<span style="color:#00008b;font-weight:bold;">=</span>[{title,<span style="color:#ff1493;">_</span>},{item,<span style="color:#ff1493;">_</span>},<span style="color:#ff1493;">_</span>,<span style="color:#ff1493;">_</span>], value<span style="color:#00008b;font-weight:bold;">=</span>V}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">42 </span>    [{title, V}|L]; <span style="color:#7f7f7f;">% extract episode title</span>
+ <span style="color:#7f7f7f;">43 </span>
+ <span style="color:#7f7f7f;">44 </span>extract(#xmlText{parents<span style="color:#00008b;font-weight:bold;">=</span>[{<span style="color:#008b8b;">link</span>,<span style="color:#ff1493;">_</span>},{item,<span style="color:#ff1493;">_</span>},<span style="color:#ff1493;">_</span>,<span style="color:#ff1493;">_</span>], value<span style="color:#00008b;font-weight:bold;">=</span>V}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">45 </span>    [{<span style="color:#008b8b;">link</span>, V}|L]; <span style="color:#7f7f7f;">% extract episode link</span>
+ <span style="color:#7f7f7f;">46 </span>
+ <span style="color:#7f7f7f;">47 </span>extract(#xmlText{parents<span style="color:#00008b;font-weight:bold;">=</span>[{pubDate,<span style="color:#ff1493;">_</span>},{item,<span style="color:#ff1493;">_</span>},<span style="color:#ff1493;">_</span>,<span style="color:#ff1493;">_</span>], value<span style="color:#00008b;font-weight:bold;">=</span>V}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">48 </span>    [{pubDate, V}|L]; <span style="color:#7f7f7f;">% extract episode publication date (&#8217;pubDate&#8217; tag)</span>
+ <span style="color:#7f7f7f;">49 </span>
+ <span style="color:#7f7f7f;">50 </span>extract(#xmlText{parents<span style="color:#00008b;font-weight:bold;">=</span>[{<span>'dc:date'</span>,<span style="color:#ff1493;">_</span>},{item,<span style="color:#ff1493;">_</span>},<span style="color:#ff1493;">_</span>,<span style="color:#ff1493;">_</span>], value<span style="color:#00008b;font-weight:bold;">=</span>V}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">51 </span>    [{pubDate, V}|L]; <span style="color:#7f7f7f;">% extract episode publication date (&#8217;dc:date&#8217; tag)</span>
+ <span style="color:#7f7f7f;">52 </span>
+ <span style="color:#7f7f7f;">53 </span>extract(#xmlText{}, L) <span style="color:#00008b;font-weight:bold;">-&gt;</span> L<span style="color:#ff1493;">.</span>  <span style="color:#7f7f7f;">% ignore any other text data</span>
+ <span style="color:#7f7f7f;">54 </span>
+ <span style="color:#7f7f7f;">55 </span><span style="color:#7f7f7f;">% &#8216;main&#8217; function (invoked from shell, receives command line arguments)</span>
+ <span style="color:#7f7f7f;">56 </span>main(A) <span style="color:#00008b;font-weight:bold;">-&gt;</span>
+ <span style="color:#7f7f7f;">57 </span>    D <span style="color:#00008b;font-weight:bold;">=</span> <span style="color:#008b8b;">atom_to_list</span>(<span style="color:#008b8b;">hd</span>(A)),
+ <span style="color:#7f7f7f;">58 </span>    parseAll(D)<span style="color:#ff1493;">.</span></pre>
+<h3>Conclusion</h3>
+<p>Erlang&#8217;s <code>filelib:fold_files()</code> function is cool and a good example of how easy things should be.</p>
+<p>On the other hand:</p>
+<ul>
+<li> it took quite a bit of time and effort to write the code above (perhaps due to my lack of experience in functional programming) and it was not fun <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_sad.gif' alt=':-(' class='wp-smiley' /> </li>
+<li> beauty is in the eye of the beholder as they say and the promise of being able to write clean and attractive code is a major reason to pick up a new programming language. Again, maybe it&#8217;s just me but I did not find the resulting Erlang code to be particularly attractive.</li>
+<li> the XML parser chokes reproducibly on XML files with non-ASCII character sets (try <a href="http://hrnjad.net/src/d/xml2.erl">the code</a> e.g. with the following <a href="http://www.elektrischer-reporter.de/index.php/site/rss_mp3">RSS file</a> (containing german characters))</li>
+<li> The XPath implementation appears to be incomplete: I could not use the <code>|</code> operator in an XPath expression to select several paths for example.</li>
+</ul>
+<p>Anyway, that&#8217;s just my <code>$ 0.02</code> on XML parsing with Erlang. I am not an expert by any stretch of the imagination so feel free to point to anything I may have missed.</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/36/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/36/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/36/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/36/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/36/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/36/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/36/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/36/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/36/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/36/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/36/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/36/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=36&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/#comments" thr:count="4"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2007/08/21/processing-xml-in-erlang/feed/atom/" thr:count="4"/>
+		<thr:total>4</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[A first look at Groovy]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/" />
+		<id>http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/</id>
+		<updated>2007-08-15T18:01:21Z</updated>
+		<published>2007-08-15T14:45:52Z</published>
+		<category scheme="http://muharem.wordpress.com" term="Groovy" /><category scheme="http://muharem.wordpress.com" term="RSS" /><category scheme="http://muharem.wordpress.com" term="Spring framework" /><category scheme="http://muharem.wordpress.com" term="XML" /><category scheme="http://muharem.wordpress.com" term="parsing" />		<summary type="html"><![CDATA[Introduction
+Recently I started playing with Groovy, a dynamic language that &#8212; according to the first chapter of the Groovy in Action book &#8212; is Python-inspired.
+One of the reasons why I find Groovy attractive is that it can be compiled to Java byte code (despite being a dynamic language) i.e. you gain access to all the [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/"><![CDATA[<div class='snap_preview'><br /><h3>Introduction</h3>
+<p>Recently I started playing with <a href="http://groovy.codehaus.org/">Groovy</a>, a dynamic language that &#8212; according to the <a href="http://www.manning.com/koenig/sample-ch01.pdf">first chapter</a> of the <a href="http://www.manning.com/koenig/">Groovy in Action</a> book &#8212; is Python-inspired.</p>
+<p>One of the reasons why I find Groovy attractive is that it can be compiled to Java byte code (despite being a dynamic language) i.e. you gain access to all the Java libraries and the capability to deploy on the Java platform without actually having to write Java code.</p>
+<p>Groovy is even <a href="http://www.springframework.org/docs/reference/dynamic-language.html">supported</a> by the <a href="http://www.springframework.org/">Spring Framework</a>. So, if you&#8217;re &#8220;forced&#8221; to work in a Java project in order to make a living but would rather be using a dynamic language then Groovy is definitely worth a look.</p>
+<h3>Example</h3>
+<p>Some time ago I wrote a small tool (using Python) that manages my audiocasts. Based on the RSS feeds I am interested in it synchronises </p>
+<ol>
+<li>
+the MP3 files on my MP3 player with the ones available on the local hard disk of my computer
+</li>
+<li>
+the MP3 files on my computer (local hard disk) with the ones available on the web
+</li>
+</ol>
+<p>It is also cognizant of the date of an audiocast and will only consider MP3 files that were published on a particular channel <code>N</code> days ago.</p>
+<p>I thought building a similar tool in Groovy would be a nice exercise and a good way to get to know the language.</p>
+<p>I started playing with the code that parses the RSS (XML) files first and was pleasantly surprised how quickly I was able to get my hands on the data required.</p>
+<p>For an example of how an RSS file looks like see e.g. the <a href="http://leoville.tv/podcasts/mbw.xml">MacBreak&#8217;s weekly RSS file</a>. In essence the top level tag is <code>&lt;channel&gt;</code> with a number of embedded <code>&lt;item&gt;</code> tags. Each item is an audiocast and the data I needed for my purpose is as follows:</p>
+<ul>
+<li>audiocast episode title (<code>&lt;title&gt;</code> tag)</li>
+<li>publication date (<code>&lt;pubDate&gt;</code> tag)</li>
+<li>the URL pointing to the MP3 file (<code>&lt;link&gt;</code> tag)</li>
+</ul>
+<p>Depending on the publisher the format of the RSS file may vary slightly. The publication date is e.g. sometimes buried in a <code>&lt;dc:date&gt;</code> tag (where <code>dc</code> is an XML name space pointing to <code>http://purl.org/dc/elements/1.1/</code>).</p>
+<p>Likewise, the MP3 file URL is sometimes not contained in a <code>&lt;link&gt;</code> tag but in the <code>url</code> attribute of the <code>&lt;enclosure&gt;</code> tag.</p>
+<p>The RSS files on my system are here:</p>
+<pre>
+ <span style="color:#7f7f7f;">1 </span>bbox33:audiocasts $ <span style="font-weight:bold;">pwd</span>
+ <span style="color:#7f7f7f;">2 </span>/Users/mhr/dl/audio/audiocasts
+ <span style="color:#7f7f7f;">3 </span>bbox33:audiocasts $ <span style="font-weight:bold;">find . -type f -name \\*.rss</span>
+ <span style="color:#7f7f7f;">4 </span>./metadata/Cc_zwei.rss
+ <span style="color:#7f7f7f;">5 </span>./metadata/Elrep.rss
+ <span style="color:#7f7f7f;">6 </span>./metadata/Security_now_.rss
+ <span style="color:#7f7f7f;">7 </span>./metadata/Technometria.rss
+ <span style="color:#7f7f7f;">8 </span>./metadata/This_week_in_tech.rss
+ <span style="color:#7f7f7f;">9 </span>./metadata/Windows_weekly.rss
+</pre>
+<h3><a href="//hrnjad.net/src/c/xml.groovy.html">The code</a></h3>
+<p>The <a href="//hrnjad.net/src/c/xml.groovy.html">Groovy code</a> that finds the RSS files listed above and parses them is as follows:</p>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span><span style="color:#ff1493;">def</span> audioDir = <span style="color:#00008b;font-weight:bold;">new</span> File(<span style="color:#008b00;">&quot;/Users/mhr/dl/audio/audiocasts&quot;</span>)
+ <span style="color:#7f7f7f;"> 2 </span>
+ <span style="color:#7f7f7f;"> 3 </span><span style="color:#7f7f7f;">// initialise RSS files list</span>
+ <span style="color:#7f7f7f;"> 4 </span>files = []
+ <span style="color:#7f7f7f;"> 5 </span><span style="color:#7f7f7f;">// find RSS files underneath &#39;audioDir&#39;</span>
+ <span style="color:#7f7f7f;"> 6 </span>audioDir.eachFileRecurse { <span style="color:#00008b;font-weight:bold;">if</span> (it =~ /.*\.(xml|rss)$/) { files <span style="color:#00008b;font-weight:bold;">&lt;&lt;</span> it } }
+ <span style="color:#7f7f7f;"> 7 </span>
+ <span style="color:#7f7f7f;"> 8 </span><span style="color:#008b8b;">println</span>(<span style="color:#008b00;">&quot;</span><span style="color:#ff1493;">\\\n</span><span style="color:#008b00;">&#8212;&#8212;&#8211; RSS files &#8212;&#8212;&#8211;&quot;</span>)
+ <span style="color:#7f7f7f;"> 9 </span><span style="color:#008b8b;">println</span> files.<span style="color:#008b8b;">join</span>(<span style="color:#008b00;">&#39;</span><span style="color:#ff1493;">\\\n</span><span style="color:#008b00;">&#39;</span>)
+ <span style="color:#7f7f7f;">10 </span>
+ <span style="color:#7f7f7f;">11 </span><span style="color:#7f7f7f;">// iterate over RSS files found</span>
+ <span style="color:#7f7f7f;">12 </span><span style="color:#00008b;font-weight:bold;">for</span> (rssf <span style="color:#ff1493;">in</span> files) {
+ <span style="color:#7f7f7f;">13 </span>    <span style="color:#008b8b;">println</span>(<span style="color:#008b00;">&quot;</span><span style="color:#ff1493;">\\\n</span><span style="color:#008b00;">&#8212;&#8212;&#8211; $rssf &#8212;&#8212;&#8211;&quot;</span>)
+ <span style="color:#7f7f7f;">14 </span>    <span style="color:#7f7f7f;">// parse the RSS file</span>
+ <span style="color:#7f7f7f;">15 </span>    <span style="color:#ff1493;">def</span> d = <span style="color:#00008b;font-weight:bold;">new</span> XmlSlurper().parse(rssf)
+ <span style="color:#7f7f7f;">16 </span>    d.declareNamespace(dc:<span style="color:#008b00;">&quot;<a href="//purl.org/dc/elements/1.1/&quot;">http://purl.org/dc/elements/1.1/</a>&quot;</span>)
+ <span style="color:#7f7f7f;">17 </span>
+ <span style="color:#7f7f7f;">18 </span>    <span style="color:#7f7f7f;">// iterate over item tags in RSS file (take only the first two)</span>
+ <span style="color:#7f7f7f;">19 </span>    d.channel.item[<span style="color:#008b00;">0..1</span>].<span style="color:#008b8b;">each</span> {
+ <span style="color:#7f7f7f;">20 </span>        <span style="color:#008b8b;">println</span> <span style="color:#008b00;">&quot;==&gt; </span><span style="color:#008b8b;">${it.title}</span><span style="color:#008b00;">&quot;</span>
+ <span style="color:#7f7f7f;">21 </span>        <span style="color:#00008b;font-weight:bold;">if</span> (it.pubDate.toString().trim()) {
+ <span style="color:#7f7f7f;">22 </span>            <span style="color:#008b8b;">println</span> <span style="color:#008b00;">&quot;pubDate: </span><span style="color:#008b8b;">${it.pubDate}</span><span style="color:#008b00;">&quot;</span>
+ <span style="color:#7f7f7f;">23 </span>        } <span style="color:#00008b;font-weight:bold;">else</span> {
+ <span style="color:#7f7f7f;">24 </span>            <span style="color:#008b8b;">println</span> <span style="color:#008b00;">&quot;dc:date: </span><span style="color:#008b8b;">${it.&#39;dc:date&#39;}</span><span style="color:#008b00;">&quot;</span>
+ <span style="color:#7f7f7f;">25 </span>        }
+ <span style="color:#7f7f7f;">26 </span>        <span style="color:#00008b;font-weight:bold;">if</span> (it.link.toString().trim()) {
+ <span style="color:#7f7f7f;">27 </span>            <span style="color:#008b8b;">println</span> <span style="color:#008b00;">&quot;link: </span><span style="color:#008b8b;">${it.link}</span><span style="color:#008b00;">&quot;</span>
+ <span style="color:#7f7f7f;">28 </span>        } <span style="color:#00008b;font-weight:bold;">else</span> {
+ <span style="color:#7f7f7f;">29 </span>            <span style="color:#008b8b;">println</span> <span style="color:#008b00;">&quot;url: </span><span style="color:#008b8b;">${it.enclosure.@url}</span><span style="color:#008b00;">&quot;</span>
+ <span style="color:#7f7f7f;">30 </span>        }
+ <span style="color:#7f7f7f;">31 </span>    }
+ <span style="color:#7f7f7f;">32 </span>}
+</pre>
+<p>Here&#8217;s the output generated by the code above:</p>
+<pre>
+ <span style="color:#7f7f7f;"> 1 </span>bbox33:groovy $ <span style="font-weight:bold;">groovy xml.groovy</span>
+ <span style="color:#7f7f7f;"> 2 </span>
+ <span style="color:#7f7f7f;"> 3 </span>&#8212;&#8212;&#8211; RSS files &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;"> 4 </span>/Users/mhr/dl/audio/audiocasts/metadata/Cc_zwei.rss
+ <span style="color:#7f7f7f;"> 5 </span>/Users/mhr/dl/audio/audiocasts/metadata/Elrep.rss
+ <span style="color:#7f7f7f;"> 6 </span>/Users/mhr/dl/audio/audiocasts/metadata/Security_now_.rss
+ <span style="color:#7f7f7f;"> 7 </span>/Users/mhr/dl/audio/audiocasts/metadata/Technometria.rss
+ <span style="color:#7f7f7f;"> 8 </span>/Users/mhr/dl/audio/audiocasts/metadata/This_week_in_tech.rss
+ <span style="color:#7f7f7f;"> 9 </span>/Users/mhr/dl/audio/audiocasts/metadata/Windows_weekly.rss
+ <span style="color:#7f7f7f;">10 </span>
+ <span style="color:#7f7f7f;">11 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/Cc_zwei.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">12 </span>==&gt; CC2 - 62. Folge
+ <span style="color:#7f7f7f;">13 </span>pubDate: Mon, 13 Aug 2007 20:00:00 +0200 +0200
+ <span style="color:#7f7f7f;">14 </span>url: http://www.media01-live.de/CC-Zwei-62.mp3
+ <span style="color:#7f7f7f;">15 </span>==&gt; CC2 - 61. Folge
+ <span style="color:#7f7f7f;">16 </span>pubDate: Mon, 06 Aug 2007 20:00:00 +0200 +0200
+ <span style="color:#7f7f7f;">17 </span>url: http://www.media01-live.de/CC-Zwei-61.mp3
+ <span style="color:#7f7f7f;">18 </span>
+ <span style="color:#7f7f7f;">19 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/Elrep.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">20 </span>==&gt; 36: Lutz Schmitt ^_ber Machinima
+ <span style="color:#7f7f7f;">21 </span>dc:date: 2007-08-05T21:30:00+01:00
+ <span style="color:#7f7f7f;">22 </span>link: http://www.elektrischer-reporter.de/index.php/site/film/48/
+ <span style="color:#7f7f7f;">23 </span>==&gt; 35: Peter Schaar ^_ber Vorratsdatenspeicherung und Online-Durchsuchungen
+ <span style="color:#7f7f7f;">24 </span>dc:date: 2007-07-22T21:30:00+01:00
+ <span style="color:#7f7f7f;">25 </span>link: http://www.elektrischer-reporter.de/index.php/site/film/47/
+ <span style="color:#7f7f7f;">26 </span>
+ <span style="color:#7f7f7f;">27 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/Security_now_.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">28 </span>==&gt; Security Now 104: SteveOs Questions, Your Answers 22 - sponsored by Astaro Corp.
+ <span style="color:#7f7f7f;">29 </span>pubDate: Thu, 09 Aug 2007 08:22:49 -0700
+ <span style="color:#7f7f7f;">30 </span>link: http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/sn/SN-104.mp3
+ <span style="color:#7f7f7f;">31 </span>==&gt; Security Now 103: Paypal Security Key - sponsored by Astaro Corp.
+ <span style="color:#7f7f7f;">32 </span>pubDate: Thu, 02 Aug 2007 15:17:58 -0700
+ <span style="color:#7f7f7f;">33 </span>link: http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/sn/SN-103.mp3
+ <span style="color:#7f7f7f;">34 </span>
+ <span style="color:#7f7f7f;">35 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/Technometria.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">36 </span>==&gt; Scott Lemon, Ben Galbraith - Technometria
+ <span style="color:#7f7f7f;">37 </span>pubDate: Tue, 14 Aug 2007 00:00:00 CDT
+ <span style="color:#7f7f7f;">38 </span>link: http://www.itconversations.com/shows/detail1892.html
+ <span style="color:#7f7f7f;">39 </span>==&gt; Drew Major - Technometria
+ <span style="color:#7f7f7f;">40 </span>pubDate: Tue, 7 Aug 2007 00:00:00 CDT
+ <span style="color:#7f7f7f;">41 </span>link: http://www.itconversations.com/shows/detail1886.html
+ <span style="color:#7f7f7f;">42 </span>
+ <span style="color:#7f7f7f;">43 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/This_week_in_tech.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">44 </span>==&gt; TWiT 109: The Numinous From The Quotidian
+ <span style="color:#7f7f7f;">45 </span>pubDate: Sun, 12 Aug 2007 22:39:47 -0700
+ <span style="color:#7f7f7f;">46 </span>link: http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/TWiT0109H.mp3
+ <span style="color:#7f7f7f;">47 </span>==&gt; TWiT 108: The Crash of 2007
+ <span style="color:#7f7f7f;">48 </span>pubDate: Sun, 05 Aug 2007 20:48:59 -0700
+ <span style="color:#7f7f7f;">49 </span>link: http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/TWiT0108H.mp3
+ <span style="color:#7f7f7f;">50 </span>
+ <span style="color:#7f7f7f;">51 </span>&#8212;&#8212;&#8211; /Users/mhr/dl/audio/audiocasts/metadata/Windows_weekly.rss &#8212;&#8212;&#8211;
+ <span style="color:#7f7f7f;">52 </span>==&gt; Windows Weekly 32: Neener Neener Neener
+ <span style="color:#7f7f7f;">53 </span>pubDate: Fri, 27 Jul 2007 18:49:31 -0700
+ <span style="color:#7f7f7f;">54 </span>link: http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/WW-032.mp3
+ <span style="color:#7f7f7f;">55 </span>==&gt; Windows Weekly 31: Computing In The Clouds
+ <span style="color:#7f7f7f;">56 </span>pubDate: Fri, 20 Jul 2007 08:57:52 -0700
+ <span style="color:#7f7f7f;">57 </span>link: http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/WW-031.mp3
+</pre>
+<h3>Conclusion</h3>
+<p>I have not written any substantial code in Groovy yet but my first impressions of the language are favourable. Groovy should be an interesting addition to your arsenal (particularly if you know the Java libraries fairly well).</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/34/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/34/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/34/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/34/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/34/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/34/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/34/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/34/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/34/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/34/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/34/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/34/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=34&subd=muharem&ref=&feed=1" /></div>]]></content>
+<link href="http://www.media01-live.de/CC-Zwei-62.mp3" rel="enclosure" length="28048449" type="audio/mpeg" />
+<link href="http://www.media01-live.de/CC-Zwei-61.mp3" rel="enclosure" length="26789556" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/sn/SN-104.mp3" rel="enclosure" length="33788910" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/sn/SN-103.mp3" rel="enclosure" length="24771348" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/TWiT0109H.mp3" rel="enclosure" length="35275110" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/TWiT0108H.mp3" rel="enclosure" length="22413879" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/WW-032.mp3" rel="enclosure" length="33332420" type="audio/mpeg" />
+<link href="http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/WW-031.mp3" rel="enclosure" length="28678637" type="audio/mpeg" />
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/#comments" thr:count="1"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2007/08/15/a-first-look-at-groovy/feed/atom/" thr:count="1"/>
+		<thr:total>1</thr:total>
+	</entry>
+		<entry>
+		<author>
+			<name>muharem</name>
+						<uri>http://muharem.wordpress.com/</uri>
+					</author>
+		<title type="html"><![CDATA[Renovating Jython: a strategic imperative]]></title>
+		<link rel="alternate" type="text/html" href="http://muharem.wordpress.com/2007/08/09/renovating-jython-a-strategic-imperative/" />
+		<id>http://muharem.wordpress.com/2007/08/09/renovating-jython-a-strategic-imperative/</id>
+		<updated>2007-08-09T21:13:45Z</updated>
+		<published>2007-08-09T20:03:40Z</published>
+		<category scheme="http://muharem.wordpress.com" term="interoperability" /><category scheme="http://muharem.wordpress.com" term="java" /><category scheme="http://muharem.wordpress.com" term="jython" /><category scheme="http://muharem.wordpress.com" term="strategy" />		<summary type="html"><![CDATA[I always found Java boring, .. never really understood how people could get all fired up about it  
+When it comes to programming, however, Java is the undisputed present day &#8220;king of the hill&#8221;. It has a huge community and a lot of cool tools (e.g. Lucene and ANTLR just to mention a few) [...]]]></summary>
+		<content type="html" xml:base="http://muharem.wordpress.com/2007/08/09/renovating-jython-a-strategic-imperative/"><![CDATA[<div class='snap_preview'><br /><p>I always found Java boring, .. never really understood how people could get all fired up about it <img src='http://s.wordpress.com/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>When it comes to programming, however, Java is the undisputed present day &#8220;king of the hill&#8221;. It has a huge community and a lot of cool tools (e.g. <a href="http://lucene.apache.org/java/docs/">Lucene</a> and <a href="http://www.antlr.org/">ANTLR</a> just to mention a few) that I would love to use in my own projects.</p>
+<p>Problem is: I don&#8217;t fancy the prospect of writing Java code. Having used Python almost exclusively for the last two years I came to appreciate dynamic languages and loathe going back to statically typed programming.</p>
+<p>Maybe <a href="http://groovy.codehaus.org/">Groovy</a> can fill the gap: it appears to be dynamic in nature while allowing easy access to all the Java goodies. It has some potential and I am still exploring it.</p>
+<p>All things considered <a href="http://www.jython.org/Project/index.html">Jython</a> would clearly be the best contender if it were not for the fact that it is quite outdated (when compared to CPython).</p>
+<p>My sense is that a lot of developers and companies would embrace Jython (and thus Python) without any hesitation if provided with a modern and more up to date implementation. The <a href="http://wiki.python.org/moin/BoulderSprint">Jython renovation effort</a> is thus a no-brainer and a strategic imperative for the entire Python community.</p>
+<p>We should not allow others <a href="http://www.javaworld.com/javaworld/jw-02-2007/jw-02-jruby.html">to outrun us</a> in this important &#8220;market segment&#8221;. Let&#8217;s get our act together and lend the Jython folks a helping hand!</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/muharem.wordpress.com/33/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/muharem.wordpress.com/33/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/muharem.wordpress.com/33/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/muharem.wordpress.com/33/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/muharem.wordpress.com/33/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/muharem.wordpress.com/33/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/muharem.wordpress.com/33/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/muharem.wordpress.com/33/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/muharem.wordpress.com/33/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/muharem.wordpress.com/33/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/muharem.wordpress.com/33/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/muharem.wordpress.com/33/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=muharem.wordpress.com&blog=484506&post=33&subd=muharem&ref=&feed=1" /></div>]]></content>
+		<link rel="replies" type="text/html" href="http://muharem.wordpress.com/2007/08/09/renovating-jython-a-strategic-imperative/#comments" thr:count="7"/>
+		<link rel="replies" type="application/atom+xml" href="http://muharem.wordpress.com/2007/08/09/renovating-jython-a-strategic-imperative/feed/atom/" thr:count="7"/>
+		<thr:total>7</thr:total>
+	</entry>
+	</feed>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- generator="wordpress/2.3.3" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>david ascher &#187; Python</title>
+	<link>http://ascher.ca/blog</link>
+	<description></description>
+	<pubDate>Thu, 05 Jun 2008 20:10:34 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.3.3</generator>
+	<language>en</language>
+			<item>
+		<title>Thunderbird team needs help from Python/Perl build engineer</title>
+		<link>http://ascher.ca/blog/2008/05/02/thunderbird-team-needs-help-from-pythonperl-build-assist/</link>
+		<comments>http://ascher.ca/blog/2008/05/02/thunderbird-team-needs-help-from-pythonperl-build-assist/#comments</comments>
+		<pubDate>Sat, 03 May 2008 00:07:30 +0000</pubDate>
+		<dc:creator>david</dc:creator>
+		
+		<category><![CDATA[Mozilla]]></category>
+
+		<category><![CDATA[Open Source]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/2008/05/02/thunderbird-team-needs-help-from-pythonperl-build-assist/</guid>
+		<description><![CDATA[If you&#8217;re a Thunderbird fan but not interested in fixing some of the nasty C++ problems we tackle in the product, you could still be very, very helpful if you can help us with a little Python/Perl build problems.
+Specifically, Mozilla has a great system called &#8220;try servers&#8221; where one can submit patches against the tree, [...]]]></description>
+			<content:encoded><![CDATA[<p>If you&#8217;re a Thunderbird fan but not interested in fixing some of the nasty C++ problems we tackle in the product, you could still be very, very helpful if you can help us with a little Python/Perl build problems.</p>
+<p>Specifically, Mozilla has a great system called &#8220;try servers&#8221; where one can submit patches against the tree, and the build system runs builds on Linux, Mac and Windows, using those patches, then serves those builds for testing.  This is really helpful to figure out if proposed patches solve specific problems, especially when the developers aren&#8217;t able to reproduce the bugs, but testers can.  It works great for Firefox development right now.</p>
+<p>The only problem is that there&#8217;s a little bit of patching needed to the try server code itself to make it able to work with other targets besides Firefox, as described in <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=431375">bug 431375</a>.  <a href="http://blog.mozilla.com/bhearsum/archives/25">Ben Hearsum</a>, a build guy from Mozilla, is happy to help someone figure out those patches, but he doesn&#8217;t have time to make it happen right now.  </p>
+<p>From what i can tell, required skills include comfort with CVS and Linux, Python, Perl, and some build engineering common sense.  </p>
+<p>Thanks in advance!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2008/05/02/thunderbird-team-needs-help-from-pythonperl-build-assist/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Anyone taking a Django weblogging engine public?</title>
+		<link>http://ascher.ca/blog/2007/09/11/anyone-taking-a-django-weblogging-engine-public/</link>
+		<comments>http://ascher.ca/blog/2007/09/11/anyone-taking-a-django-weblogging-engine-public/#comments</comments>
+		<pubDate>Wed, 12 Sep 2007 04:32:57 +0000</pubDate>
+		<dc:creator>david</dc:creator>
+		
+		<category><![CDATA[Django]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Software]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/2007/09/11/anyone-taking-a-django-weblogging-engine-public/</guid>
+		<description><![CDATA[Some really bright people seem to be building really nice blogs with Django.  Is anyone considering turning the bespoke code into a reusable project?  I&#8217;d be up for something that I could hack on with ease&#8230;
+]]></description>
+			<content:encoded><![CDATA[<p>Some really bright people seem to be building really nice blogs with Django.  Is anyone considering turning the bespoke code into a reusable project?  I&#8217;d be up for something that I could hack on with ease&#8230;</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2007/09/11/anyone-taking-a-django-weblogging-engine-public/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Google Summer of Code</title>
+		<link>http://ascher.ca/blog/2005/05/31/google-summer-of-code/</link>
+		<comments>http://ascher.ca/blog/2005/05/31/google-summer-of-code/#comments</comments>
+		<pubDate>Tue, 31 May 2005 18:08:13 +0000</pubDate>
+		<dc:creator>david</dc:creator>
+		
+		<category><![CDATA[Computing]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/2005/05/31/google-summer-of-code/</guid>
+		<description><![CDATA[So it&#8217;s finally live! I&#8217;m talking about the Google Summer of Code, a program whereby Google spends $$&#8217;s via open source foundations (such as our own Python Software Foundation) to students in exchange for code.  I&#8217;m happy to see this project actually happen, and I hope it&#8217;s successful for all involved.   I [...]]]></description>
+			<content:encoded><![CDATA[<p>So it&#8217;s finally live! I&#8217;m talking about the <a href="http://code.google.com/summerofcode.html">Google Summer of Code</a>, a program whereby Google spends $$&#8217;s <em>via</em> open source foundations (such as our own <a href="http://www.python.org/psf">Python Software Foundation</a>) to students in exchange for code.  I&#8217;m happy to see this project actually happen, and I hope it&#8217;s successful for all involved.   I heard about it a while back when Chris DiBona was trying to figure out whether foundations would be willing partipants.</p>
+<p>The <em>real</em> <a href="http://www.pythonchallenge.com">Python Challenge</a>, over the next few weeks, will be to come up with:</p>
+<ul>
+<li>a compelling list of projects (I&#8217;ve started <a href="http://wiki.python.org/moin/CodingProjectIdeas">a draft</a> on the Python wiki)</li>
+<li>to rouse interested and interesting students (unfortunately, many of the best probably already have incompatible plans for the summer),</li>
+<li>to <strike>rope in</strike> recruit mentors who&#8217;ll be able to help the students along if they get stuck.</li>
+</ul>
+<p>Still, it&#8217;s a great opportunity to broaden the pool of actors in the open source world to include on a full-time basis those who need to pay the rent.  I&#8217;m confident that the open source communities around each of these foundations step up to the plate, and we&#8217;ll end up in the fall with some code, sure, but more importantly some fresh blood with energy and a few scars to go with the experience gained.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2005/05/31/google-summer-of-code/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Python Challenge</title>
+		<link>http://ascher.ca/blog/2005/05/07/python-challenge/</link>
+		<comments>http://ascher.ca/blog/2005/05/07/python-challenge/#comments</comments>
+		<pubDate>Sun, 08 May 2005 06:49:18 +0000</pubDate>
+		<dc:creator>david</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/2005/05/07/python-challenge/</guid>
+		<description><![CDATA[I&#8217;m at level 5 of the Python Challenge.  12 more to go, phew.
+]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m at level 5 of the <a href="http://www.pythonchallenge.com/pc/index.htm">Python Challenge</a>.  12 more to go, phew.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2005/05/07/python-challenge/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyCon</title>
+		<link>http://ascher.ca/blog/2005/03/23/pycon/</link>
+		<comments>http://ascher.ca/blog/2005/03/23/pycon/#comments</comments>
+		<pubDate>Wed, 23 Mar 2005 17:06:23 +0000</pubDate>
+		<dc:creator>David</dc:creator>
+		
+		<category><![CDATA[Computing]]></category>
+
+		<category><![CDATA[Conferences]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/?p=99</guid>
+		<description><![CDATA[First day at PyCon 2005.  It&#8217;s, as usual, interesting.  Random bits:
+
+Crowded!  It&#8217;s bigger than ever, clocking in over 400.  It&#8217;s caused some headaches of the good kind (catering more expensive than planned, not enough t-shirts, rooms are packed).
+Not too surprisingly given the buzz around Python, there are big names (although we&#8217;ve [...]]]></description>
+			<content:encoded><![CDATA[<p>First day at <a href="www.pycon.org/dc2005/">PyCon 2005</a>.  It&#8217;s, as usual, interesting.  Random bits:</p>
+<ul>
+<li>Crowded!  It&#8217;s bigger than ever, clocking in over 400.  It&#8217;s caused some headaches of the good kind (catering more expensive than planned, not enough t-shirts, rooms are packed).</li>
+<li>Not too surprisingly given the buzz around Python, there are big names (although we&#8217;ve had big names at Python conferences for years).  This year it&#8217;s Jim Hugunin from Microsoft, Greg Stein from Google, and we&#8217;ll see who else).</li>
+<li>More interesting to me, a lot of old friends, including many who used to come at conferences, then stopped, and are now back.  I don&#8217;t know if it has anything to do with Python itself, the economy in general, or it&#8217;s just random &#8212; but it&#8217;s nice to touch base again.</li>
+<li>It&#8217;s only been three hours, so it&#8217;s a bit hard to know for sure yet, but it seems as though there&#8217;s more money around &#8212; more startups, some VC influences, and a greater proportion of people who do Python for their jobs, not just for love</li>
+</ul>
+<p>Washington DC is still a great city, the Rouge Hotel still has attitude and free broadband, and I&#8217;m looking forward to good dinners with old friends.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2005/03/23/pycon/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Python and OpenGL on Nokia Phones</title>
+		<link>http://ascher.ca/blog/2005/03/16/python-and-opengl-on-nokia-phones/</link>
+		<comments>http://ascher.ca/blog/2005/03/16/python-and-opengl-on-nokia-phones/#comments</comments>
+		<pubDate>Wed, 16 Mar 2005 23:00:11 +0000</pubDate>
+		<dc:creator>David</dc:creator>
+		
+		<category><![CDATA[Computing]]></category>
+
+		<category><![CDATA[Conferences]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/?p=98</guid>
+		<description><![CDATA[Sitting here at ETech, just after Erik Smartt, product manager for the Python on Nokia product, gave the first real public demo of the Symbian/Series 60 port of Python.  The highlight was a PyOpenGL demo (the code isn&#8217;t available yet, and the author is not public either).  Click on the picture for the [...]]]></description>
+			<content:encoded><![CDATA[<p>Sitting here at ETech, just after Erik Smartt, product manager for the Python on Nokia product, gave the first real public demo of the <a href="http://www.forum.nokia.com/main/0,,034-821,00.html">Symbian/Series 60 port of Python</a>.  The highlight was a PyOpenGL demo (the code isn&#8217;t available yet, and the author is not public either).  Click on the picture for the Quicktime movie.</p>
+<p><a href="http://www.ascher.ca/images/P1050038.MOV"><img src="http://www.ascher.ca/images/P1050038.JPG"/></a></p>
+<p>As someone who worked on PyOpenGL a <em>long, long time ago</em> on high end Silicon Graphics workstations, it&#8217;s fairly stunning to see it fit into a pocket.</p>
+<p>Also notable was a demo of the FlashLite stuff, which is equally cool, but probably available elsewhere (if not, I&#8217;ll post a movie later).</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2005/03/16/python-and-opengl-on-nokia-phones/feed/</wfw:commentRss>
+<enclosure url="http://www.ascher.ca/images/P1050038.MOV" length="3751910" type="video/quicktime" />
+		</item>
+		<item>
+		<title>Bloglines &#038; Twisted</title>
+		<link>http://ascher.ca/blog/2004/11/09/bloglines-twisted/</link>
+		<comments>http://ascher.ca/blog/2004/11/09/bloglines-twisted/#comments</comments>
+		<pubDate>Tue, 09 Nov 2004 21:44:43 +0000</pubDate>
+		<dc:creator>David</dc:creator>
+		
+		<category><![CDATA[Blogging]]></category>
+
+		<category><![CDATA[Computing]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/?p=46</guid>
+		<description><![CDATA[Interesting bit found in my webserver access logs:
+209.67.209.74 - - [08/Nov/2004:00:07:32 -0500] "GET /blog/index.cgi/?flav=rss HTTP/1.0" 404 24542 "-" "Twisted PageGetter"
+Googling &#8220;Twisted PageGetter&#8221; confirms that it&#8217;s a spider that comes with Twisted Python.  Once more, Python&#8217;s in the web spidering business, this times w/ bloglines.
+]]></description>
+			<content:encoded><![CDATA[<p>Interesting bit found in my webserver access logs:</p>
+<p><code>209.67.209.74 - - [08/Nov/2004:00:07:32 -0500] "GET /blog/index.cgi/?flav=rss HTTP/1.0" 404 24542 "-" "Twisted PageGetter"</code></p>
+<p>Googling &#8220;Twisted PageGetter&#8221; confirms that it&#8217;s a spider that comes with Twisted Python.  Once more, Python&#8217;s in the web spidering business, this times w/ <a href="www.bloglines.com">bloglines</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2004/11/09/bloglines-twisted/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>The Python Software Foundation is Giving Out Money</title>
+		<link>http://ascher.ca/blog/2004/09/20/the-python-software-foundation-is-giving-out-money/</link>
+		<comments>http://ascher.ca/blog/2004/09/20/the-python-software-foundation-is-giving-out-money/#comments</comments>
+		<pubDate>Mon, 20 Sep 2004 04:00:00 +0000</pubDate>
+		<dc:creator>David</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/?p=11</guid>
+		<description><![CDATA[I&#8217;m thinking a catchy headline will grab eyeballs.  Furthermore, it&#8217;s actually true.  The PSF issued a short-but-sweet call for proposals.  It&#8217;s as open-ended as we could make it, and leaves many questions unanswered.  So we also created a mailing list for discussion of said questions.  Come one, come all.  [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;m thinking a catchy headline will grab eyeballs.  Furthermore, it&#8217;s actually true.  The <span class="caps">PSF</span> issued a short-but-sweet <a href="http://www.python.org/psf/call-2004.html">call for proposals</a>.  It&#8217;s as open-ended as we could make it, and leaves many questions unanswered.  So we also created a <a href="http://mail.python.org/mailman/listinfo/grants-discuss">mailing list</a> for discussion of said questions.  Come one, come all.  It&#8217;s an interesting time for Python; we can actually put money towards rewarding interesting projects.  Deadline for proposals is October 1.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2004/09/20/the-python-software-foundation-is-giving-out-money/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Pyblosxom plugin: summary (aka extended entry)</title>
+		<link>http://ascher.ca/blog/2004/09/20/pyblosxom-plugin-emsummaryem-emakaem-extended-entry/</link>
+		<comments>http://ascher.ca/blog/2004/09/20/pyblosxom-plugin-emsummaryem-emakaem-extended-entry/#comments</comments>
+		<pubDate>Mon, 20 Sep 2004 04:00:00 +0000</pubDate>
+		<dc:creator>David</dc:creator>
+		
+		<category><![CDATA[Blogging]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://ascher.ca/blog/?p=12</guid>
+		<description><![CDATA[A missing feature of Pyblosxom was the &apos;extended entry&apos; capability that several other blogging systems have.  Continuing in my experiment with Pyblosxom, a second plugin for Pyblosxom, which comes in at a whopping 32 lines of code (a sign of a decent architecture!).  
+The markup is relatively simple, and seems to be compatible [...]]]></description>
+			<content:encoded><![CDATA[<p>A missing feature of Pyblosxom was the &apos;extended entry&apos; capability that several other blogging systems have.  Continuing in my experiment with Pyblosxom, <a href="/software/pyblosxom/summary.py">a second plugin</a> for Pyblosxom, which comes in at a whopping 32 lines of code (a sign of a decent architecture!).  </p>
+<p>The markup is relatively simple, and seems to be compatible with the various entry parsers (textile, ReST, etc.):</p>
+<pre>
+    Entry title
+    (((
+    This is the summary
+    )))
+    This is the full entry.
+</pre>
+<p><a href="/software/pyblosxom/summary.py">summary.py</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://ascher.ca/blog/2004/09/20/pyblosxom-plugin-emsummaryem-emakaem-extended-entry/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

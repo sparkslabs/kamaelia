@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+	<channel>
+		<title>YouTube :: Videos by pycon08</title>
+		<link>http://www.youtube.com/rss/user/pycon08/videos.rss</link>
+		<image> 
+			<url>http://youtube.com/img/pic_youtubelogo_123x63.gif</url>
+			<link>http://youtube.com</link> 
+			<title>YouTube</title> 
+			<height>63</height>
+			<width>123</width>
+		</image>
+		<description>Videos uploaded by pycon08 hosted at http://www.youtube.com.</description>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Your Pythonic Math Class of the __future__</title>
+			<link>http://youtube.com/?v=hbeHdg8mtdc</link>
+			<description>
+				<![CDATA[
+				<img src="http://s1.ytimg.com/vi/hbeHdg8mtdc/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				By Kirby Urner.
+
+Currently most K-12 mathematics curricula eschew programming, but with the advent of One Laptop Per Child, other trends, there's evidence a new status quo is emerging. This talk focuses on how some prototypical classes are already putting Python to good use.
+
+http://us.pycon.org/2008/conference/schedule/event/11/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=math">math</a> <a href="/results?search_query=mathematics">mathematics</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=pycon2008">pycon2008</a><br/>
+					Added: March 30, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=hbeHdg8mtdc</guid>
+			<pubDate>Sun, 30 Mar 2008 17:21:33 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=hbeHdg8mtdc" />
+			<media:thumbnail url="http://s1.ytimg.com/vi/hbeHdg8mtdc/default.jpg" width="120" height="90" />
+			<media:title>Your Pythonic Math Class of the __future__</media:title>
+			<media:category label="Tags"> math mathematics python pycon pycon2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/hbeHdg8mtdc.swf" duration="1687" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Using Grok to Walk Like a Duck</title>
+			<link>http://youtube.com/?v=UF77e2TeeQo</link>
+			<description>
+				<![CDATA[
+				<img src="http://s2.ytimg.com/vi/UF77e2TeeQo/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 Talk by
+Mr. Brandon C Rhodes (Georgia Tech)
+
+Grok provides tools for general-purpose application design. Reuse in Python often involves teaching an old class new tricks: adding attributes or methods to allow the class to function in a new environment that its author had not anticipated. A simple coding example is enough to illustrate that the three traditional Python approaches to this problem are burdened by significant limitations. The talk will examine the concept of an "adapter", an industrial-strength design pattern which solves every problem burdening the other three approaches — but which makes it necessary to call the adapter constantly from your code! The talk therefore concludes by introducing Grok, whose ability to register and dynamically invoke your adapters will remove all mention of them from your code while leaving you in full control of how classes are adapted.
+
+Slides: http://rhodesmill.org/brandon/adapters/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=advocacy">advocacy</a> <a href="/results?search_query=best-practices">best-practices</a> <a href="/results?search_query=object">object</a> <a href="/results?search_query=orientation">orientation</a> <a href="/results?search_query=technique">technique</a> <a href="/results?search_query=web">web</a> <a href="/results?search_query=framework">framework</a> <a href="/results?search_query=zope">zope</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a><br/>
+					Added: March 27, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=UF77e2TeeQo</guid>
+			<pubDate>Thu, 27 Mar 2008 04:16:43 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=UF77e2TeeQo" />
+			<media:thumbnail url="http://s2.ytimg.com/vi/UF77e2TeeQo/default.jpg" width="120" height="90" />
+			<media:title>Using Grok to Walk Like a Duck</media:title>
+			<media:category label="Tags"> advocacy best-practices object orientation technique web framework zope python pycon 2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/UF77e2TeeQo.swf" duration="1900" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>A New Compiler for Jython</title>
+			<link>http://youtube.com/?v=7TQAgQ8aZXo</link>
+			<description>
+				<![CDATA[
+				<img src="http://s4.ytimg.com/vi/7TQAgQ8aZXo/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 Talk by
+
+Jim Baker; Mr. Tobias Ivarsson
+
+As part of the Google Summer of Code, we created a prototype of a fully-functional Jython 2.5 compiler. We will discuss this and our subsequent work to turn this into a production-ready compiler.
+
+Slides: http://us.pycon.org/2008/conference/schedule/event/13/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=python">python</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a> <a href="/results?search_query=ast">ast</a> <a href="/results?search_query=concurrency">concurrency</a> <a href="/results?search_query=coroutines">coroutines</a> <a href="/results?search_query=jython">jython</a> <a href="/results?search_query=performance">performance</a><br/>
+					Added: March 27, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=7TQAgQ8aZXo</guid>
+			<pubDate>Thu, 27 Mar 2008 04:15:19 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=7TQAgQ8aZXo" />
+			<media:thumbnail url="http://s4.ytimg.com/vi/7TQAgQ8aZXo/default.jpg" width="120" height="90" />
+			<media:title>A New Compiler for Jython</media:title>
+			<media:category label="Tags"> python pycon 2008 ast concurrency coroutines jython performance</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/7TQAgQ8aZXo.swf" duration="1657" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Using .NET Libraries in CPython</title>
+			<link>http://youtube.com/?v=BF660esQbW0</link>
+			<description>
+				<![CDATA[
+				<img src="http://s3.ytimg.com/vi/BF660esQbW0/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 talk by
+Mr. Feihong Hsu
+
+In the past several years, .NET has really taken off in the software industry. The .NET platform includes an efficient VM and a comprehensive standard library, as well as numerous third-party libraries and tools. OK, nothing new, we've seen all this before in Java. However, unlike Java, .NET is fairly easy to integrate with your Python programs. I will show just how easy it is by giving a detailed introduction to Python.NET, a bridge between CPython and .NET.
+ 
+Topics in this talk will include:
+ 
+* Comparison of Python.NET and IronPython
+* A basic grounding in .NET terminology, concepts, and language features
+* How to read .NET documentation
+* Troubleshooting tips
+* Threading issues
+
+Materials available at http://us.pycon.org/2008/conference/schedule/event/23/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=dotnet">dotnet</a> <a href="/results?search_query=integration">integration</a> <a href="/results?search_query=ironpython">ironpython</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a><br/>
+					Added: March 27, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=BF660esQbW0</guid>
+			<pubDate>Thu, 27 Mar 2008 03:42:02 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=BF660esQbW0" />
+			<media:thumbnail url="http://s3.ytimg.com/vi/BF660esQbW0/default.jpg" width="120" height="90" />
+			<media:title>Using .NET Libraries in CPython</media:title>
+			<media:category label="Tags"> dotnet integration ironpython python pycon 2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/BF660esQbW0.swf" duration="1663" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>To RE or not to RE - parsing text in Python</title>
+			<link>http://youtube.com/?v=GR8t3mTovD8</link>
+			<description>
+				<![CDATA[
+				<img src="http://s4.ytimg.com/vi/GR8t3mTovD8/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 Talk by 
+Anna M Ravenscroft (Stanford University)
+
+Text parsing - breaking up text into smaller parts for processing - is a common task for programmers. Whether you're tokenizing a sentence for Part of Speech tagging in computational linguistics, automatically checking logs for specific errors, or doing Hidden Markov Models to output Emily Dickinson-style poems, chances are, at some point in your programming, you'll need to do text parsing.
+ 
+One of the most common methods of doing text parsing uses a specialized pattern-recognition language called regular expressions. Regular expressions (REs) can be intimidating to a new programmer; they may try to avoid REs at all costs. Others will turn to REs out of unfamiliarity with the wonders of Python native string manipulation. This talk will focus on the basics:
+ 
+ * when and how can you use Python's native string methods,
+ * when to consider REs, and
+ * how to do simple text parsing.
+
+Slides available at http://us.pycon.org/2008/conference/schedule/event/63/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=parsing">parsing</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=newbie">newbie</a> <a href="/results?search_query=regex">regex</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a><br/>
+					Added: March 27, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=GR8t3mTovD8</guid>
+			<pubDate>Thu, 27 Mar 2008 02:30:28 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=GR8t3mTovD8" />
+			<media:thumbnail url="http://s4.ytimg.com/vi/GR8t3mTovD8/default.jpg" width="120" height="90" />
+			<media:title>To RE or not to RE - parsing text in Python</media:title>
+			<media:category label="Tags"> parsing python newbie regex pycon 2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/GR8t3mTovD8.swf" duration="1619" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>MPI Cluster Programming with Python and Amazon EC2</title>
+			<link>http://youtube.com/?v=XR3rIVLjA-U</link>
+			<description>
+				<![CDATA[
+				<img src="http://s1.ytimg.com/vi/XR3rIVLjA-U/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 Talk by
+Peter Skomoroch (Juice Analytics)
+
+Amazon EC2 may offer the possibility of high performance computing to programmers on a budget. Instead of building and maintaining a permanent Beowulf cluster, we can launch a cluster on-demand using Python and EC2. This talk will cover the basics involved in getting your own cluster running using Python, demonstrate how to run some large parallel computations using Python MPI wrappers, and show some initial results on cluster performance.
+
+Slides available at http://us.pycon.org/2008/conference/schedule/event/10/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=case">case</a> <a href="/results?search_query=study">study</a> <a href="/results?search_query=cloud">cloud</a> <a href="/results?search_query=computing">computing</a> <a href="/results?search_query=distributed">distributed</a> <a href="/results?search_query=performance">performance</a> <a href="/results?search_query=tutorial">tutorial</a><br/>
+					Added: March 26, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=XR3rIVLjA-U</guid>
+			<pubDate>Wed, 26 Mar 2008 11:27:18 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=XR3rIVLjA-U" />
+			<media:thumbnail url="http://s1.ytimg.com/vi/XR3rIVLjA-U/default.jpg" width="120" height="90" />
+			<media:title>MPI Cluster Programming with Python and Amazon EC2</media:title>
+			<media:category label="Tags"> pycon 2008 python case study cloud computing distributed performance tutorial</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/XR3rIVLjA-U.swf" duration="1733" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Grassy Knoll</title>
+			<link>http://youtube.com/?v=jV7kMiUPTXM</link>
+			<description>
+				<![CDATA[
+				<img src="http://s3.ytimg.com/vi/jV7kMiUPTXM/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008
+Pete Fein's talk on Grassy Knoll, a search engine written in Python.  Code is available from http://code.google.com/p/grassyknoll/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=chipy">chipy</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=grassy">grassy</a> <a href="/results?search_query=knoll">knoll</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a><br/>
+					Added: March 26, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=jV7kMiUPTXM</guid>
+			<pubDate>Wed, 26 Mar 2008 02:57:11 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=jV7kMiUPTXM" />
+			<media:thumbnail url="http://s3.ytimg.com/vi/jV7kMiUPTXM/default.jpg" width="120" height="90" />
+			<media:title>Grassy Knoll</media:title>
+			<media:category label="Tags"> chipy python grassy knoll pycon 2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/jV7kMiUPTXM.swf" duration="1573" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Lightning talk: SPSS</title>
+			<link>http://youtube.com/?v=okvb4bEye3s</link>
+			<description>
+				<![CDATA[
+				<img src="http://s4.ytimg.com/vi/okvb4bEye3s/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				By Jon Peck.
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=pycon2008">pycon2008</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=spss">spss</a> <a href="/results?search_query=statistics">statistics</a><br/>
+					Added: March 23, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=okvb4bEye3s</guid>
+			<pubDate>Sun, 23 Mar 2008 16:02:38 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=okvb4bEye3s" />
+			<media:thumbnail url="http://s4.ytimg.com/vi/okvb4bEye3s/default.jpg" width="120" height="90" />
+			<media:title>Lightning talk: SPSS</media:title>
+			<media:category label="Tags"> pycon2008 pycon python spss statistics</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/okvb4bEye3s.swf" duration="293" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Lightning talk: Ubiquitous Offline Shopping</title>
+			<link>http://youtube.com/?v=gEk6jTvp4to</link>
+			<description>
+				<![CDATA[
+				<img src="http://s4.ytimg.com/vi/gEk6jTvp4to/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				By Wesley Chun of NearbyNow.
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=pycon2008">pycon2008</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=nearbynow">nearbynow</a><br/>
+					Added: March 23, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=gEk6jTvp4to</guid>
+			<pubDate>Sun, 23 Mar 2008 14:59:58 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=gEk6jTvp4to" />
+			<media:thumbnail url="http://s4.ytimg.com/vi/gEk6jTvp4to/default.jpg" width="120" height="90" />
+			<media:title>Lightning talk: Ubiquitous Offline Shopping</media:title>
+			<media:category label="Tags"> pycon2008 pycon python nearbynow</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/gEk6jTvp4to.swf" duration="259" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Lightning Talk: Noonhat and Saturday House</title>
+			<link>http://youtube.com/?v=g3AFTQURzXQ</link>
+			<description>
+				<![CDATA[
+				<img src="http://s4.ytimg.com/vi/g3AFTQURzXQ/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 lightning talk regarding Noonhat, http://www.noonhat.com/lunch/
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=noonhat">noonhat</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=2008">2008</a> <a href="/results?search_query=pycon2008">pycon2008</a> <a href="/results?search_query=pycon08">pycon08</a><br/>
+					Added: March 23, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=g3AFTQURzXQ</guid>
+			<pubDate>Sun, 23 Mar 2008 12:45:22 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=g3AFTQURzXQ" />
+			<media:thumbnail url="http://s4.ytimg.com/vi/g3AFTQURzXQ/default.jpg" width="120" height="90" />
+			<media:title>Lightning Talk: Noonhat and Saturday House</media:title>
+			<media:category label="Tags"> noonhat pycon 2008 pycon2008 pycon08</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/g3AFTQURzXQ.swf" duration="306" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Lightning talk: How to write Unix daemons (I heart windows)</title>
+			<link>http://youtube.com/?v=6yU9FjrR2Ig</link>
+			<description>
+				<![CDATA[
+				<img src="http://s3.ytimg.com/vi/6yU9FjrR2Ig/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				Hilarious lightning talk about what to do when writing daemons for Unix/Linux.
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=daemons">daemons</a> <a href="/results?search_query=linux">linux</a> <a href="/results?search_query=unix">unix</a> <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=2008">2008</a> <a href="/results?search_query=pycon08">pycon08</a> <a href="/results?search_query=pycon2008">pycon2008</a><br/>
+					Added: March 20, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=6yU9FjrR2Ig</guid>
+			<pubDate>Thu, 20 Mar 2008 13:23:20 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=6yU9FjrR2Ig" />
+			<media:thumbnail url="http://s3.ytimg.com/vi/6yU9FjrR2Ig/default.jpg" width="120" height="90" />
+			<media:title>Lightning talk: How to write Unix daemons (I heart windows)</media:title>
+			<media:category label="Tags"> daemons linux unix pycon python 2008 pycon08 pycon2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/6yU9FjrR2Ig.swf" duration="208" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Lightning Talk: Why algebraFirst</title>
+			<link>http://youtube.com/?v=nBhlCON6Pho</link>
+			<description>
+				<![CDATA[
+				<img src="http://s3.ytimg.com/vi/nBhlCON6Pho/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 Lightning Talk
+
+call for evidence by UK Govt Williams early math committee on March 19th from the international python community!~
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=pycon">pycon</a> <a href="/results?search_query=pycon08">pycon08</a> <a href="/results?search_query=2008">2008</a> <a href="/results?search_query=python">python</a> <a href="/results?search_query=algebra">algebra</a> <a href="/results?search_query=gattegno">gattegno</a> <a href="/results?search_query=tizard">tizard</a> <a href="/results?search_query=stanford">stanford</a> <a href="/results?search_query=pycon2008">pycon2008</a><br/>
+					Added: March 20, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=nBhlCON6Pho</guid>
+			<pubDate>Thu, 20 Mar 2008 12:24:01 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=nBhlCON6Pho" />
+			<media:thumbnail url="http://s3.ytimg.com/vi/nBhlCON6Pho/default.jpg" width="120" height="90" />
+			<media:title>Lightning Talk: Why algebraFirst</media:title>
+			<media:category label="Tags"> pycon pycon08 2008 python algebra gattegno tizard stanford pycon2008</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/nBhlCON6Pho.swf" duration="375" type="application/x-shockwave-flash"/>
+		</item>
+		<item>
+			<author>rss@youtube.com (pycon08)</author>
+			<title>Case Study of Python Application Development: Humanized Enso</title>
+			<link>http://youtube.com/?v=Aj9APRWAga0</link>
+			<description>
+				<![CDATA[
+				<img src="http://s2.ytimg.com/vi/Aj9APRWAga0/default.jpg" align="right" border="0" width="120" height="90" vspace="4" hspace="4" />
+				<p>
+				PyCon 2008 talk by 
+Jono DiCarlo (Humanized, Inc).
+
+http://us.pycon.org/2008/conference/schedule/event/60/
+
+Think that Python is just for web frameworks and scripting? Come hear the case study of how we developed Enso, a client-side, end-user Windows application, almost entirely in Python (with a little C) and how doing so sped up our development cycle enormously.
+ 
+Talk will focus on how to write Python extension modules in C using SWIG and ctypes, how to automate your build process with Python using scons, and how to package Python code into an easily distributable Windows application using py2exe. It will also explain why supposed pitfalls like dynamic typing and slow performance did not turn out to be significant problems at all.
+				</p>
+				<p>
+					Author: <a href="http://youtube.com/profile?user=pycon08">pycon08</a><br/>
+					Keywords:  <a href="/results?search_query=python">python</a> <a href="/results?search_query=pycon2008">pycon2008</a> <a href="/results?search_query=pycon08">pycon08</a> <a href="/results?search_query=command">command</a> <a href="/results?search_query=line">line</a> <a href="/results?search_query=tools">tools</a> <a href="/results?search_query=extensions">extensions</a> <a href="/results?search_query=packaging">packaging</a> <a href="/results?search_query=project">project</a> <a href="/results?search_query=software">software</a> <a href="/results?search_query=technique">technique</a> <a href="/results?search_query=testing">testing</a> <a href="/results?search_query=user">user</a> <a href="/results?search_query=interfaces">interfaces</a><br/>
+					Added: March 19, 2008<br/>
+				</p>
+]]>
+			</description>
+			<guid isPermaLink="true">http://youtube.com/?v=Aj9APRWAga0</guid>
+			<pubDate>Wed, 19 Mar 2008 13:28:31 -0700</pubDate>
+
+			<media:player url="http://youtube.com/?v=Aj9APRWAga0" />
+			<media:thumbnail url="http://s2.ytimg.com/vi/Aj9APRWAga0/default.jpg" width="120" height="90" />
+			<media:title>Case Study of Python Application Development: Humanized Enso</media:title>
+			<media:category label="Tags"> python pycon2008 pycon08 command line tools extensions packaging project software technique testing user interfaces</media:category>
+			<media:credit>pycon08</media:credit>
+			<enclosure url="http://youtube.com/v/Aj9APRWAga0.swf" duration="1682" type="application/x-shockwave-flash"/>
+		</item>
+	</channel>
+</rss>

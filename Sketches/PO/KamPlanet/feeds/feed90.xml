@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0"
+   xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback"
+   xmlns:ent="http://www.purl.org/NET/ENT/1.0/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<channel>
+<title>Python Postings</title>
+<link>http://www.executableabstractions.com/weblog/Python/</link>
+<description>On my explorations of python</description>
+<language>en</language>
+<copyright>Copyright 2005 Rand Anderson</copyright>
+<lastBuildDate>Sat, 15 Jan 2005 20:35:12 GMT</lastBuildDate>
+<generator>Python Desktop Server 0.7.1 (http://pyds.muensterland.org/)</generator>
+<managingEditor>rand@executableabstractions.com</managingEditor>
+<webMaster>rand@executableabstractions.com</webMaster>
+<category domain="http://www.weblogs.com/rssUpdates/changes.xml">rssUpdates</category>
+<skipHours>
+<hour>1</hour>
+<hour>2</hour>
+<hour>3</hour>
+<hour>4</hour>
+<hour>5</hour>
+<hour>6</hour>
+<hour>7</hour>
+<hour>8</hour>
+<hour>9</hour>
+<hour>10</hour>
+<hour>11</hour>
+<hour>12</hour>
+<hour>13</hour>
+<hour>14</hour>
+<hour>15</hour>
+<hour>16</hour>
+<hour>18</hour>
+<hour>19</hour>
+<hour>21</hour>
+<hour>23</hour>
+</skipHours>
+<item>
+<title>Tagsonomy Management</title>
+<link>http://www.executableabstractions.com/weblog/Python/2005/01/15.html#P79</link>
+<description>&lt;p&gt;Following the recent growth-spike in social software systems like &lt;a href=&quot;http://del.icio.us/randog&quot;&gt;del.icio.us&lt;/a&gt; and &lt;a href=&quot;http://www.flickr.com&quot;&gt;flickr&lt;/a&gt; (systems that support the use of tags to classify content and to then share those tag schemes with others) has been the use of the term &lt;a href=&quot;http://en.wikipedia.org/wiki/Folksonomy&quot;&gt;folksonomy&lt;/a&gt; to describe these tag-based &lt;a href=&quot;http://en.wikipedia.org/wiki/Taxonomy&quot;&gt;taxonomies&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Personally, I find a lesser-used term, &lt;a href=&quot;http://technorati.com/tag/tagsonomy&quot; rel=&quot;tag&quot;&gt;tagsonomy&lt;/a&gt;, more appropriate.&lt;/p&gt;
+
+&lt;p&gt;Of course, these recent &apos;net-based systems aren&apos;t the first place that I&apos;ve run into on-the-fly creation of tags to help classify content.&lt;/p&gt;
+
+&lt;p&gt;I believe I have various tagsonomies now in effect in a number of places, including at least the following:
+&lt;li&gt;- Outlook categories for PIM content&lt;/li&gt;
+&lt;li&gt;- Office document keyword metadata&lt;/li&gt;
+&lt;li&gt;- del.icio.us bookmark tags&lt;/li&gt;
+&lt;li&gt;- Adobe Album photo tags&lt;/li&gt;
+&lt;li&gt;- iPhoto photo tags&lt;/li&gt;
+&lt;li&gt;- posts on this blog&lt;/li&gt;
+&lt;li&gt;- grouped news feeds in Sharpreader&lt;/li&gt;
+&lt;li&gt;- etc.&lt;/li&gt;
+&lt;/p&gt;
+
+&lt;p&gt;[Some may object that the tags used in systems that manage purely private content (e.g., Outlook categories) cannot be considered true folksonomies, since neither the content nor the tags are visible to anyone but myself. That may be true, and is maybe the root difference between folksonomy and tagsonomy. However, my guess, without having (yet) studied the patterns/structures in tags used across the different systems, some private some public, is that my informal tagging systems probably bear more similarities than differences. They probably all reflect to a significant extent my particular way of viewing the world.]&lt;/p&gt;
+
+&lt;p&gt;I have been quite intrigued with the exploration that del.icio.us lets one do by browsing not only who else is bookmarking the same content you are, but also seeing how they have tagged the same links...in some cases, there is quite a bit of diversity! And then when you see someone else with a similar tagsonomy, you think, hey, they must think in some way like me.&lt;/p&gt;
+
+&lt;p&gt;I realize that the simple, informal, ad-hoc nature of these tag-based classifications is a feature, yet I am unable to avoid thinking that there may be a way to, without diminishing those properties, somehow do a better job of managing at least my own global tagsonomy as it grows and evolves. By manage it, I mostly mean do something special to help make the tags more consistent across my own content. The anticipated benefit will be better searchability across my own content. And beyond that, some better means for discovering related content elsewhere on the web.&lt;/p&gt;
+
+&lt;p&gt;Next step (if I had the time) would be to build a tool that harvests all the tags from these decentralized tagsonomies, and presents them to me in some unified way. This would be a nice little sem-webbish python project, I recall seeing python libs for &lt;a href=&quot;http://www.xml.com/pub/a/2004/11/10/delicious.html&quot;&gt;del.icio.us&lt;/a&gt; and &lt;a href=&quot;http://jamesclarke.info/projects/flickr/&quot;&gt;flickr&lt;/a&gt;, I can use &lt;a href=&quot;http://www.python.org/windows/win32com/&quot;&gt;win32com&lt;/a&gt; for the com-based apps, I&apos;ll have to explore to see what some of the other apps provide in the way of exposure or api.&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2005/01/15.html#P79</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Knowledge Management</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Knowledge Management" ent:href="http://www.executableabstractions.com/weblog/Knowledge Management/">Knowledge Management</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sat, 15 Jan 2005 20:35:12 GMT</pubDate>
+</item>
+<item>
+<title>Python Native XML Datatype redux</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/12/07.html#P76</link>
+<description>&lt;p&gt;&lt;a href=&quot;http://logix.livelogix.com/index.html&quot;&gt;Logix&lt;/a&gt; makes &lt;a href=&quot;http://www.executableabstractions.com/weblog/2004/10/06.html&quot;&gt;this&lt;/a&gt; and &lt;a href=&quot;http://www.executableabstractions.com/weblog/2004/10/10.html&quot;&gt;that&lt;/a&gt; feasible (or so it would appear) with a working implementation of a multi-language programming system.
+&lt;/p&gt;
+&lt;p&gt;Thanks to &lt;a href=&quot;http://lambda-the-ultimate.org/&quot;&gt;LtU&lt;/a&gt; for the pointer&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/12/07.html#P76</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Tue, 07 Dec 2004 22:06:56 GMT</pubDate>
+</item>
+<item>
+<title>The New New Mod-pubsub</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/10/27.html#P73</link>
+<description>&lt;p&gt;So, the &lt;a href=&quot;http://www.mod-pubsub.org/blog/archives/440_Repubsub_good_to_go.html&quot;&gt;new new mod-pubsub engine&lt;/a&gt; is out. This is the long-awaited &lt;a href=&quot;http://www.twistedmatrix.com/&quot;&gt;twisted&lt;/a&gt;-based one. If you are not yet familiar with mod-pubsub, and you have any interest in &lt;a href=&quot;ftp://ftp.ora.com/pub/conference/p2p2001/1163/khare_1163.ppt&quot;&gt;the two-way web&lt;/a&gt;, &lt;a href=&quot;http://www.knownow.com/products/platform.shtml&quot;&gt;event-routing&lt;/a&gt;, and &lt;a href=&quot;http://www.ics.uci.edu/~rohit/DecentralizingREST.pdf&quot;&gt;progressive RESTian architectures&lt;/a&gt; (amongst other possible profound themes into which this could be categorized), go check this out pronto.&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/10/27.html#P73</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Event-driven</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Event-driven" ent:href="http://www.executableabstractions.com/weblog/Event-driven/">Event-driven</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Wed, 27 Oct 2004 20:48:00 GMT</pubDate>
+</item>
+<item>
+<title>Native XML Datatype for Python, contd</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/10/10.html#P72</link>
+<description>&lt;p&gt;Jon Udell, &lt;a href=&quot;http://weblog.infoworld.com/udell/2004/10/08.html#a1091&quot;&gt;taking it&lt;/a&gt; to the next level by suggesting that such a native type be added to the mainstream VMs, kept me thinking about how to move toward the ideal of a native xml datatype in python...&lt;a href=&quot;http://www.aaronsw.com/2002/xmltramp/&quot;&gt;xmltramp&lt;/a&gt; looks like it is worth some experimentation.&lt;/p&gt;
+
+&lt;p&gt;Then yesterday, serendipitously, I was browsing around the site of one of the giants of Python, &lt;a href=&quot;http://effbot.org/&quot;&gt;Frederick Lundh&lt;/a&gt;, when I ran across this post of his from late 2002: &lt;a href=&quot;http://effbot.org/zone/idea-xml-literal.htm&quot;&gt;Idea: XML Literals for Python&lt;/a&gt;. Maybe we should be praying for rain?&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/10/10.html#P72</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sun, 10 Oct 2004 12:45:52 GMT</pubDate>
+</item>
+<item>
+<title>PEP: Native XML Datatype</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/10/06.html#P71</link>
+<description>&lt;p&gt;Request for new Python Feature: support for a native (or quasi-native) XML datatype, a la &lt;a href=&quot;http://www.ecma-international.org/publications/standards/Ecma-357.htm&quot;&gt;E4X&lt;/a&gt;. As recently discussed by &lt;a href=&quot;http://weblog.infoworld.com/udell/2004/09/29.html#a1085&quot;&gt;Jon Udell&lt;/a&gt; and &lt;a href=&quot;http://www.windley.com/2004/09/30.html#a1444&quot;&gt;Phil Windley&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I wonder how close to the ideal user (developer) experience a solution could get without changes to the core language? Does python 2.3.x have enough innate extensibility to make something decent possible?&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/10/06.html#P71</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Wed, 06 Oct 2004 17:27:28 GMT</pubDate>
+</item>
+<item>
+<title>IronPython</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/07/29.html#P69</link>
+<description>&lt;p&gt;Bonus! Tonight was an all-niter, wasn&apos;t it sweet to take a glance at the news before retiring circa 4am only to see jump from the page that &lt;a href=&quot;http://www.ironpython.com/&quot;&gt;IronPython&lt;/a&gt; has finally been made available. I thought maybe I was hallucinating, but no, it is there. Maybe I won&apos;t hit the hay just yet...&lt;p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/07/29.html#P69</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Thu, 29 Jul 2004 07:45:04 GMT</pubDate>
+</item>
+<item>
+<title>PyDS as a Windows Service</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/05/10.html#P64</link>
+<description>&lt;p&gt;I now have my PyDS desktop server running as a Windows service, thanks to &lt;a href=&quot;http://www.westfalen.de/pipermail/pyds-dev/2004-March/000714.html&quot;&gt;these clues&lt;/a&gt;. This is &lt;i&gt;much&lt;/i&gt; more convenient and &apos;cleaner&apos; than the previous mechanism of starting up the server from a cmd-shell.&lt;/p&gt;
+
+&lt;p&gt;The best impact is that I no longer run into &lt;a href=&quot;http://www.executableabstractions.com/weblog/2004/03/15.html#P38&quot;&gt;localhost-not-localhost&lt;/a&gt; because I forgot to start up PyDS.&lt;/p&gt;
+
+&lt;p&gt;This solution leverages the ZService.py script from the &lt;a href=&quot;http://www.zope.org&quot;&gt;Zope&lt;/a&gt; distribution. Nice little gem to keep in mind for running some python as a Windows service.&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/05/10.html#P64</guid>
+<category domain="http://www.executableabstractions.com/weblog/">PyDS</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="PyDS" ent:href="http://www.executableabstractions.com/weblog/PyDS/">PyDS</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Mon, 10 May 2004 04:20:16 GMT</pubDate>
+</item>
+<item>
+<title>PySpaces 3</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/04/30.html#P63</link>
+<description>&lt;p&gt;Another &lt;a href=&quot;http://www.executableabstractions.com/weblog/Python/2004/03/20.html#P41&quot;&gt;python-based tuplespace&lt;/a&gt; implementation has turned up: &lt;a href=&quot;http://www-users.cs.york.ac.uk/~aw/pylinda&quot;&gt;PyLinda&lt;/a&gt; [thanks to &lt;a href=&quot;http://pyds.muensterland.org/&quot;&gt;Georg Bauer&lt;/a&gt; for alerting me to it].&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/04/30.html#P63</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Fri, 30 Apr 2004 22:56:00 GMT</pubDate>
+</item>
+<item>
+<title>Pub-sub Internet Middleware</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/04/18.html#P59</link>
+<description>&lt;p&gt;Adam Rifkin, co-founder of &lt;a href=&quot;http://www.knownow.com&quot;&gt;KnowNow&lt;/a&gt;, has a new article (co-authored with KnowNow&apos;s CTO Jnan Dash) published in &lt;a href=&quot;http://www.bijonline.com/Department.asp?DepartmentID=15&quot;&gt;Business Integration Journal&lt;/a&gt;: &lt;a href=&quot;http://www.bijonline.com/Article.asp?ArticleID=876&amp;DepartmentID=15&quot;&gt;&apos;Survival of the Freshest: Improving Business Processes With Pub-Sub
+Internet Middleware&apos;&lt;/a&gt;. I was pleased to see in a recent email update from BIJ that this article is amongst their most-read in recent months.&lt;/p&gt;
+
+&lt;p&gt;&quot;With publish-and-subscribe internet middleware, organizations can achieve &apos;last-mile&apos;, real-time data delivery with less latency, fewer IT requirements, and low cost.&quot;&lt;/p&gt;
+
+&lt;p&gt;&quot;...HTTP-based real-time information can be sent from anywhere on the Internet to anywhere on the Internet. In effect, HTTP now goes in both directions, enabling applications to be continuously updated with new data...&quot;&lt;/p&gt;
+
+&lt;p&gt;Want to build some wicked event-driven apps? Or add some real-time information displays to your web apps? Check out &lt;a href=&quot;http://www.knownow.com&quot;&gt;KnowNow&lt;/a&gt;. Also check out &lt;a href=&quot;http://www.mod-pubsub.org&quot;&gt;mod-pubsub&lt;/a&gt;, the open-source edition that is also led by Adam. Mod-pubsub includes a python-based server implementation, as well as numerous python-based client examples (not to mention the many examples in most other mainstream platforms/languages).&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/04/18.html#P59</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Event-driven</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Event-driven" ent:href="http://www.executableabstractions.com/weblog/Event-driven/">Event-driven</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sun, 18 Apr 2004 19:14:08 GMT</pubDate>
+</item>
+<item>
+<title>Moving Python: The Problem</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/04/16.html#P58</link>
+<description>&lt;p&gt;When I first installed &lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;, I made a mistake. I didn&apos;t think it was a mistake at the time, but have come to believe so over time.&lt;/p&gt;
+
+&lt;p&gt;The mistake that I am referring to is that I didn&apos;t install python to hang directly off of my root directory, as c:\python23, but rather off of another folder. [Note: This is on a Windows host]&lt;/p&gt;
+
+&lt;p&gt;So instead of having c:\python23, I have c:\dev\python23. This made sense to me at the time, grouping all of my development tools/libs/sdks under a single c:\dev folder, and it still makes sense to me conceptually. But over time, I have realized two things, at least wrt python: 1) Certain kinds of installs prompt you for the target location (rather than just finding where python is already installed), and these usually default to c:\python23; and 2) I have occasionally found that some installs (could be python packages, or maybe other tools that embed python facilities) create a c:\python23 folder and put some stuff in it. I haven&apos;t always noticed cases of the latter immediately, so I&apos;m not sure who the culprits are.&lt;/p&gt;
+
+&lt;p&gt;Right now for instance, I see that c:\python23 was created recently, and it contains 3 files (and no subfolders): MSVCIRT.dll, MSVCP60.dll, and MSVCRT.dll. I recognize these as the runtime files for apps built with Visual Studio 6. But who put them there? And what is the impact, if any, of this rogue python folder?&lt;/p&gt;
+
+&lt;p&gt;Worse, something also messed with some of my registry settings for python-related paths. I searched the registry for occurrences of &apos;\python23&apos; and found some to be &apos;c:\dev\python23&apos; and others to be &apos;c:\python23&apos;. Ayy. Even more confusing was when I realized that I might have been the cause of some of these, due to factor#1 above: when installs prompt for the target python folder, and default to c:\python23, I wouldn&apos;t be surprised if I sometimes glazed over at that step and just (incorrectly) went with the default.&lt;/p&gt;
+
+&lt;p&gt;In any case, I think that these ongoing problems can all be cleared up if I move my python folder from c:\dev\python23 to c:\python23. The question is how?&lt;/p&gt;
+
+&lt;p&gt;I&apos;ve searched around the likely places, but haven&apos;t found a recipe for doing this. So...&lt;/p&gt;
+
+&lt;p&gt;Option 1: Re-install python from scratch
+&lt;p&gt;This, I am sure, is the cleanest approach. The only reason I am looking for another option is that I am not as confident about easily getting back to my current &apos;state&apos; of python installation, meaning having all of the same releases of python packages, and tweaks or customizations of python scripts, etc.&lt;/p&gt;
+&lt;p&gt;I am pretty sure that all such customizations on top of the base python23 install are isolated to four categories/places:
+&lt;li&gt;Lib\site-packages&lt;/li&gt;
+&lt;li&gt;Scripts, where I&apos;ve customized some of the scripts that get installed and added my own&lt;/li&gt;
+&lt;li&gt;The files from Python.NET which enable access to .NET assemblies&lt;/li&gt;
+&lt;li&gt;myScraps, my own folder for keeping bits and pieces of useful code&lt;/li&gt;
+
+&lt;p&gt;This might lead to Option 1a, reinstall python and then handle these exceptions manually, but I&apos;m uncomfortable with this approach, with assuming that there are no other post-base-python-install areas to account for. Plus, if I have to hand-manage all these individually...which leads me to option 2.&lt;/p&gt;
+
+&lt;p&gt;Option 2: Physically move the python folder, and make necessary adjustments manually
+&lt;p&gt;I think that with this approach, the manual adjustments are limited to:
+&lt;li&gt;Search and edit all registry entries that mention \python23&lt;/li&gt;
+&lt;li&gt;Edit the paths of existing batch files in the Scripts folder (I did a grep for hardcoded refs to &apos;\python23&apos; in the whole python tree and the only results were in scripts and in some install log files)&lt;/li&gt;
+&lt;li&gt;Change my path to point to the new python root location&lt;/li&gt;&lt;/p&gt;
+
+&lt;p&gt;If anyone has any comments, or an easier option, please let me know; otherwise, I&apos;ll report back in a few days with &apos;Moving Python: A Solution&apos;.&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/04/16.html#P58</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sat, 17 Apr 2004 00:02:08 GMT</pubDate>
+</item>
+<item>
+<title>TMAPI</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/04/09.html#P57</link>
+<description>&lt;p&gt;TMAPI, a new proposal for a standardized API for working with topic maps, has been released in alpha 1.0 status.&lt;/p&gt;
+
+&lt;p&gt;Coverpages coverage &lt;a href=&quot;http://xml.coverpages.org/ni2004-04-09-a.html&quot;&gt;here&lt;/a&gt; and the project homepage &lt;a href=&quot;http://tmapi.sourceforge.net/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I wonder if &lt;a href=&quot;http://www.ontopia.net/&quot;&gt;Ontopia&lt;/a&gt; will update its (free) python-based &lt;a href=&quot;http://www.ontopia.net/software/tmproc/index.html&quot;&gt;tmproc&lt;/a&gt; topic map engine?&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/04/09.html#P57</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Knowledge Management</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Knowledge Management" ent:href="http://www.executableabstractions.com/weblog/Knowledge Management/">Knowledge Management</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sat, 10 Apr 2004 00:06:24 GMT</pubDate>
+</item>
+<item>
+<title>xyzzy</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/04/01.html#P55</link>
+<description>&lt;p&gt;I wonder what the ongoing impact of computer-games / video-games is on generating interest among youth in software development?&lt;/p&gt;
+
+&lt;p&gt;In fact, &lt;a href=&quot;http://en.wikipedia.org/wiki/Colossal_Cave_Adventure&quot;&gt;Adventure&lt;/a&gt; on a &lt;a href=&quot;http://en.wikipedia.org/wiki/PDP-11&quot;&gt;PDP-11/34&lt;/a&gt; definitely played a role not only in how much time I spent online way back when, but also in instigating me to learn the PDP&apos;s dialect of BASIC so that I could write my own &lt;a href=&quot;http://www.google.com/search?q=interactive+fiction&quot;&gt;interactive fiction&lt;/a&gt; (IF) adventure.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://zephyrfalcon.org/weblog/arch_d7_2004_03_06.html#e516&quot;&gt;Hans Nowak&apos;s recent discovery&lt;/a&gt; of &lt;a href=&quot;http://www.amazon.com/exec/obidos/tg/detail/-/0262134365/102-4772460-9710550&quot;&gt;Twisty Little Passages&lt;/a&gt; has, in some faint way, rekindled a bit of my original interest in interactive fiction, probably partly from nostalgia, partly from pure amusement, and partly from wondering what v2.0 of my own rendition of an IF game might look like by applying the power of some of the technologies and techniques I know now. For example, python and OO - I recall reading another pythoneer&apos;s consideration of the pros/cons of python/OO for game-development, can&apos;t remember just now who/where.&lt;/p&gt;
+
+&lt;p&gt;Maybe this would be a good pure-fun side-project to exercise my still-growing python muscles and expand my breadth - I have a few ideas that may prove very interesting. Does &lt;a href=&quot;http://www.pygame.org/&quot;&gt;pygame&lt;/a&gt; provide support for game state and flow, or is it mostly geared toward the visuals? Are there other essential python libs for this kind of dev?&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/04/01.html#P55</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Games</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Games" ent:href="http://www.executableabstractions.com/weblog/Games/">Games</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Fri, 02 Apr 2004 00:04:16 GMT</pubDate>
+</item>
+<item>
+<title>Outlined Blogroll</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/03/23.html#P44</link>
+<description>&lt;p&gt;Putting aside for the moment the issues of whether and how to organize a blogroll beyond a simple list (these issues to be covered in a follow-up post), here is a decent first cut at presenting such information in an expandable/collapsable form, assuming you have some such blogroll feed taxonomy available in OPML.&lt;/p&gt; 
+
+&lt;p&gt;With the help of the recent &lt;a href=&quot;http://www.activerenderer.com/&quot;&gt;activeRenderer&lt;/a&gt; v2.0 and its new &lt;a href=&quot;http://www.activerenderer.com/outlines/aR/api.html&quot;&gt;XML-RPC API&lt;/a&gt;, I&apos;ve finally managed to add my blogroll to my page&apos;s sidebar in a form that I feel is at least a slight improvement over the flat list. ActiveRenderer does all the hard work.&lt;/p&gt;
+
+&lt;p&gt;Here&apos;s the python code:&lt;/p&gt;
+
+&lt;pre&gt;
+def blogrollRenderer(self, blogrollURL=&apos;c:\\somefiles\\mySubscriptions.opml&apos;):
+    import xmlrpclib
+    server = xmlrpclib.Server(&quot;http://rpc.activerenderer.com&quot;)
+
+    opmlFile = open(blogrollURL)
+    opml = opmlFile.read()
+    opmlFile.close()
+
+    opmlHtml = server.activeRenderer.opmlRenderer(opml)
+
+    html = &apos;&amp;lt;p&amp;gt;&apos;
+    html += &apos;&amp;lt;b&amp;gt;Blogroll&amp;lt;/b&amp;gt;&apos;
+    html += &apos;&amp;lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; \
+            href=&quot;http://www.activerenderer.com/activeRenderer/activerenderer.css&quot;&amp;gt;&apos;
+    html += &apos;&amp;lt;script type=&quot;text/javascript&quot; \
+            src=&quot;http://www.activerenderer.com/activeRenderer/activerenderer.js&quot;&amp;gt;&amp;lt;/script&amp;gt;&apos;
+    html += opmlHtml
+    html += &apos;&amp;lt;/p&amp;gt;&apos;
+
+    return html
+
+&lt;/pre&gt;
+
+&lt;p&gt;With &lt;a href=&quot;http://pyds.muensterland.org/&quot;&gt;PyDS&lt;/a&gt;, you just put this in a macro, and then invoke the macro from a nugget, and you&apos;re done.&lt;/p&gt;
+
+&lt;p&gt;Of course this is just step one; some usability issues still need to be addressed, foremost being easier access to the sites and RSS URLs of the listed feeds. This looks like it will require delving a bit into the activeRenderer script.&lt;/p&gt;
+
+&lt;p&gt;TTD (Things To Do):
+&lt;li&gt;Bag inline expansion of items&lt;/li&gt;
+&lt;li&gt;Add hrefs to feed items&lt;/li&gt;
+&lt;li&gt;Add rss links to feed items&lt;/li&gt;
+&lt;li&gt;Replace use of remote activerenderer resources with local copies where possible&lt;/li&gt;&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/03/23.html#P44</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Knowledge Management</category>
+<category domain="http://www.executableabstractions.com/weblog/">PyDS</category>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Knowledge Management" ent:href="http://www.executableabstractions.com/weblog/Knowledge Management/">Knowledge Management</ent:topic>
+<ent:topic ent:id="PyDS" ent:href="http://www.executableabstractions.com/weblog/PyDS/">PyDS</ent:topic>
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Tue, 23 Mar 2004 21:32:48 GMT</pubDate>
+</item>
+<item>
+<title>PySpaces 2</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/03/20.html#P41</link>
+<description>&lt;p&gt;Since my &lt;a href=&quot;http://www.executableabstractions.com/weblog/2004/03/06.html#P34&quot;&gt;initial post&lt;/a&gt; puzzling about the absence of a Python-based tuple-space product and/or API, I&apos;ve discovered these two starts:
+
+&lt;li&gt;&lt;a href=&quot;http://mail.mems-exchange.org/pipermail/quixote-users/2003-July/001776.html&quot;&gt;Quixote-based proof-of-concept&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://22c078.cs.uiowa.edu/article/9.html&quot;&gt;Linda in Python&lt;/a&gt;&lt;/li&gt;
+&lt;/p&gt;
+
+&lt;p&gt;I sure would love to see a &lt;a href=&quot;http://www.twistedmatrix.com&quot;&gt;Twisted&lt;/a&gt;-based PySpaces effort get started...I&apos;ve got a project or two that would actively exercise such an engine.&lt;/p&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/03/20.html#P41</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Sun, 21 Mar 2004 00:46:56 GMT</pubDate>
+</item>
+<item>
+<title>Instant Webserver Here</title>
+<link>http://www.executableabstractions.com/weblog/Python/2004/03/17.html#P40</link>
+<description>&lt;p&gt;Pretty funny (maybe profound, actually) how a one-liner using a core package of Python suddenly gets &lt;a href=&quot;http://insom.me.uk/blog/Tech/Python/echo.writeback&quot;&gt;such attention&lt;/a&gt; in the community.&lt;/p&gt;
+
+&lt;p&gt;As I &lt;a href=&quot;http://www.executableabstractions.com/weblog/2004/03/15.html#P38&quot;&gt;mentioned&lt;/a&gt; the other day, I also found this &apos;instant webserver&apos; functionality compelling; so much so, I wanted to make it even more &lt;i&gt;accessible&lt;/i&gt; to common ad-hoc contexts. Improving accessibility to tools has an exponential (or at least multiplicative) effect on their value to the user.&lt;/p&gt;
+
+&lt;p&gt;The following is specific to the Windows platform; but surely a similarly simple (or simpler) solution exists for your favorite Linux distro.&lt;/p&gt;
+
+Improved Shell Access
+&lt;p&gt;First, create a two-line batch file:&lt;/p&gt;
+&lt;pre&gt;   cd %1
+   python -c &quot;import SimpleHTTPServer; SimpleHTTPServer.test()&quot;
+&lt;/pre&gt;
+
+&lt;p&gt;and save it to a folder that is in your system path. I put mine in c:\utils, and named it iws.cmd.&lt;/p&gt;
+
+&lt;p&gt;Now, at any shell prompt, I can enter&lt;/p&gt;
+&lt;pre&gt;   c:\iws &lt;i&gt;serve-dir&lt;/i&gt;
+&lt;/pre&gt;
+where &lt;i&gt;serve-dir&lt;/i&gt; is the name of the directory that I want to serve up via HTTP. For example, to serve up the current working dir, just enter
+&lt;pre&gt;   c:\foo&gt;iws .&lt;/pre&gt;
+
+Direct Explorer Access
+&lt;p&gt;Now provide easy GUI access to this same batch file.&lt;/p&gt;
+
+&lt;p&gt;Two options here, one requires registry editing, the other doesn&apos;t.&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;Option #1: No Registry Edit Required&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;Just create a short-cut in your SendTo folder that points to your iws batch-file, and you&apos;re done. Apparently the send-to folder essentially maps the selected element in Explorer as a first parameter to the target.&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;Option #2: Registry Edit Required&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;[&lt;b&gt;WARNING/DISCLAIMER&lt;/b&gt;: This option requires the use of the Registry Editor (REGEDIT.EXE). Changes made to the Windows registry happen immediately, and no backup is automatically made. Do not edit the Windows registry unless you are confident about doing so.
+
+Microsoft have issued the following warning with respect to the Registry Editor:
+
+    &quot;Using Registry Editor incorrectly can cause serious, system-wide problems that may require you to re-install Windows to correct them. Microsoft cannot guarantee that any problems resulting from the use of Registry Editor can be solved. Use this tool at your own risk.&quot;]
+
+&lt;p&gt;If you have authorization to edit your registry, and are comfortable with doing so, then you can make the access point slightly cleaner semantically while also requiring less menu navigation. You need to add a new key in &apos;My Computer\HKEY_CLASSES_ROOT\Folder\shell&apos; named &apos;Instant Web Server&apos;, and under that a key named &apos;command&apos; with a REG_SZ value that points to your batch file and follows it with a reference to the %L variable. On my machine, this full value looks like this: &quot;c:\utils\iws.cmd&quot; &quot;%L&quot; (all quotes included).&lt;/p&gt;
+
+&lt;p&gt;Now in Windows Explorer, right click on any folder...&lt;img src=&quot;/images/IWSHere.jpg&quot;&gt;
+
+&lt;p&gt;Sweetness!&lt;/p&gt;
+
+&lt;p&gt;Next steps:
+&lt;li&gt;Add a line to the iws.cmd file to, after starting the web server, open up a new tab in a current firefox window and navigate to the url&lt;/li&gt;&lt;/p&gt;&lt;/img&gt;</description>
+<guid>http://www.executableabstractions.com/weblog/Python/2004/03/17.html#P40</guid>
+<category domain="http://www.executableabstractions.com/weblog/">Python</category>
+<ent:cloud ent:href="http://www.executableabstractions.com/weblog/">
+<ent:topic ent:id="Python" ent:href="http://www.executableabstractions.com/weblog/Python/">Python</ent:topic>
+</ent:cloud>
+<pubDate>Wed, 17 Mar 2004 17:36:00 GMT</pubDate>
+</item>
+</channel>
+</rss>

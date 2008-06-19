@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?><feed
+  xmlns="http://www.w3.org/2005/Atom"
+  xmlns:thr="http://purl.org/syndication/thread/1.0"
+  xml:lang="en"
+  >
+  <id>http://livingcode.org/feed/atom</id>
+  <updated>2008-05-29T21:59:05Z</updated>
+  <title type="text">Living Code</title>
+  <subtitle type="text">Programming for the Fun of It</subtitle>
+  <link rel="self" type="application/atom+xml" href="http://livingcode.org/feed" />
+  <link rel="alternate" href="http://livingcode.org" />
+  <rights type="text">Copyright 2008</rights>
+  <generator uri="http://wordpress.org/" version="2.3.2">WordPress</generator>
+      <entry>
+    <id>http://livingcode.org/2008/meme-du-jour</id>
+    <title type="html"><![CDATA[Meme du jour]]></title>
+    <updated>2008-04-11T16:05:39Z</updated>
+    <published>2008-04-11T04:49:10Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/meme-du-jour/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/meme-du-jour" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[Just for fun, and because I'm trying out two things:
+
+Using Ecto for posting again
+Blogging more often
+
+Here are my results from the latest craze:
+
+
+
+$ history&#124;awk '{a[$2]++} END{for(i in a){printf "%5d\t%s\n",a[i],i}}'&#124;sort -rn&#124;head
+139 ls
+87 cd
+54 python
+43 /usr/bin/python
+38 less
+21 vim
+16 clear
+12 mate
+11 rm
+10 ssh
+
+
+
+The first python is the one I built from source so I can include it in [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/meme-du-jour"><![CDATA[<p>Just for fun, and because I'm trying out two things:</p>
+<ol>
+<li>Using Ecto for posting again</li>
+<li>Blogging more often</li>
+</ol>
+<p>Here are my results from the latest craze:</p>
+<pre>
+<code>
+<pre>
+$ history|awk '{a[$2]++} END{for(i in a){printf "%5d\t%s\n",a[i],i}}'|sort -rn|head
+139 ls
+87 cd
+54 python
+43 /usr/bin/python
+38 less
+21 vim
+16 clear
+12 mate
+11 rm
+10 ssh
+</pre>
+<p></code>
+</pre>
+<p>The first python is the one I built from source so I can include it in applications packaged with py2app, the second is the built-in python for Leopard. Both are version 2.5. The mate program is used to open files in TextMate from the command line.</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/metaprogramming-at-vanpyz</id>
+    <title type="html"><![CDATA[MetaProgramming at VanPyZ]]></title>
+    <updated>2008-04-01T04:01:59Z</updated>
+    <published>2008-04-01T04:01:59Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/metaprogramming-at-vanpyz/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/metaprogramming-at-vanpyz" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[Just a reminder for Pythonistas in the Vancouver area: The Vancouver Python and Zope user group (VanPyZ) is tomorrow (Tuesday, April 1). Paul Prescod will be talking about metaprogramming in Python. Details and directions are on the VanPyZ site. And, as usual, we'll be heading out to the pub afterwards for more discussion.
+Hope to see [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/metaprogramming-at-vanpyz"><![CDATA[<p>Just a reminder for Pythonistas in the Vancouver area: The Vancouver Python and Zope user group (VanPyZ) is tomorrow (Tuesday, April 1). Paul Prescod will be talking about metaprogramming in Python. Details and directions are on the <a href="http://www.vanpyz.org/">VanPyZ site</a>. And, as usual, we'll be heading out to the pub afterwards for more discussion.</p>
+<p>Hope to see you there!</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/saving-png-from-pygame</id>
+    <title type="html"><![CDATA[Saving PNG from PyGame]]></title>
+    <updated>2008-04-01T03:21:31Z</updated>
+    <published>2008-04-01T03:21:31Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/saving-png-from-pygame/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/saving-png-from-pygame" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[The latest version, 1.8, of PyGame can save PNGs directly from a Surface: pygame.Image.save(mySurface, 'myimagefile.png').  But what if you want to support an older version of PyGame, such as the one available for the N800 or the XO?  Well, assuming you have access to the Python Image Library, you can use that:
+
+
+import Image [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/saving-png-from-pygame"><![CDATA[<p>The latest version, 1.8, of PyGame can save PNGs directly from a Surface: <code>pygame.Image.save(mySurface, 'myimagefile.png')</code>.  But what if you want to support an older version of PyGame, such as the one available for the N800 or the XO?  Well, assuming you have access to the Python Image Library, you can use that:</p>
+<blockquote><p><code>
+<pre>
+import Image # from PIL
+import pygame
+
+def pygame_to_pil_img(pg_surface):
+    imgstr = pygame.image.tostring(pg_surface, 'RGB')
+    return Image.fromstring('RGB', pg_surface.get_size(), imgstr)
+
+def pil_to_pygame_img(pil_img):
+    imgstr = pil_img.tostring()
+    return pygame.image.fromstring(imgstr, pil_img.size, 'RGB')
+</pre>
+<p></code>
+</p></blockquote>
+<p>Once you have a PyGame Image, you can save it to PNG easily: <code>myImage.save('myfilename.png')</code></p>
+<p>I've found myself looking for this code snippet more than once, now I can Google for it more readily, and maybe someone else will find it helpful too.</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/drawing-hexmaps</id>
+    <title type="html"><![CDATA[Drawing Hexmaps]]></title>
+    <updated>2008-03-21T05:03:08Z</updated>
+    <published>2008-03-21T05:03:08Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/drawing-hexmaps/feed" thr:count="2"  />
+    <link rel="alternate" href="http://livingcode.org/2008/drawing-hexmaps" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[The other day, Thomas Guest talked about drawing chessboards, and ended with a challenge.  I wanted to answer a different challenge, however.  What if, instead of drawing on a rectangular grid, we wanted to draw on a hexagonal grid? The following is my slapdash answer.  For real-world use I'd make nice classes [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/drawing-hexmaps"><![CDATA[<p>The other day, Thomas Guest talked about <a href="http://wordaligned.org/articles/drawing-chessboards">drawing chessboards</a>, and ended with a challenge.  I wanted to answer a different challenge, however.  What if, instead of drawing on a rectangular grid, we wanted to draw on a hexagonal grid? The following is my slapdash answer.  For real-world use I'd make nice classes and pass more parameters to the methods, but to demonstrate the math I'm just going to use global constants and functions.</p>
+<p>Like Thomas' article, I will show solutions using several different tools, in this case Apple's <a href="http://developer.apple.com/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/dq_python/chapter_17_section_1.html#//apple_ref/doc/uid/TP30001066-CH218-TPXREF101">Core Graphics</a>, <a href="http://pygame.org/docs/">PyGame</a>, <a href="http://www.pythonware.com/library/pil/handbook/index.htm">Python Imaging Library</a> (PIL), and <a href="http://www.w3.org/TR/SVG11/">SVG</a>. All of these solutions will use the same constants and math:</p>
+<p><code>
+<pre>
+# Constants used by each solution
+
+from math import sin, cos, pi, sqrt
+THETA = pi / 3.0 # Angle from one point to the next
+HEXES_HIGH = 8 # How many rows of hexes
+HEXES_WIDE = 5 # How many hexes in a row
+RADIUS = 30 # Size of a hex
+HALF_RADIUS = RADIUS / 2.0
+HALF_HEX_HEIGHT = sqrt(RADIUS ** 2 - HALF_RADIUS ** 2)
+IMAGE_WIDTH = int(RADIUS * (HEXES_WIDE * 3 + .5))
+IMAGE_HEIGHT = int(HALF_HEX_HEIGHT * (HEXES_HIGH + 1))
+
+# Functions (generators) used by each solution
+
+def hex_points(x,y):
+    '''Given x and y of the origin, return the six points around the origin of RADIUS distance'''
+    for i in range(6):
+        yield cos(THETA * i) * RADIUS + x, sin(THETA * i) * RADIUS + y
+
+def hex_centres():
+    for x in range(HEXES_WIDE):
+        for y in range(HEXES_HIGH):
+            yield (x * 3 + 1) * RADIUS + RADIUS * 1.5 * (y % 2), (y + 1) * HALF_HEX_HEIGHT
+</pre>
+<p></code></p>
+<p>Now, given the above, what does the code look like to draw the hexes?  Because each library handles colours slightly differently, we will need a generator for colours (and we will need more than just black and white as the chessboard used, because each hex borders on six others).  I haven't given a lot of thought to optimal colouring schemes: each colour generator simply produces red, yellow, blue, and green in a cycle.  Here is the image produced by the Core Graphics solution, followed by the code:</p>
+<p><img src='http://livingcode.org/wp-content/uploads/2008/03/quartz_hexes.png' alt='Hex Image 1' /></p>
+<p><code>
+<pre>
+def quartz_colours():
+    while True:
+        yield 1,0,0,1 # red
+        yield 1,1,0,1 # yellow
+        yield 0,0,1,1 # blue
+        yield 0,1,0,1 # green
+
+def quartz_hex():
+    '''Requires a Mac with OS 10.4 or better and the Developer Tools installed'''
+    import CoreGraphics as cg
+    colours = quartz_colours()
+    cs = cg.CGColorSpaceCreateDeviceRGB()
+    c = cg.CGBitmapContextCreateWithColor(IMAGE_WIDTH, IMAGE_HEIGHT, cs, (0,0,0,.2))
+    c.saveGState()
+    c.setRGBStrokeColor(0,0,0,0)
+    c.setLineWidth(0)
+    for x,y in hex_centres():
+        c.beginPath()
+        c.setRGBFillColor(*colours.next())
+        points = list(hex_points(x,y))
+        c.moveToPoint(*points[-1])
+        [c.addLineToPoint(*pt) for pt in points]
+        c.drawPath(cg.kCGPathFill)
+    c.restoreGState()
+    c.writeToFile("quartz_hexes.png", cg.kCGImageFormatPNG)
+</pre>
+<p></code></p>
+<p>Now for some cross-platform examples.  Here is the image generated by PyGame, followed by that code:</p>
+<p><img src='http://livingcode.org/wp-content/uploads/2008/03/pygame_hexes.png' alt='Hex Image 2' /></p>
+<p><code>
+<pre>
+def pygame_colours():
+    while True:
+        yield 255, 0, 0 # red
+        yield 255, 255, 0 # yellow
+        yield 0, 0, 255 # blue
+        yield 0, 255, 0 # green
+
+def pygame_hex():
+    '''Requires PyGame 1.8 or better to save as PNG'''
+    import pygame
+    pygame.init()
+    screen = pygame.display.set_mode((IMAGE_WIDTH, IMAGE_HEIGHT))
+    colours = pygame_colours()
+    for x,y in hex_centres():
+        pygame.draw.polygon(screen, colours.next(), list(hex_points(x,y)))
+    pygame.image.save(screen, 'pygame_hexes.png')
+</pre>
+<p></code></p>
+<p>When you run the PyGame script, it will actually pop up a window very briefly, draw into the window, save the result, and close the window.  I also didn't get the PyGame script to add transparency for the background, although I think it could be added fairly easily.  Now, for the web, here is a solution in SVG, with the image captured by screenshot in Safari, followed by the Python code, and the resulting SVG code:</p>
+<p><img src='http://livingcode.org/wp-content/uploads/2008/03/picture-4.png' alt='Hex Image 3' /></p>
+<p><code>
+<pre>
+def svg_colours():
+    while True:
+        yield 'rgb(255, 0, 0)'
+        yield 'rgb(255, 255, 0)'
+        yield 'rgb(0, 0, 255)'
+        yield 'rgb(0, 255, 0)'
+
+def svg_hex():
+    out = open('svg_hexes.svg', 'w')
+    print >> out, '''&lt;?xml version="1.0" standalone="no"?>
+    &lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    &lt;svg width="%spx" height="%spx" version="1.1" xmlns="http://www.w3.org/2000/svg">''' % (IMAGE_WIDTH, IMAGE_HEIGHT)
+    colours = svg_colours()
+    for pt in hex_centres():
+        print >> out, '&lt;polygon fill="%s" stroke-width="0" points="%s" />' % (colours.next(),  ' '.join(["%s,%s" % (x,y) for (x,y) in hex_points(*pt)]))
+    print >> out, '&lt;/svg>'
+    out.close()
+</pre>
+<p></code></p>
+<p>And here is the SVG created by the above script: <a href='http://livingcode.org/wp-content/uploads/2008/03/svg_hexes.svg' title='SVG Hexes'>SVG Hexes</a></p>
+<p>Finally, one library which overlaps with the ones used by the Chessboard example: Python Imaging Library.</p>
+<p><img src='http://livingcode.org/wp-content/uploads/2008/03/pil_hexes.png' alt='Hex Image 4' /></p>
+<p><code>
+<pre>
+pil_colours = pygame_colours  # same format works, so we'll re-use it
+
+def pil_hex():
+    import Image, ImageDraw
+    image = Image.new("RGBA", (IMAGE_WIDTH,IMAGE_HEIGHT), (0,0,0,0))
+    colours = pil_colours()
+    draw = ImageDraw.Draw(image)
+    for x,y in hex_centres():
+        draw.polygon(list(hex_points(x,y)), fill=colours.next())
+    image.save('pil_hexes.png', 'PNG')
+</pre>
+<p></code></p>
+<p>That's it for my examples.  Thomas ended with a challenge for displaying chess, and for describing the position. To describe the position, I would use a standard chess notation, such as described <a href="http://www.xml.com/pub/a/2004/08/25/tourist.html">here</a>.  For my challenge, what other formats would be useful to create hex maps in?  POVRay?  Flash?  Any other examples out there?</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/the-419-economy</id>
+    <title type="html"><![CDATA[The 419 Economy]]></title>
+    <updated>2008-03-20T05:25:17Z</updated>
+    <published>2008-03-20T05:25:17Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/the-419-economy/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/the-419-economy" />
+    <category scheme="http://livingcode.org" term="Fiction" />
+    <category scheme="http://livingcode.org" term="Humor" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[Hello, my name is Sergio Arragones and I am writing to you for assistance in a matter that will be of great economic benefit to us both.
+My late father was VICE PRESIDENT of the large American investment bankerage of Bear Stearns and he managed to put aside over two billion US dollars of bailout money [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/the-419-economy"><![CDATA[<p>Hello, my name is Sergio Arragones and I am writing to you for assistance in a matter that will be of great economic benefit to us both.</p>
+<p>My late father was VICE PRESIDENT of the large American investment bankerage of Bear Stearns and he managed to put aside over two billion US dollars of bailout money from the puppet government of Mr. George Bush.</p>
+<p>Unfortunately, he was killed in a incident of ROAD RAGE when his bullet-proof Mercedes convertible was driven into the bomb barricade of the New York UN Building by the SUV of an off-duty Police Officer.</p>
+<p>While my family is still grieving over his tragic death, and attempting to get the suspicious circumstances investigated, I must act quickly to move these funds to your Nation for safekeeping. As a Citizen of the Monarchy of Canada, you may receive these funds for me until I may cross from New York State to the Province of Quebec, at which time you will transfer the funds over to me, keeping 10% (TEN PERCENT) for yourself, along with my Gratitude.</p>
+<p>In order for me to transfer the Fund to you, you will need to create a PayPal account for this purpose.  Do not use an existing PayPal account, as it may already have been compromised by nefarious hackers and BotNets. Also, you will need to download the Python libraries which allow you to code to PayPal directly.  In addition, you will need libraries for Google Checkout the Atom Publishing Protocol.</p>
+<p>On a server under your control (the server must be physically located in the Sovereignty of Canada.  THIS IS IMPORTANT) you must set up a WSGI server.  You may use Django or TurboGears for this, or use the reference WSGI implementation.  I recommend you use PYTHON 2.5 or greater as many of the tools you need will be part of the STANDARD LIBRARY. </p>
+<p>Once you have the Foundations of a Web2.0 server administered, contact me at the return address of this message and I will give you instructions on how to proceed for the transfer of funds.</p>
+<p>My family thanks you.</p>
+<p>Sincerly,</p>
+<p>Dr. Rev. Sergio Arragones, Esq.<br />
+New York, NY<br />
+United States of America</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/processing-critters</id>
+    <title type="html"><![CDATA[Processing Critters]]></title>
+    <updated>2008-03-20T17:49:53Z</updated>
+    <published>2008-03-20T05:21:53Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/processing-critters/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/processing-critters" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This browser does not have a Java Plug-in.
+
+
+Get the latest Java Plug-in here.
+
+
+
+
+
+
+
+
+
+Source code: sketch_080314a
+
+I've been playing around some with Processing, this is the result.  As I mentioned in my earlier article, Processing and NodeBox are quite similar. Processing has some more interactivity (better keyboard and mouse handling) built in, and it can do [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/processing-critters"><![CDATA[<div id="sketch_080314a_container">
+<!--[if !IE]> --><br />
+<object classid="java:sketch_080314a.class" type="application/x-java-applet" archive="http://livingcode.org/wp-content/uploads/2008/03/sketch_080314a.jar" width="400" height="400" standby="Loading Processing software..." ></p>
+<param name="archive" value="http://livingcode.org/wp-content/uploads/2008/03/sketch_080314a.jar" />
+<param name="mayscript" value="true" />
+<param name="scriptable" value="true" />
+<param name="image" value="http://livingcode.org/wp-content/uploads/2008/03/loading.gif" />
+<param name="boxmessage" value="Loading Processing software..." />
+<param name="boxbgcolor" value="#FFFFFF" />
+<param name="test_string" value="outer" />
+<!--<![endif]--><br />
+<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" codebase="http://java.sun.com/update/1.4.2/jinstall-1_4_2_12-windows-i586.cab" width="400" height="400" standby="Loading Processing software..."  ></p>
+<param name="code" value="sketch_080314a" />
+<param name="archive" value="http://livingcode.org/wp-content/uploads/2008/03/sketch_080314a.jar" />
+<param name="mayscript" value="true" />
+<param name="scriptable" value="true" />
+<param name="image" value="http://livingcode.org/wp-content/uploads/2008/03/loading.gif" />
+<param name="boxmessage" value="Loading Processing software..." />
+<param name="boxbgcolor" value="#FFFFFF" />
+<param name="test_string" value="inner" />
+<p>
+<strong><br />
+This browser does not have a Java Plug-in.<br />
+<br />
+<a href="http://java.sun.com/products/plugin/downloads/index.html" title="Download Java Plug-in"><br />
+Get the latest Java Plug-in here.<br />
+</a><br />
+</strong>
+</p>
+<p></object><br />
+<!--[if !IE]> --><br />
+</object><br />
+<!--<![endif]-->
+</div>
+</p>
+<p>Source code: <a href="http://livingcode.org/wp-content/uploads/2008/03/sketch_080314a.pde">sketch_080314a</a></p>
+<p>
+I've been playing around some with <a href="http://processing.org/">Processing</a>, this is the result.  As I mentioned in my earlier <a href="http://livingcode.org/2008/the-importance-of-visual-programming">article</a>, Processing and <a href="http://www.nodebox.net/code/index.php/Home">NodeBox</a> are quite similar. Processing has some more interactivity (better keyboard and mouse handling) built in, and it can do basic 3D. NodeBox has better color handling (gradients) and remarkable libraries (WordNet).  But what it really comes down to is that NodeBox is Python (much easier to extend) and Processing is Java (still easier than straight Java, but a lot more code to do basic extensions).  Now all we need is a quick-start programming environment like these for Flash (and before you tell me the Adobe Flash tools are for artists--I have used the Flash IDE and it is possibly the worst IDE I've ever experienced.  Which is odd, because the Flex IDE is one of the best, better than XCode/Interface Builder in some ways).
+</p>
+<p>
+All of which is the long way to say that I enjoyed making this little animation in Processing, but I'm ready to go back to working in Python now, thank you.</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/wordpress-pain</id>
+    <title type="html"><![CDATA[Wordpress pain]]></title>
+    <updated>2008-03-20T05:21:04Z</updated>
+    <published>2008-03-16T06:19:25Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/wordpress-pain/feed" thr:count="1"  />
+    <link rel="alternate" href="http://livingcode.org/2008/wordpress-pain" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[Well, I've been working off and on for a few days on a Processing applet.  The only reason I like Processing better than NodeBox is because I can embed the results in an applet on my web site.  At least, I could if WordPress didn't keep stripping out the embedding markup.  
+[Update: [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/wordpress-pain"><![CDATA[<p>Well, I've been working off and on for a few days on a Processing applet.  The only reason I like Processing better than NodeBox is because I can embed the results in an applet on my web site.  At least, I could if WordPress didn't keep stripping out the embedding markup.  </p>
+<p>[Update: I did finally figure out how to disable the auto-conversion.  What a PITA.  Now I just have to figure out what I've broken by doing that.]</p>
+<p>Frustrations like this are why I was writing my own blogging software.  The main holdup on writing my own blogging software was the fact that it is damn difficult to get anything but PHP to run persistently on Dreamhost.  Actually, even WordPress runs as a CGI, so maybe its hard to run PHP persistently too.  Anyway, it would take a lot of effort to move all my sites to a host that lets me run WSGI apps, but at moments like this, I think it would be worth it.  WordPress has sucked yet more hours of my life away.</p>
+<p>Going to bed, sick with loathing for WordPress. Again.</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/from-vanpyz-import-cannon</id>
+    <title type="html"><![CDATA[from vanpyz import cannon]]></title>
+    <updated>2008-03-04T06:07:04Z</updated>
+    <published>2008-03-04T06:07:04Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/from-vanpyz-import-cannon/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/from-vanpyz-import-cannon" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[The March Vancouver Python and Zope User Group meeting snuck up on me.  It is tomorrow night, March 4th, in the conference room of the Bentall Five building.  Same location for three months in a row, that's got to be some kind of a record!  For anyone who has not attended recently and would like [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/from-vanpyz-import-cannon"><![CDATA[<p>The March Vancouver Python and Zope User Group meeting snuck up on me.  It is tomorrow night, March 4th, in the conference room of the Bentall Five building.  Same location for three months in a row, that's got to be some kind of a record!  For anyone who has not attended recently and would like to, there is a map on the <a href="http://vanpyz.org/">VanPyZ website</a>. Tomorrow's talk will be by Brett Cannon:<br />
+<blockquote style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 40px; border-width: initial; border-color: initial; border-style: none; padding: 0px" class="webkit-indent-blockquote"><span style="font-size: 14px; line-height: normal; font-family: Helvetica" class="Apple-style-span">The once and future Import: How import works in Python 2.6 and beyond, and what it means for you.</span>  </p></blockquote>
+<p><span class="Apple-style-span" style="font-size: 12px; line-height: 18px">This should be interesting. The import mechanism has some interesting hooks, and Brett has been re-working it for some time now. Also, the recent meetings have had a great turnout with lots of good conversation, both during the meeting itself, and afterwards at the pub. So come on out, if you're in Vancouver.  And if you're not in Vancouver, well from whereeveryouare import yourself.  See you there!</span></p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/programming-problems</id>
+    <title type="html"><![CDATA[Programming Problems]]></title>
+    <updated>2008-02-24T06:36:55Z</updated>
+    <published>2008-02-24T06:36:55Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/programming-problems/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/programming-problems" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[
+André Roberge has started a project to embed programming challenges in his Crunchy project.  Crunchy is a way to embed both Python code and an interpreter into a web page, making it great for Python education projects.  I like the idea of collecting both sources of programming challenges, and solutions to them in [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/programming-problems"><![CDATA[<p><a href="http://livingcode.org/wp-content/uploads/2008/02/ruins.png" title="Ruins"><img src="http://livingcode.org/wp-content/uploads/2008/02/ruins.png" alt="Ruins" /></a></p>
+<p>André Roberge has <a href="http://aroberge.blogspot.com/2008/02/99-problems-looking-for-volunteers.html">started a project</a> to embed programming challenges in his <a href="http://code.google.com/p/crunchy/">Crunchy</a> project.  Crunchy is a way to embed both Python code and an interpreter into a web page, making it great for Python education projects.  I like the idea of collecting both sources of programming challenges, and solutions to them in Python, as a way of spurring interest. Discussion around alternative solutions could get pretty interesting.  Anyway, rather than try to coordinate this through the comments on André's blog, or via email, I created a page on the Python wiki to help organize this: <a href="http://wiki.python.org/moin/ProblemSets">Problem Sets</a>. I listed the 99 Prolog Problems that Andé pointed to originally, and a couple more sources of programming challenges I was aware of.  Hopefully more people will fill in both the sources, and some solutions.  I've started to put up a few solutions, but this is definitely something that would benefit from more participation.</p>
+<p>If you know of a good source of programming problems (or want to create one), or want to provide some solutions of your own, or even just kibbitz, <a href="http://wiki.python.org/moin/ProblemSets">please dive in</a>!</p>
+]]></content>
+        </entry>
+    <entry>
+    <id>http://livingcode.org/2008/simple-text-adventure</id>
+    <title type="html"><![CDATA[Simple text adventure]]></title>
+    <updated>2008-02-23T07:39:02Z</updated>
+    <published>2008-02-23T07:39:02Z</published>
+    <author>
+      <name>delza</name>
+      <email>delza@livingcode.org</email>
+<uri>http://livingcode.org/</uri>    </author>
+    <link rel="replies" type="application/atom+xml" href="http://livingcode.org/2008/simple-text-adventure/feed" thr:count="0"  />
+    <link rel="alternate" href="http://livingcode.org/2008/simple-text-adventure" />
+    <category scheme="http://livingcode.org" term="Python" />
+    <summary type="html"><![CDATA[
+My daughter was working on her XO and said something like, "Dad, you promised to help me with Python." It turns out she was working on her first python program, using the bare-bones IDE for the XO, Pippy. (Aside: If anyone has a suggestion for a better environment than Pippy, that runs on the XO, [...]]]></summary>
+      <content type="html" xml:base="http://livingcode.org/2008/simple-text-adventure"><![CDATA[<p><a href="http://livingcode.org/wp-content/uploads/2008/02/stairs.jpg" title="Stairs down"><img src="http://livingcode.org/wp-content/uploads/2008/02/stairs.jpg" alt="Stairs down" /></a></p>
+<p>My daughter was working on her <a href="http://laptop.org/laptop/">XO</a> and said something like, "Dad, you promised to help me with Python." It turns out she was working on her first python program, using the bare-bones IDE for the XO, <a href="http://wiki.laptop.org/go/Pippy">Pippy</a>. (Aside: If anyone has a suggestion for a better environment than Pippy, that runs on the XO, I'm all ears.) I helped her with the syntax of an if statement and explained how else works, and how to quote the strings she was testing against. Looking over her shoulder I see that she's got a minimal version of a text adventure game shaping up.  I thought this would be a good opportunity to introduce her to lists and dicts, so I put together an email for her, so she would have it to refer back to later.  Here is what I wrote:</p>
+<blockquote><p>In Python there are some powerful data structures for organizing your<br />
+code and information.  You can also build your own, and I'll show you<br />
+how to do that soon, but it is amazing what you can do just with what<br />
+is built in.  Three of the key structures are lists, dicts (short for<br />
+dictionaries), and tuples.  Tuples are similar enough to lists that I<br />
+will only talk about lists and dicts for now, and we can talk about<br />
+tuples later.  Also, it is important to know that when I talk about<br />
+"strings" I mean text, which is a string of characters, generally<br />
+surrounded by either single quotes 'like this' or double quotes "like<br />
+this".</p>
+<p>Dictionaries</p>
+<p>Dicts are a lot like real dictionaries: there is something you use to<br />
+look something else up.  With a real dictionary you use the spelling<br />
+of a word to look up its definition.  With python dictionaries, you<br />
+can use a wide variety of objects to look up other objects.  The<br />
+objects you look up can be anything: strings, functions, even lists or<br />
+other dictionaries.  The objects you use to look up with are required<br />
+to be things that cannot change, but usually they are strings.</p>
+<p>For convenience we call the things we use to look up with "keys" and<br />
+the things that are looked up "values".  In the case of a real<br />
+dictionary, the key is the spelling of a word, and the value is the<br />
+definition.</p>
+<p>There are two ways to create a dict and assign it to a variable, in<br />
+this example the variable is "my_lookup".  There is the dict()<br />
+constructor function, and the literal notation.</p>
+<pre class="code">my_lookup = dict(one=1, two=2, three='xyzzy') # dict constructor</pre>
+<pre class="code">my_lookup = {'one': 1, 'two': 2, 'three': 'xyzzy')</pre>
+<p>Once we have a dict, we can change the value of the keys, add new key/<br />
+value pairs, remove key/value pairs, or loop through all the keys:</p>
+<p class="code">print my_lookup['one']  # prints '1'</p>
+<p class="code">my_lookup['one'] = 'flugelhorn' # the key 'one' is now associated with the value 'flugelhorn'</p>
+<p class="code">my_lookup['four'] = 'this is the value of the key "four"' # add a new key, my_lookup now has four key/value pairs</p>
+<p class="code">del my_lookup['one'] # remove a key/value pair, my_lookup now has keys 'two', 'three', and 'four'</p>
+<p class="code">for key in my_lookup:<br />
+print key, my_lookup[key] # will print each key with its value, in random order</p>
+<p>The last point is important: dicts do not keep any specific order for<br />
+their keys.  If you need to have the keys in order, you need to sort<br />
+them first.  Usually this is not a problem.</p>
+<p>For more information on dicts and things you can do with them: <a href="http://docs.python.org/lib/typesmapping.html" target="_blank">http://docs.python.org/lib<wbr></wbr>/typesmapping.html</a></p>
+<p>If you do need ordering, then you would generally use lists.  Lists<br />
+keep what you put into them in order.  They can grow or shrink as you<br />
+put things in or take them out, and you can put pretty much anything<br />
+into a list, including dicts or other lists.  Getting or putting an<br />
+item into a list looks a lot like getting or putting an item into a<br />
+dict, except the keys are always integers.  By now you probably know,<br />
+or can guess, that the first item in a list is 0, followed by 1, then<br />
+2, etc.  You can also count down in a list: the last item is -1, the<br />
+next-to-last is -2, etc.</p>
+<pre class="code"></pre>
+<pre class="code">my_list = list(1,2,3,4)</pre>
+<pre class="code">my_list = [1,2,3,4] # create a literal list</pre>
+<p>So far my_list may not be what you expect.  What is the value of<br />
+my_list[1]?</p>
+<pre class="code">print my_list[1] # prints 2 because the indexes (like keys) of the list start with 0</pre>
+<pre class="code">my_list = [4,8,16,32]</pre>
+<pre class="code">print my_list[1] # prints 8</pre>
+<p>You can change any value in a list</p>
+<pre class="code">my_list[2] = "new value of two"</pre>
+<p>You can add new values to the end of a list</p>
+<pre class="code">my_list.append(64)</pre>
+<p>And you can go through all the values of a list:</p>
+<pre class="code">for value in my_list:
+    print value</pre>
+<p>OK, so what does all of this have to do with games?</p>
+<p>Here is a simple example game.  See if you can extend it to do some<br />
+more things, like dropping an item (or all items), or the 'look'<br />
+command to show the long description and the room's contents. What<br />
+else would be good to add?</p>
+<pre class="code">'''
+Simple dungeon game
+'''
+
+character = {'inventory': [], 'location': 'west room'}
+
+dungeon = {
+    'west room': {
+        'short description': 'west room',
+        'long description': 'a sloping north-south passage of barren rock',
+        'contents': ['pail of water', 'dragon tooth'],
+        'exits': {'east': 'centre room'}
+    },
+    'east room': {
+        'short description': 'east room',
+        'long description': 'a room of finished stone with high arched ceiling and soaring columns',
+        'contents': [],
+        'exits': {'west': 'centre room'}
+    },
+    'centre room': {
+        'short description': 'centre room',
+        'long description': 'the very heart of the dungeon, a windowless chamber lit only by the eerie light of glowing fungi high above',
+        'contents': ['golden key', 'spiral hourglass'],
+        'exits': {'east': 'east room', 'west': 'west room'}
+    }
+}
+
+while True:
+    room = dungeon[character['location']]
+    command = raw_input(room['short description'] + ' &gt; ')
+    command_parts = command.split(None, 1)
+    verb = command_parts[0]
+    obj = command_parts[-1] # if the user only types one word, both verb and obj will be the same
+    if verb in ['east', 'west', 'north', 'south', 'up', 'down', 'in', 'out']:
+        if verb in room['exits']:
+            character['location'] = room['exits'][verb]
+            room = dungeon[character['location']]
+            print 'You are in', room['long description']
+            for item in room['contents']:
+                print 'There is a', item, 'here'
+        else:
+            print 'You cannot go that way'
+    if verb == 'inventory':
+        print 'You are carrying:'
+        for item in character['inventory']:
+            print '   ', item
+    if verb == 'quit':
+        print 'Goodbye'
+        break
+    if verb == 'take':
+        if obj == 'all':
+            if room['contents']:
+                for item in room['contents'][:]: # this part: [:] makes a copy of the list so removing items works
+                    print 'You pick up the', item
+                    character['inventory'].append(item)
+                    room['contents'].remove(item)
+            else:
+                print 'There is nothing to take!'
+        else:
+            for item in room['contents']:
+                if obj in item: # does the word in obj match any part of the text of item?
+                    print 'You pick up the', item
+                    character['inventory'].append(item)
+                    room['contents'].remove(item)</pre>
+<p>That's it for now.  I hope this was clear.  Feel free to ask me<br />
+question.</p>
+<p>Love,</p>
+<p>--Dad</p></blockquote>
+]]></content>
+        </entry>
+  </feed>
+
+<!-- Dynamic Page Served (once) in 1.556 seconds -->
+<!-- Cached page served by WP-Cache -->

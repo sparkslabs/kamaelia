@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>Farmdev: Thoughts on Python</title><link>http://farmdev.com/thoughts/on/3/python/</link><description>Some thoughts on Python</description><language>en-us</language><item><title>After the release of Google App Engine, the Rubyists ...</title><link>http://farmdev.com/thoughts/49/after-the-release-of-google-app-engine-the-rubyists-/</link><description>&lt;p&gt;
+... learn Python?  No.  They &lt;a href="http://hackety.org/2008/05/05/sneakingRubyThroughGoogleAppEngine.html"&gt;try compiling Ruby to Python bytecode&lt;/a&gt;, naturally.  One has to admire their pride, I guess.  The funny part is this might actually work.  As the article points out, Ruby's opcode structure was inspired by Python's (I had no idea it was so similar, but this &lt;a href="http://www.flickr.com/photos/john_lam/1910968816/"&gt;makes sense&lt;/a&gt;).  And a while back Fuzzyman performed what looks to me a successful experiment in &lt;a href="http://www.voidspace.org.uk/python/articles/code_blocks.shtml"&gt;implementing Ruby-style anonymous blocks in Python bytecode&lt;/a&gt;, which is probably the only Ruby &lt;em&gt;logic&lt;/em&gt; that Python doesn't do.  Although I'm probably forgetting something as I don't use Ruby much.
+&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/49/after-the-release-of-google-app-engine-the-rubyists-/</guid></item><item><title>Making Erlang indentation-sensitive</title><link>http://farmdev.com/thoughts/47/making-erlang-indentation-sensitive/</link><description>&lt;p&gt;
+Ulf Wiger has been experimenting with &lt;a href="http://ulf.wiger.net/weblog/2008/03/19/indentation-sensitive-erlang/"&gt;making Erlang indentation-senstive&lt;/a&gt;.  He followed up with a &lt;a href="http://ulf.wiger.net/weblog/2008/03/20/indentation-sensitive-erlang-2/"&gt;Part 2&lt;/a&gt; after comments.  
+&lt;/p&gt;
+&lt;p&gt;For most people who start working in the Erlang language, the most annoying new concept is all the various line-terminators you have to know.  Damien Katz &lt;a href="http://damienkatz.net/2008/03/what_sucks_abou.html"&gt;sums this up nicely&lt;/a&gt;.  All these explicit terminators might make other people's code easier to &lt;em&gt;read&lt;/em&gt; but writing code should be easy too (they are equally important).  Mue says &lt;a href="http://mue.tideland.biz/2008/03/please-stop-complaining.html"&gt;just get over it&lt;/a&gt; but as a Python user I agree that Erlang would be way better off if it was indentation-based so this was an interesting experiment.
+&lt;/p&gt;
+&lt;p&gt;
+As for Python, I'm still shocked to hear people say &amp;quot;Python would be nice ... if it wasn't for that whitespace thing.&amp;quot;  Who is perpetuating this?  I have no idea.  The next time you hear someone say this, pass along &lt;a href="http://www.secnetix.de/~olli/Python/block_indentation.hawk"&gt;Python: Myths about Indentation&lt;/a&gt;!
+&lt;/p&gt;
+</description><guid>http://farmdev.com/thoughts/47/making-erlang-indentation-sensitive/</guid></item><item><title>The Python Make tool</title><link>http://farmdev.com/thoughts/46/the-python-make-tool/</link><description>&lt;p&gt;
+A while back there was a lot of talk about needing a &lt;strong&gt;Make&lt;/strong&gt; tool for Python, one like &lt;a href="http://rake.rubyforge.org/"&gt;Ruby Rake&lt;/a&gt;.  There are a few packages now:
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference" href="http://www.scons.org/"&gt;SCONS&lt;/a&gt;&lt;ul&gt;
+    &lt;li&gt;A software construction tool&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference" href="http://pypi.python.org/pypi/zc.buildout/"&gt;zc.buildout&lt;/a&gt;&lt;ul&gt;
+    &lt;li&gt;System for managing development buildouts&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;... and more recently:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference" href="http://www.zedshaw.com/projects/vellum/index.html"&gt;Vellum&lt;/a&gt;&lt;ul&gt;
+    &lt;li&gt;Vellum is Zed Shaw's project to create a nice build tool for Python, or really for anything you need to automate in a consistent fashion.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.blueskyonmars.com/projects/paver/"&gt;Paver&lt;/a&gt;&lt;ul&gt;
+    &lt;li&gt;Paver is a Python-based build/distribution/deployment scripting tool along the lines of Make or Rake&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;
+    Personally, I liked Ian Bicking's suggestion to &lt;a href="http://blog.ianbicking.org/pythons-makefile.html"&gt;just use distutils&lt;/a&gt; but apparently his examples &lt;a href="http://griddlenoise.blogspot.com/2007/04/pythons-make-rake-and-bake-another-and.html"&gt;came off convoluted&lt;/a&gt;.  I think this is because distutils is somewhat convoluted (to be fair, it was created a long time ago in software years).
+&lt;/p&gt;
+&lt;p&gt;At the time of that article I took Ian's advice and tried to do Make-like work in &lt;a href="http://docs.python.org/dist/node32.html"&gt;distutils commands&lt;/a&gt;.  It was a pain.  Mostly, I kept forgetting how everything needed to be set up.  Since distutils silently ignores errors it doesn't &lt;em&gt;tell you&lt;/em&gt; what's wrong, your command just doesn't work.  But I still think the core concept is a good one.  You probably already have a &lt;a href="http://docs.python.org/dist/setup-script.html"&gt;setup.py&lt;/a&gt; file anyway, so why not add some commands to it?
+&lt;/p&gt;
+&lt;h3&gt;disthelper&lt;/h3&gt;
+&lt;p&gt;
+    So ... I made a helper to reduce the pain of creating setup.py commands: &lt;a href="http://code.google.com/p/disthelper/"&gt;disthelper&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;
+    It's the simplest possible approach: it just automates the creation of standard setup.py commands.  You need setuptools and Paste to &lt;em&gt;run disthelper&lt;/em&gt; but you don't need anything beyond the stdlib distutils module to &lt;em&gt;run&lt;/em&gt; your custom command.  I think more pain can be abstracted out of creating distutils commands.  First off, I've been experimenting with an &lt;a href="http://docs.python.org/lib/module-optparse.html"&gt;optparse&lt;/a&gt;-based wrapper around &lt;a href="http://docs.python.org/dist/module-distutils.cmd.html"&gt;distutils.core.Command&lt;/a&gt;.  This isn't ready for release but so far I am convinced it is possible to make a nicer Command class that's fully backwards compatible with &lt;code&gt;distutils.core.Command&lt;/code&gt;.  This could be taken even further and grow a decorator interface or something simpler that didn't require a class (for simple commands).  If anyone wants to help dream up an interface, I've laid down the ground work to make this distutils-compatible and am willing to help implement it (my time permitting, of course).  As an aside, I think such a wrapper would make a nice addition to the stdlib as long as backwards-compatibility is maintained.
+&lt;/p&gt;
+&lt;p&gt;
+    Somewhat related is the  &lt;a href="http://buildutils.lesscode.org/"&gt;buildutils&lt;/a&gt; project.  Buildutils defines many custom tasks you typically want to perform on your project.  At some point I may also make disthelper a repository for typical commands but right now I'd like to focus on making it a facilitator of creating setup.py commands.
+&lt;/p&gt;
+</description><guid>http://farmdev.com/thoughts/46/the-python-make-tool/</guid></item><item><title>Testing Google App Engine sites</title><link>http://farmdev.com/thoughts/45/testing-google-app-engine-sites/</link><description>&lt;p&gt;
+    The &lt;a href="http://code.google.com/appengine/downloads.html"&gt;Google App Engine SDK&lt;/a&gt; sets up a fairly restrictive Python environment on your local machine to simulate their runtime restrictions.  Roughly this consists of no access to sockets and thus barely working httplib, urllib, etc (replaced by &lt;a href="http://code.google.com/appengine/docs/urlfetch/"&gt;urlfetch.fetch()&lt;/a&gt;), inability to use Python C modules, and no access to the file system.  The SDK lets you run your app very easily using the &lt;code&gt;dev_appserver.py&lt;/code&gt; script but I thought, how the heck would I test my app without the dev server?
+&lt;/p&gt;
+&lt;p&gt;
+    It turns out this was ridiculously easy.  You just run about 10 lines of code at the start of your test suite.  Of course, it might change with an SDK upgrade but here's what worked in my &lt;code&gt;tests/__init__.py&lt;/code&gt; in today's SDK (besides sys.path munging):
+    &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import os
+from google.appengine.tools import dev_appserver
+from google.appengine.tools.dev_appserver_main import *
+option_dict = DEFAULT_ARGS.copy()
+option_dict[ARG_CLEAR_DATASTORE] = True
+
+def setup():
+    ## path to app:
+    root_path = os.path.join(os.path.dirname(__file__), '..')
+    logging.basicConfig(
+        level=option_dict[ARG_LOG_LEVEL],
+        format='%(levelname)-8s %(asctime)s %(filename)s] %(message)s')
+    config, matcher = dev_appserver.LoadAppConfig(root_path, {})
+    ## commented out stuff that checked for SDK updates
+    dev_appserver.SetupStubs(config.application, **option_dict)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+    The &lt;code&gt;setup()&lt;/code&gt; is called by &lt;a href="http://somethingaboutorange.com/mrl/projects/nose"&gt;nose&lt;/a&gt; at the beginning of all tests but if you weren't using nose you could put it at the module level or anywhere else to be called once.
+&lt;/p&gt;
+&lt;p&gt;
+    The really cool thing is running tests like this will automatically add &lt;a href="http://code.google.com/appengine/docs/datastore/queriesandindexes.html"&gt;indexes for your queries&lt;/a&gt; (just like the SDK dev server will) so if you had good code coverage your app would be ready to go live.
+&lt;/p&gt;
+&lt;p&gt;
+    Next, you can test your URLs with something like &lt;a href="http://pythonpaste.org/webtest/"&gt;WebTest&lt;/a&gt; like so:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;from YOURAPP import application
+from webtest import TestApp
+def test_index():
+    app = TestApp(application)
+    response = app.get('/')&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+    ...where &lt;code&gt;application&lt;/code&gt; is any WSGI app, like one defined in the &lt;a href="http://code.google.com/appengine/docs/gettingstarted/usingwebapp.html"&gt;Hello World tutorial&lt;/a&gt;:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;from google.appengine.ext import webapp
+class MainPage(webapp.RequestHandler):
+  def get(self):
+    self.response.out.write('Hello, webapp World!')
+
+application = webapp.WSGIApplication(
+                [('/', MainPage)], debug=True)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+    I haven't tried this for Django, but I'm pretty sure it would work &lt;a href="http://code.google.com/appengine/articles/django.html"&gt;as advertised&lt;/a&gt;, making your &lt;code&gt;application&lt;/code&gt; object this:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;application = django.core.handlers.wsgi.WSGIHandler()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+    And there you have it.  The two modules used here aren't in the SDK but that's fine because you don't need to upload them to App Engine anyway.  You can run &lt;code&gt;easy_install nose WebTest&lt;/code&gt; and be ready to test.  You &lt;em&gt;were&lt;/em&gt; planning on testing your App Engine site, weren't you? :) &lt;/p&gt;
+&lt;p&gt;
+If you want to poke around in the test suite I made for &lt;a href="http://pypi.appspot.com/"&gt;pypi.appspot.com&lt;/a&gt;, the code is all in the &lt;a href="http://code.google.com/p/pypione/"&gt;Pypione project&lt;/a&gt;, specifically, the &lt;a href="http://code.google.com/p/pypione/source/browse/trunk/tests/__init__.py"&gt;tests&lt;/a&gt; directory.
+&lt;/p&gt;
+&lt;h3&gt;UPDATE&lt;/h3&gt;
+&lt;p&gt;
+I have since realize the above method does not actually simulate all restrictions, it just inserts some stub modules.  Specifically, it doesn't simulate restricting imports of a lot of builtin modules, nor does it remove file() and open().
+&lt;/p&gt;
+&lt;p&gt;
+Jason Pellerin is working on a nose plugin, &lt;a href="http://code.google.com/p/nose-gae/"&gt;noseGAE&lt;/a&gt; (mentioned below in comments), that aims to get all this simulation accurate.  It is coming along nicely.
+&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/45/testing-google-app-engine-sites/</guid></item><item><title>PyPi (Cheeseshop) on Google App Engine</title><link>http://farmdev.com/thoughts/44/pypi-cheeseshop-on-google-app-engine/</link><description>&lt;p&gt;Like many of you, I've had my jaw on the floor since the release of &lt;a href="http://code.google.com/appengine/"&gt;Google App Engine&lt;/a&gt;.  Although there are skeptics out there, a careful read of their &lt;a href="http://code.google.com/appengine/terms.html"&gt;terms&lt;/a&gt; will show you that it's for real &amp;mdash; Google has released &lt;em&gt;GOOGLE&lt;/em&gt; to the world and it's not for scary marketing purposes.  In fact, I've been growing tired of &lt;a href="http://fakesteve.blogspot.com/2008/04/google-putting-up-fence-and-gate-to.html"&gt;paranoid Google haters&lt;/a&gt;; I'm hoping this will shut them up for a while.
+&lt;/p&gt;
+&lt;p&gt;Why is App Engine such a breakthrough?  The concept of a hosted web application is nothing new but it has never been done this well.  Mundane server maintenance?  Gone.  Infinite scalability?  Check.  100% uptime?  Let's face it, if Google went offline you'd probably be down in a nuclear bunker playing Parcheesi.&lt;/p&gt;
+&lt;p&gt;
+    So ... how should we leverage this tool for the greater good of the community?  I can't count the ways without getting dizzy.  How about let's start with a mirror of &lt;a href="http://pypi.python.org/pypi/"&gt;PyPi&lt;/a&gt;, the Python Package Index?  
+&lt;/p&gt;
+&lt;h3&gt;PyPi on the App Engine&lt;/h3&gt;
+&lt;p&gt;
+    I barely spent two days on it, but here it is: &lt;a href="http://pypi.appspot.com/"&gt;http://pypi.appspot.com/&lt;/a&gt;.  Test it out, play with it, try to break it.
+&lt;/p&gt;
+&lt;p&gt;
+    As Python grows, especially due to App Engine, PyPi needs to scale too.  &lt;a href="http://www.zope.org/"&gt;Zope&lt;/a&gt; has put together a PyPi mirror but that's the only other one I know of (actually, I can't even find the link to it right now).  Coincidentally, &lt;a href="http://pypi.python.org/pypi/"&gt;PyPi&lt;/a&gt; even went offline for a few min while I was writing this blog post.
+&lt;/p&gt;
+&lt;h3&gt;Issues...&lt;/h3&gt;
+&lt;ul&gt;
+    &lt;li&gt;&lt;a href="http://code.google.com/appengine/docs/urlfetch/"&gt;urlfetch&lt;/a&gt; can't get big packages
+        &lt;ul&gt;&lt;li&gt;fetching SQLAlchemy triggered the ResponseTooLarge error but its package was barely over 1MB.  We might be able to create a download proxy to work around this.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;May not be fully &lt;a href="http://peak.telecommunity.com/DevCenter/EasyInstall#package-index-api"&gt;compatible with easy_install&lt;/a&gt; yet&lt;/li&gt;
+    &lt;li&gt;Can't run scripts on App Engine
+        &lt;ul&gt;&lt;li&gt;Not too big a deal, you have to think of web pages as scripts and use a separate crontab to make timed requests.  There are security issues with this, but for mirroring pypi it's not a problem&lt;/li&gt;
+        &lt;li&gt;Note that I haven't actually &lt;em&gt;mirrored&lt;/em&gt; all of PyPi, I'm still testing it out.&lt;/li&gt;
+        &lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;It's not very pretty yet (see below)&lt;/li&gt;
+    &lt;li&gt;The prototype works, now it needs some tests :)
+        &lt;ul&gt;&lt;li&gt;I'm curious to give &lt;a href="http://pythonpaste.org/webtest/"&gt;WebTest&lt;/a&gt; a whirl on top of &lt;a href="http://code.google.com/appengine/docs/webapp/"&gt;webapp&lt;/a&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;You Can Help&lt;/h3&gt;
+&lt;p&gt;I'm not dedicated to this project, I just thought it sounded like a good idea and would be a fun way to experiment with the App Engine.  If anyone is interested in working on it just let me know --kumar.mcmillan@gmail.com.  If there is enough interest I'll put it on Google Code.  Possibly the most exciting feature of App Engine is the &lt;a href="http://code.google.com/appengine/docs/datastore/"&gt;Datastore API&lt;/a&gt; (aka &lt;a href="http://en.wikipedia.org/wiki/BigTable"&gt;BigTable&lt;/a&gt;) and &lt;a href="http://groovie.org/articles/2008/04/13/google-datastore-and-the-shift-from-a-rdbms"&gt;Ben Bangert agrees&lt;/a&gt;.  It's a little hard for me to wrap my head around it but so far the &lt;a href="http://code.google.com/appengine/docs/datastore/expandoclass.html"&gt;Expando&lt;/a&gt; class&amp;mdash;besides being the coolest name for a class&amp;mdash;seems to work great for storing package data.  If EGG-INO grows a new parameter, it just gets tacked on to the row dynamically.&lt;/p&gt;
+&lt;p&gt;This has also been a great way to &lt;a href="http://code.google.com/p/googleappengine/issues/list?q=reporter%3Akumar.mcmillan&amp;can=2"&gt;dig up bugs&lt;/a&gt;, some of which have already been fixed.&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/44/pypi-cheeseshop-on-google-app-engine/</guid></item><item><title>Unicode In Python, Completely Demystified (slides available)</title><link>http://farmdev.com/thoughts/43/unicode-in-python-completely-demystified-slides-available-/</link><description>&lt;p&gt;
+Big thanks to everyone who attended my talk at PyCon today, &lt;a href="http://us.pycon.org/2008/conference/schedule/event/51/"&gt;Unicode In Python, Completely Demystified&lt;/a&gt;.  It was an ambitious title; I highly doubt I &amp;quot;demystified&amp;quot; everything, but I was happy with how it went.  There were a ton of great questions &amp;mdash; even some I couldn't answer, of course.  If you have any other questions feel free to comment here and I'll try my best to answer.
+&lt;/p&gt;
+&lt;p&gt;
+For those who couldn't make the talk or those who just want to refer back to the talk and / or source code, I've posted the slides here: &lt;a href="http://farmdev.com/talks/unicode/"&gt;http://farmdev.com/talks/unicode/&lt;/a&gt;.  The audio / video should be available soon so I'll re-post a message when that's available.
+&lt;/p&gt;
+&lt;p&gt;Also, for reference, here is the primer:&lt;/p&gt;
+&lt;p&gt;This talks aims to make every single last person in the audience understand exactly how to write Unicode-aware applications in Python 2. If necessary, we will move to a Birds of Feather gathering, to the bar, to your hotel room, I'll start hanging around your cube at work -- whatever it takes -- until you completely "get it." But it's really simple so bring an open mind, a notepad, and get ready to create bullet proof Python software that can read and write text in Arabic, Russian, Chinese, Klingon, et cetera. As a citizen of the Python community you have the responsibility of creating Unicode-aware applications!
+&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/43/unicode-in-python-completely-demystified-slides-available-/</guid></item><item><title>Data mining in Python and beyond?</title><link>http://farmdev.com/thoughts/42/data-mining-in-python-and-beyond-/</link><description>&lt;p&gt;
+Dear Lazy Web,
+&lt;/p&gt;
+&lt;p&gt;
+I am a software engineer who hasn't done any college level math (gasp!).  Recently, I've been having a lot of fun transforming data into more meaningful data.  This, I believe, is more commonly known as &lt;a href="http://en.wikipedia.org/wiki/Data_mining"&gt;data mining&lt;/a&gt; and I'd like to learn more about it.  
+&lt;/p&gt;
+&lt;p&gt;Specifically, I've been looking at Internet search data where &lt;strong&gt;keywords&lt;/strong&gt; are buried in some kind of template like &lt;code&gt;{foo}::{bar}::{keywords}&lt;/code&gt;, placeholders replaced with actual content; there are many different, disparate template formats and no template ID to go by.  So, I spent some quality time with my favorite programming language, &lt;a href="http://python.org/"&gt;Python&lt;/a&gt;, and identified as many patterns as I could in a sampling of 5 million candidate strings.  After much tweakage, my pattern recognition became 94.54% accurate.  This rate was more than good enough to the users of the data so I basked in sweet triumph and called it a day :)
+&lt;/p&gt;
+&lt;p&gt;
+In another project I used &lt;a href="http://en.wikipedia.org/wiki/Frequency_analysis_(cryptanalysis)"&gt;frequency analysis&lt;/a&gt; and deduction to turn eBay auction titles into more meaningful identifiers of items up for sale.  This worked fairly well because my dataset was large and all the auctions were for a specific kind of item.
+&lt;/p&gt;
+&lt;p&gt;
+My question to you is where can I find out more about this kind of fun stuff?  Can you recommend a good book on data mining?  Any good blogs to read?  Should I take some math classes before I get too deep into this?  If so, which ones?  
+&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/42/data-mining-in-python-and-beyond-/</guid></item><item><title>The Monty Hall Problem (win a goat or a car)</title><link>http://farmdev.com/thoughts/41/the-monty-hall-problem-win-a-goat-or-a-car-/</link><description>&lt;p&gt;
+There is a puzzle used in game shows known as &lt;a href="http://en.wikipedia.org/wiki/Monty_hall_problem"&gt;The Monty Hall Problem&lt;/a&gt;.  It's been around for a while but over lunch yesterday someone explained it to me for the first time and 3 out of 4 of us argued convincingly the same answer.  And it was wrong.  Here's the problem:
+&lt;/p&gt;
+&lt;p&gt;
+Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats. You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat. He then says to you, &amp;quot;Do you want to pick door No. 2?&amp;quot; Is it to your advantage to switch your choice?
+&lt;/p&gt;
+&lt;p&gt;
+The most logical answer to me was no it doesn't matter if you switch or not because you never knew what was behind the first door you chose anyway.  It seemed to me that the problem was no different than having two choices, a goat or a car and randomly choosing one.  But this is all wrong! 
+&lt;/p&gt;
+&lt;p&gt;
+Since I'm not good at math I could only loosely follow the explanations for why I was wrong.  So, naturally, I wrote some code to see it in action (bear with me, I spent all of 5 minutes on it):
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import random
+from decimal import Decimal
+choices = ['goat','goat','car']
+tries = 99000
+switch_correct, stay_correct = 0, 0
+for num in range(tries):
+    doors = [c for c in choices]
+    random.shuffle(doors)
+    first = doors.pop(random.randint(0,len(doors)-1))
+    for i,val in enumerate(doors):
+        if val == 'goat':
+            doors.pop(i)
+    switched = doors[0]
+    if switched == 'car':
+        switch_correct += 1
+    elif first == 'car':
+        stay_correct += 1
+print "stay: you win %s%% of the time" % (Decimal(stay_correct) / Decimal(tries) * 100)
+print "switch: you win %s%% of the time" % (Decimal(switch_correct) / Decimal(tries) * 100)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+I found the result astonishing:
+&lt;/p&gt;
+&lt;pre&gt;stay: you win 33.5% of the time
+switch: you win 66.5% of the time&lt;/pre&gt;
+&lt;p&gt;The wikipedia link above explains why this is but it is still incredible to me, like a magic trick.&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/41/the-monty-hall-problem-win-a-goat-or-a-car-/</guid></item><item><title>Building Flash/ActionScript sites entirely in code and using FireBug for debugging</title><link>http://farmdev.com/thoughts/40/building-flash-actionscript-sites-entirely-in-code-and-using-firebug-for-debugging/</link><description>&lt;p&gt;
+Way back in the olden days I used to dabble in &lt;a href="http://www.adobe.com/products/flash/"&gt;Flash&lt;/a&gt; for building dynamic websites.  This was incredibly painful, as I recall, because I couldn't stand the Flash IDE.  It was clunky and hard to navigate, there weren't enough key commands, and the code editor was a sad version of notepad at best.  And why use Flash anyway?  JavaScript will do most of what you need for a dynamic site nowadays and I believe things like &lt;a href="https://www.google.com/adsense/"&gt;Google AdSense&lt;/a&gt; read the DOM for content filtering, which would render a Flash site useless.  For me, the answer was audio playback.  I wanted to play some audio on a site and for this Flash seems like the only option.
+&lt;/p&gt;  
+&lt;p&gt;Digging deep into my vault of web dabblery I remembered getting so fed up with the Flash IDE that I wrote an entire site in &lt;a href="http://www.actionscript.org/"&gt;ActionScript&lt;/a&gt; alone.  I was quite proud of this as it was an early foray into programming and made me realize how much I enjoyed writing software in code.  By some stroke of luck, this ActionScript-only site written circa 2002 is &lt;a href="http://gintas.com/"&gt;still online&lt;/a&gt;!  OK, the intro was made with some timeline animation (someone else did that) but everything else is pure code, I swear.
+&lt;/p&gt;
+&lt;p&gt;
+So there I was, planning out my soon-to-blow-your-mind Flash audio player, yet without &lt;a href="http://www.adobe.com/products/flash/"&gt;Creative Suite 3&lt;/a&gt;, the latest Flash IDE.  In fact, I didn't want it &amp;mdash; $699.00, ouch!  Not to mention: the pain of installing another massive, bloated application on my hard drive.  A little Googling around later, I discovered &lt;a href="http://www.mtasc.org/"&gt;Motion-Twin ActionScript 2 Compiler&lt;/a&gt;, or mtasc for short, written in &lt;a href="http://caml.inria.fr/"&gt;OCaml&lt;/a&gt;.  This was exactly what I was hoping for, an open source command line tool for compiling ActionScript code into SWF (Flash) movies without the need for any clunky IDE.  And it works very nicely.  
+&lt;/p&gt;
+&lt;p&gt;
+Unfortanately, ActionScript seems to have no error handling whatsoever (or I haven't figured out how to handle errors yet) so doing stupid stuff like calling a method that doesn't exist will not stop program execution as it should.  Great.  So I quickly became familiar with hooks that mtasc provides to the trace() command.  Calling trace() writes to the Flash IDE's debug log.  But since you aren't in a Flash IDE when testing a freshly compiled swf, mtasc allows you to define your own implementation of trace.  Cool!  So naturally, I created my own trace that writes to the &lt;a href="http://getfirebug.com/"&gt;FireBug&lt;/a&gt; log.  FireBug, of course, is the ultimate webapp-debugging tool.  
+&lt;/p&gt;
+&lt;p&gt;
+Here it is first added to the example app (from the &lt;a href="http://tech.motion-twin.com/mtasc.html#tutorial"&gt;mtasc tutorial&lt;/a&gt;):
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;class Tuto {
+
+    static var app : Tuto;
+
+    function Tuto() {
+        // creates a 'tf' TextField size 800x600 at pos 0,0
+        _root.createTextField("tf",0,0,0,800,600);
+        // write some text into it
+        _root.tf.text = "Hello world !";
+        
+        trace("debugging with trace rocks!");
+    }
+
+    // entry point
+    static function main(mc) {
+        // note that this seems to help mtasc find the trace method
+        var f = new FireTrace();
+        app = new Tuto();
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;...saved to Tuto.as.  And here is my trace implementation, saved to FireTrace.as:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;class FireTrace {
+    static function trace(msg, class_, file, line) {
+        getURL('javascript:console.debug("[' + file + ':' + line + ' ' + class_ + '] ' + msg + '")');
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+I compiled it like so:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mtasc -swf Tuto.swf -trace FireTrace.trace -main -header 800:600:20 Tuto.as&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And used a simple HTML page to run it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+&amp;lt;script type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+
+if (!window.console || !console.firebug)
+{
+    var names = [&amp;quot;log&amp;quot;, &amp;quot;debug&amp;quot;, &amp;quot;info&amp;quot;, &amp;quot;warn&amp;quot;, &amp;quot;error&amp;quot;, &amp;quot;assert&amp;quot;, &amp;quot;dir&amp;quot;, &amp;quot;dirxml&amp;quot;,
+    &amp;quot;group&amp;quot;, &amp;quot;groupEnd&amp;quot;, &amp;quot;time&amp;quot;, &amp;quot;timeEnd&amp;quot;, &amp;quot;count&amp;quot;, &amp;quot;trace&amp;quot;, &amp;quot;profile&amp;quot;, &amp;quot;profileEnd&amp;quot;];
+
+    window.console = {};
+    for (var i = 0; i &amp;lt; names.length; ++i)
+        window.console[names[i]] = function() {}
+}
+
+&amp;lt;/script&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;object classid=&amp;quot;clsid:d27cdb6e-ae6d-11cf-96b8-444553540000&amp;quot; name=&amp;quot;TopPlayer&amp;quot; id=&amp;quot;TopPlayer&amp;quot;
+     codebase=&amp;quot;http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0&amp;quot;
+     width=&amp;quot;800&amp;quot; height=&amp;quot;600&amp;quot;&amp;gt;
+ &amp;lt;param name=&amp;quot;movie&amp;quot; value=&amp;quot;Tuto.swf&amp;quot;&amp;gt; 
+ &amp;lt;param name=&amp;quot;quality&amp;quot; value=&amp;quot;high&amp;quot;&amp;gt;
+ &amp;lt;param name=&amp;quot;loop&amp;quot; value=&amp;quot;false&amp;quot;&amp;gt;
+ &amp;lt;param name=&amp;quot;play&amp;quot; value=&amp;quot;true&amp;quot;&amp;gt;
+ &amp;lt;!--&amp;lt;param name=&amp;quot;bgcolor&amp;quot; value=&amp;quot;#ffffff&amp;quot;&amp;gt;--&amp;gt;
+ &amp;lt;param name=&amp;quot;swliveconnect&amp;quot; value=&amp;quot;true&amp;quot;&amp;gt;
+
+ &amp;lt;embed src=&amp;quot;Tuto.swf&amp;quot; quality=&amp;quot;high&amp;quot; width=&amp;quot;800&amp;quot; height=&amp;quot;600&amp;quot;
+ 	type=&amp;quot;application/x-shockwave-flash&amp;quot; name=&amp;quot;TopPlayer&amp;quot; id=&amp;quot;TopPlayer&amp;quot;
+ 	pluginspage=&amp;quot;http://www.macromedia.com/shockwave/download/index.cgi?p1_prod_version=shockwaveflash&amp;quot;
+ 	swliveconnect=&amp;quot;true&amp;quot;&amp;gt;
+ &amp;lt;/embed&amp;gt;
+&amp;lt;/object&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+...and here is what it prints to my FireBug console:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Tuto.as:11 Tuto::Tuto] debugging with trace rocks!&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+Notice that I had to add this line of code to the Tuto class:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;var f = new FireTrace();&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+I don't know if this is a bug in mtasc but without it the custom trace seems like it never gets loaded.  Also notice that I used the &lt;a href="http://www.getfirebug.com/lite.html"&gt;FireBug Lite&lt;/a&gt; JavaScript snippet for gracefully degrading console methods when FireBug isn't running.
+&lt;/p&gt;
+&lt;p&gt;After my romantic reunion with writing ActionScript, what has changed?  The first thing I've noticed is that ActionScript 3 now looks exactly Java but I have no idea why.  Luckily, it remains compatible with ActionScript 2 so you can leave out all the type declarations and everything still seems to work.  Thus, it is pretty much a clone of JavaScript with some extra craziness you probably don't need.  I'm still trying to figure out a better way to handle errors; putting debug statements everywhere is pretty lame.  If anyone has a suggestion let me know.  At the least, I would like to get an error in the log when I stupidly try to call a non-existant method.&lt;/p&gt;
+&lt;p&gt;
+    Now that I have a prototype, the next step is to write automated tests, of course!  This will be a lot of fun as I love watching tests pass.  At first glance, the &lt;a href="http://www.asunit.org/"&gt;AsUnit&lt;/a&gt; (ActionScript Unit Test Runner) seems like it will be useful.  I have no doubt that GUI testing Flash is no easier than it is in other languages, and thus not so easy to automate ... but one always needs unit tests.
+&lt;/p&gt;
+&lt;h4&gt;UPDATE&lt;/h4&gt;
+&lt;p&gt;
+    Ah, looks like there is an even better way to call JavaScript by way of the &lt;a href="http://livedocs.adobe.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&amp;file=00002200.html"&gt;ExternalInterface&lt;/a&gt; class:
+&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ExternalInterface.call("console.log", variable1, variable2, variableN);&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+    I haven't tried it but this &lt;a href="http://64.233.167.104/search?q=cache:05dYg8_egrMJ:beaucollins.com/past/2007/11/9/logging_to_firebug_from_flash/+flash+actionscript+firebug&amp;hl=en&amp;ct=clnk&amp;cd=4&amp;gl=us&amp;client=firefox-a"&gt;article&lt;/a&gt; suggests to limit your calls to String, Number, Array, Object, and Boolean datatypes.
+    &lt;/p&gt;
+
+</description><guid>http://farmdev.com/thoughts/40/building-flash-actionscript-sites-entirely-in-code-and-using-firebug-for-debugging/</guid></item><item><title>Software is written by hand</title><link>http://farmdev.com/thoughts/39/software-is-written-by-hand/</link><description>&lt;p&gt;
+...that's right, it's not molded or prefabbed, it's not made on a production line or in a lab.  Are we insane??!  Here is a hilarious probe into the darker side of &lt;a href="http://codeulate.com/?p=7"&gt;this art we call programming&lt;/a&gt;.
+&lt;/p&gt;</description><guid>http://farmdev.com/thoughts/39/software-is-written-by-hand/</guid></item></channel></rss>

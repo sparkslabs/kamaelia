@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.2.1" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>Abe Fettig's Weblog</title>
+	<link>http://fettig.net/weblog</link>
+	<description>The latest on Abe's work</description>
+	<pubDate>Tue, 19 Feb 2008 04:36:24 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.2.1</generator>
+	<language>en</language>
+			<item>
+		<title>iPhone sync problem and solution</title>
+		<link>http://fettig.net/weblog/2008/02/18/iphone-sync-problem-and-solution/</link>
+		<comments>http://fettig.net/weblog/2008/02/18/iphone-sync-problem-and-solution/#comments</comments>
+		<pubDate>Tue, 19 Feb 2008 04:30:32 +0000</pubDate>
+		<dc:creator>Abe</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://fettig.net/weblog/2008/02/18/iphone-sync-problem-and-solution/</guid>
+		<description><![CDATA[
+A few days ago my iPhone stopped syncing correctly. When I tried to sync I would get a message that contact syncing had failed because &#8220;the sync server failed to sync the iphone&#8221;. If I disabled contact syncing, calendar synching would fail with the same error message, and if I disabled calendar syncing too, bookmarking [...]]]></description>
+			<content:encoded><![CDATA[<p>
+A few days ago my iPhone stopped syncing correctly. When I tried to sync I would get a message that contact syncing had failed because &#8220;the sync server failed to sync the iphone&#8221;. If I disabled contact syncing, calendar synching would fail with the same error message, and if I disabled calendar syncing too, bookmarking synching would fail. I found a few people talking about the problem, but none of the suggested solutions (including restoring my iPhone) worked for me.
+</p>
+<p>
+Finally I came across a weblog entry that mentioned looking at the console to see the sync log. I opened /Applications/Console and saw this message:</p>
+<blockquote><p>
+<code><br />
+2008-02-18 22:57:38.111 AppleMobileSync[652] CFLog (0):<br />
+	CFPropertyListCreateFromXMLData(): plist parse failed; the data is not proper UTF-8. The file name for this data could be:<br />
+	/Users/abe/Library/Application Support/SyncServices/Local/clientdata/[really long numerical directory]/[really long numerical file name]<br />
+</code>
+</p></blockquote>
+<p>
+Apparently that file with the really long name was causing the problem. So I went ahead and moved it out of the way (I put it on my desktop so I could restore it if it turned out to be important). Then I tried to sync again&#8230; and it worked! I did get a couple of messages about resolving sync conflicts, but they were easily resolved and now everything appears to be working fine.
+</p>
+<p>
+Take this for what it&#8217;s worth; I don&#8217;t know if this will work for you, or make matters worse. I have no idea what that file was supposed to do, and randomly removing application files from your computer is generally a bad idea. But if you&#8217;ve got a similar iPhone syncing problem, and nothing else works, you might want to check your Console log and see if there&#8217;s a similar file causing your problem.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://fettig.net/weblog/2008/02/18/iphone-sync-problem-and-solution/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Copies of Twisted book available</title>
+		<link>http://fettig.net/weblog/2008/02/14/copies-of-twisted-book-available/</link>
+		<comments>http://fettig.net/weblog/2008/02/14/copies-of-twisted-book-available/#comments</comments>
+		<pubDate>Thu, 14 Feb 2008 06:06:35 +0000</pubDate>
+		<dc:creator>Abe</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://fettig.net/weblog/2008/02/14/copies-of-twisted-book-available/</guid>
+		<description><![CDATA[Update, 2/18/08: Thanks to those who have taken me up on this offer so far. I still have a few copies available. I&#8217;ll update this post when I run out of author copies, so if you&#8217;re reading this that means the offer is still good. Also, I&#8217;ve been asked if I would consider trading for [...]]]></description>
+			<content:encoded><![CDATA[<p><em><b>Update, 2/18/08</b>: Thanks to those who have taken me up on this offer so far. I still have a few copies available. I&#8217;ll update this post when I run out of author copies, so if you&#8217;re reading this that means the offer is still good. Also, I&#8217;ve been asked if I would consider trading for other things besides the items on my Amazon wish list. Sure! Just send me an email describing what you&#8217;d like to trade.</em>
+</p>
+<p>
+I was thinking today about what to do with my remaining author&#8217;s copies of <a href="http://fettig.net/tnpe">Twisted Network Programming Essensials</a>. I&#8217;ve given most of them away, but I have a few left, and I&#8217;d like to see them get into the hands of people who will read them before they become obsolete. So I decided to try offering the following deal to anybody who&#8217;s interested:</p>
+<ol>
+<li>Buy me something from <a href="http://www.amazon.com/gp/registry/wishlist/K6FDWMAG140I">this Amazon wishlist</a>. To make it a good deal for you, pick something less expensive than my book.</li>
+<li>Send me an email (abe at this domain) with your mailing address.</li>
+<li>I&#8217;ll mail you an autographed copy of Twisted Network Programming Essentials.</li>
+</ol>
+<p>
+ Sound good? Gift away. Or email me if you have questions. I currently have 10 extra copies, first come first serve.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://fettig.net/weblog/2008/02/14/copies-of-twisted-book-available/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>1 TB</title>
+		<link>http://fettig.net/weblog/2007/10/16/1-tb/</link>
+		<comments>http://fettig.net/weblog/2007/10/16/1-tb/#comments</comments>
+		<pubDate>Tue, 16 Oct 2007 16:07:00 +0000</pubDate>
+		<dc:creator>Abe</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://fettig.net/weblog/2007/10/16/1-tb/</guid>
+		<description><![CDATA[I recently started running MythTV on a Linux box I have sitting in my basement. This machine also acts as a home file, web, and print server, and it had a couple of internal hard drives in it already, plus an external USB drive for backup. MythTV soon ate up all the available space on [...]]]></description>
+			<content:encoded><![CDATA[<p>I recently started running <a href="http://www.mythtv.org/">MythTV</a> on a Linux box I have sitting in my basement. This machine also acts as a home file, web, and print server, and it had a couple of internal hard drives in it already, plus an external USB drive for backup. MythTV soon ate up all the available space on my /home partition, so I <a href="http://dealnews.com/categories/Computer/Storage/51.html">went shopping for another drive</a> to use for dedicated video storage. It&#8217;s amazing how cheap hard drives have become: I ended up getting a 500GB drive (which seems to be the current sweet spot for bytes-per-dollar) for $100 plus tax. After installing and formatting it, I took a look at the available disks in my system, and suddenly realized how much total storage there was:</p>
+<pre>
+$ df -H -t ext3
+Filesystem             Size   Used  Avail Use% Mounted on
+/dev/hda1               28G   4.3G    23G  16% /
+/dev/hda2              216G   142G    63G  70% /home
+/dev/sda1              316G   143G   158G  48% /mnt/bigboy
+/dev/hdc1              493G   115G   353G  25% /mnt/video
+</pre>
+<p>That&#8217;s just about a terabyte! A few years ago I would never have imagined setting up a machine for personal use with a terabyte of storage. And now I have one, almost accidentally. Amazing.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://fettig.net/weblog/2007/10/16/1-tb/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>View Source for Safari on iPhone</title>
+		<link>http://fettig.net/weblog/2007/07/02/view-source-for-safari-on-iphone/</link>
+		<comments>http://fettig.net/weblog/2007/07/02/view-source-for-safari-on-iphone/#comments</comments>
+		<pubDate>Tue, 03 Jul 2007 01:40:35 +0000</pubDate>
+		<dc:creator>Abe</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://fettig.net/weblog/2007/07/02/view-source-for-safari-on-iphone/</guid>
+		<description><![CDATA[
+A lot of web development knowledge has been gleaned by viewing source. Unfortunately the iPhone&#8217;s version of Safari doesn&#8217;t have a View Source command. So if you visit a site on the iPhone, and find that they&#8217;re serving you up a different, iPhone-optimized version of the site, there&#8217;s no easy way to look at the [...]]]></description>
+			<content:encoded><![CDATA[<p>
+A lot of web development knowledge has been gleaned by viewing source. Unfortunately the iPhone&#8217;s version of Safari doesn&#8217;t have a View Source command. So if you visit a site on the iPhone, and find that they&#8217;re serving you up a different, iPhone-optimized version of the site, there&#8217;s no easy way to look at the source and see what they&#8217;re doing.</p>
+<p><p>
+To work around this problem, I made myself a little View Source bookmarklet that works on the iPhone. Here it is:</p>
+<p><a href="javascript:var%20sourceWindow%20%3D%20window.open%28%27about%3Ablank%27%29%3B%20%0Avar%20newDoc%20%3D%20sourceWindow.document%3B%20%0AnewDoc.open%28%29%3B%20%0AnewDoc.write%28%27%3Chtml%3E%3Chead%3E%3Ctitle%3ESource%20of%20%27%20%2B%20document.location.href%20%2B%20%27%3C/title%3E%3C/head%3E%3Cbody%3E%3C/body%3E%3C/html%3E%27%29%3B%20%0AnewDoc.close%28%29%3B%20%0Avar%20pre%20%3D%20newDoc.body.appendChild%28newDoc.createElement%28%22pre%22%29%29%3B%20%0Apre.appendChild%28newDoc.createTextNode%28document.documentElement.innerHTML%29%29%3B">View Source</a>
+</p>
+<p>
+To use, add the above bookmarklet to your Safari or IE bookmarks, and sync your iPhone. Then visit a web page on your iPhone, pull up your bookmarks and select &#8220;View Source&#8221;. A new page will open containing the source of the page you were viewing.
+</p>
+<p>Unlike the traditional View Source command, this bookmarklet shows the generated source, not the original source. if the DOM has been modified by script you&#8217;ll see the modified version and not the original. Also, you&#8217;ll probably have to do lots of zooming and panning, since the lines of source code will be wide. If anybody wants to make a version that has nicer formatting, feel free to expand this code.</p>
+<p><p>
+Here&#8217;s the original un-escaped javascript:
+</p>
+<pre>
+var sourceWindow = window.open('about:blank');
+var newDoc = sourceWindow.document;
+newDoc.open();
+newDoc.write('&lt;html&gt;&lt;head&gt;' +
+    '&lt;title&gt;Source of ' + document.location.href + '&lt;/title&gt;' +
+    '&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;');
+newDoc.close();
+var pre = newDoc.body.appendChild(newDoc.createElement("pre"));
+pre.appendChild(newDoc.createTextNode(
+    document.documentElement.innerHTML));
+</pre>
+]]></content:encoded>
+			<wfw:commentRss>http://fettig.net/weblog/2007/07/02/view-source-for-safari-on-iphone/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>A few iPhone Safari notes</title>
+		<link>http://fettig.net/weblog/2007/06/29/a-few-iphone-safari-notes/</link>
+		<comments>http://fettig.net/weblog/2007/06/29/a-few-iphone-safari-notes/#comments</comments>
+		<pubDate>Sat, 30 Jun 2007 01:36:22 +0000</pubDate>
+		<dc:creator>Abe</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://fettig.net/weblog/2007/06/29/a-few-iphone-safari-notes/</guid>
+		<description><![CDATA[Some notes on Safari on the iPhone, from the perspective of a web developer: 
+
+Poking around the DOM, I don&#8217;t see any special objects, with the possible exception of window.offscreenBuffering (set to true).
+Bookmarklets work, although you have to go through the bookmarks menu to get to them.
+The javascript shell bookmarklet is tantalizingly close to working, but [...]]]></description>
+			<content:encoded><![CDATA[<p>Some notes on Safari on the iPhone, from the perspective of a web developer: </p>
+<ul>
+<li>Poking around the DOM, I don&#8217;t see any special objects, with the possible exception of <code>window.offscreenBuffering</code> (set to <code>true</code>).</li>
+<li><a href="http://en.wikipedia.org/wiki/Bookmarklet">Bookmarklets</a> work, although you have to go through the bookmarks menu to get to them.</li>
+<li>The <a href="http://www.squarefree.com/shell/">javascript shell</a> bookmarklet is tantalizingly close to working, but doesn&#8217;t actually evaluate what you&#8217;ve entered when you hit enter - it just goes to a newline. This is probably easy to fix.</li>
+<li><b>Update</b>: the problem appears to be the fact that you only get an onkeypress event after you hit enter on the virtual keyboard, and even then the keyCode is equal to 0. I tried modifying the script to execute whenever keyCode is 0, but that made Safari crash! Does that make me the first civilian to crash Safari?</li>
+<li>Safari crashes are handled gracefully - the main screen fades back in, and you can jump right back into Safari. It will then load page you were visiting when it crashed.
+  </li>
+<li>Drag and drop, and other behaviors based on picking up mousemove events, don&#8217;t work. <a href="http://dev.lipidity.com/apple/iphone-webkit-css-3#toc-2-element-drag">CSS-based element drag and drop</a> doesn&#8217;t work either. Dragging one finger around the iPhone&#8217;s version of Safari causes the window to scroll, and that&#8217;s it. I assume that scroll events do work. I&#8217;m sure somebody is already working on a version of drag and drop based on window scrolling.</li>
+<li>For documents with no width set, the iPhone uses a default width of 980px.</li>
+<li>alert() works.</li>
+</ul>
+<p>
+I&#8217;ll post more things as I discover them, or feel free to add your own in the comments.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://fettig.net/weblog/2007/06/29/a-few-iphone-safari-notes/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

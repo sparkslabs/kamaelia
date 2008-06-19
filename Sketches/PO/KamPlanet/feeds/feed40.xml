@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://purl.org/rss/1.0/"
+  >
+
+  <channel rdf:about="http://www.artima.com/weblogs/feeds/bloggers/guido.rss">
+    <title>Guido van Rossum's Weblog</title>
+    <link>http://www.artima.com/weblogs/index.jsp?blogger=guido</link>
+    <description>
+Artima Weblogs is a community of bloggers posting on a wide range of topics of interest to software developers.
+    </description>
+    <image rdf:resource="http://www.artima.com/images/artima88x33.gif"/>
+    <items>
+      <rdf:Seq>
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=227041" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=220341" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=219793" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=215479" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=214325" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=214235" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=214122" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=213583" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=213546" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=212871" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=212259" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=211842" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=211430" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=211200" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=211026" />
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <image rdf:about="http://www.artima.com/images/artima88x33.gif">
+    <title>Artima.com</title>
+    <url>http://www.artima.com/images/artima88x33.gif</url>
+    <link>http://www.artima.com/</link>
+  </image>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=227041">
+    <title>Python 3000 and You</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=227041</link>
+    <description>
+I've posted the slides from my PyCon 2008 keynote on python.org.  Here are the URLs, plus a warning against the temptation of changing your APIs at the same time as porting to Py3k.  This is really important!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=220341">
+    <title>Python 3.0 alpha 2 Released!</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=220341</link>
+    <description>
+Another milestone in Python 3000 development: alpha 2 is released.  Now with immutable bytes!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=219793">
+    <title>Google Highly Open Participation Contest</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=219793</link>
+    <description>
+The Google Open Source Office is outdoing itself with a new contest aimed at a younger generation of coders: students ages 13 or older.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=215479">
+    <title>Myths About Indentation in Python</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=215479</link>
+    <description>
+I stumbled upon a particularly lucid explanation of Python's significant indentation, by Oliver Fromme of secnetics GmbH.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=214325">
+    <title>A Response to Bruce Eckel</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=214325</link>
+    <description>
+Bruce Eckel blogged about &amp;quot;Python 3K or Python 2.9?&amp;quot;.  A lively discussion ensued.  Here's my response.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=214235">
+    <title>It isn't Easy to Remove the GIL</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=214235</link>
+    <description>
+A response to a blog post by Juergen Brendel pleading for the removal of the GIL.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=214122">
+    <title>Syncing Motorola RAZR v3xx With Mac iSync 2.4</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=214122</link>
+    <description>
+I gave my wife a new phone for her birthday. But it was not recognized by iSync (I guess the phone is too new).  I found a hint on an Italian bulletin board which I a am copying now.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=213583">
+    <title>Python 3000 alpha 1 Released!</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=213583</link>
+    <description>
+The first Python 3000 release is out -- Python 3.0a1. Be the first one on your block to download it!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=213546">
+    <title>Python Sprint @ Google</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=213546</link>
+    <description>
+Lesley Hawthorn wrote a brief summary of the activities at the Python Sprint at Google last week.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=212871">
+    <title>Python Bites (off-topic)</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=212871</link>
+    <description>
+Two gruesome pictures of a Python caught in an electric fence. Warning: not for the faint of heart.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=212259">
+    <title>Python 3000 Sprint @ Google</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=212259</link>
+    <description>
+The second annual Python Sprint @ Google is happening: August 22-25 (Wed-Sat), in Mountain View and Chicago.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=211842">
+    <title>Python 3000 Plea for Help</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=211842</link>
+    <description>
+We're closing in on the first Python 3000 alpha release (promised for the end of August).  I'd love help with fixing the last 11 unit tests that are still failing.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=211430">
+    <title>More Questions About Python 3000 Answered</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=211430</link>
+    <description>
+Last week I started a Python 3000 FAQ, and solicited additional questions.  Here are some additional answers.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=211200">
+    <title>Python 3000 FAQ</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=211200</link>
+    <description>
+Some questions that people often ask about Python 3000 (and answers).  (First in a series of posts.)
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=211026">
+    <title>Tim O'Reilly in China</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=211026</link>
+    <description>
+A quick comment on an off-the-cuff remark by Tim O'Reilly
+    </description>
+  </item>
+
+</rdf:RDF>

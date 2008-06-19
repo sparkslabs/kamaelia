@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Interstellar Overdrive</title>
+    <link rel="self" type="application/atom+xml" href="http://3.flowsnake.org/atom.xml" />
+    <updated>2008-03-31T15:56:21+00:00</updated>
+    <author>
+      <name>Hans Nowak</name>
+    </author>
+    <subtitle type="html">Programming and stuff.</subtitle>
+    <id>http://3.flowsnake.org/</id>
+        <entry>
+      <title>Updated resume</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/updated-resume.html" />
+      <id>http://3.flowsnake.org/updated-resume.html</id>
+      <published>2008-03-31T15:56:21+00:00</published>
+      <updated>2008-03-31T15:56:21+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p><a href="http://hedgehoglab.com/about/blog/2008/03/17/why-good-developers-dont-need-resume/" title="">Great developers might not need a resume</a>, but I probably do. :-) Here's the <a href="http://zephyrfalcon.org/resume.html" title="">updated version</a>.</p>
+<p>(I know, it needs cleaning up, and I will do so soon, but the relevant information is all there.)<br />
+</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>Drinkable Links: February 2008</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/links-200802.html" />
+      <id>http://3.flowsnake.org/links-200802.html</id>
+      <published>2008-03-02T03:51:28+00:00</published>
+      <updated>2008-03-02T03:51:28+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>A few links from my other weblog that might be of interest.</p>
+<p><ul><li><a href="http://4.flowsnake.org/archives/55" title="">Making up the balance after a month of Chicken.</a></li></ul></p>
+<p><ul><li><a href="http://4.flowsnake.org/archives/64" title="">Module</a> systems in Scheme, or lack of it</li></ul></p>
+<p><ul><li><a href="http://4.flowsnake.org/archives/61" title="">Chauvinism</a> :-)</li></ul></p>
+<p><ul><li>Learning Emacs: <a href="http://4.flowsnake.org/archives/65" title="">part 0</a>, <a href="http://4.flowsnake.org/archives/68" title="">part 1</a>, <a href="http://4.flowsnake.org/archives/69" title="">part 2</a>, <a href="http://4.flowsnake.org/archives/72" title="">part 2.5</a></li></ul></p>
+<p><ul><li>I'm writing an Awk-like command-line tool in Chicken. Some of the progress can be found <a href="http://4.flowsnake.org/archives/58" title="">here</a>, <a href="http://4.flowsnake.org/archives/59" title="">here</a> and <a href="http://4.flowsnake.org/archives/66" title="">here</a>.</li></ul></p>
+<p><ul><li><a href="http://4.flowsnake.org/archives/67" title="">Python vs Scheme: function parameters (part III)</a> (not many of these this month; I'll need to fix that)</li></ul><br />
+</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>Drinkable links: January 2008</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/links-200801.html" />
+      <id>http://3.flowsnake.org/links-200801.html</id>
+      <published>2008-02-01T23:05:00+00:00</published>
+      <updated>2008-02-01T23:05:00+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Last December, I started my <a href="http://4.flowsnake.org/" title="Drinkable Chicken">new weblog</a>. As it's mostly about <a href="http://www.call-with-current-continuation.org/" title="">Chicken Scheme</a>, I naturally did not try to register it for e.g. <a href="http://planet.python.org/" title="">Planet Python</a>, as most of my posts would be out of place appearing in a Python aggregator.</p>
+<p>However, a few posts might be of interest to Pythonistas, and so I'm listing them here. (Interstellar Overdrive should still be listed at planet.python.org.)</p>
+<p>Here goes:</p>
+<p><ul><li><a href="http://4.flowsnake.org/archives/6" title="">Cool listcomp</a></li>
+<li><a href="http://4.flowsnake.org/archives/12" title="">Python vs Scheme: function parameters (part I)</a></li>
+<li><a href="http://4.flowsnake.org/archives/13" title="">Python vs Scheme: function parameters (part II)</a></li>
+<li><a href="http://4.flowsnake.org/archives/16" title="">Python vs Scheme: formatted output</a></li>
+<li><a href="http://4.flowsnake.org/archives/21" title="">Python vs Scheme: simple list comprehensions</a></li>
+<li><a href="http://4.flowsnake.org/archives/24" title="">Catamorphisms in 60 seconds</a></li>
+<li><a href="http://4.flowsnake.org/archives/36" title="">Python vs Scheme: dictionaries</a></li>
+<li><a href="http://4.flowsnake.org/archives/47" title="">Chandler</a></li>
+<li><a href="http://4.flowsnake.org/archives/29" title="">Python vs Scheme: strings</a></li></ul></p>
+<p>(The "Python vs Scheme" series compares features in both languages. There are still some more posts like that coming up, as I haven't yet discussed lists, regular expressions, records, etc.)</p>
+<p>In general, Python-related articles can be found <a href="http://4.flowsnake.org/archives/tag/python" title="">here</a>.</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>2007 reprise</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/2007-reprise.html" />
+      <id>http://3.flowsnake.org/2007-reprise.html</id>
+      <published>2007-12-30T22:52:44+00:00</published>
+      <updated>2007-12-30T23:27:23+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>I didn't blog all that much this year (although more than in 2006). Here's a short summary of what happened in 2007. (Note: Most of this is personal, so if you're here for Python stuff, feel free to skip. :-))</p>
+<p>In no particular order:</p>
+<p><ul><li>I had an <a href="google-interview.html" title="">interview with Google</a>, which was an interesting experience.</li></ul></p>
+<p><ul><li>After having worked at Oasis Digital for over 5 years, I got a <a href="update-job.html" title="">new job</a> (although not at Google :-). Finally dipped my toe into web programming.</li></ul></p>
+<p><ul><li>I made significant progress with working on my own programming language. (It's not available; right now I just use it for experimenting.)</li></ul></p>
+<p><ul><li>The relationship with my daughter saw a few ups and many downs. Ah well.</li></ul></p>
+<p><ul><li>Last month, my wife was diagnosed with a "lung mass". We don't know what it is yet, or if it's benign or malignant. In any case, it made a serious impact, and will likely do even more so in 2008.</li></ul></p>
+<p><ul><li>I got a new cat, named Zero. :-)</li></ul></p>
+<p><ul><li>I moved from Windows to Mac. That is, I now develop on OS X, both professionally and for fun.</li></ul></p>
+<p><ul><li>I also ate through two <a href="cheapskate-mac-guide-addendum.html" title="">G3 clamshells</a> and finally settled on a <a href="update-macbook.html" title="">MacBook</a>.</li></ul></p>
+<p><ul><li>I visited the Netherlands in January, this time without any travel partners. It went better than I thought. Had a bunch of yummy food, too. (Like, Greek! Yum-O! Note that there is no Greek restaurant in Gainesville.)</li></ul></p>
+<p><ul><li>Aside from the Netherlands, I visited California, Miami, Tampa and Orlando.</li></ul></p>
+<p>As a side note, this may or may not be the last post on Interstellar Overdrive. I've embarked on a <a href="http://4.flowsnake.org/" title="">new adventure</a>.</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>Review: Summon Night: Swordcraft Story</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/summon-night.html" />
+      <id>http://3.flowsnake.org/summon-night.html</id>
+      <published>2007-11-16T15:13:18+00:00</published>
+      <updated>2007-11-22T04:24:58+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>(GameBoy Advance; Atlus/Banpresto/Flight Plan)</p>
+<p><h3>What's this, then?</h3></p>
+<p>Summon Night: Swordcraft Story is an RPG-like game. It's not real complex, but it has some interesting twists, and good replay value.</p>
+<p><h3>A bit of plot and characters</h3></p>
+<p>At the beginning of the game, you get to choose the main character: a boy or a girl. This child is the son/daughter of a famous "craftlord" who died three years ago, and they are now starting their training to become a craftknight.  Being an apprentice, they will learn how to forge weapons like swords, axes, spears, knuckles and drills.</p>
+<p>The main plot revolves around a tournament where minors compete to become the next craftlord.  Besides fighting in the tournament, you will get to explore dungeons full of monsters and treasures, run errands, travel to other areas, solve puzzles (more or less -- the game is not very puzzle-oriented), and pick up new techniques along the way, which allow you to forge more powerful weapons. You will also get a guardian beast, which helps you during battles (and generally makes the game more enjoyable with witty banter or otherwise).</p>
+<p><h3>Game mechanics</h3></p>
+<p>As said, this game isn't very complex. Much time is spent in the dungeons, leveling up and gathering materials, which are necessary to forge weapons. Random battles occur here. The interesting part is that they are not turned based; rather, you get to fight your opponents in a special screen. This part is mostly action, where you run, jump and hit monsters with your weapon of choice, rather than selecting an action from a menu.  Your guardian beast can help here by using magic.  In regular battles, you can also switch weapons, so there is a bit of tactics here as well (some monsters are better fought with certain weapons than with others).</p>
+<p>Tournament battles are similar, but there are a few differences. You only get to bring one weapon; if it breaks, you lose (and of course you also lose if you run out of HP). Conversely, it is possible to win by breaking your opponent's weapon, in which case you not only win the battle, but also get the technique to make their weapon, for your own use.</p>
+<p><h3>The good</h3></p>
+<p>This game has great replay value.  When you "beat" it (i.e. successfully end the main storyline), you gain access to 50 extra dungeon levels, where you can level up more, fight new monsters, find new items and acquire new techniques. On top of that, there's now a continuously ongoing tournament where you can match your skills against 8 opponents.</p>
+<p>But wait, there's more! Should you want to play the game again from scratch, then it's possible to play with the other character (male or female), a new guardian beast (there's 4 to choose from), and specialize in a new technique. During the game, you could also make different choices, answer questions differently, etc.</p>
+<p>The story itself isn't too original, but isn't weak either, and there's quite a bit of humor, for kids and adults alike. (Although more so if you have a guardian "beast" that can actually talk and make wisecrack comments.)</p>
+<p><h3>The bad</h3></p>
+<p>Overall this is a great little game, but unsurprisingly it also has a few downsides. For example, much time is spent leveling up, which gets tedious sooner or later. Of course, this is true for many RPGs, and SN alleviates it a bit by the action aspect of its battles. Also, choosing a guardian beast feels kind of random (I recommend <a href="http://www.gamefaqs.com/portable/gbadvance/game/583203.html" title="">gamefaqs</a> for those who want to pick a specific one). Oh, and puzzles are weak.</p>
+<p><h3>Screenshots</h3></p>
+<p><img src="images/SN3.png" title="Opening screen" /></p>
+<p><img src="images/SN1.png" /></p>
+<p><img src="images/SN2.png" title="A charming message from your master." /></p>
+<p><img src="images/SN4.png" title='One of the guardian "beasts"' /></p>
+<p><img src="images/SN5.png" title="In the dungeon" /></p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>Three Hundred Mechanics</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/300-mechanics.html" />
+      <id>http://3.flowsnake.org/300-mechanics.html</id>
+      <published>2007-11-17T17:17:19+00:00</published>
+      <updated>2007-11-17T17:17:19+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>This is cool stuff: <a href="http://www.squidi.net/three/index.php" title="">Three Hundred Mechanics</a>, a site that aspires to come up with 300 new game ideas. (Although not "new" as in "there never was anything remotely like it... that would be extremely hard, if possible at all.) This is an ongoing process, by the way... there's currently 58 ideas listed.</p>
+<p>I would point out some highlights, but there's just too much here. I'll definitely keep an eye on this site. <span class="smiley">^_^</span></p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>Nanoreviews: games</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/nanoreviews-games.html" />
+      <id>http://3.flowsnake.org/nanoreviews-games.html</id>
+      <published>2007-01-14T04:52:02+00:00</published>
+      <updated>2007-10-29T02:20:55+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p><h3>Gamecube</h3></p>
+<p><strong>Geist</strong>: Cool game that starts out as a first-person shooter, but then turns into something much more interesting. You, a ghost, get to possess people, animals and objects. This makes for some pretty complex puzzles, where you have to take control of something or someone and use its special powers to get ahead in the game. For example, you can possess a telephone or a trashcan to scare someone, after which it becomes possible to possess *them*, and move around, open doors, use their weapons, etc. Recommended if you like something different. <span class="smiley">^_^</span></p>
+<p><strong>Lord of the Rings: The Third Age</strong>: Turn-based RPG set in (Peter Jackson's interpretation of) the world of LotR. Quite good. You know a game has something special if you tell yourself to stop "at the next save point", but keep going instead. Not overly simple, but it's easy to get started nonetheless. Recommended.</p>
+<p><strong>Fire Emblem: Path of Radiance</strong>: Much like the GBA Fire Emblems. Would be as good if it wasn't for the fact that battles can easily take an hour or more, during which the game cannot be saved. As such, everything gets too long in the tooth. Should be better in 10 years or so when we can play it on Gamecube emulators and save whenever we want. <span class="smiley">;-)</span></p>
+<p><h3>Nintendo DS</h3></p>
+<p><strong>Children of Mana</strong>: A dungeon crawler game. Cool if you like this kind of stuff. It's kind of like Nethack, with better graphics and dialogue, but less sophisticated. At first there's considerable variety in monsters and obstacles, but eventually it gets long in the tooth, since you have to revisit the same worlds over and over again (although the dungeons will be different each time). Story is decent but neither original nor very deep. Still, an enjoyable game to kill some time. </p>
+<p><strong>Phoenix Wright: And justice for all</strong>: If you liked the first Phoenix Wright game, you'll like this one. It's just more of the same. That's not to say that the sequel isn't worth playing. Quite the opposite. It has some seriously weird cases (especially the last one), where you think, "there's no way the accused is going to get out of this"... and yet you can pull it off. <span class="smiley">^_^</span> A new feature is the so-called <em>psyche-lock</em>; this appears on people who are lying or refusing to tell you the truth. You can break the locks by presenting evidence, much like in court. When all the locks are broken, they will tell you the truth, which is often crucial for progress. Highly recommended.</p>
+<p><strong>Lost Magic</strong>: Innovative RPG-like game. You cast spells by drawing mystic runes with your stylus. Unfortunately, you'll often run out of mana, rendering your character helpless. Also, casting a spell doesn't pause the game, which makes you vulnerable to attacks and forces you to draw quickly and often. These two problems make the game much less enjoyable and playable than it could have been, IMHO.</p>
+<p><strong>Dragon Quest Heroes: Rocket Slime</strong>: Brilliant little game. Think Zelda meets <a href="http://unicornjelly.com/" title="">Unicorn Jelly</a>. You take on the role of a "slime" and set out on a quest to rescue 100 other slimes from the evil platiosi. Your actions are limited: move around, break things or knock them over, possibly catching them on your head and throwing them off later. This is how you rescue townsfolk and collect monsters and items. Plus, you get to reuse objects you collected in hilarious tank battles. These don't require a lot of strategy, but are fun: basically you pelt your opponent with "stuff" (anything goes here, pretty much) until his tank's HP reaches zero, then you go and finish off his engine. There's lots of little twists and choices that make the game highly replayable. Recommended!</p>
+<p><h3>Playstation</h3></p>
+<p><strong>Hoshigami</strong>: This could have been a good game, but it's frightfully hard.  Tactical RPG that looks and works a bit like Disgaea, but it's much less playable. I personally like games where the first levels or stages double as a tutorial so the player can get the hang of things. This is not such a game. Instead, there's a separate tutorial, which is a must-read, since just starting the game and hoping that you will figure things out along the way will <strong>not</strong> work. Question is why you would want to bother mastering all the complex rules, since they don't add very much to the gameplay. Not recommended, unless you like micro-management and difficult battle tactics.</p>
+<p><h3>PSP</h3></p>
+<p><strong>Mercury Meltdown</strong>: Unusual game that reminds me of Marble Madness. You control a blob of mercury. The goal is simple: in each level, lead the blob to the exit. Doing this correctly or optimally, however, is anything but simple. Besides all kinds of obstacles and traps, there are also puzzles that must be solved by making the mercury change color. (Which is extra hard for somebody who is colorblind, aside...) This is what makes Mercury Meltdown part thinking game. Often, you have to split the blob into separate parts, give them different colors, and add them again, to get the desired target color (which would, for example, unlock a gate). Nifty.</p>
+<p><h3>Gameboy Advance</h3></p>
+<p><strong>Fire Emblem: The Sacred Stones</strong>: Much the same as the first Fire Emblem. I personally love these games. <span class="smiley">^_^</span> They're tactical RPGs with a strong storyline. Basically you take a main character (or two, in this case) through a number of quests. Most quests are of the type "defeat all enemies on a map", collecting loot and recruiting new party members as the story unfolds. Acquiring more powerful weapons, and leveling up your characters, is all there, but has less of an emphasis than most other RPGs. Execution is great, and most levels require some strategical thinking, if only because you don't want to lose crucial characters. Pet peeve: You can't save during battles. Aside from that, I could probably play this all day. <span class="smiley">;-)</span><br />
+</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>The Wii is here</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/wii-is-here.html" />
+      <id>http://3.flowsnake.org/wii-is-here.html</id>
+      <published>2007-10-27T01:47:55+00:00</published>
+      <updated>2007-10-29T01:47:55+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Well, I do live in Florida, where everything happens 50 years later... <span class="smiley">;-)</span></p>
+<p>If you're from a more affluent part of the US/world, you'll probably find it hard to believe that Wiis are still in short supply around here (Florida, Gainesville area). Game stores (and the likes of Target and Wal-mart) are still out of them. Fortunately, I found out that they were available at some stores in Ocala, thanks to <a href="http://www.itrackr.com/" title="">iTrackr</a> (sort of). </p>
+<p>The verdict so far: Controllers and new ways of playing games are cool. Good games are scarce.</p>
+<p>Zelda: Twilight Princess is just as difficult (with the new controllers) as on the Gamecube. (I'm not playing it all that often because it feels too much like work &lt;0.5 wink&gt;; especially when you restore a game and have to do many things all over again.) Super Paper Mario was disappointing, as I expected a game similar to the Gamecube's Paper Mario. That's all I played for now... most other games that are out don't look very appealing, and/or get bad reviews. (Well, there's always Metroid...)</p>
+<p>I think the real innovation will start when the Wii has reached sufficient market penetration... that's (hopefully) when we will see great games that make good use of the new controllers. Kind of like the DS, which has seen an onslaught of good games in the past year or so.</p>
+<p>In the meantime, I'll get myself a DS Lite just so I can play <a href="http://en.wikipedia.org/wiki/Summon_Night:_Swordcraft_Story" title="">Summon Night</a>. Yes, its that good. <span class="smiley">^_^</span> (Although I don't fancy the <a href="good-design.html" title="">boring colors</a> of the Lite... <a href="http://decalgirl.com/" title="">DecalGirl</a> to the rescue.)</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>"Good" design</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/good-design.html" />
+      <id>http://3.flowsnake.org/good-design.html</id>
+      <published>2007-10-25T01:06:10+00:00</published>
+      <updated>2007-10-29T01:06:10+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Why is it that these days, "good design" seems to imply, flat, shapeless and colorless?</p>
+<p>I'm talking about the design of computers and the like... Apple products being the prime example, but it also extends to, for example, recent Nintendo consoles -- like the <a href="http://en.wikipedia.org/wiki/Nintendo_Wii" title="">Wii</a> and the <a href="http://en.wikipedia.org/wiki/Nintendo_DS_Lite" title="">DS Lite</a>.</p>
+<p>I really don't understand the appeal of this trend. I mean, minimalism is one thing, but since when did color and shape become bad things? I remember Macs being <a href="http://images.apple.com/pr/photos/iMac/imac_flowershot.jpg" title="">colorful and curvy</a>... and then at some point they decided everything had to be flat and white. </p>
+<p>I also notice the advent of self-proclaimed design pundits that criticize anything that doesn't fit the flat/colorless/shapeless mold. "Oh yeah, the old design of the DS was really bad, typical Nintendo", some guy on Youtube says. Why was it bad, exactly? No clue; at least it was available in blue and silver and could not be mistaken for a cutting board. (The same can be said for Apple's original iBooks, vs their MacBooks nowadays.)  &bull;<a href="#_1">1</a> </p>
+<p>My guess is that someday the pendulum will swing the other way again, maybe because everybody's homes will be full of similar-looking, white, featureless, personality-lacking items... at which point it will be time for color to be "in vogue" again.</p>
+<p>:::</p>
+<p> &bull;<a name="_1"></a>1 --  Note: I do appreciate the actual <strong>technical improvements</strong> in the DS Lite, like the brighter screen.<br />
+</p>
+       </div>
+      </content>
+    </entry>
+
+    <entry>
+      <title>My Google interview</title>
+      <link rel="alternate" type="text/html" href="http://3.flowsnake.org/google-interview.html" />
+      <id>http://3.flowsnake.org/google-interview.html</id>
+      <published>2007-07-05T17:33:14+00:00</published>
+      <updated>2007-10-23T20:50:05+00:00</updated>
+      <content type="xhtml">
+       <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Signs of the Apocalypse... last month I was actually contacted by a Google recruiter, claiming that my skills might be an excellent match for some job openings at YouTube.</p>
+<p>Without going into too much detail: I went to the YouTube interview day, where I was grilled together with around 15 other candidates. Google interviews deserve their reputation... I was interviewed five times, and pelted with puzzles, brain teasers and difficult programming problems. (Some of which had topics that I don't encounter every day... C++, state machines, to name a few.)</p>
+<p>Anyway, I didn't get the job... judging from the (rather vague) rejection email, it almost seems like there was only one job opening, and they didn't hire anybody at all for it. Weird.</p>
+<p>While the end result was disappointing, this was actually a positive experience for me, for several reasons.</p>
+<p><ul><li>Going to California and the interview day forced me to overcome my agoraphobia. So that was a great success. (Well, sort of. I didn't travel alone.) I couldn't pass this chance up, so I went. Probably a no-brainer for most other people, but it required overcoming lots of fears.</li></ul></p>
+<p><ul><li>I like California (or at least the Bay Area) very much, and have decided that I want to live there. So I now have a bright new goal. I am now going to work on improving my skills and look for a job there. Maybe not at Google (although that would be powerful cool), but there are tons of IT companies in Silicon Valley.</li></ul></p>
+<p><ul><li>It has also become clear that I miss having "peers"... other programmers, or people with similar interests, that I can talk to. While I am not the most social person, going for 5 years without meeting any other hackers, is a bit much even for me. <span class="smiley">:-)</span></li></ul></p>
+<p>(Google really does hire exceptional people, by the way. For example, the recruiter that first contacted me is not just that... she's also a captain of the US Air Force and a TV producer. <span class="smiley">^_^</span>)<br />
+</p>
+       </div>
+      </content>
+    </entry>
+
+</feed>
