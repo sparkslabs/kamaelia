@@ -194,10 +194,11 @@ class Paint(Axon.Component.component):
                         if event.button == 1:
                             self.drawing = True
                     if event.button == 3:
-                        self.oldpos = None
-                        self.drawBG()
-                        self.blitToSurface()
-                        self.send(("clear",), "outbox")
+                        self.floodFill(event.pos[0],event.pos[1],(255,0,0,0),self.display.get_at(event.pos))
+                      #  self.oldpos = None
+                      #  self.drawBG()
+                      #  self.blitToSurface()
+                      #  self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
                        self.floodFill(100,100,(240,224,143,0),self.display.get_at((100,100)))
