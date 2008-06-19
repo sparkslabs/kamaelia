@@ -19,7 +19,7 @@ def resize((width, height)):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45, 1.0*width/height, 1, 100.0)
+    gluPerspective(45, 1.0*width/height, 1.0, 100.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
@@ -36,7 +36,7 @@ def init():
     glEnable(GL_TEXTURE_2D)    
     
     glShadeModel(GL_SMOOTH)
-    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearColor(0.0, 1.0, 0.0, 0.0)
     glClearDepth(1.0)
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
@@ -62,15 +62,27 @@ def init():
 def buildLabel(text):
     """Pre-render the text to go on the label."""    
     
-    global texID
-
+    global texID, imageSize, textureSize
+    fontColor = (0,0,255)
+    imageColor = (128,128,128)
+    textureColor = (244,244,244)
+    
+    
     # Text texture
     pygame.font.init()
     font = pygame.font.Font(None, 20)
-    image = font.render(text,True, (0,0,255), (255,255,255) )
-    textureSurface = pygame.Surface((64, 64)) # The size has to be power of 2
-    textureSurface.blit(image, (0,0))
+    image = font.render(text,True, fontColor, imageColor)
+    
+    imageSize = image.get_width(), image.get_height()
+    textureSize = (64, 64)
+    
+    textureSurface = pygame.Surface(textureSize) # The size has to be power of 2
+    textureSurface.fill(textureColor)
+    textureSurface.blit(image, ((textureSurface.get_width()-image.get_width())/2,
+                                (textureSurface.get_height()-image.get_height())/2))
     textureSurface = textureSurface.convert_alpha()
+    
+    print image.get_width(), image.get_height()
     
 #    # Picture texture
 #    texturefile = os.path.join('data','nehe.bmp')
@@ -100,7 +112,7 @@ def buildLabel(text):
 
 
 def draw():
-    global xrot, yrot, zrot, quadratic, texID
+    global xrot, yrot, zrot, quadratic, texID, imageSize, textureSize
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    
     
@@ -113,14 +125,13 @@ def draw():
     
     glColor3f(1.0,0.0,0.0)
    
-    
     glBegin(GL_QUADS)    
     
     # Front Face (note that the texture's corners have to match the quad's corners)
-    glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  1.0)    # Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  1.0)    # Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0,  1.0)    # Top Right Of The Texture and Quad
-    glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0,  1.0)    # Top Left Of The Texture and Quad
+    glTexCoord2f((textureSize[0]-imageSize[0])*0.5/textureSize[0], (textureSize[1]-imageSize[1])*0.5/textureSize[1]); glVertex3f(-1.0, -1.0,  1.0)    # Bottom Left Of The Texture and Quad
+    glTexCoord2f(1-(textureSize[0]-imageSize[0])*0.5/textureSize[0], (textureSize[1]-imageSize[1])*0.5/textureSize[1]); glVertex3f( 1.0, -1.0,  1.0)    # Bottom Right Of The Texture and Quad
+    glTexCoord2f(1-(textureSize[0]-imageSize[0])*0.5/textureSize[0], 1-(textureSize[1]-imageSize[1])*0.5/textureSize[1]); glVertex3f( 1.0,  1.0,  1.0)    # Top Right Of The Texture and Quad
+    glTexCoord2f((textureSize[0]-imageSize[0])*0.5/textureSize[0], 1-(textureSize[1]-imageSize[1])*0.5/textureSize[1]); glVertex3f(-1.0,  1.0,  1.0)    # Top Left Of The Texture and Quad
     
  
     # Back Face
@@ -155,9 +166,9 @@ def draw():
         
     glEnd()    
     
-#    xrot  = xrot + 0.2                # X rotation
-#    yrot = yrot + 0.2                 # Y rotation
-#    zrot = zrot + 0.2                 # Z rotation      
+    xrot  = xrot + 0.2                # X rotation
+    yrot = yrot + 0.2                 # Y rotation
+    zrot = zrot + 0.2                 # Z rotation      
     
 
 def main():
