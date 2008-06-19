@@ -76,12 +76,19 @@ class ExtraWindowFurniture(object):
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ExtraWindowFurniture,self).__init__()
-        
-        self.logo = pygame.image.load("kamaelia_logo.png")
-        
-        biggest = max( self.logo.get_width(), self.logo.get_height() )
-        from pygame.transform import rotozoom
-        self.logo = rotozoom(self.logo, 0.0, 64.0 / biggest)
+        self.logo = None
+        try:
+            self.logo = pygame.image.load("kamaelia_logo.png")
+        except pygame.error:
+            try:
+                self.logo = pygame.image.load("/usr/local/share/kamaelia/kamaelia_logo.png")
+            except pygame.error:
+                pass # Give up for now. FIXME: Could do something new
+    
+        if self.logo:
+            biggest = max( self.logo.get_width(), self.logo.get_height() )
+            from pygame.transform import rotozoom
+            self.logo = rotozoom(self.logo, 0.0, 64.0 / biggest)
         
     def render(self, surface):
         """\
@@ -89,7 +96,8 @@ class ExtraWindowFurniture(object):
         specified pygame surface at coordinates (8,8)
         """
         yield 10
-        surface.blit(self.logo, (8,8))
+        if self.logo:
+            surface.blit(self.logo, (8,8))
         
     def setOffset( self, (x,y) ):
         """Dummy method."""
