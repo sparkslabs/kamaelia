@@ -6,7 +6,7 @@
 
 import Axon
 
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+file_to_stream = "../../SupportingMediaFiles/KDE_Startup_2.ogg"
 
 def tests():
    from Axon.Scheduler import scheduler
