@@ -27,7 +27,7 @@ from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 import ao
 background(slowmo=0.001).start()
 
-filename = "./snail.ogg"
+filename = "../SupportingMediaFiles/KDE_Startup_2.ogg"
 
 playStream = likefile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
 
