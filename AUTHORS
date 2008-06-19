@@ -4,14 +4,20 @@ Primary Author (for purposes of MPL 1.1):
 All Authors (in first name order):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Ciaran Eaton, BBC R&D, ciarane@rd.bbc.co.uk
+Dave King, <dave.uk@gmail.com>
+Jason Baker, <jason.baker@ttu.edu>
+Jinna Lei, <jinna.lei@gmail.com> 
+Joe Turner, <orphansandoligarchs@gmail.com>
 Joseph Lord, jtl21@users.sourceforge.net
 Matt Hammond, BBC R&D, matth_rd@users.sourceforge.net
 Michael Sparks, BBC R&D, ms_@users.sourceforge.net (listed as Michael in most docs)
+Patrick Thomson, patrick.thomson@gmail.com
 Ryan Lothian, celestialryan@users.sourceforge.net
 Sylvain Hellegouarch, <sh@defuze.org>
 Thomas Flanitzer, thf_dev@users.sourceforge.net
 Tom Gibson, BBC R&D, apexmerridian@users.sourceforge.net
 
-Additional Contributors (Heroes!)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Gintautas Miliauskas, Programmers of Vilnius, <gintas@pov.lt> (For Debian packaging!)
+
+Additional Contributors
+~~~~~~~~~~~~~~~~~~~~~~~
+Gintautas Miliauskas, Programmers of Vilnius, <gintas@pov.lt> (For Debian packaging - needs updating & a maintainer)
