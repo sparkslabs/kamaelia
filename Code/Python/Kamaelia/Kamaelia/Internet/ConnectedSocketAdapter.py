@@ -106,6 +106,12 @@ class SSLSocket(object):
       # so that we can perform some operations on it
       self.sock = sock
       
+   def shutdown(self, code):
+      self.sock.shutdown(code)
+
+   def close(self):
+      self.sock.close()
+
    def fileno(self):
       return self.sock.fileno()
    
