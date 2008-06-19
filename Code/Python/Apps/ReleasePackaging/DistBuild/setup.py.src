@@ -32,7 +32,7 @@ setup(name = "Kamaelia-Modeller",
       packages = [\
 # REPLACE
                   ""],
-      scripts = [ 'App/Modeller.py' ],
+#      scripts = [ 'App/Modeller.py' ],
       data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
       long_description = """
 Kamaelia Modeller is a modelling tool initially aimed a graph systems,
