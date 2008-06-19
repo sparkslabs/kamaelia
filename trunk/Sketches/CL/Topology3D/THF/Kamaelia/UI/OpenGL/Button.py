@@ -142,6 +142,7 @@ class Button(OpenGLComponent):
         """ Draw button cuboid."""
         hs = self.size/2.0
         print hs
+        print self.tex_w, self.tex_h
         # draw faces
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
@@ -289,9 +290,9 @@ if __name__=='__main__':
     from Kamaelia.Chassis.Graphline import Graphline
 
     Graphline(
-        BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
+#        BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
 #        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
-#        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
+        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
 #        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
