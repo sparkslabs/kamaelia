@@ -175,6 +175,8 @@ class Value(object):
     - value -- the object's initial value
     - store -- a Store object to hold the value and it's history
     - key -- a key to refer to the value
+    
+    Note: You do not instantiate these - the Store does that
     """
     def __init__(self, version, value,store,key):
         """
@@ -206,6 +208,8 @@ class Collection(dict):
     Collection() -> new Collection dict
 
     A dictionary which belongs to a thread-safe store
+    
+    Again, you do not instantiate these yourself
     """
     def set_store(self,store):
         """ Set the store to associate the collection with """
@@ -221,6 +225,8 @@ class Store(object):
     Store() -> new Store object
 
     A thread-safe versioning store for key-value pairs
+    
+    You instantiate this as per the documentation for this module
     """
     def __init__(self):
         self.store = {}                # Threadsafe
