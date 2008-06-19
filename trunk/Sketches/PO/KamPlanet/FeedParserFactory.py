@@ -47,7 +47,7 @@ class Feedparser(Axon.Component.component):
         
     def main(self):
         while True:
-            while self.dataReady("inbox"):
+            if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 parseddata = feedparser.parse(data)
                 parseddata.href = self.feedUrl
@@ -59,7 +59,7 @@ class Feedparser(Axon.Component.component):
                     self.send(producerFinished(self),"signal")
                     return
             
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 data = self.recv("control")
                 self.send(data,"signal")
                 if not isinstance(data, producerFinished):
@@ -158,8 +158,6 @@ class FeedParserFactory(Axon.Component.component):
         while True:
             mustStop, providerFinished = self.checkControl()
             if mustStop:
-                for _ in self.waitForChildren(mustStop):
-                    yield 1
                 self.send(mustStop,"signal")
                 return
                 

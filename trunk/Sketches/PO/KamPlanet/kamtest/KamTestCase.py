@@ -63,13 +63,15 @@ class _AuxiliarTestCase(unittest.TestCase):
         self._kamtestcase.tearDown()
         self._kamtestcase._finish()
 
-# TODO: this might break something if another component says
-# background().start() ... why is background a singleton?
-LikeFile.background().start()
-
 class KamTestCase(object):
+    INITIALIZATION_TIMEOUT = 5
+    
     def __init__(self, prefix = 'test', *argd, **kwargs):
         super(KamTestCase, self).__init__()
+        if LikeFile.background.lock.acquire(False):
+            LikeFile.background.lock.release()
+            LikeFile.background().start()
+            
         self._kamtest_initialized = False
         self._createTestCase(prefix)
         self._fillTestCaseMethods()
@@ -179,15 +181,15 @@ class KamTestCase(object):
             )
         
         # TODO: not thread-safe...
-        TIMEOUT = 5
-        max_time = time.time() + TIMEOUT
+        max_time = time.time() + self.INITIALIZATION_TIMEOUT
         while len(self._graph.children) == 0:
             cur_time = time.time()
             if cur_time >= max_time:
-                break
+                raise self.failureException(
+                    "Graph children were not created in %s seconds" % self.INITIALIZATION_TIMEOUT
+                )
             time.sleep(0.1)
             
-        
         self._kamtest_initialized = True
 
     def put(self, msg, inbox):
@@ -219,7 +221,7 @@ class KamTestCase(object):
     def assertOutboxEmpty(self, outbox, msg = None, timeout=0):
         try:
             self._lf.get(outbox, timeout=timeout)
-        except:
+        except Queue.Empty:
             pass # Expected
         else:
             raise self.failureException(
@@ -247,7 +249,7 @@ class KamTestCase(object):
         self._mocks = []
         self._kamtest_initialized = False
         self._graph = None
-    
+        
     def _childrenDone(self):
         realChildren = [ child for child in self._graph.childComponents()
             if child != self._messageAdder and child != self._messageStorer ]
@@ -290,9 +292,6 @@ class KamTestCase(object):
             self._lf.shutdown()
             self.assertFinished()
             
-    def assertNotStopping(self, msg = None, steps = None, clear = False):
-        pass #TODO: this method makes no sense when using LikeFile
-
     def setUp(self):
         pass # To be overriden by the user
         
