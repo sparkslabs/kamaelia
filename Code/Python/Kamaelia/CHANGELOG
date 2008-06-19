@@ -1,3 +1,7 @@
+
+    * Kamaelia/Kamaelia/UI/Pygame/Multiclick.py -
+      Added outbox pygamesignal - to avoid accidental bugs when used in a pipeline
+
    * Minor bugfix to SSL support
 
    * Kamaelia.UI.Pygame.Text Added - (similar to Ticker, but input as well
