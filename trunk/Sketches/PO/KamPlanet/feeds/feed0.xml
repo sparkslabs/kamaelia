@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://purl.org/rss/1.0/"
+  >
+
+  <channel rdf:about="http://www.artima.com/weblogs/index.jsp?blogger=aahz">
+    <title>Aahz's Weblog</title>
+    <description>
+Pythoncraft and Pigs With Wings
+    </description>
+    <link>http://www.artima.com/weblogs/index.jsp?blogger=aahz</link>
+    <image rdf:resource="http://www.artima.com/images/artima88x33.gif" />
+   <items>
+      <rdf:Seq>
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=7590" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=4967" />
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <image rdf:about="http://www.artima.com/images/artima88x33.gif">
+    <title>Artima.com</title>
+    <url>http://www.artima.com/images/artima88x33.gif</url>
+    <link>http://www.artima.com/</link>
+  </image>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=7590">
+    <title>Typing: Strong vs. Weak, Static vs. Dynamic</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=7590</link>
+    <description>
+With the advent of languages such as Python, the debate over typing has
+heated up again.  Contrary to some claims (notably from Bruce Eckel), I
+believe Python has strong typing, and this article explains why. (From Aahz's Weblog)
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=4967">
+    <title>Aahz's Yet Another Blog Introduction</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=4967</link>
+    <description>
+Why a technophilic Luddite would choose to write a blog (From Aahz's Weblog)
+    </description>
+  </item>
+
+</rdf:RDF>

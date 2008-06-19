@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	>
+
+<channel>
+	<title>davblog</title>
+	<atom:link href="http://www.davbo.org/blog/feed/" rel="self" type="application/rss+xml" />
+	<link>http://www.davbo.org/blog</link>
+	<description># comments on all things awesome</description>
+	<pubDate>Thu, 22 May 2008 23:40:34 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.5.1</generator>
+	<language>en</language>
+			<item>
+		<title>Kamaelia Multicore Support</title>
+		<link>http://www.davbo.org/blog/2008/05/22/kamaelia-multicore-support/</link>
+		<comments>http://www.davbo.org/blog/2008/05/22/kamaelia-multicore-support/#comments</comments>
+		<pubDate>Thu, 22 May 2008 23:06:45 +0000</pubDate>
+		<dc:creator>Dave</dc:creator>
+		
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[Kamaelia]]></category>
+
+		<category><![CDATA[Multicore]]></category>
+
+		<guid isPermaLink="false">http://www.davbo.org/blog/?p=8</guid>
+		<description><![CDATA[In response to a blog post over at Ye Olde Clue. I thought I'd write up my thoughts on this topic since I'm (hopefully) going to try to review this code and merge it into the core of Kamaelia. I say hopefully because it's partly a matter of experience with subversion which at the minute [...]]]></description>
+			<content:encoded><![CDATA[<p>In response to a blog post over at <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209413487">Ye Olde Clue</a>. I thought I'd write up my thoughts on this topic since I'm (hopefully) going to try to review this code and merge it into the core of Kamaelia. I say hopefully because it's partly a matter of experience with subversion which at the minute I'm a few years behind other people on the Kamaelia project. Fortunately they're all patient with me while I ask questions.</p>
+<p>Okay, so, meanwhile back at the point: "Where should Multicore support sit in the Kamaelia tree?"</p>
+<p>In my opinion the scope of what we're calling "Multicore support", is potentially more than just that. It <strong>potentially</strong> opens up avenues for things like distributed computing and many interesting things which require "Process Manipulation". Of course I don't see this happening in the near future but Kamaelia already has some very cool support for various network protocols. I think it would be reasonably trivial now we have 2 Processes working on different cores to stretch the distance of those cores to say the scale of a WAN. That sounds pretty damn cool to me, it may be a long way off or have little benefits. However with Axon I believe this kind of thing could be done in 1 line of code as opposed to several hundred. Yet again displaying how the Axon model makes concurrency so elegant and simple.</p>
+<p>More immediate effects (pointed out by Matt on IRC) this component also applies to single core CPU's with things like Hyperthreading, along with any other/further technologies implemented on this level of hardware.</p>
+<p>Okay so I kinda rambled off-topic. Anyway; for things like this I think it's a good idea to not box this into a label like "Multicore support" when we're looking at another tool in Kamaelia arsenal <img src='http://www.davbo.org/blog/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>This is why I would rather see this code placed in "Kamaelia.Chassis.Process" rather than "Kamaelia.Chassis.Multicore". Hopefully this makes sense.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://www.davbo.org/blog/2008/05/22/kamaelia-multicore-support/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Accepted into GSoC!! and KamaeliaNXT</title>
+		<link>http://www.davbo.org/blog/2008/04/22/accepted-into-gsoc-and-kamaelianxt/</link>
+		<comments>http://www.davbo.org/blog/2008/04/22/accepted-into-gsoc-and-kamaelianxt/#comments</comments>
+		<pubDate>Tue, 22 Apr 2008 23:38:16 +0000</pubDate>
+		<dc:creator>Dave</dc:creator>
+		
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[Kamaelia]]></category>
+
+		<category><![CDATA[ROBOTS!!]]></category>
+
+		<guid isPermaLink="false">http://www.davbo.org/blog/?p=7</guid>
+		<description><![CDATA[
+Wooo! I got accepted into Google's Summer of Code last night, I was really hoping I'd make the cut, as I've already mentioned I was applying to the BBC's open source project, Kamaelia.
+I still can't get around how awesome the project is, Google are really doing amazing things for the open source community. This year [...]]]></description>
+			<content:encoded><![CDATA[<p><img class="alignright" src="http://lambcutlet.org/images/LEGO_Mindstorms_NXT_mini.jpg" alt="LEGO Robot!" width="239" height="306" /></p>
+<p>Wooo! I got accepted into Google's Summer of Code last night, I was really hoping I'd make the cut, as I've already mentioned I was applying to the <a href="http://www.bbc.co.uk/opensource/">BBC's open source</a> project, <a title="Kamaelia" href="http://kamaelia.sourceforge.net">Kamaelia</a>.</p>
+<p>I still can't get around how awesome the project is, Google are really doing amazing things for the open source community. This year they're taking on around <a href="http://google-opensource.blogspot.com/2008/04/announcing-accepted-student-proposals.html">~1200 students</a> it's a massive accomplishment to organise something of this magnitude.</p>
+<p>Anyway I'll cut to the chase: ROBOTS ARE AWESOME! And here is a component for Kamaelia I programmed last week. It's programmed for a LEGO NXT robot using some Python nxt bindings (<a href="http://home.comcast.net/~dplau/nxt_python/index.html">NXT_Python</a> which also sounds like a cool OSS project) Hopefully (not tested yet) it makes the robot move until the touch sensor is active, ie. it hits a wall. Anyway, here's the code:</p>
+<p><span id="more-7"></span></p>
+<pre class="python"><span style="color: #ff7700;font-weight:bold;">import</span> nxt.<span style="color: black;">locator</span>
+<span style="color: #ff7700;font-weight:bold;">import</span> axon
+<span style="color: #ff7700;font-weight:bold;">from</span> nxt.<span style="color: black;">sensor</span> <span style="color: #ff7700;font-weight:bold;">import</span> *
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> KamaeliaNXT<span style="color: black;">&#40;</span>Axon.<span style="color: black;">Component</span>.<span style="color: black;">component</span><span style="color: black;">&#41;</span>:
+   Inboxes = <span style="color: black;">&#123;</span><span style="color: #483d8b;">&quot;rmotor&quot;</span> : <span style="color: #483d8b;">&quot;control signals for the right motor&quot;</span>,
+              <span style="color: #483d8b;">&quot;lmotor&quot;</span> : <span style="color: #483d8b;">&quot;control signals for the left motor&quot;</span>,
+              <span style="color: black;">&#125;</span>
+   Outboxes = <span style="color: black;">&#123;</span><span style="color: #483d8b;">&quot;outbox&quot;</span> : <span style="color: #483d8b;">&quot;data collected from sensors&quot;</span>,
+              <span style="color: black;">&#125;</span>
+   <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, sock<span style="color: black;">&#41;</span>:
+      <span style="color: #008000;">self</span>.<span style="color: black;">rmotor</span> = Motor<span style="color: black;">&#40;</span>sock, PORT_B<span style="color: black;">&#41;</span>
+      <span style="color: #008000;">self</span>.<span style="color: black;">lmotor</span> = Motor<span style="color: black;">&#40;</span>sock, PORT_C<span style="color: black;">&#41;</span>
+      <span style="color: #008000;">self</span>.<span style="color: black;">light</span> = LightSensor<span style="color: black;">&#40;</span>b, PORT_3<span style="color: black;">&#41;</span>
+      <span style="color: #008000;">self</span>.<span style="color: black;">sock</span> = sock
+&nbsp;
+   <span style="color: #ff7700;font-weight:bold;">def</span> stop<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+      <span style="color: #008000;">self</span>.<span style="color: black;">send</span><span style="color: black;">&#40;</span><span style="color: #ff4500;">0</span>, <span style="color: #483d8b;">&quot;rmotor&quot;</span><span style="color: black;">&#41;</span>
+      <span style="color: #008000;">self</span>.<span style="color: black;">send</span><span style="color: black;">&#40;</span><span style="color: #ff4500;">0</span>, <span style="color: #483d8b;">&quot;lmotor&quot;</span><span style="color: black;">&#41;</span>
+&nbsp;
+   <span style="color: #ff7700;font-weight:bold;">def</span> main<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+      <span style="color: #ff7700;font-weight:bold;">while</span> <span style="color: #ff4500;">1</span>:
+         <span style="color: #008000;">self</span>.<span style="color: black;">send</span><span style="color: black;">&#40;</span>light.<span style="color: black;">get_sample</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span><span style="color: black;">&#41;</span>, <span style="color: #483d8b;">&quot;outbox&quot;</span><span style="color: black;">&#41;</span>
+         <span style="color: #ff7700;font-weight:bold;">if</span> <span style="color: #008000;">self</span>.<span style="color: black;">dataReady</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;rmotor&quot;</span><span style="color: black;">&#41;</span>:
+            rmotor.<span style="color: black;">power</span> = <span style="color: #008000;">self</span>.<span style="color: black;">recv</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;rmotor&quot;</span><span style="color: black;">&#41;</span> <span style="color: #808080; font-style: italic;"># Right motor control</span>
+            rmotor.<span style="color: black;">mode</span> = MODE_MOTOR_ON
+            rmotor.<span style="color: black;">run_state</span> = RUN_STATE_RUNNING
+         <span style="color: #ff7700;font-weight:bold;">if</span> <span style="color: #008000;">self</span>.<span style="color: black;">dataReady</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;lmotor&quot;</span><span style="color: black;">&#41;</span>:
+            lmotor.<span style="color: black;">power</span> = <span style="color: #008000;">self</span>.<span style="color: black;">recv</span><span style="color: black;">&#40;</span><span style="color: #483d8b;">&quot;lmotor&quot;</span><span style="color: black;">&#41;</span> <span style="color: #808080; font-style: italic;"># Left motor control</span>
+            lmotor.<span style="color: black;">mode</span> = MODE_MOTOR_ON
+            lmotor.<span style="color: black;">run_state</span> = RUN_STATE_RUNNING
+         <span style="color: #ff7700;font-weight:bold;">if</span> TouchSensor<span style="color: black;">&#40;</span>b, PORT_1<span style="color: black;">&#41;</span>.<span style="color: black;">get_sample</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>:
+             <span style="color: #008000;">self</span>.<span style="color: black;">stop</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+             <span style="color: #ff7700;font-weight:bold;">break</span>
+         <span style="color: #ff7700;font-weight:bold;">yield</span> <span style="color: #ff4500;">1</span></pre>
+]]></content:encoded>
+			<wfw:commentRss>http://www.davbo.org/blog/2008/04/22/accepted-into-gsoc-and-kamaelianxt/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>State Machines</title>
+		<link>http://www.davbo.org/blog/2008/03/27/state-machines/</link>
+		<comments>http://www.davbo.org/blog/2008/03/27/state-machines/#comments</comments>
+		<pubDate>Thu, 27 Mar 2008 17:19:48 +0000</pubDate>
+		<dc:creator>Dave</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://www.davbo.org/blog/?p=5</guid>
+		<description><![CDATA[When thinking of how to demo the MiniAxon, I had a very confusing experience trying to write a recursive Fibonacci sequence using it. While I was doing that I realised how similar the Axon was to a Moore finite state machine, going between states with the yield statements, so i thought i'd sumarise it in [...]]]></description>
+			<content:encoded><![CDATA[<p>When thinking of how to demo the MiniAxon, I had a very confusing experience trying to write a recursive Fibonacci sequence using it. While I was doing that I realised how similar the Axon was to a Moore finite state machine, going between states with the yield statements, so i thought i'd sumarise it in a small MooreMachine component.</p>
+<pre class="python">&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> MooreMachine<span style="color: black;">&#40;</span>component<span style="color: black;">&#41;</span>:
+&nbsp;
+ <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, state<span style="color: black;">&#41;</span>:
+&nbsp;
+ 	<span style="color: #008000;">self</span>.<span style="color: black;">state</span> = state
+&nbsp;
+ <span style="color: #ff7700;font-weight:bold;">def</span> main<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+&nbsp;
+        <span style="color: #ff7700;font-weight:bold;">while</span> <span style="color: #ff4500;">1</span>:
+&nbsp;
+        	<span style="color: #808080; font-style: italic;">#output here</span>
+&nbsp;
+            <span style="color: #ff7700;font-weight:bold;">yield</span> <span style="color: #ff4500;">1</span></pre>
+<p>You would instantiate many of these states and use another component to go between them. I know i'll probably be making lots of mistakes in this code but I thought it was interesting how Kamaelia can easily simulate state machines.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://www.davbo.org/blog/2008/03/27/state-machines/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>MiniAxon</title>
+		<link>http://www.davbo.org/blog/2008/03/27/miniaxon/</link>
+		<comments>http://www.davbo.org/blog/2008/03/27/miniaxon/#comments</comments>
+		<pubDate>Thu, 27 Mar 2008 17:13:55 +0000</pubDate>
+		<dc:creator>Dave</dc:creator>
+		
+		<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://www.davbo.org/blog/?p=4</guid>
+		<description><![CDATA[For Google's Summer of Code I'm applying to work on a project called "Kamaelia", it's difficult to explain fully what Kamaelia is but I'd say it's a sort of component based framework for python. You write your programs in small components and these are handled by the core or the "Axon" as it's called by [...]]]></description>
+			<content:encoded><![CDATA[<p>For Google's Summer of Code I'm applying to work on a project called "Kamaelia", it's difficult to explain fully what Kamaelia is but I'd say it's a sort of component based framework for python. You write your programs in small components and these are handled by the core or the "Axon" as it's called by Kamaelia. There's a tutorial located <a href="http://kamaelia.sourceforge.net/MiniAxon/" title="MiniAxon">here</a> for anyone interested in making their own Axon, it really helps explain what Kamaelia is about to build this core component of it. Anyway I thought I'd blog my answers from the tutorial for anyone interested.</p>
+<pre class="python">&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> microprocess<span style="color: black;">&#40;</span><span style="color: #008000;">object</span><span style="color: black;">&#41;</span>:
+&nbsp;
+    <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+        <span style="color: #008000;">super</span><span style="color: black;">&#40;</span>microprocess, <span style="color: #008000;">self</span><span style="color: black;">&#41;</span>.<span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> main<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+        <span style="color: #ff7700;font-weight:bold;">yield</span> <span style="color: #ff4500;">1</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> scheduler<span style="color: black;">&#40;</span>microprocess<span style="color: black;">&#41;</span>:
+    <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+        <span style="color: #008000;">super</span><span style="color: black;">&#40;</span>scheduler, <span style="color: #008000;">self</span><span style="color: black;">&#41;</span>.<span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+        <span style="color: #008000;">self</span>.<span style="color: black;">active</span> = <span style="color: black;">&#91;</span><span style="color: black;">&#93;</span>
+        <span style="color: #008000;">self</span>.<span style="color: black;">newqueue</span> = <span style="color: black;">&#91;</span><span style="color: black;">&#93;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> main<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>: <span style="color: #808080; font-style: italic;"># keeps track of queued and active processes</span>
+        <span style="color: #ff7700;font-weight:bold;">for</span> i <span style="color: #ff7700;font-weight:bold;">in</span> <span style="color: #008000;">xrange</span><span style="color: black;">&#40;</span><span style="color: #ff4500;">100</span><span style="color: black;">&#41;</span>:
+            <span style="color: #ff7700;font-weight:bold;">for</span> current <span style="color: #ff7700;font-weight:bold;">in</span> <span style="color: #008000;">self</span>.<span style="color: black;">active</span>:
+                <span style="color: #ff7700;font-weight:bold;">yield</span> <span style="color: #ff4500;">1</span>
+                <span style="color: #ff7700;font-weight:bold;">try</span>:
+                    result = current.<span style="color: black;">next</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+                    <span style="color: #ff7700;font-weight:bold;">if</span> result <span style="color: #ff7700;font-weight:bold;">is</span> <span style="color: #ff7700;font-weight:bold;">not</span> <span style="color: #ff4500;">-1</span>:
+                        <span style="color: #008000;">self</span>.<span style="color: black;">newqueue</span>.<span style="color: black;">append</span><span style="color: black;">&#40;</span>current<span style="color: black;">&#41;</span>
+                <span style="color: #ff7700;font-weight:bold;">except</span> <span style="color: #008000;">StopIteration</span>:
+                    <span style="color: #ff7700;font-weight:bold;">pass</span>
+            <span style="color: #008000;">self</span>.<span style="color: black;">active</span> = <span style="color: #008000;">self</span>.<span style="color: black;">newqueue</span>
+            <span style="color: #008000;">self</span>.<span style="color: black;">newqueue</span> = <span style="color: black;">&#91;</span><span style="color: black;">&#93;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> activateMicroprocess<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, someprocess<span style="color: black;">&#41;</span>:
+        microthread = someprocess.<span style="color: black;">main</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+        <span style="color: #008000;">self</span>.<span style="color: black;">newqueue</span>.<span style="color: black;">append</span><span style="color: black;">&#40;</span>microthread<span style="color: black;">&#41;</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> component<span style="color: black;">&#40;</span>microprocess<span style="color: black;">&#41;</span>:
+    Boxes = <span style="color: black;">&#123;</span>
+        <span style="color: #483d8b;">&quot;inbox&quot;</span> : <span style="color: #483d8b;">&quot;Work is placed in here&quot;</span>,
+        <span style="color: #483d8b;">&quot;outbox&quot;</span> : <span style="color: #483d8b;">&quot;Result of the work and messages goes here&quot;</span>
+    <span style="color: black;">&#125;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>:
+        <span style="color: #008000;">super</span><span style="color: black;">&#40;</span>component, <span style="color: #008000;">self</span><span style="color: black;">&#41;</span>.<span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+        <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span> = <span style="color: black;">&#123;</span><span style="color: black;">&#125;</span>
+        <span style="color: #ff7700;font-weight:bold;">for</span> box <span style="color: #ff7700;font-weight:bold;">in</span> <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span>:
+            <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span><span style="color: black;">&#91;</span>box<span style="color: black;">&#93;</span> = <span style="color: #008000;">list</span><span style="color: black;">&#40;</span><span style="color: black;">&#41;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> send<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, value, outboxname<span style="color: black;">&#41;</span>: <span style="color: #808080; font-style: italic;"># adds to outbox once work is done</span>
+        <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span><span style="color: black;">&#91;</span>outboxname<span style="color: black;">&#93;</span>.<span style="color: black;">append</span><span style="color: black;">&#40;</span>value<span style="color: black;">&#41;</span>
+    <span style="color: #ff7700;font-weight:bold;">def</span> recv<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, inboxname<span style="color: black;">&#41;</span>: <span style="color: #808080; font-style: italic;"># when work is in inbox it takes it</span>
+        result = <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span><span style="color: black;">&#91;</span>inboxname<span style="color: black;">&#93;</span><span style="color: black;">&#91;</span><span style="color: #ff4500;">0</span><span style="color: black;">&#93;</span>
+        <span style="color: #ff7700;font-weight:bold;">del</span> <span style="color: #008000;">self</span>.<span style="color: black;">boxes</span><span style="color: black;">&#91;</span>inboxname<span style="color: black;">&#93;</span><span style="color: black;">&#91;</span><span style="color: #ff4500;">0</span><span style="color: black;">&#93;</span>
+        <span style="color: #ff7700;font-weight:bold;">return</span> result
+    <span style="color: #ff7700;font-weight:bold;">def</span> dataReady<span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, inboxname<span style="color: black;">&#41;</span>: <span style="color: #808080; font-style: italic;"># check to see if there is work on the inbox</span>
+        <span style="color: #ff7700;font-weight:bold;">return</span> <span style="color: #008000;">len</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>.<span style="color: black;">boxes</span><span style="color: black;">&#91;</span>inboxname<span style="color: black;">&#93;</span><span style="color: black;">&#41;</span>
+&nbsp;
+<span style="color: #ff7700;font-weight:bold;">class</span> postman<span style="color: black;">&#40;</span>microprocess<span style="color: black;">&#41;</span>:
+    <span style="color: #ff7700;font-weight:bold;">def</span> <span style="color: #0000cd;">__init__</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>, source, sourcebox, sink, sinkbox<span style="color: black;">&#41;</span>:
+        <span style="color: #008000;">self</span>.<span style="color: black;">source</span> = source
+        <span style="color: #008000;">self</span>.<span style="color: black;">sourcebox</span> = sourcebox
+        <span style="color: #008000;">self</span>.<span style="color: black;">sink</span> = sink
+        <span style="color: #008000;">self</span>.<span style="color: black;">sinkbox</span> = sinkbox
+    <span style="color: #ff7700;font-weight:bold;">def</span> main<span style="color: black;">&#40;</span><span style="color: #008000;">self</span><span style="color: black;">&#41;</span>: <span style="color: #808080; font-style: italic;"># infinite loop whilst there's work</span>
+        <span style="color: #ff7700;font-weight:bold;">while</span> <span style="color: #ff4500;">1</span>:
+            <span style="color: #ff7700;font-weight:bold;">yield</span> <span style="color: #ff4500;">1</span>
+            <span style="color: #ff7700;font-weight:bold;">if</span> <span style="color: #008000;">self</span>.<span style="color: black;">source</span>.<span style="color: black;">dataReady</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>.<span style="color: black;">sourcebox</span><span style="color: black;">&#41;</span>:
+                d = <span style="color: #008000;">self</span>.<span style="color: black;">source</span>.<span style="color: black;">recv</span><span style="color: black;">&#40;</span><span style="color: #008000;">self</span>.<span style="color: black;">sourcebox</span><span style="color: black;">&#41;</span>
+                <span style="color: #008000;">self</span>.<span style="color: black;">sink</span>.<span style="color: black;">send</span><span style="color: black;">&#40;</span>d, <span style="color: #008000;">self</span>.<span style="color: black;">sinkbox</span><span style="color: black;">&#41;</span></pre>
+]]></content:encoded>
+			<wfw:commentRss>http://www.davbo.org/blog/2008/03/27/miniaxon/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Hello!</title>
+		<link>http://www.davbo.org/blog/2008/03/22/hello/</link>
+		<comments>http://www.davbo.org/blog/2008/03/22/hello/#comments</comments>
+		<pubDate>Sat, 22 Mar 2008 15:54:21 +0000</pubDate>
+		<dc:creator>Dave</dc:creator>
+		
+		<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://www.davbo.org/blog/?p=3</guid>
+		<description><![CDATA[Welcome to the Davblog….see what i did there? I’m mostly starting this since I’ve noticed bits of code for this and that around on my HDD so this seems a good place to up anything I think is interesting/I’m proud of. I’m also applying to take part in this years Google Summer of Code, and [...]]]></description>
+			<content:encoded><![CDATA[<p>Welcome to the <font color="#000000">Davb<font color="#3366ff">l</font></font><font color="#000000">o<font color="#3366ff">g</font></font>….see what i did there? I’m mostly starting this since I’ve noticed bits of code for this and that around on my HDD so this seems a good place to up anything I think is interesting/I’m proud of. I’m also applying to take part in this years <a href="http://code.google.com/soc/2008/" title="GSOC">Google Summer of Code</a>, and if I were to somehow get accepted I plan on recording my experiences on here.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://www.davbo.org/blog/2008/03/22/hello/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

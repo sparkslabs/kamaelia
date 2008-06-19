@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet href="http://blogs.nuxeo.com/rss.css" type="text/css"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns="http://purl.org/rss/1.0/"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <channel rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/exportrss">
+    <title>Lennart Regebro</title>
+    <description>RSS 1.0 export from the folder 'Lennart Regebro'.</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/exportrss</link>
+
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_09_13_triage-bugs-in-an-open-source-world" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_06_28_finding-last-changed-object-in-zodb" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_04_13_easter-python-eggs" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_20_version-2-calendar-modules-released" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_08_using-special-zodb-with-zopetestcase" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_07_user-interface-day" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_02_01_guido-webframeworks" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_18_does-internet" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_13_1-3-calendar-released" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_12_using-zpkg" />
+
+      </rdf:Seq>
+    </items>
+
+  </channel>
+
+
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_09_13_triage-bugs-in-an-open-source-world">
+    <title>Triage of bugs in an open-source world.</title>
+    <description>&lt;p&gt;The word "triage" in programming has been around for a while, but seem to have gained popularity lately. What it is, is basically a new word for "bugprioritizing", being easier to say and spell. But if we look at what the word comes from, we see that behind this lies a concept that is often forgotten in the usage. &lt;/p&gt;
+
+&lt;p&gt;"Triage" comes from french and means sorting, so nothing new there. Howerver, it comes to the programming world from the world of emergency health care, where it is used to allocate health care resources in emergencies, when there are more people needing care than there are health care available. In computers then, it becomes a system of allocating programming time to bugs, when there are not enough programmers to fix all the bugs.&lt;/p&gt;
+
+&lt;p&gt;How should this be done? Well, first of all, we of course need to take a look at how serious the bug is. What categories you have depend largely on what bugtracking system you use, and it's also a matter of personal taste. Personally, I would prefer these categories:&lt;/p&gt;
+
+&lt;ul&gt;&lt;li&gt;A blocking/critical bug is a bug that means the system or part of the
+system gets unusable. It has no workarounds, and affects most users of
+the system.&lt;/li&gt;
+&lt;li&gt;A serious/medium bug is a bug that is a big problem for many users and
+has no workaround, or affects everybody, but has a workaround.&lt;/li&gt;
+&lt;li&gt;A minor bug is a bug that affects few users and has a workaround, or
+has no workaround but only is a problem in very extreme edge
+usercases.&lt;/li&gt;
+&lt;li&gt;A trivial bug is not an actual problem for anybody. Could be
+spelling errors or ugly design.&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;Bugs also usually have a priority field. Prioritizing or triaging a bug is usually just setting this field. But triage is not prioritizing, it's resource allocation. And although in medicine, the resources are helath care workers, and the criticality is time, in programming, the resurce is programming time, and the ciriticality is rather the knowledge to fix the really difficult bugs. 
+
+&lt;p&gt;That's OK as long as you work in a company, because there you can take the bugs allocated to you, in the order your boss prioritized them. If you get problems, you ask your co-workers. But in the open source world there is bigger differences. Also in the open source world, people assign bugs to themselves, and if you think a bug is over your head, you will simply never try to fix it.&lt;/p&gt;
+
+&lt;p&gt;Therefore, the bugs importance should not be the only data you tag the bug with, but also how hard the bug is to fix. Most bugtrackers only have severity and priority. Some, like JIRA, has a field where you can estimate it. Although that's more of a XP project management features than a help in triage, it can be used as such. If you have an hour over to bugfix, there is no point in trying to understand a bug who is estimated to take hours to fix.&lt;/p&gt;
+
+&lt;p&gt;But what would be even more helpful in an open source situation would be a difficulty field. The experienced bugfixers can look through the bugs, note severity and difficuly, and then not fix the easy bugs. It's tempting to fix the easy ones because quick fixes are satisfying and you feel productive. But if the wanna-be contributor can fix bugs marked as "easy" and understand and fix them, then we have not only gotten a new contributor, we have saved time for the experts.&lt;/p&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_09_13_triage-bugs-in-an-open-source-world</link>
+    <dc:date>2006-09-13</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>coding</dc:subject>
+    <dc:subject>zope</dc:subject>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_06_28_finding-last-changed-object-in-zodb">
+    <title>Finding the last changed object in a ZODB.</title>
+    <description>Today I had to figure out why something that should not create a write
+  transaction did create one.&lt;br /&gt;
+  &lt;br /&gt;
+  The first step is easy, you pack the database, do the thing that should not
+  modify anything and look in the "undo" tab of your Zope site. There you'll
+  see if something was written or not, it comes up as an undoable transaction.
+  &lt;br /&gt;
+  Then it is a matter of figuring out what happens. In this case, it was quite
+  a complex script with many parts. I wanted to see if I could narrow down the
+  problem by seeing what was actually changed. So, from my lib/python
+  directory, I ran this script: &lt;br /&gt;
+  &lt;br /&gt;
+&lt;pre&gt;
+from ZODB.FileStorage import FileStorage
+storage = FileStorage('/path/to/var/Data.fs', read_only=1)
+iter = storage.iterator()
+try:
+    while True:
+        transaction = iter.next()
+except:
+    pass
+for rec in transaction:
+    print repr(rec.oid)
+&lt;/pre&gt;
+This prints out the "oids" of all modified objects in the transaction.&lt;br/&gt;
+
+  Then I can run zope in debug mode: 
+&lt;pre&gt;
+bin/zopectl debug
+&lt;/pre&gt;
+When I get the python
+  prompt, I can get the objects that were modified: 
+&lt;pre&gt;
+app._p_jar['the oid pasted from the previous script']
+&lt;/pre&gt;
+ 
+This allowed me to narrow down the search for the culprit quite a lot.
+It still remains to figure out where in the code the modification is, but at least with the above you can get a rough idea of what is happening.
+
+See also &lt;a href="http://plone.org/documentation/how-to/debug-zodb-bloat"&gt;Debugging ZODB bloat&lt;/a&gt; which documents roughly this process.</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_06_28_finding-last-changed-object-in-zodb</link>
+    <dc:date>2006-06-28</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>zope</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_04_13_easter-python-eggs">
+    <title>Easter python eggs</title>
+    <description>It's easter, and only fitting that I play with eggs, so today I have been
+  looking at making &lt;a href="http://peak.telecommunity.com/DevCenter/PythonEggs"&gt;python eggs.&lt;/a&gt; Eggs are a new way of distributing python
+  software that gets more and more popular. This is mainly because installing
+  it is simple, and because an egg can contain a list of requirements, and the
+  installer will check if these requirements are installed, and if not, it
+  will look them up in the standard Python module library (known as the &lt;a href="http://cheeseshop.python.org/pypi"&gt;Cheese
+  Shop&lt;/a&gt;), and download and install them.&lt;br /&gt;
+   &lt;br /&gt;
+   This means the end of long hours of downloading, compiling and installing
+  all those modules you need to get your python software working. You download
+  just the module you want as an egg and install it, and all requirements will
+  be installed with it, if they have been eggyfied too.&lt;br /&gt;
+   &lt;br /&gt;
+   Making eggs is unfortunately a bit tricky. This is because there is no good
+  examples of how to do it, so you have to read through all the documentation,
+  and experiment a lot. This is a shame, because in the end, it turns out to
+  be very easy.&lt;br /&gt;
+   &lt;br /&gt;
+   All you need is to install the python module &lt;a href="http://peak.telecommunity.com/DevCenter/setuptools"&gt;setuptools&lt;/a&gt;, and create a a
+  setup.py for your package. Creating it can be slightly tricky, if your
+  package layout is complicated. Also, there is not always clear what the
+  parameters in it should be, and there is quite a lot of searching and trying
+  out (and for my finally some honest debugging of setupttools too figure out
+  what was going on, really).&lt;br /&gt;
+   &lt;br /&gt;
+   The parameters are for the most part the same as for making a package with
+  distutils, so if you have a distutils package, all you need to do is to
+  switch out the "from distutils.core import setup" to "from setuptools import
+  setup" and you are done.&lt;br /&gt;
+   &lt;br /&gt;
+   Here is an an example of a full setup.py, for the CalCore module:&lt;br /&gt;
+   &lt;br /&gt;
+&lt;pre&gt;
+#!/usr/bin/env python
+
+from setuptools import setup
+
+setup(name='calcore',
+      package_dir={'': 'src'},
+      packages=['calcore'],
+      version='2.0.1',
+      install_requires=['zope.interfaces &gt;= 3.0',
+                        'zope.schema &gt;= 3.0',
+                        'zope.i18nmessageid &gt;= 3.0'],
+      dependency_links=['http://download.zope.org/distribution/',],
+
+      # metadata for upload to PyPI
+      author='Martijn Faassen, Infrae;Lennart Regebro, Nuxeo',
+      author_email='lregebro@nuxeo.com',
+      description='Calendaring system',
+      license='GPL2',
+      keywords='calendar icalendar',
+      url='http://www.cps-project.org/sections/projects/calendar_server ',
+      long_description="""CalCore is an advanced, flexible calendaring component for Python. It
+        allows the Python developer do write advanced calendaring applications
+        either using their own event storage or integrating with external
+        calendar servers.
+        
+        Features of the CalCore include among others:
+        
+        * Support for making private calendars, shared calendars, resource
+        booking and more.
+        * integration with iCalendar clients (Apple iCal, Mozilla Sunbird,
+        KOrganizer...) using the iCalendar protocol,
+        * invitation workflow,
+        * meeting support, including helper functions to look for free time,
+        * recurring event support (thanks to SchoolTools recurrence
+        implementation, http://www.schooltool.org),
+        * etc.
+        
+        CalCore is being used as the core of Nuxeos CalZope and
+        CPSSharedCalendar products, products for integrating with Zope and CPS.
+        These products provide a complete web-based user interface to the
+        CalCore calendaring.""",
+      classifiers=['Development Status :: 5 - Production/Stable',
+                   'Intended Audience :: Developers',
+                   'License :: OSI Approved :: GNU General Public License (GPL)',
+                   'Operating System :: OS Independent',
+                   'Topic :: Office/Business :: Groupware'],
+      platforms='All',
+      )
+&lt;/pre&gt;
+ 
+You'll note the install_requires parameter, that list the requirements. You can also use ==, of course, and you can list requirements that are only used for testing, and lots of other stuff. Also note the dependency_links parameter, which enables downloads from other places than the Cheeze Shop, in this case Zope.orgs repository of Zope3 eggs.</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_04_13_easter-python-eggs</link>
+    <dc:date>2006-04-13</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro, root</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>python</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_20_version-2-calendar-modules-released">
+    <title>Version 2 of the calendar modules released!</title>
+    <description>Friday and today was finally the days when an official release of the
+  calendar was done after the refactorings I have been doing since december.
+  There are some big internal changes:&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;New i18n support&lt;/h2&gt;
+  The translation is now done with the Zope3/Five i18n support that comes with
+  Zope 2.9. This means that it no longer requires Localizer, which makes it
+  much easier to use the calendar outside of CPS. In fact, you now have a full
+  i18n support in pure Zope!&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Using local utilities instead of portal tools&lt;/h2&gt;
+  Also in Zope 2.9 is the support for local utilities. This is the Zope3
+  replacement for portal tools. This means that you no longer depend on the
+  name of the utility, but you depend on what interface it provides. This too
+  makes it neater to use the calendar outside of the CMF framework. Most of
+  all this provides cleaner code internally, and is another step towards
+  having the same code for Zope2 and Zope3 (although there is still some way
+  to go).&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Improved installation support.&lt;br /&gt;
+  &lt;/h2&gt;
+  CPSSharedCalendar now uses GenericSetup to do installations and upgrades.
+  GenericSetup is still somewhat immature, but it already is a great
+  improvement on the programmatic installers we used before.&lt;br /&gt;
+   &lt;br /&gt;
+   CalZope doesn't use GenericSetup yet, amongst other things becuase there is
+  no generic support for installing local utilities, and the support I wrote
+  in CPSSharedCalendar is temporary pending a refactoring of local utilities
+  that Philikon and J1m is working on. However, CalZope does now provide an
+  install script, so installation is easier. CalZope is only a base for you to
+  integrate into your Zope site (as we have done with CSSharedCalendar) but
+  this installation script will at least kick-start you. ;)&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Calendar publishing&lt;/h2&gt;
+  In CPS you can now publish calendars into sections, thereby having public
+  access to reading workspace calendars.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Packaging&lt;/h2&gt;
+  There has been some chaneg in the packaging. Officially there are now three
+  bundles:&lt;br /&gt;
+   CalCore-bunde, for use outside Zope, CalZope-bundle for use in Zope2 but
+  without CPS, and CPSGroupware for use in CPS. The CPSGroupware bundle
+  includes all you need for the calendar and the equally Five-based
+  CPSMailAccess, our new webmail client.&lt;br /&gt;
+   &lt;br /&gt;
+   You can find all of them here: &lt;a
+  href="http://www.cps-project.org/static/misc/"&gt;http://www.cps-project.org/static/misc/&lt;br /&gt;
+
+  &lt;/a&gt; &lt;br /&gt;
+   
+
+  &lt;h2&gt;The future&lt;/h2&gt;
+  The calendar modules continue to live on the bleeding edge of Zope2/Zope3
+  integration, and I hope to have the time to continue to keep it there right
+  up to the time where we can use the same code to run under both Zope2 and
+  Zope3. It's getting nearer.&lt;br /&gt;
+   &lt;br /&gt;
+   I also hope to work on a CMF/Plone version. We'll see more on that
+  soon.&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_20_version-2-calendar-modules-released</link>
+    <dc:date>2006-03-20</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro, root</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>zope</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_08_using-special-zodb-with-zopetestcase">
+    <title>Using a special ZODB with ZopeTestCase</title>
+    <description>Sometimes you want to do tests that involve a special ZODB. The typical
+  example of this is when you do tests for upgrades. As you can't create an
+  old ZODB programatically without having the old products at hand, the most
+  obvious choice is to use an old ZODB, and try the upgrade on that one.
+  Importing a ZEXP of an old database may be an alternative, but actually
+  using an old ZODB is closer to the real thing.&lt;br /&gt;
+   &lt;br /&gt;
+   So, how do you specify which ZODB you want to use? Well, the standard way
+  is to place a file called custom_zodb.py to provide your custom storage, but
+  this turns out to be very tricky, as ZopeTestCase will try to provide it's
+  own custom_zodb.py. A careful tapdance is needed, centered around the
+  configuration variable 'testinghome'.&lt;br /&gt;
+   &lt;br /&gt;
+   First in your test, import the Testing module. The testing module will,
+  when you import it, set the testinghome variable to
+  $SOFTWARE_HOME/lib/python/Testing:&lt;br /&gt;
+&lt;pre&gt;
+import Testing
+&lt;/pre&gt;
+   After that, set testinghome to wherever *you* want it, in this case a
+  subdirectory called "db" beneath the location of the test module.&lt;br /&gt;
+&lt;pre&gt;
+import App.config
+cfg = App.config.getConfiguration()
+cfg.testinghome = os.path.join(os.path.dirname(__file__), 'db')
+&lt;/pre&gt;
+   During the import of the ZopeLite module, the Zope Application will be
+  started, and it will now use our testinghome, find our custom_zodb.py and
+  use our custom ZODB. So we import ZopeLite, or rather, we import
+  ZopeTestCase, which in turn imports ZopeLite, which in turns starts
+  Zope.&lt;br /&gt;
+&lt;pre&gt;
+from Testing import ZopeTestCase
+&lt;/pre&gt;
+   After this, you can use the ZopeTestCase as usual:&lt;br /&gt;
+&lt;pre&gt;
+class MyTest(ZopeTestCase):
+    ....
+&lt;/pre&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_08_using-special-zodb-with-zopetestcase</link>
+    <dc:date>2006-03-08</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro, root</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>zope</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_07_user-interface-day">
+    <title>User interface of the day</title>
+    <description>I want this user interface on a OS with orthogonal persistance and zope
+  style aspect oriented component architecture. No further comments
+  needed, really.&lt;br /&gt;
+  &lt;br /&gt;
+  &lt;a
+  href="http://pouet.fokkus.net/multitouchreel.mpg"&gt;http://pouet.fokkus.net/multitouchreel.mpg&lt;/a&gt;&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_03_07_user-interface-day</link>
+    <dc:date>2006-03-07</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro, root</dc:contributor>
+    <dc:language>en</dc:language>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_02_01_guido-webframeworks">
+    <title>Guido and Webframeworks</title>
+    <description>Guido van Rossum has &lt;a
+  href="http://www.artima.com/weblogs/viewpost.jsp?thread=146149"&gt;started to
+  look for web frameworks&lt;/a&gt;. Now, he doesn't seem to enthusiastic about
+  using Zope. And at first it looks like he is making the right choice,
+  because his stated requirement list is too small:&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul class="simple"&gt;
+   &lt;li&gt;Independence from web server technology.&lt;/li&gt;
+
+   &lt;li&gt;Templating with reuse.&lt;/li&gt;
+
+   &lt;li&gt;Cookie handling.&lt;/li&gt;
+
+   &lt;li&gt;Query parsing.&lt;/li&gt;
+
+   &lt;li&gt;URL dispatch.&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   Note especially the lack of any kind of data storage, authentication/access
+  control, forms and session handling. Well, with these requirements, he
+  shouldn't use Zope, that's for sure. But does he really not want any
+  storage, or access control? &lt;br /&gt;
+   &lt;br /&gt;
+  Wel....in his &lt;a
+  href="http://www.artima.com/weblogs/viewpost.jsp?thread=146503"&gt;second
+  post&lt;/a&gt; he extends the requirements quite lot, and suddenly it seems like
+  persistence, acces control and session is in the game again:&lt;br /&gt;
+  &lt;br /&gt;
+  "&lt;i&gt;Maybe we need more standardization efforts like WSGI, that let you plug
+  in different animals, or roll your own, for various pieces of useful web
+  functionality: for example URL dispatch, templates, persistence,
+  authentication, sessions, forms, style sheets, i18n, and client-side
+  scripting (AJAX or not)."&lt;br /&gt;
+  &lt;br /&gt;
+  &lt;/i&gt; Right, for a really good, generic web framework, we surely do need all
+  this. And Zope 3 does it. But Guidos comment about Zope is: &lt;i&gt;"From this
+  perspective, Zope and Twisted are off the scale: they support the
+  mix-and-match approach, offering several alternative solutions for many of
+  the important issues (templating, persistence, authentication, etc.). But
+  they only work if you drink lavish quantities of their particular flavor of
+  kool-aid, and that's not good enough for me. I don't want to depend on any
+  particular flavor of interfaces, adaptation, serialization, discovery,
+  etc."&lt;br /&gt;
+  &lt;br /&gt;
+  &lt;/i&gt; Yes. They do require that you use their "particular flavor of
+  interfaces" and so on. But how are you to do it otherwise? If you want the
+  persistance to be pluggable, then everything that uses the persistance has
+  to conform to the same interface. If you want to have pluggable URL
+  dispatch, then everything that uses this URL dispatch must conform to the
+  same interface. If you want to have pluggable authentication, then all the
+  plugins must be written for the same plugin system.&lt;br /&gt;
+   &lt;br /&gt;
+   Because that's what standardization *is*, conforming to a standard.&lt;br /&gt;
+   &lt;br /&gt;
+   What Zope 3 does is not only to standardize all the mentioned things, but
+  to standardize the way to make these standards, that is by defining
+  interfaces, making objects and adapters, and connecting it all together in
+  ZCML. Now, if you don't like it, thats fine, but any effort to do the same
+  things will necessarily need to create a framwork of similar complexity. It
+  might be possible to show that Zope 3s approach of how to do it is wrong,
+  but Zope 3 does do it.&lt;br /&gt;
+   &lt;br /&gt;
+   I suspect there are two issues here: &lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ol&gt;
+   &lt;li&gt;Zope is often seen as being unpythonic. Zope 2 certainly was, but Zope
+   3 is trying really hard, and in my opinion succeeding, in being pythonic.
+   There is no more PYTHONPATH magic, there are no more half-assed
+   "pythonscripts".&lt;br /&gt;
+    In Zope 3, you create pure Python products, and you the create a user
+   interface for these by creating "views", which will typically be a page
+   template. That's really the whole gist of it. Now, if you want to do
+   override some default behavious, like the way URL handling is done, then
+   yes, you will have to write the necessary adapters for doing that according
+   to the Zope 3 standard of doing it. But isn't that unavoidable?&lt;br /&gt;
+   &lt;/li&gt;
+
+   &lt;li&gt;Guido does not like Zope Page Templates, and I can understand why. But,
+   as noted, the templating system in Zope 3 is pluggable, and you can for
+   example use ClearSilver thanks to &lt;a
+   href="http://faassen.n--tree.net/blog/view/weblog/2005/04/15/0"&gt;Martijn
+   Faassens Clarity&lt;/a&gt; product.&lt;br /&gt;
+   &lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;br /&gt;
+   I'm all for reinventing the wheel if the new wheel gets better. But really,
+  all you Python people who shun Zope because it's rumoured to be unpythonic
+  or force you to do things certain ways, take a long hard look at Zope 3.
+  You'll be happy you did.&lt;br /&gt;
+   &lt;i&gt;&lt;br /&gt;
+   "I'm looking for solutions that depend only on the Python standard library,
+  and use accepted Python idioms and patterns. Any takers?"&lt;/i&gt;&lt;br /&gt;
+   &lt;br /&gt;
+   Yes, Zope 3. :-)&lt;br /&gt;
+   &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2006_02_01_guido-webframeworks</link>
+    <dc:date>2006-02-01</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro, root</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>web</dc:subject>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_18_does-internet">
+    <title>Is internet applications a bad idea?</title>
+    <description>
+  On newsforge Robin Miller claims that &lt;a
+  href="http://software.newsforge.com/article.pl?sid=05/10/14/1633248&amp;amp;from=rss#discuss"&gt;
+  internet applications is a bad idea&lt;/a&gt;. He lists three reasons. 1: loss of
+  connection, 2: connection outage and 3, connection failure.&amp;nbsp; OK, so he
+  really mentions only one reason, but he mentions it three times in different
+  variations. Yes, internet connections between X and Y is not 100% reliable.
+  Not only can your hardware or software fail, your connection to the ISP can
+  fail, the connection between your ISP and the application servers ISP can
+  fail and the application servers ISP can fail and the application server can
+  fail and...&lt;br /&gt;
+   &lt;br /&gt;
+   Things fail. Connections too. But that is no different from a hardwaree
+  failure or a software crash from the users point of view. So, the more
+  important an application is, the more you need to make sure access to it
+  will work all the time. A rather self-evident point, which Robin Miller
+  fails to reach.&lt;br /&gt;
+   &lt;br /&gt;
+   Getting a stable access of course includes minimizing failure points. For
+  internet based applications, which in todays world includes almost anything,
+  since the internet reaches all the way to that 10base-T plug that sticks out
+  the back of your computer, that means you shouldn't have fifteen ISPs
+  between you and the server. Which also seems rather self evident. &lt;br /&gt;
+   &lt;br /&gt;
+   The internet today is everywhere, because it facilitates communication in a
+  way we have never seen before. Anything you do via the internet is an
+  internet based application, really. Can you honestly say it is a bad
+  idea?&lt;br /&gt;
+   &lt;br /&gt;
+ </description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_18_does-internet</link>
+    <dc:date>2005-10-18</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>web</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_13_1-3-calendar-released">
+    <title>1.3 of the Calendar released!</title>
+    <description>
+  If you wonder why it has been so long between 1.0 and 1.3 of the
+  CalCore/CalZope/CPSSharedCalendar trio, then the answer is not only
+  vacation, and a whole bunch of big new features, but also that every time I
+  have been close to releasing a new version, I have first released it to some
+  of our trusty customers for testing. And they have promptly found bugs,
+  which I then fixed, and made a new release, and so on.&lt;br /&gt;
+   &lt;br /&gt;
+   After the release of 1.0, several additional customers have installed the
+  new calendar, and we also have people using it outside of CPS altogether. At
+  this point I dare to say that the new calendar is both prettier, faster and
+  more stable than the old CPSCalendar. The type of bugs that has been popping
+  up lately are mostly translation and usability problems, where the calendar
+  doesn't behave exactly as you would expect it to. An upgrade is warmly
+  recommended. &lt;br /&gt;
+   &lt;br /&gt;
+   The major new features in 1.3 are:&lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;Major speed increases for big installations.&lt;/li&gt;
+
+   &lt;li&gt;Event coloring according to type.&lt;/li&gt;
+
+   &lt;li&gt;Calendar "stacking": You can create calendars which display the events
+   of several calendars as if they were one.&lt;/li&gt;
+
+   &lt;li&gt;Migration from the older CPSCalendar.&lt;/li&gt;
+
+   &lt;li&gt;Support for Zope 2.7 and 2.8, CMF 1.4 and 1.5, CPS 3.2 and 3.3.&lt;/li&gt;
+
+   &lt;li&gt;Localization of date format.&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   Of course, there are also many bugfixes, most having to do with
+  translations, something that always takes a long time.&lt;br /&gt;
+   
+
+  &lt;h2&gt;Separate releases per target&lt;/h2&gt;
+  There are now several separate releases. This is mostly because the install
+  instructions just got way to complicated, and it's also an effect of the
+  desire to release a non-zope release of the CalCore library that does all
+  the heavy calendar lifting, so the rest of teh Python world can use it.
+  CalCore requires some libraries from Zope 3,&amp;nbsp; so I made a
+  CalCore-bundle release that includes these packages, and which is easily
+  installable into any non-zope python installation with the standard
+  distutils.&lt;br /&gt;
+   &lt;br /&gt;
+   There is also a CalZope bundle that includes all you need to install it
+  under Zope or CMF (except for Five and Zope 3), which you need if you run
+  Zope 2.7.&lt;br /&gt;
+   &lt;br /&gt;
+   And of course, we also have the CPSSharedCalendar bundle, which includes
+  all the products you need to install the calendar on CPS (again not
+  including Five and Zope 3).&lt;br /&gt;
+   &lt;br /&gt;
+   You can find the latest version of these bundles on cps-project.com:&lt;br /&gt;
+   &lt;a
+  href="http://www.cps-project.org/static/misc/"&gt;http://www.cps-project.org/static/misc/&lt;/a&gt;&lt;br /&gt;
+
+   &lt;br /&gt;
+   &lt;br /&gt;
+ </description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_13_1-3-calendar-released</link>
+    <dc:date>2005-10-13</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>cps</dc:subject>
+    <dc:subject>five</dc:subject>
+    <dc:subject>zope</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_12_using-zpkg">
+    <title>zpkg tool: A quick intro</title>
+    <description>
+  &lt;h2&gt;You are in a maze of twisty little config files, all alike&lt;a
+  href="http://www.metafilter.com/mefi/45652"
+  onmousedown="return rwt(this,'res','1','&amp;amp;sig2=ACS7xxEncdR8K0_BWEUzAg')"&gt;&lt;/a&gt;&lt;/h2&gt;
+  I'm currently preparing to create a non-Zope bundle of CalCore and all it's
+  dependencies. Since these dependencies are mostly Zope 3 packages (interface
+  and schema) it seems natural to use Zope Corps tool for this: zpkg.&lt;br /&gt;
+   &lt;span style="font-weight: bold;"&gt;&lt;br /&gt;
+  &lt;/span&gt; Unfortunately zpkg is a complex tool with cryptic documentation. I
+  have made packages with zpkg before, and it was hard. This time around, it
+  was equally hard, because I had forgotten everything. I'm sorry to say this,
+  but when it's hard to do something, and hard to remember how you did it,
+  this is a sign of a bad design. Configuring a product to use zpkg is far
+  from easy or logical, and there are many confusingly similar files, all
+  named SOMETHING.cfg.&lt;br /&gt;
+   
+
+  &lt;h2&gt;Getting started&lt;/h2&gt;
+  First you need to check it out:&lt;br /&gt;
+   &amp;nbsp; svn co svn://svn.zope.org/repos/main/zpkgtools/tags/zpkg-1.0.0
+  zpkgtools&lt;br /&gt;
+   or, for the more adventurous:&lt;br /&gt;
+   &amp;nbsp; svn co svn://svn.zope.org/repos/main/zpkgtools/trunk zpkgtools&lt;br /&gt;
+   &lt;br /&gt;
+   The main application is in bin/zpkg. It takes many parameters, and after a
+  while I found that the best thing to do is to create a configuration file,
+  and call that with -C. I called mine BUILD.cfg. Zope corp likes to call them
+  the name of the package, such as Zope.cfg, but for me that is confusing, it
+  sounds way to similar to the zope.conf file.&lt;br /&gt;
+   &lt;br /&gt;
+   The format of the configuration files the same format as the zope.conf
+  file, that is you use &lt;b&gt;#&lt;/b&gt; for comments, and write &lt;b&gt;keyword value&lt;/b&gt;
+  pairs, and create groups with &lt;b&gt;&amp;lt;tag&amp;gt; &amp;lt;/tag&amp;gt;&lt;/b&gt;. &lt;br /&gt;
+   &lt;br /&gt;
+   The first keyword I needed was:&lt;br /&gt;
+   &amp;nbsp; &amp;nbsp; collect-dependencies&amp;nbsp; yes&lt;br /&gt;
+   This tells zpkg to include the dependencies of the product that I'm
+  packaging and include them in the package. That's what the whole thing is
+  about, if you don't need that you don't need zpkg at all. &lt;br /&gt;
+   &lt;br /&gt;
+   Also, I'd like to not have to write the name of the resource I'm packaging
+  every time I'm packaging, so I include the line&lt;br /&gt;
+   &amp;nbsp; &amp;nbsp; default-collection calcore&lt;br /&gt;
+   &lt;br /&gt;
+   However, this will create a package named calcore-x.x.x.tgz. This is
+  confusingly similar to the CalCore-x.x.x.tgz packages created by Nuxeos
+  packaging tool, which includes CalCore only and not dependencies, so I also
+  add&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; release-name CalCore-bundle&lt;br /&gt;
+   to make the file be called CalCore-bundle-x.x.x.tgz instead.&lt;br /&gt;
+   &lt;br /&gt;
+   Now I can run zpkg -C BUILD.cfg, and it will try to build the release.
+  However, it tries to package the calcore resource by default, and has
+  absolutely no idea how to do that, so you get an error. &lt;br /&gt;
+   
+
+  &lt;h2&gt;Defining resources&lt;/h2&gt;
+  Resources are defined in a resource map. This is a list of resource names,
+  and a location where you can find them. You can either put the list of
+  resources into the configuration file directly like this:&lt;br /&gt;
+   &amp;nbsp; &amp;lt;resources&amp;gt;&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; calcore src/calcore&lt;br /&gt;
+   &amp;nbsp; &amp;lt;/resources&amp;gt;&lt;br /&gt;
+   or you can put it in a separate file, lets call it RESOURCES.cfg, like
+  this:&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; calcore src/calcore&lt;br /&gt;
+   and just include it in the main file with&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; resource-map RESOURCES.cfg&lt;br /&gt;
+   &lt;br /&gt;
+   The resource definition for calcore points to a subdirectory in the current
+  hierarchy. In most cases you have the product directly in the same directory
+  as the configuration file you are now creating, and then you would define it
+  up with a dot:&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; calcore .&lt;br /&gt;
+   
+
+  &lt;h2&gt;Including the dependencies&lt;/h2&gt;
+  At this point, you can now actually make a package. It will however not
+  include the dependencies, which of course is the whole point of this
+  excercise. For this, we need to tell zpkg which dependencies the resource
+  has. This is done with a DEPENDENCIES.cfg file, which simply lists the
+  resources that this resource needs. The calcore resource was defined up as
+  being in src/calcore, so that's where the DEPENDENCIES.cfg needs to be. It
+  looks like this:&lt;br /&gt;
+   &amp;nbsp; zope.interface&lt;br /&gt;
+   &amp;nbsp; zope.schema&lt;br /&gt;
+   &amp;nbsp; zope.i18nmessageid&lt;br /&gt;
+   &amp;nbsp; iCalendar&lt;br /&gt;
+   &lt;br /&gt;
+   Of course, zpkg has absolutely no idea where to find these resources, so we
+  have to extend the RESOURCES.cfg file:&lt;br /&gt;
+   &lt;br /&gt;
+   &amp;nbsp; zope.interface
+  svn://svn.zope.org/repos/main/Zope3/tags/ZopeX3-3.0.0/src/zope/interface&lt;br /&gt;
+
+   &amp;nbsp; zope.schema
+  svn://svn.zope.org/repos/main/Zope3/tags/ZopeX3-3.0.0/src/zope/schema&lt;br /&gt;
+   &amp;nbsp; zope.testing
+  svn://svn.zope.org/repos/main/Zope3/tags/ZopeX3-3.0.0/src/zope/testing&lt;br /&gt;
+   &amp;nbsp; zope.i18nmessageid
+  svn://svn.zope.org/repos/main/Zope3/tags/ZopeX3-3.0.0/src/zope/i18nmessageid&lt;br /&gt;
+
+   &amp;nbsp; iCalendar
+  svn:http://codespeak.net/svn/iCalendar/tag/iCalendar-0.10&lt;br /&gt;
+   &lt;br /&gt;
+   Note here that these resources are defined up as svn tags! zpkg will fetch
+  the files directly from the svn of each product. Very practical. You can
+  also have a * instead of the tag-name, in which case it will use some kind
+  of logic to figure out which tag to use (what logic I don't know). Also note
+  that I included zope.testing above. That's because several of the resources
+  above define up their own DEPENDENCIES.cfg, and of course, those
+  dependencies must be defined as well, if they are to be included.
+  zope.testing is really not needed unless you want to run the unittests, but
+  I include it anyway for good measure.&lt;br /&gt;
+   &lt;br /&gt;
+   For some reason zpkg will complain that the resource "zope" is not defined
+  and skip it. That's a good thing, because it's would mean that all of Zope3
+  was included, which is quite silly. Why it wants to include it is beyond me,
+  none of the resources have it in their DEPENDENCIES.cfg file.&lt;br /&gt;
+   
+
+  &lt;h2&gt;Adding files to the distribution root&lt;/h2&gt;
+  I want to have some files in the distribution root. A README.txt that tells
+  you what the package is and how to install it should be in every package. I
+  also want the HISTORY file to be included (but named HISTORY.txt), the GPL
+  license, with the name COPYING.txt and the whole doc directory. To add them
+  to the root I need to create a PACKAGE.cfg in the resource directory, that
+  includes the follwing lines:&lt;br /&gt;
+   &amp;lt;load&amp;gt;&lt;br /&gt;
+   &amp;nbsp; HISTORY.txt
+  svn:http://svn.nuxeo.org/pub/CalCore/tags/*/HISTORY&lt;br /&gt;
+   &amp;nbsp; COPYING.txt
+  svn:http://svn.nuxeo.org/pub/CalCore/tags/*/COPYING.txt&lt;br /&gt;
+   &amp;nbsp; README.txt&amp;nbsp;
+  svn:http://svn.nuxeo.org/pub/CalCore/tags/*/README.txt&lt;br /&gt;
+   &amp;nbsp; doc&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+  svn:http://svn.nuxeo.org/pub/CalCore/tags/*/doc&lt;br /&gt;
+   &amp;lt;/load&amp;gt;&lt;br /&gt;
+   &lt;br /&gt;
+   &amp;lt;distribution&amp;gt;&lt;br /&gt;
+   &amp;nbsp; HISTORY.txt&lt;br /&gt;
+   &amp;nbsp; COPYING.txt&lt;br /&gt;
+   &amp;nbsp; README.txt&lt;br /&gt;
+   &amp;nbsp; doc&lt;br /&gt;
+   &amp;lt;/distribution&amp;gt;&lt;br /&gt;
+   &lt;br /&gt;
+   The first part adds the files into the resource directory. It isn't
+  possible in zpkg to include files that are above the resource root, so I
+  instead load them from svn. This can also be used to have the latest version
+  of the licensing in a separate package and thereby automatically include the
+  correct version every time you package, and other cool things.&lt;br /&gt;
+   &lt;br /&gt;
+   The distribution tag also tells zpkg to include these files in the
+  distribution root. (They will end up both there and in the resource
+  directory).&lt;br /&gt;
+   
+
+  &lt;h2&gt;Nice extras&lt;/h2&gt;
+  The PUBLICATION.cfg is not needed, but it's a place to put in meta data
+  about the product, which is a good thing:&lt;br /&gt;
+   &amp;nbsp; Name: calcore&lt;br /&gt;
+   &amp;nbsp; Summary: Python calendaring&lt;br /&gt;
+   &amp;nbsp; Home-page: http://www.nuxeo.com/&lt;br /&gt;
+   &amp;nbsp; Author: Martijn Faassen, Lennart Regebro, Nuxeo SARL.&lt;br /&gt;
+   &amp;nbsp; Author-email: lregebro@nuxeo.com&lt;br /&gt;
+   &amp;nbsp; Licence: GPL 2&lt;br /&gt;
+   &amp;nbsp; Description: A python package for making personal and group
+  calendars.&lt;br /&gt;
+   &lt;br /&gt;
+   Note that PUBLICATION.cfg uses an RFC-822 type format, that is, it uses
+  keyword-value pairs with a colon after the keyword, while all the other
+  config files does not have a colon.&lt;br /&gt;
+   
+
+  &lt;h2&gt;Thats it!&lt;br /&gt;
+  &lt;/h2&gt;
+  There is a lot of cfg files involved and it can be very confusing, and I'm
+  in no way near understanding all the details. But at least, after some trial
+  and error, I succeeded in making a tgz that includes what I want. &lt;br /&gt;
+ </description>
+    <link>http://blogs.nuxeo.com/sections/blogs/lennart_regebro/2005_10_12_using-zpkg</link>
+    <dc:date>2005-10-12</dc:date>
+    <dc:creator>lregebro</dc:creator>
+    <dc:contributor>Lennart Regebro</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+
+
+  <xhtml:script id="js" type="text/javascript" src="http://blogs.nuxeo.com/rss.js" />
+
+</rdf:RDF>

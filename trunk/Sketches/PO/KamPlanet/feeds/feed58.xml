@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<rss version="2.0" 
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:admin="http://webns.net/mvcb/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+   xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  >
+
+<!-- ukey="05FD3D25" -->
+<channel>
+    <title>Life of Brian Ray - Python</title>
+    <link>http://kazavoo.com/blog/</link>
+    <description>Journal from the Windy City</description>
+    <dc:language>en</dc:language>
+    <generator>Serendipity 1.0.1 - http://www.s9y.org/</generator>
+    <pubDate>Sun, 03 Feb 2008 20:30:44 GMT</pubDate>
+
+    <image>
+        <url>http://kazavoo.com/blog/templates/default/img/s9y_banner_small.png</url>
+        <title>RSS: Life of Brian Ray - Python - Journal from the Windy City</title>
+        <link>http://kazavoo.com/blog/</link>
+        <width>100</width>
+        <height>21</height>
+    </image>
+
+<item>
+    <title>Send Custom Email from Subversion Commits Tutorial</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/73-Send-Custom-Email-from-Subversion-Commits-Tutorial.html</link>
+            <category>Programming</category>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/73-Send-Custom-Email-from-Subversion-Commits-Tutorial.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=73</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=73</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    I wrote this script to accomplish the following:&lt;br /&gt;
+&lt;br /&gt;
+&lt;ul&gt;&lt;br /&gt;
+&lt;li&gt; use an external SMTP email server&lt;br /&gt;
+&lt;li&gt; Use Python&lt;br /&gt;
+&lt;li&gt; Not use the svn.fs packages form subversion&lt;br /&gt;
+&lt;li&gt; Allow configuration on a reg-ex pattern&lt;br /&gt;
+&lt;li&gt; Send the logs and diffs in the email&lt;br /&gt;
+&lt;li&gt; allow simply dropping the script into svn/hooks/post-commit&lt;br /&gt;
+&lt;/ul&gt;&lt;br /&gt;
+&lt;br /&gt;
+First, I tried the contrib scripts from subversion. They were a little too complicated and had dependencies I did not want to install on a shared server.  &lt;br /&gt;
+&lt;br /&gt;
+I wrote this script to accomplish the goals.&lt;br /&gt;
+&lt;br /&gt;
+Here are some links to the script:&lt;br /&gt;
+&lt;ul&gt;&lt;br /&gt;
+&lt;li&gt; &lt;a href=http://kazavoo.com/misc/post-commit&gt;Plain source&lt;/a&gt;&lt;br /&gt;
+&lt;li&gt;  &lt;a href=http://kazavoo.com/misc/post-commit.html&gt;Colorized source&lt;/a&gt;&lt;br /&gt;
+&lt;/ul&gt;&lt;br /&gt;
+&lt;br /&gt;
+Or here is the source inline: &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/73-Send-Custom-Email-from-Subversion-Commits-Tutorial.html#extended&quot;&gt;Continue reading &quot;Send Custom Email from Subversion Commits Tutorial&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Sun,  3 Feb 2008 15:30:44 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/73-guid.html</guid>
+    
+</item>
+<item>
+    <title>ChiPy Video Posted / Looking for advice</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/72-ChiPy-Video-Posted-Looking-for-advice.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/72-ChiPy-Video-Posted-Looking-for-advice.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=72</wfw:comment>
+
+    <slash:comments>6</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=72</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;em&gt;(I also posted this question to the ChiPy List)&lt;/em&gt;&lt;br /&gt;
+&lt;br /&gt;
+I posted the video and will be reposting a better quality version soon  &lt;br /&gt;
+if some of you can help me work out the details (Disclaimer: I am  &lt;br /&gt;
+totally new to recording and publishing video). If you can&#039;t wait here  &lt;br /&gt;
+is the first try:&lt;br /&gt;
+&lt;br /&gt;
+&lt;embed style=&quot;width:400px; height:326px;&quot; id=&quot;VideoPlayback&quot; type=&quot;application/x-shockwave-flash&quot; src=&quot;http://video.google.com/googleplayer.swf?docId=-906354546937878632&amp;hl=en&quot; flashvars=&quot;&quot;&gt; &lt;/embed&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;a href=&quot;http://video.google.com/videoplay?docid=-906354546937878632&quot;&gt;Link to Video&lt;/a&gt;&lt;br /&gt;
+&lt;br /&gt;
+Admittedly, the quality is poor on my first try.  The aspect ratio I  &lt;br /&gt;
+shot in was different than how I posted to Google Video--so its skewed  &lt;br /&gt;
+to letterbox.  The video looks and sounds much better on my computer  &lt;br /&gt;
+before I post. I shot the video in HD widescreen and went to mp4 the  &lt;br /&gt;
+way the google video suggests in its FAQ. I am not sure I like the  &lt;br /&gt;
+quality of any of the videos on a hosted web viewer solution versus  &lt;br /&gt;
+the pod-casts I view through iTunes.  But, I am also concerned if  &lt;br /&gt;
+other pod-cast readers are readily available (Linux? Windows?) so that  &lt;br /&gt;
+all of you viewing can use any feed I produce.&lt;br /&gt;
+&lt;br /&gt;
+If everyone can use this format, I would like to explore the option of  &lt;br /&gt;
+using the mv4 format in the form of a podcast. IE, it would be nice to  &lt;br /&gt;
+have a RSS feed just for meetings.  I did see a Python package called  &lt;br /&gt;
+PyRSS2Gen http://www.dalkescientific.com/Python/PyRSS2Gen.html.  Does  &lt;br /&gt;
+anybody know the correlation between the content of the RSS entry for  &lt;br /&gt;
+video and the example used on this website? For instance, is the  &lt;br /&gt;
+content of each entry just html pointing to the video data as a  &lt;br /&gt;
+hyperlink? What do I need to consider if I want to optimize for  &lt;br /&gt;
+devices like the iPhone and iPod?&lt;br /&gt;
+&lt;br /&gt;
+Also, the video is kind of large in the mv4 or mp4 formats. Its like  &lt;br /&gt;
+around 400-600Meg for 1 hour with the compressions I have available on  &lt;br /&gt;
+my platform. Also, the video when digitized from the HD format takes  &lt;br /&gt;
+60 Gigs. So, I do not really want to save the original data on disk.   &lt;br /&gt;
+Also, I do not really want to host the data in the mv4 or mp4 formats  &lt;br /&gt;
+on the ChiPy Server. Its just a lot of disk space and bandwidth. What  &lt;br /&gt;
+other options do I have. Can I use a file hosting service in  &lt;br /&gt;
+conjunction with a link from a RSS feed I do host on ChiPy Server?&lt;br /&gt;
+&lt;br /&gt;
+Someone else suggested a torrent. I am not sure how this works either.&lt;br /&gt;
+&lt;br /&gt;
+Like I mentioned before, I am a novice and do want to continue  &lt;br /&gt;
+recording and sharing this information online. Any suggestions or  &lt;br /&gt;
+advice? I am looking forward to learning but do not know where to start. 
+    </content:encoded>
+
+
+    <pubDate>Sun, 13 Jan 2008 22:25:11 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/72-guid.html</guid>
+    
+</item>
+<item>
+    <title>Django &quot;newforms&quot; review: I like it</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/70-Django-newforms-review-I-like-it.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/70-Django-newforms-review-I-like-it.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=70</wfw:comment>
+
+    <slash:comments>4</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=70</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    After taking some time off from Django, I have returned and am happy with what I found--in particular &quot;&lt;a href=&quot;http://www.djangoproject.com/documentation/newforms/&quot; &gt;newforms&lt;/a&gt;.&quot;&lt;br /&gt;
+&lt;br /&gt;
+The thing I like about Django is it seems to continue to move forward despite some drastic swings in loyal users and a API changes.  When a open source project starts to get some attention, I have often found that the projects goal get lost in the clutter by persons involved with mixed motives. The project tear apart in a way not repairable. The project becomes a sort of a Humpty Dumpty. I can tell that by newforms the project continues on track. Yes, its anouther big change for those who can&#039;t wait for 1.0, but they seemed to pull it off.&lt;br /&gt;
+&lt;br /&gt;
+&quot;newforms&quot; is like the removal of a thorn from Django side.  The old way of handling forms was one of the things I did not like about Django. It seemed too clumsy. Nevertheless, the newforms method of modeling the intent of a form and then providing a form in table or list item format is fabulous. newforms method of self generation from models is brilliant. The error handling and the round tripping of data is great. &quot;newforms&quot; provides the instant gratification I needed for the one-off project I had to produce under time constraints.&lt;br /&gt;
+ 
+    </content:encoded>
+
+
+    <pubDate>Fri,  7 Dec 2007 20:34:44 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/70-guid.html</guid>
+    
+</item>
+<item>
+    <title>Is picking YAML a bad thing?</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/67-Is-picking-YAML-a-bad-thing.html</link>
+            <category>C++</category>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/67-Is-picking-YAML-a-bad-thing.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=67</wfw:comment>
+
+    <slash:comments>13</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=67</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    A Python/C++ project I am working on requires a lightweight human readable/writable markup. Unless you stop me, I am about to pick YAML...&lt;br /&gt;
+&lt;br /&gt;
+ &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/67-Is-picking-YAML-a-bad-thing.html#extended&quot;&gt;Continue reading &quot;Is picking YAML a bad thing?&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Fri, 28 Sep 2007 23:42:47 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/67-guid.html</guid>
+    
+</item>
+<item>
+    <title>I pick Komodo, for now</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/61-I-pick-Komodo,-for-now.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/61-I-pick-Komodo,-for-now.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=61</wfw:comment>
+
+    <slash:comments>10</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=61</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;img src=&quot;http://www.kazavoo.com/images/komodo.jpg&quot; alt=&quot;&quot; /&gt;&lt;br /&gt;
+&lt;br /&gt;
+I have been shopping for a more IDE-like Python programming environment.  I typically have stuck with VIM. But now I have been working with wxPython and more event-driven stuff where I really want things like: breakpoints, debugging, code-complete, code-folding, and other IDE niceties.  Its not that I can not accomplish the same thing with VIM, its that it was much easier with Komodo.&lt;br /&gt;
+&lt;br /&gt;
+I can not say its been an easy, however. So far...&lt;br /&gt;
+ &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/61-I-pick-Komodo,-for-now.html#extended&quot;&gt;Continue reading &quot;I pick Komodo, for now&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Thu, 27 Sep 2007 16:46:38 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/61-guid.html</guid>
+    
+</item>
+<item>
+    <title>Python Bootcamp taught David Beazley</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/59-Python-Bootcamp-taught-David-Beazley.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/59-Python-Bootcamp-taught-David-Beazley.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=59</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=59</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    Trolling for Python news, I ran across this article &lt;a href=&quot;http://pr-gb.com/index.php?option=com_content&amp;task=view&amp;id=12244&amp;Itemid=9&quot;&gt;Make Your Pilgrimage to Python Bootcamp at the Big Nerd Ranch, November 5-9, 2007&lt;/a&gt;. It states that the class teaches, &quot;using Python to process data, creating links between existing applications, and creating complex mission critical applications involving concurrency, network programming, and distributed systems.&quot;  Better yet, the class will be thought by David Beazley, one of the great Python Guru&#039;s also from Chicago. Seems to be a really good choice for &lt;a href=&quot;http://bignerdranch.com/classes/python.shtml&quot;&gt;Big Nerd Ranch Class.&lt;/a&gt;  Here is the complete press release:&lt;br /&gt;
+&lt;br /&gt;
+  &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/59-Python-Bootcamp-taught-David-Beazley.html#extended&quot;&gt;Continue reading &quot;Python Bootcamp taught David Beazley&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Thu, 30 Aug 2007 09:19:52 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/59-guid.html</guid>
+    
+</item>
+<item>
+    <title>Python 3000: Small changes that matter</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/53-Python-3000-Small-changes-that-matter.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/53-Python-3000-Small-changes-that-matter.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=53</wfw:comment>
+
+    <slash:comments>7</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=53</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    This is partially in response to Chris&#039;, &lt;a href=&quot;http://weblog.lonelylion.com/2007/03/30/why-python-3k-shouldnt-be-ruby-and-a-mention-of-erlang/&quot;&gt;Why Python 3k Shouldn’t Be Ruby (and a mention of Erlang)&lt;/a&gt; and my investigation on what I see Python 3000 as being, in plain English.&lt;br /&gt;
+&lt;br /&gt;
+First, none of the changes in Python 3000 are so Earth-shattering that one should fear being taken in the wrong direction. As part of the Python tradition, the PEP (Python Enhancement Proposal) process is in full effect for Python 3000. I believe its name, &quot;Python 3000,&quot; comes from the fact that the PEP index has all Python 3k proposals between 3000-3999.  I have highlighted some of these below for others to comment. Consider this my executive-and-check-if-I-am-understanding-things-summary. Likewise, if you take his short list as the major changes, along with the arrangement of items in the std lib, there really is not too much here to grasp.&lt;br /&gt;
+&lt;br /&gt;
+ &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/53-Python-3000-Small-changes-that-matter.html#extended&quot;&gt;Continue reading &quot;Python 3000: Small changes that matter&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Tue, 14 Aug 2007 11:04:15 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/53-guid.html</guid>
+    
+</item>
+<item>
+    <title>ChiPy August Roundup: TextMate, AdrBook2Gmail</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/52-ChiPy-August-Roundup-TextMate,-AdrBook2Gmail.html</link>
+            <category>Macintosh</category>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/52-ChiPy-August-Roundup-TextMate,-AdrBook2Gmail.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=52</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=52</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    The &lt;a href=&quot;http://chipy.org/SnakesOnApples&quot; &gt;Snakes on Apples&lt;/a&gt; meeting went well. Attendance was just under 30, from what I could tell.  Good for this time of year and for a topic that may not interest everyone. About half were regulars, 1/4 in from out of town to attend the C4, and others were new or students from UIC.&lt;br /&gt;
+&lt;br /&gt;
+&lt;BR /&gt;&lt;BR /&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;a href=&quot;http://farmdev.com/&quot; &gt;Kumar McMillan&lt;/a&gt; gave a detailed presentation on &lt;a href=&quot;http://macromates.com/&quot; &gt;TextMate&lt;/a&gt;. I talked about my new &lt;a href=&quot;http://kazavoo.com/AdrBook2Gmail/&quot; &gt;AdrBook2Gmail&lt;/a&gt; plug in written in Python.  &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/52-ChiPy-August-Roundup-TextMate,-AdrBook2Gmail.html#extended&quot;&gt;Continue reading &quot;ChiPy August Roundup: TextMate, AdrBook2Gmail&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Sat, 11 Aug 2007 18:21:34 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/52-guid.html</guid>
+    
+</item>
+<item>
+    <title>AdrBook2Gmail Sources Released</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/51-AdrBook2Gmail-Sources-Released.html</link>
+            <category>Macintosh</category>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/51-AdrBook2Gmail-Sources-Released.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=51</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=51</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    I have released the sources (&lt;a href=&quot;http://kazavoo.com/AdrBook2Gmail/&quot;  title=&quot;AdrBook2Gmail&quot;&gt;found here&lt;/a&gt;) for the my AdrBook2Gmail plugin. Its goal is to plug into Mac OSX address book to sync to and from gmail contacts in an intelligent manner.  A gmail account and a modern Mac is required. There also exists a installer if you simply want to test--but be warned its not fully functional or even close. This project is still very much in development right now. So this is a alpha / pre-alpha release. A new BSD style license has already been applied.  I will present on this project at tonights &lt;a href=&quot;http://chipy.org&quot;  title=&quot;Chicago Python User Group&quot;&gt;ChiPy&lt;/a&gt; meeting tonight. I am open to hearing suggestions you may have on where to take this next. I think the concept is good, but the needs some work; aka, finished.  Also, the data structures describing what consists of a Contact are realized on both ends. Likewise, the way a contact may mash together, is fairly well along. Let me know your thoughts. 
+    </content:encoded>
+
+
+    <pubDate>Thu,  9 Aug 2007 10:46:52 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/51-guid.html</guid>
+    
+</item>
+<item>
+    <title>ChiPy Snakes on Apples</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/50-ChiPy-Snakes-on-Apples.html</link>
+            <category>Macintosh</category>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/50-ChiPy-Snakes-on-Apples.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=50</wfw:comment>
+
+    <slash:comments>1</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=50</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    I am organizing this months ChiPy Meeting titled Snakes on Apples &lt;a href=&quot;http://chipy.org/SnakesOnApples&quot;  title=&quot;Snakes on Apples&quot;&gt;http://chipy.org/SnakesOnApples&lt;/a&gt;. Its a meeting about developing Python on the Mac. We have free food, a great new venue University of Illinois at Chicago (UIC), and some great presentations lined up; which reminds me I need to finish my presentation. See you all there. 
+    </content:encoded>
+
+
+    <pubDate>Wed,  8 Aug 2007 17:51:55 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/50-guid.html</guid>
+    
+</item>
+<item>
+    <title>JavaFX this summer</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/44-JavaFX-this-summer.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/44-JavaFX-this-summer.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=44</wfw:comment>
+
+    <slash:comments>4</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=44</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    For the three or so projects I have been putting off until after finals, I finally can say I may be able to consider thinking about actually finishing these.  So, to start I am scraping off the blog-sphere trying to get caught up on the latest and greatest. For the website I have hesitated publishing, yeah the one concerning real estate search and rescue I had everyone so excited about, we talked about adding AJAX functionality to the UI.  So, now, what is the JavaFX and should I be looking at JavaFX instead of AJAX? And, finally, when are we coming out with PythonFX? 
+    </content:encoded>
+
+
+    <pubDate>Fri, 11 May 2007 08:55:33 -0400</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/44-guid.html</guid>
+    
+</item>
+<item>
+    <title>Zenoss Core SourceForge's Project of the month</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/42-Zenoss-Core-SourceForges-Project-of-the-month.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/42-Zenoss-Core-SourceForges-Project-of-the-month.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=42</wfw:comment>
+
+    <slash:comments>3</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=42</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;a href=&quot;http://www.zenoss.com/&quot;  title=&quot;Project home page&quot;&gt;Zenoss Core&lt;/a&gt; is SF project of the month. Wow. This is nice to see. Because: &lt;br /&gt;
+&lt;br /&gt;
+&lt;ol&gt;&lt;br /&gt;
+&lt;li&gt;I am getting tired of WebMin&lt;br /&gt;
+&lt;li&gt;its written in Python&lt;br /&gt;
+&lt;li&gt;it&#039;s something liked by Sys Admin people and its not written Perl &lt;br /&gt;
+&lt;li&gt;its broken up into layers user, data, and collection (presumably MVC like)&lt;br /&gt;
+&lt;li&gt;it looks all slick and web2.0 like&lt;br /&gt;
+&lt;li&gt;its written in Python&lt;br /&gt;
+&lt;/ol&gt;&lt;br /&gt;
+&lt;br /&gt;
+Although, things I am note as sure about: &lt;br /&gt;
+&lt;br /&gt;
+&lt;ol&gt;&lt;br /&gt;
+&lt;li&gt;is it proven&lt;br /&gt;
+&lt;li&gt;is it as robust&lt;br /&gt;
+&lt;li&gt;why zope&lt;br /&gt;
+&lt;li&gt;why only mysql&lt;br /&gt;
+&lt;li&gt;is it as secure (recalling recent WebMin exploits)&lt;br /&gt;
+&lt;/ol&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;br /&gt;
+ &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/42-Zenoss-Core-SourceForges-Project-of-the-month.html#extended&quot;&gt;Continue reading &quot;Zenoss Core SourceForge&#039;s Project of the month&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Mon, 26 Mar 2007 11:15:30 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/42-guid.html</guid>
+    
+</item>
+<item>
+    <title>ChiPy Gets fancy</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/35-ChiPy-Gets-fancy.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/35-ChiPy-Gets-fancy.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=35</wfw:comment>
+
+    <slash:comments>2</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=35</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;br /&gt;
+&lt;img width=&quot;295&quot; height=&quot;167&quot; src=&quot;http://www.brantley-harris.com/files/chipy.jpg&quot; /&gt;&lt;a href=&quot;http://www.brantley-harris.com/blog/&quot;&gt; Brantley Harris&lt;/a&gt;, long time &lt;a href=&quot;http://chipy.org&quot;&gt;ChiPy&lt;/a&gt; fellow made this pretty cool ChiPy Logo for our Chicago Python User Group.&lt;br /&gt;
+ &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/35-ChiPy-Gets-fancy.html#extended&quot;&gt;Continue reading &quot;ChiPy Gets fancy&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Tue, 20 Feb 2007 22:33:16 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/35-guid.html</guid>
+    
+</item>
+<item>
+    <title>Life without ChiPy</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/30-Life-without-ChiPy.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/30-Life-without-ChiPy.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=30</wfw:comment>
+
+    <slash:comments>1</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=30</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;br /&gt;
+&lt;p&gt;I blame myself, really. This is for this month&#039;s ChiPy meeting that never happened. It like the second ChiPy meeting we canceled since May 2005 or something like that. I posted to the forum we should instead just meet at a pub, but no takers. I guess everyone is too busy planning our bid for PyCon or playing with their new toys &lt;img src=&quot;http://kazavoo.com/blog/templates/default/img/emoticons/smile.png&quot; alt=&quot;:-)&quot; style=&quot;display: inline; vertical-align: bottom;&quot; class=&quot;emoticon&quot; /&gt;&lt;/p&gt;&lt;br /&gt;&lt;p&gt;So instead, I thought I would grab the oldest version of Python I could find, and see if it would compile on my Mac OSX 10.4.5. Yep:&lt;/p&gt;&lt;pre&gt;$ ./Python/python &lt;br /&gt;Python 1.0.1 (Jan 11 2007)&lt;br /&gt;Copyright 1991-1994 Stichting Mathematisch Centrum, Amsterdam&lt;br /&gt;&amp;gt;&amp;gt;&amp;gt; print &amp;quot;hi&amp;quot;&lt;br /&gt;hi&lt;br /&gt;&amp;gt;&amp;gt;&amp;gt; 1+1&lt;br /&gt;2&lt;br /&gt;&amp;gt;&amp;gt;&amp;gt; 1/0&lt;br /&gt;Traceback (innermost last):&lt;br /&gt;  File &amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;, line 1&lt;br /&gt;ZeroDivisionError: integer division or modulo&lt;/pre&gt;See, its not that I have no life, its that I schedule time for not having a life.  &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/30-Life-without-ChiPy.html#extended&quot;&gt;Continue reading &quot;Life without ChiPy&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Thu, 11 Jan 2007 22:42:06 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/30-guid.html</guid>
+    
+</item>
+<item>
+    <title>SVN to ICAL</title>
+    <link>http://kazavoo.com/blog/index.php?/archives/28-SVN-to-ICAL.html</link>
+            <category>Python</category>
+          
+    <comments>http://kazavoo.com/blog/index.php?/archives/28-SVN-to-ICAL.html#comments</comments>
+    <wfw:comment>http://kazavoo.com/blog/wfwcomment.php?cid=28</wfw:comment>
+
+    <slash:comments>2</slash:comments>
+    <wfw:commentRss>http://kazavoo.com/blog/rss.php?version=2.0&amp;type=comments&amp;cid=28</wfw:commentRss>
+    
+
+    <author>bray@sent.com (Brian Ray)</author>
+    <content:encoded>
+    &lt;br /&gt;
+&lt;p&gt;I started using &lt;a href=&quot;http://subversion.tigris.org/&quot;&gt;Subversion&lt;/a&gt; for my own home consulting business.  This brings a whole new feeling to the already great version control system  over the other repositories I have used with dozens of committers. I decided to make a little hack that  ties together :&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Version Control (SVN)&lt;/li&gt;&lt;li&gt;Project Management (ICAL)&lt;/li&gt;&lt;li&gt;Billing (email log)&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;img style=&quot;border: 0px none ; float: right; padding-left: 5px; padding-right: 5px; width: 335px; height: 169px;&quot; src=&quot;uploads/SVNICAL.jpg&quot; /&gt;&lt;br /&gt;All in Python, course! My little nifty script source found below.&lt;/p&gt; &lt;br /&gt;&lt;a href=&quot;http://kazavoo.com/blog/index.php?/archives/28-SVN-to-ICAL.html#extended&quot;&gt;Continue reading &quot;SVN to ICAL&quot;&lt;/a&gt;
+    </content:encoded>
+
+
+    <pubDate>Sun,  7 Jan 2007 23:22:59 -0500</pubDate>
+    <guid isPermaLink="false">http://kazavoo.com/blog/index.php?/archives/28-guid.html</guid>
+    
+</item>
+
+</channel>
+</rss>

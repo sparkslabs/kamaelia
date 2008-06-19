@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.0.4" -->
+<rss version="2.0" 
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>Pythoneering</title>
+	<link>http://efford.org/blog</link>
+	<description>Random musings on Python, software engineering, the web &#038; other stuff</description>
+	<pubDate>Sun, 01 Jun 2008 22:29:39 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.0.4</generator>
+	<language>en</language>
+			<item>
+		<title>Mercurial</title>
+		<link>http://efford.org/blog/archives/43</link>
+		<comments>http://efford.org/blog/archives/43#comments</comments>
+		<pubDate>Fri, 16 May 2008 07:16:33 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Tools</category>
+	<category>Python</category>
+	<category>Software development</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/43</guid>
+		<description><![CDATA[In the past, I&#8217;ve used Subversion for the one-person software development projects with which I&#8217;m often involved.  Just recently, however, I thought I&#8217;d give Mercurial a spin, having heard good things about it and seen a lot of people start using it.
+So far, I&#8217;m impressed - particularly by the ease with which you can [...]]]></description>
+			<content:encoded><![CDATA[<p>In the past, I&#8217;ve used Subversion for the one-person software development projects with which I&#8217;m often involved.  Just recently, however, I thought I&#8217;d give <a href="http://www.selenic.com/mercurial/wiki/">Mercurial</a> a spin, having heard good things about it and seen a lot of people start using it.</p>
+<p>So far, I&#8217;m impressed - particularly by the ease with which you can clone a repository to create a new branch for development, and then merge changes made there back into the original.  Another nice feature is the ability to view repository changelogs with a web browser, courtesy of Mercurial&#8217;s built-in web server.  And then there&#8217;s the fact that large parts of it are written in Python&#8230; <img src='http://efford.org/blog/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/43/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Fun with generators</title>
+		<link>http://efford.org/blog/archives/40</link>
+		<comments>http://efford.org/blog/archives/40#comments</comments>
+		<pubDate>Thu, 24 Apr 2008 12:47:22 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Python</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/40</guid>
+		<description><![CDATA[I&#8217;ll admit to being a little scared of Python generators when I first became aware of their existence.  I was fairly sure that I didn&#8217;t understand them properly, and I failed to see how useful they really are.  A few things have opened my eyes in recent months.  First, Wesley Chun&#8217;s Core [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ll admit to being a little scared of Python generators when I first became aware of their existence.  I was fairly sure that I didn&#8217;t understand them properly, and I failed to see how useful they really are.  A few things have opened my eyes in recent months.  First, Wesley Chun&#8217;s <em>Core Python Programming </em> helped to clarify a couple of issues, and then <a href="http://efford.org/blog/archives/32">there was a session at SPA2008</a> which generated one or two &#8220;Aha!&#8221; moments, despite ultimately making my head spin.</p>
+<p>Most recently, a few folk have blogged about David Beazley&#8217;s PyCon &#8216;08 presentation, <a href="http://www.dabeaz.com/generators/">Generator Tricks for Systems Programmers</a>.  I concur with the person who said it was one of the best introductions he&#8217;d come across.  I particularly like the approach David&#8217;s taken, of avoiding trivial Fibonacci sequence examples and jumping straight into real problems of the kind faced by sysadmins.  The performance stats he&#8217;s gathered are striking; I hadn&#8217;t realised just how competitive writing generator-based scripts for log file analysis can be with non-generator approaches or the more traditional tools used for this purpose, such as awk.</p>
+<p>All this has made me more determined to make much better use of generators in my day-to-day Python programming.
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/40/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>On teaching programming with Python 3.0</title>
+		<link>http://efford.org/blog/archives/38</link>
+		<comments>http://efford.org/blog/archives/38#comments</comments>
+		<pubDate>Tue, 08 Apr 2008 18:25:13 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Teaching</category>
+	<category>Python</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/38</guid>
+		<description><![CDATA[I&#8217;ve been doing a lot of thinking lately about Python 3.0 and the impact it might have on our teaching of the language to our first-year students - most of whom have done little or no programming before.
+I&#8217;ve written a paper about the issues; you might want to check it out if you have an [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ve been doing a lot of thinking lately about Python 3.0 and the impact it might have on our teaching of the language to our first-year students - most of whom have done little or no programming before.</p>
+<p>I&#8217;ve <a href="http://www.comp.leeds.ac.uk/nde/papers/teachpy3.html">written a paper</a> about the issues; you might want to check it out if you have an interest in the teaching of programming using Python.
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/38/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Google App Engine</title>
+		<link>http://efford.org/blog/archives/37</link>
+		<comments>http://efford.org/blog/archives/37#comments</comments>
+		<pubDate>Tue, 08 Apr 2008 07:06:03 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Web development</category>
+	<category>Python</category>
+	<category>Django</category>
+	<category>Neat stuff</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/37</guid>
+		<description><![CDATA[This is very cool.  And Python-based, to boot, with a strong Django flavour to it.  Needless to say, I wasn&#8217;t quick enough to get a beta testing account.  I&#8217;m on the waiting list, like countless others, no doubt&#8230;
+
+]]></description>
+			<content:encoded><![CDATA[<p><a href="http://code.google.com/appengine/docs/whatisgoogleappengine.html">This is <em>very</em> cool</a>.  And Python-based, to boot, with a strong Django flavour to it.  Needless to say, I wasn&#8217;t quick enough to get a beta testing account.  I&#8217;m on the waiting list, like countless others, no doubt&#8230;
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/37/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Pygments is cool&#8230;</title>
+		<link>http://efford.org/blog/archives/35</link>
+		<comments>http://efford.org/blog/archives/35#comments</comments>
+		<pubDate>Fri, 28 Mar 2008 16:54:32 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Tools</category>
+	<category>Python</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/35</guid>
+		<description><![CDATA[Pygments has been on my radar for a while, but I hadn&#8217;t looked closely at it until the other day, when I had a need to highlight some code fragments in a reST document that I&#8217;m writing.  Hacking rst2html.py to do the necessary work was easy - just a copy-and-paste from some sample code [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://pygments.org/">Pygments</a> has been on my radar for a while, but I hadn&#8217;t looked closely at it until the other day, when I had a need to highlight some code fragments in a <a href="http://docutils.sourceforge.net/rst.html">reST</a> document that I&#8217;m writing.  Hacking <code>rst2html.py</code> to do the necessary work was easy - just a copy-and-paste from some sample code in the docs.  But then I hit a problem; my document includes code fragments written for both Python 2.5 and Python 3.0, and Pygments can handle the former but not the latter.</p>
+<p>I delved into the source code with some trepidation, wondering how long it would take to hack a solution of some kind.  I needn&#8217;t have worried.  Pygments has good docs and a <em>very</em> clean design, so it took just a few minutes of study to figure out what was required.  Less than fifteen minutes later, I had a <code>Python3Lexer</code> class plugged in and working!</p>
+<p>If you want the code, it&#8217;s now been merged into <a href="http://dev.pocoo.org/hg/pygments-main">Pygments&#8217; Mercurial repository</a>, courtesy of Pygments lead developer, Georg Brandl (Cheers, Georg!)  Check it out with</p>
+<pre>
+  hg clone http://dev.pocoo.org/hg/pygments-main
+</pre>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/35/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Printing in Python 3.0</title>
+		<link>http://efford.org/blog/archives/34</link>
+		<comments>http://efford.org/blog/archives/34#comments</comments>
+		<pubDate>Thu, 27 Mar 2008 18:33:21 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Python</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/34</guid>
+		<description><![CDATA[I&#8217;ve been playing with Python 3.0 recently.  It does some nice things, like fixing the asymmetry between reading from stdin and writing to stdout by making print a function rather than a statement:
+
+print('Square-root of', x, 'is', math.sqrt(x))
+
+There&#8217;s also a new (C#-inspired?) syntax for string formatting:
+
+output = 'Square-root of {0:g} is {1:g}'
+print(output.format(x, math.sqrt(x)))
+
+It&#8217;s a shame [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ve been playing with Python 3.0 recently.  It does some nice things, like fixing the asymmetry between reading from stdin and writing to stdout by making <code>print</code> a function rather than a statement:</p>
+<pre name="code" class="python">
+print('Square-root of', x, 'is', math.sqrt(x))
+</pre>
+<p>There&#8217;s also a new (C#-inspired?) syntax for string formatting:</p>
+<pre name="code" class="python">
+output = 'Square-root of {0:g} is {1:g}'
+print(output.format(x, math.sqrt(x)))
+</pre>
+<p>It&#8217;s a shame that they haven&#8217;t closed the loop by providing a <code>printf</code> function of some kind.  Still, I suppose it isn&#8217;t hard to write one:</p>
+<pre name="code" class="python">
+def printf(format_string, *args, **kwargs):
+    print(format_string.format(*args, **kwargs))
+</pre>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/34/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>SPA2008 - day 2</title>
+		<link>http://efford.org/blog/archives/32</link>
+		<comments>http://efford.org/blog/archives/32#comments</comments>
+		<pubDate>Tue, 18 Mar 2008 00:00:36 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Python</category>
+	<category>Django</category>
+	<category>Events</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/32</guid>
+		<description><![CDATA[A good day today.  Went to an intense but stimulating three-hour session on Python generators in the morning, which had gone beyond my prior knowledge of them within the first half-hour.  I was struggling to grasp some of the more advanced aspects of what was being demonstrated, but I certainly came out of the room [...]]]></description>
+			<content:encoded><![CDATA[<p>A good day today.  Went to an intense but stimulating three-hour session on Python generators in the morning, which had gone beyond my prior knowledge of them within the first half-hour.  I was struggling to grasp some of the more advanced aspects of what was being demonstrated, but I certainly came out of the room with a better understanding than when I went in.</p>
+<p>Other sessions of note included a panel discussion asking whether software practice had actually advanced over the past 15 years, and a thought-provoking presentation on the design of domain-specific languages.  Between this and the evening meal, I had the chance to run a Django BoF (basically just a demo and a discussion).  Four people turned up and we had some good discussion of Django vs. Rails.
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/32/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>PyCon UK</title>
+		<link>http://efford.org/blog/archives/27</link>
+		<comments>http://efford.org/blog/archives/27#comments</comments>
+		<pubDate>Sun, 09 Sep 2007 21:15:12 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Python</category>
+	<category>Events</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/27</guid>
+		<description><![CDATA[I&#8217;ve just got home from PyCon UK, and a rip-roaring success it was too, IMHO.  There were 190 attendees, which certainly exceeded my expectations, and many interesting presentations.
+Eye-openers for me included Tim Parkin of Pollenation showing how easily Twisted could be used for web application development and Matthew Pontefract of the Moving Picture Company [...]]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ve just got home from <a href="http://www.pyconuk.org/">PyCon UK</a>, and a rip-roaring success it was too, IMHO.  There were 190 attendees, which certainly exceeded my expectations, and many interesting presentations.</p>
+<p>Eye-openers for me included Tim Parkin of <a href="http://www.pollenation.net/">Pollenation</a> showing how easily Twisted could be used for web application development and Matthew Pontefract of the <a href="http://www.moving-picture.com/">Moving Picture Company</a> discussing a Twisted-based framework for distributing computation for CGI movie effects and all kinds of other services across a mesh of loosely-coupled nodes.  I also found Christian Tismer&#8217;s introduction to Stackless Python to be useful, and I enjoyed the keynotes greatly - particularly the one by Simon Willison on <a href="http://www.openid.net/">OpenID</a>.</p>
+<p>The event as a whole cost far less that some other tech conferences that I&#8217;ve attended, and the organisation was superb.  I reckon I&#8217;ll be back next year&#8230;
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/27/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Django on a PDA</title>
+		<link>http://efford.org/blog/archives/17</link>
+		<comments>http://efford.org/blog/archives/17#comments</comments>
+		<pubDate>Sat, 28 Oct 2006 09:50:40 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Python</category>
+	<category>Django</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/17</guid>
+		<description><![CDATA[This is exceptionally cool, and a real testament to Python&#8217;s flexibility.
+
+]]></description>
+			<content:encoded><![CDATA[<p><a href="http://marxyblog.blogspot.com/2006/10/django-on-windows-mobile-5.html">This is exceptionally cool</a>, and a real testament to Python&#8217;s flexibility.
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/17/feed/</wfw:commentRSS>
+		</item>
+		<item>
+		<title>Python worms its way onto an iPod</title>
+		<link>http://efford.org/blog/archives/16</link>
+		<comments>http://efford.org/blog/archives/16#comments</comments>
+		<pubDate>Wed, 18 Oct 2006 20:23:13 +0000</pubDate>
+		<dc:creator>Nick</dc:creator>
+		
+	<category>Security</category>
+	<category>Python</category>
+		<guid isPermaLink="false">http://efford.org/blog/archives/16</guid>
+		<description><![CDATA[RavMonE.exe, the piece of malware that Apple have thoughtfully shipped with some recent iPods, is the W32/RJump worm &#8212; and its written in Python.  Infamy for our favourite programming language, at last!
+
+]]></description>
+			<content:encoded><![CDATA[<p>RavMonE.exe, the piece of malware that Apple have thoughtfully <a href="http://www.theregister.co.uk/2006/10/18/apple_ipod_virus_infection/">shipped with some recent iPods</a>, is the <a href="http://vil.nai.com/vil/content/v_139985.htm">W32/RJump worm</a> &#8212; and its written in Python.  Infamy for our favourite programming language, at last!
+</p>
+]]></content:encoded>
+			<wfw:commentRSS>http://efford.org/blog/archives/16/feed/</wfw:commentRSS>
+		</item>
+	</channel>
+</rss>

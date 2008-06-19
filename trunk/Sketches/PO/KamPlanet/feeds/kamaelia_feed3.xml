@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<rss version="2.0" 
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:admin="http://webns.net/mvcb/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+   xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+   xmlns:creativeCommons="http://backend.userland.com/creativeCommonsRssModule">
+<channel>
+    <title>deFuze.org</title>
+    <link>http://www.defuze.org/</link>
+    <description></description>
+    <dc:language>fr</dc:language>
+    <generator>Serendipity 1.2 - http://www.s9y.org/</generator>
+    <pubDate>Wed, 21 May 2008 07:17:43 GMT</pubDate>
+
+    <image>
+        <url>http://www.defuze.org/templates/default/img/s9y_banner_small.png</url>
+        <title>RSS: deFuze.org - </title>
+        <link>http://www.defuze.org/</link>
+        <width>100</width>
+        <height>21</height>
+    </image>
+
+<item>
+    <title>They made me do it...</title>
+    <link>http://www.defuze.org/archives/19-They-made-me-do-it....html</link>
+            <category>oss</category>
+    
+    <comments>http://www.defuze.org/archives/19-They-made-me-do-it....html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=19</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=19</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    &lt;a href=&quot;http://twitter.com/lawouach&quot;&gt;I had to.&lt;/a&gt;&lt;br /&gt;
+&lt;br /&gt;
+More seriously though since the work I&#039;m doing with XMPP and AtomPub these days, I thought it be a nice idea to try and plug into Twitter somehow. I guess I won&#039;t be using Twitter much for anything else than testing. We&#039;ll see.&lt;br /&gt;
+&lt;br /&gt;
+ 
+    </content:encoded>
+
+    <pubDate>Wed, 21 May 2008 02:17:43 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/19-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>XMPP, AtomPub and microblogging</title>
+    <link>http://www.defuze.org/archives/18-XMPP,-AtomPub-and-microblogging.html</link>
+            <category>python</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/18-XMPP,-AtomPub-and-microblogging.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=18</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=18</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    Following my previous &lt;a href=&quot;http://www.defuze.org/archives/16-XMPP,-AtomPub,-headstock,-amplee-and-the-BBC.html&quot;&gt;posts&lt;/a&gt; about my work on mixing AtomPub and XMPP together in a single application I&#039;ve worked yesterday on the basic workflow of the application I write.&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;The first use case is to create a profile using OpenID.&lt;/strong&gt;&lt;br /&gt;
+&lt;br /&gt;
+ 1. When landing on the application main page the user can enter his (or her) OpenID which will redirect him to his &lt;a href=&quot;http://openid.net/&quot;&gt;OpenID&lt;/a&gt; &lt;a href=&quot;https://www.myopenid.com/&quot; title=&quot;myOpenID&quot;&gt;provider&lt;/a&gt; for validation.&lt;br /&gt;
+ 2. Once validated and accepted the user comes back to the application which shows a simple profile page pre-filled with information using the &lt;a href=&quot;http://openid.net/specs/openid-simple-registration-extension-1_0.html&quot;&gt;simple registration extension&lt;/a&gt; of OpenID.&lt;br /&gt;
+ 3. Upon submitting his profile for registration the application stores the profile following the format described in &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0154.html&quot;&gt;XEP-0154&lt;/a&gt;. It also creates a node in a Jabber PubSub service that will be used as the top-level node of the user. It finally creates a workspace specific to the user within the AtomPub service. &lt;br /&gt;
+&lt;br /&gt;
+Note the the application I&#039;m writing will conflate two similar notions into one and make them context free:&lt;br /&gt;
+&lt;br /&gt;
+ 1. &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0060.html#nodetypes&quot;&gt;node&lt;/a&gt; in PubSub&lt;br /&gt;
+ 2. &lt;a href=&quot;http://bitworking.org/projects/atom/rfc5023.html#dataiscode&quot;&gt;collection&lt;/a&gt; in AtomPub&lt;br /&gt;
+&lt;br /&gt;
+Both terms will refer to a channel in the application. So sub-nodes of the user top-level node will be called a channels and each collection within the user workspace will also be called a channel. In other words publishing data to a channel means publishing data to both the PubSub  node and the AtomPub collection at the same time no matter the protocol chosen to perform the operation. The channel convention is arbitrary but helpful as it hides the underlying protocol away.&lt;br /&gt;
+&lt;br /&gt;
+Once a user is registered to the application he can log in using his OpenID. After logging in the user can register, start and stop the internal XMPP client associated with his account. The first step is to register it from the application. Once registered the client can be started and stopped at will.&lt;br /&gt;
+&lt;br /&gt;
+When the internal XMPP client is registered the user ought to use his favorite Jabber client to register a new account to the Jabber server. Then he should subscribe to the internal client&#039;s contact list that will automatically accept it (probably in a better scenario subscription should be moderated from the user&#039;s profile page).&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;The second use case is to create channels&lt;/strong&gt;&lt;br /&gt;
+&lt;br /&gt;
+ 1. The user could create channels using either his Jabber client or using the AtomPub interface.&lt;br /&gt;
+ 2. In both cases the application would create both the according PubSub sub-node to the user&#039;s top-level node and the appropriate AtomPub collection.&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;The third use case is to publish data to channels with XMPP&lt;/strong&gt;&lt;br /&gt;
+&lt;br /&gt;
+ 1. The user uses his own Jabber client to send a message to the internal jabber client like this: “publish channel Hello world”. This would translate into “Publish &#039;Hello world&#039; to channel” where channel is the name of the channel to publish to.&lt;br /&gt;
+ 2. The jabber server would forward this message to the internal client who upon parsing it would understand it must publish the sent data to the according PubSub node. First it would enclose the data into the atom:content of an atom entry and &lt;a href=&quot;http://www.xmpp.org/extensions/inbox/microblogging.html#publish&quot;&gt;publish that entry as the node&#039;s item&lt;/a&gt;.&lt;br /&gt;
+ 3. When the item is published the Jabber server would send a &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0060.html#publisher-publish-success-withpayload&quot;&gt;notification&lt;/a&gt; back to the internal client which could then create and store the according AtomPub member entry to the appropriate collection. The entry would become visible via the Atom feed of the collection.&lt;br /&gt;
+&lt;br /&gt;
+Note that waiting for the notification to be propagated back to store the atom entry within the collection rather than doing it immediately when publishing to the PubSub node is not gratuitous. Indeed the user could publish items directly from an external client that understands PubSub. By doing it the way described above we ensure that even in such a case the internal client will be informed a new item was published to a node it is subscribed to and therefore the application will keep in sync&#039; no matter what.&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;The fourth use case is to publish data to channels with AtomPub&lt;/strong&gt;&lt;br /&gt;
+&lt;br /&gt;
+This would be similar to the previous use case except the entry point would be the AtomPub interface and that of course a message would be sent through XMPP accordingly.&lt;br /&gt;
+&lt;br /&gt;
+Deleting items from channels would work in the same fashion.&lt;br /&gt;
+&lt;br /&gt;
+Of course the user&#039;s channels would then be publicly available and other users could subscribe to the Atom feed, to the internal XMPP client or to the user&#039;s PubSub nodes.&lt;br /&gt;
+&lt;br /&gt;
+From there on the application could be extended so that for instance users can comment to each other and ensure that the channels&#039; items contain that information, for instance using &lt;a href=&quot;http://www.ietf.org/rfc/rfc4685.txt&quot;&gt;RFC 4685&lt;/a&gt; within each item.&lt;br /&gt;
+&lt;br /&gt;
+These are few things I&#039;ve been working on. The application is not ready yet and it might take a few days for it to complete and hopefully some of you will be interested in testing it then.&lt;br /&gt;
+&lt;br /&gt;
+Regarding the platform used, Python and the following products:&lt;br /&gt;
+&lt;br /&gt;
+1. &lt;a href=&quot;http://trac.defuze.org/wiki/headstock&quot;&gt;headstock&lt;/a&gt; through &lt;a href=&quot;http://kamaelia.sourceforge.net/Home&quot;&gt;Kamaelia&lt;/a&gt; for the XMPP layer&lt;br /&gt;
+2. &lt;a href=&quot;http://trac.defuze.org/wiki/amplee&quot;&gt;amplee&lt;/a&gt; for the AtomPub interface&lt;br /&gt;
+3. &lt;a href=&quot;http://www.cherrypy.org/&quot;&gt;CherryPy 3.1&lt;/a&gt; for the HTTP serving&lt;br /&gt;
+4. &lt;a href=&quot;http://uche.ogbuji.net/tech/4suite/amara/&quot;&gt;amara&lt;/a&gt; for the XML handling 
+    </content:encoded>
+
+    <pubDate>Tue, 20 May 2008 09:39:36 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/18-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>Facebook goes XMPP</title>
+    <link>http://www.defuze.org/archives/17-Facebook-goes-XMPP.html</link>
+            <category>python</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/17-Facebook-goes-XMPP.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=17</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=17</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    &lt;a href=&quot;http://mail.jabber.org/pipermail/jdev/2008-May/026737.html&quot;&gt;Via Peter Saint-André&lt;/a&gt; we learn that &lt;a href=&quot;http://developers.facebook.com/news.php?blog=1&amp;story=110&quot;&gt;facebook is adding XMPP&lt;/a&gt; as a mean to connect and use its services. Independently from what usage is made of Facebook this is a great news for the Jabber community in general and the protocol itself as it demonstrates that, unlike some nay-sayers used to claim in the past, XMPP will be the the true sibling to HTTP when it comes to social networking and delivering near real-time data on a large scale. Indeed, considering that media companies like the BBC, &lt;a href=&quot;http://www.bbc.co.uk/blogs/radiolabs/2008/05/pushing_the_programmes_ontolog.shtml&quot;&gt;are looking at using too&lt;/a&gt; (even if it&#039;s purely at a research level for now) it seems to me that XMPP has great years ahead.&lt;br /&gt;
+&lt;br /&gt;
+I find that interesting though that Google, which has had a Jabber network for years now, has never been able to actually push much that way. I mean &lt;a href=&quot;http://www.google.com/support/talk/bin/topic.py?topic=10073&quot;&gt;Orkut and Google Talk&lt;/a&gt; have been able to communicate for quite some time and yet it seems the Facebook prospect is more exciting for the Jabber community than Google&#039;s usage ever was. Maybe it comes down to the fact Orkut is a pale shadow of Facebook. &lt;br /&gt;
+&lt;br /&gt;
+On a personal level, I won&#039;t complain that Google doesn&#039;t push advertisement through Google Talk of course but one may wonder why it doesn&#039;t do so from a business point of view. well probably they know having ads that way would drive their customers away, &lt;a href=&quot;http://www.google.com/talk/chathistory.html&quot;&gt;as they say&lt;/a&gt; (emphasis mine):&lt;br /&gt;
+&lt;br /&gt;
+&lt;em&gt;&lt;blockquote&gt;There are no ads in your chat sessions or your Quick Contacts list. Once a chat is saved, however, it becomes just like a Gmail message. And just as you may see relevant ads next to your Gmail messages, there now may be ads alongside your saved chats. Ads are only displayed when you&#039;re viewing a saved chat, and as with all ads in Gmail, they are matched entirely by computers. Only ads classified as Family-Safe are shown and we are constantly improving our technologies to prevent displaying any inappropriate ads. &lt;strong&gt;One of the things many Gmail users have told us is how much they appreciate the unobtrusive text ads in Gmail, as opposed to the large, irrelevant, blinking banner ads they often see in other services, and many have even cited the usefulness of the ads in Gmail.&lt;/strong&gt;&lt;/blockquote&gt;&lt;/em&gt;&lt;br /&gt;
+&lt;br /&gt;
+We&#039;ll see how Facebook handles it considering the big fiasco &lt;a href=&quot;http://en.wikipedia.org/wiki/Facebook_Beacon&quot;&gt;Beacon&lt;/a&gt; was.&lt;br /&gt;
+&lt;br /&gt;
+As a developer I&#039;ve long felt frustrated at how limited the Google Talk standalone application is. Google Talk gadget is a bit better featured but it pains me having to use it when I prefer its big brother. Still both are very limited. To be fair though most well known IM clients speaking XMPP are limited in regards to what the protocol and its extensions offer. It&#039;s sad so little support &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0060.html&quot;&gt;PubSub&lt;/a&gt; and even &lt;a href=&quot;http://tkabber.jabber.ru/&quot; title=&quot;Tkabber&quot;&gt;those&lt;/a&gt; &lt;a href=&quot;http://thecoccinella.org/&quot; title=&quot;Coocinella&quot;&gt;that&lt;/a&gt; do are somewhat basic in their support.&lt;br /&gt;
+&lt;br /&gt;
+Let&#039;s hope we&#039;ll more and more XMPP applications out of the context of instant messaging or with a larger scope like &lt;a href=&quot;http://www.xmpp.org/extensions/inbox/microblogging.html&quot;&gt;microblogging&lt;/a&gt;.  
+    </content:encoded>
+
+    <pubDate>Wed, 14 May 2008 08:50:53 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/17-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>XMPP, AtomPub, headstock, amplee and the BBC</title>
+    <link>http://www.defuze.org/archives/16-XMPP,-AtomPub,-headstock,-amplee-and-the-BBC.html</link>
+            <category>atompub</category>
+            <category>python</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/16-XMPP,-AtomPub,-headstock,-amplee-and-the-BBC.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=16</wfw:comment>
+
+    <slash:comments>1</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=16</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    Matthew Wood, from the &lt;a href=&quot;http://www.bbc.co.uk/blogs/radiolabs&quot; title=&quot;BBC Radio Labs blog&quot;&gt;BBC Radio Labs&lt;/a&gt;, posted a few days ago &lt;a href=&quot;http://www.bbc.co.uk/blogs/radiolabs/2008/05/were_playing_your_song_persona.shtml&quot;&gt;an exciting note&lt;/a&gt; regarding fun he was having with XMPP and services such as &lt;a href=&quot;http://www.last.fm/&quot;&gt;last.fm&lt;/a&gt; to inform user, via XMPP messages, of BBC radios broadcasting music they might like based on thier last.fm profile. I thought this was fantastic but I was even more excited when I read &lt;a href=&quot;http://www.bbc.co.uk/blogs/radiolabs/2008/05/pushing_the_programmes_ontolog.shtml&quot;&gt;another note&lt;/a&gt; where he explained that he was using &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0060.html&quot;&gt;PubSub&lt;/a&gt; as a mean to carry and distribute metadata about BBC shows using &lt;a href=&quot;http://www.ietf.org/rfc/rfc4287&quot; title=&quot;RFC 4287&quot;&gt;Atom&lt;/a&gt; entries as the metadata format.&lt;br /&gt;
+&lt;br /&gt;
+This evening I spent three hours expanding on the &lt;a href=&quot;http://trac.defuze.org/browser/oss/headstock/headstock/example/simplechat&quot;&gt;simple chat example&lt;/a&gt; coming with &lt;a href=&quot;http://trac.defuze.org/wiki/headstock&quot;&gt;headstock&lt;/a&gt; to talk with the PubSub service. Then I integrated &lt;a href=&quot;http://trac.defuze.org/wiki/amplee&quot;&gt;amplee&lt;/a&gt; as a way to offer an AtomPub interface at the same time. This means that when the demo starts both a XMPP client, connecting to Matt&#039;s service, and an AtomPub server, using amplee and served by &lt;a href=&quot;http://www.cherrypy.org/&quot; title=&quot;CherryPy&quot;&gt;CherryPy&lt;/a&gt;, are started. The XMPP client asks the server about PubSub nodes. For each node representing BBC channels I create an atompub collection within its own workspace. Simultaneously I subscribe to those nodes. I then ask the XMPP server for items belonging to those nodes and for each item, representing metadata about a show for instance, I create an atom entry that I store within the AtomPub store.&lt;br /&gt;
+&lt;br /&gt;
+This means one can then simply subscribe with a feed reader to a given collection and/or a XMPP PubSub node. All of this happening on the fly starting from an empty AtomPub service document.&lt;br /&gt;
+&lt;br /&gt;
+Eventually I will add support so that when an Atom entry is POSTed to a AtomPub collection, the according PubSub stanza is pushed towards the service (I doubt Matt&#039;s service accepts it though) allowing for &lt;a href=&quot;http://www.xmpp.org/extensions/inbox/microblogging.html&quot; title=&quot;Microblogging extension&quot;&gt;microblogging&lt;/a&gt; support.&lt;br /&gt;
+&lt;br /&gt;
+The source code of the example can be found &lt;a href=&quot;http://trac.defuze.org/browser/oss/headstock/headstock/example/microblog&quot;&gt;here&lt;/a&gt;. If you want to understand how it works you might want to read this quick word I wrote about &lt;a href=&quot;http://trac.defuze.org/wiki/KamaeliaQuickWord&quot;&gt;Kamaelia&lt;/a&gt; first which is at the core of headstock. 
+    </content:encoded>
+
+    <pubDate>Tue, 13 May 2008 15:35:33 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/16-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>headstock: XMPP library based on Kamaelia</title>
+    <link>http://www.defuze.org/archives/15-headstock-XMPP-library-based-on-Kamaelia.html</link>
+            <category>headstock</category>
+    
+    <comments>http://www.defuze.org/archives/15-headstock-XMPP-library-based-on-Kamaelia.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=15</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=15</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    I&#039;m pleased to announce the release of the first version of &lt;a href=&quot;http://trac.defuze.org/wiki/headstock&quot; title=&quot;headstock library&quot;&gt;headstock&lt;/a&gt;, my XMPP implementation using the &lt;a href=&quot;http://trac.defuze.org/wiki/KamaeliaQuickWord&quot;&gt;Kamaelia&lt;/a&gt; library.  My main motivation behind working on that project rather than using one of the &lt;a href=&quot;http://pyxmpp.jajcus.net/&quot; title=&quot;pyxmpp&quot;&gt;existing&lt;/a&gt; &lt;a href=&quot;http://idavoll.ik.nu/&quot; title=&quot;Idavoll&quot;&gt;libraries&lt;/a&gt; was that I wanted to find a challenging project to work with Kamaelia. XMPP seemed challenging enough.&lt;br /&gt;
+&lt;br /&gt;
+This first release is flagged as beta. Not production ready at all but offers enough so that you can play with it and actually use it for integrating XMPP into your applications. Documentation and tests are badly missing and they will eventually come but for now you&#039;ll have to go through the code. I know this is not attractive but I though it was worth to be released nonetheless. Enjoy. 
+    </content:encoded>
+
+    <pubDate>Mon, 12 May 2008 14:56:47 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/15-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>French O'Reilly has shutdown</title>
+    <link>http://www.defuze.org/archives/14-French-OReilly-has-shutdown.html</link>
+            <category>oss</category>
+    
+    <comments>http://www.defuze.org/archives/14-French-OReilly-has-shutdown.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=14</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=14</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    A sad news for French speakers as the &lt;a href=&quot;http://www.oreilly.fr/&quot;&gt;French O&#039;Reilly editor&lt;/a&gt; has shutdown completely due to the lack of sales. They&#039;ll be missed. 
+    </content:encoded>
+
+    <pubDate>Fri, 09 May 2008 04:24:08 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/14-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>Redmine vs Trac</title>
+    <link>http://www.defuze.org/archives/13-Redmine-vs-Trac.html</link>
+            <category>python</category>
+    
+    <comments>http://www.defuze.org/archives/13-Redmine-vs-Trac.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=13</wfw:comment>
+
+    <slash:comments>2</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=13</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    Following &lt;a href=&quot;http://www.defuze.org/archives/12-From-subversion-to-mercurial.html&quot;&gt;my last post&lt;/a&gt; in regards to a move from subversion to mercurial I received many interesting comments. One key aspect that those comments showed was that no matter which DCVS I would use it would be critical to me that it could be interfaced with &lt;a href=&quot;http://trac.edgewall.org/&quot; title=&quot;Trac&quot;&gt;Trac&lt;/a&gt; since that&#039;s the tool I&#039;m using to manage my projects. &lt;a href=&quot;http://www.defuze.org/archives/12-From-subversion-to-mercurial.html#c2469&quot;&gt;Jim Jones&lt;/a&gt; hinted that I could also see the problem the other way around and decide to change for a different software management tool that would be better at handling the DCVS I&#039;d choose. He led me to discover &lt;a href=&quot;http://www.redmine.org/&quot; title=&quot;Redmine&quot;&gt;Redmine&lt;/a&gt;. &lt;br /&gt;
+&lt;br /&gt;
+I wasn&#039;t very motivated by the idea of migrating from Trac to a different tool. Many reasons to that: &lt;br /&gt;
+&lt;br /&gt;
+1. Trac has answered most of my needs until now. &lt;br /&gt;
+2. It&#039;s well spread and has an active community. &lt;br /&gt;
+3. I&#039;m damn lazy when it comes to such mundane task.&lt;br /&gt;
+&lt;br /&gt;
+Nonetheless Jim had made me curious and so I did give a look at the &lt;a href=&quot;http://www.redmine.org/wiki/redmine/Features&quot; title=&quot;Redmine features&quot;&gt;Redmine&#039;s features&lt;/a&gt; and I wasn&#039;t disappointed. It basically supports what Trac offers with some more interesting built-in features like Gantt chart, multiple projects, forums, DCVS, etc. Of course most of these features could be integrated to Trac easily thanks to the &lt;a href=&quot;http://trac-hacks.org/&quot; title=&quot;Trac plugins&quot;&gt;community&lt;/a&gt; (although I can&#039;t tell whether or not multiple projects in one Trac instance is feasible).&lt;br /&gt;
+&lt;br /&gt;
+That being said not everything is perfect in this world and while discussing about this topic on the #kamaelia IRC channel, Matt Hammond, one of the &lt;a href=&quot;http://kamaelia.sourceforge.net/&quot;&gt;Kamaelia&lt;/a&gt; long time project developer, linked me to a note from &lt;a href=&quot;http://changelog.complete.org/authors/1-John-Goerzen&quot;&gt;John Goerzen&lt;/a&gt; indicating that &lt;a href=&quot;http://changelog.complete.org/posts/696-Thoughts-on-Redmine.html&quot;&gt;social considerations&lt;/a&gt; were sometimes as important as technical ones.&lt;br /&gt;
+&lt;br /&gt;
+I guess you understand that I&#039;m still struggling on which decision to make. Nevertheless redmine looks like a great product and if you&#039;re not using any software management tool yet I&#039;m pretty sure you want to give a close look at it. 
+    </content:encoded>
+
+    <pubDate>Wed, 07 May 2008 03:29:43 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/13-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>From subversion to mercurial</title>
+    <link>http://www.defuze.org/archives/12-From-subversion-to-mercurial.html</link>
+            <category>python</category>
+    
+    <comments>http://www.defuze.org/archives/12-From-subversion-to-mercurial.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=12</wfw:comment>
+
+    <slash:comments>9</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=12</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    I&#039;ve been wondering lately whether or not I should be moving my different &lt;a href=&quot;http://trac.defuze.org/&quot; title=&quot;deFuze.org OSS projects&quot;&gt;projects&lt;/a&gt; from subversion to mercurial. Not so much because subversion could have let me down in any ways, I&#039;ve been very happy with it, but rather because I wonder if it would help users of said projects to experiment and become occasional or regular contributors.&lt;br /&gt;
+&lt;br /&gt;
+If anything, the distributed model lower the barrier for users to branch and go wild with ideas they might have. I don&#039;t really want to add contributors to my subversion repository just so that they can try something out that might not have any happy outcome. I&#039;ve been happy enough that my projects had never drawn more attention that I could handle but that doesn&#039;t mean I don&#039;t want people to take over in some fashion and I&#039;ve been wondering if DCVS like mercurial wouldn&#039;t allow that. Ultimately of course the official repository would be the one available on defuze but it would still be much easier for people to try out and propose modifications or extensions to projects.&lt;br /&gt;
+&lt;br /&gt;
+Anyway, I would be happy in your feedback on the subject as I&#039;m still trying to make my mind around this issue. 
+    </content:encoded>
+
+    <pubDate>Fri, 02 May 2008 10:20:16 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/12-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>Python LDAP for Windows and Python 2.4</title>
+    <link>http://www.defuze.org/archives/11-Python-LDAP-for-Windows-and-Python-2.4.html</link>
+            <category>python</category>
+    
+    <comments>http://www.defuze.org/archives/11-Python-LDAP-for-Windows-and-Python-2.4.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=11</wfw:comment>
+
+    <slash:comments>2</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=11</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    At work we need to do some ldap work and it so happens we run Python 2.4. Unfortunately the only &lt;a href=&quot;http://www.osuch.org/python-ldap&quot; title=&quot;Python Ldap for Python 2.5 on Windows&quot;&gt;pre-compiled package&lt;/a&gt; I&#039;ve found for Windows is for Python 2.5. I&#039;ve tried all morning compiling python-ldap for Windows but that &lt;a href=&quot;http://bowmansolutions.com/mingw-openldap/&quot; title=&quot;Compiling Python-ldap for Windows&quot;&gt;requires&lt;/a&gt; so much tweaking that I&#039;ve gone slightly mad. Hence my request to the good Python community, would anyone have python-ldap for Python 2.4 on Windows (not cygwin by the way)?&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;Update:&lt;/strong&gt; Well as an anonymous commenter showed me, the eggs for Python 2.4 linked from the &lt;a href=&quot;http://python-ldap.sourceforge.net/download.shtml&quot;&gt;python-ldap download page&lt;/a&gt; are indeed okay to work with. I had simply missed the DLLs package. I can only wish I could blame on being Friday. 
+    </content:encoded>
+
+    <pubDate>Wed, 23 Apr 2008 05:38:25 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/11-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>AtomPub and XMPP</title>
+    <link>http://www.defuze.org/archives/10-AtomPub-and-XMPP.html</link>
+            <category>amplee</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/10-AtomPub-and-XMPP.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=10</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=10</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    &lt;a href=&quot;http://mail.jabber.org/pipermail/social/2008-April/000102.html&quot; title=&quot;Social chat minutes&quot;&gt;There&lt;/a&gt; has been quite a lot of &lt;a href=&quot;http://mail.jabber.org/pipermail/social/2008-April/000109.html&quot; title=&quot;Social network rock n&#039;roll&quot;&gt;discussions&lt;/a&gt; around the use of XMPP in a web context and how to blend HTTP and XMPP protocols for a better social network experience. &lt;br /&gt;
+&lt;br /&gt;
+I&#039;ve been working on implementing XMPP for a while now on my spare time and even though it&#039;s been a much slower effort I would have liked, I&#039;ve been able to have a fantastic fun with it. Most recently I&#039;ve started integrating &lt;a href=&quot;http://www.xmpp.org/extensions/xep-0060.html&quot; title=&quot;XMPP PubSub&quot;&gt;XMPP PubSub&lt;/a&gt; along with &lt;a href=&quot;http://atompub.org/rfc4287.html&quot; title=&quot;AtomPub&quot;&gt;AtomPub&lt;/a&gt; using my AtomPub implementation, &lt;a href=&quot;http://trac.defuze.org/wiki/amplee&quot; title=&quot;amplee&quot;&gt;amplee&lt;/a&gt;.&lt;br /&gt;
+&lt;br /&gt;
+The idea is to use amplee as an AtomPub library from within XMPP PubSub handlers. For instance I map AtomPub collections to PubSub nodes . When an atom entry is published to a node and that the client receives an acknowledgment of that publication, the handler uses amplee to store the entry in the AtomPub collection as well, respecting of course the RFC specification. Similarly if an item is deleted, the handler uses amplee to remove the entry from the collection. This works both ways, we can also run an AtomPub web service which issues the right XMPP stanzas according to the operation carried. So a POST on a collection would publish the atom entry to the XMPP server. The web service would obviously expose the Atom feed of the collection.&lt;br /&gt;
+&lt;br /&gt;
+This is just a stub, but the idea here is to associate both protocols so that they cooperate to expand the audience of your network. It&#039;d be easy to consider allowing people commenting to a blog entry using their XMPP client. You blog entry would for instance advert the XMPP service and node name where to publish items. The user could then subscribe to than node and publish items. &lt;br /&gt;
+&lt;br /&gt;
+That&#039;s one reason why I had written amplee as an AtomPub library that could work outside of the HTTP protocol. RFC 5023 defines the protocol using HTTP but the root idea behind it works well in the context of XMPP and maybe AtomPub is the protocol that will rule them all. 
+    </content:encoded>
+
+    <pubDate>Sun, 20 Apr 2008 14:05:20 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/10-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>XMPP in the browser</title>
+    <link>http://www.defuze.org/archives/9-XMPP-in-the-browser.html</link>
+            <category>python</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/9-XMPP-in-the-browser.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=9</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=9</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    Following my post on XMPP yesterday, one comment by &lt;a href=&quot;http://lost-theory.org/blog/&quot; title=&quot;Steven Kryskalla&#039;s blog&quot;&gt;Steven Kryskalla&lt;/a&gt; raised the point of the Mozilla extension: &lt;a href=&quot;http://dev.hyperstruct.net/xmpp4moz/&quot; title=&quot;xmpp4moz home page&quot;&gt;xmpp4moz&lt;/a&gt;. This extension is indeed an excellent showcase of what I wish could see more in the browser. However, while I knew about that extension I chose not to discuss about it as I wanted to stress over the need of a standard XMPP API, built-into browsers. This would imply a discussion shared by all the browser vendors and I thought inducing that Mozilla was already there could have disrupted the message. That being said xmpp4moz is &lt;a href=&quot;http://sameplace.cc/&quot; title=&quot;SamePlace IM client&quot;&gt;a great piece of work&lt;/a&gt; and would definitely be an appropriate ground for more discussion.&lt;br /&gt;
+&lt;br /&gt;
+What I think xmpp4moz does right is to use &lt;a href=&quot;http://web.archive.org/web/20060521194814/http://www.faqts.com/knowledge_base/index.phtml/fid/1762&quot; title=&quot;E4X FAQ&quot;&gt;E4X&lt;/a&gt; to represent &lt;a href=&quot;http://www.xmpp.org/rfcs/rfc3920.html#stanzas&quot; title=&quot;RFC 3920&quot;&gt;XMPP stanzas&lt;/a&gt; rather than providing its own datamodel. That means that the API stays quite at a low level but also means it&#039;s much quicker to grasp and more flexible.&lt;br /&gt;
+&lt;br /&gt;
+I think ultimately what I&#039;d like to see is a standard API that allows me from Javascript to do XMPP connection, authentication, session and binding. Then provide a nice interface to register handlers for given stanzas. By standard API I obviously meant that the same Javascript works the same way in any browser. Yeah I&#039;m demanding like that. &lt;br /&gt;
+&lt;br /&gt;
+Why Javascript? Two reasons that I can think of:&lt;br /&gt;
+&lt;br /&gt;
+ - The Ajax crazy party has pushed dramatically the competition across Javascript supporters and proved it was a valid and solid solution all along.&lt;br /&gt;
+ - Javascript is now the programing language with the best support inside browsers, no point going for something different.&lt;br /&gt;
+&lt;br /&gt;
+Overall, considering how small &lt;a href=&quot;http://www.xmpp.org/rfcs/rfc3920.html&quot; title=&quot;RFC 3920&quot;&gt;XMPP-core&lt;/a&gt; is, I don&#039;t believe this is an impossible goal. The guys behind xmpp4moz have demonstrated it. What is tough with XMPP is not to provide support for the core but to start supporting its &lt;a href=&quot;http://www.xmpp.org/extensions/&quot; title=&quot;XMPP Extensions&quot;&gt;myriad of extensions&lt;/a&gt; that make the protocol so rich. But if people don&#039;t even have an access to the core they won&#039;t be able to build applications at all.&lt;br /&gt;
+&lt;br /&gt;
+ 
+    </content:encoded>
+
+    <pubDate>Wed, 26 Mar 2008 02:43:18 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/9-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>XMPP, a ground for social technologies</title>
+    <link>http://www.defuze.org/archives/8-XMPP,-a-ground-for-social-technologies.html</link>
+            <category>python</category>
+            <category>xmpp</category>
+    
+    <comments>http://www.defuze.org/archives/8-XMPP,-a-ground-for-social-technologies.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=8</wfw:comment>
+
+    <slash:comments>3</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=8</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    I&#039;ve been a long fan of the &lt;a href=&quot;http://www.xmpp.org/&quot; title=&quot;XMPP Home page&quot;&gt;XMPP&lt;/a&gt; protocol and I&#039;ve started &lt;a href=&quot;http://trac.defuze.org/browser/oss/headstock&quot; title=&quot;Headstock, XMPP library in Python&quot;&gt;implementing&lt;/a&gt; it using the fantastic &lt;a href=&quot;http://kamaelia.sourceforge.net/Home&quot; title=&quot;Kamaelia home page&quot;&gt;Kamaelia&lt;/a&gt;. With all the GSoC discussion around it appeared that lots of people were more and more interested in seeing XMPP becoming the natural partner of HTTP in the maze that the Internet has quickly become. Consequently &lt;a href=&quot;https://stpeter.im/?p=2177&quot;&gt;Peter Saint-André&lt;/a&gt; created today the &lt;a href=&quot;http://mail.jabber.org/mailman/listinfo/social&quot;&gt;Social mailing-list&lt;/a&gt; to all people interested in discussing how XMPP could be used in what is that social web of yours.&lt;br /&gt;
+&lt;br /&gt;
+I&#039;m totally biased but I think there is more to XMPP than IM, the protocol and its suite of extensions provide great power applicable to &lt;a href=&quot;http://en.wikipedia.org/wiki/Rich_Internet_application&quot; title=&quot;RIA&quot;&gt;RIA&lt;/a&gt;, whether they reside inside our outside the browser. For instance, I do believe that rather than using &lt;a href=&quot;http://en.wikipedia.org/wiki/Comet_%28programming%29&quot; title=&quot;Comet and the push tale&quot;&gt;Comet&lt;/a&gt; one ought to use XMPP to push notifications to the client. In such a case one might consider the client as a node in a cloud of lazily interconnected nodes and then start thinking of the browser as more than a HTML rendering engine and without the resort to abuse HTTP for things &lt;a href=&quot;http://en.wikipedia.org/wiki/Comet_%28programming%29#Scalability&quot;&gt;it was never meant to support&lt;/a&gt;.&lt;br /&gt;
+&lt;br /&gt;
+I wish browser vendors could start implementing XMPP within the browser as that would provide a fantastic incentive for more applications based on the power of XMPP. 
+    </content:encoded>
+
+    <pubDate>Tue, 25 Mar 2008 13:59:21 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/8-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>CherryPy in the field</title>
+    <link>http://www.defuze.org/archives/7-CherryPy-in-the-field.html</link>
+            <category>python</category>
+    
+    <comments>http://www.defuze.org/archives/7-CherryPy-in-the-field.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=7</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=7</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    &lt;a href=&quot;http://michael.susens-schurter.com/blog/&quot; title=&quot;Michael Schurter blog&quot;&gt;Michael Schurter&lt;/a&gt; just posted a &lt;a href=&quot;http://groups.google.com/group/cherrypy-users/browse_thread/thread/1774049cc582a595&quot;&gt;message&lt;/a&gt; on the main CherryPy users &lt;a href=&quot;http://groups.google.com/group/cherrypy-users&quot; title=&quot;CherryPy users list&quot;&gt;mailing-list&lt;/a&gt; asking developers using CherryPy to let the &lt;a href=&quot;http://www.cherrypy.org/wiki/CherryPyTeam&quot; title=&quot;CherryPy team&quot;&gt;project team&lt;/a&gt; know about it. I want to support the idea as I would love our &lt;a href=&quot;http://www.cherrypy.org/wiki/SuccessStories&quot; title=&quot;CherryPy success stories&quot;&gt;dusty success stories&lt;/a&gt; page being updated with new entries. I have a feeling that CherryPy is used quite a lot but mainly as a light HTTP framework in administration tools context and those projects quite likely are internals and don&#039;t have much visibility outside of their scope. Nonetheless we&#039;d be interested in knowing where CherryPy is used so please let us know. 
+    </content:encoded>
+
+    <pubDate>Tue, 18 Mar 2008 16:15:31 -0500</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/7-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>amplee 0.6.0 released</title>
+    <link>http://www.defuze.org/archives/6-amplee-0.6.0-released.html</link>
+            <category>amplee</category>
+    
+    <comments>http://www.defuze.org/archives/6-amplee-0.6.0-released.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=6</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=6</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    As per today&#039;s announcement. I&#039;m glad to release amplee 0.6.0.&lt;br /&gt;
+&lt;br /&gt;
+This release is an important move from previous releases as it doesn&#039;t include support for any HTTP layer out of the box anymore. The reason is that it made the previous API needlessly complex and stopped people to actually use amplee for what it aims at being: one simple representation of the AtomPub protocol server side. Basically I wish amplee was used as a library rather than as a host for AtomPub applications.&lt;br /&gt;
+&lt;br /&gt;
+The 0.6.x branch will focus therefore on polishing the AtomPub model API as well as the related sub-packages such as the index and graph extension. Moreover I would like to improve the performance of amplee although they have already improved since 0.5.x. The graph sub-package is a first stab at using graph theory via the &lt;a href=&quot;http://cneurocvs.rmki.kfki.hu/igraph/&quot;&gt;igraph&lt;/a&gt; package to perform foxy manipulations of Atom feeds.&lt;br /&gt;
+&lt;br /&gt;
+One major change since 0.5.x is the move from &lt;a href=&quot;http://trac.defuze.org/wiki/bridge&quot;&gt;bridge&lt;/a&gt; to &lt;a href=&quot;http://uche.ogbuji.net/tech/4suite/amara/&quot;&gt;Amara&lt;/a&gt; to parse, query and generate XML documents within amplee. I think that change was for the best considering the capabilities of Amara.&lt;br /&gt;
+&lt;br /&gt;
+Another change is that I&#039;ve dropped the INI file format for configuration and loading an amplee structure. Instead you can now directly use the XML service document itself and complete using a bit of extra code. That allows for some funny capabilities such as mirroring existing AtomPub service document (see the example directory for &lt;a href=&quot;http://trac.defuze.org/browser/oss/amplee/amplee/examples/miror&quot;&gt;instance&lt;/a&gt;).&lt;br /&gt;
+&lt;br /&gt;
+I would like to thank &lt;a href=&quot;http://ionrock.org/&quot;&gt;Eric Larson&lt;/a&gt; and Mohanaraj Gopala Krishnan for their feedback and patience. They have provided the project with a tremendous help.&lt;br /&gt;
+&lt;br /&gt;
+== Download ==&lt;br /&gt;
+&lt;br /&gt;
+ &lt;strong&gt; easy_install -U amplee&lt;br /&gt;
+ &lt;/strong&gt; Tarballs http://www.defuze.org/oss/amplee/&lt;br /&gt;
+ * svn co https://svn.defuze.org/oss/amplee/&lt;br /&gt;
+&lt;br /&gt;
+== Documentation ==&lt;br /&gt;
+&lt;br /&gt;
+Home page: http://trac.defuze.org/wiki/amplee&lt;br /&gt;
+API: http://www.defuze.org/oss/amplee/api-0.6.0/&lt;br /&gt;
+Tutorial (sort of): http://trac.defuze.org/wiki/amplee/Tutorial-0.6.x&lt;br /&gt;
+ 
+    </content:encoded>
+
+    <pubDate>Mon, 18 Feb 2008 15:00:17 -0600</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/6-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+<item>
+    <title>IronPython, OpenGL, GLFW and SDL</title>
+    <link>http://www.defuze.org/archives/5-IronPython,-OpenGL,-GLFW-and-SDL.html</link>
+            <category>ironpython</category>
+    
+    <comments>http://www.defuze.org/archives/5-IronPython,-OpenGL,-GLFW-and-SDL.html#comments</comments>
+    <wfw:comment>http://www.defuze.org/wfwcomment.php?cid=5</wfw:comment>
+
+    <slash:comments>0</slash:comments>
+    <wfw:commentRss>http://www.defuze.org/rss.php?version=2.0&amp;type=comments&amp;cid=5</wfw:commentRss>
+    
+
+    <author>nospam@example.com (Sylvain Hellegouarch)</author>
+    <content:encoded>
+    Triggered by a question posted on the &lt;a href=&quot;http://lists.ironpython.com/pipermail/users-ironpython.com/2008-February/006435.html&quot; title=&quot;OpenGL with IronPython question on the IP mailing list&quot;&gt;IronPython mailing-list&lt;/a&gt; by Jane Janet, I decided to see how IronPython would deal with OpenGL. &lt;br /&gt;
+&lt;br /&gt;
+I quickly realized that the &lt;a href=&quot;http://taoframework.com&quot; title=&quot;Tao framework home page&quot;&gt;Tao framework&lt;/a&gt; was my best bet to gain access to OpenGL with .NET.&lt;br /&gt;
+&lt;br /&gt;
+I therefore played a bit with the provided examples (ported from excellent tutorials such as &lt;a href=&quot;http://nehe.gamedev.net/&quot; title=&quot;NeHe tutorials home page&quot;&gt;NeHe&lt;/a&gt;) and started to port them to IronPython. I chose to use &lt;a href=&quot;http://glfw.sourceforge.net/&quot; title=&quot;GLFW home page&quot;&gt;GLFW&lt;/a&gt; in order to get a context to run an OpenGL example rather than FreeGlut as I prefer the API design of GLFW.&lt;br /&gt;
+&lt;br /&gt;
+I finally ported/wrote three examples on the IronPython &lt;a href=&quot;http://www.ironpython.info&quot; title=&quot;IronPython cookbook home page&quot;&gt;cookbook&lt;/a&gt; as invited by &lt;a href=&quot;http://www.voidspace.org.uk&quot;&gt;Michael J. Foord&lt;/a&gt;.&lt;br /&gt;
+&lt;br /&gt;
+The &lt;a href=&quot;http://www.ironpython.info/index.php/OpenGL_Spinning_Triangle_With_GLFW&quot; title=&quot;IronPython, OpenGL spinning triangle&quot;&gt;GLFW+OpenGL examples&lt;/a&gt; were easy to port and run.&lt;br /&gt;
+&lt;br /&gt;
+However the &lt;a href=&quot;http://libsdl.org/&quot; title=&quot;SDL home page&quot;&gt;SDL&lt;/a&gt; &lt;a href=&quot;http://www.ironpython.info/index.php/SDL_Zoom&quot; title=&quot;IronPython and SDL&quot;&gt;example&lt;/a&gt; has been quite a pain to setup. I think it comes down to the fact that Tao exposes the SDL API has an unmanaged  code which means you have some conversion to do between &lt;a href=&quot;http://msdn2.microsoft.com/fr-fr/library/system.intptr(VS.80).aspx&quot;&gt;IntPtr&lt;/a&gt; objects and SDL structures. Moreover I kept running into the &lt;em&gt;SystemError: Missing or incorrect header for method GetValue&lt;/em&gt; exception when accessing structure attributes and that drove me nuts. Finally I settled for the horrible &lt;em&gt;evt_type = Sdl.SDL_Event.type.&lt;u&gt;_get_&lt;/u&gt;(evt)&lt;/em&gt; call that basically says:&lt;em&gt; in that structure, I want to grab the value of that field for the provided instance&lt;/em&gt;. Ugly I say.&lt;br /&gt;
+&lt;br /&gt;
+Anyway I hope those few examples will help using IronPython in multimedia context without having to resort to Direct X. 
+    </content:encoded>
+
+    <pubDate>Mon, 18 Feb 2008 06:20:47 -0600</pubDate>
+    <guid isPermaLink="false">http://www.defuze.org/archives/5-guid.html</guid>
+    <creativeCommons:license>http://creativecommons.org/licenses/by/1.0/</creativeCommons:license>
+</item>
+
+</channel>
+</rss>

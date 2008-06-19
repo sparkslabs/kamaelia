@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rdf:RDF xmlns="http://purl.org/rss/1.0/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+<channel rdf:about="http://base-art.net">
+<description>Phil's blog</description>
+<link>http://base-art.net</link>
+<title>Base-Art / Articles</title>
+
+
+
+<items>
+<rdf:seq>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/102/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/101/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/100/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/99/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/98/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/97/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/96/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/95/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/94/"/>
+
+<rdf:li rdf:resource="http://base-art.net/Articles/93/"/>
+
+</rdf:seq>
+</items>
+
+
+</channel>
+
+
+
+
+
+<item rdf:about="http://base-art.net/Articles/102/">
+<dc:date>2008-05-21T20:07:49.000002+02:00</dc:date>
+<title>GUADEC</title>
+<link>http://base-art.net/Articles/102/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Anyone going to &lt;a class="reference" href="http://2008.guadec.es/guadec"&gt;GUADEC-ES&lt;/a&gt;? I can't go to GUADEC this year for various reasons... Living in Spain, I'm wondering about GUADEC-ES ;) Might be worth the trip to Madrid, which I haven't visited yet. Maybe the occasion to do a little lightning talk about &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt; too.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;update&lt;/strong&gt;: holiday not granted by boss, I'm pissed. :(&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/101/">
+<dc:date>2008-05-09T17:36:22.000004+02:00</dc:date>
+<title>Elisa on Windows and new resources for contributors</title>
+<link>http://base-art.net/Articles/101/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;So our Windows developer strike force came up with a windows version
+of &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt;, Windows XP and Vista are supported. Check out the &lt;cite&gt;Elisa
+download&lt;/cite&gt; page to find the alpha version of the installer. There are
+some issues, this is an alpha, you're warned :)&lt;/p&gt;
+&lt;p&gt;Alessandro and Olivier cooked 2 &lt;a class="reference" href="http://elisa.fluendo.com/documentation/tutorials/"&gt;tutorials&lt;/a&gt; showing off how to develop
+new features for Elisa, by example. The &lt;a class="reference" href="http://elisa.fluendo.com/api"&gt;API&lt;/a&gt; of the upcoming 0.5
+branch of Elisa has also been published, it might evolve a bit but
+it's already a good starting point for motivated contributors out
+there :)&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/100/">
+<dc:date>2008-05-05T17:14:08+02:00</dc:date>
+<title>On-going projects status report</title>
+<link>http://base-art.net/Articles/100/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Last time I blogged about &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt; was end of February in an ultimate
+attempt to keep up with the weekly news reporting idea. I miserably
+failed since then... Some people recently asked me some status on
+Elisa, so I'll do my best to deliver some periodic insider news of
+&lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt; and the other projects I'm involved on ;)&lt;/p&gt;
+&lt;p&gt;March was the month of the Elisa &lt;a class="reference" href="http://elisa.fluendo.com/2008/04/02/new-tools-for-the-elisa-community/"&gt;organization changes&lt;/a&gt;, the
+bug tracker is slowly moving towards Launchpad, the code was moved to
+Bazaar branches (about 20 so far) and the code reviews process was
+officialized (mailing list and BundleBuggy). All these changes are
+meant to ease contributions to the project and increase its visibility
+in the FOSS world, we'll see how it goes :)&lt;/p&gt;
+&lt;p&gt;The team significantly grew up, we have 2 new developers working on
+the windows ports of both Pigment and Elisa, one QA manager working on
+improving the global quality assessment of the code we write and a new
+graphic designer, smashing his head on the UI ergonomy and look. This
+is quite amazing, at some point we needed a sheet of paper with names and assigned roles on the wall to keep up with new people arrivals!&lt;/p&gt;
+&lt;p&gt;So the whole team is mainly working on the upcoming 0.5 branch of
+Elisa, for which a first release is scheduled in june. Many
+architecture changes on the table, a revisited UI framework, some new
+plugins to drive more content to the end-user and the usual
+fixes. More details to come later about that.&lt;/p&gt;
+&lt;p&gt;Some news about &lt;a class="reference" href="https://code.fluendo.com/pigment/trac"&gt;Pigment&lt;/a&gt;, Loïc worked on the OpenGL|ES plugin and
+support for touchscreens. This opens up Pigment to a wide range of
+embedded platforms! The plan is to release a 0.4 version soon. Work is
+heading towards the Pigment 0.5 branch. Guillaume is continuing
+his efforts on the &lt;a class="reference" href="http://live.gnome.org/PAF"&gt;PAF&lt;/a&gt; animation framework, the API is coming along
+nicely, let's keep an eye on this promising project.&lt;/p&gt;
+&lt;p&gt;Last but not least both Pigment and Elisa will be presented at next &lt;a class="reference" href="http://guadec.org"&gt;GUADEC&lt;/a&gt;, be sure to attend!&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/99/">
+<dc:date>2008-05-03T17:15:38.000005+02:00</dc:date>
+<title>Coherence strikes back</title>
+<link>http://base-art.net/Articles/99/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;With a release per month, &lt;a class="reference" href="https://coherence.beebits.net/"&gt;Coherence&lt;/a&gt; is evolving rapidly, the
+community is coming along, it's nice to see the IRC channel filling up
+with developers and users. Recently Frank added a backend for
+&lt;a class="reference" href="http://www.gnome.org/projects/tracker/index.html"&gt;Tracker&lt;/a&gt;, it's a bit rough on the edges currently and publishes only
+the Music files over UPnP, but support for Videos and Pictures
+publishing will come soon! In the future, every media file you'll have
+on your desktop monitored by Tracker will be potentially available to
+the other devices of your living network via UPnP.&lt;/p&gt;
+&lt;p&gt;One nice use-case is to use Rhythmbox on one computer to play the
+media hosted on another desktop, transparently, with no headaches of
+setting up a network share. Work is currently being done towards a
+desktop applet called &lt;a class="reference" href="http://29a.ch/gcoherence/"&gt;gcoherence&lt;/a&gt; meant to ease the configuration and
+setup of Coherence:&lt;/p&gt;
+&lt;a class="reference image-reference" href="http://29a.ch/gcoherence/"&gt;&lt;img alt="http://base-art.net/static/gcoherence.png" src="http://base-art.net/static/gcoherence.png" /&gt;&lt;/a&gt;
+&lt;p&gt;Another new feature of Coherence is a MediaServer backend for
+&lt;a class="reference" href="http://www.ampache.org/"&gt;Ampache&lt;/a&gt;, a web-based audio jukebox system. I haven't tested that one
+yet, but Ampache looks like a nice toy to play with in the near future
+:)&lt;/p&gt;
+&lt;p&gt;Great stuff guys, keep up the good work :)&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/98/">
+<dc:date>2008-03-12T23:22:48.000002+02:00</dc:date>
+<title>Releases!</title>
+<link>http://base-art.net/Articles/98/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Yeah &lt;a class="reference" href="http://gnome.org"&gt;GNOME&lt;/a&gt; 2.22 is out! Yeah &lt;a class="reference" href="http://elisa.fluendo.com/2008/03/12/elisa-new-releases/"&gt;Elisa 0.3.5 is out&lt;/a&gt; ! Let's
+celebrate :) Well it still has no DVB, no standard DVD, no
+HD-DVD (it's dead anyway), no Blue-ray support BUT 0.3.5 brings
+drag&amp;amp;drop, a little nice splash screen, Codeina (or CodecBuddy,
+or whatever its name now), some UI improvements and the usual
+bugfixes. I really think we're on the right track, the software
+is slowly but surely getting mature, people actually write Elisa
+plugins, translate Elisa in their language and help us to hunt
+bugs, this is cool.&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference" href="http://lists.fluendo.com/pipermail/pigment/2008-March/000009.html"&gt;Pigment 0.3.5&lt;/a&gt; was recently released too. Loïc and Guillaume
+are now starting to work on the &lt;a class="reference" href="https://guij.emont.org/blog/2008/03/11/future-of-pigment/"&gt;future Pigment&lt;/a&gt; and they have
+already ambitious great plans, good stuff to come for sure, let's
+keep an eye on how it will evolve :) I'm especially looking
+forward the &lt;a class="reference" href="https://guij.emont.org/blog/2008/03/10/paf-animation-framework/"&gt;Paf! animation framework&lt;/a&gt;, let's stop reinventing
+the animation framework wheel now, we need a generic animation
+framework, be sure to read Guillaume's post, it's very
+interesting.&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/97/">
+<dc:date>2008-02-27T22:49:37.000002+02:00</dc:date>
+<title>Hi Planet GNOME!</title>
+<link>http://base-art.net/Articles/97/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Just a quick post to say hi to the &lt;a class="reference" href="http://planet.gnome.org"&gt;GNOME community&lt;/a&gt;. Thanks Jeff for adding me!&lt;/p&gt;
+&lt;p&gt;So I'm Philippe (philn on IRC), working for Fluendo on the &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt;
+MediaCenter, writing Python fluently during work hours for fun and
+profit and off work, only for fun :)&lt;/p&gt;
+&lt;p&gt;I regularly write news about &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt;, did some posts about &lt;a class="reference" href="https://code.fluendo.com/pigment/trac/timeline"&gt;Pigment&lt;/a&gt;
+and &lt;a class="reference" href="http://gstreamer.freedesktop.org"&gt;GStreamer&lt;/a&gt; too and a good bunch of posts related to various
+hacks and ramblings about Python.&lt;/p&gt;
+&lt;p&gt;So expect new posts about Pigment and Elisa towards better
+integration in the GNOME desktop. I'll also try to blog about my
+little growing experience in the GStreamer world :)&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/96/">
+<dc:date>2008-02-21T12:57:33.000003+02:00</dc:date>
+<title>Elisa weekly (not that weekly) news #6</title>
+<link>http://base-art.net/Articles/96/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Hey been a while since last shot of Elisa news... Be not
+disapointed, much is happening! Let's see...&lt;/p&gt;
+&lt;p&gt;The whole team is firing up to cook an Elisa release candidate
+for tomorrow and final release should happen end of next
+week. What's new? The plugin management framework entered test
+stage, the server is coming along nicely and the client library
+became more robust thanks to Guido's continuous
+efforts. Integration in Elisa UI has been started. Elisa will
+check every hour for updates from the server and manage its
+plugin upgrades automagically with minimum user
+interaction. Benjamin has been working on drag&amp;amp;drop
+support (which was added in Pigment by Loïc). So we can now
+easily add new media locations in Elisa by &amp;quot;putting&amp;quot; them in the
+Elisa window, sweet :) Same goes for plugins, if you download
+some Egg files providing Elisa plugins and drag them to the Elisa
+window, they will be installed too!&lt;/p&gt;
+&lt;p&gt;Benjamin also worked on a benchmarking process. First time Elisa
+is launched a Pigment benchmark is started to see how fast the
+user machine is, if it handles the various OpenGL things Pigment
+supports. This is useful to warn the user if Elisa won't be able
+to run smoothly on his machine.&lt;/p&gt;
+&lt;p&gt;Florian brought a shiny new Slideshow plugin to Elisa, code is
+much cleaner and bugless this time, which is good news. He also fixed
+a good bunch of bugs in the frontend code.&lt;/p&gt;
+&lt;p&gt;Alessandro worked on &lt;a class="reference" href="http://fedoraproject.org/wiki/Multimedia/Codeina"&gt;Codeina&lt;/a&gt; (or CodecBuddy, or whatever its
+name) support for Elisa. It means that if Elisa isn't able to
+play a file because a codec is missing then a little program
+fires up and handles additional codecs installation, mostly
+without user interaction. In the future versions of Elisa we'll
+have deeper integration with Codeina and the codec installation
+UI will be managed by Elisa itself. Now Alessandro is busy
+preparing his FOSDEM talk, I cross fingers for you dude :)&lt;/p&gt;
+&lt;p&gt;Loïc is also preparing his talk for FOSDEM. He has been working
+on an impressive little application to show Pigment bling and
+play with mapping matrices and a webcam. I shall tell no more,
+be at FOSDEM this weekend!&lt;/p&gt;
+&lt;p&gt;Guillaume has been thinking about Pigment 0.5 and more
+specifically the rewrite of our current Python animation
+framework in C. He's investigating on the current solutions
+available to compare them... See his work on the &lt;a class="reference" href="https://code.fluendo.com/pigment/trac/wiki/ExistingTimingFrameworks"&gt;wiki&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/95/">
+<dc:date>2008-02-12T22:17:45.000001+02:00</dc:date>
+<title>N810: first impressions</title>
+<link>http://base-art.net/Articles/95/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Two weeks ago I bought my N810 with the discount code kindly
+offered by Nokia for the Maemo development program. The device is
+really nice, the OS2008 provides a totally new user
+experience (compared to the version I used on my N770). So here
+are few remarks I have after few weeks of usage:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;the padlock slider is too easy to activate.&lt;/li&gt;
+&lt;li&gt;the keyboard is coool but I sometimes have difficulties with
+the keys of the first row in the keyboard. To me they are
+slightly too near from the screen.&lt;/li&gt;
+&lt;li&gt;I dislike the kinda &amp;quot;micro&amp;quot; USB plug, it looks like some Nokia
+specific plug, a mini-usb plug would have been more handy so
+that I could use the same USB wire as for my camera.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So far I used the IM a bit with Frank for a video chat and with
+Mom for an audio-only GoogleTalk chat. Sound is good but video
+quality was bad, I need to make more tests I guess :)&lt;/p&gt;
+&lt;p&gt;Played a bit with MediaStreamer and &lt;a class="reference" href="https://coherence.beebits.net/"&gt;Coherence&lt;/a&gt;, everything works
+fine, excepted seeking that's lacking because Coherence HTTP
+server doesn't yet support HTTP range requests.&lt;/p&gt;
+&lt;p&gt;I also did some media transcoding so that I can watch videos on
+the device. Videos need to be encoded in MP4 at some specific
+resolutions. Fortunately there's an &lt;a class="reference" href="http://mediautils.garage.maemo.org/tablet-encode.html"&gt;handy script&lt;/a&gt; at maemo.org to
+do the whole job for me :)&lt;/p&gt;
+&lt;p&gt;Last weekend I gave a try to geottagging using the &lt;a class="reference" href="http://maemo.org/community/wiki/HowToUseGPSFrameworkInOS2007"&gt;documentation on
+Maemo wiki&lt;/a&gt;. I ended up with a nice KML file that can be displayed on
+Google Earth and &lt;a class="reference" href="http://maps.google.com/maps?f=q&amp;amp;hl=fr&amp;amp;geocode=&amp;amp;q=http:%2F%2Fbase-art.net%2Fstatic%2Ftest.kml&amp;amp;ie=UTF8&amp;amp;z=14&amp;amp;om=0"&gt;Google Maps&lt;/a&gt; (see below too). I'll directly
+integrate these features in my gallery soon, geotagging is an
+interesting thing, especially for my next holidays... :)&lt;/p&gt;
+&lt;iframe width="300" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;hl=fr&amp;geocode=&amp;q=http:%2F%2Fbase-art.net%2Fstatic%2Ftest.kml&amp;ie=UTF8&amp;om=0&amp;s=AARTsJoKslGlhTBznoJVAptgAtiDnwEaVg&amp;ll=41.390138,2.18844&amp;spn=0.045075,0.072956&amp;z=13&amp;output=embed"&gt;&lt;/iframe&gt;&lt;br /&gt;&lt;small&gt;&lt;a href="http://maps.google.com/maps?f=q&amp;hl=fr&amp;geocode=&amp;q=http:%2F%2Fbase-art.net%2Fstatic%2Ftest.kml&amp;ie=UTF8&amp;om=0&amp;ll=41.390138,2.18844&amp;spn=0.045075,0.072956&amp;z=13&amp;source=embed" style="color:#0000FF;text-align:left"&gt;Agrandir le plan&lt;/a&gt;&lt;/small&gt;&lt;p&gt;In the coming weeks I'll start developing user-interfaces using the
+Python EFL libraries. I'll most likely play a bit with the Coherence
+MediaRenderer called &lt;a class="reference" href="https://coherence.beebits.net/wiki/CoherenceMediaRenderer"&gt;Compere&lt;/a&gt;, so far implemented using PyGame and try
+to rework it with the EFL libs... More to come later :)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;edit&lt;/strong&gt;: Frank the Coherence guru reminds me that Coherence de facto supports HTTP range requests but MediaStreamer HTTP client doesn't implement the seek requests correctly... :)&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/94/">
+<dc:date>2008-01-30T23:15:00.000002+02:00</dc:date>
+<title>Coherence and Rhythmbox love</title>
+<link>http://base-art.net/Articles/94/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Some heads up and bling on &lt;a class="reference" href="https://coherence.beebits.net"&gt;Coherence&lt;/a&gt; front. Rhythmbox now acts as MediaServer, MediaClient and MediaRenderer thanks to Frank's great efforts. This is awesome :) See the demo video, it really blows you away:&lt;/p&gt;
+&lt;object width="425" height="355"&gt;&lt;param name="movie" value="http://www.youtube.com/v/N4dY2ByvOsU&amp;rel=1"&gt;&lt;/param&gt;&lt;param name="wmode" value="transparent"&gt;&lt;/param&gt;&lt;embed src="http://www.youtube.com/v/N4dY2ByvOsU&amp;rel=1" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355"&gt;&lt;/embed&gt;&lt;/object&gt;&lt;p&gt;And the Rhythmbox plugin is developed in Python&lt;/p&gt;
+
+</description>
+</item>
+
+
+<item rdf:about="http://base-art.net/Articles/93/">
+<dc:date>2008-01-29T11:54:04.000001+02:00</dc:date>
+<title>Elisa weekly news #5</title>
+<link>http://base-art.net/Articles/93/</link>
+<author>Philippe Normand</author>
+<description>
+&lt;p&gt;Welcome to this new edition of &lt;a class="reference" href="http://elisa.fluendo.com"&gt;Elisa&lt;/a&gt; weekly news. I'm not very
+regular on the timetable, but yet haven't reached the 3-weeks
+limit! :)&lt;/p&gt;
+&lt;p&gt;So what happened since last week? First off we've got Huge
+feedback from the release, good press coverage so far, especially
+an article on &lt;a class="reference" href="http://arstechnica.com/journals/linux.ars/2008/01/22/elisa-0-3-3-turns-linux-into-a-movie-theater"&gt;ars technica&lt;/a&gt;. The &lt;a class="reference" href="http://elisa.fluendo.com"&gt;website&lt;/a&gt; is having trouble to
+keep up with the hits, we'll soon move it to a new
+server. Enthousiasts (or desperate, it depends) users keep
+flowing on the IRC channel at any time, this is exciting! Many
+thanks to Saviq, dev, hugolp and some others who form the first
+non-core-elisa support team. Many things happen on IRC, someone
+is building an Elisa live CD, another one did a plugin to list
+MythTV recordings and watch live-TV from the Myth backend. It's
+really nice for us to see people having fun with Elisa like we do
+every day at work :)&lt;/p&gt;
+&lt;p&gt;On the development side, Benjamin and Florian are designing a new
+API to replace the current media_provider API and improve the MVC
+framework to go even further in the modularization process. This
+new move is inspired from the REST architecture of the Web, among
+other things. I'm working with Guido on the Plugin Repository
+framework, we've got a (console) client/server prototype so far,
+it's coming along nicely and will very soon be integrated in the
+Elisa UI. Alessandro is doing some GStreamer development, hunting
+some bugs either in gst-python or directly in the GStreamer
+plugins. In the end we are getting some nice improvements inside
+Elisa :) He will also move the Elisa media_scanner in a separate
+plugin, out of the core.&lt;/p&gt;
+&lt;p&gt;Loïc released Pigment 0.3.4 and Pigment-python 0.3.2 last
+week. He also added ARGB support to the Pigment OpenGL plugin,
+meaning that we are now able to make even more bling inside
+Elisa, like apply color masks to drawables. He also added some
+API to hide/show the Viewport. Next he'll work on freedesktop
+startup specification support and minimize/maximize the viewport
+in the tray bar, everything towards better Pigment integration in
+the desktop! Guillaume is hunting an annoying race condition
+inside X.org's XCB library which makes Pigment based applications
+crash on some distributions like Fedora8.&lt;/p&gt;
+
+</description>
+</item>
+
+
+
+</rdf:RDF>

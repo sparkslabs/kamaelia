@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.2.2" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>t+1: Matt Wilson's blog &#187; Python</title>
+	<link>http://blog.tplus1.com</link>
+	<description>Economics, programming, life in Cleveland, parenting, growing vegetables, other stuff.</description>
+	<pubDate>Tue, 03 Jun 2008 16:57:54 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.2.2</generator>
+	<language>en</language>
+			<item>
+		<title>defaultdict.fromkeys does not play nice.</title>
+		<link>http://blog.tplus1.com/index.php/2008/06/03/defaultdictfromkeys-does-not-play-nice/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/06/03/defaultdictfromkeys-does-not-play-nice/#comments</comments>
+		<pubDate>Tue, 03 Jun 2008 16:57:54 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/06/03/defaultdictfromkeys-does-not-play-nice/</guid>
+		<description><![CDATA[I use defaultdicts a lot when I&#8217;m grouping elements into a dictionary of lists.  Here&#8217;s a simple example:
+
+&#62;&#62;&#62; a = defaultdict(list)
+&#160;
+&#62;&#62;&#62; a[&#039;x&#039;]
+[]
+&#160;
+&#62;&#62;&#62; a[&#039;y&#039;].append(&#039;yellow&#039;)
+&#160;
+&#62;&#62;&#62; a
+defaultdict(&#60;type &#039;list&#039;&#62;, {&#039;y&#039;: [&#039;yellow&#039;], &#039;x&#039;: []})
+
+Now here&#8217;s where I got silly.  I used defaultdict.fromkeys to prepopulate the &#8216;x&#8217; and &#8216;y&#8217; key right away, because I know I needed those:
+
+&#62;&#62;&#62; b [...]]]></description>
+			<content:encoded><![CDATA[<p>I use defaultdicts a lot when I&#8217;m grouping elements into a dictionary of lists.  Here&#8217;s a simple example:<br />
+<code><br />
+&gt;&gt;&gt; a = defaultdict(list)<br />
+&nbsp;<br />
+&gt;&gt;&gt; a[&#039;x&#039;]<br />
+[]<br />
+&nbsp;<br />
+&gt;&gt;&gt; a[&#039;y&#039;].append(&#039;yellow&#039;)<br />
+&nbsp;<br />
+&gt;&gt;&gt; a<br />
+defaultdict(&lt;type &#039;list&#039;&gt;, {&#039;y&#039;: [&#039;yellow&#039;], &#039;x&#039;: []})<br />
+</code><br />
+Now here&#8217;s where I got silly.  I used defaultdict.fromkeys to prepopulate the &#8216;x&#8217; and &#8216;y&#8217; key right away, because I know I needed those:<br />
+<code><br />
+&gt;&gt;&gt; b = defaultdict.fromkeys([&#039;x&#039;, &#039;y&#039;], list)<br />
+&nbsp;<br />
+&gt;&gt;&gt; b<br />
+defaultdict(None, {&#039;y&#039;: &lt;type &#039;list&#039;&gt;, &#039;x&#039;: &lt;type &#039;list&#039;&gt;})<br />
+&nbsp;<br />
+&gt;&gt;&gt; b[&#039;x&#039;]<br />
+&lt;type &#039;list&#039;&gt;<br />
+&nbsp;<br />
+&gt;&gt;&gt; b[&#039;z&#039;]<br />
+&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-<br />
+Traceback (most recent call last):<br />
+&nbsp;&nbsp;File &quot;&lt;ipython console&gt;&quot;, line 1, in &lt;module&gt;<br />
+KeyError: &#039;z&#039;<br />
+</code><br />
+Wowsa!  b calls itself a defaultdict, but it is not a defaultdict.</p>
+<p>I haven&#8217;t really thought this through, but this behavior is so unexpected that I would prefer that defaultdict.fromkeys raised a NotImplementedError.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/06/03/defaultdictfromkeys-does-not-play-nice/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>My proposed talk for PyOhio</title>
+		<link>http://blog.tplus1.com/index.php/2008/05/19/my-proposed-talk-for-pyohio/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/05/19/my-proposed-talk-for-pyohio/#comments</comments>
+		<pubDate>Mon, 19 May 2008 15:32:48 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[self-aggrandizement]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/05/19/my-proposed-talk-for-pyohio/</guid>
+		<description><![CDATA[Here&#8217;s what I submitted for a presentation topic for PyOhio:
+TITLE: Decorators are fun
+EXPERTISE LEVEL: Hopefully, there will be something for everyone.  Novices might enjoy the material at the beginning mostly, while experts would likely be more interested in the ruledispatch discussion.
+SUMMARY: This talk will start with a friendly walkthrough of decorators for people that [...]]]></description>
+			<content:encoded><![CDATA[<p>Here&#8217;s what I submitted for a presentation topic for <a href="http://pyohio.org">PyOhio</a>:</p>
+<p>TITLE: Decorators are fun</p>
+<p>EXPERTISE LEVEL: Hopefully, there will be something for everyone.  Novices might enjoy the material at the beginning mostly, while experts would likely be more interested in the ruledispatch discussion.</p>
+<p>SUMMARY: This talk will start with a friendly walkthrough of decorators for people that have never seen them, then go into some straightforward examples, then finish with a review of how decorators are used in Philip Eby&#8217;s ruledispatch package.  </p>
+<p>OUTLINE:</p>
+<ul>
+<li>The simplest possible decorator.</li>
+<li>Pass arguments to a decorator.</li>
+<li>Write a decorator and still preserve the function signature of the decorated function.</li>
+<li> Coerce values into a function into types using decorators.</li>
+<li>Log values coming out of a function.</li>
+<li>Phillip Eby&#8217;s ruledispatch package implements generic functions, aka <a href="http://en.wikipedia.org/wiki/Multimethod">multimethods</a>, for python.  I&#8217;ll walk through how he uses decorators, and why they&#8217;re such a good idea for this.</li>
+</ul>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/05/19/my-proposed-talk-for-pyohio/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>How to use tg-admin sql upgrade</title>
+		<link>http://blog.tplus1.com/index.php/2008/04/16/how-to-use-tg-admin-sql-upgrade/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/04/16/how-to-use-tg-admin-sql-upgrade/#comments</comments>
+		<pubDate>Wed, 16 Apr 2008 17:02:26 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[TurboGears]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/04/16/how-to-use-tg-admin-sql-upgrade/</guid>
+		<description><![CDATA[The tg-admin script that is bundled with turbogears is really helpful, but I had a hard time learning how to use it.
+Before you read any more, you should know that this only works when you use SQLObject, not SQLAlchemy, for your ORM.
+These are my notes on how I use tg-admin to upgrade an existing database.
+
+I [...]]]></description>
+			<content:encoded><![CDATA[<p>The tg-admin script that is bundled with turbogears is really helpful, but I had a hard time learning how to use it.</p>
+<p>Before you read any more, you should know that this only works when you use SQLObject, not SQLAlchemy, for your ORM.</p>
+<p>These are my notes on how I use tg-admin to upgrade an existing database.</p>
+<ul>
+<li>I have a production database that uses prod.cfg;</li>
+<li>I have a development database that uses dev.cfg;</li>
+<li>Neither databases have a sqlobject_db_version table initially, because I never payed attention to it yet.</li>
+</ul>
+<p>The development database has a bunch of new columns, tables, and indexes that I want to add to the production database.  For this example, I&#8217;ll pretend that all I want to do is add an index to a table.</p>
+<p>First, I made sure that the dev database matches sqlobject classes:<br />
+<code><br />
+tg-admin -c dev.cfg sql status<br />
+</code></p>
+<p>If those are out of sync, then do whatever you need to do to make sure your actual dev database matches your classes.  Of course, tg-admin sql status is not perfect.  For example, it overlooks missing indexes and constraints, at least with postgres.</p>
+<p>Next, I recorded the state of the development database:<br />
+<code><br />
+tg-admin -c dev.cfg sql record &#45;-force-db-version=2008-03-21<br />
+</code><br />
+This will make a new table in the dev database called sqlobject_db_version.  I am forcing it to have a value of today&#8217;s date (March 21st, 2008).</p>
+<p>Now I connect to the production database and set a version on it with yesterday&#8217;s date:<br />
+<code><br />
+tg-admin -c prod.cfg sql record &#45;-force-db-version=2008-03-20<br />
+</code></p>
+<p>Now I run this to try to upgrade the production database to match the development database:<br />
+<code><br />
+tg-admin -c prod.cfg sql upgrade<br />
+</code></p>
+<p>Of course, that should fail, and I see some error message sort of like this:<br />
+<code><br />
+$ tg-admin -c prod.cfg sql upgrade<br />
+Using database URI postgres://staffknex:staffknex@localhost/staffknex320<br />
+No way to upgrade from 2008-03-20 to 2008-03-21<br />
+(you need a 2008-03-20/upgrade_postgres_2008-03-21.sql script)<br />
+</code></p>
+<p>This is an example of a helpful error message.  I need to write a script that will explain how to upgrade from yesterday&#8217;s version to today&#8217;s version.</p>
+<p>That script will be really simple:<br />
+<code><br />
+BEGIN;<br />
+CREATE UNIQUE INDEX majestic12 ON ufo_theorists (first_name, last_name);<br />
+END;<br />
+</code></p>
+<p>I suggest using BEGIN and END so that in case something goes wrong in the middle, your transaction will be rolled back automatically.</p>
+<p>Now I can run this:<br />
+<code><br />
+tg-admin -c prod.cfg sql upgrade<br />
+</code><br />
+And my production database will be upgraded with the new index.</p>
+<p>Now for some complaints:</p>
+<ul>
+<li>Why isn&#8217;t this advertised better?  This is a really nice feature.</li>
+<li>You&#8217;re supposed to be able to specify the URI on the command-line with the &#8211;connection option, but I could never get it to work.</li>
+<li>I really wish that tg-admin sql status detected stuff like missing indexes and constraints.  I use these things heavily.</li>
+<li>It would be nice to be able to mix python into the upgrade script, rather than just SQL.  For example, I recently dropped a column that had both an employee&#8217;s first and last name, and separated this into two columns.  I used SQL to make the new columns, then I used python to read data out of the old single column and write it to the two new columns.  Then I used SQL again to drop the old column.</li>
+</ul>
+<p>Like I said at the beginning, this is a really helpful script and I&#8217;m very grateful to whoever wrote it.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/04/16/how-to-use-tg-admin-sql-upgrade/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>My article is finally online</title>
+		<link>http://blog.tplus1.com/index.php/2008/04/09/my-article-is-finally-online/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/04/09/my-article-is-finally-online/#comments</comments>
+		<pubDate>Thu, 10 Apr 2008 01:58:22 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[self-aggrandizement]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/04/09/my-article-is-finally-online/</guid>
+		<description><![CDATA[Introduction to Python Decorators is available for you to read after you fill out the annoying registration form.
+I have a few ideas for the next article.  Do any of these seem interesting?
+
+Demystify metaclasses: use metaclasses to add camel-cased aliases for underscored method names, show how to automatically make methods into properties, and build a [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://www.linux-mag.com/id/5377">Introduction to Python Decorators</a> is available for you to read after you fill out the annoying registration form.</p>
+<p>I have a few ideas for the next article.  Do any of these seem interesting?</p>
+<ol>
+<li style="list-style:lower-greek">Demystify metaclasses: use metaclasses to add camel-cased aliases for underscored method names, show how to automatically make methods into properties, and build a crude ORM.</li>
+<li style="list-style:lower-greek">Explore logging with python, ranging from writing out to local files to setting up a syslog-ng server.  Show how to use logging config files and filters.</li>
+<li style="list-style:lower-greek">Build a <a href="http://en.wikipedia.org/wiki/Prototype-based_programming">prototype inheritance system</a> into python.  I got really interested in prototype inheritance when I studied lua.  Prototypes make it really easy to change class-based behaviors at run time.</li>
+</ol>
+<p>Finally, the meaning behind the pirates-vs-ninjas debate became clear to me during a recent nitrous-oxide haze (no, not how you think; I was getting my teeth cleaned at the dentist).  Anyhow, pirates and ninjas are symbols.</p>
+<p>The ninja is a metaphor for the corporate employee.  A ninja will get the job done or die trying.  A ninja will kill everyone in his own family if he&#8217;s ordered to.  A ninja has no sense of entitlement or dignity or flex time.</p>
+<p>Meanwhile, the pirate is the entrepeneur, or maybe the upper-level executive.  He has no sense of duty or honor.  He seeks adventure and glory only.  He&#8217;ll jump ship as soon as possible.  He might even maroon his crew-mates on a desert island if it means he gets the treasure to himself.</p>
+<p>Pirates love to hire ninjas because a ninja never disobeys.  Ninjas love to kill pirates because they can pretend they&#8217;re killing their own pirate boss.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/04/09/my-article-is-finally-online/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Neat code complexity tool.</title>
+		<link>http://blog.tplus1.com/index.php/2008/04/01/neat-code-complexity-tool/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/04/01/neat-code-complexity-tool/#comments</comments>
+		<pubDate>Tue, 01 Apr 2008 14:06:23 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/04/01/neat-code-complexity-tool/</guid>
+		<description><![CDATA[David Stanek wrote a nice utility to measure code complexity.  This post explains the details. Anyway, I downloaded his code and tried it out.  I really like it:
+
+$ cat matt.py
+&#34;&#34;&#34;A few functions for use with pygenie.&#34;&#34;&#34;
+def f(x):
+&#160;&#160;&#160;&#160;&#34;Make an 8-way branch, 1 layer deep.&#34;
+&#160;&#160;&#160;&#160;if x == 1: return 1
+&#160;&#160;&#160;&#160;elif x == 2: return 2
+&#160;&#160;&#160;&#160;elif [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http:traceback.org">David Stanek</a> wrote a nice utility to measure code complexity.  <a href="http://www.traceback.org/2008/03/31/measuring-cyclomatic-complexity-of-python-code/">This post explains the details</a>. Anyway, I downloaded his code and tried it out.  I really like it:<br />
+<code><br />
+$ cat matt.py<br />
+&quot;&quot;&quot;A few functions for use with pygenie.&quot;&quot;&quot;<br />
+def f(x):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;Make an 8-way branch, 1 layer deep.&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if x == 1: return 1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 2: return 2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 3: return 3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 4: return 4<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 5: return 5<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 6: return 6<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 7: return 7<br />
+&nbsp;&nbsp;&nbsp;&nbsp;elif x == 8: return 8<br />
+&nbsp;<br />
+def g(a, b, c):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;This function has 8 paths.&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if a:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if b:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if c:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1 # a and b and c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 2 # a and b and not c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if c:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 3 # a and not b and c<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 4 # a and not b and not c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if b:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if c:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 5 # not a and b and c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 6 # not a and not b and c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if c:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 7 # not a and b and not c.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 8 # not a and not b and not c.<br />
+&nbsp;<br />
+def h(x):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if x: return True<br />
+&nbsp;&nbsp;&nbsp;&nbsp;else: return False<br />
+</code></p>
+<p>And this is what happens when I run the code:<br />
+<code><br />
+$ ./pygenie.py complexity matt.py <br />
+File: /home/matt/svn-checkouts/cyclic_complexity/matt.py<br />
+Type Name Complexity <br />
+&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;&#45;&#8211;<br />
+F&nbsp;&nbsp;&nbsp;&nbsp;f&nbsp;&nbsp;&nbsp;&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+F&nbsp;&nbsp;&nbsp;&nbsp;g&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;<br />
+</code></p>
+<p>The functions f and g have a complexity exceeding 7, so they print out.</p>
+<p>This might make a nice nose plugin.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/04/01/neat-code-complexity-tool/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Python&#8217;s hash lookup is insanely good</title>
+		<link>http://blog.tplus1.com/index.php/2008/03/17/pythons-hash-lookup-is-insanely-good/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/03/17/pythons-hash-lookup-is-insanely-good/#comments</comments>
+		<pubDate>Mon, 17 Mar 2008 19:35:01 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/03/17/pythons-hash-lookup-is-insanely-good/</guid>
+		<description><![CDATA[As near as I can tell, looking up a string inside a set is effectively free.
+I made a 9000-element set, where each element is foo_0, or foo_1, foo_2, &#8230; , on up to foo_8999.  Then I measured the time cost of testing whether an element belongs to that set:
+
+$ python -m timeit -s &#039;s [...]]]></description>
+			<content:encoded><![CDATA[<p>As near as I can tell, looking up a string inside a set is effectively free.</p>
+<p>I made a 9000-element set, where each element is foo_0, or foo_1, foo_2, &#8230; , on up to foo_8999.  Then I measured the time cost of testing whether an element belongs to that set:<br />
+<code><br />
+$ python -m timeit -s &#039;s = set([&quot;foo_%s&quot; % i for i in range(9000) ])&#039; &#039;&quot;foo_4500&quot; in s&#039;<br />
+1000000 loops, best of 3: 0.447 usec per loop<br />
+</code><br />
+Next I measured a few scans across a list of the same size:<br />
+<code><br />
+$ python -m timeit -s &#039;s = [&quot;foo_%s&quot; % i for i in range(9000) ]&#039; &#039;&quot;foo_0&quot; in s&#039;<br />
+1000000 loops, best of 3: 0.447 usec per loop<br />
+$ python -m timeit -s &#039;s = [&quot;foo_%s&quot; % i for i in range(9000) ]&#039; &#039;&quot;foo_1&quot; in s&#039;<br />
+1000000 loops, best of 3: 0.659 usec per loop<br />
+$ python -m timeit -s &#039;s = [&quot;foo_%s&quot; % i for i in range(9000) ]&#039; &#039;&quot;foo_900&quot; in s&#039;<br />
+10000 loops, best of 3: 130 usec per loop<br />
+$ python -m timeit -s &#039;s = [&quot;foo_%s&quot; % i for i in range(9000) ]&#039; &#039;&quot;foo_4500&quot; in s&#039;<br />
+1000 loops, best of 3: 631 usec per loop<br />
+</code></p>
+<p>It takes more time to do to two string comparisons than it does to hash the string and look it up in the set.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/03/17/pythons-hash-lookup-is-insanely-good/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>A few rules I try to follow with TurboGears</title>
+		<link>http://blog.tplus1.com/index.php/2008/03/16/a-few-rules-i-try-to-follow-with-turbogears/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/03/16/a-few-rules-i-try-to-follow-with-turbogears/#comments</comments>
+		<pubDate>Sun, 16 Mar 2008 16:18:22 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[TurboGears]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/03/16/a-few-rules-i-try-to-follow-with-turbogears/</guid>
+		<description><![CDATA[These are a few of the rules I try to follow in my design.  So far, they&#8217;ve helped me out.
+I aim to finish all interaction with the database before I get to the template layer.
+This is non-trivial because it is so easy to forget that a method or an attribute will evaluate into a [...]]]></description>
+			<content:encoded><![CDATA[<p>These are a few of the rules I try to follow in my design.  So far, they&#8217;ve helped me out.</p>
+<h3>I aim to finish all interaction with the database before I get to the template layer.</h3>
+<p>This is non-trivial because it is so easy to forget that a method or an attribute will evaluate into a query.  I use this rule because it lets me be certain about the number of interactions each page will have with the database.</p>
+<h3>I avoid branching (if-else clause) in my templates as much as possible.</h3>
+<p>I have a really hard time detangling code when I find a bunch of nested if statements. For all but the most trivial instances, I prefer to have a bunch of similar templates and then choose the best one.  For example, instead of handling both a successful login and a failed login in a single template, I&#8217;ll make two different files and then choose the right one in my controller.</p>
+<p>In practice, I have some really similar templates.  But then I go back and strip out as much of the common code as possible and put those into widgets.</li>
+<h3>Any time I find a select() call in my controller, I consider making a new method in my model.</h3>
+<p>When I write something like this in a controller:<br />
+<code><br />
+bluebirds = model.Bird.select(Bird.q.color == &#039;blue&#039;)<br />
+</code></p>
+<p>I usually come back later and put in something like this into the Bird class:<br />
+<code><br />
+class Bird(SQLObject):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;color = UnicodeCol()<br />
+&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@classmethod<br />
+&nbsp;&nbsp;&nbsp;&nbsp;def by_color(cls, color)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return cls.select(cls.q.color == color)<br />
+</code></p>
+<p>Now I have something that I can reuse.  If I&#8217;m feeling whimsical I&#8217;ll use functools.partial to do something like this:<br />
+<code><br />
+class Bird(SQLObject):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;color = UnicodeCol()<br />
+&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;def by_color(self, color):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return self.select(self.q.color == color)<br />
+&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;redbirds = classmethod(partial(by_color, color=&#039;red&#039;))<br />
+&nbsp;&nbsp;&nbsp;&nbsp;bluebirds = classmethod(partial(by_color, color=&#039;blue&#039;))<br />
+</code></p>
+<p>Sidenote: I couldn&#8217;t figure out how to use the @classmethod decorator in the second version of by_color because partial complained.  Appararently, callable(some_class_method) returns False, and partial requires the first argument to be a callable.</p>
+<p>Maybe a reader can explain to me what&#8217;s going on there&#8230;</p>
+</li>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/03/16/a-few-rules-i-try-to-follow-with-turbogears/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>A few half-formed thoughts on SQLObject</title>
+		<link>http://blog.tplus1.com/index.php/2008/03/11/a-few-half-formed-thoughts-on-sqlobject/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/03/11/a-few-half-formed-thoughts-on-sqlobject/#comments</comments>
+		<pubDate>Tue, 11 Mar 2008 19:16:02 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[TurboGears]]></category>
+
+		<category><![CDATA[SQLObject]]></category>
+
+		<category><![CDATA[PostgreSQL]]></category>
+
+		<category><![CDATA[SQL]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/03/11/a-few-half-formed-thoughts-on-sqlobject/</guid>
+		<description><![CDATA[I love SQLObject, but this is a rant about the tiny frustrations I face with it.
+First, this is a minor point.  I don&#8217;t really care about database independence that much.  Postgres has a lot of wonderful features: I never have to worry about choosing the table engine that will enforce foreign key constraints, [...]]]></description>
+			<content:encoded><![CDATA[<p>I love SQLObject, but this is a rant about the tiny frustrations I face with it.</p>
+<p>First, this is a minor point.  I don&#8217;t really care about database independence that much.  Postgres has a lot of wonderful features: I never have to worry about choosing the table engine that will enforce foreign key constraints,  I like creating indexes with function inside:<br />
+<code><br />
+create unique index nodup_parent on category (org_id, parent_cat, lower(name));<br />
+</code><br />
+and I really like how easy it is to write stored procedures.  Anyway, since I know I&#8217;m going to use postgresql, I don&#8217;t want to be restricted to only the features that exist or can be emulated in every platform.  I know all about sqlmeta and createSQL and use it plenty.   But I don&#8217;t like how when I set a default value, sometimes it is set in the database table, and other times, it isn&#8217;t.</p>
+<p>Anyway, in practice, the most dangerous part of using SQLObject is that it hypnotizes you into forgetting about the queries behind everything.  Imagine you have employees, departments, and a join table between them.  You can set this up in SQLObject like this:</p>
+<p><code>class Employee(SQLobject):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;name = UnicodeCol(alternateID=True)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;departments = RelatedJoin(&#039;Department&#039;)<br />
+&nbsp;<br />
+class Department(SQLObject):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;name = UnicodeCol(alternateID=True)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;employees = RelatedJoin(&#039;Employee&#039;)</code></p>
+<p>You want to draw a grid that indicates whether each user is a member in every group, so you might dash off some code like this:</p>
+<p><code>for emp in Employee.select():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;for d in Department.select():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if d in emp.departments: <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &quot;yes!&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else: <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &quot;no!&quot;<br />
+</code></p>
+<p>In an ideal scenario, you can do this with three simple queries:</p>
+<ul>
+<li>You need a list of employees</li>
+<li>You need a list of departments</li>
+<li>You need the list of employee-department of associations.
+</ul>
+<p>People that talk about how you can use outer joins to cram all that into one query will be dropped into a bottomless pit.  Besides, I profiled it, and three separate queries is often much cheaper.</p>
+<p>Anyway, back to the point.  SQLObject will only run a single query to get the employees and a separate single query to get all the departments.  So that&#8217;s good.</p>
+<p>However, the place where all hell breaks loose is that if clause in the middle.  If we have three employees and four departments, this statement<br />
+<code><br />
+if d in emp.departments:<br />
+</code><br />
+executes a dozen times.  That&#8217;s unavoidable.  The problem is that each time it executes, SQLObject runs a query like:<br />
+<code><br />
+select department_id from department_employee where employee_id = (whatever);<br />
+</code><br />
+Every time you say &#8220;is this particular department in this employee&#8217;s list of departments?&#8221; SQLObject grabs the full list of departments for that employee.  So, if you ask about 10 different departments, you will run the exact same query ten times.  Sure, the database is likely to cache the results of the query for you, but it is still very wasteful.</p>
+<p>With just a few employees and a few departments, that&#8217;s not so bad.  Eventually, though, as the number of employees and departments grow,  the cost of that code grows at N<sup>2</sup>, which is just geek slang for sucky.</p>
+<p>So, in conclusion, this may sound like a rant, but it really isnt.  SQLObject is great.  But it isn&#8217;t magic.  It&#8217;s a great scaffolding system.  But now I find that I&#8217;m rewriting a fair portion of code in order to reduce the database costs.</p>
+<p>Aside: when I started paying attention to the queries generated by SQLObject, I found it really useful to edit postgresql.conf and enable log_min_duration_statement.  Then every query and its cost will be logged for you.  This is really useful stuff.  It&#8217;s helped me to relax about doing a lot of things that I used to think were really bad.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/03/11/a-few-half-formed-thoughts-on-sqlobject/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>How to use itertools.cycle to set even and odd rows</title>
+		<link>http://blog.tplus1.com/index.php/2008/01/31/how-to-use-itertoolscycle-to-set-even-and-odd-rows/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/01/31/how-to-use-itertoolscycle-to-set-even-and-odd-rows/#comments</comments>
+		<pubDate>Thu, 31 Jan 2008 18:28:43 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[web]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/01/31/how-to-use-itertoolscycle-to-set-even-and-odd-rows/</guid>
+		<description><![CDATA[I find code like this in a lot of web applications:
+
+list_of_x_objects = [&#039;a&#039;, &#039;b&#039;, &#039;c&#039;, &#039;d&#039;, &#039;e&#039;]
+for i, x in enumerate(list_of_x_objects):
+&#160;&#160;&#160;&#160;if i % 2: htmlclass = &#34;odd&#34;
+&#160;&#160;&#160;&#160;else: htmlclass = &#34;even&#34;
+&#160;&#160;&#160;&#160;print &#34;&#34;&#34;&#60;li class=&#34;%s&#34;&#62;%s&#60;/li&#62;&#34;&#34;&#34; % (htmlclass, x)
+
+Never mind the print statement.  That&#8217;s just to illustrate the point without having to explain some template syntax.
+The same thing [...]]]></description>
+			<content:encoded><![CDATA[<p>I find code like this in a lot of web applications:<br />
+<code><br />
+list_of_x_objects = [&#039;a&#039;, &#039;b&#039;, &#039;c&#039;, &#039;d&#039;, &#039;e&#039;]<br />
+for i, x in enumerate(list_of_x_objects):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if i % 2: htmlclass = &quot;odd&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;else: htmlclass = &quot;even&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;print &quot;&quot;&quot;&lt;li class=&quot;%s&quot;&gt;%s&lt;/li&gt;&quot;&quot;&quot; % (htmlclass, x)<br />
+</code><br />
+Never mind the print statement.  That&#8217;s just to illustrate the point without having to explain some template syntax.</p>
+<p>The same thing can be expressed with itertools.cycle:<br />
+<code><br />
+list_of_x_objects = [&#039;a&#039;, &#039;b&#039;, &#039;c&#039;, &#039;d&#039;, &#039;e&#039;]<br />
+for htmlclass, x in zip(itertools.cycle([&#039;odd&#039;, &#039;even&#039;]), list_of_x_objects):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;print &quot;&quot;&quot;&lt;li class=&quot;%s&quot;&gt;%s&lt;/li&gt;&quot;&quot;&quot; % (htmlclass, x)<br />
+</code></p>
+<p>I see several advantages of the second approach:</p>
+<ul>
+<li>It&#8217;s way more flexible.  I can easily switch to a style that repeats every three lines (or four, or five&#8230;).</li>
+<li>I don&#8217;t create the variable i when all I really want is a class variable that toggles between values.</li>
+<li>The second approach avoids the modulus operator.  Since I hardly ever use the modulus operator, when I do come across it, I always have to take a second and puzzle out what&#8217;s happening.</li>
+</ul>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/01/31/how-to-use-itertoolscycle-to-set-even-and-odd-rows/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Notes from Cleveland Ruby meeting on Thursday, Jan 25th</title>
+		<link>http://blog.tplus1.com/index.php/2008/01/25/notes-from-cleveland-ruby-meeting-on-thursday-jan-25th/</link>
+		<comments>http://blog.tplus1.com/index.php/2008/01/25/notes-from-cleveland-ruby-meeting-on-thursday-jan-25th/#comments</comments>
+		<pubDate>Fri, 25 Jan 2008 15:54:08 +0000</pubDate>
+		<dc:creator>matt</dc:creator>
+		
+		<category><![CDATA[Ruby]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.tplus1.com/index.php/2008/01/25/notes-from-cleveland-ruby-meeting-on-thursday-jan-25th/</guid>
+		<description><![CDATA[This post contains some python-related information, I promise.
+Fun time.  Corey Haines explained behavior-driven development and showed some examples using RSpec at last night&#8217;s Cleveland Ruby meetup.
+As an aside, Corey said &#8220;powershell is what the unix command line will be when it grows up&#8221; and a thousand angels fell over dead when they heard this [...]]]></description>
+			<content:encoded><![CDATA[<p><i>This post contains some python-related information, I promise.</i></p>
+<p>Fun time.  <a href="http://coreyhaines.com">Corey Haines</a> explained behavior-driven development and showed some examples using <a href="http://rspec.info">RSpec</a> at last night&#8217;s <a href="http://ruby.meetup.com/119/">Cleveland Ruby meetup</a>.</p>
+<p>As an aside, Corey said &#8220;powershell is what the unix command line will be when it grows up&#8221; and a thousand angels fell over dead when they heard this blasphemy.</p>
+<p>The story-based tests in RSpec seem downright magic.  You can write in an english-y syntax:<br />
+<code><br />
+Given a = 1,<br />
+When <br />
+b.foo(a)<br />
+Then <br />
+b should return &quot;Hurray&quot;<br />
+</code></p>
+<p>Or something like that.</p>
+<p>I like that RSpec supports a result called &#8220;Pending&#8221;.  <a href="http://jwhitmire.com/rspec">This guy writes a good explanation of how it works</a>, and I agree with this remark:</p>
+<blockquote><p>It’s easy enough to rename a test method so it doesn’t execute, but before RSpec I’ve never worked with one where you can mark it as pending and it then reminds you that you still have work to come back too.</p></blockquote>
+<p>I figure that it would be straightforward to add this into nose.  Maybe raise a special exception called PendingTest that gets caught differently.</p>
+<p>I learned a neat way of using a mock object without having to pass it in as a parameter based on some code I saw last night.</p>
+<p>Corey had a couponcontroller that operated on coupon objects.  He made a mock coupon object to use with his tests for his couponcontroller. Then, in his test code, he monkeypatched the coupon module so that when somebody said &#8220;give me a coupon&#8221; he got a mock coupon instead.</p>
+<p>I spent a few minutes trying something vaguely like that in python. I&#8217;m not sure I like it, but it gets the point across.</p>
+<p>I have a file coupon.py:<br />
+<code><br />
+# This is coupon.py.<br />
+&nbsp;<br />
+class Coupon(object):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;I&#039;m the real coupon&quot;<br />
+&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;def foo(self):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &quot;This is the real coupon&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return &quot;foo&quot;<br />
+</code></p>
+<p>And I have a file couponcontroller.py:<br />
+<code><br />
+# This is couponcontroller.py.<br />
+&nbsp;<br />
+from coupon import Coupon<br />
+&nbsp;<br />
+def couponcontroller():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;c = Coupon()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;return c.foo()<br />
+</code></p>
+<p>In my test_couponcontroller.py, I want the couponcontroller to use my mock coupon, not the real one.<br />
+<code><br />
+# This is test_couponcontroller.py.<br />
+&nbsp;<br />
+import couponcontroller<br />
+&nbsp;<br />
+class mockCoupon(object):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;I&#039;m not the real coupon.&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;def foo(self):<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &quot;Congratulations. You&#039;re using a mock.&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return &quot;foo&quot;<br />
+&nbsp;<br />
+def setup():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# Mess with the module.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;couponcontroller.Coupon = mockCoupon<br />
+&nbsp;<br />
+def test_couponcontroller():<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&quot;couponcontroller should return a string &#039;foo&#039;&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;assert couponcontroller.couponcontroller() == &quot;foo&quot;<br />
+</code></p>
+<p>It seems to work:<br />
+<code><br />
+$ nosetests -s test_couponcontroller.py<br />
+couponcontroller should return a string &#039;foo&#039; &#46;.. Congratulations. You&#039;re using a mock.<br />
+ok<br />
+&nbsp;<br />
+&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;-&#45;&#45;&#45;-<br />
+Ran 1 test in 0.003s<br />
+&nbsp;<br />
+OK<br />
+</code></p>
+<p>In summary, there&#8217;s clearly a lot of smart people in the ruby community, even if they insist on using syntax like<br />
+<code><br />
+@adder ||= Adder.new<br />
+</code></p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.tplus1.com/index.php/2008/01/25/notes-from-cleveland-ruby-meeting-on-thursday-jan-25th/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>
+
+<!-- Dynamic Page Served (once) in 0.460 seconds -->

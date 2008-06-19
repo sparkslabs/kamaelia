@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>PyCon Podcast</title><link>http://advocacy.python.org/podcasts/.rss</link><description>Listen to talks and recordings from PyCon, the
+premier North American Python conference.   Hear the talks you missed!
+
+Episodes are 30-45 minutes long.
+</description><atom:link href="http://advocacy.python.org/podcasts/.rss" type="application/rss+xml" rel="self"></atom:link><itunes:subtitle>Talks about the Python programming language, from the premier North American conference.</itunes:subtitle><itunes:author>Python Software Foundation, and the Python community</itunes:author><dc:creator>Python Software Foundation, and the Python community</dc:creator><itunes:summary>Listen to talks and recordings from PyCon, the
+premier North American Python conference.   Hear the talks you missed!
+
+Episodes are 30-45 minutes long.
+</itunes:summary><itunes:keywords>phython</itunes:keywords><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Python Software Foundation</itunes:name><itunes:email>webmaster@python.org</itunes:email></itunes:owner><itunes:image href="http://advocacy.python.org/podcasts/pycon/podcast-logo-2008-01-26.png"></itunes:image><itunes:category text="Technology"><itunes:category text="Software How-To"></itunes:category></itunes:category><language>en-us</language><copyright>
+Copyrighted by the speaker or speakers, 2007-2008; all rights reserved.
+Copyright extends to the presentation, any presentation materials, and
+the recording.  Please contact the speaker or speakers for release
+permissions.</copyright><lastBuildDate>Sun, 13 Apr 2008 15:59:44 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><ttl>2880</ttl><item><title>Studying Internet Censorship: A Python Case Study</title><link>http://advocacy.python.org/podcasts/pycon/Censorship.mp3</link><itunes:author>Michelle Levesque</itunes:author><itunes:summary>In an increasing number of countries, significant portions of the web
+are being blocked from public access, from pornography to human rights
+sites.  Studying what is being blocked and how the filtering occurs is
+a complex cat-and-mouse game involving rapidly changing requirements
+and restrictions.  This presentation examines how Python is
+providing the researchers with an advantage and demonstrates an example
+of Python being used to do some good in the world.</itunes:summary><description>In an increasing number of countries, significant portions of the web
+are being blocked from public access, from pornography to human rights
+sites.  Studying what is being blocked and how the filtering occurs is
+a complex cat-and-mouse game involving rapidly changing requirements
+and restrictions.  This presentation examines how Python is
+providing the researchers with an advantage and demonstrates an example
+of Python being used to do some good in the world.</description><enclosure url="http://advocacy.python.org/podcasts/pycon/Censorship.mp3" length="10717502" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/Censorship.mp3</guid><pubDate>Sat, 10 Nov 2007 00:00:00 GMT</pubDate></item><item><title>What Every Open Source Developer Must Know About Intellectual Property</title><link>http://advocacy.python.org/podcasts/pycon/IP_Open_Source.mp3</link><itunes:author>Van Lindberg</itunes:author><itunes:summary>However you feel about intellectual property laws, they are an
+important feature of today's technology landscape.  This talk will
+give a brief introduction to the three main areas of intellectual
+property law (patents, copyrights, and trademarks) with an emphasis
+on principles that will help keep individuals and businesses out of
+trouble when developing or using open source software.
+</itunes:summary><description>However you feel about intellectual property laws, they are an
+important feature of today's technology landscape.  This talk will
+give a brief introduction to the three main areas of intellectual
+property law (patents, copyrights, and trademarks) with an emphasis
+on principles that will help keep individuals and businesses out of
+trouble when developing or using open source software.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/IP_Open_Source.mp3" length="6630306" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/IP_Open_Source.mp3</guid><pubDate>Mon, 19 Nov 2007 00:00:00 GMT</pubDate></item><item><title>Becoming an Open Source Developer: Lessons from the Django Project</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-BecomingOSDeveloper.mp3</link><itunes:author>Jacob Kaplan-Moss</itunes:author><itunes:summary>
+It almost seems like a joke: a family-owned newspaper in Lawrence, KS
+(population 80,000) releases an open-source web framework. It's not a
+joke, of course: today Django is an increasingly popular web
+development platform. As an open-source community Django has been
+incredibly successful; in Tim O'Reilly's OSCON keynote, he called
+Django "the new face of open source."  But it's often unclear how we
+got here. How did a couple of programmers at a newspaper convince
+management to contribute to the open-source ecosystem? How does the
+company justify the time its developers spend on open source? And how
+have we as individuals and as a business had to adapt to become better
+open source developers?  In this session: ten lessons in becoming an
+open source developer from the Django project.
+</itunes:summary><description>
+It almost seems like a joke: a family-owned newspaper in Lawrence, KS
+(population 80,000) releases an open-source web framework. It's not a
+joke, of course: today Django is an increasingly popular web
+development platform. As an open-source community Django has been
+incredibly successful; in Tim O'Reilly's OSCON keynote, he called
+Django "the new face of open source."  But it's often unclear how we
+got here. How did a couple of programmers at a newspaper convince
+management to contribute to the open-source ecosystem? How does the
+company justify the time its developers spend on open source? And how
+have we as individuals and as a business had to adapt to become better
+open source developers?  In this session: ten lessons in becoming an
+open source developer from the Django project.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-BecomingOSDeveloper.mp3" length="30668320" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-BecomingOSDeveloper.mp3</guid><pubDate>Sat, 24 Nov 2007 00:00:00 GMT</pubDate></item><item><title>Python and wxPython for Experimental Economics</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Experimental_Economics.mp3</link><itunes:author>Dr. Theodore L. Turocy</itunes:author><itunes:summary>
+The Economic Research Laboratory at Texas A&amp;M University has begun
+using Python and wxPython to develop software to implement laboratory
+experiments in economics.  This talk outlines why this combination has
+been so successful for the specific requirements of laboratory
+economics in general, and illustrate specifically how the code for one
+specific experiment is evolving into a framework of reusable
+components.
+</itunes:summary><description>
+The Economic Research Laboratory at Texas A&amp;M University has begun
+using Python and wxPython to develop software to implement laboratory
+experiments in economics.  This talk outlines why this combination has
+been so successful for the specific requirements of laboratory
+economics in general, and illustrate specifically how the code for one
+specific experiment is evolving into a framework of reusable
+components.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Experimental_Economics.mp3" length="9037693" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Experimental_Economics.mp3</guid><pubDate>Sun, 02 Dec 2007 00:00:00 GMT</pubDate></item><item><title>IronPython: Present and Future</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-IronPython.mp3</link><itunes:author>Jim Hugunin</itunes:author><itunes:summary>IronPython (http://codeplex.com/ironpython) is an
+implementation of the Python language targeting the Common Language
+Runtime. IronPython has excellent performance, seamless integration
+with the .NET platform and very high compatibility with the standard
+Python implementation. The first public talk on IronPython was at PyCon 2004, three years ago. Since then, IronPython has progressed from a rough prototype to a 1.0 release with a vibrant user community. This talk will present the current state and future directions of this Python implementation.
+</itunes:summary><description>IronPython (http://codeplex.com/ironpython) is an
+implementation of the Python language targeting the Common Language
+Runtime. IronPython has excellent performance, seamless integration
+with the .NET platform and very high compatibility with the standard
+Python implementation. The first public talk on IronPython was at PyCon 2004, three years ago. Since then, IronPython has progressed from a rough prototype to a 1.0 release with a vibrant user community. This talk will present the current state and future directions of this Python implementation.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-IronPython.mp3" length="12072016" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-IronPython.mp3</guid><pubDate>Mon, 10 Dec 2007 00:00:00 GMT</pubDate></item><item><title>PyDX: Mathematics Is Code</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-PyDX.mp3</link><itunes:author>Simon Burton</itunes:author><itunes:summary>PyDX (http://gr.anu.edu.au/~sdburton/pydx/) is a
+package for working with calculus, differential geometry, arbitrary
+precision arithmetic, and interval arithmetic. 
+
+The talk includes many graphs and diagrams; the accompanying slides
+are available from
+http://us.pycon.org/zope/talks/2007/sat/track4/066/talkDetails2 .
+</itunes:summary><description>PyDX (http://gr.anu.edu.au/~sdburton/pydx/) is a
+package for working with calculus, differential geometry, arbitrary
+precision arithmetic, and interval arithmetic. 
+
+The talk includes many graphs and diagrams; the accompanying slides
+are available from
+http://us.pycon.org/zope/talks/2007/sat/track4/066/talkDetails2 .
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-PyDX.mp3" length="5565232" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-PyDX.mp3</guid><pubDate>Sat, 15 Dec 2007 00:00:00 GMT</pubDate></item><item><title>Web Frameworks Panel</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-WebFrameworksPanel.mp3</link><itunes:author>Dr. C. Titus Brown</itunes:author><itunes:summary>
+A discussion of the various web frameworks available for Python,
+moderated by Dr C. Titus Brown.
+
+The panelists are: John Ellis (Spyce), Robert Brewer (CherryPy), Kevin
+Dangoor (TurboGears), Duncan MacGregor (Twisted/Nevow), Jim Fulton
+(Zope), Adrian Holovaty (Django), Ben Bangert (Pylons), James Cover
+(Pyjamas).</itunes:summary><description>
+A discussion of the various web frameworks available for Python,
+moderated by Dr C. Titus Brown.
+
+The panelists are: John Ellis (Spyce), Robert Brewer (CherryPy), Kevin
+Dangoor (TurboGears), Duncan MacGregor (Twisted/Nevow), Jim Fulton
+(Zope), Adrian Holovaty (Django), Ben Bangert (Pylons), James Cover
+(Pyjamas).</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-WebFrameworksPanel.mp3" length="12835167" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-WebFrameworksPanel.mp3</guid><pubDate>Sun, 23 Dec 2007 00:00:00 GMT</pubDate></item><item><title>Iterators in Action</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Iterators.mp3</link><itunes:author>Jim Baker</itunes:author><itunes:summary>
+Using iterators well can make your code lean and your programming
+fun. We will distill current best practice by investigating a
+useful example of iterators in action.
+
+The accompanying slides are available from 
+http://us.pycon.org/zope/talks/2007/fri/track4/028/talkDetails2 .
+</itunes:summary><description>
+Using iterators well can make your code lean and your programming
+fun. We will distill current best practice by investigating a
+useful example of iterators in action.
+
+The accompanying slides are available from 
+http://us.pycon.org/zope/talks/2007/fri/track4/028/talkDetails2 .
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Iterators.mp3" length="6586231" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Iterators.mp3</guid><pubDate>Wed, 26 Dec 2007 00:00:00 GMT</pubDate></item><item><title>You vs. The Real World: Writing Tests With Fixtures</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Fixtures.mp3</link><itunes:author>Kumar McMillan</itunes:author><itunes:summary>One of the biggest challenges of testing is creating
+an environment akin to the real world that your code lives in. This
+talk will focus on general strategies for tackling the problem and
+then will move into specific examples using the fixture module for
+setting up and interacting with data stored in databases and other
+storage media.  The fixture module is available from
+http://code.google.com/p/fixture/
+
+The goal of the talk is to promote better code coverage in tests, more
+maintainable test suites, and techniques for easy and painless
+refactoring.
+ 
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sun/track1/077/talkDetails2 .
+</itunes:summary><description>One of the biggest challenges of testing is creating
+an environment akin to the real world that your code lives in. This
+talk will focus on general strategies for tackling the problem and
+then will move into specific examples using the fixture module for
+setting up and interacting with data stored in databases and other
+storage media.  The fixture module is available from
+http://code.google.com/p/fixture/
+
+The goal of the talk is to promote better code coverage in tests, more
+maintainable test suites, and techniques for easy and painless
+refactoring.
+ 
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sun/track1/077/talkDetails2 .
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Fixtures.mp3" length="5790422" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Fixtures.mp3</guid><pubDate>Sat, 29 Dec 2007 00:00:00 GMT</pubDate></item><item><title>SQLAlchemy</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-SQLAlchemy.mp3</link><itunes:author>Mark Ramm</itunes:author><itunes:summary>SQLAlchemy (http://www.sqlalchemy.org) isn't just an ORM, it's a next
+generation, full-stack SQL Toolkit. The talk explores how to use
+SQLAlchemy to perform all kinds of database acrobatics at various
+levels.
+
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sat/track1/041/talkDetails2 .
+</itunes:summary><description>SQLAlchemy (http://www.sqlalchemy.org) isn't just an ORM, it's a next
+generation, full-stack SQL Toolkit. The talk explores how to use
+SQLAlchemy to perform all kinds of database acrobatics at various
+levels.
+
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sat/track1/041/talkDetails2 .
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-SQLAlchemy.mp3" length="9157060" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-SQLAlchemy.mp3</guid><pubDate>Sun, 30 Dec 2007 00:00:00 GMT</pubDate></item><item><title>Packaging Python Applications for Linux Distributions</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Packaging_for_Linux.mp3</link><itunes:author>Monty Taylor</itunes:author><itunes:summary>An overview of packaging Python libraries and tools for the major
+distributions. We will cover use of setuptools and eggs, and how those
+interact with deb and RPM packages. Attention will be given to recent
+Debian decisions such as the use of python-central, as well as
+strategies for packaging for multiple distros.
+
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sun/track4/096/talkDetails2
+</itunes:summary><description>An overview of packaging Python libraries and tools for the major
+distributions. We will cover use of setuptools and eggs, and how those
+interact with deb and RPM packages. Attention will be given to recent
+Debian decisions such as the use of python-central, as well as
+strategies for packaging for multiple distros.
+
+The slides for this talk are available at
+http://us.pycon.org/zope/talks/2007/sun/track4/096/talkDetails2
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Packaging_for_Linux.mp3" length="7890349" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Packaging_for_Linux.mp3</guid><pubDate>Sat, 05 Jan 2008 00:00:00 GMT</pubDate></item><item><title>The Essentials of Stackless Python</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Stackless.mp3</link><itunes:author>Christian Tismer</itunes:author><itunes:summary>As a surprise for people who think they know Stackless, we present the
+new Stackless implementation for PyPy, which has led to a significant
+amount of new insight about parallel programming and its possible
+implementations. We will isolate the known Stackless Python as a
+special case of a general concept.
+
+This is a Stackless, not a PyPy talk. But the insights presented here
+would not exist without PyPy.
+</itunes:summary><description>As a surprise for people who think they know Stackless, we present the
+new Stackless implementation for PyPy, which has led to a significant
+amount of new insight about parallel programming and its possible
+implementations. We will isolate the known Stackless Python as a
+special case of a general concept.
+
+This is a Stackless, not a PyPy talk. But the insights presented here
+would not exist without PyPy.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Stackless.mp3" length="6183628" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Stackless.mp3</guid><pubDate>Sun, 06 Jan 2008 00:00:00 GMT</pubDate></item><item><title>Software Development with Trac</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Trac.mp3</link><itunes:author>Matthew Good</itunes:author><itunes:summary>Trac is an enhanced wiki and issue tracking system for software development projects. This talk will introduce users to using Trac to integrate their issue tracking and version control, use plugins for automated builds and testing, and discuss how to extend Trac with new plugins. 
+</itunes:summary><description>Trac is an enhanced wiki and issue tracking system for software development projects. This talk will introduce users to using Trac to integrate their issue tracking and version control, use plugins for automated builds and testing, and discuss how to extend Trac with new plugins. 
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Trac.mp3" length="6136322" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Trac.mp3</guid><pubDate>Mon, 21 Jan 2008 00:00:00 GMT</pubDate></item><item><title>Pybots: Testing Python Projects in Real Time</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-Pybots.mp3</link><itunes:author>Grig Gheorghiu</itunes:author><itunes:summary>The goal of the Pybots project (www.pybots.org) is to
+allow people 
+to run automated tests for their Python projects "in real time".
+Testing is done every time a commit is made to the
+Python's subversion repository (trunk and 2.5 branch currently),
+with Python binaries built from the latest source.
+ 
+I will talk about the setup of the Pybots buildbot farm,
+about the issues that the Pybots farm has helped uncover,
+and also about lessons learned in building, sustaining
+and growing an open-source community project.
+
+Slides for this talk are available at 
+http://us.pycon.org/zope/talks/2007/sun/track1/090/talkDetails2.
+</itunes:summary><description>The goal of the Pybots project (www.pybots.org) is to
+allow people 
+to run automated tests for their Python projects "in real time".
+Testing is done every time a commit is made to the
+Python's subversion repository (trunk and 2.5 branch currently),
+with Python binaries built from the latest source.
+ 
+I will talk about the setup of the Pybots buildbot farm,
+about the issues that the Pybots farm has helped uncover,
+and also about lessons learned in building, sustaining
+and growing an open-source community project.
+
+Slides for this talk are available at 
+http://us.pycon.org/zope/talks/2007/sun/track1/090/talkDetails2.
+</description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-Pybots.mp3" length="6216014" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-Pybots.mp3</guid><pubDate>Sat, 26 Jan 2008 00:00:00 GMT</pubDate></item><item><title>Testing Tools Panel Discussion</title><link>http://advocacy.python.org/podcasts/pycon/PyCon2007-TestingPanel.mp3</link><itunes:author>Grig Gheorghiu</itunes:author><itunes:summary>A panel discussion of some of the testing frameworks available for
+Python.  For a full list of testing tools, see
+http://pycheesecake.org/wiki/PythonTestingToolsTaxonomy </itunes:summary><description>A panel discussion of some of the testing frameworks available for
+Python.  For a full list of testing tools, see
+http://pycheesecake.org/wiki/PythonTestingToolsTaxonomy </description><enclosure url="http://advocacy.python.org/podcasts/pycon/PyCon2007-TestingPanel.mp3" length="11601154" type="audio/mpeg"></enclosure><guid>http://advocacy.python.org/podcasts/pycon/PyCon2007-TestingPanel.mp3</guid><pubDate>Sun, 03 Feb 2008 00:00:00 GMT</pubDate></item></channel></rss><!-- {pca-2ba88ef0de85b61b2d01f7f0fc159c71} -->

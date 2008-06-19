@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+   <channel>
+      <title>Yeoldeclue</title>
+      <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi</link>
+      <description>Random musings on random stuff...</description>
+      <language>en-uk</language>
+      <pubDate> Mon, 28 Apr 2008 20:11:27 +0000 </pubDate>
+      <lastBuildDate> Mon, 28 Apr 2008 20:11:27 +0000 </lastBuildDate>
+      <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+      <generator>Kamaelia 0.1</generator>
+      <managingEditor>ms@cerenity.org</managingEditor>
+      <webMaster>ms@cerenity.org</webMaster>
+      <item>
+         <title>Where to put our Multicore support in the Kamaelia tree?</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209413487</link>
+         <author>Michael</author>
+         <description><![CDATA[As <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1205626569">discussed before, Kamaelia now has multicore support in subversion</a> in the form of ProcessPipeline and ProcessGraphlines, meaning taking any Kamaelia system and making it multicore is a matter of simply pre-pending "Process" to the pipeline set up. That's pretty cool - especially if you're aware of what our <a href="http://kamaelia.sourceforge.net/Cookbook">normal cookbook</a> code looks like. The question I've really got is where to merge this on the mainline. Given how useful this would be, it strikes me that like ThreadedComponent &amp; LikeFile and Introspection, this ought to live in Axon. However, like Introspection, it probably also ought to be used from inside the Kamaelia Namespace.<br>]]></description>
+         <pubDate>Mon, 28 Apr 2008 20:11:27 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209413487</guid>
+      </item>
+      <item>
+         <title>Interesting thing new faces....</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209335385</link>
+         <author>Michael</author>
+         <description><![CDATA[New faces bring new ideas. As part of <a href="http://code.google.com/soc/2008/">Google Summer of Code</a> this year I asked upfront<a href="http://code.google.com/soc/2008/bbc/about.html"> our students</a> why they didn't want to use the mailing lists the project uses on sourceforge (since it was clear they didn't) - preferring private mails and IRC (as a project we tend to prefer IRC generally nyway). The response we got was unaminous around the fact they didn't want to subscribe due to SF lists being highly spammy, and requested we move over to google groups - so they could also gain better web access and RSS feeds. It was the one answer I hadn't thought of or expected :-)<br>]]></description>
+         <pubDate>Sun, 27 Apr 2008 22:29:45 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209335385</guid>
+      </item>
+      <item>
+         <title>Recent requests/Q and A</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209334971</link>
+         <author>Michael</author>
+         <description><![CDATA[People have used the comment or new post feature of my blog recently to leave some useful comments. Rather than have them as top level posts though, I'll drop them as replies to this post. In summary though:<br><ul><li>I had a complaint/bug report from Steve (no surname) about the dates in my RSS feed (which should now be fixed), about double escaping of entities (which is also hopefully fixes). Steve also made a comment saying that he wished he didn't have to enter HTML manually. This strikes me as odd, because I'm typing this using Dojo's editor widget, so I guess that failed disgracefully on his machine. I've seen that on a few machines, but Dojo's generally got the most browser friendly wysiwyg editor, so I'm not sure what's up there.</li><li>I had a request whether Kamaelia's latest release is available for windows as a special bundle. The answer to that really is "it's python, so it should work, but we tend to develop under linux &amp; Mac OS X so you may find some niggles". I certainly haven't created an installer for windows. All that said, we are overdue doing a new release, and /trunk is far and away recommended. Even so, that needs updating as well with recent developments... :-)</li><li>Finally, another anonymous poster made the following comment:</li><ul><li><i>Came across this today and thought you might be interested in it Michael:<br>]]></description>
+         <pubDate>Sun, 27 Apr 2008 22:22:51 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1209334971</guid>
+      </item>
+      <item>
+         <title>Python Bindings for AR Toolkit</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206723386</link>
+         <author>Michael</author>
+         <description><![CDATA[Not tested this, but this looks really interesting/promising. The AR Toolkit is really cool, and this appears to be linux &amp; mac os x bindings for it. (Means that using this people should be able to access a webcam easily from both of those OSs using python...)<br><ul><li><a href="http://mgldev.scripps.edu/projects/pyartk/index.html">http://mgldev.scripps.edu/projects/pyartk/index.html</a></li><li><a href="http://mgldev.scripps.edu/projects/pyartk/docs.html">http://mgldev.scripps.edu/projects/pyartk/docs.html</a></li></ul><br>]]></description>
+         <pubDate>Fri, 28 Mar 2008 16:56:26 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206723386</guid>
+      </item>
+      <item>
+         <title>Writing successful applications - common questions and answers regarding summer of code</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206709783</link>
+         <author>Michael</author>
+         <description><![CDATA[We're getting some commons questions regarding GSOC, which boil down to "how do I write a successful application". I've taken the common starting point and generalised my comments, questions and suggestions in the hope of helping those in the crunch. This will also go on the <a href="http://kamaelia.sourceforge.net/Introduction">Kamaelia website</a> linked from the <a href="http://kamaelia.sourceforge.net/SummerOfCode2008">GSOC</a> <a href="http://kamaelia.sourceforge.net/SummerOfCode">pages</a>. As such this is written on the assumption the reader is someone interested in putting in a GSOC application.<br>]]></description>
+         <pubDate>Fri, 28 Mar 2008 13:09:43 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206709783</guid>
+      </item>
+      <item>
+         <title>Summer of Code</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206614319</link>
+         <author>Michael</author>
+         <description><![CDATA[Only a few more days to get your application in, and less if you want good feedback. The ideas we're seeing look really good and interesting, but we'd love to hear from more talented developers, and see your really cool ideas. <a href="http://kamaelia.sourceforge.net/SummerOfCode2008">Our ideas page continues to expand</a> with more ideas and the mixture we're seeing is really interesting. If you haven't put in your application yet, <a href="http://kamaelia.sourceforge.net/SummerOfCode2008">why not</a>? :) After all, this year we're after ideas that are <b>completely</b> different from previous years, since the intent is to allow students to produce something really cool they've always wanted to build, such that it grows the <a href="http://kamaelia.sourceforge.net/Components">component set</a> in interesting ways, as well as the <a href="http://kamaelia.sourceforge.net/Cookbook">kamaelia cookbook</a> which given all components (from DVB through Open GL through networking) can be used with one another is kinda fun. (as well as useful because the whole thing is naturally <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1205626569">multicore</a> friendly)&nbsp;]]></description>
+         <pubDate>Thu, 27 Mar 2008 10:38:39 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206614319</guid>
+      </item>
+      <item>
+         <title>Kamaelia and Google Summer of Code</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206109429</link>
+         <author>Michael</author>
+         <description><![CDATA[<div class="bodytext">]]></description>
+         <pubDate>Fri, 21 Mar 2008 14:23:49 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1206109429</guid>
+      </item>
+      <item>
+         <title>Kamaelia Multicore Pipeline. The future is here.</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1205626569</link>
+         <author>Michael</author>
+         <description><![CDATA[As the next step forward, I now have multiprocess support for basic pipeline. Essentially I have the equivalent of "self.link" implemented for multiprocesses. Kinda like the Postman in the MiniAxon tutorial. It's a little messy right now, but works, and does NOT require any changes to existing Kamaelia components. It builds on LikeFile from last years summer of code efforts and pprocess. The core code currently looks like this:<br><blockquote><font face="Courier New, monospace"><font color="#3333ff"><i># setup code snipped, and specifically ProcessWrapComponent snipped</i></font><br>]]></description>
+         <pubDate>Sun, 16 Mar 2008 00:18:29 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1205626569</guid>
+      </item>
+      <item>
+         <title>Sociable Software (Presentation)</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1204588633</link>
+         <author>Michael</author>
+         <description><![CDATA[Well, I travelled all the way up to barcamp this weekend, and it was well worth it. Whilst I was there I gave a talk called "Sociable Software", as a general over arching description of how Kamaelia deals with concurrency. I'm going to write this up as a proper blog entry as well shortly, but in the meantime I thought adding the slides here would be a good idea.<br>]]></description>
+         <pubDate>Mon, 03 Mar 2008 23:57:13 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1204588633</guid>
+      </item>
+      <item>
+         <title>What is wrong with free software zealots?</title>
+         <link>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1204287205</link>
+         <author>Michael</author>
+         <description><![CDATA[<div align="left">Now they think they have the right to dictate to me what software I get to choose to run? cf in italics<br><blockquote>On Thursday 28 February 2008 15:58:08 Dave Crossland wrote:<br>&gt; &nbsp;Even if I choose to use a proprietary program on a open source operating<br>&gt; &nbsp;system. Sorry, I'm not wrong,<br>]]></description>
+         <pubDate>Fri, 29 Feb 2008 12:13:25 +0000</pubDate>
+         <guid>http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1204287205</guid>
+      </item>
+   </channel>
+</rss>
+

@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="iso-8859-1"?><!-- generator="b2evolution/2.4.1" -->
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+	<channel>
+		<title>Mass Transit</title>
+		<link>http://www.aminus.org/blogs/index.php?blog=15</link>
+		<description></description>
+		<language>en-US</language>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		<admin:generatorAgent rdf:resource="http://b2evolution.net/?v=2.4.1"/>
+		<ttl>60</ttl>
+				<item>
+			<title>SQLComp, an experimental LINQ-in-Python</title>
+			<link>http://www.aminus.org/blogs/index.php/2006/01/27/sqlcomp_an_experimental_linq_in_python?blog=15</link>
+			<pubDate>Fri, 27 Jan 2006 17:12:37 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Computers</category>			<guid isPermaLink="false">796@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;We've (hopefully) all seen C# 3.0's fantastic new feature called &lt;a href=&quot;http://msdn.microsoft.com/vcsharp/future/linqsamples/default.aspx&quot;&gt;LINQ&lt;/a&gt;. I think it's a great idea. It makes it easy to query differing data sources using an embedded query syntax. Wouldn't it be great if we had something like this for Python?&lt;/p&gt;
+
+&lt;p&gt;We do. It's called a list (or generator) comprehension. For example, it lets you rewrite &lt;a href=&quot;http://msdn.microsoft.com/vcsharp/future/linqsamples/restriction/default.aspx#simple1&quot;&gt;this LINQ example&lt;/a&gt; like this:&lt;/p&gt;
+
+&lt;pre&gt;
+numbers = [5, 4, 1, 3, 9, 8, 6, 7, 2, 0]
+lowNums = [number for number in numbers if number &lt; 5]
+&lt;/pre&gt;
+
+&lt;p&gt;The problem is, we can only run these comprehensions inside the Python application, which is inefficient if you want to talk to a SQL RDBMS with a huge amount of data to filter.&lt;/p&gt;
+
+&lt;p&gt;Enter SQLComp. SQLComp breaks down the ASTs and translates your list and generator comprehensions to SQL, and automatically queries the database and gets the result. It also allows simple, safe variable interpolation. The wiki page has a few simple examples on it.&lt;/p&gt;
+
+&lt;p&gt;Please note that SQLComp is experimental, and I intended for someone to perhaps pick it up, hack on it, and make something cool. Shoot me an email if you're interested in collaborating.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://subway.python-hosting.com/wiki/SQLComp&quot;&gt;Why don't you give SQLComp a look?&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2006/01/27/sqlcomp_an_experimental_linq_in_python?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>We've (hopefully) all seen C# 3.0's fantastic new feature called <a href="http://msdn.microsoft.com/vcsharp/future/linqsamples/default.aspx">LINQ</a>. I think it's a great idea. It makes it easy to query differing data sources using an embedded query syntax. Wouldn't it be great if we had something like this for Python?</p>
+
+<p>We do. It's called a list (or generator) comprehension. For example, it lets you rewrite <a href="http://msdn.microsoft.com/vcsharp/future/linqsamples/restriction/default.aspx#simple1">this LINQ example</a> like this:</p>
+
+<pre>
+numbers = [5, 4, 1, 3, 9, 8, 6, 7, 2, 0]
+lowNums = [number for number in numbers if number < 5]
+</pre>
+
+<p>The problem is, we can only run these comprehensions inside the Python application, which is inefficient if you want to talk to a SQL RDBMS with a huge amount of data to filter.</p>
+
+<p>Enter SQLComp. SQLComp breaks down the ASTs and translates your list and generator comprehensions to SQL, and automatically queries the database and gets the result. It also allows simple, safe variable interpolation. The wiki page has a few simple examples on it.</p>
+
+<p>Please note that SQLComp is experimental, and I intended for someone to perhaps pick it up, hack on it, and make something cool. Shoot me an email if you're interested in collaborating.</p>
+
+<p><a href="http://subway.python-hosting.com/wiki/SQLComp">Why don't you give SQLComp a look?</a></p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2006/01/27/sqlcomp_an_experimental_linq_in_python?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2006/01/27/sqlcomp_an_experimental_linq_in_python?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>Templating languages, and YAPTL</title>
+			<link>http://www.aminus.org/blogs/index.php/2006/01/27/templating_languages_and_yaptl?blog=15</link>
+			<pubDate>Fri, 27 Jan 2006 16:48:21 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Computers</category>			<guid isPermaLink="false">794@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;&lt;a href=&quot;http://www.entrian.com/PyMeld&quot;&gt;PyMeld&lt;/a&gt; is the coolest templating language ever, because it's not a templating language, it's a template engine. It's what I like to call an &quot;active&quot; or &quot;push&quot; templating engine, that is, rather than the Cheetah school of passing a model object or dictionary to the template and letting the templating engine &quot;pull&quot; the data from it and figure it out, your controller code handles the vast majority of the logic (&quot;pushes&quot; the data), and the engine just makes it simple to manipulate the document. This is the best way for a templating language to be, because your templates are similar, and you're using a Real Programming Language to do what Real Programming Languages should be doing instead of these fake templating languages. In addition, your template files are nice and simple, and can be pulled right out of Dreamweaver and your graphic designer without having to mark it up with stuff.&lt;/p&gt;
+
+&lt;p&gt;PyMeld isn't without its issues, though. It's really slow and inefficient, as its powered by regular expressions and must reparse every time you run an operation on it. It's license requires you to pay money to use it commercially, which sort of sucks too.&lt;/p&gt;
+
+&lt;p&gt;There's a few reimplementations around, but they're very ZPT-like and, I believe, miss the point of PyMeld. PyMeld is just a badass, amazing, extra-special DOM library, and these reimplementations try to turn it into YAPTL. Meld4 sticks to PyMeld's roots, but throws the power of ElementTree behind it. I also added a couple of utility functions: fill() implements something similar but cooler than ASP.NET's MasterPages, and push_pull() is for those people who really can't bear to use an active templating engine, and will accept a dictionary that will fill the keys of a template and automatically handle lists, nested dicts and primitives.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://subway.python-hosting.com/wiki/Meld4&quot;&gt;Why don't you give Meld4 a look?&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2006/01/27/templating_languages_and_yaptl?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p><a href="http://www.entrian.com/PyMeld">PyMeld</a> is the coolest templating language ever, because it's not a templating language, it's a template engine. It's what I like to call an "active" or "push" templating engine, that is, rather than the Cheetah school of passing a model object or dictionary to the template and letting the templating engine "pull" the data from it and figure it out, your controller code handles the vast majority of the logic ("pushes" the data), and the engine just makes it simple to manipulate the document. This is the best way for a templating language to be, because your templates are similar, and you're using a Real Programming Language to do what Real Programming Languages should be doing instead of these fake templating languages. In addition, your template files are nice and simple, and can be pulled right out of Dreamweaver and your graphic designer without having to mark it up with stuff.</p>
+
+<p>PyMeld isn't without its issues, though. It's really slow and inefficient, as its powered by regular expressions and must reparse every time you run an operation on it. It's license requires you to pay money to use it commercially, which sort of sucks too.</p>
+
+<p>There's a few reimplementations around, but they're very ZPT-like and, I believe, miss the point of PyMeld. PyMeld is just a badass, amazing, extra-special DOM library, and these reimplementations try to turn it into YAPTL. Meld4 sticks to PyMeld's roots, but throws the power of ElementTree behind it. I also added a couple of utility functions: fill() implements something similar but cooler than ASP.NET's MasterPages, and push_pull() is for those people who really can't bear to use an active templating engine, and will accept a dictionary that will fill the keys of a template and automatically handle lists, nested dicts and primitives.</p>
+
+<p><a href="http://subway.python-hosting.com/wiki/Meld4">Why don't you give Meld4 a look?</a></p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2006/01/27/templating_languages_and_yaptl?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2006/01/27/templating_languages_and_yaptl?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>How Python wins on the Web</title>
+			<link>http://www.aminus.org/blogs/index.php/2006/01/04/how_python_wins_on_the_web?blog=15</link>
+			<pubDate>Thu, 05 Jan 2006 02:05:12 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Computers</category>			<guid isPermaLink="false">780@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;Recently, it seems like everyone's been focused upon creating The One Framework -- the Ruby on Rails of Python. In fact, I'm almost as &lt;a href=&quot;http://www.gosubway.org/&quot;&gt;guilty&lt;/a&gt; as &lt;a href=&quot;http://www.djangoproject.com/&quot;&gt;everyone&lt;/a&gt; &lt;a href=&quot;http://www.turbogears.org/&quot;&gt;else&lt;/a&gt;. We have failed in this regard, and we will continue to fail. We've been struggling to find the best practices and combination of tools to create Joe User's average database-backed dynamic web site and application, and not only can't we agree on how to do it, no actual end-users care when polished solutions like Rails and ASP.NET are in town. Not only that, by many accounts Ruby seems to be overtaking Python in its rate of growth. Personally, I'd rather write Python.&lt;/p&gt;
+
+&lt;p&gt;But oh, how quick are we to forget Python's smashing successes in the Web world. We've got Plone, probably the most popular and comprehensive CMS out there. We've got the platform its built on, Zope, which is (from what I hear) fairly popular, too. We've had PyBloxsom, which until WordPress came along was a very widespread blogging system. Let's also not forget MoinMoin and Mailman, some of the most widespread Wiki and mailing list applications on the Web today. And hell, we've got Python's &quot;killer&quot; web app, Trac, which just about everyone is using these days. And oh, BitTorrent. I know it's not a Web application in the traditional server-side sense, but it just shows how capable Python truly is.&lt;/p&gt;
+
+&lt;p&gt;What do all of these applications have in common? They certainly don't share a web framework; most of them are developed specific to that application and tailored to various deployment platforms (CGI, FastCGI, custom server, mod_python). Python appears to be falling behind in the world of custom-made Web applications, but in the world of generic, reusable Web applications, Python is doing great.&lt;/p&gt;
+
+&lt;p&gt;And let's not forget about the great achievement of Web-SIG: WSGI. Now, we have a system that lets us write an application once and deploy it upon any WSGI-compliant server or gateway (to name a few, ISAPI, mod_python, CGI, FastCGI, SCGI, custom HTTP server).&lt;/p&gt;
+
+&lt;p&gt;Here's what I propose: screw Web frameworks for now. We won't win in the Rails generation. Perhaps when some ingenious Python programming comes up with that next-generation Web framework (Seaside + ZODB + LINQ + ASP.NET + PyMeld + LivePage + CrackAJAX, anyone?), we can give the Web framework wars another shot.&lt;/p&gt;
+
+&lt;p&gt;For today, let's work on making generic Python products. Let's make a kick-ass community forums system, an incredible blogging system, a news script, a CPanel/Webmin clone that people will use because of their features, not their programming language. &lt;a href=&quot;http://pythonpaste.org/comment/commentary/&quot;&gt;Commentary&lt;/a&gt; is a great example of what I'm talking about. Let's not forget to make sure Trac, Plone, and all of our applications run seamlessly on WSGI, and let's make our WSGI gateways ironclad and diverse.&lt;/p&gt;
+
+&lt;p&gt;And, most importantly, let's all get behind what I believe is the most pressing and important concept in the Python web development world today: &lt;a href=&quot;http://pythonpaste.org/deploy/&quot;&gt;Paste Deploy&lt;/a&gt;. What Python needs more than anything is a brainless, quick-and-easy way of connecting applications to gateways. I want to drop a CGI file on to a Web server, point its config file to (the fictional) pyBB-1.0.0.egg, chmod it, and have it Just Work. I want to do the same thing for FastCGI. In fact, what I would love more than anything would be a portable mod_wsgi across Apache, LightTPD, and IIS: a module that would let me drop a .egg file into a directory and have it automatically pick up and install the WSGI application from the archive. Once we've got this, a standard, portable way of easily installing ANY Python web app, we'll be getting somewhere.&lt;/p&gt;
+
+&lt;p&gt;Happy hacking.&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2006/01/04/how_python_wins_on_the_web?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>Recently, it seems like everyone's been focused upon creating The One Framework -- the Ruby on Rails of Python. In fact, I'm almost as <a href="http://www.gosubway.org/">guilty</a> as <a href="http://www.djangoproject.com/">everyone</a> <a href="http://www.turbogears.org/">else</a>. We have failed in this regard, and we will continue to fail. We've been struggling to find the best practices and combination of tools to create Joe User's average database-backed dynamic web site and application, and not only can't we agree on how to do it, no actual end-users care when polished solutions like Rails and ASP.NET are in town. Not only that, by many accounts Ruby seems to be overtaking Python in its rate of growth. Personally, I'd rather write Python.</p>
+
+<p>But oh, how quick are we to forget Python's smashing successes in the Web world. We've got Plone, probably the most popular and comprehensive CMS out there. We've got the platform its built on, Zope, which is (from what I hear) fairly popular, too. We've had PyBloxsom, which until WordPress came along was a very widespread blogging system. Let's also not forget MoinMoin and Mailman, some of the most widespread Wiki and mailing list applications on the Web today. And hell, we've got Python's "killer" web app, Trac, which just about everyone is using these days. And oh, BitTorrent. I know it's not a Web application in the traditional server-side sense, but it just shows how capable Python truly is.</p>
+
+<p>What do all of these applications have in common? They certainly don't share a web framework; most of them are developed specific to that application and tailored to various deployment platforms (CGI, FastCGI, custom server, mod_python). Python appears to be falling behind in the world of custom-made Web applications, but in the world of generic, reusable Web applications, Python is doing great.</p>
+
+<p>And let's not forget about the great achievement of Web-SIG: WSGI. Now, we have a system that lets us write an application once and deploy it upon any WSGI-compliant server or gateway (to name a few, ISAPI, mod_python, CGI, FastCGI, SCGI, custom HTTP server).</p>
+
+<p>Here's what I propose: screw Web frameworks for now. We won't win in the Rails generation. Perhaps when some ingenious Python programming comes up with that next-generation Web framework (Seaside + ZODB + LINQ + ASP.NET + PyMeld + LivePage + CrackAJAX, anyone?), we can give the Web framework wars another shot.</p>
+
+<p>For today, let's work on making generic Python products. Let's make a kick-ass community forums system, an incredible blogging system, a news script, a CPanel/Webmin clone that people will use because of their features, not their programming language. <a href="http://pythonpaste.org/comment/commentary/">Commentary</a> is a great example of what I'm talking about. Let's not forget to make sure Trac, Plone, and all of our applications run seamlessly on WSGI, and let's make our WSGI gateways ironclad and diverse.</p>
+
+<p>And, most importantly, let's all get behind what I believe is the most pressing and important concept in the Python web development world today: <a href="http://pythonpaste.org/deploy/">Paste Deploy</a>. What Python needs more than anything is a brainless, quick-and-easy way of connecting applications to gateways. I want to drop a CGI file on to a Web server, point its config file to (the fictional) pyBB-1.0.0.egg, chmod it, and have it Just Work. I want to do the same thing for FastCGI. In fact, what I would love more than anything would be a portable mod_wsgi across Apache, LightTPD, and IIS: a module that would let me drop a .egg file into a directory and have it automatically pick up and install the WSGI application from the archive. Once we've got this, a standard, portable way of easily installing ANY Python web app, we'll be getting somewhere.</p>
+
+<p>Happy hacking.</p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2006/01/04/how_python_wins_on_the_web?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2006/01/04/how_python_wins_on_the_web?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>0.2-rc1</title>
+			<link>http://www.aminus.org/blogs/index.php/2005/12/06/0_2_rc1?blog=15</link>
+			<pubDate>Tue, 06 Dec 2005 13:36:21 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Computers</category>			<guid isPermaLink="false">773@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;&lt;a href=&quot;http://www.gosubway.org/&quot;&gt;http://www.gosubway.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Subway 0.2-rc1 is out. http://www.gosubway.org/&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2005/12/06/0_2_rc1?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p><a href="http://www.gosubway.org/">http://www.gosubway.org/</a></p><p>Subway 0.2-rc1 is out. http://www.gosubway.org/</p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2005/12/06/0_2_rc1?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2005/12/06/0_2_rc1?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>Psst...CrackAJAX is in SVN.</title>
+			<link>http://www.aminus.org/blogs/index.php/2005/10/09/psst_crackajax_is_in_svn?blog=15</link>
+			<pubDate>Mon, 10 Oct 2005 02:14:20 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Computers</category>			<guid isPermaLink="false">709@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;http://svn.subway.python-hosting.com/crackajax/trunk&lt;/p&gt;
+
+&lt;p&gt;For some reason, itunes.py doesn't have remote_eval functionality in Opera. It used to work, I swear...I just broke it...&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2005/10/09/psst_crackajax_is_in_svn?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>http://svn.subway.python-hosting.com/crackajax/trunk</p>
+
+<p>For some reason, itunes.py doesn't have remote_eval functionality in Opera. It used to work, I swear...I just broke it...</p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2005/10/09/psst_crackajax_is_in_svn?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2005/10/09/psst_crackajax_is_in_svn?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>Subway's new Ajax framework</title>
+			<link>http://www.aminus.org/blogs/index.php/2005/10/06/subway_s_new_ajax_framework?blog=15</link>
+			<pubDate>Fri, 07 Oct 2005 01:23:48 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Subway</category>			<guid isPermaLink="false">706@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;As many of the #cherrypy regulars know, I've been developing a top-secret Ajax framework code-named CrackAJAX, which will soon be integrated into Subway. Though it's not quite ready for a release, I &lt;em&gt;will&lt;/em&gt; show you a quick teaser of its current functionality, and some of the motivation behind developing it.&lt;/p&gt;
+
+&lt;p&gt;I hate Ajax. It's a silly name, and it's bad technology. JavaScript is a &lt;em&gt;horrid&lt;/em&gt; language to develop in, and the destandardized DOM that exists in the current browser market makes maintenance a nightmare. HTTP wasn't designed to support this sort of thing, and Ajax breaks URLs and the back button.&lt;/p&gt;
+
+&lt;p&gt;But it's a cool idea, and the functionality is great.&lt;/p&gt;
+
+&lt;p&gt;Well, there wasn't much I could do to fix the latter problems, but I figured, what if I could write an Ajax application in Python? I set out to work, and came up with CrackAJAX, which uses the jsolait JavaScript library.&lt;/p&gt;
+
+&lt;p&gt;CrackAJAX is based around the concept of an AjaxPage, an HTML page that is &quot;ajaxified.&quot; In its current incarnation, you can write the HTML code right in the docstring, or pass it a callable template rendering method. You extend the AjaxPage class, add your markup, and then add special methods. These special methods are decorated as either @clientside or @serverside, depending on where you want them to be run. &lt;em&gt;@clientside methods translate the Python source code of the method to client-side JavaScript, and @serverside methods automatically generate an XML-RPC call to the server.&lt;/em&gt; You can call these seamlessly from your DHTML handlers, just like regular JavaScript.&lt;/p&gt;
+
+&lt;p&gt;It's quite a joy to develop with, actually. I built an Ajax application that emulates iTunes' search functionality. Granted, the JavaScript loops are a bit dicey, but look how slick this is:&lt;/p&gt;
+
+&lt;pre&gt;
+import crackajax
+import cherrypy
+import ituneslib
+
+class iTunesAjaxPage(crackajax.AjaxPage):
+    &quot;&quot;&quot;
+    &amp;lt;html&amp;gt;
+    &amp;lt;head&amp;gt;
+    $crackajax
+    &amp;lt;title&amp;gt;CrackAJAX iTunes Example&amp;lt;/title&amp;gt;
+    &amp;lt;/head&amp;gt;
+    &amp;lt;body onload=&quot;load_list()&quot;&amp;gt;
+    Welcome to the CrackAJAX iTunes example. This search system is similar to
+    the iTunes search mechanism; just start typing characters to limit your search.
+    This application is pulling data directly from a &quot;Library.xml&quot; file located
+    in the current working directory.
+    &amp;lt;form&amp;gt;
+    &amp;lt;b&amp;gt;Search:&amp;lt;/b&amp;gt; &amp;lt;input type=&quot;text&quot; id=&quot;searchbox&quot; onkeyup=&quot;do_search()&quot; /&amp;gt;
+    &amp;lt;/form&amp;gt;
+    &amp;lt;ul id=&quot;songlist&quot;&amp;gt;
+    &amp;lt;/ul&amp;gt;
+    &amp;lt;/body&amp;gt;
+    &amp;lt;/html&amp;gt;
+    &quot;&quot;&quot;
+    def __init__(self, lib, *args, **kwargs):
+        crackajax.AjaxPage.__init__(self, *args, **kwargs)
+        self.SONGS = []
+        lib.load()
+        try:
+            while True:
+                track_info = lib.getTrack()
+                if track_info:
+                    self.SONGS.append(track_info.get(&quot;Artist&quot;, &quot;(no artist)&quot;) + &quot; - &quot; + track_info.get(&quot;Name&quot;, &quot;(no name)&quot;))
+        except EOFError:
+            pass
+
+    @crackajax.clientside
+    def load_list():
+        update_list(get_all_songs())
+
+    @crackajax.clientside
+    def update_list(songs):
+        the_song_list = document.getElementById(&quot;songlist&quot;)
+        while true:
+            if the_song_list.childNodes.length == 0:
+                break
+            the_song_list.removeChild(the_song_list.childNodes[0])
+        c = songs.length
+        if c &amp;gt; 0:
+            i = 0
+            while true:
+                song = songs[i]
+                newitem = document.createElement(&quot;li&quot;)
+                newitem.appendChild(document.createTextNode(song))
+                the_song_list.appendChild(newitem)
+                i = i + 1
+                if i &amp;gt;= c:
+                    break
+
+    @crackajax.clientside
+    def do_search():
+        update_list(search_songs(document.getElementById(&quot;searchbox&quot;).value))
+
+    @crackajax.serverside
+    def get_all_songs(self):
+        return [self.SONGS]
+
+    @crackajax.serverside
+    def search_songs(self, query):
+        query = query.lower()
+        return [filter(lambda s: self.does_song_match(query, s), self.SONGS)]
+
+    def does_song_match(self, query, song):
+        song = song.lower()
+        words = query.split(&quot; &quot;)
+        for word in words:
+            if word not in song:
+                return False
+        return True
+
+crackajax.init(&quot;jsolait&quot;)
+
+cherrypy.root = iTunesAjaxPage(ituneslib.Library(&quot;Library.xml&quot;), &quot;&quot;)
+
+cherrypy.server.start()
+
+&lt;/pre&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2005/10/06/subway_s_new_ajax_framework?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>As many of the #cherrypy regulars know, I've been developing a top-secret Ajax framework code-named CrackAJAX, which will soon be integrated into Subway. Though it's not quite ready for a release, I <em>will</em> show you a quick teaser of its current functionality, and some of the motivation behind developing it.</p>
+
+<p>I hate Ajax. It's a silly name, and it's bad technology. JavaScript is a <em>horrid</em> language to develop in, and the destandardized DOM that exists in the current browser market makes maintenance a nightmare. HTTP wasn't designed to support this sort of thing, and Ajax breaks URLs and the back button.</p>
+
+<p>But it's a cool idea, and the functionality is great.</p>
+
+<p>Well, there wasn't much I could do to fix the latter problems, but I figured, what if I could write an Ajax application in Python? I set out to work, and came up with CrackAJAX, which uses the jsolait JavaScript library.</p>
+
+<p>CrackAJAX is based around the concept of an AjaxPage, an HTML page that is "ajaxified." In its current incarnation, you can write the HTML code right in the docstring, or pass it a callable template rendering method. You extend the AjaxPage class, add your markup, and then add special methods. These special methods are decorated as either @clientside or @serverside, depending on where you want them to be run. <em>@clientside methods translate the Python source code of the method to client-side JavaScript, and @serverside methods automatically generate an XML-RPC call to the server.</em> You can call these seamlessly from your DHTML handlers, just like regular JavaScript.</p>
+
+<p>It's quite a joy to develop with, actually. I built an Ajax application that emulates iTunes' search functionality. Granted, the JavaScript loops are a bit dicey, but look how slick this is:</p>
+
+<pre>
+import crackajax
+import cherrypy
+import ituneslib
+
+class iTunesAjaxPage(crackajax.AjaxPage):
+    """
+    &lt;html&gt;
+    &lt;head&gt;
+    $crackajax
+    &lt;title&gt;CrackAJAX iTunes Example&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body onload="load_list()"&gt;
+    Welcome to the CrackAJAX iTunes example. This search system is similar to
+    the iTunes search mechanism; just start typing characters to limit your search.
+    This application is pulling data directly from a "Library.xml" file located
+    in the current working directory.
+    &lt;form&gt;
+    &lt;b&gt;Search:&lt;/b&gt; &lt;input type="text" id="searchbox" onkeyup="do_search()" /&gt;
+    &lt;/form&gt;
+    &lt;ul id="songlist"&gt;
+    &lt;/ul&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+    """
+    def __init__(self, lib, *args, **kwargs):
+        crackajax.AjaxPage.__init__(self, *args, **kwargs)
+        self.SONGS = []
+        lib.load()
+        try:
+            while True:
+                track_info = lib.getTrack()
+                if track_info:
+                    self.SONGS.append(track_info.get("Artist", "(no artist)") + " - " + track_info.get("Name", "(no name)"))
+        except EOFError:
+            pass
+
+    @crackajax.clientside
+    def load_list():
+        update_list(get_all_songs())
+
+    @crackajax.clientside
+    def update_list(songs):
+        the_song_list = document.getElementById("songlist")
+        while true:
+            if the_song_list.childNodes.length == 0:
+                break
+            the_song_list.removeChild(the_song_list.childNodes[0])
+        c = songs.length
+        if c &gt; 0:
+            i = 0
+            while true:
+                song = songs[i]
+                newitem = document.createElement("li")
+                newitem.appendChild(document.createTextNode(song))
+                the_song_list.appendChild(newitem)
+                i = i + 1
+                if i &gt;= c:
+                    break
+
+    @crackajax.clientside
+    def do_search():
+        update_list(search_songs(document.getElementById("searchbox").value))
+
+    @crackajax.serverside
+    def get_all_songs(self):
+        return [self.SONGS]
+
+    @crackajax.serverside
+    def search_songs(self, query):
+        query = query.lower()
+        return [filter(lambda s: self.does_song_match(query, s), self.SONGS)]
+
+    def does_song_match(self, query, song):
+        song = song.lower()
+        words = query.split(" ")
+        for word in words:
+            if word not in song:
+                return False
+        return True
+
+crackajax.init("jsolait")
+
+cherrypy.root = iTunesAjaxPage(ituneslib.Library("Library.xml"), "")
+
+cherrypy.server.start()
+
+</pre>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2005/10/06/subway_s_new_ajax_framework?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2005/10/06/subway_s_new_ajax_framework?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>Getting ready for Subway 0.2</title>
+			<link>http://www.aminus.org/blogs/index.php/2005/10/04/getting_ready_for_subway_0_2?blog=15</link>
+			<pubDate>Tue, 04 Oct 2005 22:14:46 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">Subway</category>			<guid isPermaLink="false">703@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;Over at the &lt;a href=&quot;http://subway.python-hosting.com/&quot;&gt;Subway project&lt;/a&gt;, we've been getting ready for the 0.2 release. This release is a huge stepping stone to Subway 1.0.&lt;/p&gt;
+
+&lt;p&gt;Subway, a Python &quot;megaframework&quot;, was designed from the ground up to ensure that every single line of code the developer writes is meaningful. It was also designed to keep the total lines of code down without sacrificing readability and ease of maintenance. With so many Web frameworks in the Python world, why did I write Subway? None of the current Web frameworks included everything needed to create a Web application while still remaining flexible (I'm looking at you, Zope). In doing so, I realized that there were still &lt;a href=&quot;http://www.sqlobject.org/&quot;&gt;a lot&lt;/a&gt; of &lt;a href=&quot;http://www.formencode.org/&quot;&gt;great&lt;/a&gt; &lt;a href=&quot;http://www.cherrypy.org/&quot;&gt;tools&lt;/a&gt; out there. I decided to reuse as many existing Python components as possible, and as a result, we have a framework that has more mature component parts, a framework that is not the quintessential reinvention of a generic web framework, and a little bit of good PR.&lt;/p&gt;
+
+&lt;p&gt;A lot of people have wondered how it compares to &lt;a href=&quot;http://www.djangoproject.com/&quot;&gt;other&lt;/a&gt; &lt;a href=&quot;http://www.turbogears.org&quot;&gt;frameworks&lt;/a&gt;. Granted, there is a lot of overlap between the various projects, and I'm going to try to explain how Subway is different.&lt;/p&gt;
+
+&lt;p&gt;The first (and most controversial) difference that people usually notice is the choice of a templating language, &lt;a href=&quot;http://www.cheetahtemplate.org/&quot;&gt;Cheetah&lt;/a&gt;. I had several reasons for eliminating contenders such as Kid, ZPT, PTL, DTML, Nevow, PyMeld, my own &lt;a href=&quot;http://subway.python-hosting.com/wiki/OneRing&quot;&gt;OneRing&lt;/a&gt; and PSP in favor of Cheetah. First of all, Cheetah is already known as one of the most mature templating systems around. Although it is a version 0.9 product, it has many years of development time behind it. Furthermore, such maturity brings mature features, features like object-oriented-document page inheritance to manage larger websites, and excellent documentation. Cheetah is also known for its speed due to its excellent precompilation mechanism. I also wanted a templating language where users did not have to go through a paradigm shift; they could go from hacking code in PHP or standard Python right into Cheetah with a minimal learning curve. Finally, templating languages like Kid, ZPT, Nevow and PyMeld are HTML-only, meaning they cannot generate other document formats like CSS. In my mind, this is unacceptible. Some of these language require your documents to be XML-compliant, which is another no-no. A framework (and templating language) should &lt;em&gt;never&lt;/em&gt; get in your way, ever.&lt;/p&gt;
+
+&lt;p&gt;Though TurboGears in particular is very, very similar in structure, Subway has a lot of lesser-known features. One of the cooler ones is CherryFlow, a generator-based system that allows you to write a complex Web application as a flow of different pages all in one method. It looks something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@expose
+@flow
+def example_flow():
+    yield view.first_page()
+    if request.args[&quot;choice&quot;] == &quot;a&quot;:
+        yield view.choice_a_page()
+    else:
+        yield view.choice_b_page()
+    yield view.last_page()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This sort of functionality is analagous to Cocoon's &lt;a href=&quot;http://cocoon.apache.org/2.1/userdocs/flow/&quot;&gt;FlowScript&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Subway also has a form validation framework that makes your life easier. In my incredibly biased opinion, it's the best form validation out there. Every Subway &quot;view&quot; (template object) has an attribute &quot;form&quot;, which corresponds to a FormEncode schema that is generated by reading specialized tags and attributes inside the view file. These definitions look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&amp;lt;form method=&quot;post&quot; action=&quot;submit_form&quot;&amp;gt;
+Your name:
+&amp;lt;input type=&quot;text&quot; name=&quot;yourname&quot; form:required=&quot;true&quot;
+    form:message=&quot;You must enter your name&quot; /&amp;gt;
+&amp;lt;form:error name=&quot;yourname&quot; /&amp;gt;
+&amp;lt;br /&amp;gt;
+Your e-mail address: &amp;lt;input type=&quot;text&quot; name=&quot;youremail&quot;
+    form:validate=&quot;email&quot; form:message=&quot;Your must enter a valid e-mail address&quot; /&amp;gt;
+&amp;lt;form:error name=&quot;youremail&quot; /&amp;gt;
+&amp;lt;br /&amp;gt;
+&amp;lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&amp;gt;
+&amp;lt;/form&amp;gt;&lt;/pre&gt;
+
+&lt;p&gt;Next, you'll want to hook this up to some Python code to handle the form. That code will look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@expose
+def display_form():
+    return view.the_form()
+
+@expose
+@form_handler(view.the_form.form)
+def submit_form(yourname, youremail):
+    if form_submitted:
+        if form_errors:
+            return view.the_form() # send back the form, Subway will automatically fill in the fields with their submitted values and display all error messages
+        else:
+          # form is OK
+            return view.form_ok()
+    # form was not submitted
+    return view.the_form()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can also manually manipulate the form_defaults and form_errors dictionaries to add your own custom validation, or provide a custom-defined FormEncode schema to the form_handler decorator.&lt;/p&gt;
+
+&lt;p&gt;A handy little feature of Subway is the docstring views. An example shows it clearly:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@expose
+def test_docstring_view():
+    &quot;&quot;&quot;
+    This $name is in a docstring
+    &quot;&quot;&quot;
+    return test_docstring_view.view(name=&quot;view&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Before I sign off for today, let me remind you that a &lt;em&gt;super cool&lt;/em&gt; new Ajax framework will be included with the next Subway version, 0.3. Keep an eye out.&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2005/10/04/getting_ready_for_subway_0_2?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>Over at the <a href="http://subway.python-hosting.com/">Subway project</a>, we've been getting ready for the 0.2 release. This release is a huge stepping stone to Subway 1.0.</p>
+
+<p>Subway, a Python "megaframework", was designed from the ground up to ensure that every single line of code the developer writes is meaningful. It was also designed to keep the total lines of code down without sacrificing readability and ease of maintenance. With so many Web frameworks in the Python world, why did I write Subway? None of the current Web frameworks included everything needed to create a Web application while still remaining flexible (I'm looking at you, Zope). In doing so, I realized that there were still <a href="http://www.sqlobject.org/">a lot</a> of <a href="http://www.formencode.org/">great</a> <a href="http://www.cherrypy.org/">tools</a> out there. I decided to reuse as many existing Python components as possible, and as a result, we have a framework that has more mature component parts, a framework that is not the quintessential reinvention of a generic web framework, and a little bit of good PR.</p>
+
+<p>A lot of people have wondered how it compares to <a href="http://www.djangoproject.com/">other</a> <a href="http://www.turbogears.org">frameworks</a>. Granted, there is a lot of overlap between the various projects, and I'm going to try to explain how Subway is different.</p>
+
+<p>The first (and most controversial) difference that people usually notice is the choice of a templating language, <a href="http://www.cheetahtemplate.org/">Cheetah</a>. I had several reasons for eliminating contenders such as Kid, ZPT, PTL, DTML, Nevow, PyMeld, my own <a href="http://subway.python-hosting.com/wiki/OneRing">OneRing</a> and PSP in favor of Cheetah. First of all, Cheetah is already known as one of the most mature templating systems around. Although it is a version 0.9 product, it has many years of development time behind it. Furthermore, such maturity brings mature features, features like object-oriented-document page inheritance to manage larger websites, and excellent documentation. Cheetah is also known for its speed due to its excellent precompilation mechanism. I also wanted a templating language where users did not have to go through a paradigm shift; they could go from hacking code in PHP or standard Python right into Cheetah with a minimal learning curve. Finally, templating languages like Kid, ZPT, Nevow and PyMeld are HTML-only, meaning they cannot generate other document formats like CSS. In my mind, this is unacceptible. Some of these language require your documents to be XML-compliant, which is another no-no. A framework (and templating language) should <em>never</em> get in your way, ever.</p>
+
+<p>Though TurboGears in particular is very, very similar in structure, Subway has a lot of lesser-known features. One of the cooler ones is CherryFlow, a generator-based system that allows you to write a complex Web application as a flow of different pages all in one method. It looks something like this:</p>
+
+<pre><code>@expose
+@flow
+def example_flow():
+    yield view.first_page()
+    if request.args["choice"] == "a":
+        yield view.choice_a_page()
+    else:
+        yield view.choice_b_page()
+    yield view.last_page()
+</code></pre>
+
+<p>This sort of functionality is analagous to Cocoon's <a href="http://cocoon.apache.org/2.1/userdocs/flow/">FlowScript</a>.</p>
+
+<p>Subway also has a form validation framework that makes your life easier. In my incredibly biased opinion, it's the best form validation out there. Every Subway "view" (template object) has an attribute "form", which corresponds to a FormEncode schema that is generated by reading specialized tags and attributes inside the view file. These definitions look something like this:</p>
+
+<pre>&lt;form method="post" action="submit_form"&gt;
+Your name:
+&lt;input type="text" name="yourname" form:required="true"
+    form:message="You must enter your name" /&gt;
+&lt;form:error name="yourname" /&gt;
+&lt;br /&gt;
+Your e-mail address: &lt;input type="text" name="youremail"
+    form:validate="email" form:message="Your must enter a valid e-mail address" /&gt;
+&lt;form:error name="youremail" /&gt;
+&lt;br /&gt;
+&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;</pre>
+
+<p>Next, you'll want to hook this up to some Python code to handle the form. That code will look something like this:</p>
+
+<pre><code>@expose
+def display_form():
+    return view.the_form()
+
+@expose
+@form_handler(view.the_form.form)
+def submit_form(yourname, youremail):
+    if form_submitted:
+        if form_errors:
+            return view.the_form() # send back the form, Subway will automatically fill in the fields with their submitted values and display all error messages
+        else:
+          # form is OK
+            return view.form_ok()
+    # form was not submitted
+    return view.the_form()
+</code></pre>
+
+<p>You can also manually manipulate the form_defaults and form_errors dictionaries to add your own custom validation, or provide a custom-defined FormEncode schema to the form_handler decorator.</p>
+
+<p>A handy little feature of Subway is the docstring views. An example shows it clearly:</p>
+
+<pre><code>@expose
+def test_docstring_view():
+    """
+    This $name is in a docstring
+    """
+    return test_docstring_view.view(name="view")
+</code></pre>
+
+<p>Before I sign off for today, let me remind you that a <em>super cool</em> new Ajax framework will be included with the next Subway version, 0.3. Keep an eye out.</p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2005/10/04/getting_ready_for_subway_0_2?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2005/10/04/getting_ready_for_subway_0_2?blog=15#comments</comments>
+		</item>
+				<item>
+			<title>Welcome to Mass Transit</title>
+			<link>http://www.aminus.org/blogs/index.php/2005/10/04/welcome_to_mass_transit?blog=15</link>
+			<pubDate>Tue, 04 Oct 2005 20:52:01 +0000</pubDate>			<dc:creator>peterhunt</dc:creator>
+			<category domain="main">General</category>			<guid isPermaLink="false">700@http://www.aminus.org/blogs/</guid>
+						<description>&lt;p&gt;It's about time I got a blog. Hello and welcome to Mass Transit, the blog of the future.&lt;/p&gt;
+&lt;div class=&quot;item_footer&quot;&gt;&lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://www.aminus.org/blogs/index.php/2005/10/04/welcome_to_mass_transit?blog=15&quot;&gt;Original post&lt;/a&gt; blogged on &lt;a href=&quot;http://b2evolution.net/&quot;&gt;b2evolution&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;&lt;/div&gt;</description>
+			<content:encoded><![CDATA[<p>It's about time I got a blog. Hello and welcome to Mass Transit, the blog of the future.</p>
+<div class="item_footer"><p><small><a href="http://www.aminus.org/blogs/index.php/2005/10/04/welcome_to_mass_transit?blog=15">Original post</a> blogged on <a href="http://b2evolution.net/">b2evolution</a>.</small></p></div>]]></content:encoded>
+								<comments>http://www.aminus.org/blogs/index.php/2005/10/04/welcome_to_mass_transit?blog=15#comments</comments>
+		</item>
+			</channel>
+</rss>
