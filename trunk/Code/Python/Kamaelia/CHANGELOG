@@ -1,3 +1,5 @@
+   * Minor bugfix to SSL support
+
    * Kamaelia.UI.Pygame.Text Added - (similar to Ticker, but input as well
      as output. Line oriented rather than word)
 
