@@ -22,21 +22,28 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia-Modeller",
-      version = "1.0.0",
-      description = "Kamaelia Modeller - a basic database modelling tool",
+setup(name = "Kamaelia",
+      version = "0.6.0-rc1",
+      description = "Kamaelia - Multimedia & Server Development Kit",
       author = "Michael Sparks & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/KamaeliaModeller",
+      url = "http://edit.kamaelia.org/Developers",
       license = "Copyright (c)2008 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [\
 # REPLACE
                   ""],
-#      scripts = [ 'App/Modeller.py' ],
       data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
       long_description = """
-Kamaelia Modeller is a modelling tool initially aimed a graph systems,
-such as entity relationship systems.
+Kamaelia is an open source project from BBC R&D. It makes prototyping
+multimedia, network & broadcast aware systems simple. Kamaelia systems are
+naturally concurrent and transform into production quality, maintainable
+systems, with relatively little change from prototype.
+
+It is useful for things from 3D systems through building PVRs through video
+playback, through shot change detection, through P2P distribution (live and
+bit torrent), through whiteboards, handwriting/gesture recognition, speech
+generation, and games systems, and back through DVB on both the reception
+side and broadcast side, and lots more not mentioned...
 """,
       )
 
