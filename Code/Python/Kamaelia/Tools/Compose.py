@@ -359,12 +359,12 @@ if __name__ == "__main__":
 
 #    from Filters import FilterSelectMsgs, FilterTopologyMsgs
 
-    from Compose.PipeBuild import PipeBuild
-    from Compose.PipelineWriter import PipelineWriter
-    from Compose.CodeGen import CodeGen
-    from Compose.BuildViewer import BuildViewer
-    from Compose.GUI.BuilderControlsGUI import BuilderControlsGUI
-    from Compose.GUI.TextOutputGUI import TextOutputGUI
+    from Kamaelia.Apps.Compose.PipeBuild import PipeBuild
+    from Kamaelia.Apps.Compose.PipelineWriter import PipelineWriter
+    from Kamaelia.Apps.Compose.CodeGen import CodeGen
+    from Kamaelia.Apps.Compose.BuildViewer import BuildViewer
+    from Kamaelia.Apps.Compose.GUI.BuilderControlsGUI import BuilderControlsGUI
+    from Kamaelia.Apps.Compose.GUI.TextOutputGUI import TextOutputGUI
     from Kamaelia.Util.Backplane import *
 
     items = getAllComponents()
