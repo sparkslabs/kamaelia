@@ -26,8 +26,6 @@ Simple UDP components
 
 These components provide simple support for sending and receiving UDP packets.
 
-*Note* that this components are deemed somewhat experimental.
-
 
 
 Example Usage
@@ -100,6 +98,9 @@ they are bound to; they send out a tuple (data,(host,port)) out of their
 SimplePeer is the simplest to use. Any data sent to its "inbox" inbox is sent
 as a UDP packet to the destination (receiver) specified at initialisation.
 
+UDPSender and UDPReceiver duplicate the sending and receiving functionality of
+SimplePeer in seperate components.
+
 TargettedPeer behaves identically to SimplePeer; however the destination
 (receiver) it sends UDP packets to can be changed by sending a new (host,port)
 tuple to its "target" inbox.
@@ -108,30 +109,29 @@ PostboxPeer does not have a fixed destination (receiver) to which it sends UDP
 packets. Send (host,port,data) tuples to its "inbox" inbox to arrange for a UDP
 packet containing the specified data to be sent to the specified (host,port).
 
-None of these components terminate. They ignore any messages sent to their
-"control" inbox and do not send anything out of their "signal" outbox.
-
-
+All of the components shutdown upon receiving a ShutdownMicroprocess message
+on their "control" inbox.  UDPSender also shuts down upon receiving a
+ProducerFinished message on its "control" inbox.  In this case before it shuts
+down it sends any data in its send queue, and any data waiting on its inbox.
 
 Implementation Details
 ----------------------
 
-SimplePeer, TargettedPeer and PostboxPeer are all derived from the base class
-BasicPeer. BasicPeer provides some basic code for receiving from a socket.
+All of the UDP components are all derived from the base class BasicPeer.
+BasicPeer provides some basic code for sending and receiving from a socket.
 
 Although technically BasicPeer is a component, it is not a usable one as it
 does not implement a main() method.
 """
 
-#
-# Experimental code, not to be moved into release tree without
-# documentation. (Strictly not to be moved into release tree!)
-#
-
 import socket
+import errno
 import Axon
 
-# ---------------------------- # SimplePeer
+from Kamaelia.Internet.Selector import Selector
+from Kamaelia.IPC import newReader, newWriter
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+
 class BasicPeer(Axon.Component.component):
     """\
     BasicPeer() -> new BasicPeer component.
@@ -139,31 +139,239 @@ class BasicPeer(Axon.Component.component):
     Base component from which others are derived in this module. Not properly
     functional on its own and so *should not be used* directly.
     """
-    
-    Inboxes = { "inbox" : "NOT USED",
-                "control" : "NOT USED",
-              }
-    Outboxes = { "outbox" : "(data,(host,port)) tuples for each packet received",
-                 "signal" : "NOT USED",
+
+    Inboxes  = { "inbox"      : "Data to sent to the socket",
+                 "control"    : "Recieve shutdown messages",
+                 "readReady"  : "Notify that there is incoming data ready on the socket",
+                 "writeReady" : "Notify that the socket is ready to send"
+                }
+
+    Outboxes = { "outbox"          : "(data,(host,port)) tuples for each packet received",
+                 "signal"          : "Signals receiver is shutting down",
+                 "_selectorSignal" : "For communication to the selector"
                }
-    
-    def receive_packet(self, sock):
-        """\
-        Tries to receive from socket. Any data received is sent out of the 
-        "outbox" outbox. Any socket errors are absorbed.
+
+    def __init__(self):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
+        super(BasicPeer, self).__init__()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM,
+                                  socket.IPPROTO_UDP)
+        self.receiving = False
+        self.sending = False
+        # Send buffer is actually a [buffer, (address, port)] list so we can
+        # keep track of where things are supposed to go if they don't get sent
+        # succesfully first time
+        self.sendBuffer = ["", ("0.0.0.0", 0)]
+
+    def safeBind(self, target):
+        """
+        Bind the socket to the target address and port, handling errors
+        gracefully
         
         Arguments:
-    
-        - sock  -- bound socket object to receive from
-        """
-        try:
-            message = sock.recvfrom(1024)
-        except socket.error, e:
-            pass
-        else:
-            self.send(message,"outbox") # format ( data, addr )
 
- 
+        - target -- (address, port) tuple indicating where to bind
+        """
+        
+        #FIXME: Binding should handle errors gracefully
+        self.sock.bind(target)
+
+    def setupSelector(self):
+        """ Get the selector service, and ensure it is activated and linked """
+
+        selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices()
+        if newSelector:
+            newSelector.activate()
+
+        # Link to the selector's "notify" inbox
+        self.link((self, "_selectorSignal"), selectorService)
+
+    def sendLoop(self, target):
+        """
+        Safely send any data stored in the send buffer or waiting on the
+        "inbox" inbox
+
+        Arguments:
+
+        - target -- (address, port) tuple indicating where to send the data
+        """
+        while len(self.sendBuffer[0]) != 0 or self.dataReady("inbox"):
+            if len(self.sendBuffer[0]) == 0:
+                self.sendBuffer = [self.recv("inbox"), target]
+            bytesSent = self.safeSend(*self.sendBuffer)
+            self.sendBuffer[0] = self.sendBuffer[0][bytesSent:]
+            if bytesSent == 0:
+                # Failed to send right now, so resend it later
+                break
+
+    def safeSend(self, data, target):
+        """
+        Send data over the socket, handling errors gracefully
+
+        Arguments:
+
+        - data   -- the data to send over the socket
+        - target -- (address, port) tuple indicating where to send the data
+        """
+
+        bytesSent = 0
+        try:
+            bytesSent = self.sock.sendto(data, target)
+            return bytesSent
+        except socket.error, socket.msg:
+            (errorno, errmsg) = socket.msg.args
+            if errorno == errno.AGAIN or errorno == errno.EWOULDBLOCK:
+                self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                          "_selectorSignal")
+        self.sending = False
+        return bytesSent
+
+    def recvLoop(self):
+        """
+        Read any data available on the socket in chunks of 1024 bytes
+        """
+
+        data = True
+        while data:
+            data = self.safeRecv(1024)
+            if data:
+                self.send(data, "outbox")
+
+    def safeRecv(self, size):
+        """
+        Read data from the socket, handling errors gracefully
+
+        Arguments:
+
+        - size -- The number of bytes of data to request from the socket
+        """
+
+        try:
+            data = self.sock.recvfrom(size)
+            if data:
+                return data
+        except socket.error, socket.msg:
+            (errorno, errmsg) = socket.msg.args
+            if errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK:
+                self.send(newReader(self, ((self, "readReady"), self.sock)),
+                         "_selectorSignal")
+        self.receiving = False
+        return None 
+    
+class UDPReceiver(BasicPeer):
+    """\
+    UDPReceiver([localaddr][,localport]) -> new UDPReceiver component.
+    
+    A simple component for receiving UDP packets. It binds to
+    the specified local address and port - from which it will receive packets.
+    Packets received are sent to it "outbox" outbox.
+    
+    Arguments:
+    
+    - localaddr      -- Optional. The local addresss (interface) to bind to. (default="0.0.0.0")
+    - localport      -- Optional. The local port to bind to. (default=0)
+    """    
+    def __init__(self, localaddr="0.0.0.0", localport=0):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
+        super(UDPReceiver, self).__init__()
+        self.local = (localaddr, localport)
+
+    def main(self):
+        """ Main loop """
+        self.safeBind(self.local)
+        # FIXME: This should possibly deal with problems with setting the
+        # socket non-blocking
+        self.sock.setblocking(0)
+
+        self.setupSelector()
+        yield 1
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                   "_selectorSignal")
+
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
+
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
+
+            if self.receiving:
+                self.recvLoop()
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class UDPSender(BasicPeer):
+    """\
+    UDPSender([receiver_addr][,receiver_port]) -> new UDPSender component.
+    
+    A simple component for transmitting UDP packets. It sends packets received
+    from the "inbox" inbox to a receiver on the specified address and port.
+    
+    Arguments:
+    
+    - receiver_addr  -- Optional. The address the receiver is bound to - to which packets will be sent. (default="0.0.0.0")
+    - receiver_port  -- Optional. The port the receiver is bound on - to which packets will be sent. (default=0)
+    """
+
+    def __init__(self, receiver_addr="0.0.0.0", receiver_port=0):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
+        super(UDPSender, self).__init__()
+        self.remote= (receiver_addr, receiver_port)
+
+    def main(self):
+        """ Main loop """
+        self.sock.setblocking(0)
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+
+        shutdownOnEmptyBuffer = False
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, producerFinished):
+                    shutdownOnEmptyBuffer = True
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
+
+            # Make sure everything which could get sent does so before we
+            # exit
+            if shutdownOnEmptyBuffer:
+                if (not self.dataReady("inbox") and
+                    len(self.sendBuffer[0]) == 0):
+                    self.send(producerFinished(), "signal")
+                    break
+
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+
+            if self.sending:
+                self.sendLoop(self.remote)
+
+            # This line is sketchy.  I have a feeling it'll lead to never
+            # pausing in certain circumstances.  So far it's not happened...
+            if not shutdownOnEmptyBuffer:
+                if (not self.anyReady() or
+                    not (self.sending and len(self.sendBuffer[0]) != 0)):
+                    self.pause()
+            yield 1
 
 class SimplePeer(BasicPeer):
     """\
@@ -180,36 +388,53 @@ class SimplePeer(BasicPeer):
     - receiver_addr  -- Optional. The address the receiver is bound to - to which packets will be sent. (default="0.0.0.0")
     - receiver_port  -- Optional. The port the receiver is bound on - to which packets will be sent. (default=0)
     """
-    
-    Inboxes = { "inbox" : "Raw binary string data packets to be sent to the destination (receiver host,port)",
-                "control" : "NOT USED",
-              }
-    Outboxes = { "outbox" : "(data,(host,port)) tuples for each packet received",
-                 "signal" : "NOT USED",
-               }
-    
-    def __init__(self, localaddr="0.0.0.0", localport=0, receiver_addr="0.0.0.0", receiver_port=0):
+
+    def __init__(self, localaddr="0.0.0.0", localport=0,
+                 receiver_addr="0.0.0.0", receiver_port=0):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(SimplePeer, self).__init__()
-        self.localaddr = localaddr
-        self.localport = localport
-        self.receiver_addr = receiver_addr
-        self.receiver_port = receiver_port
+        self.local = (localaddr, localport)
+        self.remote = (receiver_addr, receiver_port)
 
     def main(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.bind((self.localaddr,self.localport))
-        sock.setblocking(0)
+        """ Main loop """
+        self.safeBind(self.local)
+        self.sock.setblocking(0)
+
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
         while 1:
-            while self.dataReady("inbox"):
-                data = self.recv()
-                sent = sock.sendto(data, (self.receiver_addr, self.receiver_port) )
-                yield 1
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
 
-            self.receive_packet(sock)
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
+
+            if self.sending:
+                self.sendLoop(self.remote)
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
 
-# ---------------------------- # TargetedPeer
 class TargettedPeer(BasicPeer):
     """\
     TargettedPeer([localaddr][,localport][,receiver_addr][,receiver_port]) -> new TargettedPeer component.
@@ -228,46 +453,68 @@ class TargettedPeer(BasicPeer):
     - receiver_addr  -- Optional. The address the receiver is bound to - to which packets will be sent. (default="0.0.0.0")
     - receiver_port  -- Optional. The port the receiver is bound on - to which packets will be sent. (default=0)
     """
-    Inboxes = {
-        "inbox" : "Data recieved here is sent to the reciever addr/port",
-        "target" : "Data receieved here changes the receiver addr/port data is tuple form: (host, port)",
-        "control" : "Not listened to", # SMELL: This is actually a bug!
-    }
-    Outboxes = {
-        "outbox" : "Data received on the socket is passed out here, form: (data,(host, port))",
-        "signal" : "No data sent to", # SMELL: This is actually a bug!
-    }
-    def __init__(self, localaddr="0.0.0.0", localport=0, receiver_addr="0.0.0.0", receiver_port=0):
+
+    Inboxes  = { "inbox"      : "Data to sent to the socket",
+                 "control"    : "Recieve shutdown messages",
+                 "readReady"  : "Notify that there is incoming data ready on the socket",
+                 "writeReady" : "Notify that the socket is ready to send",
+                 "target"     : "Data receieved here changes the receiver addr/port data is tuple form: (host, port)",
+               }
+
+    Outboxes = { "outbox"          : "(data,(host,port)) tuples for each packet received",
+                 "signal"          : "Signals receiver is shutting down",
+                 "_selectorSignal" : "For communication to the selector",
+               }
+
+    def __init__(self, localaddr="0.0.0.0", localport=0,
+                 receiver_addr="0.0.0.0", receiver_port=0):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(TargettedPeer, self).__init__()
-        self.localaddr = localaddr
-        self.localport = localport
-        self.receiver_addr = receiver_addr
-        self.receiver_port = receiver_port
+        self.local = (localaddr, localport)
+        self.remote = (receiver_addr, receiver_port)
 
     def main(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.bind((self.localaddr,self.localport))
-        sock.setblocking(0)
+        """ Main loop """
+        self.safeBind(self.local)
+        self.sock.setblocking(0)
+
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
         while 1:
-            #
-            # Simple Dispatch behaviour
-            # 
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
+
             if self.dataReady("target"):
-                addr, port = self.recv("target")
-                self.receiver_addr = addr
-                self.receiver_port = port
+                self.remote = self.recv("target")
 
-            if self.dataReady("inbox"):
-                data = self.recv("inbox")
-                sock.sendto(data, (self.receiver_addr, self.receiver_port) );
-                yield 1
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
 
-            self.receive_packet(sock)
+            if self.sending:
+                self.sendLoop(self.remote)
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
 
-
-# ---------------------------- # PostboxPeer
 class PostboxPeer(BasicPeer):
     """\
     PostboxPeer([localaddr][,localport]) -> new PostboxPeer component.
@@ -281,33 +528,68 @@ class PostboxPeer(BasicPeer):
     - localaddr      -- Optional. The local addresss (interface) to bind to. (default="0.0.0.0")
     - localport      -- Optional. The local port to bind to. (default=0)
     """
-    Inboxes = {
-        "inbox" : "Send (host,port,data) tuples here to send a UDP packet to (host,port) containing data",
-        "control" : "Not listened to", # SMELL: This is actually a bug!
-    }
-    Outboxes = {
-        "outbox" : "Data received on the socket is passed out here, form: ((host, port), data)",
-        "signal" : "No data sent to", # SMELL: This is actually a bug!
-    }
+
     def __init__(self, localaddr="0.0.0.0", localport=0):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
+
         super(PostboxPeer, self).__init__()
-        self.localaddr = localaddr
-        self.localport = localport
+        self.local = (localaddr, localport)
+
+    def sendLoop(self):
+        """
+        Safely send any data stored in the send buffer or waiting on the
+        "inbox" inbox
+        """
+        while len(self.sendBuffer[0]) != 0 or self.dataReady("inbox"):
+            if len(self.sendBuffer[0]) == 0:
+                receiverAddr, receiverPort, data = self.recv("inbox")
+                self.sendBuffer = [data, (receiverAddr, receiverPort)]
+            bytesSent = self.safeSend(*self.sendBuffer)
+            self.sendBuffer[0] = self.sendBuffer[0][bytesSent:]
+            if bytesSent == 0:
+                # Failed to send right now, so resend it later
+                break        
 
     def main(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.bind((self.localaddr,self.localport))
-        sock.setblocking(0)
+        """ Main loop """
+        self.safeBind(self.local)
+        self.sock.setblocking(0)
+
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
         while 1:
-            if self.dataReady("inbox"):
-                receiver_addr, receiver_port, data = self.recv("inbox")
-                sock.sendto(data, (receiver_addr, receiver_port) );
-                yield 1
-            self.receive_packet(sock)
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
+
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
+
+            if self.sending:
+                self.sendLoop()
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
 
-__kamaelia_components__  = ( SimplePeer, TargettedPeer, PostboxPeer, )
+__kamaelia_components__  = ( UDPSender, UDPReceiver, SimplePeer,
+                             TargettedPeer, PostboxPeer, )
 
 if __name__=="__main__":
     class DevNull(Axon.Component.component):
@@ -381,6 +663,7 @@ if __name__=="__main__":
         for server_addr, server_port in server_addrs:
             Pipeline(
                 SimplePeer(localaddr=server_addr, localport=server_port), # Simple Servers
+
                 LineSepFilter("SERVER:"+server_addr+" :: "),
                 ConsoleEchoer()
             ).activate()
@@ -416,7 +699,7 @@ if __name__=="__main__":
         from Kamaelia.Chassis.Graphline import Graphline
         import random
 
-        server_addrs = [ 
+        server_addrs = [
                          ("127.0.0.1", 1601),
                          ("127.0.0.2", 1602),
                          ("127.0.0.3", 1603),
@@ -456,8 +739,5 @@ if __name__=="__main__":
 #    TargettedPeer_tests()
 #    PostboxPeer_tests()
 
-# FIXME: Note the header!
-# FIXME: Note the header!
-# FIXME: Note the header!
-
 # RELEASE: MH, MPS
+
