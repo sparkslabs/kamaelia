@@ -11,7 +11,19 @@ from OpenGL.GLU import *
 import pygame
 from pygame.locals import *
 
-xrot = yrot = zrot = 0.0
+#xrot = yrot = zrot = 0.0
+
+xrot = yrot = 0.0
+xspeed = yspeed = 0.0
+x = y = 0.0
+z = -5.0
+
+textures = []
+filter = 0
+light = 0
+blend = 0
+
+
 
 def resize((width, height)):
     if height==0:
@@ -20,11 +32,15 @@ def resize((width, height)):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(45, 1.0*width/height, 1.0, 100.0)
+    #glOrtho(-5.0*width/height, 5.0*width/height, -5.0, 5.0, 5.0, -5.0)
+    
+#    glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0)
+    
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
 def init():
-    global quadratic, textures
+    global quadratic
     
     # Create a quadratic object for sphere rendering
     quadratic = gluNewQuadric()
@@ -42,6 +58,15 @@ def init():
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     
+    LightAmbient  = ( (0.5, 0.5, 0.5, 1.0) )
+    LightDiffuse  = ( (1.0, 1.0, 1.0, 1.0) )
+    LightPosition = ( (0.0, 0.0, 2.0, 1.0) )
+    glLightfv( GL_LIGHT1, GL_AMBIENT, LightAmbient )
+    glLightfv( GL_LIGHT1, GL_DIFFUSE, LightDiffuse )
+    glLightfv( GL_LIGHT1, GL_POSITION, LightPosition )
+    glEnable( GL_LIGHT1 )
+    glColor4f( 1.0, 1.0, 1.0, 0.5)
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE )
     
 #    # Add light
 #    light_ambient =  [0.0, 0.0, 0.0, 1.0]
@@ -62,7 +87,7 @@ def init():
 def buildLabel(text):
     """Pre-render the text to go on the label."""    
     
-    global texID, imageSize, textureSize
+    global textures, imageSize, textureSize
     fontColor = (0,0,255)
     imageColor = (128,128,128)
     textureColor = (244,244,244)
@@ -90,40 +115,58 @@ def buildLabel(text):
     
     textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
     
-    texID = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, texID)
+    textures = glGenTextures(3)
+    #glBindTexture(GL_TEXTURE_2D, texID)        
+#    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+#                  GL_RGBA, GL_UNSIGNED_BYTE, textureData )
+#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+#    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+#    #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
     
-    
+    glBindTexture(GL_TEXTURE_2D, textures[0])
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
                   GL_RGBA, GL_UNSIGNED_BYTE, textureData )
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
-    #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
-    
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-#    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-#    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+
+    glBindTexture(GL_TEXTURE_2D, textures[1])
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR )
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR )
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
+                  GL_RGBA, GL_UNSIGNED_BYTE, textureData )
+
+    glBindTexture( GL_TEXTURE_2D, textures[2])
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST )
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR )
+    gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(),
+                       GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 
 
 
 def draw():
-    global xrot, yrot, zrot, quadratic, texID, imageSize, textureSize
+    global quadratic, textures, imageSize, textureSize, x, y, z, xspeed, yspeed, xrot, yrot, zrot
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    
     
     glLoadIdentity();                        
-    glTranslatef(0.0,0.0,-5.0)
+    glTranslatef(x,y,z)
 
     glRotatef(xrot,1.0,0.0,0.0)            # Rotate The Cube On It's X Axis
     glRotatef(yrot,0.0,1.0,0.0)            # Rotate The Cube On It's Y Axis
-    glRotatef(zrot,0.0,0.0,1.0)            # Rotate The Cube On It's Z Axis
+#    glRotatef(zrot,0.0,0.0,1.0)            # Rotate The Cube On It's Z Axis
     
-    glColor3f(1.0,0.0,0.0)
+#    glRotatef(30.0,1.0,0.0,0.0)            # Rotate The Cube On It's X Axis
+#    glRotatef(30.0,0.0,1.0,0.0)            # Rotate The Cube On It's Y Axis
+#    glRotatef(0.0,0.0,0.0,1.0)            # Rotate The Cube On It's Z Axis
+    
+    #glColor3f(1.0,0.0,0.0)
+    
+#    # viewing transformation 
+#    gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+#    glScalef (1.0, 2.0, 1.0)      # modeling transformation
+
+    glBindTexture(GL_TEXTURE_2D, textures[filter])
    
     glBegin(GL_QUADS)    
     
@@ -164,12 +207,63 @@ def draw():
     glTexCoord2f(1.0, 1.0); glVertex3f(-1.0,  1.0,  1.0)    # Top Right Of The Texture and Quad
     glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0, -1.0)    # Top Left Of The Texture and Quad
         
-    glEnd()    
+    glEnd()
+        
+    xrot += xspeed
+    yrot += yspeed
     
-    xrot  = xrot + 0.2                # X rotation
-    yrot = yrot + 0.2                 # Y rotation
-    zrot = zrot + 0.2                 # Z rotation      
+#    xrot  = xrot + 0.2                # X rotation
+#    yrot = yrot + 0.2                 # Y rotation
+#    zrot = zrot + 0.2                 # Z rotation      
     
+    
+def handleKeys(key):
+    global filter, light, x, y, z, xspeed, yspeed, blend
+
+    if key == K_ESCAPE:
+        return 0
+    if key == K_f:
+        filter = filter + 1
+        if filter == 3:
+            filter = 0
+    elif key == K_l:
+        light = not light
+        if not light:
+            glDisable(GL_LIGHTING)
+        else:
+            glEnable(GL_LIGHTING)
+    elif key == K_b:
+        blend = not blend
+        if blend:
+            glEnable(GL_BLEND)
+            glDisable(GL_DEPTH_TEST)
+        else:
+            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_BLEND)
+    elif key == K_PAGEUP:
+        z -= 0.05
+    elif key == K_PAGEDOWN:
+        z += 0.05
+    elif key == K_UP:
+        xspeed -= 0.01
+    elif key == K_DOWN:
+        xspeed += 0.01
+    elif key == K_LEFT:
+        yspeed -= 0.01
+    elif key == K_RIGHT:
+        yspeed += 0.01
+    elif key == K_w:
+        y += 0.2
+    elif key == K_s:
+        y -= 0.2
+    elif key == K_a:
+        x -= 0.2
+    elif key == K_d:
+        x += 0.2
+            
+    
+    return 1
+
 
 def main():
 
@@ -186,8 +280,11 @@ def main():
     ticks = pygame.time.get_ticks()
     while 1:
         event = pygame.event.poll()
-        if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+        if event.type == QUIT:
             break
+        if event.type == KEYDOWN:
+            if handleKeys(event.key) == 0:
+                break
         
         draw()
         pygame.display.flip()
