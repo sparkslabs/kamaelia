@@ -1,23 +1,47 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: JMB
+"""
+NOTE:  This is experimental software.  It has not been fully tested and will
+probably break or behave in unexpected ways.
+
+This is the WSGI handler for ServerCore.  It works by importing a module and
+pulling out the relevant application object from it.  It will wait on the
+HTTPParser to transmit the body in full before proceeding.  Thus, it is probably
+not a good idea to use any WSGI apps requiring a lot of large file uploads.
+"""
+
 from pprint import pprint, pformat
-import sys
-import os
-import re
-import cStringIO
-import cgitb
+import sys, os, re, cStringIO, cgitb, copy
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
-import copy
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 from Axon.Ipc import producerFinished
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+from Kamaelia.Protocol.HTTP import HTTPProtocol
 
 Axon.Box.ShowAllTransits = False
-# ----------------------------------------------------------------------------------------------------
-#
-# Simple WSGI Handler
-#
 
 def HTML_WRAP(app):
     """
@@ -41,18 +65,10 @@ def normalizeEnviron(environ):
     Converts environ variables to strings for wsgi compliance and deletes extraneous
     fields.  Also puts the request headers into CGI variables.
     """
-    header_list = []
-    header_dict = environ['headers']
-
     for header in environ["headers"]:
         cgi_varname = "HTTP_"+header.replace("-","_").upper()
         environ[cgi_varname] = environ["headers"][header]
 
-    for key in header_dict:
-        line = "%s: %s\n" % (key, header_dict[key])
-        header_list.append(line)
-
-    environ['headers'] = ''.join(header_list)
     del environ['bad']
 
 
@@ -83,7 +99,7 @@ class _WsgiHandler(threadedcomponent):
 
         self.app = app
         self.log_writable = log_writable
-        self.response_dict = False
+        self.response_dict = {}
         self.wsgi_config = WsgiConfig
         self.write_called = False
 
@@ -94,16 +110,15 @@ class _WsgiHandler(threadedcomponent):
 
         self.headers = self.environ["headers"]
 
+        if self.request['method'] == 'POST':
+            self.waitForBody()
+        else:
+            self.environ['wsgi.input'] = cStringIO.StringIO('')
+
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
 
-
-        if self.request['method'] == 'POST':
-            self.waitForBody()
-
         normalizeEnviron(self.environ)
-
-        self.log_writable.write(pformat(self.environ))
 
         try:
             #PEP 333 specifies that we're not supposed to buffer output here,
@@ -138,12 +153,11 @@ class _WsgiHandler(threadedcomponent):
         elif self.response_dict:
             raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
-        self.response_dict = dict(response_headers)
-        self.response_dict['statuscode'] = status
-
-        for key in self.response_dict:
+        for key,value in response_headers:
             if is_hop_by_hop(key):
                 raise WsgiAppError('Hop by hop header specified')
+            self.response_dict[key.lower()] = value
+        self.response_dict['statuscode'] = status
 
         return self.write
 
@@ -155,7 +169,7 @@ class _WsgiHandler(threadedcomponent):
         """
         if self.response_dict and not self.write_called:
             self.response_dict['data'] = body_data
-            self.response_dict['type'] = self.response_dict['Content-type']
+            self.response_dict['type'] = self.response_dict['content-type']
             self.send(self.response_dict, 'outbox')
             self.write_called = True
         elif self.write_called:
@@ -166,6 +180,10 @@ class _WsgiHandler(threadedcomponent):
             raise WsgiError('Unkown error in write.')
 
     def _error(self, status=503, body_data=('', '', '')):
+        """
+        This is an internal method used to print an error to the browser and log
+        it in the wsgi log.
+        """
         if self.Debug:
             resource = {
                 'statuscode' : status,
@@ -180,6 +198,13 @@ class _WsgiHandler(threadedcomponent):
 
 
     def waitForBody(self):
+        """
+        This internal method is used to make the WSGI Handler wait for the body
+        of an HTTP request before proceeding.
+
+        FIXME:  We should really begin executing the Application and pull the
+        body as needed rather than pulling it all up front.
+        """
         buffer = []     #Wait on the body to be sent to us
         not_done = True
         while not_done:
@@ -192,25 +217,8 @@ class _WsgiHandler(threadedcomponent):
 
             if not_done and not self.anyReady():
                 self.pause()
-        self.environ['body'] = ''.join(buffer)
+        self.environ['wsgi.input'] = cStringIO.StringIO(''.join(buffer))
 
-    def generateRequestMemFile(self):
-        """
-        Creates a memfile to be stored in wsgi.input.  Uses cStringIO which may be vulnerable to DOS attacks.
-        """
-        request_line = "%s %s %s/%s" % \
-            (self.environ['method'], self.environ['raw-uri'], self.environ['protocol'], self.environ['version'])
-
-        request_list = [request_line]
-        for key in self.environ['headers']:
-            request_list.append("%s: %s" % (key, self.environ['headers'][key]))
-
-        request_list.extend(['', self.environ['body']])
-
-        full_request = '\r\n'.join(request_list)
-#        print "full_request: \n" + full_request
-
-        return cStringIO.StringIO(full_request)
 
     def sendFragment(self, fragment):
         page = {
@@ -243,14 +251,13 @@ class _WsgiHandler(threadedcomponent):
         #==================================
         #WSGI variables
         #==================================
-        self.environ["wsgi.version"] = wsgi_config['WSGI_VER']
+        self.environ["wsgi.version"] = wsgi_config['wsgi_ver']
         self.environ["wsgi.url_scheme"] = self.environ["protocol"].lower()
         self.environ["wsgi.errors"] = self.log_writable
 
         self.environ["wsgi.multithread"] = False
         self.environ["wsgi.multiprocess"] = False
-        self.environ["wsgi.run_once"] = False
-        self.environ["wsgi.input"] = self.generateRequestMemFile()
+        self.environ["wsgi.run_once"] = True
 
     def initOptVars(self, wsgi_config):
         """This method initializes all variables that are optional"""
@@ -261,27 +268,10 @@ class _WsgiHandler(threadedcomponent):
         # Contents of an HTTP_CONTENT_LENGTH field
         self.environ["CONTENT_LENGTH"] = self.headers.get("content-length","")
         #self.environ["DOCUMENT_ROOT"] = self.homedirectory
-        self.environ["SERVER_ADMIN"] = wsgi_config['SERVER_ADMIN']
-        self.environ["SERVER_SOFTWARE"] = wsgi_config['SERVER_SOFTWARE']
+        self.environ["SERVER_ADMIN"] = wsgi_config['server_admin']
+        self.environ["SERVER_SOFTWARE"] = wsgi_config['server_software']
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
-                    (wsgi_config['SERVER_SOFTWARE'], self.server_name, self.server_port)
-
-    def unsupportedVars(self):
-        """
-        Probably won't be used.  This is just a list of environment variables that
-        aren't implemented as of yet.
-        """
-        consider = " **CONSIDER ADDING THIS -- eg: "
-        self.environ["HTTP_REFERER"] = consider + "-"
-        self.environ["SERVER_SIGNATURE"] = consider + "...."
-        self.environ["SCRIPT_FILENAME"] = consider + \
-            "/usr/local/httpd/sites/com.thwackety/cgi/test.pl"
-        self.environ["REQUEST_URI"] = consider + "/cgi-bin/test.pl"
-        self.environ["SCRIPT_URL"] = consider + "/cgi-bin/test.pl"
-        self.environ["SCRIPT_URI"] = consider + "http://thwackety.com/cgi-bin/test.pl"
-        self.environ["REMOTE_ADDR"] = consider + "192.168.2.5"
-        self.environ["REMOTE_PORT"] = consider + "56669"
-        self.environ["GATEWAY_INTERFACE"] = consider + "CGI/1.1"
+                    (wsgi_config['server_software'], self.server_name, self.server_port)
 
 def WsgiHandler(log_writable, WsgiConfig, url_list):
     """
@@ -295,8 +285,8 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
         split_uri = [x for x in split_uri if x]  #remove any empty strings
         for url_item in url_list:
             if re.search(url_item['kp.regex'], split_uri[0]):
-                request['SCRIPT_NAME'] = split_uri.pop(0)
-                request['PATH_INFO'] = '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
+                request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
+                request['PATH_INFO'] = '/' + '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
                 matched_dict = url_item
                 break
 
@@ -308,15 +298,6 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
         request.update(matched_dict)
         return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler
-
-def HTTPProtocol():
-    """
-    Pretty standard method.  Returns a function object to implement the HTTP protocol.
-    """
-    def foo(self,**argd):
-        print self.routing
-        return HTTPServer(requestHandlers(self.routing),**argd)
-    return foo
 
 class WsgiError(Exception):
     """

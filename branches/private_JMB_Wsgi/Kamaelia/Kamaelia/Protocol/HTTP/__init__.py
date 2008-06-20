@@ -19,12 +19,17 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-
+"""
+This is a generic module containing some commonly used bits of the HTTP package.
+"""
 import types
 from itertools import izip
 from HTTPServer import HTTPServer, MapStatusCodeToText
 
 def requestHandlers(URLHandlers, errorpages=None):
+    """
+    This is a commonly used function used to find a request handler.
+    """
     if errorpages is None:
         import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
         errorpages = ErrorPages
@@ -43,8 +48,12 @@ def requestHandlers(URLHandlers, errorpages=None):
     return createRequestHandler
 
 def HTTPProtocol(routing):
-    def foo(**argd):
+    """
+    This is a convenience method that you should probably use when creating a
+    server rather than creating an HTTPServer directly.
+    """
+    def _getHttpServer(**argd):
         return HTTPServer(requestHandlers(routing),**argd)
-    return foo
+    return _getHttpServer
 
 MapTextToStatusCode = dict(izip(MapStatusCodeToText.itervalues(), MapStatusCodeToText.iterkeys()))

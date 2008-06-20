@@ -8,7 +8,6 @@ from Kamaelia.Protocol.HTTP import MapStatusCodeToText, HTTPProtocol
 import Kamaelia.Experimental.Wsgi.Log as Log
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
 from Kamaelia.Protocol.HTTP import MapStatusCodeToText
-import Kamaelia.Protocol.HTTP as HTTP
 
 port=8082
 

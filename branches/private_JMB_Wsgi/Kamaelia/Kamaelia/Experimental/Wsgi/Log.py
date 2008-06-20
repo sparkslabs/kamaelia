@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -73,12 +73,11 @@ To make a program that will write everything it receieves via stdin:
  reader.activate()
  log.run()
 """
-
+import os, datetime
 from Axon.Component import component
 from Kamaelia.Util.Backplane import Backplane,  SubscribeTo, PublishTo
 from Axon.Ipc import newComponent, producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
-import datetime
 
 def wrapMessage(message):
     """
@@ -120,7 +119,7 @@ class LogWriter(component):
             formatted string to put in the log.
         """
         super(LogWriter,  self).__init__()
-        self.logname = logname
+        self.logname = os.path.expanduser(logname)
         self.bplane = Backplane('LOG_' + logname)
         self.subscriber = SubscribeTo('LOG_' + logname)
         self.wrapper = wrapper

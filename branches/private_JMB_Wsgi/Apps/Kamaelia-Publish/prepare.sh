@@ -25,8 +25,8 @@ echo "Copying scripts into the assembly directory"
 cp -R scripts/* assembly
 echo "Copying plugins to the assembly directory"
 cp -R plugins assembly/plugins
-echo "Copying packages to the assembly directory"
-cp -R packages assembly/packages
+echo "Copying data to the assembly directory"
+cp -R data assembly/data
 
 echo "----------------------------------------------------"
 echo "Done preparing!"

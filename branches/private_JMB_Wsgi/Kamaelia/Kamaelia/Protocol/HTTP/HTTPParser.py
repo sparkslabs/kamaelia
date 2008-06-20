@@ -203,7 +203,9 @@ class HTTPParser(component):
         """Read once from inbox (generally a TCP connection) and add
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
-            self.readbuffer += self.recv("inbox")
+            msg = self.recv("inbox")
+            self.readbuffer += msg
+            print 'received ' + msg.replace('\r\n', '\\r\\n\n')
             return 1
         else:
             return 0
