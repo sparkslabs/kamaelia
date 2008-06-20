@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import time, sys, Axon
-from Axon.LikeFile import likefile, background
-
+from Axon.LikeFile import LikeFile as likefile
+from Axon.background import background
+import Queue
 background().start()
 
 
@@ -17,13 +18,20 @@ class Reverser(Axon.Component.component):
 
 sys.stderr.write("""_Similar_ to Unix's "rev" tool, implemented using likefile., type stuff, it reverses it\n""")
 
-reverser = likefile(Reverser())
+reverser = likefile(Reverser()).activate()
 
 while True:
     line = sys.stdin.readline()
     if line == "":
        break
     line = line.rstrip() # get rid of the newline (Doesn't just strip newline, so rev(rev()) would not work 'correctly')
-    reverser.put(line)
-    enil = reverser.get()
+    reverser.put(line, "inbox")
+
+    while 1:
+        try:
+            enil = reverser.get("outbox")
+            break
+        except Queue.Empty:
+            time.sleep(0.1)
+            
     print enil # This is doesn't necessarily put the right whitespace back

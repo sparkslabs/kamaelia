@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 import time
-from background import background
+from Axon.background import background
 from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
-from LikeFile import LikeFile
+from Axon.LikeFile import LikeFile
 background().start()
 
 import Queue
