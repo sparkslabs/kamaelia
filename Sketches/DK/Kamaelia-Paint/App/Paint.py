@@ -110,13 +110,21 @@ class Paint(Axon.Component.component):
       self.display.fill( self.backgroundColour, self.innerRect )
       
    def floodFill(self, x, y, newColour, oldColour):
-       colour = self.display.get_at((x,y))
-       if (self.display.get_at((x,y)) == oldColour and self.display.get_at((x,y)) != newColour):
-           self.display.set_at((x,y),newColour)
-           self.floodFill(x + 1, y,     newColour, oldColour)
-           self.floodFill(x - 1, y,     newColour, oldColour)
-           self.floodFill(x,     y + 1, newColour, oldColour)
-           self.floodFill(x,     y - 1, newColour, oldColour)
+       "Flood fill on a region of non-BORDER_COLOR pixels."
+       if (self.display.get_at((x,y)) == newColour):
+           print "hergfhe"
+           return
+       edge = [(x, y)]
+       self.display.set_at((x, y), newColour)
+       while edge:
+           newedge = []
+           for (x, y) in edge:
+               for (s, t) in ((x+1, y), (x-1, y), (x, y+1), (x, y-1)):
+                   if (self.display.get_at((s,t)) == oldColour):
+                       self.display.set_at((s, t), newColour)
+                       newedge.append((s, t))
+           edge = newedge
+       self.blitToSurface()
            
    def main(self):
       """Main loop."""
@@ -194,7 +202,7 @@ class Paint(Axon.Component.component):
                         if event.button == 1:
                             self.drawing = True
                     if event.button == 3:
-                        self.floodFill(event.pos[0],event.pos[1],(255,0,0,0),self.display.get_at(event.pos))
+                        self.floodFill(event.pos[0],event.pos[1],self.selectedColour,self.display.get_at(event.pos))
                       #  self.oldpos = None
                       #  self.drawBG()
                       #  self.blitToSurface()
