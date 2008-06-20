@@ -20,15 +20,31 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.LikeFile import likefile, background
+from Axon.background import background
+from Axon.LikeFile import LikeFile
 from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 background = background().start()
-p = likefile(SimpleHTTPClient())
-p.put("http://google.com")
-p.put("http://slashdot.org")
-p.put("http://whatismyip.org")
-google = p.get()
-slashdot = p.get()
-whatismyip = p.get()
-p.shutdown()
+import time
+import Queue
+
+p = LikeFile(SimpleHTTPClient()).activate()
+p.put("http://google.com","inbox")
+p.put("http://slashdot.org","inbox")
+p.put("http://whatismyip.org","inbox")
+
+def get_item(handle):
+   while 1:
+      try:
+          item = handle.get("outbox")
+          break
+      except Queue.Empty:
+          time.sleep(0.05)
+   return item
+
+google = get_item(p)
+slashdot = get_item(p)
+whatismyip = get_item(p)
+
 print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+
+time.sleep(5)
