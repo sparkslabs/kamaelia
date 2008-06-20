@@ -100,11 +100,14 @@ class linkage(AxonObject):
             return self.source.inboxes[self.sourcebox]
         else:
             try:
-                outbox = self.source.outboxes[self.sourcebox]
-                return outbox
-            except KeyError, e:
-                print "Box not found:", self, self.sourcebox
-                raise 
+                return self.source.outboxes[self.sourcebox]
+            except KeyError:
+                import time
+                print "Linkage isn't being made correctly - does the following component"
+                print "have a comma trailing it in the linkage description?"
+                print self.source
+                time.sleep(3)
+                raise
         
     def getSinkbox(self):
         """Returns the box object that this linkage goes to."""
