@@ -271,6 +271,7 @@ requests to wake or pause components.
 """
 import time
 import gc as _gc
+import os
 
 from util import removeAll
 from idGen import strId, numId
@@ -292,7 +293,8 @@ _GOINGTOSLEEP = object()     # microprocess to be paused (should be removed from
 class scheduler(microprocess):
    """Scheduler - runs microthreads of control."""
    run = None
-   def __init__(self):
+   wait_for_one = False
+   def __init__(self, **argd):
       """Creates a scheduler object. If scheduler.run has not been set, sets it.
       Class initialisation ensures that this object/class attribute is initialised - client
       modules always have access to a standalone scheduler.
@@ -304,15 +306,24 @@ class scheduler(microprocess):
       Whilst there can be more than one scheduler active in the general case you will NOT
       want to create a custom scheduler.
       """
-      super(scheduler, self).__init__()
+      super(scheduler, self).__init__(**argd)
       if not scheduler.run:         # If no scheduler already allocated...
          scheduler.run = self       # Make this scheduler the singleton scheduler.
 
       self.time = time.time()
       
       self.threads = {}    # current set of threads and their states (whether sleeping, or running)
+      self.stopRequests = Queue.Queue()
       self.wakeRequests = Queue.Queue()
       self.pauseRequests = Queue.Queue()
+      self.debuggingon = False
+      if self.wait_for_one:
+         self.extra = 1
+      else:
+         self.extra = 0
+
+   def waitForOne(self):
+      self.extra = 1
 
    def _addThread(self, mprocess):
       """A Microprocess adds itself to the runqueue using this method, using
@@ -320,6 +331,7 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
+      self.extra = 0
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
@@ -353,6 +365,7 @@ class scheduler(microprocess):
    
    def listAllThreads(self):
        """Returns a list of all microprocesses (both active and sleeping)"""
+       self.debuggingon = True
        return self.threads.keys()
    
    def handleMicroprocessShutdownKnockon(self, knockon):
@@ -399,7 +412,6 @@ class scheduler(microprocess):
        running = True
        
        while running:
-           
            # slowmo
            now = time.time()
            until = now + slowmo
@@ -416,7 +428,11 @@ class scheduler(microprocess):
            nextrunqueue = []
            
            # run microprocesses in the runqueue
+#           if self.debuggingon:
+#               print "-->", [ x.name for x in self.threads], [ x.name for x in runqueue]
            for mprocess in runqueue:
+#               if self.debuggingon:
+#                   print "Before Run", mprocess
                yield 1
                
                if self.threads[mprocess] == _ACTIVE:
@@ -427,11 +443,16 @@ class scheduler(microprocess):
                            for c in result.components():
                                c.activate()
                        if isinstance(result, WaitComplete):
-                           newThread = microprocess(result.args[0], reactivate(mprocess))
+                           tag = result.argd.get("tag","")
+                           if tag == "":
+                              tag = "__" + mprocess.name[-10:] # So we have a clue of parentage(!)
+                           newThread = microprocess(result.args[0], reactivate(mprocess), tag = tag )
                            newThread.activate()
                            del self.threads[mprocess]
                            mprocess = None
                            
+#                       if self.debuggingon:
+#                           print "After Run", mprocess
                        if mprocess:
                            nextrunqueue.append(mprocess)
                    except StopIteration:
@@ -487,9 +508,28 @@ class scheduler(microprocess):
                except Queue.Empty:
                     # catch timeout
                     pass
-           
-           running = len(self.threads)
-               
+               if not self.stopRequests.empty():
+#                   print "Do we get here? 1"
+                   break
+
+           if not self.stopRequests.empty():
+#               print "Do we get here? 2"
+               break
+#           print "len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests
+           running = len(self.threads) + self.extra
+
+       if not self.stopRequests.empty():
+#           print "WE GOT HERE! :-)"
+           for X in self.threads:
+#               print "We now call .stop() on ", X.name, type(X)
+               X.stop()
+#       print "All microprocesses now stopped. Halting"
+
+   def stop(self):
+#       print "ADDING STOP REQUEST"
+       self.stopRequests.put( self )
+       super(scheduler, self).stop()
+
    def runThreads(self,slowmo=0):
       """\
       Runs the scheduler until there are no activated microprocesses left
