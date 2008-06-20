@@ -192,7 +192,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleClosedCSA(shutdownCSA(self,CSA))
 
         self.send(serverShutdown(), "_serversignal")
-        super(SimpleServer, self).stop()
+        super(ServerCore, self).stop()
 
     def mkProtocolHandler(self, **sock_info):
 
