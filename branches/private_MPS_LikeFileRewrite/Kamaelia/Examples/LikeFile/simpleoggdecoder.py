@@ -20,20 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.LikeFile import likefile, background
+from Axon.background import background
+from Axon.LikeFile import LikeFile
 from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+import time
 import ao
 background(slowmo=0.001).start()
 
 filename = "../SupportingMediaFiles/KDE_Startup_2.ogg"
 
-playStream = likefile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
+playStream = LikeFile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor())).activate()
 
 # Play the ogg data in the background
 oggdata = open(filename, "r+b").read()
-playStream.put(oggdata)
+playStream.put(oggdata,"inbox")
 while True:
-    playStream.get()
-    # there's no data produced but this will prevent us from exiting immediately.
+    time.sleep(0.1)
