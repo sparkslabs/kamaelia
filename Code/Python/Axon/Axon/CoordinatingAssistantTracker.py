@@ -170,6 +170,11 @@ class coordinatingassistanttracker(object):
       else:
          self._parent = None
 
+   def zap(self):
+      self._informationLogged = dict()
+      self._servicesRegistered = dict()
+
+
    def informationItemsLogged(self):
       """Returns list of names values are being tracked under."""
       return self._informationLogged.keys()
