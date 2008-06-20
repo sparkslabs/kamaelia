@@ -3,11 +3,11 @@
 import time
 from Axon.background import background
 from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
-from Axon.LikeFile import LikeFile
+from Axon.Handle import Handle
 background().start()
 
 import Queue
-TD = LikeFile(
+TD = Handle(
          TextDisplayer(position=(20, 90),
                        text_height=36,
                        screen_width=900,
@@ -17,7 +17,7 @@ TD = LikeFile(
                       )
      ).activate()
 
-TB = LikeFile(
+TB = Handle(
         Textbox(position=(20, 340),
                 text_height=36,
                 screen_width=900,
