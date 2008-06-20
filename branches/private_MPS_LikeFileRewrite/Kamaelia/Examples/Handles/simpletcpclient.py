@@ -37,8 +37,7 @@ Axon.background.background().start()
 print "what channel on freenode?"
 channel = raw_input(">>> ") # this is to prevent spammage of the default settings.
 
-client = Axon.Handle.Handle
-
+client = Axon.Handle.Handle(TCPClient(host = host, port = port)).activate()
 time.sleep(1)
 client.put("user likefile likefile likefile :likefile\n","inbox")
 client.put("nick likefile\n","inbox")
