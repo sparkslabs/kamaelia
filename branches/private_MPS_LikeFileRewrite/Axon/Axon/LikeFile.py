@@ -23,11 +23,11 @@
 # component that creates and encapsulates a Pipeline of components, connecting
 # their outbox to inbox, and signal to control to form the Pipeline chain.
 
-import Axon
+import ThreadedComponent
 import time
 import Queue
 
-class LikeFile(Axon.ThreadedComponent.threadedcomponent):
+class LikeFile(ThreadedComponent.threadedcomponent):
    Inboxes = {
        "_inbox":"From the component to go to the outside world",
        "_control":"From the component to go to the outside world",
