@@ -205,7 +205,6 @@ class HTTPParser(component):
         if self.dataReady("inbox"):
             msg = self.recv("inbox")
             self.readbuffer += msg
-            print 'received ' + msg.replace('\r\n', '\\r\\n\n')
             return 1
         else:
             return 0
