@@ -26,21 +26,27 @@
 host = "irc.freenode.net"
 port = 6667
 
-import Axon.LikeFile, time
+import Axon.background
+import Axon.Handle
+import time
+import Queue
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Internet.TCPClient import TCPClient
-Axon.LikeFile.background().start()
+Axon.background.background().start()
 
 print "what channel on freenode?"
 channel = raw_input(">>> ") # this is to prevent spammage of the default settings.
 
-client = Axon.LikeFile.likefile(TCPClient(host = host, port = port))
+client = Axon.Handle.Handle(TCPClient(host = host, port = port)).activate()
 time.sleep(1)
-client.put("user likefile likefile likefile :likefile\n")
-client.put("nick likefile\n")
-client.put("JOIN %s\n" % channel)
+client.put("user likefile likefile likefile :likefile\n","inbox")
+client.put("nick likefile\n","inbox")
+client.put("JOIN %s\n" % channel, "inbox")
 while True:
-    print client.get()
+    try:
+        print client.get("outbox")
+    except Queue.Empty:
+        time.sleep(0.1)
 
 
 

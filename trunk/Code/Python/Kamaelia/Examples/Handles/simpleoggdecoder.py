@@ -20,15 +20,21 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.LikeFile import likefile, background
-from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
-background = background().start()
-p = likefile(SimpleHTTPClient())
-p.put("http://google.com")
-p.put("http://slashdot.org")
-p.put("http://whatismyip.org")
-google = p.get()
-slashdot = p.get()
-whatismyip = p.get()
-p.shutdown()
-print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+from Axon.background import background
+from Axon.Handle import Handle
+from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+import time
+import ao
+background(slowmo=0.001).start()
+
+filename = "../SupportingMediaFiles/KDE_Startup_2.ogg"
+
+playStream = Handle(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor())).activate()
+
+# Play the ogg data in the background
+oggdata = open(filename, "r+b").read()
+playStream.put(oggdata,"inbox")
+while True:
+    time.sleep(0.1)

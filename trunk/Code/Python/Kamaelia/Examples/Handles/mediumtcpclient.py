@@ -20,20 +20,33 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.LikeFile import likefile, background
-from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-import ao
-background(slowmo=0.001).start()
 
-filename = "../SupportingMediaFiles/KDE_Startup_2.ogg"
+# a slightly more complicated example of a TCP client, where we define an echo.
 
-playStream = likefile(Pipeline(VorbisDecode(), AOAudioPlaybackAdaptor()))
+from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.Protocol.EchoProtocol import EchoProtocol
+from Kamaelia.Internet.TCPClient import TCPClient
+from Axon.background import background
+from Axon.Handle import Handle
+import Queue
+import time
 
-# Play the ogg data in the background
-oggdata = open(filename, "r+b").read()
-playStream.put(oggdata)
+background(slowmo=0.01).start()
+
+PORT = 1900
+# This starts an echo server in the background.
+SimpleServer(protocol = EchoProtocol, port = PORT).activate()
+
+# give the component time to commence listening on a port.
+time.sleep(0.5)
+
+echoClient = Handle(TCPClient(host = "localhost", port = PORT)).activate()
 while True:
-    playStream.get()
-    # there's no data produced but this will prevent us from exiting immediately.
+    echoClient.put(raw_input(">>> "),"inbox")
+    while 1:
+        try:
+            print echoClient.get("outbox")
+            break
+        except Queue.Empty:
+            time.sleep(0.01)
+
