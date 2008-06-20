@@ -27,7 +27,7 @@ import ThreadedComponent
 import time
 import Queue
 
-class LikeFile(ThreadedComponent.threadedcomponent):
+class Handle(ThreadedComponent.threadedcomponent):
    Inboxes = {
        "_inbox":"From the component to go to the outside world",
        "_control":"From the component to go to the outside world",
@@ -38,7 +38,7 @@ class LikeFile(ThreadedComponent.threadedcomponent):
    }
    def __init__(self, someComponent):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(LikeFile,self).__init__()
+      super(Handle,self).__init__()
       self.comp = someComponent
       self.inboundData = Queue.Queue()
       self.outboundData = Queue.Queue()
