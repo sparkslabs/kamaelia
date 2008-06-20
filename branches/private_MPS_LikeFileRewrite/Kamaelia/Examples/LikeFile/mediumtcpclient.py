@@ -26,7 +26,9 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.EchoProtocol import EchoProtocol
 from Kamaelia.Internet.TCPClient import TCPClient
-from Axon.LikeFile import likefile, background
+from Axon.background import background
+from Axon.LikeFile import LikeFile
+import Queue
 import time
 
 background(slowmo=0.01).start()
@@ -38,7 +40,13 @@ SimpleServer(protocol = EchoProtocol, port = PORT).activate()
 # give the component time to commence listening on a port.
 time.sleep(0.5)
 
-echoClient = likefile(TCPClient(host = "localhost", port = PORT))
+echoClient = LikeFile(TCPClient(host = "localhost", port = PORT)).activate()
 while True:
-    echoClient.put(raw_input(">>> "))
-    print echoClient.get()
+    echoClient.put(raw_input(">>> "),"inbox")
+    while 1:
+        try:
+            print echoClient.get("outbox")
+            break
+        except Queue.Empty:
+            time.sleep(0.01)
+
