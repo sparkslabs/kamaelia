@@ -20,25 +20,31 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-
-# a slightly more complicated example of a TCP client, where we define an echo.
-
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Protocol.EchoProtocol import EchoProtocol
-from Kamaelia.Internet.TCPClient import TCPClient
-from Axon.LikeFile import likefile, background
+from Axon.background import background
+from Axon.Handle import Handle
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+background = background().start()
 import time
+import Queue
 
-background(slowmo=0.01).start()
+p = Handle(SimpleHTTPClient()).activate()
+p.put("http://google.com","inbox")
+p.put("http://slashdot.org","inbox")
+p.put("http://whatismyip.org","inbox")
 
-PORT = 1900
-# This starts an echo server in the background.
-SimpleServer(protocol = EchoProtocol, port = PORT).activate()
+def get_item(handle):
+   while 1:
+      try:
+          item = handle.get("outbox")
+          break
+      except Queue.Empty:
+          time.sleep(0.05)
+   return item
 
-# give the component time to commence listening on a port.
-time.sleep(0.5)
+google = get_item(p)
+slashdot = get_item(p)
+whatismyip = get_item(p)
 
-echoClient = likefile(TCPClient(host = "localhost", port = PORT))
-while True:
-    echoClient.put(raw_input(">>> "))
-    print echoClient.get()
+print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+
+time.sleep(5)
