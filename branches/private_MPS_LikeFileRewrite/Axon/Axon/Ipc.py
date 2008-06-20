@@ -178,8 +178,9 @@ class WaitComplete(ipc):
 
    - the generator to be run as the separate microprocess
    """
-   def __init__(self, *args):
+   def __init__(self, *args,**argd):
       self.args = args
+      self.argd = argd
 
 class reactivate(ipc):
    """\
