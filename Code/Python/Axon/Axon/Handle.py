@@ -27,6 +27,13 @@ import ThreadedComponent
 import time
 import Queue
 
+print "Polite Notice"
+print "-------------"
+
+print "The code you are using includes using Axon.Handle. This code is"
+print "currently experimental - we'd welcome any issues you may find/experience"
+print "with this code."
+
 class Handle(ThreadedComponent.threadedcomponent):
    Inboxes = {
        "_inbox":"From the component to go to the outside world",
