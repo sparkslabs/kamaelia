@@ -44,7 +44,7 @@ from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Util.Console import ConsoleEchoer
 
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
-from Kamaelia.Apps.Jam.Internet.NewDP import UDPReceiver, UDPSender, PostboxPeer
+from Kamaelia.Apps.Jam.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPeer
 from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
