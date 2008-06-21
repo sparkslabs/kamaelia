@@ -89,15 +89,15 @@ Example Usage
 -------------
 
 Type URLs, and they will be downloaded and placed, back to back in "downloadedfile.txt"::
-  
+
     Pipeline(
         ConsoleReader(">>> ", ""),
         SimpleHTTPClient(),
         SimpleFileWriter("downloadedfile.txt"),
     ).run()
 
-    
-    
+
+
 How does it work?
 -----------------
 
@@ -120,7 +120,7 @@ from Kamaelia.Protocol.HTTP.HTTPParser import *
 class ParsedHTTPRedirect(object):
     def __init__(self, redirectto):
         self.redirectto = redirectto
-        
+
 def intval(mystring):
     """Convert a string to an integer, representing errors by None"""
     try:
@@ -147,7 +147,7 @@ def AttachConsoleToDebug(comp):
     comp.debuggingconsole = ConsoleEchoer()
     comp.link((comp, "debug"), (comp.debuggingconsole, "inbox"))
     comp.debuggingconsole.activate()
-    
+
 class SingleShotHTTPClient(component): 
     """\
     SingleShotHTTPClient() -> component that can download a file using HTTP by URL
@@ -158,29 +158,29 @@ class SingleShotHTTPClient(component):
     - [connectionclass] -- specify a class other than TCPClient to connect with
     - [method]     -- the HTTP method for the request (default to GET normally or POST if postbody != ""
     """
-   
-    Inboxes =  {             
+
+    Inboxes =  {
         "inbox"          : "UNUSED",
         "control"        : "UNUSED",
-                    
+
         "_parserinbox"   : "Data from HTTP parser",
         "_parsercontrol" : "Signals from HTTP parser",
         "_tcpcontrol"    : "Signals from TCP client",
     }
-        
+
 
     Outboxes = {
         "outbox"         : "Requested file",
         "debug"          : "Output to aid debugging",
-        
+
         "_parsersignal"  : "Signals for HTTP parser",
-                
+
         "_tcpoutbox"     : "Send over TCP connection",
         "_tcpsignal"     : "Signals shutdown of TCP connection",
-        
+
         "signal"         : "UNUSED"
     }
-        
+
     def __init__(self, starturl, postbody = "", connectionclass = TCPClient, extraheaders = None, method = None):
         #print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
@@ -190,17 +190,17 @@ class SingleShotHTTPClient(component):
         self.starturl = starturl
         self.connectionclass = connectionclass
         self.method = method
-        
+
         self.postbody = postbody
         if extraheaders is not None:
             self.extraheaders = extraheaders
         else:
             self.extraheaders = {}
-        
+
     def formRequest(self, url):
         """Craft a HTTP request string for the supplied url"""
         splituri = splitUri(url)
-        
+
         host = splituri["uri-server"]
         if splituri.has_key("uri-port"):
             host += ":" + splituri["uri-port"]
@@ -225,16 +225,16 @@ class SingleShotHTTPClient(component):
         splituri["request"].append("Connection: Keep-Alive\r\n") # keep-alive is a work around for lack of shutdown notification in TCPClient
         for header in self.extraheaders:
             splituri["request"].append("%s: %s\r\n" % (header, self.extraheaders[header]))
-        
+
         splituri["request"].append("\r\n") 
 
         splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
 
-        #print splituri["request"]
-        
+        print splituri["request"]
+
         if self.postbody not in [None, ""]:
             splituri["request"].append(self.postbody)
-        
+
         return splituri
 
     def makeRequest(self, request):
@@ -244,16 +244,16 @@ class SingleShotHTTPClient(component):
         port = intval(request.requestobject.get("uri-port", ""))
         if port == None:
             port = 80
-        
+
         self.tcpclient = self.connectionclass(request.requestobject["uri-server"], port)
         self.httpparser = HTTPParser(mode="response")
-                
+
         self.link( (self, "_tcpoutbox"),       (self.tcpclient, "inbox") )
         self.link( (self, "_tcpsignal"),       (self.tcpclient, "control") )
         self.link( (self.tcpclient, "signal"), (self, "_tcpcontrol") )
 
         self.link( (self.tcpclient, "outbox"), (self.httpparser, "inbox") ) #incoming TCP data -> HTTPParser directly
-        
+
         self.link( (self, "_parsersignal"), (self.httpparser, "control") )
         self.link( (self.httpparser, "outbox"), (self, "_parserinbox") )
         self.link( (self.httpparser, "signal"), (self, "_parsercontrol") )
@@ -274,14 +274,14 @@ class SingleShotHTTPClient(component):
             self.send(producerFinished(), "_tcpsignal")
             self.send(shutdown(), "_parsersignal")
             self.removeChild(self.tcpclient)
-            self.removeChild(self.httpparser)            
+            self.removeChild(self.httpparser)
             self.tcpclient = None
             self.httpparser = None
 
     def handleRedirect(self, header):
         """Check for a redirect response and queue the fetching the page it points to if it is such a response.
         Returns true if it was a redirect page and false otherwise."""
-        
+
         if header["responsecode"] in ["301", "302", "303", "307"]:
             # location header gives the redirect URL
             newurl = header["headers"].get("location", "")
@@ -295,7 +295,7 @@ class SingleShotHTTPClient(component):
                 # do something equivalent to what we'd do for 404
         else:
             return False
-                            
+
     def main(self):
         """Main loop."""
         self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
@@ -305,40 +305,40 @@ class SingleShotHTTPClient(component):
         self.send(producerFinished(self), "signal")
         yield 1
         return
-        
+
     def mainBody(self):
         """Called repeatedly by main loop. Checks inboxes and processes messages received.
         Start the fetching of the new page if the current one is a redirect and has been
         completely fetched."""
-        
+
         self.send("SingleShotHTTPClient.mainBody()", "debug")
         while self.dataReady("_parserinbox"):
             msg = self.recv("_parserinbox")
             if isinstance(msg, ParsedHTTPHeader):
-                self.send("SingleShotHTTPClient received a ParsedHTTPHeader on _parserinbox", "debug")                        
+                self.send("SingleShotHTTPClient received a ParsedHTTPHeader on _parserinbox", "debug")
                 # if the page is a redirect page
                 if not self.handleRedirect(msg.header):
                     if msg.header["responsecode"] == "200":
                         self.send(msg, "outbox") # if not redirecting then send the response on
                     else:  #treat as not found
                         pass
-                        
+
             elif isinstance(msg, ParsedHTTPBodyChunk):
                 self.send("SingleShotHTTPClient received a ParsedHTTPBodyChunk on _parserinbox", "debug")
                 if len(self.requestqueue) == 0: # if not redirecting then send the response on
                     self.send(msg, "outbox")
-                
+
             elif isinstance(msg, ParsedHTTPEnd):
                 self.send("SingleShotHTTPClient received a ParsedHTTPEnd on _parserinbox", "debug")
                 if len(self.requestqueue) == 0: # if not redirecting then send the response on
                     self.send(msg, "outbox")
                 self.shutdownKids()
                 return 1
-            
+
         while self.dataReady("_parsercontrol"):
             temp = self.recv("_parsercontrol")
             self.send("SingleShotHTTPClient received something on _parsercontrol", "debug")
-            
+
         while self.dataReady("_tcpcontrol"):
             msg = self.recv("_tcpcontrol")
             self.send(msg, "_parsersignal")
@@ -360,7 +360,7 @@ class SingleShotHTTPClient(component):
                     self.makeRequest(self.currentrequest)
             else:
                 return 0
-                    
+
         self.pause()
         return 1
 
@@ -392,27 +392,27 @@ class SimpleHTTPClient(component):
         """Create and link to a carousel object"""
         super(SimpleHTTPClient, self).__init__()
         #AttachConsoleToDebug(self)
-        self.debug("SimpleHTTPClient.__init__()")    
-        
+        self.debug("SimpleHTTPClient.__init__()")
+
         # now create our Carousel subcomponent
         self.carousel = Carousel(componentFactory=makeSSHTTPClient)
         self.addChildren(self.carousel)
         self.link((self, "_carouselnext"),        (self.carousel, "next"))
         self.link((self, "_carouselsignal"),      (self.carousel, "control"))
         self.link((self.carousel, "outbox"),      (self, "_carouselinbox"))
-        self.link((self.carousel, "requestNext"), (self, "_carouselready"))        
-        
+        self.link((self.carousel, "requestNext"), (self, "_carouselready"))
+
     def cleanup(self):
-        """Destroy child components and send producerFinished when we quit."""    
+        """Destroy child components and send producerFinished when we quit."""
         self.debug("SimpleHTTPClient.cleanup()")
         self.send(producerFinished(self), "_carouselsignal") #shutdown() not currently supported by Carousel
         self.send(producerFinished(self), "signal")
-        self.removeChild(self.carousel)        
+        self.removeChild(self.carousel)
         self.unpause()
-        
+
     def debug(self, msg):
         self.send(msg, "debug")
-        
+
     def main(self):
         """Main loop."""
         self.debug("SimpleHTTPClient.main()\n")
@@ -425,24 +425,24 @@ class SimpleHTTPClient(component):
 
             while self.dataReady("inbox"):
                 paramdict = self.recv("inbox")
-                
+
                 # we accept either string or dict messages - if it's a string then
                 # we assume you mean that's the URL you want fecthed
-                
+
                 if isinstance(paramdict, str):
                     paramdict = { "url": paramdict }
-                    
+
                 self.debug("SimpleHTTPClient received url " + paramdict.get("url","") + "\n")
-                
+
                 # request creation of a new SingleShotHTTPClient by Carousel
                 self.send(paramdict, "_carouselnext")
-                
+
                 # store as a list of strnigs then join at the 
                 # end to avoid O(n^2) time string cat'ing behaviour
                 filebody = []
-                     
+
                 carouselbusy = True
-                
+
                 while carouselbusy:
                     yield 1
 
@@ -450,7 +450,7 @@ class SimpleHTTPClient(component):
                         msg = self.recv("_carouselinbox")
                         if isinstance(msg, ParsedHTTPBodyChunk):
                             filebody.append(msg.bodychunk)
-                            
+
                     while self.dataReady("control"):
                         msg = self.recv("control")
                         if isinstance(msg, producerFinished):
@@ -458,16 +458,16 @@ class SimpleHTTPClient(component):
                         elif isinstance(msg, shutdown):
                             self.cleanup()
                             return
-                            
+
                     while self.dataReady("_carouselready"):
                         msg = self.recv("_carouselready")
                         carouselbusy = False
 
                     self.pause()
                 self.send(string.join(filebody, ""), "outbox")
-                
+
                 filebody = [] # free up some memory used by the now unneeded list
-            
+
             while self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, producerFinished):
@@ -475,9 +475,9 @@ class SimpleHTTPClient(component):
                 elif isinstance(msg, shutdown):
                     self.cleanup()
                     return
-                    
+
             self.pause()
-        
+
         self.debug("eoml in SimpleHTTPClient\n")
         self.cleanup()
         yield 1
@@ -489,7 +489,7 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.File.Writing import SimpleFileWriter
-    
+
     # Example - type in a URL e.g. http://www.google.co.uk and have that page saved to disk
     Pipeline(
         ConsoleReader(">>> ", ""),
