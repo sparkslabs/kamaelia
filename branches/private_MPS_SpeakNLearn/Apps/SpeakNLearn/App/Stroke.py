@@ -19,8 +19,12 @@ height = 384
 pgd = PygameDisplay( width=width, height=height ).activate()
 PygameDisplay.setDisplayService(pgd)
 
-Graphline( CANVAS  = Canvas( position=(0,0),size=(width,height) ),
-           PEN     = Pen(),
+bgcolour = (255,255,180)
+Graphline( CANVAS  = Canvas( position=(100,42),
+                             size=(824,300),
+                             bgcolour = bgcolour,
+                           ),
+           PEN     = Pen(bgcolour = bgcolour),
            STROKER = StrokeRecogniser(),
            OUTPUT  = ConsoleEchoer(),
 
