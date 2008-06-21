@@ -98,6 +98,9 @@ they are bound to; they send out a tuple (data,(host,port)) out of their
 SimplePeer is the simplest to use. Any data sent to its "inbox" inbox is sent
 as a UDP packet to the destination (receiver) specified at initialisation.
 
+UDPSender and UDPReceiver duplicate the sending and receiving functionality of
+SimplePeer in seperate components.
+
 TargettedPeer behaves identically to SimplePeer; however the destination
 (receiver) it sends UDP packets to can be changed by sending a new (host,port)
 tuple to its "target" inbox.
@@ -106,16 +109,16 @@ PostboxPeer does not have a fixed destination (receiver) to which it sends UDP
 packets. Send (host,port,data) tuples to its "inbox" inbox to arrange for a UDP
 packet containing the specified data to be sent to the specified (host,port).
 
-None of these components terminate. They ignore any messages sent to their
-"control" inbox and do not send anything out of their "signal" outbox.
-
-
+All of the components shutdown upon receiving a ShutdownMicroprocess message
+on their "control" inbox.  UDPSender also shuts down upon receiving a
+ProducerFinished message on its "control" inbox.  In this case before it shuts
+down it sends any data in its send queue, and any data waiting on its inbox.
 
 Implementation Details
 ----------------------
 
-SimplePeer, TargettedPeer and PostboxPeer are all derived from the base class
-BasicPeer. BasicPeer provides some basic code for receiving from a socket.
+All of the UDP components are all derived from the base class BasicPeer.
+BasicPeer provides some basic code for sending and receiving from a socket.
 
 Although technically BasicPeer is a component, it is not a usable one as it
 does not implement a main() method.
@@ -282,7 +285,8 @@ class UDPReceiver(BasicPeer):
     def main(self):
         """ Main loop """
         self.safeBind(self.local)
-        # TODO: Find out if anything is likely to bite me when setting blocking
+        # FIXME: This should possibly deal with problems with setting the
+        # socket non-blocking
         self.sock.setblocking(0)
 
         self.setupSelector()
