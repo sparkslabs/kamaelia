@@ -11,12 +11,15 @@ from Kamaelia.Protocol.HTTP import HTTPProtocol
 sys.path.insert(0, sys.argv[0] + '/data')
 
 def normalizeWsgiVars(WsgiConfig):
-    WsgiConfig['WSGI_VER'] = tuple(WsgiConfig['WSGI_VER'].split('.'))
+    WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
 
 def main():
     configs = ParseConfigFile('~/.kp', DictFormatter())
     ServerConfig = configs['SERVER']
     WsgiConfig = configs['WSGI']
+    from pprint import pprint
+    #pprint(WsgiConfig)
+    normalizeWsgiVars(WsgiConfig)
 
     sys.path.append(WsgiConfig['log'])
 
@@ -39,4 +42,13 @@ def main():
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
 
     print "Serving on port %s" % (ServerConfig['port'])
-    kp.run()
+    try:
+        kp.run()
+    except KeyboardInterrupt:
+        print "Halting server!"
+        kp.stop()
+    except:
+        import traceback
+        traceback.print_exc()
+        print "===========FATAL ERROR==========="
+        kp.stop()

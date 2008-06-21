@@ -37,7 +37,7 @@ A server using a simple echo protocol, that just echoes back anything sent by
 the client::
 
     class EchoProtocol(Axon.Component.component):
-    
+
         def main(self):
             while not self.shutdown():
                 yield 1
@@ -67,7 +67,7 @@ covers a large array of server types.
 
 A protocol handler is simply a component that can receive and send data (as
 byte strings) in a particular format and with a particular behaviour - ie.
-conforming to a particular protocol. 
+conforming to a particular protocol.
 
 Provide this chassis with a factory function to create a component to
 handle the protocol. Whenever a client connects a handler component will then be
@@ -147,7 +147,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     TCPS=TCPServer
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(ServerCore, self).__init__(**argd) 
+        super(ServerCore, self).__init__(**argd)
         self.connectedSockets = []
         self.server = None
         if not self.protocol:
@@ -192,7 +192,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleClosedCSA(shutdownCSA(self,CSA))
 
         self.send(serverShutdown(), "_serversignal")
-        super(SimpleServer, self).stop()
+        super(ServerCore, self).stop()
 
     def mkProtocolHandler(self, **sock_info):
 
@@ -229,9 +229,9 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # sys.stderr.write("Wooo!\n"); sys.stderr.flush()
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler], 
+        self.trackResourceInformation(connectedSocket,
+                                      [],
+                                      [outboxToShutdownProtocolHandler],
                                       protocolHandler)
         # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
 
@@ -246,9 +246,9 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
             controllink = None
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
+        self.trackResourceInformation(connectedSocket,
+                                      [],
+                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket],
                                       ( protocolHandler, controllink ) )
 
         self.addChildren(connectedSocket,protocolHandler)

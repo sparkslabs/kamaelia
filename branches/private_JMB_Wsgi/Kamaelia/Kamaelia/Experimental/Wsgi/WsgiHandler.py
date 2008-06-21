@@ -40,6 +40,8 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 from Kamaelia.Protocol.HTTP import HTTPProtocol
+from wsgiref.validate import validator
+
 
 Axon.Box.ShowAllTransits = False
 
@@ -70,6 +72,13 @@ def normalizeEnviron(environ):
         environ[cgi_varname] = environ["headers"][header]
 
     del environ['bad']
+    del environ['headers']
+    del environ['peerport']
+    del environ['localport']
+    if environ.get('HTTP_CONTENT_TYPE'):
+        del environ['HTTP_CONTENT_TYPE']
+    if environ.get('HTTP_CONTENT_LENGTH'):
+        del environ['HTTP_CONTENT_LENGTH']
 
 
 class _WsgiHandler(threadedcomponent):
@@ -104,16 +113,24 @@ class _WsgiHandler(threadedcomponent):
         self.write_called = False
 
     def main(self):
-        self.server_name, self.server_port = self.request['uri-server'].split(':')
+        try:
+            self.server_name, self.server_port = self.environ['uri-server'].split(':')
+        except ValueError:
+            self.server_name = self.environ['uri-server']
+            self.server_port = '80'
         #Get the server name and the port number from the server portion of the
         #uri.  E.G. 127.0.0.1:8082/moin returns 127.0.0.1 and 8082
 
         self.headers = self.environ["headers"]
 
-        if self.request['method'] == 'POST':
-            self.waitForBody()
+        if self.request['method'] == 'POST' or self.request['method'] == 'PUT':
+            body = self.waitForBody()
         else:
-            self.environ['wsgi.input'] = cStringIO.StringIO('')
+            body = ''
+
+        #The WSGI validator complains if we close the memfile from wsgi.input directly
+        self.memfile = cStringIO.StringIO(body)
+        self.environ['wsgi.input'] = self.memfile
 
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
@@ -137,7 +154,7 @@ class _WsgiHandler(threadedcomponent):
         except:
             pass  #it was a list, so we're good
 
-        self.environ['wsgi.input'].close()
+        self.memfile.close()
         self.send(Axon.Ipc.producerFinished(self), "signal")
 
     def start_response(self, status, response_headers, exc_info=None):
@@ -153,10 +170,13 @@ class _WsgiHandler(threadedcomponent):
         elif self.response_dict:
             raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
+        pprint(response_headers)
+
         for key,value in response_headers:
             if is_hop_by_hop(key):
                 raise WsgiAppError('Hop by hop header specified')
-            self.response_dict[key.lower()] = value
+
+        self.response_dict['headers'] = copy.copy(response_headers)
         self.response_dict['statuscode'] = status
 
         return self.write
@@ -169,7 +189,8 @@ class _WsgiHandler(threadedcomponent):
         """
         if self.response_dict and not self.write_called:
             self.response_dict['data'] = body_data
-            self.response_dict['type'] = self.response_dict['content-type']
+            print '==RESPONSE DICTIONARY=='
+            pprint(self.response_dict)
             self.send(self.response_dict, 'outbox')
             self.write_called = True
         elif self.write_called:
@@ -217,13 +238,15 @@ class _WsgiHandler(threadedcomponent):
 
             if not_done and not self.anyReady():
                 self.pause()
-        self.environ['wsgi.input'] = cStringIO.StringIO(''.join(buffer))
+        return ''.join(buffer)
 
 
     def sendFragment(self, fragment):
         page = {
             'data' : fragment,
             }
+        print 'FRAGMENT'
+        pprint(page)
         self.send(page, 'outbox')
 
     def initRequiredVars(self, wsgi_config):
@@ -247,6 +270,8 @@ class _WsgiHandler(threadedcomponent):
         if qindex != -1:
             self.environ['PATH_INFO'] = path_info[:qindex]
             self.environ['QUERY_STRING'] = path_info[(qindex+1):]
+        else:
+            self.environ['QUERY_STRING'] = ''
 
         #==================================
         #WSGI variables
@@ -255,9 +280,9 @@ class _WsgiHandler(threadedcomponent):
         self.environ["wsgi.url_scheme"] = self.environ["protocol"].lower()
         self.environ["wsgi.errors"] = self.log_writable
 
-        self.environ["wsgi.multithread"] = False
+        self.environ["wsgi.multithread"] = True
         self.environ["wsgi.multiprocess"] = False
-        self.environ["wsgi.run_once"] = True
+        self.environ["wsgi.run_once"] = False
 
     def initOptVars(self, wsgi_config):
         """This method initializes all variables that are optional"""
@@ -272,6 +297,9 @@ class _WsgiHandler(threadedcomponent):
         self.environ["SERVER_SOFTWARE"] = wsgi_config['server_software']
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
                     (wsgi_config['server_software'], self.server_name, self.server_port)
+        self.environ['REMOTE_ADDR'] = self.environ['peer']
+
+__imported__ = []
 
 def WsgiHandler(log_writable, WsgiConfig, url_list):
     """
@@ -291,12 +319,13 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
                 break
 
         if not matched_dict:
-            raise WsgiError('Page not found and no 404 pages enabled!')
+            raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
+
 
         module = _importWsgiModule(matched_dict['kp.import_path'])
         app = getattr(module, matched_dict['kp.app_object'])
         request.update(matched_dict)
-        return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
+        return _WsgiHandler(validator(app), request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler
 
 class WsgiError(Exception):
