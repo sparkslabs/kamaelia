@@ -49,12 +49,13 @@ class Canvas(Axon.Component.component):
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                }
 
-    def __init__(self, position=(0,0), size=(1024,768), ):
+    def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255)):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Canvas,self).__init__()
         self.position = position
         self.size = size
         self.antialias = False
+        self.bgcolour = bgcolour
         if self.antialias == True:
             self.pygame_draw_line = pygame.draw.aaline
         else:
@@ -98,7 +99,7 @@ class Canvas(Axon.Component.component):
                                  )
               )
 
-        self.surface.fill( (255,255,255) )
+        self.surface.fill( (self.bgcolour) )
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
 
 
@@ -182,7 +183,7 @@ class Canvas(Axon.Component.component):
         if len(args) == 3:
             self.surface.fill( [int(a) for a in args[0:3]] )
         else:
-            self.surface.fill( (255,255,255) )
+            self.surface.fill( (self.bgcolour) )
         self.redrawNeeded = True
         self.dirty_sent = True
         self.clean = True

@@ -13,7 +13,7 @@
 import sys
 sys.path.append("../Sketcher")
 
-from Whiteboard.Canvas import Canvas
+from Kamaelia.Apps.Whiteboard.Canvas import Canvas
 import pygame
 
 from Pen import *
