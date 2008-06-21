@@ -14,9 +14,10 @@ class Pen(component):
                  "points" : "(x,y) pairs"
                }
     
-    def __init__(self):
+    def __init__(self, bgcolour=(255,255,255)):
         super(Pen,self).__init__()
         self.sendbuffer = []
+        self.bgcolour = bgcolour
      
     
     def finished(self):
@@ -44,7 +45,7 @@ class Pen(component):
                 for data in message:
                     if data.type == pygame.MOUSEBUTTONDOWN:
                         if data.button==1:
-                            self.sendbuffer.append( ["CLEAR", "255","255","255"] )
+                            self.sendbuffer.append( ["CLEAR"]+[str(x) for x in self.bgcolour] )
                             oldpos = data.pos
                             dragging = True
                     elif data.type == pygame.MOUSEMOTION and dragging:
