@@ -22,24 +22,34 @@ class IRCLogin(Axon.ThreadedComponent.threadedcomponent): # lazy
         self.send("/user kamspeakbot irc.freenode.net 127.0.0.1 username", "outbox")
         time.sleep(0.2)
         self.send("/join #kamtest", "outbox")
+        time.sleep(0.2)
+        self.send("/join #kamaelia", "outbox")
+        time.sleep(0.2)
+        self.send("/join #mashed", "outbox")
         time.sleep(1)
 
 class spokenIRCFilter(Axon.Component.component):
     channels = ["#mashed", "#kamaelia", "#kamtest"]
     def main(self):
         last_to_speak = None
+        lastchannel = None
         while True:
             for comment in self.Inbox("inbox"):
                 print comment
                 if comment[0] != "PRIVMSG":
                     continue
                 if comment[2] in self.channels:
-                    speaker, said = comment[1], comment[3]
+                    speaker, channel, said = comment[1], comment[2], comment[3]
+                    tosay = ""
                     if speaker != last_to_speak:
                         last_to_speak = speaker
-                        self.send ( "%s says %s\n" % (speaker, said) , "outbox")
-                    else:
-                        self.send( said +"\n", "outbox")
+                        tosay = tosay + ("%s says " % speaker )
+                    if channel != lastchannel:
+                        lastchannel = channel
+                        tosay = tosay + ("on channel %s " % channel )
+                        
+                    tosay = tosay + said + "\n"
+                    self.send(tosay, "outbox")
 
             if not self.anyReady():
                 self.pause()
