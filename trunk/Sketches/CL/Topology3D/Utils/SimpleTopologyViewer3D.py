@@ -1,3 +1,9 @@
+"""
+REPLACEME:
+1. It's a PyGame container rather than a OpenGLComponent
+2. It needs a loop, but both setup and draw are only executed once
+"""
+
 import Axon
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
@@ -8,6 +14,8 @@ from THF.Kamaelia.UI.OpenGL.Vector import Vector
 
 import pygame
 from pygame.locals import *
+
+import sys
 
 from Particles3D import Particle3D
 
@@ -49,8 +57,10 @@ class TopologyViewer3D(OpenGLComponent):
         print 'setup...'
         #self.rotation = Vector(*(10,20,0))
         
-        self.particle = Particle3D(position = (-1,0,-10))
-        self.particle1 = Particle3D(position = (3,0,-10))
+#        self.particle = Particle3D(position = (-1,0,-10))
+#        self.particle1 = Particle3D(position = (3,0,-10))
+#        print self.Inboxes['inbox']
+        self._deliver(['ADD','NODE', '1', 'aaa', 'randompos', '-'], "inbox")
         if self.dataReady("inbox"):
             print 'ready...'
             message = self.recv("inbox")
@@ -62,11 +72,12 @@ class TopologyViewer3D(OpenGLComponent):
         print 'draw...'
         if self.particle is not None:
             #self.position = Vector(-1,0,-10)
-            self.scaling = Vector(2.1,2.1,2.1)
+            #self.scaling = Vector(2.1,2.1,2.1)
+            #print 'here'
             self.particle.render()
             #glLoadIdentity()
         #self.position = Vector(3,0,-10)
-        self.particle1.render()
+        #self.particle1.render()
         
     def doCommand(self, msg):
         """\
@@ -88,11 +99,11 @@ class TopologyViewer3D(OpenGLComponent):
                         ptype = self.particleTypes[msg[5]]
                         id    = msg[2]
                         name  = msg[3]
-                        
+                        print 'here'
                         #posSpec = msg[4]
                         #pos     = self._generateXY(posSpec)
 
-                        self.particle = ptype(position = (-1,0,-10), ID=id, name=name)
+                        self.particle = ptype(position = (-1,0,-10))
                         
                         #particle.originaltype = msg[5]
                         #self.addParticle(particle)
@@ -138,12 +149,13 @@ class TopologyViewer3D(OpenGLComponent):
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer,ConsoleReader
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
-        DataSource(['ADD NODE 1 "1st node" randompos -']),
+        #DataSource(['ADD NODE 1 aaa randompos -','']),
+        ConsoleReader(">>> "),
         lines_to_tokenlists(),
         TopologyViewer3D(),
-        ConsoleEchoer(),
+        #ConsoleEchoer(),
     ).run()  
