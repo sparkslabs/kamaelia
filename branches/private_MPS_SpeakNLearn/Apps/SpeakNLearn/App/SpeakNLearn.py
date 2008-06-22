@@ -153,30 +153,54 @@ Pipeline(
 ).activate()
 
 bgcolour = (255,255,180)
+
+CANVAS  = Canvas( position=(100,40),
+                   size=(800,320),
+                   bgcolour = bgcolour,
+                 ).activate()
+
+CHALLENGE  = TextDisplayer(size = (390, 200),
+                            position = (100,40),
+                            bgcolour = bgcolour,
+                            text_height=48,
+                            transparent =1,
+                           ).activate()
+
+TEXT  = Textbox(size = (800, 100),
+                       position = (100,260),
+                       bgcolour = (255,180,255),
+                       text_height=48,
+                       transparent =1,
+                      ).activate()
 Graphline(
            CHALLENGER  = Challenger(),
            CHALLENGE_SPLITTER = TwoWaySplitter(),
            CHALLENGE_CHECKER = Challenger_Checker(),
            SPEAKER  = PublishTo("SPEECH"),
                       
-           CHALLENGE  = TextDisplayer(size = (390, 200),
-                                      position = (100,40),
-                                      bgcolour = bgcolour,
-                                      text_height=48,
-                                     ),
-
-           CANVAS  = Canvas( position=(510,40),
-                             size=(390,200),
+           CHALLENGE  = CHALLENGE,
+           TEXT  = TEXT,
+#           CHALLENGE  = TextDisplayer(size = (390, 200),
+#                                      position = (100,40),
+#                                      bgcolour = bgcolour,
+#                                      text_height=48,
+#                                      transparent =1,
+#                                     ),
+#
+#           TEXT  = Textbox(size = (800, 100),
+#                                 position = (100,260),
+#                                 bgcolour = (255,180,255),
+#                                 text_height=48,
+#                                 transparent =1,
+#                                ),
+           CANVAS  = Canvas( position=(100,40),
+                             size=(800,320),
                              bgcolour = bgcolour,
                            ),
+
            PEN     = Pen(bgcolour = bgcolour),
            STROKER = StrokeRecogniser(),
            OUTPUT  = aggregator(),
-           TEXT  = Textbox(size = (800, 100),
-                                 position = (100,260),
-                                 bgcolour = (255,180,255),
-                                 text_height=48,
-                                ),
            ANSWER_SPLITTER = TwoWaySplitter(),
            TEXTDISPLAY  = TextDisplayer(size = (800, 100),
                                  position = (100,380),
@@ -185,10 +209,10 @@ Graphline(
                                 ),
 
            linkages = {
+               ("CANVAS",  "eventsOut") : ("PEN", "inbox"),
                ("CHALLENGER","outbox")  : ("CHALLENGE_SPLITTER", "inbox"),
                ("CHALLENGE_SPLITTER","outbox")  : ("CHALLENGE", "inbox"),
                ("CHALLENGE_SPLITTER","outbox2")  : ("SPEAKER", "inbox"),
-               ("CANVAS",  "eventsOut") : ("PEN", "inbox"),
                ("PEN", "outbox")        : ("CANVAS", "inbox"),
                ("PEN", "points")        : ("STROKER", "inbox"),
                ("STROKER", "outbox")    : ("OUTPUT", "inbox"),
