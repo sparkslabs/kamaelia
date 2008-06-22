@@ -587,6 +587,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     def handleRequest_OGL_DISPLAYREQUEST(self, message):
         ident = message.get("objectid")
+        #print ident
         eventservice = message.get("events", None)
         callbackservice = message.get("callback")
 
