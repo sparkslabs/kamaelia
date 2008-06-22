@@ -81,7 +81,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from OpenGLComponent import OpenGLComponent
+#from OpenGLComponent import OpenGLComponent
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from Vector import Vector
 from math import *
 
@@ -144,6 +145,7 @@ class Button(OpenGLComponent):
         print hs
         print self.tex_w, self.tex_h
         # draw faces
+        
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
 

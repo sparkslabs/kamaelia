@@ -2,6 +2,7 @@
 Rendering an OpenGL sphere to serve as particles of Topology 
 
 References: pygame + PyOpenGL version of Nehe's OpenGL (Paul Furber) and PyOpenGL demos
+THF's OpenGL codes
 """
 
 from OpenGL.GL import *
@@ -25,7 +26,10 @@ blend = 0
 
 
 
-def resize((width, height)):
+def resize((widthIn, heightIn)):
+    global width, height
+    height=heightIn
+    width=widthIn
     if height==0:
         height=1
     glViewport(0, 0, width, height)
@@ -54,6 +58,9 @@ def init():
     glShadeModel(GL_SMOOTH)
     glClearColor(0.0, 1.0, 0.0, 0.0)
     glClearDepth(1.0)
+    
+      
+    
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
@@ -147,7 +154,7 @@ def buildLabel(text):
 def draw():
     global quadratic, textures, imageSize, textureSize, x, y, z, xspeed, yspeed, xrot, yrot, zrot
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  
     
     glLoadIdentity();                        
     glTranslatef(x,y,z)
@@ -165,6 +172,13 @@ def draw():
 #    # viewing transformation 
 #    gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 #    glScalef (1.0, 2.0, 1.0)      # modeling transformation
+
+#    glBegin(GL_QUADS)    
+#    glVertex3f(-1.0, -1.0,  1.0)    # Bottom Left Of The Texture and Quad
+#    glVertex3f( 1.0, -1.0,  1.0)    # Bottom Right Of The Texture and Quad
+#    glVertex3f( 1.0,  1.0,  1.0)    # Top Right Of The Texture and Quad
+#    glVertex3f(-1.0,  1.0,  1.0)    # Top Left Of The Texture and Quad
+#    glEnd()
 
     glBindTexture(GL_TEXTURE_2D, textures[filter])
    
@@ -264,9 +278,69 @@ def handleKeys(key):
     
     return 1
 
+def doPicking(pos):
+    """\
+    Uses OpenGL picking to determine objects that have been hit by mouse pointer.
+    see e.g. OpenGL Redbook
+    """
+    global width, height
+    
+    # object picking
+    glSelectBuffer(512)
+    glRenderMode(GL_SELECT)
+    
+    glInitNames()
+    glPushName(0)
+    
+    
+    
+    # prepare matrices
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluPickMatrix(pos[0], height-pos[1], 1, 1)
+    gluPerspective(45, 1.0*width/height, 1.0, 100.0)
+    
+
+
+    # "draw" objects in select mode
+    
+    glMatrixMode(GL_MODELVIEW) # Always load GL_MODELVIEW before drawing
+    glPushMatrix()
+
+    glLoadName(1)
+    draw()
+    
+#
+    # restore matrices
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    
+    glMatrixMode(GL_MODELVIEW) # Always load GL_MODELVIEW before drawing
+    glPopMatrix()
+    
+    # force completion
+    glFlush()
+
+    # process hits                
+    hits = glRenderMode(GL_RENDER)
+    print hits
+    hitlist = []
+    hitall = False
+    if hitall:
+        # list of hit objects
+        hitlist = [hit[2][0] for hit in hits]
+    else:
+        nearest = 4294967295
+        for hit in hits:
+            if hit[0] < nearest:
+                nearest = hit[0]
+                hitlist = [hit[2][0]]
+                
+    return hitlist
 
 def main():
-
+    global yspeed
     video_flags = OPENGL|DOUBLEBUF
     
     pygame.init()
@@ -285,6 +359,16 @@ def main():
         if event.type == KEYDOWN:
             if handleKeys(event.key) == 0:
                 break
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    hitobjects = doPicking(event.pos)
+                    print hitobjects
+                    if 1 in hitobjects:
+                        if yspeed == 0.0:
+                            yspeed = 0.02
+                        else:
+                            yspeed = 0.0
+                
         
         draw()
         pygame.display.flip()

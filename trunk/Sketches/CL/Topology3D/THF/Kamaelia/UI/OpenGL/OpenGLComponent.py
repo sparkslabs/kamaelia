@@ -289,9 +289,9 @@ class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             while self.dataReady("control"):
                 cmsg = self.recv("control")
-                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
-                    self.send(cmsg, "signal")
-                    return
+#                if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
+#                    self.send(cmsg, "signal")
+#                    return
                    
             self.frametime = float(self.clock.tick())/1000.0
             self.handleMovement()
