@@ -60,6 +60,7 @@ class Challenger(Axon.Component.component):
                 word = random.choice(self.words)
                 while lastword == word:
                     word = random.choice(self.words)
+                lastword = word
             self.send("  Write the word:\n", "outbox")
             self.send("      "+word+"\n", "outbox")
             self.send("\n", "outbox")
@@ -85,7 +86,6 @@ class Challenger(Axon.Component.component):
                 if action == "repeat":
                     pick_new_word = False
             yield 1
-        print "exitting challenger"
 
 class Challenger_Checker(Axon.Component.component):
     Outboxes = {
@@ -145,6 +145,16 @@ from Kamaelia.Apps.Whiteboard.Routers import TwoWaySplitter
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.UnixProcess import UnixProcess
 
+from Kamaelia.UI.Pygame.Image import Image
+
+from Kamaelia.UI.Pygame.Display import PygameDisplay
+from Kamaelia.Util.Console import ConsoleEchoer
+
+pgd = PygameDisplay( width=800, height=480 ).activate()
+PygameDisplay.setDisplayService(pgd)
+
+
+
 Backplane("SPEECH").activate()    
 
 Pipeline(
@@ -154,24 +164,25 @@ Pipeline(
 
 bgcolour = (255,255,180)
 
-CANVAS  = Canvas( position=(100,40),
+CANVAS  = Canvas( position=(0,40),
                    size=(800,320),
                    bgcolour = bgcolour,
                  ).activate()
 
 CHALLENGE  = TextDisplayer(size = (390, 200),
-                            position = (100,40),
+                            position = (0,40),
                             bgcolour = bgcolour,
                             text_height=48,
                             transparent =1,
                            ).activate()
 
 TEXT  = Textbox(size = (800, 100),
-                       position = (100,260),
+                       position = (0,260),
                        bgcolour = (255,180,255),
                        text_height=48,
                        transparent =1,
                       ).activate()
+Image("/usr/local/share/kamaelia/kamaelia_logo_whitebg.png", position=(600,40)).activate()
 Graphline(
            CHALLENGER  = Challenger(),
            CHALLENGE_SPLITTER = TwoWaySplitter(),
@@ -180,20 +191,7 @@ Graphline(
                       
            CHALLENGE  = CHALLENGE,
            TEXT  = TEXT,
-#           CHALLENGE  = TextDisplayer(size = (390, 200),
-#                                      position = (100,40),
-#                                      bgcolour = bgcolour,
-#                                      text_height=48,
-#                                      transparent =1,
-#                                     ),
-#
-#           TEXT  = Textbox(size = (800, 100),
-#                                 position = (100,260),
-#                                 bgcolour = (255,180,255),
-#                                 text_height=48,
-#                                 transparent =1,
-#                                ),
-           CANVAS  = Canvas( position=(100,40),
+           CANVAS  = Canvas( position=(0,40),
                              size=(800,320),
                              bgcolour = bgcolour,
                            ),
@@ -203,7 +201,7 @@ Graphline(
            OUTPUT  = aggregator(),
            ANSWER_SPLITTER = TwoWaySplitter(),
            TEXTDISPLAY  = TextDisplayer(size = (800, 100),
-                                 position = (100,380),
+                                 position = (0,380),
                                  bgcolour = (180,255,255),
                                  text_height=48,
                                 ),
