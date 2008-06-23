@@ -73,6 +73,7 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
+        argd["transparency"] = self.bgcolour
         self.send(argd, "toDisplay")
         for _ in self.waitBox("fromDisplay"):
             yield 1
@@ -89,7 +90,10 @@ class Canvas(Axon.Component.component):
 
     def main(self):
         """Main loop"""
-
+        yield 1
+        yield 1
+        yield 1
+        yield 1
         yield WaitComplete(
               self.requestDisplay( DISPLAYREQUEST=True,
                                    callback = (self,"fromDisplay"),
