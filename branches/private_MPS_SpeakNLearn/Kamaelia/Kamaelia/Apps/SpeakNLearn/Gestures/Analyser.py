@@ -17,6 +17,8 @@ class Analyse(component):
                  "drawing":"",
                  "signal":"",
                }
+    debug = False
+
     
     def main(self):
         while 1:
@@ -266,68 +268,70 @@ class Analyse(component):
 #                    print bestscore
                     
                     # output some useful diagnostic drawing
-                    
-                    # draw the matched points along the user stroke
-                    ox=None
-                    oy=None
-                    i=0
-                    for (p,j) in points:
-                        x = int(npath[p][0]*sw + left)
-                        y = int((sy-npath[p][1])*sh + top)
-                        if ox==None:
+                    if self.debug:
+                        # draw the matched points along the user stroke
+                        ox=None
+                        oy=None
+                        i=0
+                        for (p,j) in points:
+                            x = int(npath[p][0]*sw + left)
+                            y = int((sy-npath[p][1])*sh + top)
+                            if ox==None:
+                                ox,oy = x,y
+                            self.send( [["CIRCLE","0","160","0",str(x),str(y),4],
+                                        ["LINE","160","255","160",str(ox),str(oy),str(x),str(y)],
+                                        ["WRITE", str(x), str(y), "16", "0", "160", "0", str(p)]
+                                    ], "drawing")
                             ox,oy = x,y
-                        self.send( [["CIRCLE","0","160","0",str(x),str(y),4],
-                                    ["LINE","160","255","160",str(ox),str(oy),str(x),str(y)],
-                                    ["WRITE", str(x), str(y), "16", "0", "160", "0", str(p)]
-                                ], "drawing")
-                        ox,oy = x,y
-                        i=i+1
-                    
-                    # draw points of the matched pattern
-                    i=0
-                    ox=None
-                    oy=None
-                    for (x,y,_) in pattern:
-                        x = int(x*sw + left)
-                        y = int((sy-y)*sh + top)
-                        if ox==None:
+                            i=i+1
+                    if self.debug:
+                        # draw points of the matched pattern
+                        i=0
+                        ox=None
+                        oy=None
+                        for (x,y,_) in pattern:
+                            x = int(x*sw + left)
+                            y = int((sy-y)*sh + top)
+                            if ox==None:
+                                ox,oy = x,y
+                            self.send( [["CIRCLE","255","160","0",str(x),str(y),2],
+                                        ["LINE","255","192","160",str(ox),str(oy),str(x),str(y)],
+    #                                    ["WRITE", str(x), str(y), "16", "255", "160", "0", str(i)],
+                                    ], "drawing")
                             ox,oy = x,y
-                        self.send( [["CIRCLE","255","160","0",str(x),str(y),2],
-                                    ["LINE","255","192","160",str(ox),str(oy),str(x),str(y)],
-#                                    ["WRITE", str(x), str(y), "16", "255", "160", "0", str(i)],
+                            i=i+1
+                        
+                        self.send( [["WRITE","32","00","14","255","160","160","Stroke"],
+                                    ["WRITE","32","10","14","160","255","160","Stroke segmented"],
+                                    ["WRITE","32","20","14","255","192","160","Matched pattern"],
+                                    ["WRITE","8","0","32","0","0","0",symbol],
                                 ], "drawing")
-                        ox,oy = x,y
-                        i=i+1
                     
-                    self.send( [["WRITE","32","00","14","255","160","160","Stroke"],
-                                ["WRITE","32","10","14","160","255","160","Stroke segmented"],
-                                ["WRITE","32","20","14","255","192","160","Matched pattern"],
-                                ["WRITE","8","0","32","0","0","0",symbol],
-                            ], "drawing")
+                    if self.debug:
+                        # draw path divergence diagnostics
+                        for ((px,py),(cx,cy)) in diagnostics:
+                            px = int(sw*px + left)
+                            py = int((sy-py)*sh + top)
+                            cx = int(sw*cx + left)
+                            cy = int((sy-cy)*sh + top)
+                            self.send( [["LINE","0","0","0",str(px),str(py),str(cx),str(cy)]], "drawing")
                     
-                    # draw path divergence diagnostics
-                    for ((px,py),(cx,cy)) in diagnostics:
-                        px = int(sw*px + left)
-                        py = int((sy-py)*sh + top)
-                        cx = int(sw*cx + left)
-                        cy = int((sy-cy)*sh + top)
-                        self.send( [["LINE","0","0","0",str(px),str(py),str(cx),str(cy)]], "drawing")
-                    
-                    # draw little bargraphs showing the relative responses
-                    bheight = 100.0
-                    bbottom = 364
-                    ratings = [(s, scores[s][0]) for s in scores.keys()]
-                    ratings.sort()
-                    x=4
-                    for r,symbol in ratings:
-                       t = int(bbottom - abs(bheight/r*ratings[0][0]))
-                       self.send( [["LINE","0","0","0",str(x),str(bbottom),str(x),str(t)],
-                                   ["LINE","0","0","0",str(x+1),str(bbottom),str(x+1),str(t)],
-                                   ["LINE","0","0","0",str(x+2),str(bbottom),str(x+2),str(t)],
-                                   ["LINE","0","0","0",str(x+3),str(bbottom),str(x+3),str(t)],
-                                   ["WRITE",str(x),str(bbottom),"16","0","0","0",symbol]
-                                  ], "drawing")
-                       x=x+16
+                    if self.debug:
+                        # draw little bargraphs showing the relative responses
+                        bheight = 100.0
+                        bbottom = 364
+                        ratings = [(s, scores[s][0]) for s in scores.keys()]
+                        ratings.sort()
+                        x=4
+                        for r,symbol in ratings:
+                           t = int(bbottom - abs(bheight/r*ratings[0][0]))
+                           self.send( [["LINE","0","0","0",str(x),str(bbottom),str(x),str(t)],
+                                       ["LINE","0","0","0",str(x+1),str(bbottom),str(x+1),str(t)],
+                                       ["LINE","0","0","0",str(x+2),str(bbottom),str(x+2),str(t)],
+                                       ["LINE","0","0","0",str(x+3),str(bbottom),str(x+3),str(t)],
+                                       ["WRITE",str(x),str(bbottom),"16","0","0","0",symbol]
+                                      ], "drawing")
+                           x=x+16
                     
             self.pause()
             yield 1
