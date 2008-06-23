@@ -106,6 +106,7 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
     bgcolour=(255,255,200)
     fgcolour=(0,0,0)
     position=(0,0)
+    transparent = False
     def __init__(self, **argd):
         """Initialises"""
         # FIXME: Change this to use the same names in self as in the args (note is for thoughout the file)
@@ -122,6 +123,8 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
         the color in, and copies it"""
         displayservice = PygameDisplay.getDisplayService()
         self.link((self, "_pygame"), displayservice)
+        if self.transparent:
+            argd["transparency"] = self.bgcolour
         self.send(argd, "_pygame")
         while not self.dataReady("_surface"):
             yield 1
@@ -143,6 +146,9 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
 
     def main(self):
         """Main loop"""
+        yield 1
+        yield 1
+        yield 1
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
                                            size = (self.screen_width, self.screen_height),
                                            callback = (self, '_surface'),
@@ -234,6 +240,9 @@ class Textbox(TextDisplayer):
         Then enters the main loop, which checks for Pygame events and updates
         them to the screen.
         """
+        yield 1
+        yield 1
+        yield 1
         yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
                                            size = (self.screen_width, self.screen_height),
                                            callback = (self, '_surface'),
@@ -261,6 +270,16 @@ class Textbox(TextDisplayer):
                         string_buffer += char
                     # Add a '|' character as a text cursor
                     self.setText(string_buffer + '|')
+            while self.dataReady("inbox"):
+                char = self.recv("inbox")
+                if char == "\n" or char == "\r":
+                    self.send(string_buffer)
+                    string_buffer = ''
+                elif char == "\x08":
+                    string_buffer = string_buffer[:-1]
+                else:
+                    string_buffer += char
+                self.setText(string_buffer + '|')
                     
             while not self.anyReady():  # changed to while - can be woken by messages leaving as well as arriving
                 self.pause()            # Looping here is safe, since we only update based on information on inboxes
