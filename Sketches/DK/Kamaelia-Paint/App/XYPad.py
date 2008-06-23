@@ -174,9 +174,9 @@ class XYPad(Axon.Component.component):
         rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
         rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
         gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
-        self.link( (rgbutton,"outbox"), (self,"buttons") )
-        self.link( (rbbutton,"outbox"), (self,"buttons") )
-        self.link( (gbbutton,"outbox"), (self,"buttons") )
+        self.link( (rgbutton,"outbox"), (self,"control") )
+        self.link( (rbbutton,"outbox"), (self,"control") )
+        self.link( (gbbutton,"outbox"), (self,"control") )
         FPS = 60
         clock = Clock(float(1)/FPS).activate()
         self.link((clock, "outbox"), (self, "newframe"))
@@ -225,26 +225,47 @@ class XYPad(Axon.Component.component):
             yield 1
             while self.dataReady("buttons"):
                 bmsg = self.recv("buttons")
-                print bmsg
-                if (bmsg[1] == 10):
+           #     print bmsg
+                if (bmsg[1] == 6):
                     self.colours = "RG"
                     self.drawBG()
-                elif (bmsg[1] == 11):
+                elif (bmsg[1] == 7):
                     self.colours = "RB"
                     self.drawBG()
-                elif (bmsg[1] == 12):
+                elif (bmsg[1] == 8):
                     self.colours = "GB"
                     self.drawBG()
-
             while self.dataReady("control"):
                 cmsg = self.recv("control")
-                if (isinstance(cmsg, producerFinished) or
-                    isinstance(cmsg, shutdownMicroprocess)):
+                if (isinstance(cmsg, producerFinished)):
                     self.send(cmsg, "signal")
                     done = True
+                elif (cmsg[0]=="CLICK"):
+                    if (cmsg[1] == 6):
+                        self.colours = "RG"
+                        self.drawBG()
+                    elif (cmsg[1] == 7):
+                        self.colours = "RB"
+                        self.drawBG()
+                    elif (cmsg[1] == 8):
+                        self.colours = "GB"
+                        self.drawBG()
          
             while self.dataReady("inbox"):
                 for event in self.recv("inbox"):
+                    if event == "CLICK":
+                #     print bmsg
+                        print self.recv("inbox")
+                        if (bmsg == 6):
+                            self.colours = "RG"
+                            self.drawBG()
+                        elif (bmsg == 7):
+                            self.colours = "RB"
+                            self.drawBG()
+                        elif (bmsg == 8):
+                            self.colours = "GB"
+                            self.drawBG()
+                        break
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.clickTime = time.time()
                         if self.display.get_rect().collidepoint(*event.pos):
@@ -398,7 +419,6 @@ if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.UI.Pygame.Button import Button
     
 
     
