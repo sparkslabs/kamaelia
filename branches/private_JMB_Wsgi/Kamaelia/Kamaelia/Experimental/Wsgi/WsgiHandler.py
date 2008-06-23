@@ -155,7 +155,11 @@ class _WsgiHandler(threadedcomponent):
             pass  #it was a list, so we're good
 
         self.memfile.close()
+        #print "Waiting..."
+        #self.pause(5)
+        #print 'unpausing'
         self.send(Axon.Ipc.producerFinished(self), "signal")
+        #print 'WsgiHandler dead'
 
     def start_response(self, status, response_headers, exc_info=None):
         """
@@ -170,7 +174,7 @@ class _WsgiHandler(threadedcomponent):
         elif self.response_dict:
             raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
-        pprint(response_headers)
+        #pprint(response_headers)
 
         for key,value in response_headers:
             if is_hop_by_hop(key):
@@ -189,8 +193,8 @@ class _WsgiHandler(threadedcomponent):
         """
         if self.response_dict and not self.write_called:
             self.response_dict['data'] = body_data
-            print '==RESPONSE DICTIONARY=='
-            pprint(self.response_dict)
+            #print '==RESPONSE DICTIONARY=='
+            #pprint(self.response_dict)
             self.send(self.response_dict, 'outbox')
             self.write_called = True
         elif self.write_called:
