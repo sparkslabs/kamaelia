@@ -163,7 +163,7 @@ class ConnectedSocketAdapter(component):
       self.socket = listensocket
       self.data_to_send = ""
       self.crashOnBadDataToSend = crashOnBadDataToSend
-      self.noisyErrors = noisyErrors
+      self.noisyErrors = True
       self.selectorService = selectorService
       self.howDied = False
       self.isSSL = False
@@ -173,6 +173,7 @@ class ConnectedSocketAdapter(component):
       """Check for producerFinished message and shutdown in response"""
       if self.dataReady("control"):
           data = self.recv("control")
+
           if isinstance(data, producerFinished):
 #              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
               self.connectionRECVLive = False
@@ -217,7 +218,6 @@ class ConnectedSocketAdapter(component):
              self.howDied = socket.msg
 
        except TypeError, ex:
-
           if self.noisyErrors:
              print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
           if self.crashOnBadDataToSend:
@@ -228,14 +228,20 @@ class ConnectedSocketAdapter(component):
        return bytes_sent
    
    def flushSendQueue(self):
+       self.tracker_buff = ""
        while ( len(self.data_to_send) != 0 ) or self.dataReady("inbox") :
            if len(self.data_to_send) == 0:
                # Can't get here unless self.dataReady("inbox")
-               self.data_to_send = self.recv("inbox")
+               msg = self.recv('inbox')
+               self.data_to_send = msg
+               #from pprint import pprint
            bytes_sent = self._safesend(self.socket, self.data_to_send)
+           self.tracker_buff += self.data_to_send[:bytes_sent]
            self.data_to_send = self.data_to_send[bytes_sent:]
            if bytes_sent == 0:
-               break # failed to send right now, resend later
+               #break # failed to send right now, resend later
+               yield 1
+       yield 1
 
    def _saferecv(self, sock, size=32768):
        """Internal only function, used for recieving data, and handling EAGAIN style
@@ -334,7 +340,8 @@ class ConnectedSocketAdapter(component):
           self.checkSocketStatus() # To be written
           self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
           if self.sending:
-              self.flushSendQueue()
+              for i in self.flushSendQueue():
+               yield i
           if self.receiving:
               self.handleReceive()
           if not self.canDoSomething():
