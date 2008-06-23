@@ -210,8 +210,8 @@ class HTTPRequestHandler(component):
                     if resource.has_key("charset"): # Maintain charset support for now
                         header = header[0], header[1] + "; " + resource["charset"]
                 hl.append(header)
-            from pprint import pprint
-            pprint(hl)
+            #from pprint import pprint
+            #pprint(hl)
             hl = [ x+": "+y for x,y in hl ]
 
             header = "\r\n".join(hl) + "\r\n\r\n"
