@@ -76,3 +76,11 @@ class Particle3D(object):
         glEnd()
         
         #glDisable(GL_TEXTURE_2D)
+
+from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
+class OpenGLComponentParticle3D(OpenGLComponent):
+    pass
+    
+    
+class RenderingParticle3D(object):
+    pass

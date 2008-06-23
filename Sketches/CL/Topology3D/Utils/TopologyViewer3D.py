@@ -289,8 +289,10 @@ from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 
 _cat = Axon.CoordinatingAssistantTracker
 
+from Particles3D import RenderingParticle3D
+
                  
-class TopologyViewer3D(OpenGLComponent):
+class TopologyViewer3D(Axon.Component.component):
     """\
     TopologyViewer(...) -> new TopologyViewer component.
     
@@ -334,7 +336,7 @@ class TopologyViewer3D(OpenGLComponent):
                        initialTopology    = None,
                        laws               = None,
                        simCyclesPerRedraw = None,
-                       border             = 100,
+                       border             = 0,
                        extraDrawing       = None,
                        showGrid           = True,
                        transparency       = None,
@@ -353,7 +355,7 @@ class TopologyViewer3D(OpenGLComponent):
         self.border = border
         
         if particleTypes == None:
-            self.particleTypes = {"-":RenderingParticle}
+            self.particleTypes = {"-":RenderingParticle3D}
         else:
             self.particleTypes = particleTypes
             
