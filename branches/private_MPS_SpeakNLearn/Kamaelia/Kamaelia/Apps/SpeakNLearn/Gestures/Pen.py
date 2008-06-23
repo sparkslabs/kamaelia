@@ -17,8 +17,7 @@ class Pen(component):
     def __init__(self, bgcolour=(255,255,255)):
         super(Pen,self).__init__()
         self.sendbuffer = []
-        self.bgcolour = bgcolour
-     
+        self.bgcolour = bgcolour     
     
     def finished(self):
         while self.dataReady("control"):
@@ -35,8 +34,7 @@ class Pen(component):
         yield 1
         r,g,b = 128,128,128
         dragging = False
-        mode="LINE"
-        
+        mode="LINE"        
         
         while not self.finished():
         
