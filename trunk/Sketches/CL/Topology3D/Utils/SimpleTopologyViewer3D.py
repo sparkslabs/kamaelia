@@ -10,7 +10,10 @@ from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
+
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
+from THF.Kamaelia.UI.OpenGL.Button import Button
+from THF.Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
 
 import pygame
 from pygame.locals import *
@@ -21,8 +24,8 @@ from Particles3D import Particle3D
 
 _cat = Axon.CoordinatingAssistantTracker
 
-                 
-class TopologyViewer3D(OpenGLComponent):
+class TopologyViewer3D(Axon.Component.component):
+#class TopologyViewer3D(OpenGLComponent):
     def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
                        caption            = "Topology Viewer", 
@@ -48,7 +51,18 @@ class TopologyViewer3D(OpenGLComponent):
         
         self.particle = None
         self.particleTypes = {"-":Particle3D}
-        
+    
+    """ main used if it inhirents component """
+    def main(self):
+        self._deliver(['ADD','NODE', '1', 'aaa', 'randompos', '-'], "inbox")
+        yield
+        if self.dataReady("inbox"):
+            print 'ready...'
+            message = self.recv("inbox")
+            self.doCommand(message)
+            print message
+
+    """ setup and draw are used if it inhirents OpenGLComponent """
     def setup(self):
         """ Build caption and request reception of events."""
 #        self.buildCaption()
@@ -61,6 +75,7 @@ class TopologyViewer3D(OpenGLComponent):
 #        self.particle1 = Particle3D(position = (3,0,-10))
 #        print self.Inboxes['inbox']
         self._deliver(['ADD','NODE', '1', 'aaa', 'randompos', '-'], "inbox")
+        
         if self.dataReady("inbox"):
             print 'ready...'
             message = self.recv("inbox")
@@ -70,11 +85,11 @@ class TopologyViewer3D(OpenGLComponent):
 
     def draw(self):
         print 'draw...'
-        if self.particle is not None:
+        #if self.particle is not None:
             #self.position = Vector(-1,0,-10)
             #self.scaling = Vector(2.1,2.1,2.1)
             #print 'here'
-            self.particle.render()
+            #self.particle.render()
             #glLoadIdentity()
         #self.position = Vector(3,0,-10)
         #self.particle1.render()
@@ -99,12 +114,15 @@ class TopologyViewer3D(OpenGLComponent):
                         ptype = self.particleTypes[msg[5]]
                         id    = msg[2]
                         name  = msg[3]
-                        print 'here'
+                        #print 'here'
                         #posSpec = msg[4]
                         #pos     = self._generateXY(posSpec)
 
-                        self.particle = ptype(position = (-1,0,-10))
+                        #self.particle = ptype(position = (-1,0,-10))
                         
+                        # Use OpenGLComponent Button as particle, MatchedTranslationInteractor as dragHandler
+                        self.particle = Button(caption="Particle", msg="Particle", position=(-1,0,-10)).activate()
+                        MatchedTranslationInteractor(target=self.particle).activate()
                         #particle.originaltype = msg[5]
                         #self.addParticle(particle)
                 
@@ -151,11 +169,13 @@ if __name__ == "__main__":
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
     from Kamaelia.Util.Console import ConsoleEchoer,ConsoleReader
     from Kamaelia.Chassis.Pipeline import Pipeline
-        
-    Pipeline(
-        #DataSource(['ADD NODE 1 aaa randompos -','']),
-        ConsoleReader(">>> "),
-        lines_to_tokenlists(),
-        TopologyViewer3D(),
-        #ConsoleEchoer(),
-    ).run()  
+    
+    TopologyViewer3D().run()
+    
+#    Pipeline(
+#        #DataSource(['ADD NODE 1 aaa randompos -','']),
+#        ConsoleReader(">>> "),
+#        lines_to_tokenlists(),
+#        TopologyViewer3D(),
+#        #ConsoleEchoer(),
+#    ).run()  
