@@ -52,9 +52,9 @@ scheduler.
 import time
 import sched
 
-from Axon.ThreadedComponent import threadedcomponent
+from Axon.SchedulingComponent import SchedulingComponent
 
-class MusicTimingComponent(threadedcomponent):
+class MusicTimingComponent(SchedulingComponent):
     """
     MusicTimingComponent() -> new MusicTimingComponent component.
 
@@ -83,10 +83,7 @@ class MusicTimingComponent(threadedcomponent):
 
         self.beatLength = float(60)/self.bpm
 
-        self.sched = sched.scheduler(time.time, time.sleep)
-
-        self.sched.enterabs(self.lastBeatTime + self.beatLength, 1,
-                            self.updateBeat, ())
+        self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
 
     def main(self):
         """
@@ -95,7 +92,10 @@ class MusicTimingComponent(threadedcomponent):
         #TODO: Make me shutdown properly
         while 1:
             # Keep running events until the component is supposed to shutdown
-            self.sched.run()
+            if self.dataReady("event"):
+                if self.recv("event") == "Beat":
+                    self.updateBeat()
+            self.pause()
             
     def updateBeat(self):
         """
@@ -113,8 +113,7 @@ class MusicTimingComponent(threadedcomponent):
                 self.loopBar = 0
         self.lastBeatTime += self.beatLength
         # Call this function again when the next beat has passed
-        self.sched.enterabs(self.lastBeatTime + self.beatLength, 1,
-                            self.updateBeat, ())
+        self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
 
 if __name__ == "__main__":
     MusicTimingComponent().run()
