@@ -253,8 +253,8 @@ if __name__ == "__main__":
 
 
   # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
-#   ProcessGraphline(
-   Graphline(
+   ProcessGraphline(
+#   Graphline(
         GraphCol = Graphline(
             COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),

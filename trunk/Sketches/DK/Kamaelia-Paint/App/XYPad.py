@@ -99,7 +99,7 @@ class XYPad(Axon.Component.component):
     bgcolour     -- (r,g,b) fill colour (default=(255,255,255))
     fgcolor      -- (r, g, b) colour of the puck and border
     messagePrefix -- string to be prepended to all messages
-    positionMsg  -- sent as the first element of a (positionMsg, 1) tuple when
+    positionMsg  -- sent  as the first element of a (positionMsg, 1) tuple when
                    the puck moves
     collisionMsg -- (t, r, b, l) sent as the first element of a
                     (collisionMsg[i], 1) tuple when the puck hits a side
@@ -171,15 +171,6 @@ class XYPad(Axon.Component.component):
 
         if position:
             self.dispRequest["position"] = position
-        rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
-        rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
-        gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
-        self.link( (rgbutton,"outbox"), (self,"control") )
-        self.link( (rbbutton,"outbox"), (self,"control") )
-        self.link( (gbbutton,"outbox"), (self,"control") )
-        FPS = 60
-        clock = Clock(float(1)/FPS).activate()
-        self.link((clock, "outbox"), (self, "newframe"))
     def waitBox(self, boxName):
         """Wait for a message on boxName inbox"""
         while 1:
@@ -192,6 +183,21 @@ class XYPad(Axon.Component.component):
         """Main loop."""
         displayService = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayService)
+
+
+        rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
+        rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
+        gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
+        self.link( (rgbutton,"outbox"), (self,"control") )
+        self.link( (rbbutton,"outbox"), (self,"control") )
+        self.link( (gbbutton,"outbox"), (self,"control") )
+        FPS = 60
+        clock = Clock(float(1)/FPS).activate()
+        self.link((clock, "outbox"), (self, "newframe"))
+
+
+
+
 
         self.send(self.dispRequest,
                   "display_signal")
