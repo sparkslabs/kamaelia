@@ -202,19 +202,19 @@ class HTTPShutdownLogicHandling(component):
                 temp = self.recv("control")
                 if isinstance(temp, producerFinished): # Socket has stopped sending us data (can still send data to it)
                     self.send(temp, "Psignal")         # pass on to the HTTP Parser. (eg could be a POST request)
-                    print "PRODUCER SHUTDOWN"
+#                    print "PRODUCER SHUTDOWN"
 
                 elif isinstance(temp, shutdown):       # Socket is telling us connection is dead
                     self.send(shutdown(), "Psignal")
                     self.send(shutdown(), "Hsignal")
                     keepconnectionopen = False
-                    print "SOCKET DEAD"
+#                    print "SOCKET DEAD"
 
             while self.dataReady("Pcontrol"):          # Control messages from the HTTP Parser
                 temp = self.recv("Pcontrol")
                 if isinstance(temp, producerFinished): # HTTP Parser is telling us they're done parsing
                     pass                               # XXXX Handling of shutdown messages from parser ???
-                    print "PARSER FINISHED"
+#                    print "PARSER FINISHED"
                     self.send(temp, "Hsignal") # Pass on to the HTTP Handler
 
             while self.dataReady("Hcontrol"):          # Control messages from the HTTP Handler
@@ -224,7 +224,7 @@ class HTTPShutdownLogicHandling(component):
                     self.send(sig, "Psignal")          # Make sure HTTP Parser is shutting down - (should send a "shutdown" message)
                     self.send(sig, "signal")
                     keepconnectionopen = False
-                    print "HTTP HANDLER DEAD"
+#                    print "HTTP HANDLER DEAD"
 
         self.send(producerFinished(), "signal")        # We're done, close the connection.
         yield 1                                        # And quit
