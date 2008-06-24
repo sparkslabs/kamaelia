@@ -167,13 +167,7 @@ class Paint(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-         while self.dataReady("drawn"):
-                print "drawn"
-                for x in self.recv("drawn"):
-                    if x == "c":
-                        self.oldpos = None
-                        self.drawBG()
-                        self.blitToSurface()
+
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if isinstance(event, tuple):
@@ -248,10 +242,10 @@ if __name__ == "__main__":
    from pygame.locals import *
    from XYPad import XYPad
    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
-   
+   from Kamaelia.UI.Pygame.Button import Button
    import sys; sys.path.append("../../../MPS/pprocess/");
    from MultiPipeline import ProcessGraphline
-
+   from Kamaelia.Chassis.Graphline import Graphline
 
 
 
@@ -260,15 +254,17 @@ if __name__ == "__main__":
 
   # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
    ProcessGraphline(
-        COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
-                   bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
-                   positionMsg="p2"),
+        GraphCol = Graphline(
+            COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
+                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
+                     positionMsg="p2"),
+            linkages = {}
+        ),
         WINDOW1 = Paint(bgcolour=(100,100,172),position=(0,0) ),
         WINDOW2 = Paint(bgcolour=(172,100,100),position=(0,0) ),
         linkages = {
             ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
-            ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
-        },
-        __debug = True,
+   #         ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
+        }
    ).run()
 # Licensed to the BBC under a Contributor Agreement: THF/DK
