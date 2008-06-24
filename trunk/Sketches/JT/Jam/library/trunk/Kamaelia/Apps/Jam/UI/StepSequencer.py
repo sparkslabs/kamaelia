@@ -9,6 +9,11 @@ drum beats.
 """
 
 import time
+import pygame
+
+from Axon.SchedulingComponent import SchedulingComponent
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
+
 from Kamaelia.Apps.Jam.Util.MusicTiming import MusicTimingComponent
 
 class StepSequencer(MusicTimingComponent):
@@ -19,72 +24,204 @@ class StepSequencer(MusicTimingComponent):
     beats
     """
 
-    def __init__(self):
+    Inboxes = {"inbox"    : "Receive events from Pygame Display",
+               "remoteChanges"  : "Receive messages to alter the state of the XY pad",
+               "event"    : "Scheduled events",
+               "control"  : "For shutdown messages",
+               "callback" : "Receive callbacks from Pygame Display",
+              }
+              
+    Outboxes = {"outbox" : "XY positions emitted here",
+                "localChanges" : "Messages indicating change in the state of the XY pad emitted here",
+                "signal" : "For shutdown messages",
+                "display_signal" : "Outbox used for communicating to the display surface"
+               }
+
+    def __init__(self, position=None, size=(500, 200)):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
         super(StepSequencer, self).__init__()
 
-        self.steps = {"1" : [1, 0, 0, 0]*self.loopBars,
-                      "2" : [0, 0, 1, 0]*self.loopBars,
-                      "3" : [0, 1]*2*self.loopBars}
+        # Channel and Timing Init
+        # -----------------------
+        self.numChannels = 4
         self.stepsPerBeat = 1
-        self.nextStep = 0
-        # Number of steps between the last and next active steps
-        self.deltaSteps = 0
+        self.numSteps = self.beatsPerBar * self.loopBars * self.stepsPerBeat
+        self.channels = []
+        for i in range(self.numChannels):
+            self.channels.append([])
+            for j in range(self.numSteps):
+                self.channels[i].append([0, None])
+
+        self.step = 0
 
         self.stepLength = self.beatLength * self.stepsPerBeat
         self.lastStepTime = self.startTime
         
-        sleepTime = self.deltaSteps * self.stepLength
-        self.sched.enterabs(self.lastStepTime + sleepTime, 2, self.updateStep,
-                            ())
+        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
 
-        
+        # UI Init
+        # --------
+        self.position = position
+        # Make the size fit the exact number of beats and channels
+        self.size = (size[0] - size[0] % (self.beatsPerBar * self.loopBars),
+                     size[1] - size[1] % len(self.channels))
+        self.positionSize = (self.size[0]/self.numSteps, 25)
+        self.stepSize = (self.size[0]/self.numSteps,
+                         (self.size[1]-self.positionSize[1])/len(self.channels))
+
+        self.dispRequest = {"DISPLAYREQUEST" : True,
+                            "callback" : (self,"callback"),   
+                            "events" : (self, "inbox"),
+                            "size": self.size,
+                           }
+
+        if position:
+            self.dispRequest["position"] = position
+
+    ###
+    # Timing Functions
+    ###        
+
     def updateStep(self):
-        """
-        Play the current active steps, and schedule to wake up when the next
-        active step is due
-        """
-        self.lastStepTime += self.deltaSteps * self.stepLength
-        for channel in self.steps:
-            if self.steps[channel][self.nextStep] == 1:
-                print "Step active", channel, self.beat
-                self.send((channel, 1), "outbox")
-        self.deltaSteps = self.findNextStep(self.nextStep)
-        if self.deltaSteps:
-            self.nextStep += self.deltaSteps
-            self.nextStep %= len(self.steps.items()[0][1])
-        sleepTime =  (self.deltaSteps * self.stepLength)
-        self.sched.enterabs(self.lastStepTime + sleepTime, 2, self.updateStep,
-                            ())
-
-
-    def findNextStep(self, startingStep):
-        """
-        Find the position of the next step from a certain starting position.
-        Returns the number of steps between the starting step and the next
-        step
-
-        Arguments:
-
-        - startingStep -- the step to begin searching from
-        """
-        if startingStep != len(self.steps.items()[0][1]) - 1:
-            step = startingStep + 1
+        if self.step < self.numSteps - 1:
+            self.step += 1
         else:
-            step = 0
-        stepCount = 1
-        while step != startingStep:
-            for channel in self.steps:
-                if self.steps[channel][step] == 1:
-                    return stepCount
-            if step != len(self.steps.items()[0][1]) - 1:
-                step += 1
-            else:
-                step = 0
-            stepCount += 1
+            self.step = 0
+        self.lastStepTime += self.stepLength
+        if self.step == 0:
+            prevStep = self.numSteps - 1
+        else:
+            prevStep = self.step - 1
+        self.drawPositionRect(self.step, True)
+        self.drawPositionRect(prevStep, False)
+        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
+
+    def scheduleStep(self, step, channel):
+        # Easier if we define some stuff here
+        beat = self.beat + (self.loopBar * self.beatsPerBar)
+        currentStep = beat * self.stepsPerBeat
+        loopStart = self.lastStepTime - (self.step * self.stepLength)
+        loopLength = self.numSteps * self.stepLength
+
+        stepTime = loopStart + (step * self.stepLength)
+        if step <= currentStep:
+            stepTime += loopLength
+        event = self.scheduleAbs(("StepActive", step, channel), stepTime, 3)
+        self.channels[channel][step][1] = event
+
+    def rescheduleStep(self, step, channel):
+        stepTime = self.lastStepTime + self.numSteps * self.stepLength
+        event = self.scheduleAbs(("StepActive", step, channel), stepTime, 3)
+        self.channels[channel][step][1] = event
+
+    def cancelStep(self, step, channel):
+        self.cancelEvent(self.channels[channel][step][1])
+        self.channels[channel][step][1] = None
+
+    ###
+    # UI Functions
+    ###
+
+    def drawStartingRects(self):
+        for i in range(len(self.channels)):
+            for j in range(self.numSteps):
+                self.drawStepRect(j, i)
+            self.drawPositionRect(0, True)
+        for i in range(self.numSteps - 1):
+            self.drawPositionRect(i + 1, False)
+        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
+    def drawStepRect(self, step, channel):
+        position = (step * self.stepSize[0], channel * self.stepSize[1] + self.positionSize[1])
+        velocity = self.channels[channel][step][0]
+        pygame.draw.rect(self.display, (255, 255*(1-velocity),
+                                        255*(1-velocity)),
+                         pygame.Rect(position, self.stepSize))
+        pygame.draw.rect(self.display, (0, 0, 0),
+                         pygame.Rect(position, self.stepSize), 1)
+
+    def drawPositionRect(self, step, active):
+        position = (step * self.stepSize[0], 0)
+        if active:
+            colour = (255, 255, 0)
+        else:
+            colour = (255, 255, 255)
+        pygame.draw.rect(self.display, colour,
+                         pygame.Rect(position, self.positionSize))
+        pygame.draw.rect(self.display, (0, 0, 0),
+                         pygame.Rect(position, self.positionSize), 1)
+        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
+    def positionToStep(self, position):
+        step = position[0]/self.stepSize[0]
+        channel = (position[1]-self.positionSize[1])/self.stepSize[1]
+        return step, channel
+
+    def main(self):
+        """Main loop."""
+        displayService = PygameDisplay.getDisplayService()
+        self.link((self,"display_signal"), displayService)
+
+        self.send(self.dispRequest, "display_signal")
+
+        # Wait until we get a display
+        while not self.dataReady("callback"):
+            self.pause()
+        self.display = self.recv("callback")
+
+        self.drawStartingRects()
+
+        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
+                   "surface" : self.display},
+                  "display_signal")
+
+        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                   "surface" : self.display},
+                  "display_signal")
+
+        while 1:
+            if self.dataReady("inbox"):
+                for event in self.recv("inbox"):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        bounds = self.display.get_rect()
+                        bounds.top += self.positionSize[1]
+                        bounds.height -= self.positionSize[1]
+                        if bounds.collidepoint(*event.pos):
+                            step, channel = self.positionToStep(event.pos)
+                            if event.button == 1:
+                                if self.channels[channel][step][0] > 0:
+                                    self.channels[channel][step][0] = 0
+                                    self.cancelStep(step, channel)
+                                else:
+                                    self.channels[channel][step][0] = 0.7
+                                    self.scheduleStep(step, channel)
+                            if event.button == 4:
+                                if (self.channels[channel][step][0] > 0 and 
+                                    self.channels[channel][step][0] <= 0.95):
+                                    self.channels[channel][step][0] += 0.05
+                            if event.button == 5:
+                                if self.channels[channel][step][0] > 0.05:
+                                    self.channels[channel][step][0] -= 0.05
+                            self.drawStepRect(step, channel)
+                            self.send({"REDRAW":True, "surface":self.display},
+                                      "display_signal")
+
+            if self.dataReady("event"):
+                data = self.recv("event")
+                if data == "Beat":
+                    self.updateBeat()
+                elif data == "Step":
+                    self.updateStep()
+                elif data[0] == "StepActive":
+                    message, step, channel = data
+                    print "Step active:", step
+                    self.rescheduleStep(step, channel)
+
+            if not self.anyReady():
+                self.pause()
 
 
 if __name__ == "__main__":
