@@ -294,7 +294,7 @@ if __name__=='__main__':
     Graphline(
 #        BUTTON1 = Button(caption="<<", msg="Previous", position=(-3,0,-10)),
 #        BUTTON2 = Button(caption=">>", msg="Next", position=(3,0,-10)),
-        BUTTON3 = Button(caption="Play", msg="Play", position=(-1,0,-10)),
+        BUTTON3 = Button(caption="Play", msg="Play", position=(0,0,-5)),
 #        BUTTON4 = Button(caption="Stop", msg="Stop", position=(1,0,-10)),
         ECHO = ConsoleEchoer(),
         linkages = {
