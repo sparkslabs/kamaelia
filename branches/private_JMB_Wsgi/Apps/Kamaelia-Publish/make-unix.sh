@@ -42,6 +42,7 @@ then
 fi
 
 mv kpublish ../dist
+chmod a+x ../dist/kpublish
 )
 
 if [ "$CLEANUP" = "clean" ]

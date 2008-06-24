@@ -12,7 +12,6 @@ else
 fi
 echo "----------------------------------------------------"
 echo "Assembling Axon/Kamaelia files"
-echo "Currently building inside private_JMB_DescartesComponentsAdded branch"
 echo "----------------------------------------------------"
 
 echo "Copying Axon from branch to assembly directory"
