@@ -3,7 +3,8 @@ from distutils.core import setup
 setup(name="Kamaelia Jam Library",
       version = "0.1a1",
       packages = [\
-                  "Kamaelia.Apps.Jam.Internet", #STARTPACKAGES
+                  "Axon", #STARTPACKAGES
+                  "Kamaelia.Apps.Jam.Internet",
                   "Kamaelia.Apps.Jam.Protocol",
                   "Kamaelia.Apps.Jam.UI",
                   "Kamaelia.Apps.Jam.Util", #LASTPACKAGES
