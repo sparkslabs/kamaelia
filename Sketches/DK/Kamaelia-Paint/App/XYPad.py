@@ -188,9 +188,9 @@ class XYPad(Axon.Component.component):
         rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
         rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
         gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
-        self.link( (rgbutton,"outbox"), (self,"control") )
-        self.link( (rbbutton,"outbox"), (self,"control") )
-        self.link( (gbbutton,"outbox"), (self,"control") )
+        self.link( (rgbutton,"outbox"), (self,"buttons") )
+        self.link( (rbbutton,"outbox"), (self,"buttons") )
+        self.link( (gbbutton,"outbox"), (self,"buttons") )
         FPS = 60
         clock = Clock(float(1)/FPS).activate()
         self.link((clock, "outbox"), (self, "newframe"))
@@ -231,14 +231,14 @@ class XYPad(Axon.Component.component):
             yield 1
             while self.dataReady("buttons"):
                 bmsg = self.recv("buttons")
-           #     print bmsg
-                if (bmsg[1] == 6):
+                print bmsg
+                if (bmsg[1] == 14):
                     self.colours = "RG"
                     self.drawBG()
-                elif (bmsg[1] == 7):
+                elif (bmsg[1] == 15):
                     self.colours = "RB"
                     self.drawBG()
-                elif (bmsg[1] == 8):
+                elif (bmsg[1] == 16):
                     self.colours = "GB"
                     self.drawBG()
             while self.dataReady("control"):
