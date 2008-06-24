@@ -253,15 +253,16 @@ if __name__ == "__main__":
 
 
   # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
-   ProcessGraphline(
+#   ProcessGraphline(
+   Graphline(
         GraphCol = Graphline(
             COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
                      positionMsg="p2"),
             linkages = {}
         ),
-        WINDOW1 = Paint(bgcolour=(100,100,172),position=(0,0) ),
-        WINDOW2 = Paint(bgcolour=(172,100,100),position=(0,0) ),
+        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,300) ),
+        WINDOW2 = Paint(bgcolour=(172,100,100),position=(300,300) ),
         linkages = {
             ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
    #         ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
