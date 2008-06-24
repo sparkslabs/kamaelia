@@ -246,7 +246,7 @@ class HTTPParser(component):
             while currentline != None:
                 self.debug("HTTPParser::main - stage 2.1")
                 if currentline == "":
-                    #print "End of headers found"
+#                    print "End of headers found"
                     endofheaders = True
                     break
                 else:
@@ -254,7 +254,7 @@ class HTTPParser(component):
                         requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
                     else:
                         splitheader = string.split(currentline, ":")
-                        #print "Found header: " + splitheader[0]
+#                        print "Found header: " + splitheader[0]
                         requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
                 currentline = self.nextLine()
                 #should parse headers header
@@ -280,13 +280,13 @@ class HTTPParser(component):
                 if currentline == None:
                     self.pause()
                     yield 1
-            #print requestobject
+#            print requestobject
             splitline = currentline.split(";")
 
             try:
                 bodylength = string.atoi(splitline[0], 16)
             except ValueError:
-                print "Warning: bad chunk length in request/response being parsed by HTTPParser"
+#                print "Warning: bad chunk length in request/response being parsed by HTTPParser"
                 bodylength = 0
                 requestobject["bad"] = True
             self.debug("HTTPParser::main - chunking: '%s' '%s' %d" % (currentline, splitline, bodylength))
@@ -308,7 +308,7 @@ class HTTPParser(component):
             elif self.readbuffer[bodylength:bodylength + 1] == "\n":
                 self.readbuffer = self.readbuffer[bodylength + 1:]
             else:
-                print "Warning: no trailing new line on chunk in HTTPParser"
+#                print "Warning: no trailing new line on chunk in HTTPParser"
                 requestobject["bad"] = True
                 break   # Get Body
 
@@ -322,10 +322,10 @@ class HTTPParser(component):
         self.debug("HTTPParser::main - stage 3.connection-close start\n")
         connectionopen = True
         while connectionopen:
-            #print "HTTPParser::main - stage 3.connection close.1"
+#            print "HTTPParser::main - stage 3.connection close.1"
             if self.shouldShutdown(): return
             while self.dataFetch():
-                #print "!"
+#                print "!"
                 pass
 
             if len(self.readbuffer) > 0:
@@ -333,7 +333,7 @@ class HTTPParser(component):
                 self.readbuffer = ""
 
             while self.dataReady("control"):
-                #print "!"
+#                print "!"
                 temp = self.recv("control")
                 if isinstance(temp, producerFinished):
                     connectionopen = False
@@ -359,7 +359,7 @@ class HTTPParser(component):
         bodylengthremaining = int(requestobject["headers"]["content-length"])
 
         while bodylengthremaining > 0:
-            #print "HTTPParser::main - stage 3.length known.1"
+#            print "HTTPParser::main - stage 3.length known.1"
             if self.shouldShutdown(): return
             while self.dataFetch():
                 pass
@@ -407,7 +407,7 @@ class HTTPParser(component):
         #else:
         #    #no way of knowing how long the body is
         #    requestobject["bad"] = 411 #length required
-        #    #print "HTTPParser::main - stage 3.bad"
+#            print "HTTPParser::main - stage 3.bad"
         self.debug("HTTPParser::main - stage 3 end - Got Post Body")
 
     def initialiseRequestObject(self):
@@ -474,7 +474,7 @@ class HTTPParser(component):
 
         #state 4 - request complete, send it on
         self.debug("HTTPParser::main - request sent on\n")
-        #print requestobject
+#        print requestobject
         self.closeConnection()
         yield 1
 
