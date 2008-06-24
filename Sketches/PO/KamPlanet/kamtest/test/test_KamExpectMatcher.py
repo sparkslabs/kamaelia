@@ -83,5 +83,8 @@ class KamExpectMatcherTestCase(unittest.TestCase):
         self.assertFalse( matcher.matches("something"))
         self.assertFalse( matcher.matches(None))
 
+def suite():
+    return unittest.makeSuite(KamExpectMatcherTestCase)
+
 if __name__ == '__main__':
     unittest.main()

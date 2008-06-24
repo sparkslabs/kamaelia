@@ -114,17 +114,19 @@ def getVerySimpleTestCase(storer = None, withSetUp = True, withTearDown = True):
             storer['testCounter'] = storer['testCounter'] + 1
             
     if withSetUp:
-        class SimpleSampleTestCase(SimpleSampleTestCase):
+        class klazz(SimpleSampleTestCase):
             def setUp(self):
                 if not 'setUpCounter' in storer:
                     storer['setUpCounter'] = 0
                 storer['setUpCounter'] = storer['setUpCounter'] + 1
+        SimpleSampleTestCase = klazz
     if withTearDown:
-        class SimpleSampleTestCase(SimpleSampleTestCase):
+        class klazz2(SimpleSampleTestCase):
             def tearDown(self):
                 if not 'tearDownCounter' in storer:
                     storer['tearDownCounter'] = 0
                 storer['tearDownCounter'] += storer['tearDownCounter'] + 1
+        SimpleSampleTestCase = klazz2
     return SimpleSampleTestCase
 
 class KamTestCaseTestCase(unittest.TestCase):
@@ -140,6 +142,7 @@ class KamTestCaseTestCase(unittest.TestCase):
         self.assertEquals(1, myStorer['testCounter'])
         self.assertEquals(1, myStorer['setUpCounter'])
         self.assertEquals(1,myStorer['tearDownCounter'])
+        self.assertTrue(result.wasSuccessful())
         
     def testGetTestCaseWithoutSetUpAndTearDown(self):
         myStorer = {}
@@ -153,6 +156,7 @@ class KamTestCaseTestCase(unittest.TestCase):
         self.assertEquals(1, myStorer['testCounter'])
         self.assertFalse(myStorer.has_key('setUpCounter'))
         self.assertFalse(myStorer.has_key('tearDownCounter'))
+        self.assertTrue(result.wasSuccessful())
     
     def _runTestCase(self, testCase):
         testSuite = unittest.makeSuite(testCase)
@@ -190,5 +194,8 @@ class KamTestCaseTestCase(unittest.TestCase):
         result = self._runTestCase(testCase)
         self.assertFalse(result.wasSuccessful())
         
+def suite():
+    return unittest.makeSuite(KamTestCaseTestCase)
+
 if __name__ == '__main__':
     unittest.main()

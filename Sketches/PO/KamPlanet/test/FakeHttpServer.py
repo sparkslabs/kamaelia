@@ -57,8 +57,16 @@ class FakeHttpServer(Thread):
             def do_GET(self):
                 response = FakeHttpHandler.responses[self.path]
                 self.send_response(response['code'])
-                self.send_header('Content-Type', response['contentType'])
-                self.send_header('Content-Length', len(response['body']))
+                if response.has_key('contentType'):
+                    self.send_header('Content-Type', response['contentType'])
+                else:
+                    self.send_header('Content-Type', 'text')
+                if response.has_key('locationAddr'):
+                    self.send_header('Location', response['locationAddr'])
+                else:
+                    self.send_header('Location', 'locationAddr')
+                if not response.has_key('dontProvideLength'):
+                    self.send_header('Content-Length', len(response['body']))
                 self.end_headers()
                 self.wfile.write(response['body'])
                 self.wfile.close()

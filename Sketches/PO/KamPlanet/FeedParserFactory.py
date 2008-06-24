@@ -134,9 +134,8 @@ class FeedParserFactory(Axon.Component.component):
         forwarder = Forwarder()
         plug = Plug(self.internalSplitter,  forwarder)
         plug.activate()
-        outsideForwarder = Forwarder()
-        plug.link((plug, 'signal'), (outsideForwarder, 'secondary-control'))
-        child.link((outsideForwarder, 'signal'),  (child, 'control'))
+        plug.link((plug, 'signal'), (child, 'control'))
+        child.link((child, 'signal'), (plug, 'control'))
         
     def createChild(self, feed):
         child = self.makeFeedParser(feed.url)
@@ -160,7 +159,7 @@ class FeedParserFactory(Axon.Component.component):
             if mustStop:
                 self.send(mustStop,"signal")
                 return
-                
+            
             self.handleChildTerminations()
             
             while self.dataReady("inbox"):

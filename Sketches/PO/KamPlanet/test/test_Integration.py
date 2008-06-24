@@ -29,6 +29,7 @@ import KamPlanet
 import FakeHttpServer
 import os
 import tempfile
+import time
 
 PORT=7779
 
@@ -37,12 +38,15 @@ TEST_CONFIG_TEMPLATE = 'test%sconfig-template.xml' % os.sep
 PLANET_PYTHON_FEEDS_PATH   = '/feeds/planet.python/'
 PLANET_KAMAELIA_FEEDS_PATH = '/feeds/kamaelia/'
 
+VERBOSE = True
+
 # First approach
 class IntegrationTestCase(KamTestCase.KamTestCase):
     def setUp(self):
         self.fakeHttpServer = FakeHttpServer.FakeHttpServer(PORT)
         self.fakeHttpServer.start()
         self.fakeHttpServer.waitUntilHandling()
+        self._startTime = time.time()
         
     def _configureFeeds(self):
         responses = {}
@@ -72,7 +76,6 @@ class IntegrationTestCase(KamTestCase.KamTestCase):
                     </feed>
                 """ % (
                        'http://localhost:%s%sfeed%s.xml' % (PORT, path, i), 
-                       #'http://localhost/testing/feed%s' % (i + 1), 
                        i
                     )
             )
@@ -90,25 +93,57 @@ class IntegrationTestCase(KamTestCase.KamTestCase):
             kamPlanet = KamPlanet.KamPlanet(name)
             kamPlanet.start()
             self.initializeSystem(kamPlanet.component)
-            self.assertFinished(timeout=10)
+            self.assertFinished(timeout=30)
         finally:
             os.remove(name)
         
-#    def test10Feeds(self):
-#        self._configureFeeds()
-#        configuration = self._createConfiguration(10, PLANET_PYTHON_FEEDS_PATH)
-#        fd, name = tempfile.mkstemp()
-#        os.close(fd)
-#        try:
-#            open(name, 'w').write(configuration)
-#            kamPlanet = KamPlanet.KamPlanet(name)
-#            kamPlanet.start()
-#            self.initializeSystem(kamPlanet.component)
-#            self.assertFinished(timeout=10)
-#        finally:
-#            os.remove(name)
+    def _testPlanetPythonFeeds(self, feeds, timeout):
+        if VERBOSE:
+            import introspector
+            introspector.activate()
+        self._configureFeeds()
+        configuration = self._createConfiguration(feeds, PLANET_PYTHON_FEEDS_PATH)
+        fd, name = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            open(name, 'w').write(configuration)
+            kamPlanet = KamPlanet.KamPlanet(name)
+            kamPlanet.start()
+            self.initializeSystem(kamPlanet.component)
+            self.assertFinished(timeout=timeout)
+        finally:
+            os.remove(name)
+            
+    def test0Feeds(self):
+        self._testPlanetPythonFeeds(feeds=0, timeout=100)
+        
+    def test1Feeds(self):
+        self._testPlanetPythonFeeds(feeds=1, timeout=100)
+        
+    def test10Feeds(self):
+        self._testPlanetPythonFeeds(feeds=10, timeout=100)
+            
+    def test20Feeds(self):
+        self._testPlanetPythonFeeds(feeds=20, timeout=100)
+            
+    def test30Feeds(self):
+        self._testPlanetPythonFeeds(feeds=30, timeout=100)
+            
+    def test40Feeds(self):
+        self._testPlanetPythonFeeds(feeds=40, timeout=100)
+            
+    def test50Feeds(self):
+        self._testPlanetPythonFeeds(feeds=50, timeout=200)
+            
+    def test60Feeds(self):
+        self._testPlanetPythonFeeds(feeds=60, timeout=400)
+
+    def test100Feeds(self):
+        self._testPlanetPythonFeeds(feeds=100, timeout=500)
             
     def tearDown(self):
+        if VERBOSE:
+            print "It took %s seconds" % (time.time() - self._startTime)
         self.fakeHttpServer.stop()
         self.fakeHttpServer.join()
     
