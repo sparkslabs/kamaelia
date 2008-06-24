@@ -24,8 +24,8 @@ from Particles3D import Particle3D
 
 _cat = Axon.CoordinatingAssistantTracker
 
-class TopologyViewer3D(Axon.Component.component):
-#class TopologyViewer3D(OpenGLComponent):
+#class TopologyViewer3D(Axon.Component.component):
+class TopologyViewer3D(OpenGLComponent):
     def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
                        caption            = "Topology Viewer", 
@@ -52,17 +52,17 @@ class TopologyViewer3D(Axon.Component.component):
         self.particle = None
         self.particleTypes = {"-":Particle3D}
     
-    """ main used if it inhirents component """
-    def main(self):
-        self._deliver(['ADD','NODE', '1', 'aaa', 'randompos', '-'], "inbox")
-        yield
-        if self.dataReady("inbox"):
-            print 'ready...'
-            message = self.recv("inbox")
-            self.doCommand(message)
-            print message
+#    """ main used if it inherits component """
+#    def main(self):
+#        self._deliver(['ADD','NODE', '1', 'aaa', 'randompos', '-'], "inbox")
+#        yield
+#        if self.dataReady("inbox"):
+#            print 'ready...'
+#            message = self.recv("inbox")
+#            self.doCommand(message)
+#            print message
 
-    """ setup and draw are used if it inhirents OpenGLComponent """
+    """ setup and draw are used if it inherits OpenGLComponent """
     def setup(self):
         """ Build caption and request reception of events."""
 #        self.buildCaption()
@@ -85,11 +85,11 @@ class TopologyViewer3D(Axon.Component.component):
 
     def draw(self):
         print 'draw...'
-        #if self.particle is not None:
+        if self.particle is not None:
             #self.position = Vector(-1,0,-10)
             #self.scaling = Vector(2.1,2.1,2.1)
-            #print 'here'
-            #self.particle.render()
+            print 'here'
+            self.particle.draw()
             #glLoadIdentity()
         #self.position = Vector(3,0,-10)
         #self.particle1.render()
@@ -118,11 +118,11 @@ class TopologyViewer3D(Axon.Component.component):
                         #posSpec = msg[4]
                         #pos     = self._generateXY(posSpec)
 
-                        #self.particle = ptype(position = (-1,0,-10))
+                        self.particle = ptype(position = (-1,0,-10))
                         
-                        # Use OpenGLComponent Button as particle, MatchedTranslationInteractor as dragHandler
-                        self.particle = Button(caption="Particle", msg="Particle", position=(-1,0,-10)).activate()
-                        MatchedTranslationInteractor(target=self.particle).activate()
+#                        # Use OpenGLComponent Button as particle, MatchedTranslationInteractor as dragHandler
+#                        self.particle = Button(caption="Particle", msg="Particle", position=(-1,0,-10)).activate()
+#                        MatchedTranslationInteractor(target=self.particle).activate()
                         #particle.originaltype = msg[5]
                         #self.addParticle(particle)
                 

@@ -3,12 +3,12 @@ from OpenGL.GLU import *
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
 
 class Particle3D(object):
-    def __init__(self, position = (-1,0,-10), ID='aaa', name='aaa', sidecolour=(200,200,244), size=(0.8,0.5,0.3)):
+    def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), size=(0.8,0.5,0.3)):
         self.pos = position
         self.sideColour = sidecolour
         self.size = size
         
-    def render(self):
+    def draw(self):
         """ Draw button cuboid."""
         print self.size
         hs = Vector(*self.size)/2
