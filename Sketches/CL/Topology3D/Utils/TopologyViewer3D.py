@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
+2. Kamaelia.UI.OpenGL.OpenGLComponent
+"""
 
 import math, random
 import time

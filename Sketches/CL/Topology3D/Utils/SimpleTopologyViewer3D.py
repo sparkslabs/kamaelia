@@ -105,64 +105,64 @@ class TopologyViewer3D(OpenGLComponent):
             [ "GET", "ALL" ]
         """
         
-        try:            
-            if len(msg) >= 2:
-                cmd = msg[0].upper(), msg[1].upper()
-    
-                if cmd == ("ADD", "NODE") and len(msg) == 6:
-                    if self.particleTypes.has_key(msg[5]):
-                        ptype = self.particleTypes[msg[5]]
-                        id    = msg[2]
-                        name  = msg[3]
-                        #print 'here'
-                        #posSpec = msg[4]
-                        #pos     = self._generateXY(posSpec)
+        #try:            
+        if len(msg) >= 2:
+            cmd = msg[0].upper(), msg[1].upper()
 
-                        self.particle = ptype(position = (-1,0,-10))
-                        
+            if cmd == ("ADD", "NODE") and len(msg) == 6:
+                if self.particleTypes.has_key(msg[5]):
+                    ptype = self.particleTypes[msg[5]]
+                    id    = msg[2]
+                    name  = msg[3]
+                    #print 'here'
+                    #posSpec = msg[4]
+                    #pos     = self._generateXY(posSpec)
+
+                    self.particle = ptype(position = (-1,0,-10))
+                    
 #                        # Use OpenGLComponent Button as particle, MatchedTranslationInteractor as dragHandler
 #                        self.particle = Button(caption="Particle", msg="Particle", position=(-1,0,-10)).activate()
 #                        MatchedTranslationInteractor(target=self.particle).activate()
-                        #particle.originaltype = msg[5]
-                        #self.addParticle(particle)
+                    #particle.originaltype = msg[5]
+                    #self.addParticle(particle)
+            
+            elif cmd == ("DEL", "NODE") and len(msg) == 3:
+                id = msg[2]
+                self.removeParticle(id)
+                    
+            elif cmd == ("ADD", "LINK") and len(msg) == 4:
+                src = msg[2]
+                dst = msg[3]
+                self.makeBond(src, dst)
                 
-                elif cmd == ("DEL", "NODE") and len(msg) == 3:
-                    id = msg[2]
-                    self.removeParticle(id)
-                        
-                elif cmd == ("ADD", "LINK") and len(msg) == 4:
-                    src = msg[2]
-                    dst = msg[3]
-                    self.makeBond(src, dst)
-                    
-                elif cmd == ("DEL", "LINK") and len(msg) == 4:
-                    src = msg[2]
-                    dst = msg[3]
-                    self.breakBond(src, dst)
-                    
-                elif cmd == ("DEL", "ALL") and len(msg) == 2:
-                    self.removeParticle(*self.physics.particleDict.keys())
+            elif cmd == ("DEL", "LINK") and len(msg) == 4:
+                src = msg[2]
+                dst = msg[3]
+                self.breakBond(src, dst)
+                
+            elif cmd == ("DEL", "ALL") and len(msg) == 2:
+                self.removeParticle(*self.physics.particleDict.keys())
 
-                elif cmd == ("GET", "ALL") and len(msg) == 2:
-                    topology = [("DEL","ALL")]
-                    topology.extend(self.getTopology())
-                    self.send( ("TOPOLOGY", topology), "outbox" )
-                elif cmd == ("UPDATE_NAME", "NODE") and len(msg) == 4:
-                    node_id = msg[2]
-                    new_name = msg[3]
-                    self.updateParticleLabel(node_id, new_name)
-                elif cmd == ("GET_NAME", "NODE") and len(msg) == 3:
-                    node_id = msg[2]
-                    name = self.getParticleLabel(node_id)
-                    self.send( ("UPDATE_NAME", "NODE", node_id, name), "outbox" )
-                else:
-                    raise "Command Error"
+            elif cmd == ("GET", "ALL") and len(msg) == 2:
+                topology = [("DEL","ALL")]
+                topology.extend(self.getTopology())
+                self.send( ("TOPOLOGY", topology), "outbox" )
+            elif cmd == ("UPDATE_NAME", "NODE") and len(msg) == 4:
+                node_id = msg[2]
+                new_name = msg[3]
+                self.updateParticleLabel(node_id, new_name)
+            elif cmd == ("GET_NAME", "NODE") and len(msg) == 3:
+                node_id = msg[2]
+                name = self.getParticleLabel(node_id)
+                self.send( ("UPDATE_NAME", "NODE", node_id, name), "outbox" )
             else:
                 raise "Command Error"
-        except:     
-            import traceback
-            errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
-            self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
+        else:
+            raise "Command Error"
+#        except:     
+#            import traceback
+#            errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
+#            self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
             
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
