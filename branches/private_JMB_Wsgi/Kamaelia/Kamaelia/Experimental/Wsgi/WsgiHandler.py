@@ -249,8 +249,8 @@ class _WsgiHandler(threadedcomponent):
         page = {
             'data' : fragment,
             }
-        print 'FRAGMENT'
-        pprint(page)
+        #print 'FRAGMENT'
+        #pprint(page)
         self.send(page, 'outbox')
 
     def initRequiredVars(self, wsgi_config):
@@ -303,7 +303,6 @@ class _WsgiHandler(threadedcomponent):
                     (wsgi_config['server_software'], self.server_name, self.server_port)
         self.environ['REMOTE_ADDR'] = self.environ['peer']
 
-__imported__ = []
 
 def WsgiHandler(log_writable, WsgiConfig, url_list):
     """
@@ -311,6 +310,7 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
     application object to route the request to, imports the file that contains the app object,
     and then extracts it to be passed to the newly created WSGI Handler.
     """
+    app_objs = {}   #this is a dictionary to track app objects we've already gotten
     def _getWsgiHandler(request):
         matched_dict = False
         split_uri = request['raw-uri'].split('/')
@@ -325,11 +325,14 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
         if not matched_dict:
             raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
 
-
-        module = _importWsgiModule(matched_dict['kp.import_path'])
-        app = getattr(module, matched_dict['kp.app_object'])
+        if app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
+            app = app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
+        else:                                       #otherwise, find the app object
+            module = _importWsgiModule(matched_dict['kp.import_path'])
+            app = getattr(module, matched_dict['kp.app_object'])
+            app_objs[matched_dict['kp.regex']] = app
         request.update(matched_dict)
-        return _WsgiHandler(validator(app), request, log_writable, WsgiConfig, Debug=True)
+        return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler
 
 class WsgiError(Exception):
