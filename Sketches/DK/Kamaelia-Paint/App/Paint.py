@@ -68,7 +68,7 @@ class Paint(Axon.Component.component):
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
-                transparent = False, size=(200,200), selectedColour=(0,0,0)):
+                transparent = False, size=(500,500), selectedColour=(0,0,0)):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Paint,self).__init__()
 
@@ -77,7 +77,7 @@ class Paint(Axon.Component.component):
       self.margin = margin
       self.oldpos = None
       self.drawing = False
-      self.shape = "line"
+      self.tool = "Line"
       self.size = size
       self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
@@ -171,14 +171,15 @@ class Paint(Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if isinstance(event, tuple):
-                    print "here"
-                    if event[0] == 'circle':
+                    if event[0] == "Tool":
+                        self.tool = event[1]
+                    elif event[0] == 'circle':
                         pygame.draw.circle(self.display, (255,0,0), event[1], event[2], 0)
                         self.blitToSurface()
-                    if event[0] == 'line':
+                    elif event[0] == 'line':
                         pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
                         self.blitToSurface()
-                    if event[0] == 'colour':
+                    elif event[0] == 'colour':
                         self.selectedColour = event[1]
                     break
                 if event == "clear":
@@ -188,28 +189,29 @@ class Paint(Axon.Component.component):
                     self.blitToSurface()
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.shape == "circle":
+                    if self.tool == "Circle":
                         if event.button == 1:
                             self.oldpos = event.pos
                             self.drawing = True
-                    if self.shape == "line":
+                    if self.tool == "Line":
                         if event.button == 1:
                             self.drawing = True
-                    if event.button == 3:
+                    if self.tool == "Bucket":
                         self.floodFill(event.pos[0],event.pos[1],self.selectedColour,self.display.get_at(event.pos))
-                      #  self.oldpos = None
-                      #  self.drawBG()
-                      #  self.blitToSurface()
-                      #  self.send(("clear",), "outbox")
+                    if event.button == 3:
+                        self.oldpos = None
+                        self.drawBG()
+                        self.blitToSurface()
+                        self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       self.floodFill(100,100,(240,224,143,0),self.display.get_at((100,100)))
+                       self.tool = "Circle"
                     elif event.key == pygame.K_l:
-                       self.shape = "line"
+                       self.tool = "Line"
 
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    if self.shape == "circle":
+                    if self.tool == "Circle":
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
                         pygame.draw.circle(self.display, self.selectedColour, self.oldpos, rad, 0)
                         circle = ("circle", self.oldpos, rad)
@@ -218,7 +220,7 @@ class Paint(Axon.Component.component):
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
-                    if self.shape == "line":
+                    if self.tool == "Line":
                         if self.drawing and self.innerRect.collidepoint(*event.pos):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
@@ -244,7 +246,7 @@ if __name__ == "__main__":
    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
    from Kamaelia.UI.Pygame.Button import Button
    import sys; sys.path.append("../../../MPS/pprocess/");
-   from MultiPipeline import ProcessGraphline
+   from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
 
 
@@ -255,17 +257,17 @@ if __name__ == "__main__":
   # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
    ProcessGraphline(
 #   Graphline(
-        GraphCol = Graphline(
-            COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (70, 0),
+    #    GraphCol = Graphline(
+            COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
                      positionMsg="p2"),
-            linkages = {}
-        ),
-        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,300) ),
-        WINDOW2 = Paint(bgcolour=(172,100,100),position=(300,300) ),
+      #      linkages = {}
+     #   ),
+        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500)),
+  #      WINDOW2 = Paint(bgcolour=(172,100,100),position=(300,300) ),
         linkages = {
-            ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
-   #         ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
+    #        ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
+            ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         }
    ).run()
 # Licensed to the BBC under a Contributor Agreement: THF/DK
