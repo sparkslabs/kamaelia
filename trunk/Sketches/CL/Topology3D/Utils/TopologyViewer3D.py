@@ -90,50 +90,28 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
  
         
         """
-        # create display request
-        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
-                             "objectid" : id(self),
-                             "callback" : (self,"callback"),
-                             "events" : (self, "events"),
-                             "size": (0.8,0.5,0.3)
-                           }
-        # send display request
-        self.send(self.disprequest, "display_signal")
-        
-#        particle = Particle3D(position = (-1,0,-10))
-#        self.particles.append(particle)
-        
-            
-        # wait for response on displayrequest
-        while not self.dataReady("callback"):  yield 1
-        self.identifier = self.recv("callback")
-        
-        
-        yield 1
+
         while True:
             # process incoming messages
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
                 self.doCommand(message)
                 #print message
+                self.draw()
+                # wait for response on displayrequest
+                while not self.dataReady("callback"):  yield 1
+                self.identifier = self.recv("callback")
             yield 1
             
-            self.draw()
-        
+
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                     self.send(msg, "signal")
                     self.quit()
-                    
-            
-            #self.display.updateDisplay()
             
         
                     
-    
-            
-    
     def draw(self):
         """\
         Invoke draw() and save its commands to a newly generated displaylist.
@@ -141,24 +119,27 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         The displaylist name is then sent to the display service via a
         "DISPLAYLIST_UPDATE" request.
         """
-        # display list id
-        displaylist = glGenLists(1)
-        # draw object to its displaylist
-        glNewList(displaylist, GL_COMPILE)
         self.drawParticles()
-        glEndList()
-
-        #print displaylist
-        dl_update = { "DISPLAYLIST_UPDATE": True,
-                      "objectid": id(self),
-                      "displaylist": displaylist
-                    }
-        self.send(dl_update, "display_signal")
     
     def drawParticles(self):
         for particle in self.particles:
+            # display list id
+            displaylist = glGenLists(1)
+            # draw object to its displaylist
+            glNewList(displaylist, GL_COMPILE)
             particle.draw()
+            glEndList()
+    
+            #print displaylist
+            dl_update = { "DISPLAYLIST_UPDATE": True,
+                          "objectid": id(particle),
+                          "displaylist": displaylist
+                        }
+            self.send(dl_update, "display_signal")
+            
             #print particle
+    
+    
     
     def doCommand(self, msg):
         """\
@@ -170,7 +151,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             [ "DEL", "ALL" ]
             [ "GET", "ALL" ]
         """
-        #print 'doCommand'
+        #print 'doCommand'        
         try:            
             if len(msg) >= 2:
                 cmd = msg[0].upper(), msg[1].upper()
@@ -179,18 +160,33 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     #print 'ADD NODE begin'
                     if self.particleTypes.has_key(msg[5]):
                         ptype = self.particleTypes[msg[5]]
-                        id    = msg[2]
+                        ident    = msg[2]
                         name  = msg[3]
                         
                         posSpec = msg[4]
                         pos     = self._generatePos(posSpec)
                         #print pos
 
-                        particle = ptype(position = pos, ID=id, name=name)
+                        particle = ptype(position = pos, ID=ident, name=name)
+                        
                         particle.originaltype = msg[5]
                         self.particles.append(particle)
+                        #print self.particles[0]
                         #self.addParticle(particle)
+                        
+                        
+                        # create display request for every particle added
+                        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
+                                             "objectid" : id(particle),
+                                             "callback" : (self,"callback"),
+                                             "events" : (self, "events"),
+                                             "size": particle.size
+                                           }
+                        # send display request
+                        self.send(self.disprequest, "display_signal")
+                        
                         #print 'ADD NODE end'
+                                
                 else:
                     raise "Command Error"
             else:
@@ -199,6 +195,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             import traceback
             errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
             self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
+  
+  
   
     def _generatePos(self, posSpec):
         """\
@@ -209,17 +207,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """
         posSpec = posSpec.lower()
         if posSpec == "randompos" or posSpec == "auto" :
-            # FIXME: need to consider camera/ viewer setting
-            
-            zLim = self.display.nearPlaneDist, self.display.farPlaneDist            
-            
-            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/10)-self.border,1)
+            # FIXME: need to consider camera/ viewer setting            
+            zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
+            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/5)-self.border,1)
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
             x = random.randrange(int(xLim[0])+self.border,int(xLim[1])-self.border,1)
-            #x,y,z = -1,0,-10
-            print x,y,z
+            #print x,y,z
             return x,y,z            
 
         else:
