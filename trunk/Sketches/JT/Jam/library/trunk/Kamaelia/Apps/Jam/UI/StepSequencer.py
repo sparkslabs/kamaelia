@@ -37,12 +37,14 @@ class StepSequencer(MusicTimingComponent):
                 "display_signal" : "Outbox used for communicating to the display surface"
                }
 
-    def __init__(self, position=None, size=(500, 200)):
+    def __init__(self, position=None, messagePrefix="", size=(500, 200)):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
         super(StepSequencer, self).__init__()
+
+        self.messagePrefix = messagePrefix
 
         # Channel and Timing Init
         # -----------------------
@@ -85,18 +87,21 @@ class StepSequencer(MusicTimingComponent):
         self.channels[channel][step][0] = velocity
         self.scheduleStep(step, channel)
         if send:
-            self.send(("Add", (step, channel, velocity)), "localChanges")
+            self.send((self.messagePrefix + "Add", (step, channel, velocity)),
+                      "localChanges")
 
     def removeStep(self, step, channel, send=False):
         self.channels[channel][step][0] = 0
         self.cancelStep(step, channel)
         if send:
-            self.send(("Remove", (step, channel)), "localChanges")
+            self.send((self.messagePrefix + "Remove", (step, channel)),
+                      "localChanges")
 
     def setVelocity(self, step, channel, velocity, send=False):
         self.channels[channel][step][0] = velocity
         if send:
-            self.send(("Velocity", (step, channel, velocity)), "localChanges")
+            self.send((self.messagePrefix + "Velocity",
+                       (step, channel, velocity)), "localChanges")
 
     ###
     # Timing Functions
@@ -231,11 +236,12 @@ class StepSequencer(MusicTimingComponent):
 
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
-                if data[0] == "Add":
+                address = data[0].split("/")[-1]
+                if address == "Add":
                     self.addStep(*data[1])
-                if data[0] == "Remove":
+                if address == "Remove":
                     self.removeStep(*data[1])
-                if data[0] == "Velocity":
+                if address == "Velocity":
                     self.setVelocity(*data[1])
                 step, channel = data[1][0], data[1][1]
                 self.drawStepRect(step, channel)
@@ -248,7 +254,7 @@ class StepSequencer(MusicTimingComponent):
                     self.updateStep()
                 elif data[0] == "StepActive":
                     message, step, channel = data
-                    self.send(("On", channel), "outbox")
+                    self.send((self.messagePrefix + "On", channel), "outbox")
                     self.rescheduleStep(step, channel)
 
             if not self.anyReady():
