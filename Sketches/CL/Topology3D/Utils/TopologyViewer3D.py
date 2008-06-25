@@ -100,10 +100,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # send display request
         self.send(self.disprequest, "display_signal")
         
-        particle = Particle3D(position = (-1,0,-10))
-        self.particles.append(particle)
+#        particle = Particle3D(position = (-1,0,-10))
+#        self.particles.append(particle)
         
-        self.draw()    
+            
         # wait for response on displayrequest
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
@@ -115,10 +115,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
                 self.doCommand(message)
-                print message
+                #print message
             yield 1
             
-            
+            self.draw()
         
             if self.dataReady("control"):
                 msg = self.recv("control")
@@ -127,7 +127,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.quit()
                     
             
-            self.display.updateDisplay()
+            #self.display.updateDisplay()
             
         
                     
@@ -158,6 +158,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def drawParticles(self):
         for particle in self.particles:
             particle.draw()
+            #print particle
     
     def doCommand(self, msg):
         """\
@@ -169,24 +170,27 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             [ "DEL", "ALL" ]
             [ "GET", "ALL" ]
         """
-        
+        #print 'doCommand'
         try:            
             if len(msg) >= 2:
                 cmd = msg[0].upper(), msg[1].upper()
     
                 if cmd == ("ADD", "NODE") and len(msg) == 6:
+                    #print 'ADD NODE begin'
                     if self.particleTypes.has_key(msg[5]):
                         ptype = self.particleTypes[msg[5]]
                         id    = msg[2]
                         name  = msg[3]
                         
                         posSpec = msg[4]
-                        pos     = self._generateXY(posSpec)
+                        pos     = self._generatePos(posSpec)
+                        #print pos
 
                         particle = ptype(position = pos, ID=id, name=name)
                         particle.originaltype = msg[5]
                         self.particles.append(particle)
                         #self.addParticle(particle)
+                        #print 'ADD NODE end'
                 else:
                     raise "Command Error"
             else:
@@ -206,12 +210,16 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         posSpec = posSpec.lower()
         if posSpec == "randompos" or posSpec == "auto" :
             # FIXME: need to consider camera/ viewer setting
-            zLim = self.display.nearPlaneDist, self.display.farPlaneDist
-            yLim = -zLim[1]*2.0*math.tan(self.display.perspectiveAngle*math.pi/360.0), zLim[1]*2.0*math.tan(self.display.perspectiveAngle*math.pi/360.0)
+            
+            zLim = self.display.nearPlaneDist, self.display.farPlaneDist            
+            
+            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/10)-self.border,1)
+            yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
-            z = -1*random.randrange(int((zLim[1]-zLim[0])/10)+self.border,int((zLim[1]-zLim[0])/20)-self.border,1)
-            y = random.randrange(int((yLim[1]-yLim[0]))+self.border,int((yLim[1]-yLim[0]))-self.border,1)
-            x = random.randrange(int((xLim[1]-xLim[0]))+self.border,int((xLim[1]-xLim[0]))-self.border,1)
+            y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
+            x = random.randrange(int(xLim[0])+self.border,int(xLim[1])-self.border,1)
+            #x,y,z = -1,0,-10
+            print x,y,z
             return x,y,z            
 
         else:
