@@ -20,25 +20,25 @@ class SchedulingComponent(ThreadedComponent.threadedcomponent):
         self.eventQueue.remove(event)
         heapq.heapify(self.eventQueue)
 
-    def pause(self):
-        #print "Pausing"
+    def eventReady(self):
         if self.eventQueue:
-            eventTime, priority, message = self.eventQueue[0]
-            #print "Inspecting event:", message, eventTime, priority
-            if time.time() < eventTime:
-                #print "Event not ready yet, calling wait with timeout", eventTime - time.time()
-                #a = time.time()
-                self.threadWakeUp.wait(eventTime - time.time())
-                #print "wait over, lasted", time.time()-a
-                self.threadWakeUp.clear()
-                return
-            else:
-                #print "Event ready"
-                self.signalEvent()
+            eventTime = self.eventQueue[0][0]
+            if time.time() >= eventTime:
+                return True
+        return False
+
+    def pause(self):
+        if self.eventReady():
+            self.signalEvent()
         else:
-            self.threadWakeUp.wait()
-            self.threadWakeUp.clear()
-            
+            if self.eventQueue:
+                eventTime = self.eventQueue[0][0]
+                super(SchedulingComponent, self).pause(eventTime - time.time())
+                if self.eventReady():
+                    self.signalEvent()
+            else:
+                super(SchedulingComponent, self).pause()
+
     def signalEvent(self):
         eventTime, priority, message = heapq.heappop(self.eventQueue)
         #print "Signalling, late by:", (time.time() - eventTime)
