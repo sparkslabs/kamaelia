@@ -32,6 +32,9 @@ echo ">Removing any previously compiled modules"
 rm -rfv assembly/*.pyc
 echo ">Creating executable"
 find . -name "*.py"|zip -@ kpublish.zip
+find . -name "*.cfg"|zip -@g9 kpublish.zip
+find . -name "*.ini"|zip -@g9 kpublish.zip
+zip kpublish.zip data/.kp
 #find . -name "*.pyc"|zip -@g kpublish.zip
 #find . -name "*.pyo"|zip -@g kpublish.zip
 cat zipheader.unix kpublish.zip > kpublish
