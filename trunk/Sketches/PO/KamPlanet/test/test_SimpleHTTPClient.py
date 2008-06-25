@@ -123,6 +123,8 @@ class SimpleHTTPClientTestCase(KamTestCase.KamTestCase):
         self.assertOutboxEmpty('signal')
         
     def test200withoutLength(self):
+        # This test fails because of a bug in 
+        # Kamaelia.Protocol.HTTP.HTTPParser.HTTPParser.getBodyDependingOnHalfClose
         responses = {}
         path = 'foo'
         body = 'whatever'
@@ -142,6 +144,33 @@ class SimpleHTTPClientTestCase(KamTestCase.KamTestCase):
         self.assertEquals(body, self.get('outbox', timeout=30) )
         signalMessage = self.get('signal')
         self.assertTrue(isinstance(signalMessage, producerFinished))
+        self.assertFinished()
+        self.assertOutboxEmpty('outbox')
+        self.assertOutboxEmpty('signal')
+    
+    def test200withoutLengthAndWithoutClosingConnection(self):
+        pass#TODO
+    
+    def testNoAnswer(self):
+        # This test fails because of a bug in 
+        # Kamaelia.Protocol.HTTP.HTTPParser.HTTPParser.getInitialLine
+        # the self.shouldShutdown does not handle the fact that the 
+        # provider might have finished, sending a producerFinished
+        # message
+        self.fakeHttpServer.stop()
+        self.fakeHttpServer.join()
+        # Now there is no server
+        path = 'server.was.shutdown'
+        p = Pipeline(
+                OneShot('http://localhost:%i/%s' % (PORT, path)), 
+                SimpleHTTPClient()
+            )
+        self.initializeSystem(p)
+        signalMessage = self.get('signal', timeout=20)
+        self.assertTrue(isinstance(signalMessage, producerFinished))
+        # Is this actually correct?
+        message       = self.get('outbox')
+        self.assertEquals('', message)
         self.assertFinished()
         self.assertOutboxEmpty('outbox')
         self.assertOutboxEmpty('signal')
