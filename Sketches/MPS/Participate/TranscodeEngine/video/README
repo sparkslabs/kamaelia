@@ -1,0 +1,18 @@
+The player part of this system relies upon the SWF player from this site:
+
+   http://www.jeroenwijering.com/?item=JW_FLV_Player
+
+This is OK for many open source & non-commercial systems, however it has a
+licensing scheme which means we may well need to find a different player for
+a real system since unlike open source licenses, this player *claims* to be
+open source, but then says "no commercial use without a paid for license",
+which breaches OSI guidelines.
+
+It's unclear whether participate or kamaelia fall into the non-profit
+scenarios. (I would say yes, but that's not really for me to say)
+
+(licensing costs are extremely reasonable though - to put it mildly)
+
+
+
+Michael.
