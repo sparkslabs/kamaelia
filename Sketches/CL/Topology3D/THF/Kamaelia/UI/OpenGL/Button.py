@@ -82,7 +82,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 #from OpenGLComponent import OpenGLComponent
-from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
+from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from Vector import Vector
 from math import *
 
