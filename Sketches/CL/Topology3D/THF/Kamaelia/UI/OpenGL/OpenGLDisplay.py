@@ -576,7 +576,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         # clear drawing buffer
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        
+        #print 'updated'
 
     def genIdentifier(self):
         """ Returns a unique number. """
@@ -862,7 +862,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for obj in self.ogl_objects:
             try:
                 # load transform of component
-                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                #glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
                 # call displaylist of component
                 glCallList(self.ogl_displaylists[obj])
             except KeyError: pass

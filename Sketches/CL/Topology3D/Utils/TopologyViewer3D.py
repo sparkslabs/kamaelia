@@ -18,8 +18,8 @@ from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
 from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
 from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
 
-from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
-from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
+from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
+from THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -103,7 +103,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         particle = Particle3D(position = (-1,0,-10))
         self.particles.append(particle)
         
-            
+        self.draw()    
         # wait for response on displayrequest
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
@@ -118,13 +118,16 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 print message
             yield 1
             
-            self.draw()
+            
         
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                     self.send(msg, "signal")
                     self.quit()
+                    
+            
+            self.display.updateDisplay()
             
         
                     
@@ -222,7 +225,11 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         raise ValueError("Unrecognised position specification")
 
 
-
+    
+    
+            
+            
+            
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
