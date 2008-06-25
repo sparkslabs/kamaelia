@@ -25,7 +25,7 @@
 STM
 ===
 
-Support for basic in-process software transactional memory
+Support for basic in-process software transactional memory.
 
 
 
@@ -76,13 +76,13 @@ Apologies if that sounds too noddy :)
 
 
 Using It
--------
+--------
 
 Accessing/Updating a single shared value in the store
------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can have many single vars in a store of course... If they're related though
-or updated as a group, see the next section.
+or updated as a group, see the next section::
 
     from Axon.STM import Store
 
@@ -95,9 +95,9 @@ or updated as a group, see the next section.
 
 
 Accessing/Updating a collection of shared values in the store
--------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Likewise you can use as many collections of values from the store as you like.
+Likewise you can use as many collections of values from the store as you like::
 
     from Axon.STM import Store
 
@@ -122,7 +122,7 @@ What can (possibly) go wrong?
 
 You can have 2 people trying to update the same values at once. An example of
 this would be - suppose you have the following commands being executed by 2
-threads with this mix of commands:
+threads with this mix of commands::
 
     S = Store()
     D = S.using("account_one", "account_two", "myaccount")
