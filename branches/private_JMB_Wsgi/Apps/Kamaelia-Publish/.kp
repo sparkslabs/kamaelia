@@ -1,9 +1,0 @@
-[SERVER]
-PORT: 80
-
-[WSGI]
-SERVER_SOFTWARE: Kamaelia Publish v 0.0.1
-SERVER_ADMIN: Jason Baker
-WSGI_VER: 1.0
-URL_LIST: ~/kp/urls
-LOG: ~/kamaelia-publish-wsgi.log
