@@ -81,6 +81,23 @@ class StepSequencer(MusicTimingComponent):
         if position:
             self.dispRequest["position"] = position
 
+    def addStep(self, step, channel, velocity, send=False):
+        self.channels[channel][step][0] = velocity
+        self.scheduleStep(step, channel)
+        if send:
+            self.send(("Add", (step, channel, velocity)), "localChanges")
+
+    def removeStep(self, step, channel, send=False):
+        self.channels[channel][step][0] = 0
+        self.cancelStep(step, channel)
+        if send:
+            self.send(("Remove", (step, channel)), "localChanges")
+
+    def setVelocity(self, step, channel, velocity, send=False):
+        self.channels[channel][step][0] = velocity
+        if send:
+            self.send(("Velocity", (step, channel, velocity)), "localChanges")
+
     ###
     # Timing Functions
     ###        
@@ -187,27 +204,41 @@ class StepSequencer(MusicTimingComponent):
                 for event in self.recv("inbox"):
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         bounds = self.display.get_rect()
+                        # Don't respond to clicks in the position bar
                         bounds.top += self.positionSize[1]
                         bounds.height -= self.positionSize[1]
                         if bounds.collidepoint(*event.pos):
                             step, channel = self.positionToStep(event.pos)
+                            velocity = self.channels[channel][step][0]
                             if event.button == 1:
-                                if self.channels[channel][step][0] > 0:
-                                    self.channels[channel][step][0] = 0
-                                    self.cancelStep(step, channel)
+                                if velocity > 0:
+                                    self.removeStep(step, channel, True) 
                                 else:
-                                    self.channels[channel][step][0] = 0.7
-                                    self.scheduleStep(step, channel)
+                                    self.addStep(step, channel, 0.7, True)
                             if event.button == 4:
-                                if (self.channels[channel][step][0] > 0 and 
-                                    self.channels[channel][step][0] <= 0.95):
-                                    self.channels[channel][step][0] += 0.05
+                                if velocity > 0 and velocity <= 0.95:
+                                    velocity += 0.05
+                                    self.setVelocity(step, channel, velocity,
+                                                     True)
                             if event.button == 5:
-                                if self.channels[channel][step][0] > 0.05:
-                                    self.channels[channel][step][0] -= 0.05
+                                if velocity > 0.05:
+                                    velocity -= 0.05
+                                    self.setVelocity(step, channel, velocity,
+                                                     True)
                             self.drawStepRect(step, channel)
                             self.send({"REDRAW":True, "surface":self.display},
                                       "display_signal")
+
+            if self.dataReady("remoteChanges"):
+                data = self.recv("remoteChanges")
+                if data[0] == "Add":
+                    self.addStep(*data[1])
+                if data[0] == "Remove":
+                    self.removeStep(*data[1])
+                if data[0] == "Velocity":
+                    self.setVelocity(*data[1])
+                step, channel = data[1][0], data[1][1]
+                self.drawStepRect(step, channel)
 
             if self.dataReady("event"):
                 data = self.recv("event")
@@ -217,7 +248,7 @@ class StepSequencer(MusicTimingComponent):
                     self.updateStep()
                 elif data[0] == "StepActive":
                     message, step, channel = data
-                    print "Step active:", step
+                    self.send(("On", channel), "outbox")
                     self.rescheduleStep(step, channel)
 
             if not self.anyReady():
@@ -226,3 +257,6 @@ class StepSequencer(MusicTimingComponent):
 
 if __name__ == "__main__":
     StepSequencer().run()
+    #from Kamaelia.Chassis.Graphline import Graphline
+    #Graphline(ss1 = StepSequencer(), ss2 = StepSequencer(position=(600, 0)),
+    #         linkages={("ss1","localChanges"):("ss2", "remoteChanges")}).run()
