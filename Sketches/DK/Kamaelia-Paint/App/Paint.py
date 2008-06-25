@@ -198,6 +198,8 @@ class Paint(Axon.Component.component):
                             self.drawing = True
                     if self.tool == "Bucket":
                         self.floodFill(event.pos[0],event.pos[1],self.selectedColour,self.display.get_at(event.pos))
+                    if self.tool == "Eyedropper":
+                        self.selectedColour = self.display.get_at(event.pos)
                     if event.button == 3:
                         self.oldpos = None
                         self.drawBG()
