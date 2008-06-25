@@ -11,47 +11,56 @@
 	</general>
 	<!-- Here they are all the blogs of Planet Python -->
 	<feeds>
-		<!-- All these blogs give problems-->
-
-		<!--                <feed url="http://jonasgalvez.com/blog/index.rdf">
+		<!--  no content-length; no server connection close
+                <feed url="http://radian.org/notebook/feed/atom">
                         <name>Broken blog</name>
-		</feed> -->
-		<!--                <feed url="http://krys.ca/category/python/feed/atom/1.0/">
+		</feed>
+		<feed url="http://blag.whit537.org/feeds/posts/default/-/python">
                         <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://nxsy.org/blog/category_python.rss">
+		</feed>
+		<feed url="http://andrew.puzzling.org/diary/rss">
                         <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://jehiah.com/archive/category/python/rss2">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://jessenoller.com/feed/">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://www.iki.fi/juri/blog/index.rss">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://www.redmountainsw.com/wordpress/archives/category/python/">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://www.groovie.org/index.xml">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!-- <feed url="http://feeds.feedburner.com/BeginningPythonForBioinformatics">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://ironfroggy-code.blogspot.com/atom.xml">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://feeds.feedburner.com/goldblog/python">
-                        <name>Broken blog</name>
-		</feed>-->
-		<!--
-                <feed url="http://feeds.feedburner.com/vandorp/randomthoughts-rss">
+		</feed> 
+		<feed url="http://protocolostomy.com/category/technology/python/feed">
                         <name>Broken blog</name>
 		</feed>
 		-->
-		<!-- FEEDBURNER:
+	        <feed url="http://jonasgalvez.com/blog/index.rdf">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://krys.ca/category/python/feed/atom/1.0/">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://nxsy.org/blog/category_python.rss">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://jehiah.com/archive/category/python/rss2">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://jessenoller.com/feed/">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://www.iki.fi/juri/blog/index.rss">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://www.redmountainsw.com/wordpress/archives/category/python/">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://www.groovie.org/index.xml">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://ironfroggy-code.blogspot.com/atom.xml">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://feeds.feedburner.com/BeginningPythonForBioinformatics">
+                        <name>Broken blog</name>
+		</feed>
+		<feed url="http://feeds.feedburner.com/goldblog/python">
+                        <name>Broken blog</name>
+		</feed>
+                <feed url="http://feeds.feedburner.com/vandorp/randomthoughts-rss">
+                        <name>Broken blog</name>
+		</feed>
                 <feed url="http://feeds.feedburner.com/DeadlyBloodySeriousAboutPython">
                         <name>Broken blog</name>
                 </feed>
@@ -85,52 +94,37 @@
                 <feed url="http://maxischenko.in.ua/blog/feed/">
                         <name>Broken blog</name>
 		</feed>
-
-		FEEDBURNER
-		-->
-		<!--
                 <feed url="http://pyinsci.blogspot.com/feeds/posts/default">
                         <name>Broken blog</name>
                 </feed>
-		-->
-		<!--
                 <feed url="http://words.rancidbacon.com/tag/python?flav=atom">
                         <name>Broken blog</name>
                 </feed>
-		-->
-		<!--
                 <feed url="http://morepypy.blogspot.com/feeds/posts/default">
                         <name>Broken blog</name>
                 </feed>
-		-->
-		<!--
                 <feed url="http://seanmcgrath.blogspot.com/atom.xml">
                         <name>Broken blog</name>
                 </feed>
-		-->
-		<!--
                 <feed url="http://www.livejournal.com/users/benlast/data/rss">
                         <name>Broken blog</name>
                 </feed>
-		-->
-		<!-- <feed url="http://cardboard.nu/index-sw.rdf">
+		<feed url="http://cardboard.nu/index-sw.rdf">
                         <name>Broken blog</name>
-		</feed> -->
+		</feed>
 
-		<!-- <feed url="http://www.irmak.org/index.xml">
+		<feed url="http://www.irmak.org/index.xml">
                         <name>Broken blog</name>
-		</feed>-->
-		<!--<feed url="http://soiland.no/blog/py/atom">
+		</feed>
+		<feed url="http://soiland.no/blog/py/atom">
                         <name>Broken blog</name>
-		</feed> -->
-		<!--<feed url="http://blarneyfellow.wordpress.com/category/programming/python/feed">
+		</feed>
+		<feed url="http://blarneyfellow.wordpress.com/category/programming/python/feed">
                         <name>Broken blog</name>
-		</feed>-->
-		<!-- <feed url="http://pymag.phparch.com/c/news/atom">
+		</feed>
+		<feed url="http://pymag.phparch.com/c/news/atom">
                         <name>Broken blog</name>
-		</feed>-->
-
-		<!-- All these blogs work when little amounts are used -->
+		</feed>
                 <feed url="http://awkly.org/categories.rdf?category=Python">
                         <name>Broken blog</name>
                 </feed>
@@ -147,9 +141,6 @@
                         <name>Broken blog</name>
                 </feed>
                 <feed url="http://aroberge.blogspot.com/atom.xml">
-                        <name>Broken blog</name>
-                </feed>
-                <feed url="http://andrew.puzzling.org/diary/rss">
                         <name>Broken blog</name>
                 </feed>
                 <feed url="http://dalkescientific.com/writings/diary/diary-rss.xml">
@@ -188,13 +179,7 @@
                 <feed url="http://sayspy.blogspot.com/atom.xml">
                         <name>Broken blog</name>
                 </feed>
-                <feed url="http://protocolostomy.com/category/technology/python/feed">
-                        <name>Broken blog</name>
-		</feed>
 		<feed url="http://blog.delaguardia.com.mx/rss.php?blogId=1&amp;profile=rss20">
-                        <name>Broken blog</name>
-                </feed>
-                <feed url="http://blag.whit537.org/feeds/posts/default/-/python">
                         <name>Broken blog</name>
                 </feed>
                 <feed url="http://weblog.lonelylion.com/category/python/feed">
@@ -496,7 +481,6 @@
                         <name>Broken blog</name>
 		</feed>
 		<!-- AQUI BIEN -->
-		<!--
                 <feed url="http://myownhat.blogspot.com/feeds/posts/default">
                         <name>Broken blog</name>
                 </feed>
@@ -509,9 +493,7 @@
                 <feed url="http://ramblings.timgolden.me.uk/category/tech/feed">
                         <name>Broken blog</name>
 		</feed>
-		-->
-		<!-- problems -->
-		<!--<feed url="http://www.pollenation.net/journal/tim/rss">
+		<feed url="http://www.pollenation.net/journal/tim/rss">
                         <name>Broken blog</name>
                 </feed>
                 <feed url="http://ivory.idyll.org/blog/tags/python?flav=atom">
@@ -525,9 +507,7 @@
                 </feed>
                 <feed url="http://insom.me.uk/xml/rss20.xml">
                         <name>Broken blog</name>
-		</feed>-->
-		<!-- problems -->
-		<!--
+		</feed>
                 <feed url="http://www.willmcgugan.com/feed/">
                         <name>Broken blog</name>
                 </feed>
@@ -537,9 +517,6 @@
                 <feed url="http://radio.weblogs.com/0100039/rss.xml">
                         <name>Broken blog</name>
                 </feed>
-                <feed url="http://radian.org/notebook/feed/atom">
-                        <name>Broken blog</name>
-		</feed>
                 <feed url="http://www.keyphrene.com/rss/keyphrene.rss">
                         <name>Broken blog</name>
                 </feed>
@@ -552,7 +529,6 @@
                 <feed url="http://www.python.org/dev/summary/channews.rdf">
                         <name>Broken blog</name>
 		</feed>
-		-->
 	</feeds>
 </kamplanetconfig>
 

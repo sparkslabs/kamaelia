@@ -32,6 +32,31 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 from ForwarderComponent import Forwarder
 
+SAVE = 'pickle'
+
+if SAVE == 'pickle':
+    import pickle
+    FILENAME = 'feeds-control.tmp'
+    def reset():
+        pickle.dump({}, open(FILENAME, 'w'))
+        
+    def started(url):
+        data = pickle.load(open(FILENAME))
+        data[url] = 'started'
+        pickle.dump(data, open(FILENAME, 'w'))
+        
+    def stopped(url):
+        data = pickle.load(open(FILENAME))
+        data[url] = 'stopped'
+        pickle.dump(data, open(FILENAME, 'w'))
+
+    reset()
+else:
+    def started(url):
+        pass
+    def stopped(url):
+        pass
+
 class Feedparser(Axon.Component.component):
     """
     Feedparser(feedUrl) -> Feedparser object
@@ -53,10 +78,12 @@ class Feedparser(Axon.Component.component):
                 parseddata.href = self.feedUrl
                 if parseddata.has_key('bozo_exception'):
                     self.send(producerFinished(self),"signal")
+                    stopped(self.feedUrl)
                     return
                 else:
                     self.send(parseddata, "outbox")
                     self.send(producerFinished(self),"signal")
+                    stopped(self.feedUrl)
                     return
             
             if self.dataReady("control"):
@@ -64,6 +91,7 @@ class Feedparser(Axon.Component.component):
                 self.send(data,"signal")
                 if not isinstance(data, producerFinished):
                     print data
+                stopped(self.feedUrl)
                 return
 
             if not self.anyReady():
@@ -105,6 +133,7 @@ class FeedParserFactory(Axon.Component.component):
         It returns a pipeline which does not expect any input except for signals and
         sends the parsed data through the "outbox" outbox.
         """
+        started(feedUrl)
         return Pipeline(
                 OneShot(feedUrl), 
                 SimpleHTTPClient(), # TODO: SimpleHTTPClient doesn't seem to have proxy support
