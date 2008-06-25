@@ -10,9 +10,9 @@ class Particle3D(object):
         
     def draw(self):
         """ Draw button cuboid."""
-        print self.size
+        #print self.size
         hs = Vector(*self.size)/2
-        print hs
+        #print hs
         glLoadIdentity()                        
         #glTranslatef(self.pos[0],self.pos[1],self.pos[2])
         glTranslatef(*self.pos)
