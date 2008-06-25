@@ -24,6 +24,115 @@ CSA time out.  To use it, simply call the function InactivityChassis with a time
 period and the CSA to wrap.  This will send a producerFinished signal to the CSA
 if it does not send a message on its outbox or CreatorFeedback boxes before the
 timeout expires.
+
+
+
+ResettableSender
+================
+
+This component is a simple way of makinga timeout event occur. If it receives nothing
+after 5 seconds, a "NEXT" message is sent.
+
+
+
+Example Usage
+-------------
+
+A tcp client that connects to a given host and port and prints and expects to receive
+*something* at more frequent than 5 seconds intervals. If it does not, it prints a
+rude message the first time this happens::
+
+    Pipeline(
+        TCPClient(HOST, PORT),
+        ResettableSender(),
+        PureTransformer(lambda x : "Oi, wake up. I have received nothing for 5 seconds!"),
+        ConsoleEchoer(),
+        ).run()
+
+
+
+More detail
+-----------
+
+By default, ResettableSender is set up to send a timeout message "NEXT" out of its "outbox"
+outbox within 5 seconds. However, if it receives any message on its "inbox" inbox then the
+timer is reset.
+
+Once the timeout has occurred this component terminates. It will therefore only ever generate
+one "NEXT" message, even if multiple timeouts occur.
+
+Termination is silent - no messages to indicate shutdown are sent out of the "signal" outbox.
+This component ignores any input on its "control" inbox - including shutdown messages.
+
+
+
+
+ActivityMonitor
+===============
+
+ActivityMonitor monitors up to four streams of messages passing through it and, in response,
+sends messages out of its "observed" outbox to indicate that there has been activity.
+
+This is intended to wrap a component such that it may be monitored by another component.
+
+
+
+Example Usage
+-------------
+
+Type a line at the console, and your activity will be 'observed' - a 'RESET' message will
+appear as well as the line you have typed::
+
+    Graphline(
+       MONITOR = ActivityMonitor(),
+       OUTPUT  = ConsoleEchoer(),
+       INPUT   = ConsoleReader(),
+       linkages = {
+           ("INPUT",   "outbox") : ("MONITOR", "inbox"),
+           ("MONITOR", "outbox") : ("OUTPUT", "inbox"),
+           
+           ("MONITOR", "observed") : ("OUTPUT", "inbox"),
+       }
+    ).run()
+
+
+
+Usage
+-----
+
+To use it, connect any of the three inboxes to outboxes on the component to be monitored.
+
+The messages that are sent to those inboxes will be forwarded to their respective outbox.
+For example, suppose "HELLO" was received on 'inbox2'.  self.message ("RESET" by default)
+will be sent on the 'observed' outbox and "HELLO" will be sent out on 'outbox2'.
+
+ActivityMonitor will shut down upon receiving a producerFinished or shutdownCSA message on
+its control inbox.
+
+Please note that this can't wrap adaptive components properly as of yet.
+
+
+
+More detail
+-----------
+
+Any message sent to the "inbox", "inbox2", "inbox3" or "control" inboxes are immediately
+forwarded on out of the "outbox", "outbox2", "outbox3" or "signal" outboxes respectively.
+
+Whenever this happens, a "RESET" message (the default) is sent out of the "observed" outbox.
+
+For every batch of messages waiting at the three inboxes that get forwarded on out of their
+respective outboxes, *only one* "RESET" message will be sent. This should therefore only
+be used as a general indication of activity, not as a means of counting every individual
+message passing through this component.
+
+Any message sent to the "control" inbox is also checked to see if it is a shutdownCSA
+or producerFinished message. If it is one of these then it will still be forwarded on out
+of the "signal" outbox, but will also cause ActivityMonitor to immediately terminate.
+
+Any messages waiting at any of the inboxes (including the "control" inbox) at the time the
+shutdown triggering message is received will be sent on before termination.
+
 """
 import time
 import Axon
@@ -42,6 +151,17 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
     timeout=5
     message="NEXT"
     debug = False
+    
+    Inboxes = {
+        "inbox"   : "Send anything here to reset the timeout countdown.",
+        "control" : "NOT USED",
+    }
+    
+    Outboxes = {
+        "outbox" : "'NEXT' message sent when the timeout occurs.",
+        "signal" : "NOT USED",
+    }
+    
     def main(self):
         # print "TIMEOUT", repr(self.timeout)
         now = time.time()
@@ -57,6 +177,8 @@ class ResettableSender(Axon.ThreadedComponent.threadedcomponent):
                 print "."
         self.send(self.message, "outbox")
         # print "SHUTDOWN", self.name
+
+
 
 class ActivityMonitor(Axon.Component.component):
     """
@@ -75,19 +197,20 @@ class ActivityMonitor(Axon.Component.component):
     # XXXX FIXME: are NOT preceded by an underscore. If it is wrapping an AdaptiveCommsComponent,
     # XXXX FIXME: we ought to warn we can't necessarily wrap those properly yet(!)
     Inboxes = {
-        "inbox": "",
-        "inbox2": "",
-        "inbox3": "",
-        "control": "",
+        "inbox": "Messages to be 'observed'. Will be forwarded on out of the 'outbox' outbox.",
+        "inbox2": "Messages to be 'observed'. Will be forwarded on out of the 'outbox2' outbox.",
+        "inbox3": "Messages to be 'observed'. Will be forwarded on out of the 'outbox3' outbox.",
+        "control": "Messages to be 'observed'. Will be forwarded on out of the 'signal' outbox. Also triggers shutdown",
     }
     Outboxes = {
-        "outbox": "Forwards any messages received on the inbox 'inbox'",
-        "outbox2": "Forwards any messages received on the inbox 'inbox2'",
-        "outbox3": "Forwards any messages received on the inbox 'inbox3'",
-        "signal": "Forwards any messages received on the inbox 'control' (also, shutsdown on usual messages)",
+        "outbox": "Forwards any messages received on the 'inbox' inbox",
+        "outbox2": "Forwards any messages received on the 'inbox2' inbox",
+        "outbox3": "Forwards any messages received on the 'inbox3' inbox",
+        "signal": "Forwards any messages received on the 'control' inbox (also, shutsdown on usual messages)",
         "observed" : "A message is emitted here whenever we see data on any inbox",
     }
     message="RESET"
+    
     def main(self):
         shutdown = False
         while not shutdown:
