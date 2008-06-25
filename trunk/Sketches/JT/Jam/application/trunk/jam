@@ -47,6 +47,7 @@ from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
 from Kamaelia.Apps.Jam.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPeer
 from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
+from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer
 from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
 
 FPS = 60
@@ -113,7 +114,17 @@ class PeerListFilter(Axon.Component.component):
                 self.pause()
             yield 1
             
-
+class StepSequencerFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if data[0][0].find("/StepSequencer/") >= 0:
+                    self.send(data[0], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+                    
         
 
 
@@ -138,14 +149,17 @@ if __name__ == "__main__":
 
     options, args = parser.parse_args()
 
+    # OSC messages in
     Pipeline(UDPReceiver(localaddr=options.listenAddress,
                          localport=options.listenPort),
              DeOsc(index=0),
              PublishTo("dataIn")).activate()
 
+    # Frame rate control
     Pipeline(Clock(float(1)/FPS),
              PublishTo("frameRateClock")).activate()
 
+    # Peer select/add
     Graphline(dataSub = SubscribeTo("dataIn"),
               fanout = Fanout(["addPeer", "peerList"]),
               addPeerFilter = AddPeerFilter(),
@@ -163,6 +177,7 @@ if __name__ == "__main__":
                           }
               ).activate()
 
+    # XY pad 1
     Graphline(clockSub = SubscribeTo("frameRateClock"),
               xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
               localPub = PublishTo("localDataOut"),
@@ -172,6 +187,7 @@ if __name__ == "__main__":
                           ("xyPad", "localChanges"):("remotePub", "inbox")}
               ).activate()
 
+    # XY pad 2
     Graphline(dataSub = SubscribeTo("dataIn"),
               clockSub = SubscribeTo("frameRateClock"),
               xyFilter = XYFilter(1),
@@ -184,10 +200,25 @@ if __name__ == "__main__":
                           ("xyPad", "outbox"):("localPub", "inbox")}
               ).activate()
 
+    # Step sequencer
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              ssFilter = StepSequencerFilter(),
+              ss = StepSequencer(position=(0, 120),
+                                 messagePrefix="/StepSequencer/"),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
+                          ("ssFilter", "outbox"):("ss", "remoteChanges"),
+                          ("ss", "outbox"):("localPub", "inbox"),
+                          ("ss", "localChanges"):("remotePub", "inbox")}
+              ).activate()
+
+    # Local OSC messages
     Pipeline(SubscribeTo("localDataOut"), Osc("/Jam"),
              UDPSender(receiver_addr=options.oscAddress,
                        receiver_port=options.oscPort)).activate()
 
+    # OSC messages out
     Graphline(remoteSub = SubscribeTo("remoteDataOut"),
               dataSub = SubscribeTo("dataIn"),
               fanout = Fanout(["addPeer", "peerList"]),
