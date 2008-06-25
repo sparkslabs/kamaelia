@@ -19,6 +19,45 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""\
+===================
+Passthrough of data
+===================
+
+The PassThrough component simply passes through data from its "inbox" inbox
+to its "outbox" outbox.
+
+This can be used, for example, as a dummy 'protocol' component - slotting it
+into a system where ordinarily a component would go that somehow changes or
+processes the data passing through it.
+
+
+
+Example Usage
+-------------
+
+Creating a simple tcp socket server on port 1850 that echoes back to clients
+whatever they send to it::
+
+    def echoProtocol:
+        return PassThrough()
+    
+    SimpleServer( protocol=echoProtocol, port=1850 ).run()
+
+
+
+More Detail
+-----------
+
+Send any item to PassThrough component's "inbox" inbox and it will
+immediately be sent on out of the "outbox" outbox.
+
+If a producerFinished or shutdownMicroprocess message is received on the
+"control" inbox then this component will immediately terminate. It will
+send the message on out of its "signal" outbox. Any pending data waiting
+in the "inbox" inbox may be lost.
+
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -28,12 +67,12 @@ class PassThrough(component):
    """\
    """
    Inboxes= {
-      "inbox" : "",
-      "control" : "",
+      "inbox" : "Messages to be passed through",
+      "control" : "Shutdown signalling",
    }
    Outboxes = {
-      "outbox" : "", 
-      "signal" : "",
+      "outbox" : "Passed through messages", 
+      "signal" : "Shutdown signalling",
    }
 
    Connections={ "inbox":"outbox","control":"signal" }
