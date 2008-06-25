@@ -181,16 +181,28 @@ class XYPad(Axon.Component.component):
       
     def main(self):
         """Main loop."""
+        
         displayService = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayService)
 
-
-        rgbutton = Button(caption="Red/Green",position=(0,0)).activate()
-        rbbutton = Button(caption="Red/Blue",position=(0,50)).activate()
-        gbbutton = Button(caption="Green/Blue",position=(0,100)).activate()
+        # colour buttons
+        rgbutton = Button(caption="Red/Green",position=(10,170), msg = ("Colour", "RG")).activate()
+        rbbutton = Button(caption="Red/Blue",position=(80,170), msg = ("Colour", "RB")).activate()
+        gbbutton = Button(caption="Green/Blue",position=(145,170), msg = ("Colour", "GB")).activate()
         self.link( (rgbutton,"outbox"), (self,"buttons") )
         self.link( (rbbutton,"outbox"), (self,"buttons") )
         self.link( (gbbutton,"outbox"), (self,"buttons") )
+        # tool buttons
+        circleb = Button(caption="Circle",position=(10,10), msg = (("Tool", "Circle"),)).activate()
+        lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
+        bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
+        self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
+        self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
+        self.link( (bucketb,"outbox"), (self,"outbox"), passthrough = 2 )
+        
+        
+        
+        #clock - don't really need this
         FPS = 60
         clock = Clock(float(1)/FPS).activate()
         self.link((clock, "outbox"), (self, "newframe"))
@@ -231,47 +243,19 @@ class XYPad(Axon.Component.component):
             yield 1
             while self.dataReady("buttons"):
                 bmsg = self.recv("buttons")
-                print bmsg
-                if (bmsg[1] == 14):
-                    self.colours = "RG"
+                if bmsg[0]=="Colour":
+                    self.colours = bmsg[1]
                     self.drawBG()
-                elif (bmsg[1] == 15):
-                    self.colours = "RB"
-                    self.drawBG()
-                elif (bmsg[1] == 16):
-                    self.colours = "GB"
-                    self.drawBG()
+                    
             while self.dataReady("control"):
                 cmsg = self.recv("control")
                 if (isinstance(cmsg, producerFinished)):
                     self.send(cmsg, "signal")
                     done = True
-                elif (cmsg[0]=="CLICK"):
-                    if (cmsg[1] == 6):
-                        self.colours = "RG"
-                        self.drawBG()
-                    elif (cmsg[1] == 7):
-                        self.colours = "RB"
-                        self.drawBG()
-                    elif (cmsg[1] == 8):
-                        self.colours = "GB"
-                        self.drawBG()
-         
+
             while self.dataReady("inbox"):
                 for event in self.recv("inbox"):
-                    if event == "CLICK":
-                #     print bmsg
-                        print self.recv("inbox")
-                        if (bmsg == 6):
-                            self.colours = "RG"
-                            self.drawBG()
-                        elif (bmsg == 7):
-                            self.colours = "RB"
-                            self.drawBG()
-                        elif (bmsg == 8):
-                            self.colours = "GB"
-                            self.drawBG()
-                        break
+
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.clickTime = time.time()
                         if self.display.get_rect().collidepoint(*event.pos):
