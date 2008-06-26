@@ -3,6 +3,7 @@
 """
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
 2. Kamaelia.UI.OpenGL.OpenGLComponent
+3. Kamaelia.UI.OpenGL.MatchedTranslationInteractor
 """
 
 import math, random
@@ -25,6 +26,7 @@ from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParti
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
+from THF.Kamaelia.UI.OpenGL.Intersect import Intersect
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -85,6 +87,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.particles = []
         self.hitParticles = []
         
+        self.grabbed = False
+        
+        
+        
     def main(self):
         """\
  
@@ -104,7 +110,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
         
-        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN ])
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN ])
         
         while True:
             # process incoming messages
@@ -112,7 +118,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 message = self.recv("inbox")
                 self.doCommand(message)
                 #print message
-                print self.particles
+                #print self.particles
                 # Draw new particles
                 self.draw()
                 # wait for response on displayrequest and get identifier of the particle
@@ -188,24 +194,37 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """ Handle events. """
         while self.dataReady("events"):
             event = self.recv("events")
+            if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
+                    for particle in self.hitParticles:
+                        p1 = particle.position.copy()
+                        p1.x += 10
+                        p2 = particle.position.copy()
+                        p2.y += 10
+                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.position, p1, p2])
+                        newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for particle in self.particles:
                         if particle.identifier in event.hitobjects:
+                            self.grabbed = True
                             particle.scaling = Vector(0.9,0.9,0.9)
                             self.hitParticles.append(particle)
                             #print str(id(particle))+'hit'
                             #print self.hitParticles
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
-                    #activate
-                    for particle in self.particles:
-                        if particle.identifier in event.hitobjects:
-                            particle.scaling = Vector(1,1,1)
-                            self.send( 'SELECT'+particle.ID, "outbox" )
-                            self.hitParticles.pop(self.hitParticles.index(particle))
-                            #print self.hitParticles
-                        
+                    for particle in self.hitParticles:
+                        self.grabbed = False
+                        particle.scaling = Vector(1,1,1)
+                        self.send( 'SELECT'+particle.ID, "outbox" )
+                        self.hitParticles.pop(self.hitParticles.index(particle))
+                        #print self.hitParticles
+            if event.type == pygame.MOUSEMOTION and self.grabbed:  
+                for particle in self.hitParticles:
+                    try:
+                        particle.position = newpoint
+                    except NameError: pass
+          
     
     def doCommand(self, msg):
         """\
