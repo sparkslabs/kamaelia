@@ -95,10 +95,22 @@ class ImageTranscoder(FileProcessor):
 
         os.unlink(sourcefile)
 
+class ImageMover(FileProcessor):
+    destdir = "/tmp"
+    def processfile(self, directory, filename):
+        extn = filename[filename.rfind("."):].lower()
+        if extn in [ ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ppm", ".pnm"]:
+            os.rename( os.path.join(directory, filename),
+                       os.path.join(self.destdir, filename)
+                     )
 
 Pipeline(
-    DirectoryWatcher(),
-    ImageTranscoder(),
+    DirectoryWatcher(watch = "/srv/www/sites/bicker.kamaelia.org/cgi/app/uploads"),
+    ImageMover(destdir = "/srv/www/sites/bicker.kamaelia.org/uploads/images"),
+).activate()
+
+
+Pipeline(
+    DirectoryWatcher(watch = "/srv/www/sites/bicker.kamaelia.org/uploads/images"),
+    ImageTranscoder(destdir = "/srv/www/sites/bicker.kamaelia.org/moderate/images"),
 ).run()
-
-
