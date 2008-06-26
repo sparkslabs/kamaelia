@@ -24,6 +24,7 @@ from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParti
 
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
+from THF.Kamaelia.UI.OpenGL.Vector import Vector
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -69,14 +70,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.display = OpenGLDisplay(width=screensize[0], height=screensize[1],fullscreen=fullscreen,
                                 title=caption)
         self.display.activate()
-        OpenGLDisplay.setDisplayService(self.display, tracker)
-        
-        
+        OpenGLDisplay.setDisplayService(self.display, tracker)                
         self.link((self,"display_signal"), (self.display,"notify"))
-        
-        
-
-        
         
         self.border = border
         
@@ -88,25 +83,51 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         # TODO: will be replaced by ParticleSystem3D
         self.particles = []
+        self.hitParticles = []
         
     def main(self):
         """\
  
         
         """
-
+        # create display request for itself
+        self.size = Vector(0,0,0)
+        disprequest = { "OGL_DISPLAYREQUEST" : True,
+                             "objectid" : id(self),
+                             "callback" : (self,"callback"),
+                             "events" : (self, "events"),
+                             "size": self.size
+                           }
+        # send display request
+        self.send(disprequest, "display_signal")
+        # wait for response on displayrequest and get identifier of the viewer
+        while not self.dataReady("callback"):  yield 1
+        self.identifier = self.recv("callback")
+        
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN ])
+        
         while True:
             # process incoming messages
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
                 self.doCommand(message)
                 #print message
+                print self.particles
+                # Draw new particles
                 self.draw()
-                # wait for response on displayrequest
+                # wait for response on displayrequest and get identifier of the particle
                 while not self.dataReady("callback"):  yield 1
-                self.identifier = self.recv("callback")
+                self.particles[-1].identifier = self.recv("callback")
             yield 1
             
+            self.handleEvents()
+            
+            # Perform transformation
+            for particle in self.particles:
+                transform_update = particle.applyTransforms()
+                if transform_update is not None:
+                    self.send(transform_update, "display_signal")
+                    #print transform_update
 
             if self.dataReady("control"):
                 msg = self.recv("control")
@@ -115,7 +136,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.quit()
             
         
-                    
+    
+    
     def draw(self):
         """\
         Invoke draw() and save its commands to a newly generated displaylist.
@@ -145,6 +167,46 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     
     
     
+    def addListenEvents(self, events):
+        """\
+            Sends listening request for pygame events to the display service.
+            The events parameter is expected to be a list of pygame event constants.
+        """
+        for event in events:
+            self.send({"ADDLISTENEVENT":event, "objectid":id(self)}, "display_signal")
+    
+    def removeListenEvents(self, events):
+        """\
+            Sends stop listening request for pygame events to the display service.
+            The events parameter is expected to be a list of pygame event constants.
+        """
+        for event in events:
+            self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")        
+                       
+                            
+    def handleEvents(self):
+        """ Handle events. """
+        while self.dataReady("events"):
+            event = self.recv("events")
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    for particle in self.particles:
+                        if particle.identifier in event.hitobjects:
+                            particle.scaling = Vector(0.9,0.9,0.9)
+                            self.hitParticles.append(particle)
+                            #print str(id(particle))+'hit'
+                            #print self.hitParticles
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:  
+                    #activate
+                    for particle in self.particles:
+                        if particle.identifier in event.hitobjects:
+                            particle.scaling = Vector(1,1,1)
+                            self.send( 'SELECT'+particle.ID, "outbox" )
+                            self.hitParticles.pop(self.hitParticles.index(particle))
+                            #print self.hitParticles
+                        
+    
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
@@ -156,49 +218,47 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             [ "GET", "ALL" ]
         """
         #print 'doCommand'        
-        try:            
-            if len(msg) >= 2:
-                cmd = msg[0].upper(), msg[1].upper()
-    
-                if cmd == ("ADD", "NODE") and len(msg) == 6:
-                    #print 'ADD NODE begin'
-                    if self.particleTypes.has_key(msg[5]):
-                        ptype = self.particleTypes[msg[5]]
-                        ident    = msg[2]
-                        name  = msg[3]
-                        
-                        posSpec = msg[4]
-                        pos     = self._generatePos(posSpec)
-                        #print pos
 
-                        particle = ptype(position = pos, ID=ident, name=name)
-                        
-                        particle.originaltype = msg[5]
-                        self.particles.append(particle)
-                        #print self.particles[0]
-                        #self.addParticle(particle)
-                        
-                        
-                        # create display request for every particle added
-                        self.disprequest = { "OGL_DISPLAYREQUEST" : True,
-                                             "objectid" : id(particle),
-                                             "callback" : (self,"callback"),
-                                             "events" : (self, "events"),
-                                             "size": particle.size
-                                           }
-                        # send display request
-                        self.send(self.disprequest, "display_signal")
-                        
-                        #print 'ADD NODE end'
-                                
-                else:
-                    raise "Command Error"
+        if len(msg) >= 2:
+            cmd = msg[0].upper(), msg[1].upper()
+
+            if cmd == ("ADD", "NODE") and len(msg) == 6:
+                #print 'ADD NODE begin'
+                if self.particleTypes.has_key(msg[5]):
+                    ptype = self.particleTypes[msg[5]]
+                    ident    = msg[2]
+                    name  = msg[3]
+                    
+                    posSpec = msg[4]
+                    pos     = self._generatePos(posSpec)
+                    #print pos
+
+                    particle = ptype(position = pos, ID=ident, name=name)
+                    
+                    particle.originaltype = msg[5]
+                    self.particles.append(particle)
+                    #print self.particles[0]
+                    #self.addParticle(particle)
+                    
+                    
+                    # create display request for every particle added
+                    disprequest = { "OGL_DISPLAYREQUEST" : True,
+                                         "objectid" : id(particle),
+                                         "callback" : (self,"callback"),
+                                         "events" : (self, "events"),
+                                         "size": particle.size
+                                       }
+                    # send display request
+                    self.send(disprequest, "display_signal")
+                    #print id(particle)
+                    
+                    #print 'ADD NODE end'
+                            
             else:
                 raise "Command Error"
-        except:     
-            import traceback
-            errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
-            self.send( ("ERROR", "Error processing message : "+str(msg) + " resason:\n"+errmsg), "outbox")
+        else:
+            raise "Command Error"
+
   
   
   
@@ -213,7 +273,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         if posSpec == "randompos" or posSpec == "auto" :
             # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
-            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/5)-self.border,1)
+            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)

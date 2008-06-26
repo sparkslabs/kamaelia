@@ -1,3 +1,8 @@
+"""
+References: 1. Kamaelia.UI.OpenGL.Button
+2. Kamaelia.UI.OpenGL.OpenGLComponent
+"""
+
 import math
 
 import pygame
@@ -5,13 +10,15 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
+from THF.Kamaelia.UI.OpenGL.Transform import Transform
 
 class Particle3D(object):
-    def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), size=(0.8,0.5,0.3), **argd):
-        self.pos = position
+    def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), 
+                 size=(0.8,0.5,0.3), **argd):
+        self.position = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
-        
+        self.ID = ID
         self.caption = name
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
@@ -25,19 +32,34 @@ class Particle3D(object):
         #self.margin = 8
         self.buildCaption()
         
+        self.identifier = None
+        
+        # get transformation data and convert to vectors
+        #self.position = Vector( *argd.get("position", (0,0,0)) )
+        self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
+        self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
+        
+        # for detection of changes
+        self.oldrot = Vector()
+        self.oldpos = Vector()
+        self.oldscaling = Vector()
+        self.transform = Transform()
+        
+    
+    
     def draw(self):
         """ Draw button cuboid."""
         #print self.size
         hs = self.size/2
         #print hs
-        glLoadIdentity()                        
-        #glTranslatef(self.pos[0],self.pos[1],self.pos[2])
-        glTranslatef(*self.pos)
-        glScalef(2.1,2.1,2.1)
-        glRotatef(20.2,1.0,0.0,0.0)
-        glRotatef(20.2,0.0,1.0,0.0)
-        glRotatef(2.2,0.0,0.0,1.0)
+#        #glLoadIdentity() # LoadIdentity will clear matrix and invalidate applyTransforms                            
+#        glTranslatef(*self.position.toTuple())
+#        glScalef(2.1,2.1,2.1)
+#        glRotatef(20.2,1.0,0.0,0.0)
+#        glRotatef(20.2,0.0,1.0,0.0)
+#        glRotatef(2.2,0.0,0.0,1.0)
         #print self.tex_w, self.tex_h
+        
         # draw faces
         glBegin(GL_QUADS)
         glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
@@ -137,6 +159,36 @@ class Particle3D(object):
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
         glDisable(GL_TEXTURE_2D)
         
+        
+        
+    def applyTransforms(self):
+        """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
+        # generate new transformation matrix if needed
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.position:
+            self.transform = Transform()
+            self.transform.applyScaling(self.scaling)
+            self.transform.applyRotation(self.rotation)
+            self.transform.applyTranslation(self.position)
+
+            if self.oldscaling != self.scaling:
+                self.oldscaling = self.scaling.copy()
+
+            if self.oldrot != self.rotation:
+                self.oldrot = self.rotation.copy()
+
+            if self.oldpos != self.position:
+                self.oldpos = self.position.copy()
+                
+            # send new transform to display service
+            transform_update = { "TRANSFORM_UPDATE": True,
+                                 "objectid": id(self),
+                                 "transform": self.transform
+                               }
+            return transform_update
+        else:
+            return None
+
+
 
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
 class OpenGLComponentParticle3D(OpenGLComponent):
