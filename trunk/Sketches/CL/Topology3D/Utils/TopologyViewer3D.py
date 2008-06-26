@@ -216,7 +216,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     for particle in self.hitParticles:
                         self.grabbed = False
                         particle.scaling = Vector(1,1,1)
-                        self.send( 'SELECT'+particle.ID, "outbox" )
+                        self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
                         self.hitParticles.pop(self.hitParticles.index(particle))
                         #print self.hitParticles
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
@@ -327,5 +327,5 @@ if __name__ == "__main__":
         ConsoleReader(">>> "),
         lines_to_tokenlists(),
         TopologyViewer3D(),
-        #ConsoleEchoer(),
+        ConsoleEchoer(),
     ).run()   

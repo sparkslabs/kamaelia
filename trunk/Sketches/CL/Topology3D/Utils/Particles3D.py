@@ -14,12 +14,12 @@ from THF.Kamaelia.UI.OpenGL.Transform import Transform
 
 class Particle3D(object):
     def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), 
-                 size=(0.8,0.5,0.3), **argd):
+                 size=(0,0,0), **argd):
         self.position = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
         self.ID = ID
-        self.caption = name
+        self.name = name
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
         #self.sideColour = argd.get("sidecolour", (200,200,244))
@@ -122,7 +122,7 @@ class Particle3D(object):
         
         pygame.font.init()
         font = pygame.font.Font(None, self.fontsize)
-        self.image = font.render(self.caption,True, self.foregroundColour, )
+        self.image = font.render(self.name,True, self.foregroundColour, )
         
         if self.size != Vector(0,0,0):
             texsize = (self.size.x*self.pixelscaling, self.size.y*self.pixelscaling)
