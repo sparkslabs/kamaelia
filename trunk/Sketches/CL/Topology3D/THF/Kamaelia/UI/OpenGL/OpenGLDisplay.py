@@ -862,7 +862,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for obj in self.ogl_objects:
             try:
                 # load transform of component
-                #glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
+                glLoadMatrixf(self.ogl_transforms[obj].getMatrix())
                 # call displaylist of component
                 glCallList(self.ogl_displaylists[obj])
             except KeyError: pass
