@@ -110,7 +110,7 @@ class Paint(Axon.Component.component):
       self.display.fill( self.backgroundColour, self.innerRect )
       
    def floodFill(self, x, y, newColour, oldColour):
-       "Flood fill on a region of non-BORDER_COLOR pixels."
+       """Flood fill on a region of non-BORDER_COLOR pixels."""
        if (self.display.get_at((x,y)) == newColour):
            print "hergfhe"
            return
@@ -125,7 +125,16 @@ class Paint(Axon.Component.component):
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
-           
+   def addLayer(self):
+      displayservice = PygameDisplay.getDisplayService()
+    #  self.link((self,"display_signal"), displayservice)
+
+      self.send( self.disprequest,
+                  "display_signal")
+      for _ in self.waitBox("callback"): yield 1
+      self.display = self.recv("callback")
+      self.drawBG()
+      self.blitToSurface()
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -201,12 +210,14 @@ class Paint(Axon.Component.component):
                     if self.tool == "Eyedropper":
                         self.selectedColour = self.display.get_at(event.pos)
                     if event.button == 3:
-                        self.oldpos = None
-                        self.drawBG()
-                        self.blitToSurface()
-                        self.send(("clear",), "outbox")
+                        self.addLayer()
+                        #self.oldpos = None
+                        #self.drawBG()
+                        #self.blitToSurface()
+                        #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
+                       self.display.set_alpha = 0
                        self.tool = "Circle"
                     elif event.key == pygame.K_l:
                        self.tool = "Line"
@@ -256,19 +267,13 @@ if __name__ == "__main__":
 
 
 
-  # clock2.link((clock2, "outbox"), (xyPad2, "newframe"))
+
    ProcessGraphline(
-#   Graphline(
-    #    GraphCol = Graphline(
             COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
                      positionMsg="p2"),
-      #      linkages = {}
-     #   ),
-        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500)),
-  #      WINDOW2 = Paint(bgcolour=(172,100,100),position=(300,300) ),
+        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
         linkages = {
-    #        ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         }
    ).run()
