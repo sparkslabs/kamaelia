@@ -254,7 +254,9 @@ class StepSequencer(MusicTimingComponent):
                     self.updateStep()
                 elif data[0] == "StepActive":
                     message, step, channel = data
-                    self.send((self.messagePrefix + "On", channel), "outbox")
+                    velocity = self.channels[channel][step]
+                    self.send((self.messagePrefix + "On", (channel, velocity)),
+                              "outbox")
                     self.rescheduleStep(step, channel)
 
             if not self.anyReady():
