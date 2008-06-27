@@ -129,15 +129,19 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 message = self.recv("inbox")
                 self.doCommand(message)
                 #print message
-                #print self.physics.particles
-                # Draw new particles
-                self.draw()
+
                 # wait for response on displayrequest and get identifier of the particle
                 cmd = message[0].upper(), message[1].upper()
                 if cmd == ("ADD", "NODE") and len(message) == 6:
                     while not self.dataReady("callback"):  yield 1
                     self.physics.particles[-1].identifier = self.recv("callback")
             yield 1        
+            
+            # Draw particles if new or updated
+            for particle in self.physics.particles:
+                if particle.needRedraw:
+                    self.drawParticles(particle)
+                    particle.needRedraw = False
             
             self.handleEvents()
             
@@ -164,10 +168,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         The displaylist name is then sent to the display service via a
         "DISPLAYLIST_UPDATE" request.
         """
-        self.drawParticles()
+        pass
     
-    def drawParticles(self):
-        for particle in self.physics.particles:
+    def drawParticles(self, *particles):
+        for particle in particles:
             # display list id
             displaylist = glGenLists(1)
             # draw object to its displaylist
