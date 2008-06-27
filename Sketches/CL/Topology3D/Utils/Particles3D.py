@@ -50,7 +50,7 @@ class Particle3D(BaseParticle):
         
         
         self.radius = 10
-        
+        self.needRedraw = True
     
     
     def draw(self):
