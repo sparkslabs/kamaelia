@@ -78,6 +78,7 @@ class Paint(Axon.Component.component):
       self.oldpos = None
       self.drawing = False
       self.tool = "Line"
+      self.toolSize = 3
       self.size = size
       self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
@@ -182,6 +183,8 @@ class Paint(Axon.Component.component):
                 if isinstance(event, tuple):
                     if event[0] == "Tool":
                         self.tool = event[1]
+                    if event[0] == "Size":
+                        self.toolSize = event[1]
                     elif event[0] == 'circle':
                         pygame.draw.circle(self.display, (255,0,0), event[1], event[2], 0)
                         self.blitToSurface()
@@ -238,7 +241,8 @@ class Paint(Axon.Component.component):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
                               else:
-                                 pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, 3)
+                                 pygame.draw.circle(self.display, self.selectedColour, self.oldpos, self.toolSize, 0)
+                                # pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, self.toolSize)
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
@@ -270,8 +274,7 @@ if __name__ == "__main__":
 
    ProcessGraphline(
             COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
-                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255),
-                     positionMsg="p2"),
+                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
         WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
