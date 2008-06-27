@@ -243,6 +243,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     try:
                         particle.posVector = newpoint
                     except NameError: pass
+                    
+                    # Redraw the link so that the link can move with the particle
+                    for p in particle.bondedFrom:
+                        p.needRedraw = True
           
     
     def doCommand(self, msg):
@@ -389,8 +393,9 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
         
     Pipeline(
-        #DataSource(['ADD NODE 1 1Node randompos -', 'ADD NODE 2 2Node randompos -']),
-        ConsoleReader(">>> "),
+        DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
+                    'ADD NODE 3Node 3Node randompos -', 'ADD LINK 1Node 2Node']),
+        #ConsoleReader(">>> "),
         lines_to_tokenlists(),
         TopologyViewer3D(),
         ConsoleEchoer(),
