@@ -24,7 +24,9 @@ pgd = PygameDisplay( width=1024, height=500 ).activate()
 PygameDisplay.setDisplayService(pgd)
 
 Backplane("STROKES").activate()
+Backplane("CONSOLE").activate()
 Backplane("AXONVIS").activate()
+Backplane("AXONEVENTS").activate()
 bgcolour = (255,255,180)
 
 node_add_template = \
@@ -45,12 +47,20 @@ class NodeAdder(Axon.Component.component):
         while True:
             for message in self.Inbox("inbox"):
                 if message in [ "o", "u" ]:
-                     thisis = str(nodeid)
+                     thisid = str(nodeid)
                      nodeid = nodeid +1
-                     nodedef = node_add_template % { "nodeid": nodeid }
+                     nodedef = node_add_template % { "nodeid": thisid }
                      self.send(nodedef, "outbox")
                 else:
                    print repr(message)
+                if message == "\n":
+                     nodeid = nodeid -1
+                     thisid = str(nodeid)
+                     self.send("DEL NODE %s\n" % thisid, "outbox")
+                     self.send("DEL NODE %s.i.inbox\n" % thisid, "outbox")
+                     self.send("DEL NODE %s.i.control\n" % thisid, "outbox")
+                     self.send("DEL NODE %s.o.outbox\n" % thisid, "outbox")
+                     self.send("DEL NODE %s.o.signal\n" % thisid, "outbox")
             yield 1
 
 Pipeline(
@@ -61,7 +71,8 @@ Pipeline(
 Pipeline(
          SubscribeTo("AXONVIS"),
          text_to_token_lists(),
-         AxonVisualiser(caption="Axon / Kamaelia Visualiser",screensize=(1024,500), position=(0,0), transparency=(255,255,255))
+         AxonVisualiser(caption="Axon / Kamaelia Visualiser",screensize=(1024,500), position=(0,0), transparency=(255,255,255)),
+         PublishTo("AXONEVENTS"),
 ).activate()
 
 Pipeline(
@@ -70,9 +81,16 @@ Pipeline(
      PublishTo("AXONVIS"),
 ).activate()
 
+Pipeline(
+     SubscribeTo("AXONEVENTS"), PublishTo("CONSOLE"),
+).activate()
 
 Pipeline(
-         SubscribeTo("STROKES"),
+     SubscribeTo("STROKES"), PublishTo("CONSOLE"),
+).activate()
+
+Pipeline(
+         SubscribeTo("CONSOLE"),
          ConsoleEchoer(),
 ).activate()
 
