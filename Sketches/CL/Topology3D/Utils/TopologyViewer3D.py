@@ -133,9 +133,11 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # Draw new particles
                 self.draw()
                 # wait for response on displayrequest and get identifier of the particle
-                while not self.dataReady("callback"):  yield 1
-                self.physics.particles[-1].identifier = self.recv("callback")
-            yield 1
+                cmd = message[0].upper(), message[1].upper()
+                if cmd == ("ADD", "NODE") and len(message) == 6:
+                    while not self.dataReady("callback"):  yield 1
+                    self.physics.particles[-1].identifier = self.recv("callback")
+            yield 1        
             
             self.handleEvents()
             
@@ -179,6 +181,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                           "displaylist": displaylist
                         }
             self.send(dl_update, "display_signal")
+            
+            
             
             #print particle
     
@@ -269,21 +273,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     #self.particles.append(particle)
                     #print self.particles[0]
                     self.addParticle(particle)
-                    
-                    
-                    # create display request for every particle added
-                    disprequest = { "OGL_DISPLAYREQUEST" : True,
-                                         "objectid" : id(particle),
-                                         "callback" : (self,"callback"),
-                                         "events" : (self, "events"),
-                                         "size": particle.size
-                                       }
-                    # send display request
-                    self.send(disprequest, "display_signal")
                     #print id(particle)
                     
                     #print 'ADD NODE end'
-                            
+                
+                
+            elif cmd == ("DEL", "NODE") and len(msg) == 3:
+                    ident = msg[2]
+                    self.removeParticle(ident)        
             else:
                 raise "Command Error"
         else:
@@ -328,6 +325,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if p.radius > self.biggestRadius:
                 self.biggestRadius = p.radius
             p.setOffset( (self.left, self.top) )
+            # create display request for every particle added
+            disprequest = { "OGL_DISPLAYREQUEST" : True,
+                                 "objectid" : id(p),
+                                 "callback" : (self,"callback"),
+                                 "events" : (self, "events"),
+                                 "size": p.size
+                               }
+            # send display request
+            self.send(disprequest, "display_signal")
         self.physics.add( *particles )
         
     def removeParticle(self, *ids):
@@ -336,11 +342,13 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         Also breaks any bonds to/from that particle.
         """
-        for id in ids:
-            self.physics.particleDict[id].breakAllBonds()
-            if self.selected == self.physics.particleDict[id]:
-                self.selectParticle(None)
+        for ident in ids:
+            self.physics.particleDict[ident].breakAllBonds()
+            self.display.ogl_objects.remove(id(self.physics.particleDict[ident]))
+#            if self.selected == self.physics.particleDict[id]:
+#                self.selectParticle(None)
         self.physics.removeByID(*ids)
+        #print self.physics.particles
     
     
             
