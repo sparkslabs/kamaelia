@@ -22,9 +22,9 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia Speak N Learn",
+setup(name = "Kamaelia-Scribble-N-Link",
       version = "0.1.0",
-      description = "Kamaelia Speak N Learn - a tool/toy for helping a small child to learn to read and write",
+      description = "Kamaelia Scribble N Link - a proof of concept 'system scribbling tool' ",
       author = "Michael Sparks & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/SpeakAndLearn",
@@ -32,11 +32,8 @@ setup(name = "Kamaelia Speak N Learn",
       packages = [\
 # REPLACE
                   ""],
-      scripts = [ 'App/SpeakNWrite.py' ],
-      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png', 'App/kamaelia_logo_whitebg.png']) ],
-      long_description = """
-Kamaelia Speak N Learn is a tool aimed at allowing children to play
-with reading and writing, and specifically with teaching both skills :-)
-""",
+      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
+      scripts = [ 'App/ScribbleNLink.py' ],
+      long_description = ""
       )
 
