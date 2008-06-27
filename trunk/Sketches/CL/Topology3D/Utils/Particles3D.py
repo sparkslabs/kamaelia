@@ -17,6 +17,7 @@ from Kamaelia.Support.Particles import Particle as BaseParticle
 class Particle3D(BaseParticle):
     def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), 
                  size=(0,0,0), **argd):
+        super(Particle3D, self).__init__(position=position, ID = ID)
         self.pos = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
