@@ -127,7 +127,9 @@ class XYPad(Axon.Component.component):
                  positionMsg="Position",
                  colours="RG",
                  selectedColour = (0,0,0),
-                 saturation=False,
+                 saturator=False,
+                 slider = False,
+                 colourSelector = False,
                  collisionMsg = ("Top", "Right", "Bottom", "Left"),
                  size=(100, 100), editable=True):
         """
@@ -147,11 +149,14 @@ class XYPad(Axon.Component.component):
         self.clickTime = None
         self.mousePositions = []
         self.lastMousePos = (0, 0)
-
+        self.colourSelector = colourSelector
+        self.saturator = saturator
         self.puckRadius = 10
         self.puckPos = [self.size[0]/2, self.size[1]/2]
         self.puckVel = [0, 0]
-
+        
+        self.slider = slider
+        self.selectedSize = 3
         self.borderWidth = 5
         self.bgcolour = bgcolour
         self.fgcolour = fgcolour
@@ -186,22 +191,25 @@ class XYPad(Axon.Component.component):
         self.link((self,"display_signal"), displayService)
 
         # colour buttons
-        rgbutton = Button(caption="Red/Green",position=(10,170), msg = ("Colour", "RG")).activate()
-        rbbutton = Button(caption="Red/Blue",position=(80,170), msg = ("Colour", "RB")).activate()
-        gbbutton = Button(caption="Green/Blue",position=(145,170), msg = ("Colour", "GB")).activate()
-        self.link( (rgbutton,"outbox"), (self,"buttons") )
-        self.link( (rbbutton,"outbox"), (self,"buttons") )
-        self.link( (gbbutton,"outbox"), (self,"buttons") )
-        # tool buttons
-        circleb = Button(caption="Circle",position=(10,10), msg = (("Tool", "Circle"),)).activate()
-        lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
-        bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
-        eyeb = Button(caption="Eyedropper",position=(10,130), msg = (("Tool", "Eyedropper"),)).activate()
-        self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
-        self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
-        self.link( (bucketb,"outbox"), (self,"outbox"), passthrough = 2 )
-        self.link( (eyeb,"outbox"), (self,"outbox"), passthrough = 2 )
-        
+        if self.colourSelector:
+            rgbutton = Button(caption="Red/Green",position=(10,170), msg = ("Colour", "RG")).activate()
+            rbbutton = Button(caption="Red/Blue",position=(80,170), msg = ("Colour", "RB")).activate()
+            gbbutton = Button(caption="Green/Blue",position=(145,170), msg = ("Colour", "GB")).activate()
+            self.link( (rgbutton,"outbox"), (self,"buttons") )
+            self.link( (rbbutton,"outbox"), (self,"buttons") )
+            self.link( (gbbutton,"outbox"), (self,"buttons") )
+            # tool buttons
+            circleb = Button(caption="Circle",position=(10,10), msg = (("Tool", "Circle"),)).activate()
+            lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
+            bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
+            eyeb = Button(caption="Eyedropper",position=(10,130), msg = (("Tool", "Eyedropper"),)).activate()
+            self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (bucketb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (eyeb,"outbox"), (self,"outbox"), passthrough = 2 )
+            SizePicker = XYPad(size=(255, 50), bouncingPuck = False, position = (10, 480),
+                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), slider = True).activate()
+            self.link( (SizePicker,"outbox"), (self,"outbox"), passthrough = 2 )
         
         
         #clock - don't really need this
@@ -260,6 +268,9 @@ class XYPad(Axon.Component.component):
 
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.clickTime = time.time()
+                        if self.slider:
+                            self.sliderPos = event.pos[0]
+                            self.drawBG()
                         if self.display.get_rect().collidepoint(*event.pos):
                             self.mouseDown = True
                             self.isBouncing = False
@@ -278,6 +289,9 @@ class XYPad(Axon.Component.component):
 
                     if event.type == pygame.MOUSEBUTTONUP:
                         if self.mouseDown:
+                            if self.slider:
+                                self.sliderPos = event.pos[0]
+                                self.drawBG()
                             if (self.bouncingPuck and
                                 time.time() - self.clickTime > 0.1):
                                 # Click and drag
@@ -298,6 +312,9 @@ class XYPad(Axon.Component.component):
                         self.mouseDown = False
                     
                     if event.type == pygame.MOUSEMOTION and self.mouseDown:
+                        if self.slider:
+                            self.sliderPos = event.pos[0]
+                            self.drawBG()
                         if self.display.get_rect().collidepoint(*event.pos):
                             # We are dragging inside the display
                             # Keep a buffer of 50 mouse positions
@@ -373,39 +390,56 @@ class XYPad(Axon.Component.component):
             self.send((self.messagePrefix + self.collisionMsg[2], 1), "outbox") 
     
     def drawBG(self):
-        if (self.colours == "RG"):
+        if self.slider:
+            self.display.fill( (255,255,255) )
+            pygame.draw.rect(self.display, (0,0,0),
+                             self.display.get_rect(), 2)
+        if self.saturator:
             for y in range(0, self.size[0], self.size[0]/25):
-                for x in range(0, self.size[1], self.size[1]/25):
-                    box = pygame.Rect(x, y, 10, 10)
-                    pygame.draw.rect(self.display, (x,y,0), box, 0)
-        elif (self.colours == "RB"):
-            for y in range(0, self.size[0], self.size[0]/25):
-                for x in range(0, self.size[1], self.size[1]/25):
-                    box = pygame.Rect(x, y, 10, 10)
-                    pygame.draw.rect(self.display, (x,0,y), box, 0)
-        elif (self.colours == "GB"):
-            for y in range(0, self.size[0], self.size[0]/25):
-                for x in range(0, self.size[1], self.size[1]/25):
-                    box = pygame.Rect(x, y, 10, 10)
-                    pygame.draw.rect(self.display, (0,x,y), box, 0)
+                box = pygame.Rect(self.size[0]/2, y, 10, 10)
+                pygame.draw.rect(self.display, (self.selectedColour[0],self.selectedColour[1],self.selectedColour[2],y), box, 0)
+        if self.colourSelector:
+            if (self.colours == "RG"):
+                for y in range(0, self.size[0], self.size[0]/25):
+                    for x in range(0, self.size[1], self.size[1]/25):
+                        box = pygame.Rect(x, y, 10, 10)
+                        pygame.draw.rect(self.display, (x,y,0), box, 0)
+            elif (self.colours == "RB"):
+                for y in range(0, self.size[0], self.size[0]/25):
+                    for x in range(0, self.size[1], self.size[1]/25):
+                        box = pygame.Rect(x, y, 10, 10)
+                        pygame.draw.rect(self.display, (x,0,y), box, 0)
+            elif (self.colours == "GB"):
+                for y in range(0, self.size[0], self.size[0]/25):
+                    for x in range(0, self.size[1], self.size[1]/25):
+                        box = pygame.Rect(x, y, 10, 10)
+                        pygame.draw.rect(self.display, (0,x,y), box, 0)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
     def render(self):
         """Draw the border and puck onto the surface"""
      #                    self.display.get_rect(), self.borderWidth)
-
-        if (self.colours == "RG"):
-            self.selectedColour = (self.puckPos[0], self.puckPos[1], 0)
-        elif (self.colours == "RB"):
-            self.selectedColour = (self.puckPos[0], 0, self.puckPos[1])
-        elif (self.colours == "GB"):
-            self.selectedColour = (0, self.puckPos[0], self.puckPos[1])
-        pygame.draw.rect(self.display, self.selectedColour,
-                         self.display.get_rect(), self.borderWidth)
+        if self.colourSelector:
+            if (self.colours == "RG"):
+                self.selectedColour = (self.puckPos[0], self.puckPos[1], 0)
+            elif (self.colours == "RB"):
+                self.selectedColour = (self.puckPos[0], 0, self.puckPos[1])
+            elif (self.colours == "GB"):
+                self.selectedColour = (0, self.puckPos[0], self.puckPos[1])
+            pygame.draw.rect(self.display, self.selectedColour,
+                            self.display.get_rect(), self.borderWidth)
+            self.send((("colour",self.selectedColour),), "outbox")
+        if self.slider:
+            print float(self.size[1])/float(self.size[0])*self.sliderPos
+            self.selectedSize = float(self.size[1])/float(self.size[0])*self.sliderPos
+            self.send((("Size",self.selectedSize),), "outbox")
+            box = pygame.Rect(self.sliderPos, 0, 5, self.selectedSize)
+            pygame.draw.rect(self.display, (123,123,123),
+                            box, 0)
         # Puck
    #     pygame.draw.circle(self.display, self.fgcolour,
     #                       [int(x) for x in self.puckPos], self.puckRadius)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
-        self.send((("colour",self.selectedColour),), "outbox")
+        
 
 if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
