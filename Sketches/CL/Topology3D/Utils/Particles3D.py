@@ -45,7 +45,7 @@ class Particle3D(BaseParticle):
         
         # for detection of changes
         self.oldrot = Vector()
-        self.oldpos = Vector()
+        self.oldpos = self.initialpos = Vector()
         self.oldscaling = Vector()
         self.transform = Transform()
         
@@ -127,8 +127,8 @@ class Particle3D(BaseParticle):
         # Draw links
         for p in self.bondedTo:
             glBegin(GL_LINES)
-            glVertex3f(*self.pos)
-            glVertex3f(*p.pos)
+            glVertex3f(*self.initialpos.toTuple())
+            glVertex3f(*(p.posVector*10).toTuple())
             glEnd()
         
     def buildCaption(self):
@@ -192,6 +192,7 @@ class Particle3D(BaseParticle):
                 self.oldrot = self.rotation.copy()
 
             if self.oldpos != self.posVector:
+                self.pos = self.posVector.toTuple()
                 self.oldpos = self.posVector    
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
