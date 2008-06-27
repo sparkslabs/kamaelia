@@ -12,10 +12,12 @@ from OpenGL.GLU import *
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
 from THF.Kamaelia.UI.OpenGL.Transform import Transform
 
-class Particle3D(object):
+from Kamaelia.Support.Particles import Particle as BaseParticle
+
+class Particle3D(BaseParticle):
     def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), 
                  size=(0,0,0), **argd):
-        self.position = Vector(*position)
+        self.pos = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
         self.ID = ID
@@ -35,7 +37,7 @@ class Particle3D(object):
         self.identifier = None
         
         # get transformation data and convert to vectors
-        #self.position = Vector( *argd.get("position", (0,0,0)) )
+        #self.pos = Vector( *argd.get("position", (0,0,0)) )
         self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
         
@@ -45,6 +47,9 @@ class Particle3D(object):
         self.oldscaling = Vector()
         self.transform = Transform()
         
+        
+        self.radius = 10
+        
     
     
     def draw(self):
@@ -53,7 +58,7 @@ class Particle3D(object):
         hs = self.size/2
         #print hs
 #        #glLoadIdentity() # LoadIdentity will clear matrix and invalidate applyTransforms                            
-#        glTranslatef(*self.position.toTuple())
+#        glTranslatef(*self.pos.toTuple())
 #        glScalef(2.1,2.1,2.1)
 #        glRotatef(20.2,1.0,0.0,0.0)
 #        glRotatef(20.2,0.0,1.0,0.0)
@@ -164,11 +169,11 @@ class Particle3D(object):
     def applyTransforms(self):
         """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
         # generate new transformation matrix if needed
-        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.position:
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.pos:
             self.transform = Transform()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rotation)
-            self.transform.applyTranslation(self.position)
+            self.transform.applyTranslation(self.pos)
 
             if self.oldscaling != self.scaling:
                 self.oldscaling = self.scaling.copy()
@@ -176,9 +181,8 @@ class Particle3D(object):
             if self.oldrot != self.rotation:
                 self.oldrot = self.rotation.copy()
 
-            if self.oldpos != self.position:
-                self.oldpos = self.position.copy()
-                
+            if self.oldpos != self.pos:
+                self.oldpos = self.pos    
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                  "objectid": id(self),
@@ -188,7 +192,19 @@ class Particle3D(object):
         else:
             return None
 
+    
+    def setOffset( self, (left,top) ):
+        """\
+        Set the offset of the top left corner of the rendering area.
 
+        If this particle is at (px,py) it will be rendered at (px-x,py-y).
+        """
+        self.left = left
+        self.top  = top
+        
+    def getLoc(self): # Override parent method
+        """Return current possition vector (x,y,z, ...)"""
+        return self.pos.toTuple()
 
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
 class OpenGLComponentParticle3D(OpenGLComponent):

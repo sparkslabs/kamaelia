@@ -84,12 +84,23 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
         
         # TODO: will be replaced by ParticleSystem3D
-        self.particles = []
+        #self.particles = []
         self.hitParticles = []
         
         self.grabbed = False
         
         
+        if laws==None:
+            self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=100)
+        else:
+            self.laws = laws
+            
+        self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
+        self.biggestRadius = 0
+        self.left  = 0
+        self.top   = 0
+        self.dleft = 0
+        self.dtop  = 0
         
     def main(self):
         """\
@@ -118,18 +129,18 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 message = self.recv("inbox")
                 self.doCommand(message)
                 #print message
-                #print self.particles
+                #print self.physics.particles
                 # Draw new particles
                 self.draw()
                 # wait for response on displayrequest and get identifier of the particle
                 while not self.dataReady("callback"):  yield 1
-                self.particles[-1].identifier = self.recv("callback")
+                self.physics.particles[-1].identifier = self.recv("callback")
             yield 1
             
             self.handleEvents()
             
             # Perform transformation
-            for particle in self.particles:
+            for particle in self.physics.particles:
                 transform_update = particle.applyTransforms()
                 if transform_update is not None:
                     self.send(transform_update, "display_signal")
@@ -154,7 +165,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.drawParticles()
     
     def drawParticles(self):
-        for particle in self.particles:
+        for particle in self.physics.particles:
             # display list id
             displaylist = glGenLists(1)
             # draw object to its displaylist
@@ -196,15 +207,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             event = self.recv("events")
             if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
                     for particle in self.hitParticles:
-                        p1 = particle.position.copy()
+                        p1 = particle.pos.copy()
                         p1.x += 10
-                        p2 = particle.position.copy()
+                        p2 = particle.pos.copy()
                         p2.y += 10
-                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.position, p1, p2])
+                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.pos, p1, p2])
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    for particle in self.particles:
+                    for particle in self.physics.particles:
                         if particle.identifier in event.hitobjects:
                             self.grabbed = True
                             particle.scaling = Vector(0.9,0.9,0.9)
@@ -222,7 +233,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
                 for particle in self.hitParticles:
                     try:
-                        particle.position = newpoint
+                        particle.pos = newpoint
                     except NameError: pass
           
     
@@ -255,9 +266,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     particle = ptype(position = pos, ID=ident, name=name)
                     
                     particle.originaltype = msg[5]
-                    self.particles.append(particle)
+                    #self.particles.append(particle)
                     #print self.particles[0]
-                    #self.addParticle(particle)
+                    self.addParticle(particle)
                     
                     
                     # create display request for every particle added
@@ -311,6 +322,25 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         raise ValueError("Unrecognised position specification")
 
 
+    def addParticle(self, *particles):
+        """Add particles to the system"""
+        for p in particles:
+            if p.radius > self.biggestRadius:
+                self.biggestRadius = p.radius
+            p.setOffset( (self.left, self.top) )
+        self.physics.add( *particles )
+        
+    def removeParticle(self, *ids):
+        """\
+        Remove particle(s) specified by their ids.
+
+        Also breaks any bonds to/from that particle.
+        """
+        for id in ids:
+            self.physics.particleDict[id].breakAllBonds()
+            if self.selected == self.physics.particleDict[id]:
+                self.selectParticle(None)
+        self.physics.removeByID(*ids)
     
     
             
