@@ -104,15 +104,21 @@ class LinkMaker(Axon.Component.component):
                 print "GOTIT", repr(message)
                 if message[0] == "SELECT":
                     if message[1] == "NODE":
-                        if makinglink and last_selected == None:
+                        if message[2] != None:
+                            if makinglink and last_selected == None:
+                                last_selected = message[2]
+                                print "LAST SELECTED", last_selected
+                            elif makinglink:
+                                print "MAKING LINK BETWEEN", last_selected, message[2]
+                                self.send("ADD LINK %s %s\n" % (last_selected, message[2]), "outbox")
+                                makinglink = False
+                                last_selected = None
+                            else:
+                                print "selecting", message[2]
+                                last_selected = message[2]
+                        else:
+                            print "deselecting", message[2]
                             last_selected = message[2]
-                            print "LAST SELECTED", last_selected
-                        elif makinglink:
-                            print "MAKING LINK BETWEEN", last_selected, message[2]
-                            self.send("ADD LINK %s %s\n" % (last_selected, message[2]), "outbox")
-                            makinglink = False
-                            last_selected = None
-
             yield 1
         
 
