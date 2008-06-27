@@ -344,7 +344,12 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """
         for ident in ids:
             self.physics.particleDict[ident].breakAllBonds()
-            self.display.ogl_objects.remove(id(self.physics.particleDict[ident]))
+            try:
+                self.display.ogl_objects.remove(id(self.physics.particleDict[ident]))
+                self.display.ogl_names.pop(id(self.physics.particleDict[ident]))
+                self.display.ogl_displaylists.pop(id(self.physics.particleDict[ident]))
+                self.display.ogl_transforms.pop(id(self.physics.particleDict[ident]))
+            except KeyError: pass
 #            if self.selected == self.physics.particleDict[id]:
 #                self.selectParticle(None)
         self.physics.removeByID(*ids)
