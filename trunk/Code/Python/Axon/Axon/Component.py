@@ -601,8 +601,8 @@ class component(microprocess):
       return self.inboxes[boxname].pop(0)
 
    def Inbox(self, boxname="inbox"):
-       while self.dataReady("inbox"):
-           yield self.recv("inbox")
+       while self.dataReady(boxname):
+           yield self.recv(boxname)
 
    def send(self,message, boxname="outbox"):
       """\
