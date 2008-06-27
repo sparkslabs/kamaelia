@@ -255,6 +255,16 @@ class Paint(Axon.Component.component):
 
 __kamaelia_components__  = ( Paint, )
 
+
+class DisplayConfig(Axon.Component.component):
+    width = 800
+    height = 480
+    def main(self):
+        pgd = PygameDisplay( width=self.width, height=self.height ).activate()
+        PygameDisplay.setDisplayService(pgd)
+        yield 1
+    
+
                   
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
@@ -265,17 +275,19 @@ if __name__ == "__main__":
    import sys; sys.path.append("../../../MPS/pprocess/");
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
-
-
-
-
-
+   from Kamaelia.Chassis.Pipeline import Pipeline
 
 
    ProcessGraphline(
-            COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
-                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
-        WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
+        COLOURS = Pipeline(
+                      DisplayConfig(width=270),
+                      XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
+                           bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
+                  ),
+        WINDOW1 = Pipeline(
+                      DisplayConfig(width=520, height=520),
+                      Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
+                  ),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         }
