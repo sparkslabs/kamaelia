@@ -285,6 +285,16 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             elif cmd == ("DEL", "NODE") and len(msg) == 3:
                     ident = msg[2]
                     self.removeParticle(ident)        
+            
+            elif cmd == ("ADD", "LINK") and len(msg) == 4:
+                src = msg[2]
+                dst = msg[3]
+                self.makeBond(src, dst)
+                
+            elif cmd == ("DEL", "LINK") and len(msg) == 4:
+                src = msg[2]
+                dst = msg[3]
+                self.breakBond(src, dst)
             else:
                 raise "Command Error"
         else:
@@ -360,6 +370,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         #print self.physics.particles
     
     
+    def makeBond(self, source, dest):
+        """Make a bond from source to destination particle, specified by IDs"""
+        self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
+        self.physics.particleDict[source].needRedraw = True
+
+    def breakBond(self, source, dest):
+        """Break a bond from source to destination particle, specified by IDs"""
+        self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
+        self.physics.particleDict[source].needRedraw = True
             
             
             

@@ -119,9 +119,17 @@ class Particle3D(BaseParticle):
         glTexCoord2f(0.0, 1.0)
         glVertex3f(-hs.x,hs.y,hs.z)
         #glVertex3f(-2.0,  5.0,  1.0)
+                
         glEnd()
         
         glDisable(GL_TEXTURE_2D)
+        
+        # Draw links
+        for p in self.bondedTo:
+            glBegin(GL_LINES)
+            glVertex3f(*self.pos)
+            glVertex3f(*p.pos)
+            glEnd()
         
     def buildCaption(self):
         """Pre-render the text to go on the label."""
