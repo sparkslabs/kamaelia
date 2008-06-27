@@ -18,7 +18,8 @@ class Particle3D(BaseParticle):
     def __init__(self, position = (-1,0,-10), ID='a', name='a', sidecolour=(200,200,244), 
                  size=(0,0,0), **argd):
         super(Particle3D, self).__init__(position=position, ID = ID)
-        self.pos = Vector(*position)
+        self.pos = position
+        self.posVector = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
         self.ID = ID
@@ -38,7 +39,7 @@ class Particle3D(BaseParticle):
         self.identifier = None
         
         # get transformation data and convert to vectors
-        #self.pos = Vector( *argd.get("position", (0,0,0)) )
+        #self.posVector = Vector( *argd.get("position", (0,0,0)) )
         self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
         
@@ -59,7 +60,7 @@ class Particle3D(BaseParticle):
         hs = self.size/2
         #print hs
 #        #glLoadIdentity() # LoadIdentity will clear matrix and invalidate applyTransforms                            
-#        glTranslatef(*self.pos.toTuple())
+#        glTranslatef(*self.posVector.toTuple())
 #        glScalef(2.1,2.1,2.1)
 #        glRotatef(20.2,1.0,0.0,0.0)
 #        glRotatef(20.2,0.0,1.0,0.0)
@@ -170,11 +171,11 @@ class Particle3D(BaseParticle):
     def applyTransforms(self):
         """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
         # generate new transformation matrix if needed
-        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.pos:
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.posVector:
             self.transform = Transform()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rotation)
-            self.transform.applyTranslation(self.pos)
+            self.transform.applyTranslation(self.posVector)
 
             if self.oldscaling != self.scaling:
                 self.oldscaling = self.scaling.copy()
@@ -182,8 +183,8 @@ class Particle3D(BaseParticle):
             if self.oldrot != self.rotation:
                 self.oldrot = self.rotation.copy()
 
-            if self.oldpos != self.pos:
-                self.oldpos = self.pos    
+            if self.oldpos != self.posVector:
+                self.oldpos = self.posVector    
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                  "objectid": id(self),
@@ -203,9 +204,7 @@ class Particle3D(BaseParticle):
         self.left = left
         self.top  = top
         
-    def getLoc(self): # Override parent method
-        """Return current possition vector (x,y,z, ...)"""
-        return self.pos.toTuple()
+
 
 from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
 class OpenGLComponentParticle3D(OpenGLComponent):

@@ -215,11 +215,11 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             event = self.recv("events")
             if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
                     for particle in self.hitParticles:
-                        p1 = particle.pos.copy()
+                        p1 = particle.posVector.copy()
                         p1.x += 10
-                        p2 = particle.pos.copy()
+                        p2 = particle.posVector.copy()
                         p2.y += 10
-                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.pos, p1, p2])
+                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.posVector, p1, p2])
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -241,7 +241,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
                 for particle in self.hitParticles:
                     try:
-                        particle.pos = newpoint
+                        particle.posVector = newpoint
                     except NameError: pass
           
     
