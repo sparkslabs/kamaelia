@@ -59,7 +59,7 @@ class StepSequencer(MusicTimingComponent):
 
         self.step = 0
 
-        self.stepLength = self.beatLength * self.stepsPerBeat
+        self.stepLength = self.beatLength / self.stepsPerBeat
         self.lastStepTime = self.startTime
         
         self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
@@ -68,7 +68,7 @@ class StepSequencer(MusicTimingComponent):
         # --------
         self.position = position
         # Make the size fit the exact number of beats and channels
-        self.size = (size[0] - size[0] % (self.beatsPerBar * self.loopBars),
+        self.size = (size[0] - size[0] % (self.numSteps),
                      size[1] - size[1] % len(self.channels))
         self.positionSize = (self.size[0]/self.numSteps, 25)
         self.stepSize = (self.size[0]/self.numSteps,
