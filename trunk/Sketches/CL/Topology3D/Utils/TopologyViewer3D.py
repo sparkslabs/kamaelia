@@ -148,7 +148,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 self.physics.run(self.simCyclesPerRedraw)
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
-                    particle.posVector = Vector(*particle.pos)
+                    #particle.posVector = Vector(*particle.pos)
                     particle.needRedraw = True
                     if particle.needRedraw:
                         self.drawParticles(particle)
@@ -227,11 +227,11 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             event = self.recv("events")
             if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
                     for particle in self.hitParticles:
-                        p1 = particle.posVector.copy()
+                        p1 = Vector(*particle.pos).copy()
                         p1.x += 10
-                        p2 = particle.posVector.copy()
+                        p2 = Vector(*particle.pos).copy()
                         p2.y += 10
-                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [particle.posVector, p1, p2])
+                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos), p1, p2])
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -253,7 +253,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
                 for particle in self.hitParticles:
                     try:
-                        particle.posVector = newpoint
+                        particle.pos = newpoint.toTuple()
                     except NameError: pass
                     
                     # Redraw the link so that the link can move with the particle
