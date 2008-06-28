@@ -34,8 +34,10 @@ class Particle3D(BaseParticle):
         self.pixelscaling = argd.get("pixelscaling", 100)
         self.thickness = argd.get("thickness", 0.3)
         #self.margin = 8
-        self.buildCaption()
-        
+        self.buildCaption()        
+        #  It's after buildCaption() because self.size is decided only after buildCaption() if size=(0,0,0)
+        self.radius = self.size.length()
+                
         self.identifier = None
         
         # get transformation data and convert to vectors
@@ -50,7 +52,7 @@ class Particle3D(BaseParticle):
         self.transform = Transform()
         
         
-        self.radius = 5
+        
         self.needRedraw = True
     
     
