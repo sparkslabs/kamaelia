@@ -58,7 +58,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                        particleTypes      = None,
                        initialTopology    = None,
                        laws               = None,
-                       simCyclesPerRedraw = None,
+                       simCyclesPerRedraw = 1,
                        border             = 0,
                        extraDrawing       = None,
                        showGrid           = True,
@@ -83,7 +83,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.particleTypes = particleTypes
             
         
-        # TODO: will be replaced by ParticleSystem3D
+        
         #self.particles = []
         self.hitParticles = []
         
@@ -91,7 +91,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         
         if laws==None:
-            self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=100)
+            self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=2)
         else:
             self.laws = laws
             
@@ -101,6 +101,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.top   = 0
         self.dleft = 0
         self.dtop  = 0
+        
+        # Do interaction
+        self.simCyclesPerRedraw = simCyclesPerRedraw
+        self.lastIdleTime = time.time()
         
     def main(self):
         """\
@@ -135,23 +139,31 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if cmd == ("ADD", "NODE") and len(message) == 6:
                     while not self.dataReady("callback"):  yield 1
                     self.physics.particles[-1].identifier = self.recv("callback")
+            else:
+                self.lastIdleTime = 0
+            
             yield 1        
             
-            # Draw particles if new or updated
-            for particle in self.physics.particles:
-                if particle.needRedraw:
-                    self.drawParticles(particle)
-                    particle.needRedraw = False
-            
-            self.handleEvents()
-            
-            # Perform transformation
-            for particle in self.physics.particles:
-                transform_update = particle.applyTransforms()
-                if transform_update is not None:
-                    self.send(transform_update, "display_signal")
-                    #print transform_update
-
+            if self.lastIdleTime + 1.0 < time.time():
+                self.physics.run(self.simCyclesPerRedraw)
+                # Draw particles if new or updated
+                for particle in self.physics.particles:
+                    particle.posVector = Vector(*particle.pos)
+                    particle.needRedraw = True
+                    if particle.needRedraw:
+                        self.drawParticles(particle)
+                        particle.needRedraw = False
+                
+                self.handleEvents()
+                
+                # Perform transformation
+                for particle in self.physics.particles:
+                    transform_update = particle.applyTransforms()
+                    if transform_update is not None:
+                        self.send(transform_update, "display_signal")
+                        #print transform_update
+    
+                self.lastIdleTime = time.time()
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
@@ -394,7 +406,9 @@ if __name__ == "__main__":
         
     Pipeline(
         DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
-                    'ADD NODE 3Node 3Node randompos -', 'ADD LINK 1Node 2Node']),
+                    'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
+                    'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
+                    'ADD LINK 4Node 1Node']),
         #ConsoleReader(">>> "),
         lines_to_tokenlists(),
         TopologyViewer3D(),
