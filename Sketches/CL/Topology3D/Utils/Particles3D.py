@@ -19,7 +19,7 @@ class Particle3D(BaseParticle):
                  size=(0,0,0), **argd):
         super(Particle3D, self).__init__(position=position, ID = ID)
         self.pos = position
-        self.posVector = Vector(*position)
+        #self.posVector = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
         self.ID = ID
@@ -128,7 +128,7 @@ class Particle3D(BaseParticle):
         for p in self.bondedTo:
             glBegin(GL_LINES)
             glVertex3f(*self.initialpos.toTuple())
-            glVertex3f(*(p.posVector*10).toTuple())
+            glVertex3f(*(Vector(*p.pos)*10).toTuple())
             glEnd()
         
     def buildCaption(self):
@@ -179,11 +179,11 @@ class Particle3D(BaseParticle):
     def applyTransforms(self):
         """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
         # generate new transformation matrix if needed
-        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != self.posVector:
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != Vector(*self.pos):
             self.transform = Transform()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rotation)
-            self.transform.applyTranslation(self.posVector)
+            self.transform.applyTranslation(Vector(*self.pos))
 
             if self.oldscaling != self.scaling:
                 self.oldscaling = self.scaling.copy()
@@ -191,9 +191,8 @@ class Particle3D(BaseParticle):
             if self.oldrot != self.rotation:
                 self.oldrot = self.rotation.copy()
 
-            if self.oldpos != self.posVector:
-                self.pos = self.posVector.toTuple()
-                self.oldpos = self.posVector    
+            if self.oldpos != Vector(*self.pos):
+                self.oldpos = Vector(*self.pos)  
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                  "objectid": id(self),
