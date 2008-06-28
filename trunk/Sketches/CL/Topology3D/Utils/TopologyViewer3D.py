@@ -145,14 +145,13 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1        
             
             if self.lastIdleTime + 1.0 < time.time():
+                print [particle.pos for particle in self.physics.particles]                    
                 self.physics.run(self.simCyclesPerRedraw)
+                print [particle.pos for particle in self.physics.particles]
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
-                    #particle.posVector = Vector(*particle.pos)
-                    particle.needRedraw = True
                     if particle.needRedraw:
                         self.drawParticles(particle)
-                        particle.needRedraw = False
                 
                 self.handleEvents()
                 
@@ -164,6 +163,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         #print transform_update
     
                 self.lastIdleTime = time.time()
+            else:
+                yield 1
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
