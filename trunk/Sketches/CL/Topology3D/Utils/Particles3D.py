@@ -136,7 +136,7 @@ class Particle3D(BaseParticle):
         for p in self.bondedTo:
             glBegin(GL_LINES)
             glVertex3f(*self.initialpos.toTuple())
-            glVertex3f(*(Vector(*p.pos)*10).toTuple())
+            glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
             glEnd()
         
     def buildCaption(self):
