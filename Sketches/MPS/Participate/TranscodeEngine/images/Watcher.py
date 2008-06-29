@@ -8,6 +8,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 
 class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
     watch = "upload"
+    sleeptime = 10
     def main(self):
         S = None
         while True:
@@ -22,7 +23,7 @@ class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
                     print "initialising, checking uploads", S==N, S, list(N)
                     S = N
                     self.send(self.watch, "outbox")
-            time.sleep(1)
+            time.sleep(self.sleeptime)
 
 class FileProcessor(Axon.Component.component):
     def processfile(self, directory, filename):
@@ -71,8 +72,8 @@ class ImageTranscoder(FileProcessor):
             return
         for size in self.sizes:
             if size == "microthumb":
-                dest_file1 = self.destdir + "/" + thefile + "/" + "nanothumb" + file_ending
-                dest_file2 = self.destdir + "/" + thefile + "/" + size + file_ending
+                dest_file1 = self.destdir + "/" + thefile + "/" + "nanothumb" + ".jpg"
+                dest_file2 = self.destdir + "/" + thefile + "/" + size + ".jpg"
                                 
                 
                 print "convert %s -crop %dx%d+0+0 -resize 18x %s" % (sourcefile, side_size,side_size, dest_file1)
@@ -86,7 +87,7 @@ class ImageTranscoder(FileProcessor):
                 dest_filename = size + "-" + filename
                 full_dest_filename = os.path.join(self.destdir, dest_filename)
                 
-                full_dest_filename = self.destdir + "/" + thefile + "/" + size + file_ending
+                full_dest_filename = self.destdir + "/" + thefile + "/" + size + ".jpg"
                 
                 resize_arg = "-resize %dx" % width
                 
