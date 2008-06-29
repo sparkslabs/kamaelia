@@ -9,8 +9,8 @@ import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from THF.Kamaelia.UI.OpenGL.Vector import Vector
-from THF.Kamaelia.UI.OpenGL.Transform import Transform
+from Kamaelia.UI.OpenGL.Vector import Vector
+from Kamaelia.UI.OpenGL.Transform import Transform
 
 from Kamaelia.Support.Particles import Particle as BaseParticle
 

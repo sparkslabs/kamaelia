@@ -23,11 +23,11 @@ from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
 from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
 from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
 
-from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
-from THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
-from THF.Kamaelia.UI.OpenGL.Vector import Vector
-from THF.Kamaelia.UI.OpenGL.Intersect import Intersect
-from THF.Kamaelia.UI.OpenGL.Transform import Transform
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
+from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
+from Kamaelia.UI.OpenGL.Vector import Vector
+from Kamaelia.UI.OpenGL.Intersect import Intersect
+from Kamaelia.UI.OpenGL.Transform import Transform
 
 _cat = Axon.CoordinatingAssistantTracker
 
