@@ -313,8 +313,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 src = msg[2]
                 dst = msg[3]
                 self.breakBond(src, dst)
+                
             elif cmd == ("DEL", "ALL") and len(msg) == 2:
                 self.removeParticle(*self.physics.particleDict.keys())
+                
+            elif cmd == ("GET", "ALL") and len(msg) == 2:
+                topology = [("DEL","ALL")]
+                topology.extend(self.getTopology())
+                self.send( ("TOPOLOGY", topology), "outbox" )
+                    
             else:
                 raise "Command Error"
         else:
@@ -399,6 +406,26 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """Break a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
         self.physics.particleDict[source].needRedraw = True
+        
+    def getTopology(self):
+        """getTopology() -> list of command tuples that would build the current topology"""
+        topology = []
+        
+        # first, enumerate the particles
+        for particle in self.physics.particles:
+            topology.append( ( "ADD","NODE",
+                               particle.ID,
+                               particle.name,
+                               "random",
+                               particle.originaltype
+                           ) )
+                           
+        # now enumerate the linkages
+        for particle in self.physics.particles:
+            for dst in particle.getBondedTo():
+                topology.append( ( "ADD","LINK", particle.ID, dst.ID ) )
+            
+        return topology
             
             
             
