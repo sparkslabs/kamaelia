@@ -55,6 +55,12 @@ class Particle3D(BaseParticle):
         
         self.needRedraw = True
     
+    def set_label(self, new_name):
+        self.size = Vector()
+        self.name = new_name
+        self.buildCaption()        
+        #  It's after buildCaption() because self.size is decided only after buildCaption() if size=(0,0,0)
+        self.radius = self.size.length()
     
     def draw(self):
         """ Draw button cuboid."""
