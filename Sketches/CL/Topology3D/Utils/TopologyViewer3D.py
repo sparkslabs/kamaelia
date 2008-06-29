@@ -313,6 +313,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 src = msg[2]
                 dst = msg[3]
                 self.breakBond(src, dst)
+            elif cmd == ("DEL", "ALL") and len(msg) == 2:
+                self.removeParticle(*self.physics.particleDict.keys())
             else:
                 raise "Command Error"
         else:
