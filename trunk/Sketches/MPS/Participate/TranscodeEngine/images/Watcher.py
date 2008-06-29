@@ -18,6 +18,7 @@ class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
                     if S.st_mtime != N.st_mtime:
                         print "uploads changed, processing", S==N, list(S), list(N)
                         S = N
+                        time.sleep(2)
                         self.send(self.watch, "outbox")
                 else:
                     print "initialising, checking uploads", S==N, S, list(N)
