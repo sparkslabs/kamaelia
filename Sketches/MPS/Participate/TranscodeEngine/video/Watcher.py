@@ -97,7 +97,7 @@ class ImageTranscoder(FileProcessor):
 
 class VideoTranscoder(FileProcessor):
     destdir = "moderate"
-    conversion = "ffmpeg -i %(sourcefile)s %(deststem)s.flv"
+    conversion = "/usr/local/bin/ffmpeg -i %(sourcefile)s -ar 11025 %(deststem)s.flv"
     template = "player-template.html"
     def processfile(self, directory, filename):
         thefile = filename[:filename.rfind(".")]
@@ -120,10 +120,27 @@ class VideoTranscoder(FileProcessor):
 
         os.unlink(sourcefile)
 
+class VideoMover(FileProcessor):
+    destdir = "/tmp"
+    extensions = [ ".3gp", ".3gp2", ".3gpp", ".asf", ".asx", ".avi", ".dv",
+                   ".flv", ".m1v", ".m4e", ".m4u", ".m4v", ".mjp", ".moov",
+                   ".mov", ".movie", ".mp4", ".mpe", ".mpeg", ".mpg", ".qt",
+                   ".rm", ".swf", ".ts", ".wmv"]
+    def processfile(self, directory, filename):
+        extn = filename[filename.rfind("."):].lower()
+        if extn.lower() in self.extensions:
+            os.rename( os.path.join(directory, filename),
+                       os.path.join(self.destdir, filename)
+                     )
+Pipeline(
+    DirectoryWatcher(watch = "/srv/www/sites/bicker.kamaelia.org/cgi/app/uploads"),
+    VideoMover(destdir = "/srv/www/sites/bicker.kamaelia.org/uploads/videos"),
+).activate()
+
 
 Pipeline(
-    DirectoryWatcher(),
-    VideoTranscoder(),
+    DirectoryWatcher(watch = "/srv/www/sites/bicker.kamaelia.org/uploads/videos"),
+    VideoTranscoder(destdir = "/srv/www/sites/bicker.kamaelia.org/moderate/videos"),
 ).run()
 
 
