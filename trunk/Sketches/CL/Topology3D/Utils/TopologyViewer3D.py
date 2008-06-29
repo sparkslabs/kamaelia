@@ -27,6 +27,7 @@ from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from THF.Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from THF.Kamaelia.UI.OpenGL.Vector import Vector
 from THF.Kamaelia.UI.OpenGL.Intersect import Intersect
+from THF.Kamaelia.UI.OpenGL.Transform import Transform
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -120,7 +121,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                              "size": self.size
                            }
         # send display request
-        self.send(disprequest, "display_signal")
+        self.send(disprequest, "display_signal")        
         # wait for response on displayrequest and get identifier of the viewer
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
@@ -152,6 +153,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 for particle in self.physics.particles:
                     if particle.needRedraw:
                         self.drawParticles(particle)
+                        #particle.needRedraw = False                        
                 
                 self.handleEvents()
                 
@@ -261,8 +263,39 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     # Redraw the link so that the link can move with the particle
                     for p in particle.bondedFrom:
                         p.needRedraw = True
-          
+            
+            # Keyboard events handling
+            if event.type == pygame.KEYDOWN:
+                #print self.display.viewerposition
+                viewerOldPos = self.display.viewerposition.copy()
+                if event.key == pygame.K_PAGEUP:
+                    self.display.viewerposition.z -= 0.5
+                elif event.key == pygame.K_PAGEDOWN:
+                    self.display.viewerposition.z += 0.5
+                elif event.key == pygame.K_UP:
+                    self.display.viewerposition.y -= 0.5
+                    #print 'up'
+                elif event.key == pygame.K_DOWN:
+                    self.display.viewerposition.y += 0.5
+                elif event.key == pygame.K_LEFT:
+                    self.display.viewerposition.x -= 0.5
+                elif event.key == pygame.K_RIGHT:
+                    self.display.viewerposition.x += 0.5
+                #print self.display.viewerposition
+                
+                # Scroll if self.display.viewerposition changes
+                if self.display.viewerposition.copy() != viewerOldPos:
+                    self.scroll()
+                
+#
     
+    def scroll( self ):
+        # Scroll the surface by resetting gluLookAt
+        glMatrixMode(GL_PROJECTION)                 
+        glLoadIdentity()
+        self.display.setProjection()
+        
+        
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
