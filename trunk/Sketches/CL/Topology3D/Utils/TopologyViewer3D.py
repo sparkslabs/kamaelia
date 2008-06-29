@@ -321,7 +321,16 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 topology = [("DEL","ALL")]
                 topology.extend(self.getTopology())
                 self.send( ("TOPOLOGY", topology), "outbox" )
-                    
+            
+            elif cmd == ("UPDATE_NAME", "NODE") and len(msg) == 4:
+                node_id = msg[2]
+                new_name = msg[3]
+                self.updateParticleLabel(node_id, new_name)
+                self.send( ("UPDATE_NAME", "NODE", node_id, new_name), "outbox" )
+            elif cmd == ("GET_NAME", "NODE") and len(msg) == 3:
+                node_id = msg[2]
+                name = self.getParticleLabel(node_id)
+                self.send( ("GET_NAME", "NODE", node_id, name), "outbox" )        
             else:
                 raise "Command Error"
         else:
@@ -407,6 +416,29 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
         self.physics.particleDict[source].needRedraw = True
         
+    def updateParticleLabel(self, node_id, new_name):
+        """\
+        updateParticleLabel(node_id, new_name) -> updates the given nodes name & visual label if it exists
+        
+        node_id - an id for an already existing node
+        new_name - a string (may include spaces) defining the new node name
+        """
+        for p in self.physics.particles:
+            if p.ID == node_id:
+                p.set_label(new_name)
+                p.needRedraw = True
+                return
+
+    def getParticleLabel(self, node_id):
+        """\
+        getParticleLabel(node_id) -> particle's name
+        
+        Returns the name/label of the specified particle.
+        """
+        for p in self.physics.particles:
+            if p.ID == node_id:
+                return p.name
+    
     def getTopology(self):
         """getTopology() -> list of command tuples that would build the current topology"""
         topology = []
