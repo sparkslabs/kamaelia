@@ -145,9 +145,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1        
             
             if self.lastIdleTime + 1.0 < time.time():
-                print [particle.pos for particle in self.physics.particles]                    
+                #print [particle.pos for particle in self.physics.particles]                    
                 self.physics.run(self.simCyclesPerRedraw)
-                print [particle.pos for particle in self.physics.particles]
+                #print [particle.pos for particle in self.physics.particles]
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
                     if particle.needRedraw:
@@ -161,6 +161,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if transform_update is not None:
                         self.send(transform_update, "display_signal")
                         #print transform_update
+                        #print [particle.pos for particle in self.physics.particles]
     
                 self.lastIdleTime = time.time()
             else:
@@ -403,15 +404,24 @@ if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
     from Kamaelia.Util.Console import ConsoleEchoer,ConsoleReader
-    from Kamaelia.Chassis.Pipeline import Pipeline
-        
-    Pipeline(
-        DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
-                    'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
-                    'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
-                    'ADD LINK 4Node 1Node']),
-        #ConsoleReader(">>> "),
-        lines_to_tokenlists(),
-        TopologyViewer3D(),
-        ConsoleEchoer(),
-    ).run()   
+    from Kamaelia.Chassis.Graphline import Graphline
+    
+    # Data can be from both DataSource and console inputs
+    print "Please type the command you want to draw"
+    Graphline(
+        CONSOLEREADER = ConsoleReader(">>> "),
+        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
+                                 'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
+                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
+                                 'ADD LINK 4Node 1Node']),
+        TOKENS = lines_to_tokenlists(),
+        VIEWER = TopologyViewer3D(),
+        CONSOLEECHOER = ConsoleEchoer(),
+    linkages = {
+        ("CONSOLEREADER","outbox") : ("TOKENS","inbox"),
+        ("DATASOURCE","outbox") : ("TOKENS","inbox"),
+        ("TOKENS","outbox")   : ("VIEWER","inbox"),
+        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),
+    }
+).run()
+                
