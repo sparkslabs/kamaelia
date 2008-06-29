@@ -8,6 +8,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 
 class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
     watch = "upload"
+    sleeptime = 10
     def main(self):
         S = None
         while True:
@@ -17,12 +18,13 @@ class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
                     if S.st_mtime != N.st_mtime:
                         print "uploads changed, processing", S==N, list(S), list(N)
                         S = N
+                        time.sleep(2)
                         self.send(self.watch, "outbox")
                 else:
                     print "initialising, checking uploads", S==N, S, list(N)
                     S = N
                     self.send(self.watch, "outbox")
-            time.sleep(1)
+            time.sleep(self.sleeptime)
 
 class FileProcessor(Axon.Component.component):
     def processfile(self, directory, filename):
