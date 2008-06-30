@@ -1,5 +1,6 @@
 #!/usr/bin/env
-import sys, socket
+import sys, socket, gc
+import cProfile as profile
 from pprint import pprint
 from Kamaelia.Experimental.Wsgi.WsgiHandler import HTML_WRAP,  WsgiHandler
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
@@ -9,6 +10,8 @@ from Kamaelia.File.ConfigFile import DictFormatter, UrlListFormatter, ParseConfi
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 
 sys.path.insert(0, sys.argv[0] + '/data')
+
+_profile_ = False
 
 def normalizeWsgiVars(WsgiConfig):
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
@@ -32,7 +35,7 @@ def processServerConfig(ServerConfig):
     #print 'sys.path-'
     #print sys.path
 
-def main():
+def run_program():
     configs = ParseConfigFile('~/.kp', DictFormatter())
     ServerConfig = configs['SERVER']
     WsgiConfig = configs['WSGI']
@@ -75,3 +78,28 @@ def main():
         traceback.print_exc()
         print "===========FATAL ERROR==========="
         kp.stop()
+
+def profile_main():
+    #print "==CALIBRATING=="
+    #pr = profile.Profile()
+    #for i in range(5):
+    #    print pr.calibrate(10000)
+
+    pr = profile.Profile()
+    pr.run('main.run_program()')
+    
+    import lsprofcalltree
+    k = lsprofcalltree.KCacheGrind(pr)
+    data = open('prof.kgrind', 'w+')
+    k.output(data)
+    data.close()
+    
+    #import pstats
+    #p = pstats.Stats('profile.log')
+    #p.sort_stats('name')
+    #p.print_stats()
+
+if _profile_:
+    main = profile_main
+else:
+    main = run_program
