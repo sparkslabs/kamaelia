@@ -195,7 +195,17 @@ class ConnectedSocketAdapter(component):
    def stop(self):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
-       self.socket.shutdown(2)
+       try:
+         self.socket.shutdown(socket.SHUT_RDWR)
+       except:
+         try:
+            self.socket.shutdown(socket.SHUT_WR)
+         except:
+            try:
+               self.socket.shutdown(socket.SHUT_RD)
+            except:
+               pass
+            
        self.socket.close()
        self.passOnShutdown()
        if (self.socket is not None):
