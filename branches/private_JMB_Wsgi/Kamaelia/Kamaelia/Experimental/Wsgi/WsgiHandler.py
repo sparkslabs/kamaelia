@@ -31,7 +31,7 @@ not a good idea to use any WSGI apps requiring a lot of large file uploads.
 """
 
 from pprint import pprint, pformat
-import sys, os, re, cStringIO, cgitb, copy
+import sys, os, re, cStringIO, cgitb, copy, traceback, gc, weakref
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
 import Axon
@@ -62,19 +62,15 @@ def HTML_WRAP(app):
         yield "</html>\n"
     return gen
 
-def normalizeEnviron(environ):
+def normalizeEnviron(request, environ):
     """
     Converts environ variables to strings for wsgi compliance and deletes extraneous
     fields.  Also puts the request headers into CGI variables.
     """
-    for header in environ["headers"]:
+    for header in request["headers"]:
         cgi_varname = "HTTP_"+header.replace("-","_").upper()
-        environ[cgi_varname] = environ["headers"][header]
+        environ[cgi_varname] = request["headers"][header]
 
-    del environ['bad']
-    del environ['headers']
-    del environ['peerport']
-    del environ['localport']
     if environ.get('HTTP_CONTENT_TYPE'):
         del environ['HTTP_CONTENT_TYPE']
     if environ.get('HTTP_CONTENT_LENGTH'):
@@ -98,11 +94,8 @@ class _WsgiHandler(threadedcomponent):
     def __init__(self, app, request, log_writable, WsgiConfig, **argd):
         super(_WsgiHandler, self).__init__(**argd)
         self.request = request
-        self.environ = copy.deepcopy(request)
-        #Some part of the server holds a reference to the request.
-        #Since we have to format the data in some different ways than the
-        #HTTPParser expects, we need to give the environ object its own
-        #copy of the object.
+        self.environ = {}
+        self.environ.update(request['custom'] )
 
         print 'request received for [%s]' % (self.request['raw-uri'])
 
@@ -113,15 +106,17 @@ class _WsgiHandler(threadedcomponent):
         self.write_called = False
 
     def main(self):
+        #print 'Referrers to WsgiHandler:'
+        #print '\n ', gc.get_referrers(self)
         try:
-            self.server_name, self.server_port = self.environ['uri-server'].split(':')
+            self.server_name, self.server_port = self.request['uri-server'].split(':')
         except ValueError:
-            self.server_name = self.environ['uri-server']
+            self.server_name = self.request['uri-server']
             self.server_port = '80'
         #Get the server name and the port number from the server portion of the
         #uri.  E.G. 127.0.0.1:8082/moin returns 127.0.0.1 and 8082
 
-        self.headers = self.environ["headers"]
+        self.headers = self.request["headers"]
 
         if self.request['method'] == 'POST' or self.request['method'] == 'PUT':
             body = self.waitForBody()
@@ -135,7 +130,8 @@ class _WsgiHandler(threadedcomponent):
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
 
-        normalizeEnviron(self.environ)
+        normalizeEnviron(self.request, self.environ)
+        pprint(self.request)
 
         try:
             #PEP 333 specifies that we're not supposed to buffer output here,
@@ -147,8 +143,7 @@ class _WsgiHandler(threadedcomponent):
 
             [self.sendFragment(x) for x in app_iter]
         except:
-            message = cgitb.html(sys.exc_info())
-            self._error(503, ''.join(message))
+            self._error(503, sys.exc_info())
         try:
             app_iter.close()  #WSGI validator complains if the app object returns an iterator and we don't close it.
         except:
@@ -158,6 +153,9 @@ class _WsgiHandler(threadedcomponent):
         #print "Waiting..."
         #self.pause(5)
         #print 'unpausing'
+        self.log_writable.flush()
+        del self.environ
+        del self.request
         self.send(Axon.Ipc.producerFinished(self), "signal")
         #print 'WsgiHandler dead'
 
@@ -165,7 +163,6 @@ class _WsgiHandler(threadedcomponent):
         """
         Method to be passed to WSGI application object to start the response.
         """
-        #TODO:  Add more exc_info support
         if exc_info:
             try:
                 raise exc_info[0], exc_info[1], exc_info[2]
@@ -213,13 +210,14 @@ class _WsgiHandler(threadedcomponent):
             resource = {
                 'statuscode' : status,
                 'type' : 'text/html',
-                'data' : body_data,
+                'data' : cgitb.html(body_data),
             }
             self.send(resource, 'outbox')
         else:
             self.send(ErrorPages.getErrorPage(status, 'An internal error has occurred.'), 'outbox')
 
-        self.log_writable.write(''.join(body_data))
+        self.log_writable.write(''.join(traceback.format_exception(body_data[0], body_data[1], body_data[2], '\n')))
+        self.log_writable.flush()
 
 
     def waitForBody(self):
@@ -258,7 +256,7 @@ class _WsgiHandler(threadedcomponent):
         This method initializes all variables that are required to be present
         (including ones that could possibly be empty).
         """
-        self.environ["REQUEST_METHOD"] = self.environ["method"]
+        self.environ["REQUEST_METHOD"] = self.request["method"]
 
         # Server name published to the outside world
         self.environ["SERVER_NAME"] = self.server_name
@@ -267,21 +265,23 @@ class _WsgiHandler(threadedcomponent):
         self.environ["SERVER_PORT"] =  self.server_port
 
         #Protocol to respond to
-        self.environ["SERVER_PROTOCOL"] = self.environ["protocol"]
+        self.environ["SERVER_PROTOCOL"] = "%s/%s" %(self.request['protocol'], self.request['version'])
 
-        path_info = self.environ['PATH_INFO']
+        self.environ['SCRIPT_NAME'] = self.request['SCRIPT_NAME']
+        path_info = self.request['PATH_INFO']
         qindex = path_info.find('?')
         if qindex != -1:
             self.environ['PATH_INFO'] = path_info[:qindex]
             self.environ['QUERY_STRING'] = path_info[(qindex+1):]
         else:
+            self.environ['PATH_INFO'] = path_info
             self.environ['QUERY_STRING'] = ''
 
         #==================================
         #WSGI variables
         #==================================
         self.environ["wsgi.version"] = wsgi_config['wsgi_ver']
-        self.environ["wsgi.url_scheme"] = self.environ["protocol"].lower()
+        self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
         self.environ["wsgi.errors"] = self.log_writable
 
         self.environ["wsgi.multithread"] = True
@@ -301,7 +301,7 @@ class _WsgiHandler(threadedcomponent):
         self.environ["SERVER_SOFTWARE"] = wsgi_config['server_software']
         self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
                     (wsgi_config['server_software'], self.server_name, self.server_port)
-        self.environ['REMOTE_ADDR'] = self.environ['peer']
+        self.environ['REMOTE_ADDR'] = self.request['peer']
 
 
 def WsgiHandler(log_writable, WsgiConfig, url_list):
@@ -310,30 +310,61 @@ def WsgiHandler(log_writable, WsgiConfig, url_list):
     application object to route the request to, imports the file that contains the app object,
     and then extracts it to be passed to the newly created WSGI Handler.
     """
-    app_objs = {}   #this is a dictionary to track app objects we've already gotten
-    def _getWsgiHandler(request):
-        matched_dict = False
-        split_uri = request['raw-uri'].split('/')
-        split_uri = [x for x in split_uri if x]  #remove any empty strings
-        for url_item in url_list:
-            if re.search(url_item['kp.regex'], split_uri[0]):
-                request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
-                request['PATH_INFO'] = '/' + '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
-                matched_dict = url_item
-                break
+    class _getWsgiHandler(object):
+        def __init__(self, log_writable, WsgiConfig, url_list):
+            self.log_writable = log_writable
+            self.WsgiConfig = WsgiConfig
+            self.url_list = url_list
+            self.app_objs = {}
+            self.compiled_regexes = {}
+            for dict in url_list:
+                self.compiled_regexes[dict['kp.regex']] = re.compile(dict['kp.regex'])
+        def __call__(self, request):
+            matched_dict = False
+            regexes = self.compiled_regexes
+            urls = self.url_list
+            split_uri = request['raw-uri'].split('/', 2)
+            split_uri = [x for x in split_uri if x]  #remove any empty strings
+            for url_item in urls:
+                if regexes[url_item['kp.regex']].search(split_uri[0]):
+                    request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
+                    request['PATH_INFO'] = '/' + '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
+                    matched_dict = url_item
+                    break
+    
+            if not matched_dict:
+                raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
+    
+            if self.app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
+                app = self.app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
+            else:                                       #otherwise, find the app object
+                try:
+                    module = _importWsgiModule(matched_dict['kp.import_path'])
+                    app = getattr(module, matched_dict['kp.app_object'])
+                    self.app_objs[matched_dict['kp.regex']] = app
+                except ImportError: #FIXME:  We should probably display some kind of error page rather than dying
+                    raise WsgiImportError("WSGI application file not found.  Please check your urls file.")
+                except AttributeError:
+                    raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
+            request['custom'] = matched_dict
+            #dump_garbage()
+            return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
+    return _getWsgiHandler(log_writable, WsgiConfig, url_list)
 
-        if not matched_dict:
-            raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
+def dump_garbage():
+    print '\nGARBAGE'
+    gc.collect()
+    print '\nGARBAGE OBJECTS:'
+    for x in gc.garbage:
+        s = str(x)
+        if len(s) > 80:s = s[:77]+'...'
+        print type(x), '\n  ', s
 
-        if app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
-            app = app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
-        else:                                       #otherwise, find the app object
-            module = _importWsgiModule(matched_dict['kp.import_path'])
-            app = getattr(module, matched_dict['kp.app_object'])
-            app_objs[matched_dict['kp.regex']] = app
-        request.update(matched_dict)
-        return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
-    return _getWsgiHandler
+class WsgiImportError(Exception):
+    """
+    This exception is to indicate that there was an error in importing a WSGI app.
+    """
+    pass
 
 class WsgiError(Exception):
     """
