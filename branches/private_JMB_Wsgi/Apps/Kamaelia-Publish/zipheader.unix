@@ -12,20 +12,16 @@ if [ -x "x$PYTHON" ] ; then
     exit 1
 fi
 
-exec $PYTHON - $0 $@ << END_OF_PYTHON_CODE
+exec $PYTHON -c "
 
-import sys
+import sys, os
 version = sys.version_info[:2]
 if version < (2,3):
     print 'Sorry, need python 2.3 or better; %s%s is too old' % version
+    sys.exit(1)
 sys.path.insert(0, sys.argv[1])
-sys.argv[0] = sys.argv[1]
-del sys.argv[1:2]
+del sys.argv[0]
 
 import main
 
-main.main()
-
-#NOTE: Future code may rely on this tag being here, so it's best to make sure this is at the
-#end of the script unchanged.
-END_OF_PYTHON_CODE
+main.main()" $0 $@
