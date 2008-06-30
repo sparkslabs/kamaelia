@@ -115,7 +115,10 @@ class UrlListFormatter(FormatterBase):
     def normalizeDict(self, dic):
         ret_val = {}
         for key, value in dic.iteritems():
-            ret_val['kp.' + key] = value
+            if key.find('.') == -1: #only prepend kp. if there isn't already a dot
+                ret_val['kp.' + key] = value
+            else:
+                ret_val[key] = value
         return ret_val
 
 ##################################
