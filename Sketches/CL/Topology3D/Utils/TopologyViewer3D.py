@@ -273,10 +273,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 elif event.key == pygame.K_PAGEDOWN:
                     self.display.viewerposition.z += 0.5
                 elif event.key == pygame.K_UP:
-                    self.display.viewerposition.y -= 0.5
-                    #print 'up'
-                elif event.key == pygame.K_DOWN:
                     self.display.viewerposition.y += 0.5
+                elif event.key == pygame.K_DOWN:
+                    self.display.viewerposition.y -= 0.5
                 elif event.key == pygame.K_LEFT:
                     self.display.viewerposition.x -= 0.5
                 elif event.key == pygame.K_RIGHT:
