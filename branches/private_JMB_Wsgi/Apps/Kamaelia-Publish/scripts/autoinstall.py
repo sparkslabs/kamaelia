@@ -3,7 +3,7 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-def autoinstall(dkp_loc):
+def autoinstall():
     prompt_text = 'It does not appear that Kamaelia Publish has been installed on your computer yet.  Would you like to do so now? [y/n]'
     if not prompt_yesno(prompt_text):
         print 'Kamaelia Publish must be installed to continue.  Halting.'
@@ -22,14 +22,27 @@ def autoinstall(dkp_loc):
     
 
 def prompt_yesno(text):
-    input = raw_input(text)
-    if input[0] == 'y' or input[0] == 'Y':
+    """
+    Just a generic function to determine if the user wants to continue or not.
+    Will repeat if input is unrecognizable.
+    """
+    user_input = raw_input(text)
+    
+    if user_input[0] == 'y' or input[0] == 'Y':
         return True
-    elif input[0] == 'n' or input[0] == 'N':
+    elif user_input[0] == 'n' or input[0] == 'N':
         return False
     else:
         print 'Unrecognizable input.  Please try again'
         return prompt_continue()
+    
+class AutoInstallBase(component):
+    def __init__(self, **argd):
+        super(AutoInstallBase, self).__init__(argd)
+        
+    def getInbox(self, box='inbox'):
+        while self.dataReady(name):
+            yield self.recv(name)
     
 class NameSelector(component):
     def __init__(self, namelist, regex):
@@ -52,7 +65,7 @@ class NameSelector(component):
             
         self.send(producerFinished(self), 'signal')
         
-class FileExtractor(component):
+class FileExtractor(AutoInstallBase ):
     def __init__(self, zip):
         self.zip = zip
         super(FileExtractor, self).__init__()
@@ -69,13 +82,9 @@ class FileExtractor(component):
                 
             yield 1
             
-    def getInbox(self, name='inbox'):
-        while self.dataReady(name):
-            yield self.recv(name)
-            
     def handle_inbox_item(self, item):
         data = self.zip.read(name)
-        self.send(data)
+        self.send((name, data))
         
     def handle_ctl_itm(self, item):
         if isinstance(item, producerFinished):
@@ -83,7 +92,9 @@ class FileExtractor(component):
         if isinstance(item, shutdownMicroprocess):
             self.not_done = False
             
-class FileWriter(component):
+_kpuser_location = 'data/kpuser'
+            
+class FileWriter(AutoInstallBase):
     def __init__(self, path, regex):
         self.path = path
         self.regex = regex
@@ -92,5 +103,30 @@ class FileWriter(component):
     def main(self):
         self.not_done = False
         
-        while self.not_done:
+        while self.not_done:  #self.not_done is set in handleControlBox
+            [self.handleInbox(x) for x in self.getInbox()]
+            [self.handleControlBox(x) for x in self.getInbox('control')]
             
+            if not self.anyReady() and not_done:
+                self.pause()
+                
+            yield 1
+            
+    def handleInbox(tup):
+        name, data = tup
+        
+        name = name.replace(_kpuser_location, self.path)
+
+        ext = name.rsplit('.', 1)[-1]
+        if ext == 'ini' or ext == 'kp': #these extensions are non-binary
+            mode = 'w'
+        else:
+            mode = 'wb'
+
+        file = open(name, mode)
+        file.write(data)
+        file.close()
+        
+    def handleControlBox(signal):
+        if isinstance(signal, (producerFinished, shutdownMicroprocess)):
+            self.not_done = False

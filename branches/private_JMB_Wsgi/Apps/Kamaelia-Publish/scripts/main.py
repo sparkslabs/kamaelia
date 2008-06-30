@@ -1,7 +1,10 @@
 #!/usr/bin/env
-import sys, socket, gc
+import sys, socket, os
 import cProfile as profile
 from pprint import pprint
+
+from autoinstall import autoinstall
+
 from Kamaelia.Experimental.Wsgi.WsgiHandler import HTML_WRAP,  WsgiHandler
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
 from Kamaelia.Chassis.ConnectedServer import ServerCore
@@ -36,6 +39,9 @@ def processServerConfig(ServerConfig):
     #print sys.path
 
 def run_program():
+    if not os.path.exists('.kp'):
+        autoinstall()
+    
     configs = ParseConfigFile('~/.kp', DictFormatter())
     ServerConfig = configs['SERVER']
     WsgiConfig = configs['WSGI']
