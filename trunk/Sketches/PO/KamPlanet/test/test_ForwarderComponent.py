@@ -116,4 +116,4 @@ def suite():
     return KamTestCase.makeSuite(ForwarderComponentTestCase.getTestCase())
     
 if __name__ == '__main__':
-    KamTestCase.main()
+    KamTestCase.main(defaultTest='suite')

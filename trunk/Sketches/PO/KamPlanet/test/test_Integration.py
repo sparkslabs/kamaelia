@@ -151,4 +151,4 @@ def suite():
     return KamTestCase.makeSuite(IntegrationTestCase.getTestCase())
 
 if __name__ == '__main__':
-    KamTestCase.main()
+    KamTestCase.main(defaultTest='suite')

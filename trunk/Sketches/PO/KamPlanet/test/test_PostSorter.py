@@ -183,4 +183,4 @@ def suite():
     return KamTestCase.makeSuite(PostSorterTestCase.getTestCase())
 
 if __name__ == '__main__':
-    KamTestCase.main()
+    KamTestCase.main(defaultTest='suite')
