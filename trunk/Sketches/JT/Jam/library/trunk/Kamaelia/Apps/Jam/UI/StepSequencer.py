@@ -27,6 +27,7 @@ class StepSequencer(MusicTimingComponent):
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
                "remoteChanges"  : "Receive messages to alter the state of the XY pad",
                "event"    : "Scheduled events",
+               "sync"     : "Timing synchronisation",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from Pygame Display",
               }
@@ -36,20 +37,22 @@ class StepSequencer(MusicTimingComponent):
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface"
                }
+    
+    numChannels = 4
+    stepsPerBeat = 1
+    position=None
+    messagePrefix=""
+    size=(500, 200)
 
-    def __init__(self, position=None, messagePrefix="", size=(500, 200)):
+    def __init__(self, **argd):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
-        super(StepSequencer, self).__init__()
+        super(StepSequencer, self).__init__(**argd)
 
-        self.messagePrefix = messagePrefix
-
-        # Channel and Timing Init
-        # -----------------------
-        self.numChannels = 4
-        self.stepsPerBeat = 1
+        # Channel init
+        # ------------
         self.numSteps = self.beatsPerBar * self.loopBars * self.stepsPerBeat
         self.channels = []
         for i in range(self.numChannels):
@@ -57,19 +60,11 @@ class StepSequencer(MusicTimingComponent):
             for j in range(self.numSteps):
                 self.channels[i].append([0, None])
 
-        self.step = 0
-
-        self.stepLength = self.beatLength / self.stepsPerBeat
-        self.lastStepTime = self.startTime
-        
-        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
-
         # UI Init
         # --------
-        self.position = position
         # Make the size fit the exact number of beats and channels
-        self.size = (size[0] - size[0] % (self.numSteps),
-                     size[1] - size[1] % len(self.channels))
+        self.size = (self.size[0] - self.size[0] % (self.numSteps),
+                     self.size[1] - self.size[1] % len(self.channels))
         self.positionSize = (self.size[0]/self.numSteps, 25)
         self.stepSize = (self.size[0]/self.numSteps,
                          (self.size[1]-self.positionSize[1])/len(self.channels))
@@ -80,8 +75,8 @@ class StepSequencer(MusicTimingComponent):
                             "size": self.size,
                            }
 
-        if position:
-            self.dispRequest["position"] = position
+        if self.position:
+            self.dispRequest["position"] = self.position
 
     def addStep(self, step, channel, velocity, send=False):
         self.channels[channel][step][0] = velocity
@@ -105,7 +100,14 @@ class StepSequencer(MusicTimingComponent):
 
     ###
     # Timing Functions
-    ###        
+    ###
+
+    def startStep(self):
+        self.step = (self.loopBar * self.beatsPerBar + self.beat) * self.stepsPerBeat   
+        self.lastStepTime = self.lastBeatTime
+        self.stepLength = self.beatLength / self.stepsPerBeat
+        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
+ 
 
     def updateStep(self):
         if self.step < self.numSteps - 1:
@@ -151,9 +153,8 @@ class StepSequencer(MusicTimingComponent):
         for i in range(len(self.channels)):
             for j in range(self.numSteps):
                 self.drawStepRect(j, i)
-            self.drawPositionRect(0, True)
-        for i in range(self.numSteps - 1):
-            self.drawPositionRect(i + 1, False)
+        for i in range(self.numSteps):
+            self.drawPositionRect(i, False)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def drawStepRect(self, step, channel):
@@ -203,6 +204,15 @@ class StepSequencer(MusicTimingComponent):
         self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
                    "surface" : self.display},
                   "display_signal")
+
+        # Timing init
+        # In main because timingSync needs the scheduler to be working
+        if self.sync:
+            self.timingSync()
+        else:
+            self.lastBeatTime = time.time()
+        self.startBeat()
+        self.startStep()
 
         while 1:
             if self.dataReady("inbox"):
@@ -258,6 +268,9 @@ class StepSequencer(MusicTimingComponent):
                     self.send((self.messagePrefix + "On", (channel, velocity)),
                               "outbox")
                     self.rescheduleStep(step, channel)
+
+            if self.dataReady("sync"):
+                self.recv("sync")
 
             if not self.anyReady():
                 self.pause()
