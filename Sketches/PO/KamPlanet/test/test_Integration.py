@@ -120,26 +120,26 @@ class IntegrationTestCase(KamTestCase.KamTestCase):
     def test1Feeds(self):
         self._testPlanetPythonFeeds(feeds=1, timeout=100)
         
-    def test10Feeds(self):
-        self._testPlanetPythonFeeds(feeds=10, timeout=100)
-            
-    def test20Feeds(self):
-        self._testPlanetPythonFeeds(feeds=20, timeout=100)
-            
-    def test30Feeds(self):
-        self._testPlanetPythonFeeds(feeds=30, timeout=100)
-            
-    def test40Feeds(self):
-        self._testPlanetPythonFeeds(feeds=40, timeout=100)
-            
-    def test50Feeds(self):
-        self._testPlanetPythonFeeds(feeds=50, timeout=200)
+#    def test10Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=10, timeout=100)
+#            
+#    def test20Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=20, timeout=100)
+#            
+#    def test30Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=30, timeout=100)
+#            
+#    def test40Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=40, timeout=100)
+#            
+#    def test50Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=50, timeout=200)
             
     def test60Feeds(self):
         self._testPlanetPythonFeeds(feeds=60, timeout=400)
 
-    def test100Feeds(self):
-        self._testPlanetPythonFeeds(feeds=100, timeout=500)
+#    def test100Feeds(self):
+#        self._testPlanetPythonFeeds(feeds=100, timeout=500)
             
     def tearDown(self):
         if VERBOSE:

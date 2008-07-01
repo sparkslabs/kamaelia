@@ -130,8 +130,8 @@ class KamTemplateProcessor(Axon.Component.component):
     def createItem(self, feed, entry, encoding):
         item = {}
         item['channel_name']       = feed.title.encode(encoding)
-        item['title']              = feed.title.encode(encoding)
-        item['title_plain']        = feed.title.encode(encoding)
+        item['title']              = entry.title.encode(encoding)
+        item['title_plain']        = entry.title.encode(encoding)
         item['id']                 = entry.link.encode(encoding)
         item['link']               = entry.link.encode(encoding)
         item['channel_link']       = feed.title.encode(encoding)
