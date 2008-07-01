@@ -121,7 +121,5 @@ if _profile_:
 else:
     main = run_program
     
-print "__name = ", __name__
-print sys.argv
 if __name__ == '__main__':
-    run_program()
+    main()
