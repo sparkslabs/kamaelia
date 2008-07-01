@@ -1,9 +1,10 @@
 #!/usr/bin/env
-import sys, socket, os
+import sys, socket, os, zipfile
 import cProfile as profile
 from pprint import pprint
 
 from autoinstall import autoinstall
+import console_io
 
 from Kamaelia.Experimental.Wsgi.WsgiHandler import HTML_WRAP,  WsgiHandler
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
@@ -39,10 +40,20 @@ def processServerConfig(ServerConfig):
     #print sys.path
 
 def run_program():
-    if not os.path.exists('.kp'):
-        autoinstall()
+    zip = zipfile.ZipFile(sys.argv[0], 'r')
     
-    configs = ParseConfigFile('~/.kp', DictFormatter())
+    corrupt = zip.testzip()
+    if corrupt:
+        console_io.prompt_corrupt(corrupt)
+                
+    home_path = os.environ['HOME']
+    
+    if not os.path.exists(home_path + 'kp.ini'):
+        autoinstall(zip, home_path)
+        
+    zip.close()
+    
+    configs = ParseConfigFile('~/kp.ini', DictFormatter())
     ServerConfig = configs['SERVER']
     WsgiConfig = configs['WSGI']
     
@@ -109,3 +120,8 @@ if _profile_:
     main = profile_main
 else:
     main = run_program
+    
+print "__name = ", __name__
+print sys.argv
+if __name__ == '__main__':
+    run_program()
