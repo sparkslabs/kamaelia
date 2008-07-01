@@ -19,9 +19,6 @@ def autoinstall(zip, dir):
     
     kpuser_file.close()
     tar_mem.close()
-    
-    shutil.move(dir + '/data/kpuser', dir + '/kpuser')
-    shutil.move(dir + '/data/kp.ini', dir + '/kp.ini')
 
 class AutoInstallBase(component):
     MethodText = 'handle_'

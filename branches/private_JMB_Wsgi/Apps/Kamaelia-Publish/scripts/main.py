@@ -40,51 +40,62 @@ def processServerConfig(ServerConfig):
     #print sys.path
 
 def run_program():
-    zip = zipfile.ZipFile(sys.argv[0], 'r')
-    
-    corrupt = zip.testzip()
-    if corrupt:
-        console_io.prompt_corrupt(corrupt)
-                
-    home_path = os.environ['HOME']
-    
-    if not os.path.exists(home_path + 'kp.ini'):
-        autoinstall(zip, home_path)
+    #console_out = sys.stdout
+    #log_out = open('out.log', 'w')
+    #sys.stdout = log_out
+    try:
+        zip = zipfile.ZipFile(sys.argv[0], 'r')
         
-    zip.close()
+        corrupt = zip.testzip()
+        if corrupt:
+            console_io.prompt_corrupt(corrupt)
+                    
+        home_path = os.environ['HOME']
+        
+        if not os.path.exists(home_path + '/kp.ini'):
+            autoinstall(zip, home_path)
+            
+        zip.close()
+        
+        configs = ParseConfigFile('~/kp.ini', DictFormatter())
+        ServerConfig = configs['SERVER']
+        WsgiConfig = configs['WSGI']
+        
+        processServerConfig(ServerConfig)
+        
+        #from pprint import pprint
+        #pprint(WsgiConfig)
+        normalizeWsgiVars(WsgiConfig)
     
-    configs = ParseConfigFile('~/kp.ini', DictFormatter())
-    ServerConfig = configs['SERVER']
-    WsgiConfig = configs['WSGI']
+        sys.path.append(WsgiConfig['log'])
     
-    processServerConfig(ServerConfig)
+        url_list = ParseConfigFile(WsgiConfig['url_list'], [DictFormatter(), UrlListFormatter()])
+        normalizeUrlList(url_list)
     
-    #from pprint import pprint
-    #pprint(WsgiConfig)
-    normalizeWsgiVars(WsgiConfig)
-
-    sys.path.append(WsgiConfig['log'])
-
-    url_list = ParseConfigFile(WsgiConfig['url_list'], [DictFormatter(), UrlListFormatter()])
-    normalizeUrlList(url_list)
-
-    log = Log.LogWriter(WsgiConfig['log'], wrapper=Log.nullWrapper)
-
-    log_writable = LogWritable.WsgiLogWritable(WsgiConfig['log'])
-    log_writable.activate()
-
-    routing = [
-                  ["/", WsgiHandler(log_writable, WsgiConfig, url_list)],
-              ]
-
-    log.activate()
-
-    kp = ServerCore(
-        protocol=HTTPProtocol(routing),
-        port=int(ServerConfig['port']),
-        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
-
-    print "Serving on port %s" % (ServerConfig['port'])
+        log = Log.LogWriter(WsgiConfig['log'], wrapper=Log.nullWrapper)
+    
+        log_writable = LogWritable.WsgiLogWritable(WsgiConfig['log'])
+        log_writable.activate()
+    
+        routing = [
+                      ["/", WsgiHandler(log_writable, WsgiConfig, url_list)],
+                  ]
+    
+        log.activate()
+    
+        kp = ServerCore(
+            protocol=HTTPProtocol(routing),
+            port=int(ServerConfig['port']),
+            socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
+    
+        print "Serving on port %s" % (ServerConfig['port'])
+    except:
+        import traceback
+        print 'There was an error!  Info is in error.log'
+        file = open('error.log', 'a')
+        traceback.print_exc(file=file)
+        file.close()
+        sys.exit(1)
     try:
         kp.run()
     except KeyboardInterrupt:
