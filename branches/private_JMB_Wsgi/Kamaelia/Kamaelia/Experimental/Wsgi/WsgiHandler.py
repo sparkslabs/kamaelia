@@ -21,17 +21,132 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 """
+WSGI Handler
+=============
+
 NOTE:  This is experimental software.  It has not been fully tested and will
 probably break or behave in unexpected ways.
 
-This is the WSGI handler for ServerCore.  It works by importing a module and
-pulling out the relevant application object from it.  It will wait on the
+This is the WSGI handler for ServerCore.  It will wait on the
 HTTPParser to transmit the body in full before proceeding.  Thus, it is probably
-not a good idea to use any WSGI apps requiring a lot of large file uploads.
+not a good idea to use any WSGI apps requiring a lot of large file uploads (although
+it could theoretically function fairly well for that purpose as long as the concurrency
+level is relatively low).
+
+For more information on WSGI, what it is, and to get a general overview of what
+this component is intended to adapt the ServerCore to do, see one of the following
+links:
+
+* http://www.python.org/dev/peps/pep-0333/ (PEP 333)
+* http://www.wsgi.org/wsgi/ (WsgiStart wiki)
+* http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface (Wikipedia article on WSGI)
+
+-------------
+Dependencies
+-------------
+
+This component depends on the wsgiref module, which is included with python 2.5.
+Thus if you're using an older version, you will need to install it before using
+this component.  
+
+The easiest way to install wsgiref is to use easy_install, which may be downloaded
+from http://peak.telecommunity.com/DevCenter/EasyInstall .  You may then install
+wsgiref using the command "sudo easy_install wsgiref" (without the quotes of course).
+
+Please note that Kamaelia Publish includes wsgiref.
+
+-----------------------------
+How do I use this component?
+-----------------------------
+
+The easiest way to use this component is to use the WsgiHandler factory function
+that is included in Factory.py in this package.  That method has URL handling that
+will route a URL to the proper place.  There is also a SimpleWsgiHandler that may
+be used if you only want to support one application object.  For more information
+on how to use these functions, please see Factory.py.  Also please note that both
+of these factory functions are made to work with ServerCore/SimpleServer.  Here is
+an example of how to create a simple WSGI server:
+
+from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
+import Kamaelia.Experimental.Wsgi.Log as Log
+import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
+
+WsgiConfig = {
+    'wsgi_ver' : (1, 0),
+    'server_admin' : 'Jason Baker',
+    'server_software' : 'Kamaelia Publish'
+}
+
+url_list = [ #Note that this is a list of dictionaries.  Order is important.
+    {
+        'kp.regex' : 'simple',
+        'kp.import_path' : 'Kamaelia.Support.SimpleApp',    #Note that the module need not be imported
+        'kp.app_obj' : 'simple_app',
+    }
+    {
+        'kp.regex' : '.*',  #The .* means that this is a 404 handler
+        'kp.import_path' : 'Kamaelia.Support.WsgiApps.ErrorHandler',
+        'kp.app_obj' : 'application',
+    }
+]
+
+routing = [['/', WsgiFactory(log_writable, WsgiConfig, url_list)]]
+
+ServerCore(
+    protocol=HTTPProtocol(routing),
+    port=8080,
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)).run()
+
+------------------
+Internal overview
+------------------
+
+request object
+~~~~~~~~~~~~~~~
+
+This component expects to be passed a request object in the same format as is created
+by the HTTPParser.  The request object may contain a 'custom' dictionary entry whose values
+will be passed to the application in the environ object.  For example, the request
+object may look as follows:
+
+{
+    ...
+    'custom' : {'kp.regex' : 'simple'},
+    ...
+}
+
+This will translate into a WSGI environ dictionary as follows:
+
+{
+    ...
+    'kp.regex' : 'simple',
+    ...
+}
+
+wsgi.input
+~~~~~~~~~~~
+
+PEP 333 requires that the WSGI environ dictionary also contain a file-like object
+that holds the body of the request.  Currently, the WsgiHandler will wait for the
+full request before starting the application (which is not optimal behavior).  If
+the method is not PUT or POST, the handler will use a pre-made null-file object that
+will always return empty data.  This is an optimization to lower peak memory usage
+and to speed things up.
+
+WsgiConfig
+~~~~~~~~~~~
+
+The WsgiHandler requires a WsgiConfig dictonary for general configuration info. The
+following items are required to be defined:
+
+* wsgi_ver: the WSGI version as a Tuple.  You want to use (1, 0)
+* server_admin: the name and/or email address of the server's administrator
+* server_software: The software and/or software version that runs the server
 """
 
 from pprint import pprint, pformat
-import sys, os, re, cStringIO, cgitb, copy, traceback, gc, weakref
+import sys, os, cStringIO, cgitb, copy, traceback
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
 import Axon
@@ -77,20 +192,29 @@ def normalizeEnviron(request, environ):
         del environ['HTTP_CONTENT_LENGTH']
         
 class NullFileLike (object):
+    """
+    This is a file-like object that is meant to represent an empty file.
+    """
     def read(self, number=0):
         return ''
     def readlines(self, number=0):
         return[]
+    def readline(self):
+        return ''
     def close(self):
         pass
+    def next():
+        raise StopIteration()
     
 _null_fl = NullFileLike()
 
 
 class _WsgiHandler(threadedcomponent):
-    """Choosing to run the WSGI app in a thread rather than the same
-       context, this means we don't have to worry what they get up
-       to really"""
+    """
+    This is a WSGI handler that is used to serve WSGI applications.  Typically,
+    URL routing is to be done in the factory method that creates this.  Thus,
+    the handler must be passed the application object.
+    """
     Inboxes = {
         'inbox' : 'Used to receive the body of requests from the HTTPParser',
         'control' : 'NOT USED',
@@ -98,14 +222,20 @@ class _WsgiHandler(threadedcomponent):
     Outboxes = {
         'outbox' : 'used to send page fragments',
         'signal' : 'send producerFinished messages',
-        '_signal-lw' : 'shut down the log writable',
     }
     Debug = False
     def __init__(self, app, request, log_writable, WsgiConfig, **argd):
+        """
+        app - The WSGI application to run
+        request - the request object that is generated by HTTPParser
+        log_writable - a LogWritable object to be passed as a wsgi.errors object.
+        WsgiConfig - General configuration about the WSGI server.
+        """
         super(_WsgiHandler, self).__init__(**argd)
         self.request = request
         self.environ = {}
-        self.environ.update(request['custom'] )
+        if request.get('custom'):
+            self.environ.update(request['custom'] )
 
         print 'request received for [%s]' % (self.request['raw-uri'])
 
@@ -116,8 +246,6 @@ class _WsgiHandler(threadedcomponent):
         self.write_called = False
 
     def main(self):
-        #print 'Referrers to WsgiHandler:'
-        #print '\n ', gc.get_referrers(self)
         try:
             self.server_name, self.server_port = self.request['uri-server'].split(':')
         except ValueError:
@@ -254,6 +382,10 @@ class _WsgiHandler(threadedcomponent):
 
 
     def sendFragment(self, fragment):
+        """
+        This is a pretty simple method.  It's used to send a fragment if an app
+        yields a value beyond the first.
+        """
         page = {
             'data' : fragment,
             }
@@ -314,73 +446,11 @@ class _WsgiHandler(threadedcomponent):
         self.environ['REMOTE_ADDR'] = self.request['peer']
 
 
-def WsgiHandler(log_writable, WsgiConfig, url_list):
-    """
-    This method checks the URI against a series of regexes from urls.py to determine which
-    application object to route the request to, imports the file that contains the app object,
-    and then extracts it to be passed to the newly created WSGI Handler.
-    """
-    class _getWsgiHandler(object):
-        def __init__(self, log_writable, WsgiConfig, url_list):
-            self.log_writable = log_writable
-            self.WsgiConfig = WsgiConfig
-            self.url_list = url_list
-            self.app_objs = {}
-            self.compiled_regexes = {}
-            for dict in url_list:
-                self.compiled_regexes[dict['kp.regex']] = re.compile(dict['kp.regex'])
-        def __call__(self, request):
-            matched_dict = False
-            regexes = self.compiled_regexes
-            urls = self.url_list
-            split_uri = request['raw-uri'].split('/', 2)
-            split_uri = [x for x in split_uri if x]  #remove any empty strings
-            for url_item in urls:
-                if regexes[url_item['kp.regex']].search(split_uri[0]):
-                    request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
-                    request['PATH_INFO'] = '/' + '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
-                    matched_dict = url_item
-                    break
-    
-            if not matched_dict:
-                raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
-    
-            if self.app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
-                app = self.app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
-            else:                                       #otherwise, find the app object
-                try:
-                    module = _importWsgiModule(matched_dict['kp.import_path'])
-                    app = getattr(module, matched_dict['kp.app_object'])
-                    self.app_objs[matched_dict['kp.regex']] = app
-                except ImportError: #FIXME:  We should probably display some kind of error page rather than dying
-                    raise WsgiImportError("WSGI application file not found.  Please check your urls file.")
-                except AttributeError:
-                    raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
-            request['custom'] = matched_dict
-            #dump_garbage()
-            return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
-    return _getWsgiHandler(log_writable, WsgiConfig, url_list)
-
-def dump_garbage():
-    print '\nGARBAGE'
-    gc.collect()
-    print '\nGARBAGE OBJECTS:'
-    for x in gc.garbage:
-        s = str(x)
-        if len(s) > 80:s = s[:77]+'...'
-        print type(x), '\n  ', s
-
-class WsgiImportError(Exception):
-    """
-    This exception is to indicate that there was an error in importing a WSGI app.
-    """
-    pass
 
 class WsgiError(Exception):
     """
-    This is just a generic exception class.  As of right now, it is only thrown
-    when write is called before start_response, so it's primarily an exception
-    that is thrown when an application messes up, but that may change!
+    This is used to indicate an internal error of some kind.  It is thrown if the
+    write() callable is called without start_response being called.
     """
     pass
 
@@ -389,14 +459,3 @@ class WsgiAppError(Exception):
     This is an exception that is used if a Wsgi application does something it shouldnt.
     """
     pass
-
-def _importWsgiModule(name):
-    """
-    Just a copy/paste of the example my_import function from here:
-    http://docs.python.org/lib/built-in-funcs.html
-    """
-    mod = __import__(name)
-    components = name.split('.')
-    for comp in components[1:]:
-        mod = getattr(mod, comp)
-    return mod
