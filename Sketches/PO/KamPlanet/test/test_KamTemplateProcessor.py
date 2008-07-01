@@ -166,7 +166,7 @@ class KamTemplateProcessorTestCase(KamTestCase.KamTestCase):
         ptr += 1
         self.assertEquals(POST_LINK, outputlines[ptr])
         ptr += 1
-        self.assertEquals(BLOG_TITLE, outputlines[ptr])
+        self.assertEquals(POST_TITLE, outputlines[ptr])
         ptr += 1
         self.assertEquals(POST_DESCRIPTION, outputlines[ptr])
         ptr += 1
