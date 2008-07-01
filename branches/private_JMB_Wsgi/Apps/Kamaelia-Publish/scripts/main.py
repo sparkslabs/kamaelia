@@ -6,12 +6,13 @@ from pprint import pprint
 from autoinstall import autoinstall
 import console_io
 
-from Kamaelia.Experimental.Wsgi.WsgiHandler import HTML_WRAP,  WsgiHandler
+from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 import Kamaelia.Experimental.Wsgi.Log as Log
-from Kamaelia.File.ConfigFile import DictFormatter, UrlListFormatter, ParseConfigFile
+from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Experimental.Wsgi.Config import ParseUrlFile
 
 sys.path.insert(0, sys.argv[0] + '/data')
 
@@ -69,7 +70,7 @@ def run_program():
     
         sys.path.append(WsgiConfig['log'])
     
-        url_list = ParseConfigFile(WsgiConfig['url_list'], [DictFormatter(), UrlListFormatter()])
+        url_list = ParseUrlFile(WsgiConfig['url_list'])
         normalizeUrlList(url_list)
     
         log = Log.LogWriter(WsgiConfig['log'], wrapper=Log.nullWrapper)
@@ -78,7 +79,7 @@ def run_program():
         log_writable.activate()
     
         routing = [
-                      ["/", WsgiHandler(log_writable, WsgiConfig, url_list)],
+                      ["/", WsgiFactory(log_writable, WsgiConfig, url_list)],
                   ]
     
         log.activate()
