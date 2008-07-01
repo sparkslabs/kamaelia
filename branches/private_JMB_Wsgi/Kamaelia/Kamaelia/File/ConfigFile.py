@@ -16,7 +16,9 @@ class ConfigFileReader(component):
         filename = os.path.expanduser(filename)
 #        print 'filename = %s' % (filename)
         self.config_parser.read(filename)
-        self.isections = iter(self.config_parser.sections())
+        sections = self.config_parser.sections()
+        #print sections
+        self.isections = iter(sections)
         self.vars = None
 
     def main(self):
