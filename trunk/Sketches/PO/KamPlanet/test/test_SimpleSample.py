@@ -29,12 +29,8 @@ from SimpleSample import SimpleComponent
 
 class SimpleSampleTestCase(KamTestCase.KamTestCase):
     def setUp(self):
-        print "setUp..."
         self.simpleSample = SimpleComponent()
         self.initializeSystem(self.simpleSample)
-        
-    def tearDown(self):
-        print "tearDown..."
         
     def testForwardsNumbers(self):
         self.put(5, 'numbers')

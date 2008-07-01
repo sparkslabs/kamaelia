@@ -26,8 +26,7 @@ import unittest
 from unittest import TestSuite, makeSuite, main
 
 import Axon.Scheduler             as Scheduler
-import Axon.Handle                as Handle
-import Axon.background            as background
+import Axon.LikeFile              as LikeFile
 from Axon.Ipc                     import shutdownMicroprocess
 from Kamaelia.Chassis.Graphline   import Graphline
 
@@ -64,17 +63,14 @@ class _AuxiliarTestCase(unittest.TestCase):
         self._kamtestcase.tearDown()
         self._kamtestcase._finish()
 
-background.background(zap=True).start()
-time.sleep(1)
-
 class KamTestCase(object):
     INITIALIZATION_TIMEOUT = 5
     
     def __init__(self, prefix = 'test', *argd, **kwargs):
         super(KamTestCase, self).__init__()
-        #if background.background.lock.acquire(False):
-        #    background.background.lock.release()
-        #    background.background().start()
+        if LikeFile.background.lock.acquire(False):
+            LikeFile.background.lock.release()
+            LikeFile.background().start()
             
         self._kamtest_initialized = False
         self._createTestCase(prefix)
@@ -177,12 +173,12 @@ class KamTestCase(object):
         outputComponentUnderTest.activate()
         extraOutboxes = tuple([ x 
                          for x in self._messageStorer.Inboxes 
-                         #if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
+                         if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
                     ])
-        self._lf = Handle.Handle(
+        self._lf = LikeFile.likefile(
                     self._messageStorer, 
-                    #extraOutboxes = extraOutboxes, 
-            ).activate()
+                    extraOutboxes = extraOutboxes, 
+            )
         
         # TODO: not thread-safe...
         max_time = time.time() + self.INITIALIZATION_TIMEOUT
@@ -200,14 +196,7 @@ class KamTestCase(object):
         self._messageAdder.addMessage(msg, inbox)
         
     def get(self, outbox, timeout = 1):
-        #return self._lf.get(outbox, timeout=timeout)
-        initial = time.time()
-        while time.time() > initial + timeout:
-            try:
-                return self._lf.get(outbox)
-            except Queue.Empty:
-                time.sleep(0.1)
-        return self._lf.get(outbox)
+        return self._lf.get(outbox, timeout=timeout)
         
     def expect(self, matcher, outbox, timeout=5):
         self.assertTrue(isinstance(matcher, KamExpectMatcher.Matcher))
@@ -220,8 +209,7 @@ class KamTestCase(object):
                                     (matcher, messages)
                             )
             try:
-                #data = self._lf.get(outbox, timeout=remaining)
-                data = self.get(outbox, timeout=remaining)
+                data = self._lf.get(outbox, timeout=remaining)
             except Queue.Empty:
                 raise self.failureException("Expected message: %s not arrived. Arrived messages: %s" %
                                     (matcher, messages)
@@ -301,10 +289,7 @@ class KamTestCase(object):
         """
         if self._kamtest_initialized:
             self.clearThreads()
-            self._lf.put(shutdownMicroprocess(), 'control')
-            import time
-            time.sleep(1)
-            #self._lf.shutdown()
+            self._lf.shutdown()
             self.assertFinished()
             
     def setUp(self):

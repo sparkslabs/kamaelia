@@ -38,7 +38,7 @@ TEST_CONFIG_TEMPLATE = 'test%sconfig-template.xml' % os.sep
 PLANET_PYTHON_FEEDS_PATH   = '/feeds/planet.python/'
 PLANET_KAMAELIA_FEEDS_PATH = '/feeds/kamaelia/'
 
-VERBOSE = True
+VERBOSE = False
 
 # First approach
 class IntegrationTestCase(KamTestCase.KamTestCase):
