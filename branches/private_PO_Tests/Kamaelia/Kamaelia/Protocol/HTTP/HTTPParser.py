@@ -145,6 +145,7 @@ class HTTPParser(component):
         self.mode = mode
 
         self.lines = []
+        self.controlmessages = []
         self.readbuffer = ""
         self.currentline = ""
         self.bodiedrequest = False
@@ -178,6 +179,8 @@ class HTTPParser(component):
                 self.debug("HTTPParser should shutdown")
                 return True
 
+            else:
+                self.controlmessages.append(temp)
         return False
 
     def nextLine(self):
@@ -220,6 +223,7 @@ class HTTPParser(component):
         while currentline == None:
             self.debug("HTTPParser::main - stage 1")
             if self.shouldShutdown(): return
+            if len(self.controlmessages) > 0: return
             while self.dataFetch():
                 pass
             currentline = self.nextLine()
@@ -331,6 +335,14 @@ class HTTPParser(component):
             if len(self.readbuffer) > 0:
                 self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
                 self.readbuffer = ""
+
+            while len(self.controlmessages) > 0:
+                temp = self.controlmessages.pop(0)
+                if isinstance(temp, producerFinished):
+                    connectionopen = False
+                    break
+                elif isinstance(temp, shutdown):
+                    return
 
             while self.dataReady("control"):
 #                print "!"

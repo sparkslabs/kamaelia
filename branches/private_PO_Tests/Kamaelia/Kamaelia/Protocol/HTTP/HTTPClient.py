@@ -348,6 +348,9 @@ class SingleShotHTTPClient(component):
             if isinstance(msg, shutdown):
                 self.shutdownKids()
                 return 0
+            else:
+                for i in range(100):
+                   print "control message in HTTPClient!!",i,msg
 
         # if we're not currently downloading a page
         if self.tcpclient == None:
