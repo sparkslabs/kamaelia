@@ -18,10 +18,20 @@ from Kamaelia.Apps.Jam.Util.MusicTiming import MusicTimingComponent
 
 class StepSequencer(MusicTimingComponent):
     """
-    StepSequencer() -> new StepSequencer component
+    StepSequencer([numChannels, stepsPerBeat, position, messagePrefix,
+                   size]) -> new StepSequencer component
 
     A simple step sequencer for programming rhythmic patterns such as drum
     beats
+
+    Keyword arguments (all optional):
+    numChannels   -- The number of channels in the step sequencer (default=4)
+    stepsPerBeat  -- The number of steps for each beat in the loop.  Setting
+                     this to 2 for example will allow quavers to be played
+                     (default=1)
+    position      -- (x,y) position of top left corner in pixels
+    messagePrefix -- string to be prepended to all messages
+    size          -- (w,h) in pixels (default=(500, 200))
     """
 
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
@@ -79,6 +89,11 @@ class StepSequencer(MusicTimingComponent):
             self.dispRequest["position"] = self.position
 
     def addStep(self, step, channel, velocity, send=False):
+        """
+        Turn a step on with a given velocity and add it to the scheduler.  If
+        the send argument is true then also send a message indicating the step
+        has been activated to the "localChanges" outbox
+        """
         self.channels[channel][step][0] = velocity
         self.scheduleStep(step, channel)
         if send:
@@ -86,6 +101,11 @@ class StepSequencer(MusicTimingComponent):
                       "localChanges")
 
     def removeStep(self, step, channel, send=False):
+        """
+        Turn a step off and remove it from the scheduler.  If the send argument
+        is true then also send a message indicating the step has been removed
+        to the "localChanges" outbox
+        """
         self.channels[channel][step][0] = 0
         self.cancelStep(step, channel)
         if send:
@@ -93,6 +113,11 @@ class StepSequencer(MusicTimingComponent):
                       "localChanges")
 
     def setVelocity(self, step, channel, velocity, send=False):
+        """
+        Change the velocity of a step.   If the send argument is true then also
+        send a message indicating the velocity has changed to the
+        "localChanges" outbox
+        """
         self.channels[channel][step][0] = velocity
         if send:
             self.send((self.messagePrefix + "Velocity",
@@ -102,7 +127,11 @@ class StepSequencer(MusicTimingComponent):
     # Timing Functions
     ###
 
-    def startStep(self):
+    def startStep(self): # FIXME: Could maybe do with a better name?
+        """
+        For use after any clock synchronising.  Update the various timing
+        variables, and schedule an initial step update.
+        """
         self.step = (self.loopBar * self.beatsPerBar + self.beat) * self.stepsPerBeat   
         self.lastStepTime = self.lastBeatTime
         self.stepLength = self.beatLength / self.stepsPerBeat
@@ -110,6 +139,10 @@ class StepSequencer(MusicTimingComponent):
  
 
     def updateStep(self):
+        """
+        Increment, and roll over if necessary, the step position counter, then
+        update the position display.
+        """
         if self.step < self.numSteps - 1:
             self.step += 1
         else:
@@ -124,6 +157,9 @@ class StepSequencer(MusicTimingComponent):
         self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
 
     def scheduleStep(self, step, channel):
+        """
+        Schedule a step which has been just been activated
+        """
         # Easier if we define some stuff here
         beat = self.beat + (self.loopBar * self.beatsPerBar)
         currentStep = beat * self.stepsPerBeat
@@ -137,11 +173,17 @@ class StepSequencer(MusicTimingComponent):
         self.channels[channel][step][1] = event
 
     def rescheduleStep(self, step, channel):
+        """
+        Reschedule a step to occur again in a loop's time
+        """
         stepTime = self.lastStepTime + self.numSteps * self.stepLength
         event = self.scheduleAbs(("StepActive", step, channel), stepTime, 3)
         self.channels[channel][step][1] = event
 
     def cancelStep(self, step, channel):
+        """
+        Delete a step event from the scheduler
+        """
         self.cancelEvent(self.channels[channel][step][1])
         self.channels[channel][step][1] = None
 
@@ -150,6 +192,9 @@ class StepSequencer(MusicTimingComponent):
     ###
 
     def drawStartingRects(self):
+        """
+        Initial render of all of the blank steps
+        """
         for i in range(len(self.channels)):
             for j in range(self.numSteps):
                 self.drawStepRect(j, i)
@@ -158,6 +203,9 @@ class StepSequencer(MusicTimingComponent):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def drawStepRect(self, step, channel):
+        """
+        Render a single step with a colour corresponding to its velocity
+        """
         position = (step * self.stepSize[0], channel * self.stepSize[1] + self.positionSize[1])
         velocity = self.channels[channel][step][0]
         pygame.draw.rect(self.display, (255, 255*(1-velocity),
@@ -167,6 +215,10 @@ class StepSequencer(MusicTimingComponent):
                          pygame.Rect(position, self.stepSize), 1)
 
     def drawPositionRect(self, step, active):
+        """
+        Render a single step in the position display, using colour if the
+        position is active
+        """
         position = (step * self.stepSize[0], 0)
         if active:
             colour = (255, 255, 0)
@@ -179,6 +231,10 @@ class StepSequencer(MusicTimingComponent):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def positionToStep(self, position):
+        """
+        Convert an (x, y) tuple from the mouse position to a (step, channel)
+        tuple
+        """
         step = position[0]/self.stepSize[0]
         channel = (position[1]-self.positionSize[1])/self.stepSize[1]
         return step, channel
@@ -226,16 +282,21 @@ class StepSequencer(MusicTimingComponent):
                             step, channel = self.positionToStep(event.pos)
                             velocity = self.channels[channel][step][0]
                             if event.button == 1:
+                                # Left click
                                 if velocity > 0:
+                                    # Step off
                                     self.removeStep(step, channel, True) 
                                 else:
+                                    # Step on
                                     self.addStep(step, channel, 0.7, True)
                             if event.button == 4:
+                                # Scroll up
                                 if velocity > 0 and velocity <= 0.95:
                                     velocity += 0.05
                                     self.setVelocity(step, channel, velocity,
                                                      True)
                             if event.button == 5:
+                                # Scroll down
                                 if velocity > 0.05:
                                     velocity -= 0.05
                                     self.setVelocity(step, channel, velocity,
@@ -246,6 +307,7 @@ class StepSequencer(MusicTimingComponent):
 
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
+                # Only the last part of an OSC address
                 address = data[0].split("/")[-1]
                 if address == "Add":
                     self.addStep(*data[1])
@@ -270,6 +332,8 @@ class StepSequencer(MusicTimingComponent):
                     self.rescheduleStep(step, channel)
 
             if self.dataReady("sync"):
+                # Ignore any sync messages once as we have already synced by
+                # now
                 self.recv("sync")
 
             if not self.anyReady():
