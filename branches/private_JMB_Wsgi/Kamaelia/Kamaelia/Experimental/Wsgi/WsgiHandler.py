@@ -81,7 +81,7 @@ WsgiConfig = {
 url_list = [ #Note that this is a list of dictionaries.  Order is important.
     {
         'kp.regex' : 'simple',
-        'kp.import_path' : 'Kamaelia.Support.SimpleApp',    #Note that the module need not be imported
+        'kp.import_path' : 'Kamaelia.Support.WsgiApps.SimpleApp',    #Note that the module need not be imported
         'kp.app_obj' : 'simple_app',
     }
     {
