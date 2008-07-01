@@ -1,3 +1,91 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: JMB
+"""
+This module is used for reading config files.  A config file is a standard .ini file
+that looks something like this:
+
+[section]
+option1:  blah
+option2:  blahblah
+option3:  blahblahblah
+
+ConfigFileReader
+-----------------
+
+The base of the set is the ConfigFileReader component, which will read the config
+file and then send each individual section of it out on its outbox as a tuple consisting
+of the section name, and a list of tuples that represents the options.
+
+Thus, for the example given above, the ConfigFileReader will output something like:
+
+('section',
+ [
+    ('option1', 'blah'),
+    ('option2', 'blahblah'),
+    ('option3', 'blahblahblah')
+ ]
+)
+
+The formatters
+---------------
+
+The ConfigFileReader was designed to use a set of formatters to format the results
+into a usable piece of data.  FormatterBase defines how these formatters should work.
+
+Using this method, each formatter may be a link in the chain or they may also be
+the producer of the end result.  You may get the end result out of the last component
+by calling its getResults method.  This will simply return self.results (which is
+where the results should be stored by the formatter).
+
+==================
+DictFormatter
+==================
+
+This formatter is used to format the results into a dictionary.  Please note that
+the value stored into self.results will be different from the compiled results of
+listening to its outbox.  Reading self.results will give a dictionary of dictionaries
+while the results passed on the outbox will be a tuple containing the section name
+and a dictionary that contains the options.  For example, if a DictFormatter was
+connected to a ConfigFileReader that read the example config file posted above,
+you would get the following if you read self.results:
+
+{'section' : {
+    'option1' : 'blah',
+    'option2' : 'blahblah',
+    'option3' : 'blahblahblah',
+}}
+
+However, if you were to read the DictFormatter's outbox, you would get:
+
+('section', {
+    'option1' : 'blah',
+    'option2' : 'blahblah',
+    'option3' : 'blahblahblah',
+})
+
+This is done in case any listening formatters depend upon the order of the sections.
+"""
+
 from Axon.Component import component
 from Axon.Ipc import producerFinished
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -78,50 +166,6 @@ class DictFormatter(FormatterBase):
             yield 1
 
         self.send(producerFinished(self), 'signal')
-
-class UrlListFormatter(FormatterBase):
-    """
-    This component expects to be linked to a DictFormatter
-    """
-    def __init__(self):
-        super(UrlListFormatter, self).__init__()
-        self.results = []
-        self.error_404 = None
-
-    def main(self):
-        not_done = True
-        while not_done:
-            while self.dataReady('control'):
-                signal = self.recv('control')
-                if isinstance(signal, producerFinished):
-                    not_done = False
-
-            while self.dataReady('inbox'):
-                section, data = self.recv('inbox')
-                if section == 'error_404':
-                    if data.has_key('regex'):
-                        raise ParseException('error_404 cannot contain a regex')
-                    data['regex'] = '.*'
-                    self.error_404 = self.normalizeDict(data)
-                else:
-                    self.results.append(self.normalizeDict(data))
-            if not self.anyReady() and not_done:
-                self.pause()
-
-            yield 1
-        if not self.error_404:
-            raise ParseException('Urls list must contain an error_404 item!')
-        self.results.reverse()
-        self.results.append(self.error_404)
-
-    def normalizeDict(self, dic):
-        ret_val = {}
-        for key, value in dic.iteritems():
-            if key.find('.') == -1: #only prepend kp. if there isn't already a dot
-                ret_val['kp.' + key] = value
-            else:
-                ret_val[key] = value
-        return ret_val
 
 ##################################
 #Support functions
