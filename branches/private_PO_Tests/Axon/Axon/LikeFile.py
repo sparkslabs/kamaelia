@@ -10,6 +10,7 @@ print "***                                                          ***"
 print "****************************************************************"
 print "****************************************************************"
 
+
 import gc
 import time
 
@@ -26,6 +27,11 @@ class Z(object):
  
 def crash(arg): raise arg
 
+try:
+    from ctypes import *
+    print c_char_p(42)
+except:
+   pass
 try:
     for I in gc.get_objects():
         try:
@@ -44,6 +50,8 @@ try:
             pass
 except:
     pass
+
+   
 
 raise "CRASH AND BURN"
 
