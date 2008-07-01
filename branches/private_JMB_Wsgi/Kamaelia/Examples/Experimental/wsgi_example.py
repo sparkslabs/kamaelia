@@ -4,17 +4,16 @@ import Axon
 from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import ErrorPages
-from Kamaelia.Protocol.HTTP import MapStatusCodeToText, HTTPProtocol
+from Kamaelia.Protocol.HTTP import HTTPProtocol
 import Kamaelia.Experimental.Wsgi.Log as Log
 import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
-from Kamaelia.Protocol.HTTP import MapStatusCodeToText
 
-port=8082
+port=8080
 
 #This is just a configuration dictionary for general WSGI stuff.  This needs to be passed to the handler
 #to run
 WsgiConfig ={
-'server_software' : "Kamaelia WSGI Web Server",
+'server_software' : "Example WSGI Web Server",
 'server_admin' : "Jason Baker",
 'wsgi_ver' : (1,0),
 }
