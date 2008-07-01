@@ -62,40 +62,64 @@ class MusicTimingComponent(SchedulingComponent):
     updating variables which give the time since the component was initialized
     in music timing (bars, beats etc)
     """
-    def __init__(self, bpm=120, beatsPerBar=4, beatUnit=4, loopBars=4):
+    #TODO: Fill in the blanks
+    Inboxes = {"inbox":"",
+               "control":"",
+               "event":"",
+               "sync":"",
+              }
+
+    sync = False
+    bpm = 120
+    beatsPerBar = 4
+    beatUnit = 4
+    loopBars = 4
+
+    def __init__(self, **argd):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
-        super(MusicTimingComponent, self).__init__()
-        self.bpm = bpm
-        self.beatsPerBar = beatsPerBar
-        self.beatUnit = beatUnit
-        self.loopBars = loopBars
-
-        self.playing = 1
+        super(MusicTimingComponent, self).__init__(**argd)
+        
         self.beat = 0
         self.bar = 0
         self.loopBar = 0
-
-        self.startTime = time.time()
-        self.lastBeatTime = self.startTime
-
-        self.beatLength = float(60)/self.bpm
-
-        self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
 
     def main(self):
         """
         Main loop
         """
+        if self.sync:
+            self.timingSync()
+        else:
+            self.lastBeatTime = time.time()
+        self.startBeat()
+
+
         #TODO: Make me shutdown properly
         while 1:
             # Keep running events until the component is supposed to shutdown
             if self.dataReady("event"):
                 if self.recv("event") == "Beat":
                     self.updateBeat()
-            self.pause()
+            if self.dataReady("sync"):
+                self.recv("sync")
+            if not self.anyReady():
+                self.pause()
+
+    def timingSync(self):
+        while 1:
+            if self.dataReady("sync"):
+                timing = self.recv("sync")
+                self.__dict__.update(timing)
+                break
+            else:
+                self.pause()
+
+    def startBeat(self):
+        self.beatLength = float(60)/self.bpm
+        self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
             
     def updateBeat(self):
         """
@@ -114,6 +138,38 @@ class MusicTimingComponent(SchedulingComponent):
         self.lastBeatTime += self.beatLength
         # Call this function again when the next beat has passed
         self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
+
+class SyncMaster(MusicTimingComponent):
+    externalSync = False
+    def main(self):
+        if self.externalSync:
+            # The code to generate external sync messages is currently
+            # not implemented.  This bit will probably end up looking pretty
+            # similar
+            while 1:
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    self.beatsPerBar, self.beatUnit, self.loopBars = data
+                else:
+                    self.pause()
+        self.lastBeatTime = time.time()
+        self.startBeat()
+        while 1:
+            # Keep running events until the component is supposed to shutdown
+            if self.dataReady("event"):
+                if self.recv("event") == "Beat":
+                    self.updateBeat()
+                    timingData = {"bpm" : self.bpm,
+                                  "beatsPerBar" : self.beatsPerBar,
+                                  "beatUnit" : self.beatUnit,
+                                  "loopBars" : self.loopBars,
+                                  "beat" : self.beat,
+                                  "bar" : self.bar,
+                                  "loopBar" : self.loopBar,
+                                  "lastBeatTime" : self.lastBeatTime}
+                    self.send(timingData, "outbox")
+            if not self.anyReady():
+                self.pause()
 
 if __name__ == "__main__":
     MusicTimingComponent().run()
