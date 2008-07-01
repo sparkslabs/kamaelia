@@ -25,9 +25,11 @@ cp -R scripts/* assembly
 echo "Copying plugins to the assembly directory"
 cp -R plugins assembly/plugins
 echo "Tarring configuration data."
-tar -cvvf kpuser.tar data/kpuser data/kp.ini --exclude=.svn
-mkdir assembly/data
-cp kpuser.tar assembly/data/kpuser.tar
+(
+    cd data
+    mkdir ../assembly/data
+    tar -cvvf ../assembly/data/kpuser.tar kpuser kp.ini --exclude=.svn
+)
 
 echo "----------------------------------------------------"
 echo "Done preparing!"
