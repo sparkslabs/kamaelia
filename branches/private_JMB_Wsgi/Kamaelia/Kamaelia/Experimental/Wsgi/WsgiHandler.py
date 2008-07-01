@@ -75,6 +75,16 @@ def normalizeEnviron(request, environ):
         del environ['HTTP_CONTENT_TYPE']
     if environ.get('HTTP_CONTENT_LENGTH'):
         del environ['HTTP_CONTENT_LENGTH']
+        
+class NullFileLike (object):
+    def read(self, number=0):
+        return ''
+    def readlines(self, number=0):
+        return[]
+    def close(self):
+        pass
+    
+_null_fl = NullFileLike()
 
 
 class _WsgiHandler(threadedcomponent):
@@ -120,18 +130,18 @@ class _WsgiHandler(threadedcomponent):
 
         if self.request['method'] == 'POST' or self.request['method'] == 'PUT':
             body = self.waitForBody()
+            self.memfile = cStringIO.StringIO(body)
         else:
-            body = ''
+            self.memfile = _null_fl
 
         #The WSGI validator complains if we close the memfile from wsgi.input directly
-        self.memfile = cStringIO.StringIO(body)
         self.environ['wsgi.input'] = self.memfile
 
         self.initRequiredVars(self.wsgi_config)
         self.initOptVars(self.wsgi_config)
 
         normalizeEnviron(self.request, self.environ)
-        pprint(self.request)
+#        pprint(self.request)
 
         try:
             #PEP 333 specifies that we're not supposed to buffer output here,
