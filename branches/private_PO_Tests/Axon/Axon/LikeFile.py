@@ -30,6 +30,12 @@ def crash(arg): raise arg
 try:
     from ctypes import *
     print c_char_p(42)
+
+    # The above can survive certain scenarios, so adding in another:
+    c = c_long(1)
+    print c.value
+    del c.value
+    
 except:
    pass
 try:
