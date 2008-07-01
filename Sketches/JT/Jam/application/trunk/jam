@@ -49,6 +49,7 @@ from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer
 from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
+from Kamaelia.Apps.Jam.Util.MusicTiming import SyncMaster
 
 FPS = 60
 
@@ -124,30 +125,71 @@ class StepSequencerFilter(Axon.Component.component):
             if not self.anyReady():
                 self.pause()
             yield 1
+
+class TimingFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if data[0].split("/")[-1] == "Timing":
+                    self.send(data[1], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
                     
-        
-
-
-
-if __name__ == "__main__":
+def parseOptions():
     parser = OptionParser()
+    # Address and port to send music data
     parser.add_option("-a", "--osc-address", dest="oscAddress",
                 help="The IP address to send OSC data to (default=127.0.0.1)")
     parser.add_option("-p", "--osc-port", dest="oscPort", type="int",
             help="The UDP port number to send OSC data to (default=2000)")
+    parser.set_defaults(oscAddress="127.0.0.1", oscPort=2000)
+
+    # Address and port to listen for change data on
     parser.add_option("--listen-address", dest="listenAddress",
                       help="The IP address to listen for other connecting Jam clients on (default=127.0.0.1)")
     parser.add_option("--listen-port", dest="listenPort", type="int",
                       help="The UDP port number to listen for other connecting Jam clients on (default=2001)")
+    parser.set_defaults(listenAddress="127.0.0.1", listenPort=2001)
+
+    # Address and port of a second Jam instance to connect to
     parser.add_option("--remote-address", dest="remoteAddress",
                       help="The IP address of another Jam client to connect to (default=None)")
     parser.add_option("--remote-port", dest="remotePort", type="int",
                       help="The UDP port number of another Jam client to connect to (default=None)")
-    parser.set_defaults(oscAddress="127.0.0.1", oscPort=2000,
-                        listenAddress="127.0.0.1", listenPort=2001,
-                        remoteAddress=None, remotePort=None)
+    parser.set_defaults(remoteAddress=None, remotePort=None)
+
+    # Timing options - this is half-baked at best
+    # TODO: Add all the options in and make them work, not conflict etc.
+    parser.add_option("-b", "--bpm", dest="bpm", type="int",
+                       help="The tempo of the song in beats per minute (default=120)")
+    parser.set_defaults(bpm=120)
 
     options, args = parser.parse_args()
+    if options.remoteAddress and not options.remotePort:
+         parser.error("Must provide --remote-port with --remote-address")
+    if options.remotePort and not options.remoteAddress:
+        parser.error("Must provide --remote-address with --remote-port")
+    return options
+
+
+if __name__ == "__main__":
+    options = parseOptions()
+
+    # Component time sync
+    if not (options.remoteAddress and options.remotePort):
+        # We are the first Jam instance in a network, so we get to set the bpm,
+        # loop length etc.
+        Pipeline(SyncMaster(externalSync=False),
+                 PublishTo("sync")).activate()
+    else:
+        # TODO: The external syncing code doesn't exist yet.  Not cool
+        if 0:
+            Pipeline(SubscribeTo("dataIn"),
+                     TimingFilter(),
+                     SyncMaster(externalSync=True),
+                     PublishTo("sync")).activate()
 
     # OSC messages in
     Pipeline(UDPReceiver(localaddr=options.listenAddress,
@@ -202,13 +244,16 @@ if __name__ == "__main__":
 
     # Step sequencer
     Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
               ssFilter = StepSequencerFilter(),
               ss = StepSequencer(position=(0, 120),
-                                 messagePrefix="/StepSequencer/"),
+                                 messagePrefix="/StepSequencer/",
+                                 sync=True),
               localPub = PublishTo("localDataOut"),
               remotePub = PublishTo("remoteDataOut"),
               linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
                           ("ssFilter", "outbox"):("ss", "remoteChanges"),
+                          ("syncSub", "outbox"):("ss", "sync"),
                           ("ss", "outbox"):("localPub", "inbox"),
                           ("ss", "localChanges"):("remotePub", "inbox")}
               ).activate()
@@ -235,6 +280,7 @@ if __name__ == "__main__":
                           }
               ).activate()
 
+    Backplane("sync").activate()
     Backplane("dataIn").activate()
     Backplane("frameRateClock").activate()
     Backplane("localDataOut").activate()
