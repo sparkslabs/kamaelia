@@ -186,9 +186,17 @@ class XYPad(Axon.Component.component):
       
     def main(self):
         """Main loop."""
-        
-        displayService = PygameDisplay.getDisplayService()
-        self.link((self,"display_signal"), displayService)
+        pgd = PygameDisplay( width=520, height=520 ).activate()
+        PygameDisplay.setDisplayService(pgd)
+
+        displayservice = PygameDisplay.getDisplayService()
+        self.link((self,"display_signal"), displayservice)
+
+        self.send( self.dispRequest,
+                    "display_signal")
+
+        for _ in self.waitBox("callback"): yield 1
+        self.display = self.recv("callback")
 
         # colour buttons
         if self.colourSelector:
@@ -217,18 +225,8 @@ class XYPad(Axon.Component.component):
         clock = Clock(float(1)/FPS).activate()
         self.link((clock, "outbox"), (self, "newframe"))
 
+      
 
-
-
-
-        self.send(self.dispRequest,
-                  "display_signal")
-        
-        # Wait until we get a display
-        while 1:
-            yield WaitComplete(self.waitBox("callback"))
-            break
-        self.display = self.recv("callback")
 
         # Initial render so we don't see a blank screen
         self.drawBG()

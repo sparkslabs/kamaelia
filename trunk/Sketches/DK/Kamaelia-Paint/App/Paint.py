@@ -38,7 +38,7 @@ import pygame
 import Axon
 import math
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import PygameDisplay
 class Paint(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
@@ -138,6 +138,9 @@ class Paint(Axon.Component.component):
       self.blitToSurface()
    def main(self):
       """Main loop."""
+      pgd = PygameDisplay( width=520, height=520 ).activate()
+      PygameDisplay.setDisplayService(pgd)
+
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -241,8 +244,8 @@ class Paint(Axon.Component.component):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
                               else:
-                                 pygame.draw.circle(self.display, self.selectedColour, self.oldpos, self.toolSize, 0)
-                                # pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                # pygame.draw.circle(self.display, self.selectedColour, self.oldpos, self.toolSize, 0)
+                                 pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, self.toolSize)
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
@@ -272,22 +275,21 @@ if __name__ == "__main__":
    from XYPad import XYPad
    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
    from Kamaelia.UI.Pygame.Button import Button
-   import sys; sys.path.append("../../../MPS/pprocess/");
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline
 
 
    ProcessGraphline(
-        COLOURS = Pipeline(
-                      DisplayConfig(width=270),
-                      XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
+     #   COLOURS = Pipeline(
+     #               DISPLAY =  DisplayConfig(width=270, height=600),
+                     COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
                            bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
-                  ),
-        WINDOW1 = Pipeline(
-                      DisplayConfig(width=520, height=520),
-                      Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
-                  ),
+     #             ),
+     #   WINDOW1 = Pipeline(
+     #                 DisplayConfig(width=520, height=520),
+                     WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
+     #             ),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         }
