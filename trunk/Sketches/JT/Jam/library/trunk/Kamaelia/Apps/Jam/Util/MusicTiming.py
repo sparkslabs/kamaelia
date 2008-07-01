@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #TODO:
 # * Add timing compensation
+# * Rewrite header docs for new scheduler, syncing etc
 # * Test timing code hard
 """
 ======================
@@ -109,6 +110,11 @@ class MusicTimingComponent(SchedulingComponent):
                 self.pause()
 
     def timingSync(self):
+        """
+        Wait for timing data on the "sync" inbox, and update __dict__ with the
+        data received.  This is a bit of a hack, but it works fine, and would 
+        be a PITA to change, so we'll live with it.
+        """
         while 1:
             if self.dataReady("sync"):
                 timing = self.recv("sync")
@@ -117,7 +123,11 @@ class MusicTimingComponent(SchedulingComponent):
             else:
                 self.pause()
 
-    def startBeat(self):
+    def startBeat(self): #FIXME: Better name for me?
+        """
+        For use after syncing.  Update the beatLength variable and schedule
+        the initial beat update
+        """
         self.beatLength = float(60)/self.bpm
         self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
             
@@ -140,8 +150,17 @@ class MusicTimingComponent(SchedulingComponent):
         self.scheduleAbs("Beat", self.lastBeatTime + self.beatLength, 1)
 
 class SyncMaster(MusicTimingComponent):
+    """
+    SyncMaster([externalSync]) -> new SyncMaster component.
+
+    A master clock providing beat and bar information for other
+    MusicTimingComponents to synchronise to.  It can also synchronise to key
+    timing constants from an external source.
+    """
+
     externalSync = False
     def main(self):
+        """ Main loop """
         if self.externalSync:
             # The code to generate external sync messages is currently
             # not implemented.  This bit will probably end up looking pretty
@@ -150,6 +169,7 @@ class SyncMaster(MusicTimingComponent):
                 if self.dataReady("inbox"):
                     data = self.recv("inbox")
                     self.beatsPerBar, self.beatUnit, self.loopBars = data
+                    break
                 else:
                     self.pause()
         self.lastBeatTime = time.time()
