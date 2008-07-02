@@ -126,6 +126,8 @@ class Paint(Axon.Component.component):
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
+       
+       
    def addLayer(self):
       displayservice = PygameDisplay.getDisplayService()
     #  self.link((self,"display_signal"), displayservice)
@@ -136,10 +138,12 @@ class Paint(Axon.Component.component):
       self.display = self.recv("callback")
       self.drawBG()
       self.blitToSurface()
+      
+      
    def main(self):
       """Main loop."""
-      pgd = PygameDisplay( width=520, height=520 ).activate()
-      PygameDisplay.setDisplayService(pgd)
+      #pgd = PygameDisplay( width=520, height=520 ).activate()
+      #PygameDisplay.setDisplayService(pgd)
 
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
@@ -278,18 +282,19 @@ if __name__ == "__main__":
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline
-
+   from Kamaelia.Chassis.Seq import Seq
 
    ProcessGraphline(
-     #   COLOURS = Pipeline(
-     #               DISPLAY =  DisplayConfig(width=270, height=600),
-                     COLOURS = XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
-                           bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
-     #             ),
-     #   WINDOW1 = Pipeline(
-     #                 DisplayConfig(width=520, height=520),
-                     WINDOW1 = Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
-     #             ),
+       COLOURS = Seq(
+            DisplayConfig(width=270, height=600),
+            XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
+                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
+            ),
+
+       WINDOW1 = Seq(
+                 DisplayConfig(width=520, height=520),
+                 Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
+                  ),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
         }
