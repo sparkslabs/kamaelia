@@ -83,13 +83,28 @@ def _importWsgiModule(name):
         mod = getattr(mod, comp)
     return mod
 
-def SimpleWsgiFactory(log_writable, WsgiConfig, app_object):
+def SimpleWsgiFactory(log_writable, WsgiConfig, app_object, script_name='/'):
     """
     This is a simple factory function that is useful if you know at compile time
     that you will only support one application.
     """
     
     def _getWsgiHandler(request):
+        split_uri = request['raw-uri'].split('/')
+        split_uri = [x for x in split_uri if x] #remove any empty strings
+        
+        script_name_trim = script_name.strip('/')
+        if script_name:
+            if script_name_trim == split_uri[0] and script_name != '/':
+                request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
+                request['PATH_INFO'] = '/'.join(split_uri)
+            elif script_name == '/':
+                request['SCRIPT_NAME'] = ''
+                request['PATH_INFO'] = '/'.join(split_uri)
+            else:
+                raise WsgiImportError("script name doesn't match first part of raw-uri")
+        else:
+            raise WsgiImportError("You must specify script_name to use SimpleWsgiFactory!")
         return _WsgiHandler(app_object, request, log_writable, WsgiConfig)
     
     return _getWsgiHandler
