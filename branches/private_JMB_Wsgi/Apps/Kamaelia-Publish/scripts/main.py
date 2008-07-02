@@ -1,4 +1,25 @@
-#!/usr/bin/env
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+# Licensed to the BBC under a Contributor Agreement: JMB
 import sys, socket, os, zipfile
 import cProfile as profile
 from pprint import pprint
@@ -19,14 +40,17 @@ sys.path.insert(0, sys.argv[0] + '/data')
 _profile_ = False
 
 def normalizeWsgiVars(WsgiConfig):
+    """Put WSGI config data in a state that the server expects."""
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
     
 def normalizeUrlList(url_list):
+    """Add necessary default entries that the user did not enter."""
     for dict in url_list:
         if not dict.get('kp.app_object'):
             dict['kp.app_object'] = 'application'
             
 def processServerConfig(ServerConfig):
+    """Use the Server configuration data to actually configure the server."""
     if ServerConfig.get('pypath-append'):
         path_append = ServerConfig['pypath-append'].split(':')
         sys.path.extend(path_append)
@@ -37,10 +61,12 @@ def processServerConfig(ServerConfig):
         for path in path_prepend:
             sys.path.insert(0, path)
     
+    #uncomment this if you want to debug what this code is doing to sys.path.
     #print 'sys.path-'
     #print sys.path
 
 def run_program():
+    """The main entry point for the application."""
     #console_out = sys.stdout
     #log_out = open('out.log', 'w')
     #sys.stdout = log_out
@@ -64,6 +90,7 @@ def run_program():
         
         processServerConfig(ServerConfig)
         
+        #uncomment this if you wish to debug what is happening to WsgiConfig
         #from pprint import pprint
         #pprint(WsgiConfig)
         normalizeWsgiVars(WsgiConfig)
@@ -103,30 +130,31 @@ def run_program():
         print "Halting server!"
         kp.stop()
     except:
+        #Something's gone horribly wrong and the program doesn't know what to do
+        #about it.
         import traceback
         traceback.print_exc()
         print "===========FATAL ERROR==========="
         kp.stop()
 
 def profile_main():
+    """This is what you want to use if you intend on profiling the application."""
+    #uncomment this if you're using profile and want to calibrate.  If you're still
+    #using cProfile, leave it commented out.
     #print "==CALIBRATING=="
     #pr = profile.Profile()
     #for i in range(5):
     #    print pr.calibrate(10000)
 
-    pr = profile.Profile()
+    pr = profile.Profile()  #Note that we've imported cProfile as profile.
     pr.run('main.run_program()')
     
+    #Put the data into a format that KCacheGrind can understand.
     import lsprofcalltree
     k = lsprofcalltree.KCacheGrind(pr)
     data = open('prof.kgrind', 'w+')
     k.output(data)
     data.close()
-    
-    #import pstats
-    #p = pstats.Stats('profile.log')
-    #p.sort_stats('name')
-    #p.print_stats()
 
 if _profile_:
     main = profile_main
