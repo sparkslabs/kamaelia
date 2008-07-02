@@ -107,6 +107,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.simCyclesPerRedraw = simCyclesPerRedraw
         self.lastIdleTime = time.time()
         
+        
     def main(self):
         """\
  
@@ -147,7 +148,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             if self.lastIdleTime + 1.0 < time.time():
                 #print [particle.pos for particle in self.physics.particles]                    
-                self.physics.run(self.simCyclesPerRedraw)
+                #self.physics.run(self.simCyclesPerRedraw)
                 #print [particle.pos for particle in self.physics.particles]
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
@@ -241,6 +242,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if event.button == 1:
                     for particle in self.physics.particles:
                         if particle.identifier in event.hitobjects:
+                            #particle.oldpos = particle.oldpos - self.display.viewerposition
                             self.grabbed = True
                             particle.scaling = Vector(0.9,0.9,0.9)
                             self.hitParticles.append(particle)
@@ -250,6 +252,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if event.button == 1:  
                     for particle in self.hitParticles:
                         self.grabbed = False
+                        particle.oldpoint = None
                         particle.scaling = Vector(1,1,1)
                         self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
                         self.hitParticles.pop(self.hitParticles.index(particle))
@@ -257,13 +260,25 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
                 for particle in self.hitParticles:
                     try:
-                        particle.pos = newpoint.toTuple()
+                        if particle.oldpoint is not None:
+                            print particle.pos
+                            diff = newpoint-particle.oldpoint
+                            amount = (diff.x, diff.y)
+                            particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
+                            #particle.pos = newpoint.toTuple()
+                            print newpoint, particle.pos
+                        #particle.oldpoint = newpoint
                     except NameError: pass
                     
                     # Redraw the link so that the link can move with the particle
                     for p in particle.bondedFrom:
                         p.needRedraw = True
             
+            try:
+                for particle in self.hitParticles:
+                    particle.oldpoint = newpoint                    
+            except NameError: pass    
+                    
             # Keyboard events handling
             if event.type == pygame.KEYDOWN:
                 #print self.display.viewerposition
@@ -285,6 +300,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 # Scroll if self.display.viewerposition changes
                 if self.display.viewerposition.copy() != viewerOldPos:
                     self.scroll()
+                    for particle in self.physics.particles:
+                        particle.oldpoint = None
+                    #self.display.coordCorrectionTransform = Transform()
+                    #self.display.coordCorrectionTransform.setLookAtRotation(-self.display.viewerposition, self.display.lookat, self.display.up)
+#                    for particle in self.physics.particles:
+#                        particle.oldpos = particle.oldpos + self.display.viewerposition
+#                        particle.pos = (Vector(*particle.pos) + self.display.viewerposition).toTuple()
+                    
                 
 #
     
@@ -293,6 +316,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()
         self.display.setProjection()
+        
         
         
     def doCommand(self, msg):

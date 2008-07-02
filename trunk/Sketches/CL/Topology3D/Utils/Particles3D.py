@@ -54,6 +54,9 @@ class Particle3D(BaseParticle):
         
         
         self.needRedraw = True
+        
+        # For drag handling
+        self.oldpoint = None
     
     def set_label(self, new_name):
         self.size = Vector()
