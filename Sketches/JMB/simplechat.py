@@ -26,6 +26,8 @@ dispatchers and handlers involved by liking each inbox to the expected outbox an
 vcie versa.
 
 """
+import re
+
 from Axon.Component import component
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -141,6 +143,7 @@ class DummyMessageHandler(component):
     def __init__(self):
         super(DummyMessageHandler, self).__init__() 
         self.from_jid = None
+        self.regex = re.compile('(?<!\r)\n')
 
     def initComponents(self):
         sub = SubscribeTo("JID")
@@ -194,11 +197,12 @@ class DummyMessageHandler(component):
                 # In this case we actually received a message
                 # from a contact, we print it.
                 elif isinstance(m, Message):
-                    for body in m.bodies:
-                        print m.from_jid, ": ", str(body)
-
-            if not self.anyReady():
-                self.pause()
+                    b_list = [str(body) for body in m.bodies]
+                    body = ''.join(b_list)
+                    body = self.regex.sub('\\r\\n\n', body)
+                    print body
+                if not self.anyReady():
+                    self.pause()
   
             yield 1
 
