@@ -913,6 +913,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     yclick = float(-event.pos[1]+self.height/2)*self.farPlaneHeight/float(self.height)
                     untransformed_dir = Vector(xclick, yclick, -self.farPlaneDist)
                     e.direction = self.coordCorrectionTransform.transformVector(untransformed_dir)
+                    #e.direction = untransformed_dir
                     # determine which objects have been hit
                     e.hitobjects = self.doPicking(event.pos)
                     # set specific event fields
