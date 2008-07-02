@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 """This is just a source file for miscellaneous console IO functions (in case you
-weren't able to guess by the title :) ).
+weren't able to guess by the title :) )."""
 
 def prompt_yesno(text):
     """
