@@ -236,7 +236,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         p1.x += 10
                         p2 = Vector(*particle.pos).copy()
                         p2.y += 10
-                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos), p1, p2])
+                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-self.display.viewerposition, p1, p2])
+                        #z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-Vector(0,0,self.display.viewerposition.z), p1, p2])
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -265,6 +266,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             diff = newpoint-particle.oldpoint
                             amount = (diff.x, diff.y)
                             particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
+                            #particle.pos = (particle.pos[0]+diff.x, particle.pos[1]+diff.x, -8)
                             #particle.pos = newpoint.toTuple()
                             print newpoint, particle.pos
                         #particle.oldpoint = newpoint
@@ -406,7 +408,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         if posSpec == "randompos" or posSpec == "auto" :
             # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
-            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
+            #z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
+            z = -10
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
