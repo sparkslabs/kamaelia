@@ -80,7 +80,7 @@ import pygame
 import Axon
 
 from Axon.Ipc import producerFinished, WaitComplete
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 
@@ -186,8 +186,8 @@ class XYPad(Axon.Component.component):
       
     def main(self):
         """Main loop."""
-        pgd = PygameDisplay( width=520, height=520 ).activate()
-        PygameDisplay.setDisplayService(pgd)
+    #    pgd = PygameDisplay( width=300, height=550 ).activate()
+     #   PygameDisplay.setDisplayService(pgd)
 
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayservice)
