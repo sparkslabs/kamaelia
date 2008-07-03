@@ -86,7 +86,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
         
         self.hitParticles = []
-        
+        self.selectedParticles = []
         self.grabbed = False
         
         
@@ -281,16 +281,58 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.display.viewerposition.z -= 0.5
                 elif event.key == pygame.K_PAGEDOWN:
                     self.display.viewerposition.z += 0.5
-                elif event.key == pygame.K_UP:
+                elif event.key == pygame.K_w:
                     self.display.viewerposition.y += 0.5
-                elif event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_s:
                     self.display.viewerposition.y -= 0.5
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_a:
                     self.display.viewerposition.x -= 0.5
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_d:
                     self.display.viewerposition.x += 0.5
-                #print self.display.viewerposition
+                elif event.key == pygame.K_UP:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(-20,0,0)
+                elif event.key == pygame.K_DOWN:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(20,0,0)
+                elif event.key == pygame.K_LEFT:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(0,-20,0)
+                elif event.key == pygame.K_RIGHT:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(0,20,0)
+                elif event.key == pygame.K_COMMA:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(0,0,20)
+                elif event.key == pygame.K_PERIOD:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        particle.rotation += Vector(0,0,-20)
                 
+                #print self.display.viewerposition
                 # Scroll if self.display.viewerposition changes
                 if self.display.viewerposition.copy() != viewerOldPos:
                     self.scroll()
