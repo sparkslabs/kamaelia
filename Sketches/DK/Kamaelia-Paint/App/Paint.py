@@ -68,12 +68,13 @@ class Paint(Axon.Component.component):
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
-                transparent = False, size=(500,500), selectedColour=(0,0,0)):
+                transparent = False, size=(500,500), selectedColour=(0,0,0), activeLayer = None):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Paint,self).__init__()
 
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
+      self.activeLayer = activeLayer
       self.margin = margin
       self.oldpos = None
       self.drawing = False
@@ -95,6 +96,12 @@ class Paint(Axon.Component.component):
                            "events" : (self, "inbox"),
                            "size": self.size,
                            "transparency" : transparency }
+      self.disprequest2 = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "events" : (self, "inbox"),
+                           "size": (200,200),
+                           "transparency" : True }
+
 
       if not position is None:
         self.disprequest["position"] = position
@@ -107,44 +114,56 @@ class Paint(Axon.Component.component):
         else: yield 1
 
    def drawBG(self):
-      self.display.fill( (255,0,0) )
-      self.display.fill( self.backgroundColour, self.innerRect )
+      self.activeLayer.fill( (255,0,0) )
+      self.activeLayer.fill( self.backgroundColour, self.innerRect )
       
    def floodFill(self, x, y, newColour, oldColour):
        """Flood fill on a region of non-BORDER_COLOR pixels."""
-       if (self.display.get_at((x,y)) == newColour):
+       if (self.activeLayer.get_at((x,y)) == newColour):
            print "hergfhe"
            return
        edge = [(x, y)]
-       self.display.set_at((x, y), newColour)
+       self.activeLayer.set_at((x, y), newColour)
        while edge:
            newedge = []
            for (x, y) in edge:
                for (s, t) in ((x+1, y), (x-1, y), (x, y+1), (x, y-1)):
-                   if (self.display.get_at((s,t)) == oldColour):
-                       self.display.set_at((s, t), newColour)
+                   if (self.activeLayer.get_at((s,t)) == oldColour):
+                       self.activeLayer.set_at((s, t), newColour)
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
        
        
    def addLayer(self):
-      displayservice = PygameDisplay.getDisplayService()
-    #  self.link((self,"display_signal"), displayservice)
-
+      print "adding layer"
       self.send( self.disprequest,
                   "display_signal")
+
       for _ in self.waitBox("callback"): yield 1
-      self.display = self.recv("callback")
-      self.drawBG()
-      self.blitToSurface()
+      self.activeLayer = self.recv("callback")
       
+      print "testy", self.activeLayer
       
+      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
+                  "surface" : self.activeLayer},
+                  "display_signal")
+
+      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                  "surface" : self.activeLayer},
+                  "display_signal")
+
+      self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
+                  "surface" : self.activeLayer},
+                  "display_signal")
+
+      self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
+		  "surface" : self.activeLayer},
+		  "display_signal")
+
+
    def main(self):
       """Main loop."""
-      #pgd = PygameDisplay( width=520, height=520 ).activate()
-      #PygameDisplay.setDisplayService(pgd)
-
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -153,8 +172,6 @@ class Paint(Axon.Component.component):
 
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
-      self.drawBG()
-      self.blitToSurface()
 
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
@@ -171,8 +188,37 @@ class Paint(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
 		  "surface" : self.display},
 		  "display_signal")
+      self.activeLayer = self.display
 
 
+      self.drawBG()
+      self.blitToSurface()
+      
+      self.send( self.disprequest2,
+                  "display_signal")
+
+      for _ in self.waitBox("callback"): yield 1
+      self.display2 = self.recv("callback")
+
+      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
+                  #"surface" : self.display2},
+                  #"display_signal")
+
+      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                  #"surface" : self.display2},
+                  #"display_signal")
+
+      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
+                  #"surface" : self.display2},
+                  #"display_signal")
+
+      #self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
+		  #"surface" : self.display2},
+		  #"display_signal")
+      self.activeLayer = self.display2
+      self.drawBG()
+      self.blitToSurface()
+      self.activeLayer = self.display
       done = False
       while not done:
          if not self.anyReady():
@@ -193,10 +239,10 @@ class Paint(Axon.Component.component):
                     if event[0] == "Size":
                         self.toolSize = event[1]
                     elif event[0] == 'circle':
-                        pygame.draw.circle(self.display, (255,0,0), event[1], event[2], 0)
+                        pygame.draw.circle(self.activeLayer, (255,0,0), event[1], event[2], 0)
                         self.blitToSurface()
                     elif event[0] == 'line':
-                        pygame.draw.line(self.display, (0,0,0), event[1], event[2], 3)
+                        pygame.draw.line(self.activeLayer, (0,0,0), event[1], event[2], 3)
                         self.blitToSurface()
                     elif event[0] == 'colour':
                         self.selectedColour = event[1]
@@ -212,13 +258,16 @@ class Paint(Axon.Component.component):
                         if event.button == 1:
                             self.oldpos = event.pos
                             self.drawing = True
+                    if self.tool == "Eraser":
+                        self.selectedColour = self.backgroundColour
+                        self.tool = "Line"
                     if self.tool == "Line":
                         if event.button == 1:
                             self.drawing = True
                     if self.tool == "Bucket":
-                        self.floodFill(event.pos[0],event.pos[1],self.selectedColour,self.display.get_at(event.pos))
+                        self.floodFill(event.pos[0],event.pos[1],self.selectedColour,self.activeLayer.get_at(event.pos))
                     if self.tool == "Eyedropper":
-                        self.selectedColour = self.display.get_at(event.pos)
+                        self.selectedColour = self.activeLayer.get_at(event.pos)
                     if event.button == 3:
                         self.addLayer()
                         #self.oldpos = None
@@ -227,8 +276,9 @@ class Paint(Axon.Component.component):
                         #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       self.display.set_alpha = 0
-                       self.tool = "Circle"
+                       self.activeLayer = self.display2
+                       self.drawBG()
+                       self.blitToSurface()
                     elif event.key == pygame.K_l:
                        self.tool = "Line"
 
@@ -236,7 +286,7 @@ class Paint(Axon.Component.component):
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.tool == "Circle":
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
-                        pygame.draw.circle(self.display, self.selectedColour, self.oldpos, rad, 0)
+                        pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, rad, 0)
                         circle = ("circle", self.oldpos, rad)
                         self.send((circle,), "outbox")
                         self.blitToSurface()
@@ -248,8 +298,8 @@ class Paint(Axon.Component.component):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
                               else:
-                                # pygame.draw.circle(self.display, self.selectedColour, self.oldpos, self.toolSize, 0)
-                                 pygame.draw.line(self.display, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                # pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, self.toolSize, 0)
+                                 pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
@@ -258,7 +308,7 @@ class Paint(Axon.Component.component):
          yield 1
 
    def blitToSurface(self):
-       self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+       self.send({"REDRAW":True, "surface":self.activeLayer}, "display_signal")
 
 __kamaelia_components__  = ( Paint, )
 
@@ -277,8 +327,6 @@ if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    from XYPad import XYPad
-   from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
-   from Kamaelia.UI.Pygame.Button import Button
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline
