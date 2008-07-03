@@ -25,8 +25,10 @@
 import unittest
 from unittest import TestSuite, makeSuite, main
 
+import Axon
 import Axon.Scheduler             as Scheduler
-import Axon.LikeFile              as LikeFile
+import Axon.Handle                as Handle
+import Axon.background            as background
 from Axon.Ipc                     import shutdownMicroprocess
 from Kamaelia.Chassis.Graphline   import Graphline
 
@@ -63,18 +65,39 @@ class _AuxiliarTestCase(unittest.TestCase):
         self._kamtestcase.tearDown()
         self._kamtestcase._finish()
 
+class _dummyComponent(Axon.Component.component):
+    """A dummy component. Functionality: None. Prevents the scheduler from dying immediately."""
+    def main(self):
+        while True:
+            self.pause()
+            yield 1
+
 class KamTestCase(object):
     INITIALIZATION_TIMEOUT = 5
     
     def __init__(self, prefix = 'test', *argd, **kwargs):
         super(KamTestCase, self).__init__()
-        if LikeFile.background.lock.acquire(False):
-            LikeFile.background.lock.release()
-            LikeFile.background().start()
-            
+        
         self._kamtest_initialized = False
         self._createTestCase(prefix)
         self._fillTestCaseMethods()
+        
+        def waitForLock(lock, seconds):
+            initial_time = time.time()
+            while time.time() - initial_time < seconds:
+                if lock.acquire(False):
+                    return True
+                time.sleep(0.01)
+            return lock.acquire(False)
+        
+        if waitForLock(background.background.lock, 2):
+            background.background.lock.release()
+            bg = background.background()
+            bg.start()
+            _dummyComponent().activate()
+        else:
+            print "[WARN] Couldn't waitForLock(background.background.lock)" #TODO
+        
         
     def getTestCase(klazz):
         return klazz().TestCaseClass
@@ -160,12 +183,6 @@ class KamTestCase(object):
             linkages                    = linkages, 
         )
         
-        if hasattr(self, '_lf'):
-            try:
-                self._lf.shutdown()
-            except:
-                pass
-            
         self._graph.activate()
         self._messageAdder.activate()
         self._messageStorer.activate()
@@ -173,12 +190,12 @@ class KamTestCase(object):
         outputComponentUnderTest.activate()
         extraOutboxes = tuple([ x 
                          for x in self._messageStorer.Inboxes 
-                         if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
+                         #if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
                     ])
-        self._lf = LikeFile.likefile(
+                    
+        self._lf = Handle.Handle(
                     self._messageStorer, 
-                    extraOutboxes = extraOutboxes, 
-            )
+            ).activate()
         
         # TODO: not thread-safe...
         max_time = time.time() + self.INITIALIZATION_TIMEOUT
@@ -195,8 +212,14 @@ class KamTestCase(object):
     def put(self, msg, inbox):
         self._messageAdder.addMessage(msg, inbox)
         
-    def get(self, outbox, timeout = 1):
-        return self._lf.get(outbox, timeout=timeout)
+    def get(self, outbox, timeout = 3):
+        initial = time.time()
+        while time.time() < initial + timeout:
+            try:
+                return self._lf.get(outbox)
+            except Queue.Empty:
+                time.sleep(0.1)
+        return self._lf.get(outbox)
         
     def expect(self, matcher, outbox, timeout=5):
         self.assertTrue(isinstance(matcher, KamExpectMatcher.Matcher))
@@ -209,7 +232,7 @@ class KamTestCase(object):
                                     (matcher, messages)
                             )
             try:
-                data = self._lf.get(outbox, timeout=remaining)
+                data = self.get(outbox, timeout=remaining)
             except Queue.Empty:
                 raise self.failureException("Expected message: %s not arrived. Arrived messages: %s" %
                                     (matcher, messages)
@@ -220,26 +243,22 @@ class KamTestCase(object):
                 
     def assertOutboxEmpty(self, outbox, msg = None, timeout=0):
         try:
-            self._lf.get(outbox, timeout=timeout)
+            self.get(outbox, timeout=timeout)
         except Queue.Empty:
             pass # Expected
         else:
             raise self.failureException(
                             msg or "Outbox %s not empty: %s" % (
-                            outbox, 
-                            self._messageStorer.getMessages(outbox))
+                                outbox, 
+                                self._messageStorer.getMessages(outbox)
+                            )
                 )
 
-    def _listThreads(self):
-        scheduler = self._graph.__class__.schedulerClass.run
-        threads   = scheduler.listAllThreads()
-        scheduler.debuggingon = False
-        return threads
-        
     def clearThreads(self):
         self._messageAdder.addMessage(shutdownMicroprocess(), 'control')
         self._messageAdder.stopMessageAdder(5)
         self._messageStorer.stopMessageStorer(0)
+        #background.scheduler.run.stop()
     
     def _initialize(self):
         """ _initialize()
@@ -289,7 +308,9 @@ class KamTestCase(object):
         """
         if self._kamtest_initialized:
             self.clearThreads()
-            self._lf.shutdown()
+            self._lf.put(shutdownMicroprocess(), 'control')
+            import time
+            time.sleep(1)
             self.assertFinished()
             
     def setUp(self):
