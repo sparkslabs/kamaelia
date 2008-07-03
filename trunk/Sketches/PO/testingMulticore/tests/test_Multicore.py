@@ -3,13 +3,14 @@
 
 import sys; sys.path.append("../pprocess/"); sys.path.append(".."); 
 
+# To be used
 #from MultiPipeline import ProcessPipeline
 #from MultiPipeline import ProcessGraphline
 
 import Axon
 from Axon.Ipc import producerFinished
-import KamTest.KamTestCase as KamTestCase
-import KamTest.KamExpectMatcher as KamExpectMatcher
+import Kamaelia.Testing.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamExpectMatcher as KamExpectMatcher
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 import time
