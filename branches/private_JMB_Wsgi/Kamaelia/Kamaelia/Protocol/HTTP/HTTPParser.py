@@ -183,6 +183,7 @@ class HTTPParser(component):
     localip = "*** UNDEFINED ***"
     localport = 8080
     mode = 'request'
+    print_incoming = False #Set to true if you want to have data received on the inbox printed out.
     def __init__(self, **argd):
         super(HTTPParser, self).__init__(**argd)
         self.lines = []
@@ -205,6 +206,9 @@ class HTTPParser(component):
         if self.dataReady("inbox"):
             msg = self.recv("inbox")
             self.readbuffer += msg
+            if self.print_incoming:
+                print '===HTTPParser Received==='
+                print msg
             return 1
         else:
             return 0
