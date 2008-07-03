@@ -213,15 +213,7 @@ class Particle3D(BaseParticle):
         else:
             return None
 
-    
-    def setOffset( self, (left,top) ):
-        """\
-        Set the offset of the top left corner of the rendering area.
 
-        If this particle is at (px,py) it will be rendered at (px-x,py-y).
-        """
-        self.left = left
-        self.top  = top
         
 
 

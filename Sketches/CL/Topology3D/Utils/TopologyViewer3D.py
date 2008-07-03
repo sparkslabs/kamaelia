@@ -85,8 +85,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.particleTypes = particleTypes
             
         
-        
-        #self.particles = []
         self.hitParticles = []
         
         self.grabbed = False
@@ -97,13 +95,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
             self.laws = laws
             
-        #self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
         self.physics = ParticleSystemX(self.laws, [], 0)
         self.biggestRadius = 0
-        self.left  = 0
-        self.top   = 0
-        self.dleft = 0
-        self.dtop  = 0
         
         # Do interaction
         self.simCyclesPerRedraw = simCyclesPerRedraw
@@ -150,9 +143,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
             if self.lastIdleTime + 1.0 < time.time():
                 #print [particle.pos for particle in self.physics.particles]                    
-                #self.physics.run(self.simCyclesPerRedraw)
                 self.physics.run(self.simCyclesPerRedraw, avoidedList=self.hitParticles)
                 #print [particle.pos for particle in self.physics.particles]
+                
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
                     if particle.needRedraw:
@@ -265,14 +258,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 for particle in self.hitParticles:
                     try:
                         if particle.oldpoint is not None:
-                            print particle.pos
+                            #print particle.pos
                             diff = newpoint-particle.oldpoint
                             amount = (diff.x, diff.y)
                             particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
-                            #particle.pos = (particle.pos[0]+diff.x, particle.pos[1]+diff.x, -8)
-                            #particle.pos = newpoint.toTuple()
-                            print newpoint, particle.pos
-                        #particle.oldpoint = newpoint
                     except NameError: pass
                     
                     # Redraw the link so that the link can move with the particle
@@ -307,11 +296,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.scroll()
                     for particle in self.physics.particles:
                         particle.oldpoint = None
-                    #self.display.coordCorrectionTransform = Transform()
-                    #self.display.coordCorrectionTransform.setLookAtRotation(-self.display.viewerposition, self.display.lookat, self.display.up)
-#                    for particle in self.physics.particles:
-#                        particle.oldpos = particle.oldpos + self.display.viewerposition
-#                        particle.pos = (Vector(*particle.pos) + self.display.viewerposition).toTuple()
                     
                 
 #
@@ -412,7 +396,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
             z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
-            #z = -10
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
@@ -436,7 +419,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for p in particles:
             if p.radius > self.biggestRadius:
                 self.biggestRadius = p.radius
-            p.setOffset( (self.left, self.top) )
             # create display request for every particle added
             disprequest = { "OGL_DISPLAYREQUEST" : True,
                                  "objectid" : id(p),
