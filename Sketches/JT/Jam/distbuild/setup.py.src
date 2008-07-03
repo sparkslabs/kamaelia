@@ -29,17 +29,10 @@ setup(name = "Kamaelia-Jam",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/KamaeliaJam",
       license = "Copyright (c)2008 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
-      packages = [\
-#PACKAGES
-                 ],
-      scripts =  [\
-#SCRIPTS
-                 ],
-      data_files=[('share/kamaelia',
-                   [\
-#DATA
-                   ],
+      packages = [$packages],
+      scripts =  [$scripts],
+      data_files=[('share/kamaelia/jam',
+                   [$data_files],
                   )
                  ]
      )
-
