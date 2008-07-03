@@ -29,6 +29,7 @@ vcie versa.
 import re
 
 from Axon.Component import component
+from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Backplane import Backplane
@@ -36,6 +37,12 @@ from Kamaelia.Util.Backplane import PublishTo, SubscribeTo
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
+
+from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Experimental.Wsgi.Factory import SimpleWsgiFactory
+from Kamaelia.Experimental.Wsgi.Apps.Simple import simple_app
+from Kamaelia.Experimental.Wsgi.LogWritable import WsgiLogWritable
+from Kamaelia.Experimental.Wsgi.Log import LogWriter
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -131,19 +138,20 @@ class RosterHandler(component):
   
             yield 1
 
-class DummyMessageHandler(component):
+class WebMessageHandler(AdaptiveCommsComponent):
     Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer"\
                    "or the string input in the console",
                "jid"      : "headstock.api.jid.JID instance received from the server",
-               "control"  : "stops the component"}
+               "control"  : "stops the component",
+               "http-inbox" : "Receive Messages from an HTTPServer"}
     
     Outboxes = {"outbox"  : "headstock.api.im.Message to send to the client",
                 "signal"  : "Shutdown signal"}
 
-    def __init__(self):
-        super(DummyMessageHandler, self).__init__() 
+    def __init__(self, Protocol=None):
+        super(WebMessageHandler, self).__init__() 
         self.from_jid = None
-        self.regex = re.compile('(?<!\r)\n')
+        self.protocol_callback = Protocol
 
     def initComponents(self):
         sub = SubscribeTo("JID")
@@ -199,8 +207,9 @@ class DummyMessageHandler(component):
                 elif isinstance(m, Message):
                     b_list = [str(body) for body in m.bodies]
                     body = ''.join(b_list)
-                    body = self.regex.sub('\\r\\n\n', body)
-                    print body
+                    body = body.replace('\n', '\r\n')
+                    #http = http_callback()
+                    #self.link((http, 'outbox')(self, 'http-inbox'))
                 if not self.anyReady():
                     self.pause()
   
@@ -446,17 +455,20 @@ class Client(component):
     Inboxes = {"inbox"      : "",
                "jid"        : "",
                "streamfeat" : "",
-               "control"    : "Shutdown the client stream"}
+               "control"    : "Shutdown the client stream",
+               "http-inbox" : "Receive messages to an HTTP Server",}
     
     Outboxes = {"outbox"  : "",
                 "forward" : "",
                 "log"     : "",
                 "doauth"  : "",
                 "signal"  : "Shutdown signal",
+                "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
     def __init__(self, username, password, domain, resource=u"headstock-client1", 
-                 server=u'localhost', port=5222, usetls=False, register=False):
+                 server=u'localhost', port=5222, usetls=False, register=False,
+                 log='/home/jason/chat.log'):
         super(Client, self).__init__() 
         self.jid = JID(username, domain, resource)
         self.username = username
@@ -468,6 +480,7 @@ class Client(component):
         self.domain = domain
         self.usetls = usetls
         self.register = register
+        self.log_location = log
 
     def passwordLookup(self, jid):
         return self.password
@@ -479,7 +492,7 @@ class Client(component):
 
     def abort(self):
         self.send('OUTGOING : </stream:stream>', 'log')
-        self.send('</stream:stream>', 'outbox') 
+        self.send('</stream:stream>', 'outbox')
 
     def setup(self):
         # Backplanes are like a global entry points that
@@ -503,12 +516,20 @@ class Client(component):
         Backplane("BOUND").activate()
         # Used to inform components of the supported features
         Backplane("DISCO_FEAT").activate()
+        
 
         sub = SubscribeTo("JID")
         self.link((sub, 'outbox'), (self, 'jid'))
         self.addChildren(sub)
         sub.activate()
-
+        
+        log = Logger(path=None, stdout=True, name='XmppLogger')
+        Backplane('LOG_' + self.log_location).activate()
+        Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
+        log_writable = WsgiLogWritable(self.log_location)
+        log.activate()
+        log_writable.activate()   
+        
         # We pipe everything typed into the console
         # directly to the console backplane so that
         # every components subscribed to the console
@@ -523,9 +544,10 @@ class Client(component):
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
+        routing = [ ["/", SimpleWsgiFactory(log_writable, None, None)], ]
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
-                               logger = Logger(path=None, stdout=True),
+                               logger = PublishTo('LOG_' + self.log_location),
                                tcp = TCPClient(self.server, self.port),
                                xmlparser = XMLIncrParser(),
                                xmpp = self.client,
@@ -535,7 +557,7 @@ class Client(component):
                                activityhandler = ActivityHandler(),
                                rosterhandler = RosterHandler(self.jid),
                                registerhandler = RegistrationHandler(self.username, self.password),
-                               msgdummyhandler = DummyMessageHandler(),
+                               msgdummyhandler = WebMessageHandler(HTTPProtocol(routing)),
                                presencehandler = PresenceHandler(),
                                presencedisp = PresenceDispatcher(),
                                rosterdisp = RosterDispatcher(),
@@ -700,5 +722,6 @@ if __name__ == '__main__':
                         usetls=options.usetls,
                         register=options.register)
         client.run()
+        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, url_list)], ]
 
     run()
