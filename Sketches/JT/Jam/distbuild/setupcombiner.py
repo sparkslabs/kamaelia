@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 """
-revomit.py - Aggregate a number of annotated setup files and a template into a single setup file
+setupcombiner.py - Aggregate a number of annotated setup files and a template into a single setup file
 Usage: ./revomit.py template infiles outfile
 """
 
