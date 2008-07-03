@@ -208,10 +208,12 @@ class XYPad(Axon.Component.component):
             self.link( (gbbutton,"outbox"), (self,"buttons") )
             # tool buttons
             circleb = Button(caption="Circle",position=(10,10), msg = (("Tool", "Circle"),)).activate()
+            eraseb = Button(caption="Eraser",position=(100,10), msg = (("Tool", "Eraser"),)).activate()
             lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
             bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
             eyeb = Button(caption="Eyedropper",position=(10,130), msg = (("Tool", "Eyedropper"),)).activate()
             self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (eraseb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (bucketb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (eyeb,"outbox"), (self,"outbox"), passthrough = 2 )
