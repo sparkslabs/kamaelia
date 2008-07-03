@@ -217,7 +217,7 @@ class Particle3D(BaseParticle):
         
 
 
-from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
 class OpenGLComponentParticle3D(OpenGLComponent):
     pass
     
