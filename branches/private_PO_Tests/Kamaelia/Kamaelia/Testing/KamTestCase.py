@@ -258,7 +258,6 @@ class KamTestCase(object):
         self._messageAdder.addMessage(shutdownMicroprocess(), 'control')
         self._messageAdder.stopMessageAdder(5)
         self._messageStorer.stopMessageStorer(0)
-        #background.scheduler.run.stop()
     
     def _initialize(self):
         """ _initialize()

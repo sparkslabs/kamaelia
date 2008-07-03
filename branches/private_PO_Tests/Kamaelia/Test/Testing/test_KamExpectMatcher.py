@@ -24,7 +24,7 @@
 
 import unittest
 
-import KamExpectMatcher
+import Kamaelia.Testing.KamExpectMatcher as KamExpectMatcher
 
 class KamExpectMatcherTestCase(unittest.TestCase):
     def testMatcherString(self):
@@ -87,4 +87,4 @@ def suite():
     return unittest.makeSuite(KamExpectMatcherTestCase)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(defaultTest='suite')

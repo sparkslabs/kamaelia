@@ -22,7 +22,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: PO
 
-import KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 import unittest
 
 import Axon
@@ -198,4 +198,4 @@ def suite():
     return unittest.makeSuite(KamTestCaseTestCase)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(defaultTest='suite')
