@@ -32,6 +32,7 @@ from Kamaelia.UI.OpenGL.Transform import Transform
 _cat = Axon.CoordinatingAssistantTracker
 
 from Particles3D import Particle3D
+from ParticleSystemX import ParticleSystemX
 
                  
 class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -96,7 +97,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
             self.laws = laws
             
-        self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
+        #self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
+        self.physics = ParticleSystemX(self.laws, [], 0)
         self.biggestRadius = 0
         self.left  = 0
         self.top   = 0
@@ -149,6 +151,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if self.lastIdleTime + 1.0 < time.time():
                 #print [particle.pos for particle in self.physics.particles]                    
                 #self.physics.run(self.simCyclesPerRedraw)
+                self.physics.run(self.simCyclesPerRedraw, avoidedList=self.hitParticles)
                 #print [particle.pos for particle in self.physics.particles]
                 # Draw particles if new or updated
                 for particle in self.physics.particles:
@@ -165,7 +168,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         self.send(transform_update, "display_signal")
                         #print transform_update
                         #print [particle.pos for particle in self.physics.particles]
-    
+                
                 self.lastIdleTime = time.time()
             else:
                 yield 1
@@ -408,8 +411,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         if posSpec == "randompos" or posSpec == "auto" :
             # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
-            #z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
-            z = -10
+            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
+            #z = -10
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
