@@ -43,6 +43,7 @@ from Kamaelia.Experimental.Wsgi.Factory import SimpleWsgiFactory
 from Kamaelia.Experimental.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Experimental.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Experimental.Wsgi.Log import LogWriter
+from protocol_manager import ProtocolManager, Echoer
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -101,23 +102,23 @@ class RosterHandler(component):
         yield self.initComponents()
 
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("jid"):
+            while self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
-            if self.dataReady("pushed"):
+            while self.dataReady("pushed"):
                 roster = self.recv('pushed')
                 for nodeid in roster.items:
                     self.send(Roster(from_jid=self.from_jid, to_jid=nodeid,
                                      type=u'result', stanza_id=generate_unique()), 'result')
                 
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 roster = self.recv("inbox")
                 self.roster = roster
                 print "Your contacts:"
@@ -125,7 +126,7 @@ class RosterHandler(component):
                     contact = roster.items[nodeid]
                     print "  ", contact.jid
                     
-            if self.dataReady('ask-activity'):
+            while self.dataReady('ask-activity'):
                 self.recv('ask-activity')
                 if self.roster:
                     for nodeid in self.roster.items:
@@ -138,20 +139,19 @@ class RosterHandler(component):
   
             yield 1
 
-class WebMessageHandler(AdaptiveCommsComponent):
+class WebMessageHandler(component):
     Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer"\
                    "or the string input in the console",
                "jid"      : "headstock.api.jid.JID instance received from the server",
-               "control"  : "stops the component",
-               "http-inbox" : "Receive Messages from an HTTPServer"}
+               "control"  : "stops the component",}
     
     Outboxes = {"outbox"  : "headstock.api.im.Message to send to the client",
-                "signal"  : "Shutdown signal"}
+                "signal"  : "Shutdown signal",
+                "proto" : "Send messages to the protocol manager",}
 
-    def __init__(self, Protocol=None):
+    def __init__(self):
         super(WebMessageHandler, self).__init__() 
         self.from_jid = None
-        self.protocol_callback = Protocol
 
     def initComponents(self):
         sub = SubscribeTo("JID")
@@ -170,22 +170,23 @@ class WebMessageHandler(AdaptiveCommsComponent):
         yield self.initComponents()
 
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("jid"):
+            while self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 m = self.recv("inbox")
                 # in this first case, we want to send the message
                 # typed in the console.
                 # The message is of the form:
                 #    contant_jid message
-                if isinstance(m, str) and m != '':
+                if isinstance(m, (str, unicode)) and m != '':
+                    #print self.name + ' received string!'
                     try:
                         contact_jid, message = m.split(' ', 1)
                     except ValueError:
@@ -205,13 +206,15 @@ class WebMessageHandler(AdaptiveCommsComponent):
                 # In this case we actually received a message
                 # from a contact, we print it.
                 elif isinstance(m, Message):
-                    b_list = [str(body) for body in m.bodies]
-                    body = ''.join(b_list)
-                    body = body.replace('\n', '\r\n')
-                    #http = http_callback()
-                    #self.link((http, 'outbox')(self, 'http-inbox'))
-                if not self.anyReady():
-                    self.pause()
+                    #b_list = [str(body) for body in m.bodies]
+                    #abody = ''.join(b_list)
+                    #print 'body = ', abody
+                    self.send(m, 'proto')
+                else:
+                    print 'unknown instance received!'
+                    
+            if not self.anyReady():
+                self.pause()
   
             yield 1
 
@@ -255,20 +258,20 @@ class DiscoHandler(component):
         yield self.initComponents()
 
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("jid"):
+            while self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
             # When this box has some data, it means
             # that the client is bound to the server
             # Let's ask for its supported features then.
-            if self.dataReady("initiate"):
+            while self.dataReady("initiate"):
                 self.recv("initiate")
                 d = FeaturesDiscovery(unicode(self.from_jid), self.to_jid)
                 self.send(d, "features-disco")
@@ -277,7 +280,7 @@ class DiscoHandler(component):
             # is a a headstock.api.discovery.FeaturesDiscovery instance.
             # What we immediatly do is to notify all handlers
             # interested in that event about it.
-            if self.dataReady('features.result'):
+            while self.dataReady('features.result'):
                 disco = self.recv('features.result')
                 print "Supported features:"
                 for feature in disco.features:
@@ -316,13 +319,13 @@ class ActivityHandler(component):
         yield self.initComponents()
 
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 disco = self.recv("inbox")
                 support = disco.has_feature(XMPP_LAST_NS)
                 print "Activity support: ", support
@@ -350,14 +353,15 @@ class PresenceHandler(component):
 
     def main(self):
         while 1:
-            if self.dataReady("control"):
+            print 'loop!'
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("subscribe"):
+            while self.dataReady("subscribe"):
                 p = self.recv("subscribe")
                 p.swap_jids()
 
@@ -371,7 +375,7 @@ class PresenceHandler(component):
                              type=u'subscribe')
                 self.send(p, "outbox")
                 
-            if self.dataReady("unsubscribe"):
+            while self.dataReady("unsubscribe"):
                 p = self.recv("unsubscribe")
                 p.swap_jids()
                 
@@ -420,14 +424,14 @@ class RegistrationHandler(component):
 
     def main(self):
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 r = self.recv('inbox')
                 if r.registered:
                     print "'%s' is already a registered username." % self.username
@@ -442,7 +446,7 @@ class RegistrationHandler(component):
                         r.infos[u'password'] = self.password
                         self.send(r, 'outbox')
                 
-            if self.dataReady("error"):
+            while self.dataReady("error"):
                 r = self.recv('error')
                 print r.error
 
@@ -523,7 +527,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=True, name='XmppLogger')
+        log = Logger(path=None, stdout=False, name='XmppLogger')
         Backplane('LOG_' + self.log_location).activate()
         Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
         log_writable = WsgiLogWritable(self.log_location)
@@ -544,7 +548,13 @@ class Client(component):
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
-        routing = [ ["/", SimpleWsgiFactory(log_writable, None, None)], ]
+        WsgiConfig ={
+        'server_software' : "Example WSGI Web Server",
+        'server_admin' : "Jason Baker",
+        'wsgi_ver' : (1,0),
+        }
+        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
+
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
                                logger = PublishTo('LOG_' + self.log_location),
@@ -557,7 +567,7 @@ class Client(component):
                                activityhandler = ActivityHandler(),
                                rosterhandler = RosterHandler(self.jid),
                                registerhandler = RegistrationHandler(self.username, self.password),
-                               msgdummyhandler = WebMessageHandler(HTTPProtocol(routing)),
+                               msgdummyhandler = WebMessageHandler(),
                                presencehandler = PresenceHandler(),
                                presencedisp = PresenceDispatcher(),
                                rosterdisp = RosterDispatcher(),
@@ -567,6 +577,7 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
+                               proto_man = ProtocolManager(Protocol=HTTPProtocol(routing)),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -625,6 +636,8 @@ class Client(component):
                                            ("msgdisp", "xmpp.chat"): ('msgdummyhandler', 'inbox'),
                                            ("msgdummyhandler", "outbox"): ('msgdisp', 'forward'),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
+                                           ('msgdummyhandler', 'proto') : ('proto_man' , 'inbox'),
+                                           ('proto_man', 'outbox') : ('msgdummyhandler', 'inbox'),
 
                                            # Activity
                                            ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),
@@ -643,7 +656,7 @@ class Client(component):
         yield self.setup()
 
         while 1:
-            if self.dataReady("control"):
+            while self.dataReady("control"):
                 mes = self.recv("control")
 
                 if isinstance(mes, str):
@@ -653,14 +666,14 @@ class Client(component):
                     self.send(mes, "signal")
                     break
 
-            if self.dataReady("inbox"):
+            while self.dataReady("inbox"):
                 msg = self.recv('inbox')
                 if msg == "quit":
                     self.send(shutdownMicroprocess(), "signal")
                     yield 1
                     break
 
-            if self.dataReady("streamfeat"):
+            while self.dataReady("streamfeat"):
                 feat = self.recv('streamfeat')
                 if feat.register and self.register:
                     self.send(Registration(), 'doregistration')
@@ -670,7 +683,7 @@ class Client(component):
                 else:
                     self.send(feat, 'doauth')
                 
-            if self.dataReady("jid"):
+            while self.dataReady("jid"):
                 self.jid = self.recv('jid')
                 
             if not self.anyReady():
@@ -722,6 +735,6 @@ if __name__ == '__main__':
                         usetls=options.usetls,
                         register=options.register)
         client.run()
-        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, url_list)], ]
+        
 
     run()
