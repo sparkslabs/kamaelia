@@ -80,6 +80,7 @@ class Paint(Axon.Component.component):
       self.drawing = False
       self.tool = "Line"
       self.toolSize = 3
+      self.layers = []
       self.size = size
       self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
@@ -96,11 +97,11 @@ class Paint(Axon.Component.component):
                            "events" : (self, "inbox"),
                            "size": self.size,
                            "transparency" : transparency }
-      self.disprequest2 = { "DISPLAYREQUEST" : True,
+      self.layer = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
                            "events" : (self, "inbox"),
-                           "size": (200,200),
-                           "transparency" : True }
+                           "size": self.size,
+                           "transparency" : bgcolour }
 
 
       if not position is None:
@@ -112,6 +113,14 @@ class Paint(Axon.Component.component):
       while waiting:
         if self.dataReady(boxname): return
         else: yield 1
+        
+   def addLayer(self):
+      print "adding layer"
+      self.send( self.layer, "display_signal")
+      for _ in self.waitBox("callback"): yield 1
+      x = self.recv("callback")
+      self.layers.append(x)
+
 
    def drawBG(self):
       self.activeLayer.fill( (255,0,0) )
@@ -133,34 +142,6 @@ class Paint(Axon.Component.component):
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
-       
-       
-   def addLayer(self):
-      print "adding layer"
-      self.send( self.disprequest,
-                  "display_signal")
-
-      for _ in self.waitBox("callback"): yield 1
-      self.activeLayer = self.recv("callback")
-      
-      print "testy", self.activeLayer
-      
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                  "surface" : self.activeLayer},
-                  "display_signal")
-
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                  "surface" : self.activeLayer},
-                  "display_signal")
-
-      self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
-                  "surface" : self.activeLayer},
-                  "display_signal")
-
-      self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
-		  "surface" : self.activeLayer},
-		  "display_signal")
-
 
    def main(self):
       """Main loop."""
@@ -172,7 +153,7 @@ class Paint(Axon.Component.component):
 
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
-
+      self.layers.append(self.display)
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
@@ -188,34 +169,21 @@ class Paint(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
 		  "surface" : self.display},
 		  "display_signal")
-      self.activeLayer = self.display
+      self.activeLayer = self.layers[0]
 
 
       self.drawBG()
       self.blitToSurface()
       
-      self.send( self.disprequest2,
-                  "display_signal")
-
-      for _ in self.waitBox("callback"): yield 1
-      self.display2 = self.recv("callback")
-
-      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                  #"surface" : self.display2},
+      self.addLayer()
+      #self.send( self.disprequest2,
                   #"display_signal")
 
-      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                  #"surface" : self.display2},
-                  #"display_signal")
+      #for _ in self.waitBox("callback"): yield 1
+      #self.display2 = self.recv("callback")
 
-      #self.send({ "ADDLISTENEVENT" : pygame.MOUSEMOTION,
-                  #"surface" : self.display2},
-                  #"display_signal")
-
-      #self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
-		  #"surface" : self.display2},
-		  #"display_signal")
-      self.activeLayer = self.display2
+      print self.layers
+      self.activeLayer = self.layers[1]
       self.drawBG()
       self.blitToSurface()
       self.activeLayer = self.display
@@ -280,8 +248,9 @@ class Paint(Axon.Component.component):
                        self.drawBG()
                        self.blitToSurface()
                     elif event.key == pygame.K_l:
-                       self.tool = "Line"
-
+                       self.activeLayer.set_alpha(0)
+                       self.activeLayer = self.display
+                       
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.tool == "Circle":
@@ -341,7 +310,7 @@ if __name__ == "__main__":
 
        WINDOW1 = Seq(
                  DisplayConfig(width=520, height=520),
-                 Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = True),
+                 Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = False),
                   ),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
