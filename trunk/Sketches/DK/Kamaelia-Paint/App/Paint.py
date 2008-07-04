@@ -37,7 +37,7 @@ import pprocess
 import pygame
 import Axon
 import math
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 class Paint(Axon.Component.component):
    """\
@@ -179,8 +179,12 @@ class Paint(Axon.Component.component):
       self.drawBG()
       self.blitToSurface()
       
-      for _ in self.addLayer():
-        yield 1
+      yield WaitComplete( self.addLayer() )
+      # The above line is essentially equivalent to the next two:
+      #    for _ in self.addLayer():
+      #      yield 1
+
+
       #self.send( self.disprequest2,
                   #"display_signal")
 
