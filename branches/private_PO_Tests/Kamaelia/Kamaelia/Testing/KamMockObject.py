@@ -74,9 +74,6 @@ class _KamMockObject(Axon.Component.component):
     def addMessage(self, msg, outbox):
         self.messageAdder.addMessage(msg, outbox)
         
-    def addYield(self, n = 1):
-        self.messageAdder.addYield(n)
-        
     def getMessages(self, inbox):
         return self.messageStorer.getMessages(inbox)
     

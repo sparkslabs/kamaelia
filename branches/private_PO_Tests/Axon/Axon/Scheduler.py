@@ -331,8 +331,8 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
-      self.wakeThread(mprocess, True)
       self.extra = 0
+      self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
       """\
@@ -484,7 +484,6 @@ class scheduler(microprocess):
            
            allsleeping = len(self.threads) > 0 and len(nextrunqueue) == 0
            
-	   extra = self.extra
            while (allsleeping and canblock) or not self.wakeRequests.empty():
                
                # process requests to wake threads
@@ -517,7 +516,7 @@ class scheduler(microprocess):
 #               print "Do we get here? 2"
                break
 #           print "len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests
-           running = len(self.threads) + extra
+           running = len(self.threads) + self.extra
 
        if not self.stopRequests.empty():
 #           print "WE GOT HERE! :-)"

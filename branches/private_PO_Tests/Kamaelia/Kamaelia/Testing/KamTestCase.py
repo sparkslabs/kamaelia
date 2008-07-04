@@ -74,6 +74,7 @@ class _dummyComponent(Axon.Component.component):
 
 class KamTestCase(object):
     INITIALIZATION_TIMEOUT = 5
+    _dummyComponentInstance = None
     
     def __init__(self, prefix = 'test', *argd, **kwargs):
         super(KamTestCase, self).__init__()
@@ -81,23 +82,6 @@ class KamTestCase(object):
         self._kamtest_initialized = False
         self._createTestCase(prefix)
         self._fillTestCaseMethods()
-        
-        def waitForLock(lock, seconds):
-            initial_time = time.time()
-            while time.time() - initial_time < seconds:
-                if lock.acquire(False):
-                    return True
-                time.sleep(0.01)
-            return lock.acquire(False)
-        
-        if waitForLock(background.background.lock, 2):
-            background.background.lock.release()
-            bg = background.background()
-            bg.start()
-            _dummyComponent().activate()
-        else:
-            print "[WARN] Couldn't waitForLock(background.background.lock)" #TODO
-        
         
     def getTestCase(klazz):
         return klazz().TestCaseClass
@@ -167,7 +151,9 @@ class KamTestCase(object):
         self._messageAdder         = MessageAdder(publicInboxNames)
         self._messageStorer        = MessageStorer(publicOutboxNames)
         
-        linkages = {}
+        linkages = {
+            ('', 'control') : ('MESSAGE_ADDER', 'control'), 
+        }
         
         for publicInbox in publicInboxNames:
             linkages[('MESSAGE_ADDER', publicInbox)]                = ('INPUT_COMPONENT_UNDER_TEST', publicInbox)
@@ -183,19 +169,16 @@ class KamTestCase(object):
             linkages                    = linkages, 
         )
         
-        self._graph.activate()
-        self._messageAdder.activate()
-        self._messageStorer.activate()
-        inputComponentUnderTest.activate()
-        outputComponentUnderTest.activate()
-        extraOutboxes = tuple([ x 
-                         for x in self._messageStorer.Inboxes 
-                         #if not x in LikeFile.DEFIN and not x in LikeFile.DEFOUT
-                    ])
-                    
         self._lf = Handle.Handle(
-                    self._messageStorer, 
+                    self._graph, 
             ).activate()
+        
+        if KamTestCase._dummyComponentInstance is None:
+            KamTestCase._dummyComponentInstance = _dummyComponent().activate()
+            if background.background.lock.acquire(False):
+                background.background.lock.release()
+                bg = background.background()
+                bg.start()
         
         # TODO: not thread-safe...
         max_time = time.time() + self.INITIALIZATION_TIMEOUT
@@ -216,9 +199,10 @@ class KamTestCase(object):
         initial = time.time()
         while time.time() < initial + timeout:
             try:
-                return self._lf.get(outbox)
-            except Queue.Empty:
-                time.sleep(0.1)
+                #return self._lf.get(outbox)
+                return self._messageStorer.getMessage(outbox)
+            except IndexError:
+                time.sleep(0.1)                
         return self._lf.get(outbox)
         
     def expect(self, matcher, outbox, timeout=5):
