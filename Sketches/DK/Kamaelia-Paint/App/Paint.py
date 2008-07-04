@@ -114,12 +114,6 @@ class Paint(Axon.Component.component):
         if self.dataReady(boxname): return
         else: yield 1
         
-   def addLayer(self):
-      print "adding layer"
-      self.send( self.layer, "display_signal")
-      for _ in self.waitBox("callback"): yield 1
-      x = self.recv("callback")
-      self.layers.append(x)
 
 
    def drawBG(self):
@@ -142,7 +136,17 @@ class Paint(Axon.Component.component):
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
-
+       
+   def addLayer(self):
+      print "adding layer"
+      self.send( self.layer, "display_signal")
+      if not self.dataReady('callback'): 
+          self.pause()
+          yield 1
+      print "here"
+      x = self.recv("callback")
+      self.layers.append(x)
+      
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -175,7 +179,7 @@ class Paint(Axon.Component.component):
       self.drawBG()
       self.blitToSurface()
       
-      self.addLayer()
+      self.addLayer().next()
       #self.send( self.disprequest2,
                   #"display_signal")
 
