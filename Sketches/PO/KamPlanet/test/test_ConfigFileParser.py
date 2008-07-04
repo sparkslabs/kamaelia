@@ -25,7 +25,7 @@
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.XML.SimpleXMLParser import SimpleXMLParser
 
-import kamtest.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 
 import ConfigFileParser
 

@@ -24,7 +24,7 @@
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import kamtest.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 
 import KamTemplateProcessor
 import ConfigFileParser

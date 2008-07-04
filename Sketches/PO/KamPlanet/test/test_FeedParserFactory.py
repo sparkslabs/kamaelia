@@ -27,7 +27,7 @@ from Kamaelia.Chassis.Pipeline import pipeline
 
 import mocker
 
-import kamtest.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 
 import FeedParserFactory
 import ConfigFileParser

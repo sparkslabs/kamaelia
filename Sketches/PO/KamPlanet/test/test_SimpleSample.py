@@ -23,8 +23,8 @@
 # Licensed to the BBC under a Contributor Agreement: PO
 
 from Axon.Ipc import producerFinished
-import kamtest.KamTestCase as KamTestCase
-import kamtest.KamExpectMatcher as KamExpectMatcher
+import Kamaelia.Testing.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamExpectMatcher as KamExpectMatcher
 from SimpleSample import SimpleComponent
 
 class SimpleSampleTestCase(KamTestCase.KamTestCase):
