@@ -179,7 +179,8 @@ class Paint(Axon.Component.component):
       self.drawBG()
       self.blitToSurface()
       
-      self.addLayer().next()
+      for _ in self.addLayer():
+        yield 1
       #self.send( self.disprequest2,
                   #"display_signal")
 
