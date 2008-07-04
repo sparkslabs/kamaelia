@@ -14,7 +14,6 @@ from Axon.Ipc import producerFinished
 
 class SimpleComponent(Axon.Component.component):
     def main(self):
-        for _ in range(100): yield 1 # XXX This shouldn't be here, it's a bug
         self.send('msg1', 'outbox')
         yield 1
         self.send('msg2', 'outbox')

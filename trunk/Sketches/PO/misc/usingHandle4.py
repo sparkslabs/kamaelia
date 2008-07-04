@@ -33,23 +33,23 @@ def waitForLock(lock):
 	return False
 
 class Foo(object):
+	dummyComponent = None
+
 	def initialize(self):
 #		print "begin initialize..."
 		
-		if waitForLock(background.background.lock):
-#			print "got it, releasing"
-			background.background.lock.release()
-#			print "new background..."
-			self.bg = background.background()
-#			print "starting..."
-			self.bg.start()
-#			print "sleeping..."
-			#time.sleep(1)
-			#self.bg.waitUntilSchedulerIsRunning()
-			dummyComponent().activate()
-		else:
-			print "COULDN'T ACQUIRE BACKGROUND LOCK"
-			sys.exit(2)
+#		if not self._background_initialized:
+
+		if Foo.dummyComponent is None:
+			Foo.dummyComponent = dummyComponent().activate()
+			if background.background.lock.acquire(False):
+				background.background.lock.release()
+				self.bg = background.background()
+				self.bg.start()
+			# We don't care anymore:
+			#else:
+			#	print "COULDN'T ACQUIRE BACKGROUND LOCK"
+			#	sys.exit(2)
 #		print "end initialize..."
 
 	def setUp(self):
@@ -91,10 +91,9 @@ f = Foo()
 
 N=10
 
-f.initialize()
-
 for _ in range(N):
 	f.setUp()
+	f.initialize()
 	f.test()
 	f.finish()
 

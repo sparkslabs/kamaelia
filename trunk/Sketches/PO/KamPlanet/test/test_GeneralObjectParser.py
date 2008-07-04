@@ -29,7 +29,7 @@ since KamTestCase *currently* inherits unittest.TestCase, maybe in a short futur
 somehow (i.e. not using inheritance but delegation), and these tests still need to be compatible.
 """
 
-import kamtest.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 
 from GeneralObjectParser import GeneralObjectParser, Field
 

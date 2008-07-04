@@ -22,7 +22,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: PO
 
-import kamtest.KamTestCase as KamTestCase
+import Kamaelia.Testing.KamTestCase as KamTestCase
 
 import KamPlanet
 
