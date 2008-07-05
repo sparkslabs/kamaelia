@@ -207,29 +207,6 @@ class Particle3D(BaseParticle):
             if self.oldpos != Vector(*self.pos):
                 self.oldpos = Vector(*self.pos)
             
-            
-#            transform1 = Transform()
-#            print self.pos
-##                axisPos = Vector(*self.pos) - Vector(Vector(*self.pos).x*self.axisRotation.norm().x, 
-##                                                     Vector(*self.pos).y*self.axisRotation.norm().y, 
-##                                                     Vector(*self.pos).z*self.axisRotation.norm().z)
-#            
-#            axisPos = Vector(-Vector(*self.pos).x, 
-#                                                 -Vector(*self.pos).y, 
-#                                                 0)
-##                print axisPos
-#            #self.transform.applyTranslation(Vector())
-#            #axisPos = Vector()
-#            transform1.applyTranslation(axisPos)
-#            transform1.applyRotation(self.axisRotation)
-#            transform2 = Transform()
-#            transform2.applyTranslation(Vector(Vector(*self.pos).x, 
-#                                                 Vector(*self.pos).y, 
-#                                                 0))
-#            self.transform =  self.transform*transform1
-#            self.transform =  self.transform*transform2
-#            if self.oldAxisRot != self.axisRotation:
-#                self.oldAxisRot = self.axisRotation
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                  "objectid": id(self),
