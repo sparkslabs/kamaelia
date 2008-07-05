@@ -306,8 +306,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.z)+dAngle)
                         particle.pos = (posVector.x, radius*math.sin(newAngle)+centrePoint.y, radius*math.cos(newAngle)+centrePoint.z)
-                        particle.rotation += Vector(-dAngle*180/math.pi,0,0)
-                        
+                        particle.rotation += Vector(-dAngle*180/math.pi,0,0)     
                 elif event.key == pygame.K_DOWN:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -373,11 +372,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         centrePoint += posVector
                     centrePoint /= len(particles)
                     dAngle = 20*math.pi/180
-                    #self.display.up = Vector(*(1,1,0))
-                    #self.display.lookat = Vector(*(self.display.farPlaneDist,0,-self.display.farPlaneDist))
-                    #self.scroll()
                     for particle in particles:
-                        #self.axisRotation = Vector(0,0,dAngle*180/math.pi)
                         posVector = Vector(*particle.pos)
                         relativePosVector = posVector - centrePoint
                         radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
@@ -508,8 +503,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         if posSpec == "randompos" or posSpec == "auto" :
             # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
-            #z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
-            z = -10
+            z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
